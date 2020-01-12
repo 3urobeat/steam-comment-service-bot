@@ -10,26 +10,30 @@ module.exports.run = async (logOnOptions, IDpassthrough, botindex) => {
   
     const config = require('./config.json');
     var randomstring = arr => arr[Math.floor(Math.random() * arr.length)];
+
+    function comment() {
+        var comment = randomstring(config.quotes);
+        community.postUserComment(IDpassthrough, comment, (error) => {
+            if(error !== null) {
+              logger(`[${botindex}] postUserComment error: ${error}`);
+              bot.logOff()
+              return;
+            }
+            logger(`[${botindex}] Comment: ${comment}`)
+            bot.logOff() })}
   
+    //Log in:
     bot.logOn(logOnOptions)
   
-    //Startup
     bot.on('loggedOn', () => {
         bot.setPersona(config.status);
+        setTimeout(() => {
+            comment()
+        }, 5000);
+
     })
 
     bot.on("webSession", (sessionID, cookies) => { 
         community.setCookies(cookies);
     })
-
-    setTimeout(() => {
-        var comment = randomstring(config.quotes);
-        community.postUserComment(IDpassthrough, comment, (error) => {
-            if(error !== null) {
-              logger(`[${botindex}] postUserComment error: ${error}`);
-              return;
-            }
-            logger(`[${botindex}] Comment: ${comment}`)
-            bot.logOff() })
-    }, 5000);
 }

@@ -11,16 +11,15 @@ const d = function d() { return new Date(); }
 var bootstart = 0;
 var bootstart = d()
 
+
+//Functions:
 var logger = function logger(string) { //Custom logger
     console.log(string)
     require('fs').appendFileSync('./output.txt', string.replace(/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]/g, '') + '\n', err => { //Credit: https://github.com/Filirom1/stripcolorcodes
-      if(err) logger(LOGERR + 'Error: ' + err) })
-  }
+      if(err) logger(LOGERR + 'Error: ' + err) }) }
 
 process.on('unhandledRejection', (reason, p) => {
-    logger(`Unhandled Rejection! Reason: ${reason.stack}`);
-});
-
+    logger(`Unhandled Rejection! Reason: ${reason.stack}`) });
 
 var commenteverywhere = function commenteverywhere(steamID) {
     Object.keys(logininfo).forEach((k, i) => {
@@ -30,9 +29,8 @@ var commenteverywhere = function commenteverywhere(steamID) {
             password: logininfo[k][1],
             machineName: "3urobeat's Commment Bot"
         };
-        commentjs.run(logOnOptions, steamID, `Bot ${i}`);
-    })
-}
+        commentjs.run(logOnOptions, steamID, `Bot ${i}`); 
+    })}  
 
 module.exports={
     logger,
@@ -40,6 +38,8 @@ module.exports={
     commenteverywhere
 }
 
+
+//Logging in:
 if (config.mode === 1) {
     Object.keys(logininfo).forEach((k) => {
         var logOnOptions = {
@@ -69,6 +69,7 @@ var readyinterval = setInterval(() => {
         logger(' ')
         logger('*---------------------*')
         if (botcount == 1) logger(`\x1b[34m${logininfo.bot1[0]}\x1b[0m version ${config.version} successfully logged in.`); else logger(`Started ${botcount} accounts version ${config.version}.`);
+        logger(`Using Mode ${config.mode}`)
         const bootend = d() - bootstart
         logger('Ready after ' + bootend + 'ms!')
         logger('*---------------------*')

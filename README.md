@@ -31,7 +31,8 @@ Open a command prompt or power shell in the folder and type `npm install`. Let i
 
 Rename the `logininfo.json.example` to `logininfo.json`.  
 Open the file with a text editor and fill out the user names and passwords of each bot account you wanna use.  
-You can add more login-informations based on the given pattern. The bot will start as many bot accounts as you provide login-informations for.  
+You can add more login-informations based on the given pattern. Don't forget the comma after each `],` but don't put one at the last entry. (The example should be enough to show you the pattern.)  
+The bot will start as many bot accounts as you provide login-informations for.  
 
 Open `config.json` with a text editor. You can customize the values below `version` to your liking. The values are explained below.  
 
@@ -52,4 +53,8 @@ The bot(s) is/are now setup.
 To start the bots, open a command prompt and type:    
 `node start.js`  
 
-The bots should start and you will see them online. You can add them as a friend and send them a message: `!help`  
+Mode 1: The bots should start and you will see them online. You can add them as a friend and send them a message: `!help`  
+Mode 2: The first bot should start and appear online. You can add him as a friend and send him a message: `!help`
+
+
+**Thanks** to [KNO7](https://steamcommunity.com/id/KN07Gaming/) for helping with testing the bot!

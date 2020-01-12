@@ -5,6 +5,7 @@ module.exports.run = async (logOnOptions) => {
   const SteamCommunity = require('steamcommunity');
   var start = require("./start.js")
   const SteamID = require('steamid');
+  const logininfo = require('./logininfo.json');
   var logger = start.logger
 
   const bot = new SteamUser();
@@ -15,7 +16,7 @@ module.exports.run = async (logOnOptions) => {
 
   bot.logOn(logOnOptions)
 
-  //Startup
+  //Log in:
   bot.on('loggedOn', () => {
     bot.setPersona(config.status);
     bot.gamesPlayed([config.game,730]);
@@ -57,7 +58,10 @@ module.exports.run = async (logOnOptions) => {
           bot.chatMessage(steamID, 'Okay I commented on your profile! If you are a nice person then leave a +rep on my profile!')
           logger("Comment: " + comment)})
 
-        if (config.mode === 2) start.commenteverywhere(steamID) //Let all other accounts comment if the mode is activated
+        if (config.mode === 2) {
+          start.commenteverywhere(steamID) //Let all other accounts comment if the mode is activated
+          bot.chatMessage(steamID, `The other ${Object.keys(logininfo).length} comments will follow.`)
+        }
         break;
       case '!ping':
         bot.chatMessage(steamID, 'Pong!')
