@@ -27,13 +27,12 @@ module.exports.run = async (logOnOptions, IDpassthrough, botindex) => {
   
     bot.on('loggedOn', () => {
         bot.setPersona(config.status);
-        setTimeout(() => {
-            comment()
-        }, 5000);
-
     })
 
     bot.on("webSession", (sessionID, cookies) => { 
         community.setCookies(cookies);
+        setTimeout(() => {
+            comment()
+        }, 5000);
     })
 }
