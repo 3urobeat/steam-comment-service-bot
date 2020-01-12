@@ -1,0 +1,5 @@
+{
+	"bot1": ["username1", "password1"],
+	"bot2": ["username2", "password2"],
+	"bot3": ["username3", "password3"]
+}

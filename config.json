@@ -1,0 +1,11 @@
+{
+    "version": "BETA 2.0",
+    
+    "mode": 2,
+    "status": 1,
+    "game": "!help | 3urobeat",
+    "quotes": ["Comment1", "Comment2", "Comment3"],
+    "yourgroup": "https://steamcommunity.com/groups/3urobeatGroup",
+    "yourgroup64id": "103582791464712227",
+    "owner": "https://steamcommunity.com/id/3urobeat/"
+}
