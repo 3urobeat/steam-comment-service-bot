@@ -29,10 +29,37 @@ module.exports.run = async (logOnOptions, IDpassthrough, botindex) => {
         bot.setPersona(config.status);
     })
 
-    bot.on("webSession", (sessionID, cookies) => { 
+    bot.on("webSession", (sessionID, cookies) => { //accept friend requests and comment 
         community.setCookies(cookies);
+        for (let i = 0; i < Object.keys(bot.myFriends).length; i++) { //Credit: https://dev.doctormckay.com/topic/1694-accept-friend-request-sent-in-offline/  
+            if (bot.myFriends[Object.keys(bot.myFriends)[i]] == 2) {
+                bot.addFriend(Object.keys(bot.myFriends)[i]);
+                logger(`[${botindex}] Added user while I was offline! User: ` + Object.keys(bot.myFriends)[i])
+                bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(config.yourgroup64id));
+            }}
+        for (let i = 0; i < Object.keys(bot.myGroups).length; i++) {
+          if (bot.myGroups[Object.keys(bot.myGroups)[i]] == 2) {
+              bot.respondToGroupInvite(Object.keys(bot.myGroups)[i], true)
+              logger(`[${botindex}] Accepted group invite while I was offline: ` + Object.keys(bot.myGroups)[i])
+          }}
+
         setTimeout(() => {
             comment()
         }, 5000);
     })
+
+    //Friend requests
+    bot.on('friendRelationship', (steamid, relationship) => {
+        if (relationship === 2) {
+        bot.addFriend(steamid);
+        logger(`[${botindex}] Added User: ` + steamid)
+        }
+    });
+
+    bot.on('groupRelationship', (steamid, relationship) => {
+        if (relationship === 2) {
+        bot.respondToGroupInvite(steamid, true)
+        logger(`[${botindex}] Accepted group invite: ` + steamid)
+        }
+    });
 }
