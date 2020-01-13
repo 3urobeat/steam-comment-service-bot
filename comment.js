@@ -4,6 +4,7 @@ module.exports.run = async (logOnOptions, IDpassthrough, botindex) => {
     const SteamUser = require('steam-user');
     const SteamCommunity = require('steamcommunity');
     var logger = require('./start.js').logger
+    const SteamID = require('steamid');
   
     const bot = new SteamUser();
     const community = new SteamCommunity();
