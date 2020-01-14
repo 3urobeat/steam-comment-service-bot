@@ -29,7 +29,7 @@ var commenteverywhere = function commenteverywhere(steamID) {
             password: logininfo[k][1],
             machineName: "3urobeat's Commment Bot"
         };
-        commentjs.run(logOnOptions, steamID, `Bot ${i}`); 
+        commentjs.run(logOnOptions, steamID, `Bot ${i}`, i); 
     })}  
 
 module.exports={

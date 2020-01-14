@@ -6,6 +6,8 @@
 The bot will be online in form of an own account and operate through direct messages.  
 To see a list of all commands the user can send the bot a message: `!help`.  
 
+To see this bot cluster in action, visit my him: [Click me](https://steamcommunity.com/id/3urobeatscommentbot)
+
 The bots feature a customizeable array for a selection of quotes, a variable for the name of the specific bot, a variable for the owner's profile and group link for advertisement.  
 You can either provide multiple quotes for a random one every time or only one for always the same quote.  
 The start script will start as many bots as you provide login-informations for. If you are planning to build your bot imperium this could be a great place to start from.  

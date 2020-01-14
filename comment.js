@@ -1,6 +1,6 @@
 //Code by: https://github.com/HerrEurobeat/ 
 
-module.exports.run = async (logOnOptions, IDpassthrough, botindex) => {
+module.exports.run = async (logOnOptions, IDpassthrough, botindex, loginindex) => {
     const SteamUser = require('steam-user');
     const SteamCommunity = require('steamcommunity');
     var logger = require('./start.js').logger
@@ -24,7 +24,11 @@ module.exports.run = async (logOnOptions, IDpassthrough, botindex) => {
             bot.logOff() })}
   
     //Log in:
-    bot.logOn(logOnOptions)
+    setTimeout(() => {
+        bot.logOn(logOnOptions)
+        console.log(botindex + " logged in")
+    }, config.commentdelay * loginindex);
+    
   
     bot.on('loggedOn', () => {
         bot.setPersona(config.status);
