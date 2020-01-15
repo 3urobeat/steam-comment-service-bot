@@ -11,7 +11,8 @@ You can either provide multiple quotes for a random one every time or only one f
 The start script will start as many bots as you provide login-informations for. If you are planning to build your bot imperium this could be a great place to start from.  
 Continue reading for a detailed setup guide.  
 
-**Disclaimer!** > I am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.
+**Disclaimer!** > I am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.  
+If you, the user, download or use this application, you agree that only you are responsible for any action.  
 
 ## Requirements
 
@@ -39,11 +40,16 @@ Open `config.json` with a text editor. You can customize the values below `versi
 | ------------- | ---------------- | ----- |
 | mode          | 1 or 2           | Mode 1: All bots you have logininformations provided for will start up and work for themselves. Mode 2: The first logininfo will start a bot and when a comment is requested all accounts you have provided logininfos for will comment under that one profile. |
 | status        | [Status Codes](https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EPersonaState.js) | Sets your status. (Online, Busy etc.) |
+| commentdelay  | Delay in ms | Adds a delay between each comment to prevent a cooldown from steam. Default: 5000
+| logindelay    | Delay in ms | Adds a delay between each login when the bot is started to prevent a cooldown from steam. Default: 2500 
 | game          | "my game name" | This custom text will be shown on your profile as the name of a game you are playing. |
 | yourgroup     | "link to my group" | Advertise your group with the !group command. Leave it empty (like this: "") to disable the command. |
 | yourgroup64id | "my group64id" | [How do I get this ID?](https://steamcommunity.com/sharedfiles/filedetails/?id=1344514370) The bot will send a group invite instead of the link to your group from above. If no ID is provided, the bot will send the link from above but no invite. |
 | owner         | "link to my profile" | Advertise your own profile with the !owner command. Leave it empty (like this: "") to disable the command. |
 
+
+Open `quotes.txt` with a text editor. You can add as many quotes as you want, line by line. **Don't leave an empty line anywhere in this file!**  
+The bot will choose a random quote for **every** comment. If you only provide one quote, the bot will only use that quote.  
 
 The bot(s) is/are now setup.  
 

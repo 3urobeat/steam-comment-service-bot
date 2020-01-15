@@ -1,0 +1,12 @@
+{
+    "version": "2.0",
+    
+    "mode": 2,
+    "status": 1,
+    "commentdelay": 5000,
+    "logindelay": 2500,
+    "game": "!help | 3urobeat",
+    "yourgroup": "https://steamcommunity.com/groups/3urobeatGroup",
+    "yourgroup64id": "103582791464712227",
+    "owner": "https://steamcommunity.com/id/3urobeat/"
+}
