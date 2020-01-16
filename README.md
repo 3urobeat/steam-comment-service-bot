@@ -6,10 +6,11 @@
 The bot will be online in form of an own account and operate through direct messages.  
 To see a list of all commands the user can send the bot a message: `!help`.  
 
-**If you want to buy profile comments for a small price, visit [KNO7's Discord Server](https://discordapp.com/invite/ZraK7qR)!**  
-[See my 24/7 comment bot in action](https://steamcommunity.com/id/3urobeatscommentbot)  
+**If you want to buy CS:GO Commends for a small price, visit [KNO7's Discord Server](https://discordapp.com/invite/ZraK7qR)!**  
+[Click here to see my 24/7 comment bot in action!](https://steamcommunity.com/id/3urobeatscommentbot)  
 
 The bots feature a customizeable array for a selection of quotes, a variable for the name of the specific bot, a variable for the owner's profile and group link for advertisement.  
+After requesting a comment, the user will be getting a cooldown applied, changeable in the config. The comment command can also be restricted to the owner so that the owner can even **send a comment to another profile** by supplying the profile id. Type `!help` when running in Mode 2 to see the arguments.  
  
 This bot cluster features two modes:  
 **Mode 1:** Start as many bots as you provide logininformations for and let them operate by themselves.  
@@ -44,12 +45,15 @@ Open `config.json` with a text editor. You can customize the values below `versi
 | ------------- | ---------------- | ----- |
 | mode          | 1 or 2           | Mode 1: All bots you have logininformations provided for will start up and work for themselves. Mode 2: The first logininfo will start a bot and when a comment is requested all accounts you have provided logininfos for will comment under that one profile. |
 | status        | [Status Codes](https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EPersonaState.js) | Sets your status. (Online, Busy etc.) |
-| commentdelay  | Delay in ms | Adds a delay between each comment to prevent a cooldown from steam. Default: 5000
-| logindelay    | Delay in ms | Adds a delay between each login when the bot is started to prevent a cooldown from steam. Default: 2500 
-| game          | "my game name" | This custom text will be shown on your profile as the name of a game you are playing. |
+| commentdelay  | Number in ms | Adds a delay between each comment to prevent a cooldown from steam. Default: 5000
+| logindelay    | Number in ms | Adds a delay between each login when the bot is started to prevent a cooldown from steam. Default: 2500 
+| allowcommentcmdusage | true or false | Allows other users to use the !comment command or restrict it to the owner. **ownerid needs to be set in config!**
+| commentcooldown | Number in min | Applies this cooldown in minutes to every user who used the !comment command to prevent spam. Set to 0 to disable cooldown. Default: 5
+| playinggames  | ["custom game", game id] | This custom text will be shown on your profile as the name of a game you are playing. The bot will play the set game id. |
 | yourgroup     | "link to my group" | Advertise your group with the !group command. Leave it empty (like this: "") to disable the command. |
 | yourgroup64id | "my group64id" | [How do I get this ID?](https://steamcommunity.com/sharedfiles/filedetails/?id=1344514370) The bot will send a group invite instead of the link to your group from above. If no ID is provided, the bot will send the link from above but no invite. |
 | owner         | "link to my profile" | Advertise your own profile with the !owner command. Leave it empty (like this: "") to disable the command. |
+| ownerid       | "profile id" | Needs to be set to set allowcommentcmdusage to false and to be able to use the `profileid` argument in the !comment command. |
 
 
 Open `quotes.txt` with a text editor. You can add as many quotes as you want, line by line. **Don't leave an empty line anywhere in this file!**  

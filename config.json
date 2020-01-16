@@ -1,12 +1,15 @@
 {
-    "version": "2.0",
+    "version": "2.1",
     
     "mode": 2,
     "status": 1,
     "commentdelay": 5000,
     "logindelay": 2500,
-    "game": "!help | 3urobeat",
+    "allowcommentcmdusage": true,
+    "commentcooldown": 5,
+    "playinggames": ["!help | 3urobeat", 440, 730],
     "yourgroup": "https://steamcommunity.com/groups/3urobeatGroup",
     "yourgroup64id": "103582791464712227",
-    "owner": "https://steamcommunity.com/id/3urobeat/"
+    "owner": "https://steamcommunity.com/id/3urobeat/",
+    "ownerid": "76561198260031749"
 }

@@ -42,7 +42,7 @@ var commenteverywhere = function commenteverywhere(steamID) { //function to let 
         setTimeout(() => {
             communityobject[k].postUserComment(steamID, comment, (error) => {
                 if(error !== null) { logger(`[Bot ${k}] postUserComment error: ${error}`); failedcomments.push(botobject[k].steamID.getSteam3RenderedID()); return; }
-                logger(`[Bot ${k}] Comment: ${comment}`) })
+                logger(`[Bot ${k}] Comment on ${steamID.getSteam3RenderedID()}: ${comment}`) })
 
         if (Object.keys(communityobject).length === i+1) { botobject[0].chatMessage(steamID, `All comments have been sent. Failed: ${failedcomments.length}/${i+1}`) }
         }, config.commentdelay * i); //delay every comment
@@ -63,9 +63,12 @@ module.exports={
 if (config.mode !== 1 && config.mode !== 2) { //wrong mode? abort.
     logger("\x1b[31mThe mode you provided is invalid! Please choose between 1 or 2. Aborting...\x1b[0m")
     process.exit(0); }
+if (config.allowcommentcmdusage === false && new SteamID(config.ownerid).isValid() === false) {
+    logger("\x1b[31mYou set allowcommentcmdusage to false but didn't specify an ownerid! Aborting...\x1b[0m")
+    process.exit(0); }
    
-//Size of accounts - 1 (first acc logs in instantly) * logindelay -> wait time / 100 -> ms to seconds + 1 tolerance second
-logger(`\x1b[34m[${bootstart}]\x1b[0m Logging in... Estimated wait time: ${((config.logindelay * (Object.keys(logininfo).length - 1)) / 1000) + 1} seconds.`)
+//Size of accounts - 1 (first acc logs in instantly) * logindelay -> wait time / 100 -> ms to seconds + 2 tolerance second
+logger(`\x1b[34m[${bootstart}]\x1b[0m Logging in... Estimated wait time: ${((config.logindelay * (Object.keys(logininfo).length - 1)) / 1000) + 2} seconds.`)
 
 Object.keys(logininfo).forEach((k, i) => { //log all accounts in with the logindelay
     setTimeout(() => {
@@ -85,7 +88,7 @@ var readyinterval = setInterval(() => { //log startup to console
     if (Object.keys(communityobject).length === Object.keys(logininfo).length) {
         logger(' ')
         logger('*------------------------------------------*')
-        if (config.mode === 2) logger(`\x1b[34m${logininfo.bot1[0]}\x1b[0m version ${config.version} with ${Object.keys(communityobject).length - 1} accounts logged in.`); 
+        if (config.mode === 2) logger(`\x1b[34m${logininfo.bot1[0]}\x1b[0m version ${config.version} with ${Object.keys(communityobject).length - 1} child accounts logged in.`); 
             else logger(`Started ${Object.keys(logininfo).length} accounts version ${config.version}.`);
 
         communityobject[0].getSteamUser(botobject[0].steamID, (err, user) => { //display warning if account is limited
