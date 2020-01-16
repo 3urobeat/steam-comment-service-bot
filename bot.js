@@ -68,7 +68,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
   //Message interactions
   bot.on('friendMessage', function(steamID, message) {
-    if (loginindex > 0) {
+    console.log(loginindex)
+    if (loginindex === 0 || config.mode === 1) {
       switch(message.toLowerCase()) {
         case '!help':
           if (config.owner.length > 1) var ownertext = "\nType !owner to check out my owner's profile!"; else var ownertext = "";
