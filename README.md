@@ -7,7 +7,6 @@ The bot will be online in form of an own account and operate through direct mess
 To see a list of all commands the user can send the bot a message: `!help`.  
 
 The bots feature a customizeable array for a selection of quotes, a variable for the name of the specific bot, a variable for the owner's profile and group link for advertisement.  
-You can either provide multiple quotes for a random one every time or only one for always the same quote.  
  
 This bot cluster features two modes:  
 **Mode 1:** Start as many bots as you provide logininformations for and let them operate by themselves.  
@@ -23,13 +22,10 @@ If you, the user, download or use this application, you agree that only you are 
 
 - `node` (https://nodejs.org)
 
-Only necessary if you want to download via command prompt:
-- `git` command line ([Windows](https://git-scm.com/download/win)|[Linux](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)|[MacOS](https://git-scm.com/download/mac)) installed
-
 ## Downloading
 
 Click here: [Download](https://github.com/HerrEurobeat/steam-bots/archive/master.zip)  
-Extract the zip and open the `comment-service-bot` folder.
+Extract the zip and open the `steam-comment-service-bot` folder.
 
 ## Setting the bot up & Configuring
 
@@ -64,3 +60,12 @@ To start the bots, open a command prompt and type:
 `node start.js`  
 
 The bots should start and you will see them online. You can add them as a friend and send them a message: `!help`  
+
+## Additional informations
+
+Steam limits accounts that haven't spend $5 on steam (Level 0). If plan on using Level 0 accounts in your bot cluster, be advised that the requesting user needs to be friend with **ALL** of the accounts that will try to comment.  
+This is a limitation from steam I can't do anything about.
+
+Keep also in mind, that steam can put a cooldown on your accounts if you try to comment too often too fast. I used a working commentdelay in the config.json but if too many individual users request a comment it can still cause errors.  
+
+If you have other questions or problems feel free to open an issue.  
