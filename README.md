@@ -12,7 +12,7 @@ You can either provide multiple quotes for a random one every time or only one f
 This bot cluster features two modes:  
 Mode 1: Start as many bots as you provide logininformations for and let them operate by themselves.  
 Mode 2: The first logininformation will start the main bot and all the other logininformations will connect with the main bot. When you text the main bot, all other accounts will comment under your profile.  
-If you are planning to build your bot imperium this could be a great place to start from.
+If you are planning to build your bot imperium this could be a great place to start from.  
 Continue reading for a detailed setup guide.  
 
 **Disclaimer!** 
