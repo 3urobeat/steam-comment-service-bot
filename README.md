@@ -1,6 +1,6 @@
 <div align="center">
 	<h1 align="center">~ Steam Comment Service Bot ~</h1>
-	<strong>Request a comment on your profile by texting a bot!</strong><br />See how to set up the bot and customize it below.<br /><br />
+	<strong>Request multiple comments on your profile by texting a bot!</strong><br />See how to set up the bot and customize it below.<br /><br />
 </div>
 
 The bot will be online in form of an own account and operate through direct messages.  
@@ -8,10 +8,15 @@ To see a list of all commands the user can send the bot a message: `!help`.
 
 The bots feature a customizeable array for a selection of quotes, a variable for the name of the specific bot, a variable for the owner's profile and group link for advertisement.  
 You can either provide multiple quotes for a random one every time or only one for always the same quote.  
-The start script will start as many bots as you provide login-informations for. If you are planning to build your bot imperium this could be a great place to start from.  
+ 
+This bot cluster features two modes:  
+Mode 1: Start as many bots as you provide logininformations for and let them operate by themselves.  
+Mode 2: The first logininformation will start the main bot and all the other logininformations will connect with the main bot. When you text the main bot, all other accounts will comment under your profile.  
+If you are planning to build your bot imperium this could be a great place to start from.
 Continue reading for a detailed setup guide.  
 
-**Disclaimer!** > I am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.  
+**Disclaimer!** 
+>I am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.  
 If you, the user, download or use this application, you agree that only you are responsible for any action.  
 
 ## Requirements
