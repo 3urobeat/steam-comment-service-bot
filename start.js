@@ -1,4 +1,6 @@
 //Code by: https://github.com/HerrEurobeat/ 
+//If you are here, you are wrong. Open config.json and configure everything there!
+
 
 var b = require('./bot.js');
 const logininfo = require('./logininfo.json');
@@ -13,7 +15,7 @@ var bootstart = 0;
 var bootstart = d();
 
 
-//Functions:
+/* ------------ Functions: ------------ */
 var logger = function logger(string) { //Custom logger
     console.log(string)
     fs.appendFileSync('./output.txt', string.replace(/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]/g, '') + '\n', err => { //Credit: https://github.com/Filirom1/stripcolorcodes
@@ -56,11 +58,16 @@ module.exports={
     quotes,
     accisloggedin }
 
+
+/* ------------ Login: ------------ */
+if (config.mode !== 1 && config.mode !== 2) { //wrong mode? abort.
+    logger("\x1b[31mThe mode you provided is invalid! Please choose between 1 or 2. Aborting...\x1b[0m")
+    process.exit(0); }
+   
 //Size of accounts - 1 (first acc logs in instantly) * logindelay -> wait time / 100 -> ms to seconds + 1 tolerance second
 logger(`\x1b[34m[${bootstart}]\x1b[0m Logging in... Estimated wait time: ${((config.logindelay * (Object.keys(logininfo).length - 1)) / 1000) + 1} seconds.`)
 
-//Logging in:
-Object.keys(logininfo).forEach((k, i) => {
+Object.keys(logininfo).forEach((k, i) => { //log all accounts in with the logindelay
     setTimeout(() => {
         var logOnOptions = {
             accountName: logininfo[k][0],
@@ -72,11 +79,8 @@ Object.keys(logininfo).forEach((k, i) => {
     }, config.logindelay * i);
 })
 
-if (config.mode !== 1 && config.mode !== 2) {
-    logger("\x1b[31mThe mode you provided is invalid! Please choose between 1 or 2. Aborting...\x1b[0m")
-    process.exit(0); }
 
-
+/* ------------ Everything logged in: ------------ */
 var readyinterval = setInterval(() => { //log startup to console
     if (Object.keys(communityobject).length === Object.keys(logininfo).length) {
         logger(' ')

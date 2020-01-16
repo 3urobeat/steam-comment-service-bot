@@ -1,4 +1,6 @@
 //Code by: https://github.com/HerrEurobeat/ 
+//If you are here, you are wrong. Open config.json and configure everything there!
+
 
 module.exports.run = async (logOnOptions, loginindex) => {
   const SteamUser = require('steam-user');
@@ -15,6 +17,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
   if (config.mode === 1) var thisbot = `Bot ${loginindex}`
     else var thisbot = "Main"
 
+  /* ------------ Login & Events: ------------ */
   var loggedininterval = setInterval(() => { //set an interval to check if previous acc is logged on
     if(start.accisloggedin === true) {
       bot.logOn(logOnOptions) 
@@ -35,29 +38,29 @@ module.exports.run = async (logOnOptions, loginindex) => {
     })
   });
 
-  //Log in:
-  bot.on('loggedOn', () => {
+  bot.on('loggedOn', () => { //this account is now logged on
     start.accisloggedin = true; //set to true to log next account in
-    bot.setPersona(config.status);
+    bot.setPersona(config.status); //set online status
     if (config.mode === 1) { //individual mode
-      bot.gamesPlayed([config.game,730]); //set game for all bots
+      bot.gamesPlayed([config.game,730]); //set game for all bots in mode 1
     } else if (config.mode === 2) { //connected mode
-      if (loginindex === 0) bot.gamesPlayed([config.game,730]); //set game only for the "leader" bot
+      if (loginindex === 0) bot.gamesPlayed([config.game,730]); //set game only for the "leader" bot in mode 2
     }
 
-    start.communityobject[loginindex] = community //export this community instance to the communityobject
-    start.botobject[loginindex] = bot //export this bot instance to the botobject
+    start.communityobject[loginindex] = community //export this community instance to the communityobject to access it from start.js
+    start.botobject[loginindex] = bot //export this bot instance to the botobject to access it from start.js
   });
 
-  bot.on("webSession", (sessionID, cookies) => { 
-    community.setCookies(cookies);
+  bot.on("webSession", (sessionID, cookies) => { //get websession (log in to chat)
+    community.setCookies(cookies); //set cookies (otherwise the bot is unable to comment)
+
     //Accept offline group & friend invites
     for (let i = 0; i < Object.keys(bot.myFriends).length; i++) { //Credit: https://dev.doctormckay.com/topic/1694-accept-friend-request-sent-in-offline/  
         if (bot.myFriends[Object.keys(bot.myFriends)[i]] == 2) {
             bot.addFriend(Object.keys(bot.myFriends)[i]);
             logger(`[${thisbot}] Added user while I was offline! User: ` + Object.keys(bot.myFriends)[i])
             bot.chatMessage(Object.keys(bot.myFriends)[i], 'Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more info!')
-            bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(config.yourgroup64id));
+            bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(config.yourgroup64id)); //invite the user to your group
         }}
     for (let i = 0; i < Object.keys(bot.myGroups).length; i++) {
       if (bot.myGroups[Object.keys(bot.myGroups)[i]] == 2) {
@@ -66,10 +69,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
       }}
   });
 
-  //Message interactions
+  /* ------------ Message interactions: ------------ */
   bot.on('friendMessage', function(steamID, message) {
-    console.log(loginindex)
-    if (loginindex === 0 || config.mode === 1) {
+    if (loginindex === 0 || config.mode === 1) { //check if this is the main bot or if mode 1 is set
       switch(message.toLowerCase()) {
         case '!help':
           if (config.owner.length > 1) var ownertext = "\nType !owner to check out my owner's profile!"; else var ownertext = "";
@@ -82,9 +84,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
           community.getSteamUser(steamID, (err, user) => { //check if profile is private
             if(user.privacyState !== "public") return bot.chatMessage(steamID, "Your profile seems to be private. Please edit your privacy settings on your profile and try again!") });
 
-          var randomstring = arr => arr[Math.floor(Math.random() * arr.length)];
-          var comment = randomstring(start.quotes);
-          community.postUserComment(steamID, comment, (error) => {
+          var randomstring = arr => arr[Math.floor(Math.random() * arr.length)]; 
+          var comment = randomstring(start.quotes); //get random quote
+          community.postUserComment(steamID, comment, (error) => { //post comment
             if(error !== null) { logger(`[${thisbot}] postUserComment error: ${error}`); return; }
             logger(`[${thisbot}] Comment: ${comment}`)
             if (config.mode === 1) bot.chatMessage(steamID, 'Okay I commented on your profile! If you are a nice person then leave a +rep on my profile!')
@@ -97,7 +99,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           })
 
           if (config.mode === 2) {
-            start.commenteverywhere(steamID) //Let all other accounts comment if the mode is activated
+            start.commenteverywhere(steamID) //Let all other accounts comment if mode 2 is activated
             bot.chatMessage(steamID, `The other ${Object.keys(logininfo).length} comments should follow with a delay of ${config.commentdelay}ms.`)
           }
           break;
@@ -117,10 +119,10 @@ module.exports.run = async (logOnOptions, loginindex) => {
           if (config.owner.length > 1) var ownertext = config.owner; else var ownertext = "anonymous (no owner link provided)";
           bot.chatMessage(steamID, `This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nDisclaimer: I (the developer) am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.\n\nThis instance of the bot is used and operated by: ${ownertext}`)
           break;
-        default:
+        default: //cmd not recognized
           bot.chatMessage(steamID, "I don't know that command. Type !help for more info.") }
     } else {
-      if (config.mode === 2) {
+      if (config.mode === 2) { //redirect the user to the main bot if mode 2 is running and this bot is not the main bot
         switch(message.toLowerCase()) {
           case '!about':
             if (config.owner.length > 1) var ownertext = config.owner; else var ownertext = "anonymous (no owner link provided)";
@@ -130,10 +132,10 @@ module.exports.run = async (logOnOptions, loginindex) => {
             bot.chatMessage(steamID, "This is one account running in a bot cluster.\nPlease add the main bot and send him a !help message.\nIf you want to check out what this is about, type: !about")
         }}  
       }
-    logger(`[${thisbot}] Friend message from ${steamID.getSteam3RenderedID()}: ${message}`);
+    logger(`[${thisbot}] Friend message from ${steamID.getSteam3RenderedID()}: ${message}`); //log message
   });
 
-  //Friend requests
+  //Accept Friend & Group requests/invites
   bot.on('friendRelationship', (steamid, relationship) => {
     if (relationship === 2) {
       bot.addFriend(steamid);

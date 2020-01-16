@@ -6,13 +6,16 @@
 The bot will be online in form of an own account and operate through direct messages.  
 To see a list of all commands the user can send the bot a message: `!help`.  
 
+**If you want to buy profile comments for a small price, visit [KNO7's Discord Server](https://discordapp.com/invite/ZraK7qR)!**  
+[See my 24/7 comment bot in action](https://steamcommunity.com/id/3urobeatscommentbot)  
+
 The bots feature a customizeable array for a selection of quotes, a variable for the name of the specific bot, a variable for the owner's profile and group link for advertisement.  
  
 This bot cluster features two modes:  
 **Mode 1:** Start as many bots as you provide logininformations for and let them operate by themselves.  
 **Mode 2:** The first logininformation will start the main bot and all the other logininformations will connect with the main bot. When you text the main bot, all other accounts will comment under your profile.  
 If you are planning to build your bot imperium this could be a great place to start from.  
-Continue reading for a detailed setup guide.  
+Continue reading for a detailed setup guide **including the `Additional Informations` part!**  
 
 **Disclaimer!** 
 >I am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.  
@@ -52,7 +55,7 @@ Open `config.json` with a text editor. You can customize the values below `versi
 Open `quotes.txt` with a text editor. You can add as many quotes as you want, line by line. **Don't leave an empty line anywhere in this file!**  
 The bot will choose a random quote for **every** comment. If you only provide one quote, the bot will only use that quote.  
 
-The bot(s) is/are now setup.  
+The bot(s) is/are now setup. Don't modify any of the other files.   
 
 ## Starting the bot
 
@@ -64,8 +67,13 @@ The bots should start and you will see them online. You can add them as a friend
 ## Additional informations
 
 Steam limits accounts that haven't spend $5 on steam (Level 0). If plan on using Level 0 accounts in your bot cluster, be advised that the requesting user needs to be friend with **ALL** of the accounts that will try to comment.  
-This is a limitation from steam I can't do anything about.
+This is a limitation from steam I can't do anything about.  
 
 Keep also in mind, that steam can put a cooldown on your accounts if you try to comment too often too fast. I used a working commentdelay in the config.json but if too many individual users request a comment it can still cause errors.  
 
-If you have other questions or problems feel free to open an issue.  
+As the **license** already stated: If you want to use code from this repository in your project, feel free to do that as long as you **include credit** to this repository!  
+
+**If you have other questions or problems feel free to open an issue.**  
+
+Thanks to [KNO7](https://steamcommunity.com/id/KN07Gaming/) for helping with testing early beta versions!  
+**If you want to buy profile comments for a small price, visit [KNO7's Discord Server](https://discordapp.com/invite/ZraK7qR)!**  
