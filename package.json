@@ -5,6 +5,7 @@
   "main": "bot1.js",
   "dependencies": {
     "eslint": "^6.1.0",
+    "https": "^1.0.0",
     "nodemon": "^1.19.1",
     "steam-user": "^4.12.2",
     "steamcommunity": "^3.40.0"

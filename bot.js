@@ -9,11 +9,13 @@ module.exports.run = async (logOnOptions, loginindex) => {
   var start = require("./start.js")
   const config = require('./config.json');
   const logininfo = require('./logininfo.json');
+  var fs = require("fs");
   var logger = start.logger
 
   const bot = new SteamUser();
   const community = new SteamCommunity();
-  const usedcommentrecently = new Set();
+  const usedcommentrecently = new Set(); //user specific cooldown
+  var commentedrecently = false; //global cooldown for the comment command
 
   if (config.mode === 1) var thisbot = `Bot ${loginindex}`
     else var thisbot = "Main"
@@ -65,9 +67,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
         }}
     for (let i = 0; i < Object.keys(bot.myGroups).length; i++) {
       if (bot.myGroups[Object.keys(bot.myGroups)[i]] == 2) {
-          bot.respondToGroupInvite(Object.keys(bot.myGroups)[i], true)
-          logger(`[${thisbot}] Accepted group invite while I was offline: ` + Object.keys(bot.myGroups)[i])
-      }}
+        if (config.acceptgroupinvites !== true) { //check if group accept is false
+          if (config.botsgroupid.length < 1) return; 
+          if (Object.keys(bot.myGroups)[i] !== config.botsgroupid) { return; }} //check if group id is bot group           
+        bot.respondToGroupInvite(Object.keys(bot.myGroups)[i], true)
+        logger(`[${thisbot}] Accepted group invite while I was offline: ` + Object.keys(bot.myGroups)[i])
+    }}
   });
 
   /* ------------ Message interactions: ------------ */
@@ -85,10 +90,14 @@ module.exports.run = async (logOnOptions, loginindex) => {
           }
           break;
         case '!comment':
-          if (config.allowcommentcmdusage === false && config.ownerid !== new SteamID(steamID.getSteam3RenderedID()).getSteamID64()) return bot.chatMessage(steamID, "The bot owner restricted this comment to himself.\nType !owner to get information who the owner is.\nType !about to get a link to the bot creator.") 
+          if (config.allowcommentcmdusage === false && !config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return bot.chatMessage(steamID, "The bot owner restricted this comment to himself.\nType !owner to get information who the owner is.\nType !about to get a link to the bot creator.") 
           if (config.commentcooldown !== 0) { //is the cooldown enabled?
             if (usedcommentrecently.has(steamID.getSteam3RenderedID())) { //check if user has cooldown applied Credit: https://stackoverflow.com/questions/48432102/discord-js-cooldown-for-a-command-for-each-user-not-all-users
               bot.chatMessage(steamID, `You requested a comment in the last ${config.commentcooldown} minutes. Please wait a moment.`) //send error message
+              return; }}
+          if (config.globalcommentcooldown !== 0) { //is the cooldown enabled?
+            if (commentedrecently === true) { 
+              bot.chatMessage(steamID, `Someone else requested a comment in the last ${config.globalcommentcooldown}ms. Please wait a moment.`) //send error message
               return; }}
 
           var args = cont.slice(1);
@@ -110,8 +119,10 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
           if (config.mode === 2) {
             if (numberofcomments === undefined) { //no number given? ask again
-              bot.chatMessage(steamID, `Please specify how many comments out of ${Object.keys(start.communityobject).length} you want to get.\nCommand usage: '!comment number_of_comments'`)
-              return; }
+              if (Object.keys(start.botobject).length === 1) { var numberofcomments = 1 } else { //if only one account is active, set 1 automatically
+                bot.chatMessage(steamID, `Please specify how many comments out of ${Object.keys(start.communityobject).length} you want to get.\nCommand usage: '!comment number_of_comments'`)
+                return;
+              }}
           } else {
             var numberofcomments = 1 }
 
@@ -123,9 +134,11 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
           var randomstring = arr => arr[Math.floor(Math.random() * arr.length)]; 
           var comment = randomstring(start.quotes); //get random quote
+
           community.postUserComment(steamID, comment, (error) => { //post comment
-            if(error !== null) { logger(`[${thisbot}] postUserComment error: ${error}`); return; }
-            logger(`[${thisbot}] ${numberofcomments} Comment(s) on ${steamID.getSteam3RenderedID()}: ${comment}`)
+            if(error !== null) { bot.chatMessage(steamID, `Oops, an error occured! Details: \n[${thisbot}] postUserComment error: ${error}`); logger(`[${thisbot}] postUserComment error: ${error}`); return; }
+
+            logger(`[${thisbot}] ${numberofcomments} Comment(s) on ${new SteamID(steamID.getSteam3RenderedID()).getSteamID64()}: ${comment}`)
             if (config.mode === 1 || Object.keys(start.communityobject).length === 1) bot.chatMessage(steamID, 'Okay I commented on your profile! If you are a nice person then leave a +rep on my profile!')
               else {
                 var waittime = (Object.keys(logininfo).length * config.commentdelay) / 1000 //calculate estimated wait time if mode is 2
@@ -135,13 +148,32 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 bot.chatMessage(steamID, `Estimated wait time for ${Object.keys(logininfo).length} comments: ${Number(Math.round(waittime+'e'+3)+'e-'+3)} ${waittimeunit}.`)
 
                 start.commenteverywhere(steamID) //Let all other accounts comment if mode 2 is activated
-                bot.chatMessage(steamID, `The other ${Object.keys(logininfo).length} comments should follow with a delay of ${config.commentdelay}ms.`) } })
-          
-          // Adds the user to the set so that they can't use the command for a minute
-          usedcommentrecently.add(steamID.getSteam3RenderedID());
-          setTimeout(() => { 
-            usedcommentrecently.delete(steamID.getSteam3RenderedID()) //Removes the user from the set after a minute
-          }, config.commentcooldown * 60000) //minutes * 60000 = cooldown in ms 
+                bot.chatMessage(steamID, `The other ${Object.keys(logininfo).length} comments should follow with a delay of ${config.commentdelay}ms.`) }
+
+            //Adds the user to the set so that they can't use the command for a minute
+            if (config.commentcooldown !== 0) {
+              usedcommentrecently.add(steamID.getSteam3RenderedID());
+              setTimeout(() => { //user specific cooldown
+                usedcommentrecently.delete(steamID.getSteam3RenderedID()) //Removes the user from the set after a minute
+              }, config.commentcooldown * 60000) //minutes * 60000 = cooldown in ms 
+            }
+            //sets the global cooldown to true so the account doesn't get a cooldown
+            if (config.globalcommentcooldown !== 0) {
+              commentedrecently = true;
+              setTimeout(() => { //global cooldown
+                usedcommentrecently.delete(steamID.getSteam3RenderedID()) //Removes the user from the set after a minute
+                commentedrecently = false;
+              }, config.globalcommentcooldown)
+            }
+
+            if (config.unfriendtime > 0) { //add user to lastcomment list if the unfriendtime is > 0 days
+              if (start.botobject[i].myFriends[new SteamID(steamID.getSteam3RenderedID()).getSteamID64()] === 3) {
+                lastcomment[new SteamID(steamID.getSteam3RenderedID()).getSteamID64()] = {
+                  time: Date.now(),
+                  bot: loginindex }
+                fs.writeFile("./lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
+                  if (err) logger("delete user from lastcomment.json error: " + err) }) }}
+          })
           break;
         case '!ping':
           bot.chatMessage(steamID, 'Pong!')
@@ -152,16 +184,17 @@ module.exports.run = async (logOnOptions, loginindex) => {
           break;
         case '!group':
           if (config.yourgroup.length < 1 && config.yourgroup64id.length < 1) return bot.chatMessage(steamID, "I don't know that command. Type !help for more info.") //no group info at all? stop.
-          if (config.yourgroup64id.length > 1) { bot.inviteToGroup(steamID, new SteamID(config.yourgroup64id)); bot.chatMessage(steamID, "I send you an invite! Thanks for joining!"); return; } //id? send invite and stop
+          if (config.yourgroup64id.length > 1 && Object.keys(bot.myGroups).includes(config.yourgroup64id)) { bot.inviteToGroup(steamID, config.yourgroup64id); bot.chatMessage(steamID, "I send you an invite! Thanks for joining!"); return; } //id? send invite and stop
           bot.chatMessage(steamID, "Join my group here: " + config.yourgroup) //seems like no id has been saved but an url. Send the user the url
           break;
         case '!resetcooldown':
-          if (config.ownerid !== new SteamID(steamID.getSteam3RenderedID()).getSteamID64()) return bot.chatMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
+          if (!config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return bot.chatMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
           if (config.commentcooldown === 0) { //is the cooldown enabled?
             return bot.chatMessage(steamID, "The cooldown is disabled in the config!") }
           if (usedcommentrecently.has(steamID.getSteam3RenderedID())) { //check if user has cooldown applied Credit: https://stackoverflow.com/questions/48432102/discord-js-cooldown-for-a-command-for-each-user-not-all-users
             usedcommentrecently.delete(steamID.getSteam3RenderedID()) //Removes the user from the set after a minute
-            bot.chatMessage(steamID, "Your cooldown has been cleared.")}
+            bot.chatMessage(steamID, "Your cooldown has been cleared.") } else {
+              bot.chatMessage(steamID, "There is no cooldown for you applied.") }
           break;
         case '!about':
           if (config.owner.length > 1) var ownertext = config.owner; else var ownertext = "anonymous (no owner link provided)";
@@ -180,22 +213,26 @@ module.exports.run = async (logOnOptions, loginindex) => {
             bot.chatMessage(steamID, "This is one account running in a bot cluster.\nPlease add the main bot and send him a !help message.\nIf you want to check out what this is about, type: !about")
         }}  
       }
-    logger(`[${thisbot}] Friend message from ${steamID.getSteam3RenderedID()}: ${message}`); //log message
+    logger(`[${thisbot}] Friend message from ${new SteamID(steamID.getSteam3RenderedID()).getSteamID64()}: ${message}`); //log message
   });
 
   //Accept Friend & Group requests/invites
   bot.on('friendRelationship', (steamid, relationship) => {
     if (relationship === 2) {
       bot.addFriend(steamid);
-      logger(`[${thisbot}] Added User: ` + steamid)
+      logger(`[${thisbot}] Added User: ` + new SteamID(steamID.getSteam3RenderedID()).getSteamID64())
       bot.chatMessage(steamid, 'Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more info!');
     }
   });
 
   bot.on('groupRelationship', (steamid, relationship) => {
     if (relationship === 2) {
+      if (config.acceptgroupinvites !== true) { //check if group accept is false
+        if (config.botsgroupid.length < 1) return; 
+        if (new SteamID(steamid.getSteam3RenderedID()).getSteamID64() !== config.botsgroupid) { return; }} //check if group id is bot group  
+
       bot.respondToGroupInvite(steamid, true)
-      logger(`[${thisbot}] Accepted group invite: ` + steamid)
+      logger(`[${thisbot}] Accepted group invite: ` + new SteamID(steamID.getSteam3RenderedID()).getSteamID64())
     }
   });
 

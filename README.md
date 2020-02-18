@@ -49,11 +49,15 @@ Open `config.json` with a text editor. You can customize the values below `versi
 | logindelay    | Number in ms | Adds a delay between each login when the bot is started to prevent a cooldown from steam. Default: 2500 
 | allowcommentcmdusage | true or false | Allows other users to use the !comment command or restrict it to the owner. **ownerid needs to be set in config!**
 | commentcooldown | Number in min | Applies this cooldown in minutes to every user who used the !comment command to prevent spam. Set to 0 to disable cooldown. Default: 5
+| globalcommentcooldown | Number in ms | Applies this cooldown in milliseconds to every comment command usage to prevent getting a cooldown from steam. The user specific commentcooldown will still be applied. Set to 0 to disable. |
+| unfriendtime  | Days | Number of days the bot will wait before unfriending someone who hasn't requested a comment in that time period except the owner. Set to 0 to disable. |
 | playinggames  | ["custom game", game id] | This custom text will be shown on your profile as the name of a game you are playing. The bot will play the set game id. |
 | yourgroup     | "link to my group" | Advertise your group with the !group command. Leave it empty (like this: "") to disable the command. |
 | yourgroup64id | "my group64id" | [How do I get this ID?](https://steamcommunity.com/sharedfiles/filedetails/?id=1344514370) The bot will send a group invite instead of the link to your group from above. If no ID is provided, the bot will send the link from above but no invite. |
+| botsgroupid   | "group64id" | [How do I get this ID?](https://steamcommunity.com/sharedfiles/filedetails/?id=1344514370) The main bot will send a group invite to all other bots. Disable this feature by leaving the brackets empty (like this: ""). |
+| acceptgroupinvites | true or false | Defines if the bots will accept group invites from other users. A group invite from the main bot will always be accepted. |
 | owner         | "link to my profile" | Advertise your own profile with the !owner command. Leave it empty (like this: "") to disable the command. |
-| ownerid       | "profile id" | Needs to be set to set allowcommentcmdusage to false and to be able to use the `profileid` argument in the !comment command. |
+| ownerid       | ["profile id1", "id2"] | Needs to be set to set allowcommentcmdusage to false and to be able to use the `profileid` argument in the !comment command. Add more ids to allow multiple users the usage. |
 
 
 Open `quotes.txt` with a text editor. You can add as many quotes as you want, line by line. **Don't leave an empty line anywhere in this file!**  
