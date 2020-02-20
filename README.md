@@ -6,7 +6,6 @@
 The bot will be online in form of an own account and operate through direct messages.  
 To see a list of all commands the user can send the bot a message: `!help`.  
 
-**If you want to buy CS:GO Commends for a small price, visit [KNO7's Discord Server](https://discordapp.com/invite/ZraK7qR)!**  
 [Click here to see my 24/7 comment bot in action!](https://steamcommunity.com/id/3urobeatscommentbot)  
 
 The bots feature a customizeable array for a selection of quotes, a variable for the name of the specific bot, a variable for the owner's profile and group link for advertisement.  
