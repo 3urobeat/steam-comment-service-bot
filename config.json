@@ -1,19 +1,20 @@
 {
-    "version": "2.2",
+    "version": "2.3",
     
     "mode": 2,
     "status": 1,
     "commentdelay": 5000,
     "logindelay": 2500,
+    "logcommandusage": true,
     "allowcommentcmdusage": true,
     "commentcooldown": 5,
     "globalcommentcooldown": 5000,
-    "unfriendtime": 0.0001,
+    "unfriendtime": 31,
     "playinggames": ["!help | 3urobeat", 440, 730],
     "yourgroup": "https://steamcommunity.com/groups/3urobeatGroup",
     "yourgroup64id": "103582791464712227",
-    "botsgroupid": "103582791464712227",
+    "botsgroupid": "",
     "acceptgroupinvites": true,
-    "owner": "https://steamcommunity.com/id/3urobeat/",
-    "ownerid": ["76561198982470768", "76561198260031749"]
+    "owner": "https://steamcommunity.com/id/3urobeat",
+    "ownerid": ["76561198260031749"]
 }

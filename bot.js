@@ -17,8 +17,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
   const usedcommentrecently = new Set(); //user specific cooldown
   var commentedrecently = false; //global cooldown for the comment command
 
-  if (config.mode === 1) var thisbot = `Bot ${loginindex}`
-    else var thisbot = "Main"
+  var thisbot = `Bot ${loginindex}`
+  if (config.mode === 2 && loginindex === 0) var thisbot = "Main"
 
   /* ------------ Login & Events: ------------ */
   var loggedininterval = setInterval(() => { //set an interval to check if previous acc is logged on
@@ -77,8 +77,10 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
   /* ------------ Message interactions: ------------ */
   bot.on('friendMessage', function(steamID, message) {
+    if (config.logcommandusage) logger(`[${thisbot}] Friend message from ${new SteamID(steamID.getSteam3RenderedID()).getSteamID64()}: ${message}`); //log message
     if (loginindex === 0 || config.mode === 1) { //check if this is the main bot or if mode 1 is set
       var cont = message.slice("!").split(" ");
+      var args = cont.slice(1);
       switch(cont[0].toLowerCase()) {
         case '!help':
           if (config.owner.length > 1) var ownertext = "\nType '!owner' to check out my owner's profile!"; else var ownertext = "";
@@ -86,7 +88,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           if (config.mode === 1) {
             bot.chatMessage(steamID, `Type '!comment' for a free comment!\nType '!ping' for a pong!\nType '!resetcooldown' to clear your cooldown if you are the botowner.\nType '!about' for credit (botcreator).${ownertext}${yourgrouptext}`)
           } else {
-            bot.chatMessage(steamID, `Type '!comment number_of_comments profileid' for X many comments. profileid is botowner only.\nType '!ping' for a pong!\nType '!resetcooldown' to clear your cooldown if you are the botowner.\nType '!about' for credit (botcreator).${ownertext}${yourgrouptext}`)
+            bot.chatMessage(steamID, `Type '!comment number_of_comments profileid' for X many comments. profileid is botowner only.\nType '!ping' for a pong!\nType '!resetcooldown' to clear your cooldown if you are the botowner.\nType '!unfriend profileid' to unfriend this user from the bot if you are the botowner.\nType '!eval javascript code' to run javascript code from the steam chat. Botowner only.\nType '!about' for credit (botcreator).${ownertext}${yourgrouptext}`)
           }
           break;
         case '!comment':
@@ -100,7 +102,6 @@ module.exports.run = async (logOnOptions, loginindex) => {
               bot.chatMessage(steamID, `Someone else requested a comment in the last ${config.globalcommentcooldown}ms. Please wait a moment.`) //send error message
               return; }}
 
-          var args = cont.slice(1);
           if (args[0] !== undefined) {
             if (isNaN(args[0])) //isn't a number?
               return bot.chatMessage(steamID, "This is not a valid number!\nCommand usage: '!comment number_of_comments profileid'  (profileid only available for botowner)")
@@ -119,7 +120,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
           if (config.mode === 2) {
             if (numberofcomments === undefined) { //no number given? ask again
-              if (Object.keys(start.botobject).length === 1) { var numberofcomments = 1 } else { //if only one account is active, set 1 automatically
+              if (Object.keys(start.botobject).length === 1 && config.allowcommentcmdusage === true) { var numberofcomments = 1 } else { //if only one account is active, set 1 automatically
                 bot.chatMessage(steamID, `Please specify how many comments out of ${Object.keys(start.communityobject).length} you want to get.\nCommand usage: '!comment number_of_comments'`)
                 return;
               }}
@@ -128,27 +129,29 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
           //actual comment process:
           community.getSteamUser(bot.steamID, (err, user) => { //check if acc is limited and if yes if requester is on friendlist
-            if(user.isLimitedAccount && !Object.keys(bot.myFriends).includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return bot.chatMessage(steamID, "You have to send me a friend request before I can comment on your profile!")})
+            if (err) { return logger("comment check acc is limited and friend error: " + err) }
+            if (user.isLimitedAccount && !Object.keys(bot.myFriends).includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return bot.chatMessage(steamID, "You have to send me a friend request before I can comment on your profile!")})
           community.getSteamUser(steamID, (err, user) => { //check if profile is private
-            if(user.privacyState !== "public") return bot.chatMessage(steamID, "Your profile seems to be private. Please edit your privacy settings on your profile and try again!") });
+            if (err) { return logger("comment check for private account error: " + err) }
+            if (user.privacyState !== "public") return bot.chatMessage(steamID, "Your profile seems to be private. Please edit your privacy settings on your profile and try again!") });
 
           var randomstring = arr => arr[Math.floor(Math.random() * arr.length)]; 
           var comment = randomstring(start.quotes); //get random quote
 
           community.postUserComment(steamID, comment, (error) => { //post comment
-            if(error !== null) { bot.chatMessage(steamID, `Oops, an error occured! Details: \n[${thisbot}] postUserComment error: ${error}`); logger(`[${thisbot}] postUserComment error: ${error}`); return; }
+            if(error) { bot.chatMessage(steamID, `Oops, an error occured! Details: \n[${thisbot}] postUserComment error: ${error}`); logger(`[${thisbot}] postUserComment error: ${error}`); return; }
 
             logger(`[${thisbot}] ${numberofcomments} Comment(s) on ${new SteamID(steamID.getSteam3RenderedID()).getSteamID64()}: ${comment}`)
-            if (config.mode === 1 || Object.keys(start.communityobject).length === 1) bot.chatMessage(steamID, 'Okay I commented on your profile! If you are a nice person then leave a +rep on my profile!')
+            if (numberofcomments == 1) bot.chatMessage(steamID, 'Okay I commented on your profile! If you are a nice person then leave a +rep on my profile!')
               else {
-                var waittime = (Object.keys(logininfo).length * config.commentdelay) / 1000 //calculate estimated wait time if mode is 2
+                var waittime = (numberofcomments * config.commentdelay) / 1000 //calculate estimated wait time if mode is 2
                 var waittimeunit = "seconds"
                 if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "minutes" }
                 if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "hours" }
-                bot.chatMessage(steamID, `Estimated wait time for ${Object.keys(logininfo).length} comments: ${Number(Math.round(waittime+'e'+3)+'e-'+3)} ${waittimeunit}.`)
+                bot.chatMessage(steamID, `Estimated wait time for ${numberofcomments} comments: ${Number(Math.round(waittime+'e'+3)+'e-'+3)} ${waittimeunit}.`)
 
-                start.commenteverywhere(steamID) //Let all other accounts comment if mode 2 is activated
-                bot.chatMessage(steamID, `The other ${Object.keys(logininfo).length} comments should follow with a delay of ${config.commentdelay}ms.`) }
+                start.commenteverywhere(steamID, numberofcomments) //Let all other accounts comment if mode 2 is activated
+                bot.chatMessage(steamID, `The other ${numberofcomments} comments should follow with a delay of ${config.commentdelay}ms.`) }
 
             //Adds the user to the set so that they can't use the command for a minute
             if (config.commentcooldown !== 0) {
@@ -200,6 +203,32 @@ module.exports.run = async (logOnOptions, loginindex) => {
           if (config.owner.length > 1) var ownertext = config.owner; else var ownertext = "anonymous (no owner link provided)";
           bot.chatMessage(steamID, `This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nDisclaimer: I (the developer) am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.\n\nThis instance of the bot is used and operated by: ${ownertext}`)
           break;
+        case '!unfriend':
+          if (!config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return bot.chatMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
+          if (isNaN(args[0])) return bot.chatMessage(steamID, "This is not a valid profileid! A profile id must look like this: 76561198260031749")
+            if (new SteamID(args[0]).isValid() === false) return bot.chatMessage(steamID, "This is not a valid profileid! A profile id must look like this: 76561198260031749")
+          Object.keys(start.botobject).forEach((i) => {
+            if (start.botobject[i].myFriends[new SteamID(args[0])] === 3) { //check if provided user is really a friend
+              start.botobject[i].removeFriend(new SteamID(args[0])) }})
+          bot.chatMessage(steamID, `Removed friend ${args[0]} from all bots.`)
+          break;
+        case '!eval':
+          if (!config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return bot.chatMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
+          const clean = text => {
+            if (typeof(text) === "string") return text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
+              else return text; }
+
+            try {
+              const code = args.join(" ");
+              let evaled = eval(code);
+              if (typeof evaled !== "string")
+              evaled = require("util").inspect(evaled);
+      
+              bot.chatMessage(steamID, `Code executed. Result:\n\n${clean(evaled)}`)
+            } catch (err) {
+              bot.chatMessage(steamID, `Error:\n${clean(err)}`);
+              return; }
+          break;
         default: //cmd not recognized
           bot.chatMessage(steamID, "I don't know that command. Type !help for more info.") }
     } else {
@@ -210,28 +239,27 @@ module.exports.run = async (logOnOptions, loginindex) => {
             bot.chatMessage(steamID, `This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nDisclaimer: I (the developer) am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.\n\nThis instance of the bot is used and operated by: ${ownertext}`)
             break;
           default:
-            bot.chatMessage(steamID, "This is one account running in a bot cluster.\nPlease add the main bot and send him a !help message.\nIf you want to check out what this is about, type: !about")
+            bot.chatMessage(steamID, `This is one account running in a bot cluster.\nPlease add the main bot (Profile ID: ${new SteamID(start.botobject[0].steamID.getSteam3RenderedID()).getSteamID64()}) and send him a !help message.\nIf you want to check out what this is about, type: !about`)
         }}  
       }
-    logger(`[${thisbot}] Friend message from ${new SteamID(steamID.getSteam3RenderedID()).getSteamID64()}: ${message}`); //log message
   });
 
   //Accept Friend & Group requests/invites
-  bot.on('friendRelationship', (steamid, relationship) => {
+  bot.on('friendRelationship', (steamID, relationship) => {
     if (relationship === 2) {
-      bot.addFriend(steamid);
+      bot.addFriend(steamID);
       logger(`[${thisbot}] Added User: ` + new SteamID(steamID.getSteam3RenderedID()).getSteamID64())
-      bot.chatMessage(steamid, 'Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more info!');
+      bot.chatMessage(steamID, 'Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more info!');
     }
   });
 
-  bot.on('groupRelationship', (steamid, relationship) => {
+  bot.on('groupRelationship', (steamID, relationship) => {
     if (relationship === 2) {
       if (config.acceptgroupinvites !== true) { //check if group accept is false
         if (config.botsgroupid.length < 1) return; 
-        if (new SteamID(steamid.getSteam3RenderedID()).getSteamID64() !== config.botsgroupid) { return; }} //check if group id is bot group  
+        if (new SteamID(steamID.getSteam3RenderedID()).getSteamID64() !== config.botsgroupid) { return; }} //check if group id is bot group  
 
-      bot.respondToGroupInvite(steamid, true)
+      bot.respondToGroupInvite(steamID, true)
       logger(`[${thisbot}] Accepted group invite: ` + new SteamID(steamID.getSteam3RenderedID()).getSteamID64())
     }
   });

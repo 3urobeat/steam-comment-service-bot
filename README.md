@@ -47,6 +47,7 @@ Open `config.json` with a text editor. You can customize the values below `versi
 | status        | [Status Codes](https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EPersonaState.js) | Sets your status. (Online, Busy etc.) |
 | commentdelay  | Number in ms | Adds a delay between each comment to prevent a cooldown from steam. Default: 5000
 | logindelay    | Number in ms | Adds a delay between each login when the bot is started to prevent a cooldown from steam. Default: 2500 
+| logcommandusage | true or false | Enables or disables the logging of every command usage by a user in the console. Commenting will still be logged. |
 | allowcommentcmdusage | true or false | Allows other users to use the !comment command or restrict it to the owner. **ownerid needs to be set in config!**
 | commentcooldown | Number in min | Applies this cooldown in minutes to every user who used the !comment command to prevent spam. Set to 0 to disable cooldown. Default: 5
 | globalcommentcooldown | Number in ms | Applies this cooldown in milliseconds to every comment command usage to prevent getting a cooldown from steam. The user specific commentcooldown will still be applied. Set to 0 to disable. |
@@ -57,7 +58,7 @@ Open `config.json` with a text editor. You can customize the values below `versi
 | botsgroupid   | "group64id" | [How do I get this ID?](https://steamcommunity.com/sharedfiles/filedetails/?id=1344514370) The main bot will send a group invite to all other bots. Disable this feature by leaving the brackets empty (like this: ""). |
 | acceptgroupinvites | true or false | Defines if the bots will accept group invites from other users. A group invite from the main bot will always be accepted. |
 | owner         | "link to my profile" | Advertise your own profile with the !owner command. Leave it empty (like this: "") to disable the command. |
-| ownerid       | ["profile id1", "id2"] | Needs to be set to set allowcommentcmdusage to false and to be able to use the `profileid` argument in the !comment command. Add more ids to allow multiple users the usage. |
+| ownerid       | ["profile id1", "id2"] | Needs to be set to enable different bot owner only features. You can set multiple ids like in the example to have multiple owners. |
 
 
 Open `quotes.txt` with a text editor. You can add as many quotes as you want, line by line. **Don't leave an empty line anywhere in this file!**  
