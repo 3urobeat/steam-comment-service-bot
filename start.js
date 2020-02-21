@@ -66,18 +66,124 @@ function checkforupdate() {
     var https = require("https")
 
     try {
-      https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/config.json", function(res){
+        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/config.json", function(res){
         res.setEncoding('utf8');
         res.on('data', function(chunk){
-          var onlineversion= JSON.parse(chunk).version
-          if (onlineversion > config.version) {
-              logger(`\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${config.version}\x1b[0m | New version: \x1b[32m${onlineversion}\x1b[0m\nUpdate now: https://github.com/HerrEurobeat/steam-comment-service-bot`, true)}
-        });
-      });
+            var onlineversion= JSON.parse(chunk).version
+            if (onlineversion > config.version) {
+            logger(`\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${config.version}\x1b[0m | New version: \x1b[32m${onlineversion}\x1b[0m\nUpdate now: https://github.com/HerrEurobeat/steam-comment-service-bot`, true)
+            logger("", true)
+
+            var https = require("https")
+            let output = '';
+
+            process.stdout.write(`Would you like to start the automatic updater? (\x1b[31mExperimental feature\x1b[0m, please verify that the update completed successfully) [y/n] `)
+                var stdin = process.openStdin();
+
+                stdin.addListener('data', text => {
+                var response = text.toString().trim()
+                if (response == "y") botjs();
+
+                stdin.pause() }) //stop reading
+
+            function botjs() {
+                output = ""
+                try {
+                    logger("Updating bot.js...", true)
+                    https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/bot.js", function(res){
+                        res.setEncoding('utf8');
+                        res.on('data', function (chunk) {
+                            output += chunk });
+
+                        res.on('end', () => {
+                            fs.writeFile("./bot.js", output, err => {
+                                if (err) logger(err, true)
+                                startjs(); })}) });
+                } catch (err) { logger('get bot.js function Error: ' + err, true) }}
+
+            function startjs() {
+                output = ""
+                try {
+                    logger("Updating start.js...", true)
+                    https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/start.js", function(res){
+                        res.setEncoding('utf8');
+                        res.on('data', function (chunk) {
+                            output += chunk });
+
+                        res.on('end', () => {
+                            fs.writeFile("./start.js", output, err => {
+                                if (err) logger(err, true)
+                                packagejson(); })}) });
+                } catch (err) { logger('get start.js function Error: ' + err, true) }}
+
+            fs.writeFile("./package.json", "{}", err => {
+                if (err) logger(err, true) })
+
+            function packagejson() {
+                output = ""
+                try {
+                    logger("Updating package.json...", true)
+                    https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/package.json", function(res){
+                        res.setEncoding('utf8');
+                        res.on('data', function (chunk) {
+                            output += chunk });
+
+                        res.on('end', () => {
+                            output = JSON.parse(output)
+
+                            fs.writeFile("./package.json", JSON.stringify(output, null, 4), err => {
+                                if (err) logger(err, true)
+                                packagelockjson(); })}) });
+                } catch (err) { logger('get package.json function Error: ' + err, true) }}
+
+
+            fs.writeFile("./package-lock.json", "{}", err => {
+                if (err) logger(err, true) })
+
+            function packagelockjson() {
+                output = ""
+                try {
+                    logger("Updating package-lock.json...", true)
+                    https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/package-lock.json", function(res){
+                        res.setEncoding('utf8');
+                        res.on('data', function (chunk) {
+                            output += chunk });
+
+                        res.on('end', () => {
+                            output = JSON.parse(output)
+
+                            fs.writeFile("./package-lock.json", JSON.stringify(output, null, 4), err => {
+                                if (err) logger(err, true) 
+                                configjson(); })}) });
+                } catch (err) { logger('get package-lock.json function Error: ' + err, true) }}
+
+
+            function configjson() {
+                output = ""
+                try {
+                    logger("Updating config.json...", true)
+                    https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/config.json", function(res){
+                        res.setEncoding('utf8');
+                        res.on('data', function (chunk) {
+                            output += chunk });
+            
+                        res.on('end', () => {
+                            output = JSON.parse(output)
+                            config.version = output.version
+            
+                            Object.keys(output).forEach(e => {
+                                if (!Object.keys(config).includes(e)) {
+                                    config[e] = output[e] }
+                                    
+                                fs.writeFile("./config.json", JSON.stringify(config, null, 4), err => {
+                                    if (err) logger(err, true) }) });
+                            logger("Update finished. Please restart the bot!", true)
+                        })})
+                } catch (err) { logger('get config.json function Error: ' + err, true) }} }
+        }) });
+        lastupdatecheckinterval = Date.now() + 43200000 //12 hours in ms
     } catch (err) {
-      logger('checkforupdate function Error: ' + err)
-    }
-}
+        logger('checkforupdate/update function Error: ' + err, true) }}
 
 accisloggedin = true; //var to check if previous acc is logged on (in case steamGuard event gets fired) -> set to true for first account
 
@@ -137,13 +243,13 @@ var readyinterval = setInterval(() => { //log startup to console
     if (Object.keys(communityobject).length === Object.keys(logininfo).length) {
         logger(' ', true)
         logger('*------------------------------------------*', true)
-        if (config.mode === 2) logger(`\x1b[96m${logininfo.bot1[0]}\x1b[0m version ${config.version} with ${Object.keys(communityobject).length - 1} child accounts logged in.`, true); 
-            else logger(`Started ${Object.keys(logininfo).length} accounts version ${config.version}.`, true);
+        logger(`\x1b[96m${logininfo.bot1[0]}\x1b[0m version ${config.version} by 3urobeat logged in.`, true)
+        if (config.mode === 2) logger(`Using Mode 2: ${Object.keys(communityobject).length - 1} child accounts logged in.`, true); 
+            else logger(`Using Mode 1: ${Object.keys(logininfo).length} account(s) logged in.`, true);
 
         communityobject[0].getSteamUser(botobject[0].steamID, (err, user) => { //display warning if account is limited
-            if(user.isLimitedAccount) var limitedacc = "Leader Bot has a \x1b[31mlimited account\x1b[0m!"; 
-                else var limitedacc = ""
-            logger(`Using Mode ${config.mode}. ${limitedacc}`, true)
+            if(user.isLimitedAccount) logger("Leader Bot has a \x1b[31mlimited account\x1b[0m!", true); 
+            logger(`Playing status: \x1b[32m${config.playinggames[0]}\x1b[0m (${config.playinggames.slice(1, config.playinggames.length)})`, true)
             const bootend = d() - bootstart
             logger('Ready after ' + (Number(Math.round((bootend / 1000)+'e'+2)+'e-'+2)) + 'sec!', true)
             logger('*------------------------------------------*', true)
@@ -155,6 +261,13 @@ var readyinterval = setInterval(() => { //log startup to console
                 logger("[\x1b[31mNotice\x1b[0m] You haven't set an correct owner link to your profile in the config!\nPlease add this to refer to yourself as the owner and operator of this bot.", true) }
 
             checkforupdate();
+            setInterval(() => {
+                if (Date.now() > lastupdatecheckinterval) {
+                    fs.readFile("./output.txt", function (err, data) {
+                        if (err) logger("error checking output for update notice: " + err)
+                        if (!data.toString().split('\n').slice(data.toString().split('\n').length - 21).join('\n').includes("Update available!")) { //check last 20 lines of output.txt for update notice
+                            checkforupdate() } }) }
+            }, 300000); //5 min in ms
 
             if (config.botsgroupid.length > 1 && !isNaN(config.botsgroupid) && new SteamID(config.botsgroupid).isValid()) { //check if botsgroupid is set, a number and a valid id
                 Object.keys(botobject).forEach((i) => {
@@ -169,18 +282,18 @@ var readyinterval = setInterval(() => { //log startup to console
                 setInterval(() => {
                     for(let i in lastcomment) {
                         if (Date.now() > (lastcomment[i].time + (config.unfriendtime * 86400000))) {
+                            if (lastcomment[i].bot == 0) var iminusid = i.toString() 
+                                else var iminusid = i.toString().slice(0, -1); 
 
-                        if (lastcomment[i].bot == 0) var iminusid = i.toString() 
-                            else var iminusid = i.toString().slice(0, -1); 
-
-                        if (botobject[lastcomment[i].bot].myFriends[i] === 3 && !config.ownerid.includes(iminusid)) {
-                            botobject[lastcomment[i].bot].chatMessage(new SteamID(iminusid), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
-                            botobject[lastcomment[i].bot].removeFriend(new SteamID(iminusid));
-                            logger(`[Bot ${lastcomment[i].bot}] Unfriended ${i} after ${config.unfriendtime} days of inactivity.`) }
-                            
-                        delete lastcomment[i];
-                        fs.writeFile("./lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
-                            if (err) logger("delete user from lastcomment.json error: " + err) }) }}
+                            if (botobject[lastcomment[i].bot].myFriends[i] === 3 && !config.ownerid.includes(iminusid)) {
+                                botobject[lastcomment[i].bot].chatMessage(new SteamID(iminusid), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
+                                botobject[lastcomment[i].bot].removeFriend(new SteamID(iminusid));
+                                logger(`[Bot ${lastcomment[i].bot}] Unfriended ${i} after ${config.unfriendtime} days of inactivity.`) 
+                                
+                                delete lastcomment[i];
+                                fs.writeFile("./lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
+                                    if (err) logger("delete user from lastcomment.json error: " + err) }) }}
+                            }
                 }, 5000) }
         })
         clearInterval(readyinterval)

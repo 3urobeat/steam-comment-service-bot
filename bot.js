@@ -63,7 +63,14 @@ module.exports.run = async (logOnOptions, loginindex) => {
             bot.addFriend(Object.keys(bot.myFriends)[i]);
             logger(`[${thisbot}] Added user while I was offline! User: ` + Object.keys(bot.myFriends)[i])
             bot.chatMessage(Object.keys(bot.myFriends)[i], 'Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more info!')
-            bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(config.yourgroup64id)); //invite the user to your group
+
+            lastcomment[new SteamID(steamID.getSteam3RenderedID()).getSteamID64()] = { //add user to lastcomment file in order to also unfriend him when he never used !comment
+              time: Date.now() - (config.commentcooldown * 60000), //subtract unfriendtime to enable comment usage immediately
+              bot: loginindex }
+            fs.writeFile("./lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
+              if (err) logger("delete user from lastcomment.json error: " + err) })
+
+            if (config.yourgroup64id.length > 1 && Object.keys(bot.myGroups).includes(config.yourgroup64id)) bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(config.yourgroup64id)); //invite the user to your group
         }}
     for (let i = 0; i < Object.keys(bot.myGroups).length; i++) {
       if (bot.myGroups[Object.keys(bot.myGroups)[i]] == 2) {
@@ -164,7 +171,6 @@ module.exports.run = async (logOnOptions, loginindex) => {
             if (config.globalcommentcooldown !== 0) {
               commentedrecently = true;
               setTimeout(() => { //global cooldown
-                usedcommentrecently.delete(steamID.getSteam3RenderedID()) //Removes the user from the set after a minute
                 commentedrecently = false;
               }, config.globalcommentcooldown)
             }
@@ -250,6 +256,13 @@ module.exports.run = async (logOnOptions, loginindex) => {
       bot.addFriend(steamID);
       logger(`[${thisbot}] Added User: ` + new SteamID(steamID.getSteam3RenderedID()).getSteamID64())
       bot.chatMessage(steamID, 'Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more info!');
+      if (config.yourgroup64id.length > 1 && Object.keys(bot.myGroups).includes(config.yourgroup64id)) bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(config.yourgroup64id)); //invite the user to your group
+
+      lastcomment[new SteamID(steamID.getSteam3RenderedID()).getSteamID64()] = { //add user to lastcomment file in order to also unfriend him when he never used !comment
+        time: Date.now() - (config.commentcooldown * 60000), //subtract unfriendtime to enable comment usage immediately
+        bot: loginindex }
+      fs.writeFile("./lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
+        if (err) logger("delete user from lastcomment.json error: " + err) })
     }
   });
 
