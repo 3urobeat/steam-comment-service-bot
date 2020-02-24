@@ -64,7 +64,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
             logger(`[${thisbot}] Added user while I was offline! User: ` + Object.keys(bot.myFriends)[i])
             bot.chatMessage(Object.keys(bot.myFriends)[i], 'Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more info!')
 
-            lastcomment[new SteamID(steamID.getSteam3RenderedID()).getSteamID64()] = { //add user to lastcomment file in order to also unfriend him when he never used !comment
+            lastcomment[new SteamID(Object.keys(bot.myFriends)[i].getSteam3RenderedID()).getSteamID64()] = { //add user to lastcomment file in order to also unfriend him when he never used !comment
               time: Date.now() - (config.commentcooldown * 60000), //subtract unfriendtime to enable comment usage immediately
               bot: loginindex }
             fs.writeFile("./lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {

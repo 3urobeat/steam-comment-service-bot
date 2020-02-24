@@ -19,7 +19,7 @@ lastcomment = require("./lastcomment.json")
 /* ------------ Functions: ------------ */
 var logger = function logger(str, nodate) { //Custom logger
     if (nodate === true) { var string = str; } else {
-        var string = `\x1b[96m[${d().toISOString().replace(/T/, ' ').replace(/\..+/, '')}]\x1b[0m ${str}` }
+        var string = `\x1b[96m[${(new Date(Date.now() - ((d()).getTimezoneOffset() * 60000))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}]\x1b[0m ${str}` }
     console.log(string)
     fs.appendFileSync('./output.txt', string.replace(/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]/g, '') + '\n', err => { //Credit: https://github.com/Filirom1/stripcolorcodes
       if(err) logger('logger function appendFileSync error: ' + err) }) }
