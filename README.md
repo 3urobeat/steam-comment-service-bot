@@ -74,7 +74,7 @@ The bots should start and you will see them online. You can add them as a friend
 
 ## Additional informations
 
-Steam limits accounts that haven't spend $5 on steam (Level 0). If plan on using Level 0 accounts in your bot cluster, be advised that the requesting user needs to be friend with **ALL** of the accounts that will try to comment.  
+Steam limits accounts that haven't spend $5 on steam (Level 0). If you plan on using Level 0 accounts in your bot cluster, be advised that the requesting user needs to be friend with **ALL** of the accounts that will try to comment.  
 This is a limitation from steam I can't do anything about.  
 
 Keep also in mind, that steam can put a cooldown on your accounts if you try to comment too often too fast. I used a working commentdelay in the config.json but if too many individual users request a comment it can still cause errors.  
