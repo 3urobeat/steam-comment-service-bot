@@ -8,7 +8,6 @@ To see a list of all commands the user can send the bot a message: `!help`.
 
 [Click here to see my 24/7 comment bot in action!](https://steamcommunity.com/id/3urobeatscommentbot)  
 
-The bots feature a customizeable array for a selection of quotes, a variable for the name of the specific bot, a variable for the owner's profile and group link for advertisement.  
 After requesting a comment, the user will be getting a cooldown applied, changeable in the config. The comment command can also be restricted to the owner so that the owner can even **send a comment to another profile** by supplying the profile id. Type `!help` when running in Mode 2 to see the arguments.  
  
 This bot cluster features two modes:  
