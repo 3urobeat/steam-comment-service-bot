@@ -188,6 +188,7 @@ function checkforupdate() {
 accisloggedin = true; //var to check if previous acc is logged on (in case steamGuard event gets fired) -> set to true for first account
 
 module.exports={
+    bootstart,
     logger,
     communityobject,
     botobject, 
@@ -220,7 +221,7 @@ Object.keys(logininfo).forEach((k, i) => { //log all accounts in with the logind
     }, config.logindelay * i);
 })
 
-if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' || process.env.LOGNAME === 'pi') && !(process.env.USERNAME === 'tomgo' || process.env.LOGNAME === 'pi')) { //remove myself from config on different computer
+if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' || process.env.LOGNAME === 'pi') && !(process.env.USERNAME === 'tomgo' || process.env.LOGNAME === 'pi') && !(process.env.USERNAME === 'tom' || require('os').hostname() === 'Toms-Thinkpad')) { //remove myself from config on different computer
     if (config.owner.includes("3urobeat")) { config.owner = "" }
     if (config.ownerid.includes("76561198260031749")) { config.ownerid.splice(config.ownerid.indexOf("76561198260031749"), 1) }
     if (config.ownerid.includes("76561198982470768")) { config.ownerid.splice(config.ownerid.indexOf("76561198982470768"), 1) }

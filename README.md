@@ -58,6 +58,7 @@ Open `config.json` with a text editor. You can customize the values below `versi
 | acceptgroupinvites | true or false | Defines if the bots will accept group invites from other users. A group invite from the main bot will always be accepted. |
 | owner         | "link to my profile" | Advertise your own profile with the !owner command. Leave it empty (like this: "") to disable the command. |
 | ownerid       | ["profile id1", "id2"] | Needs to be set to enable different bot owner only features. You can set multiple ids like in the example to have multiple owners. |
+| enableevalcmd | true or false | The eval command allows the botowner to run javascript code from the steam chat. **Warning: This can harm your machine! Leave it to false if you don't know what you are doing!** Default: false |
 
 
 Open `quotes.txt` with a text editor. You can add as many quotes as you want, line by line. **Don't leave an empty line anywhere in this file!**  

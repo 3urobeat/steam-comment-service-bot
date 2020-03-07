@@ -1,5 +1,5 @@
 {
-    "version": "2.4.1",
+    "version": "2.5",
     
     "mode": 2,
     "status": 1,
@@ -16,5 +16,6 @@
     "botsgroupid": "",
     "acceptgroupinvites": true,
     "owner": "https://steamcommunity.com/id/3urobeat",
-    "ownerid": ["76561198260031749"]
+    "ownerid": ["76561198260031749"],
+    "enableevalcmd": false
 }

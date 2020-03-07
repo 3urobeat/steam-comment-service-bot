@@ -8,17 +8,19 @@ module.exports.run = async (logOnOptions, loginindex) => {
   const SteamID = require('steamid');
   var start = require("./start.js")
   const config = require('./config.json');
-  const logininfo = require('./logininfo.json');
+  var lastcomment = require("./lastcomment.json")
   var fs = require("fs");
   var logger = start.logger
 
   const bot = new SteamUser();
   const community = new SteamCommunity();
-  const usedcommentrecently = new Set(); //user specific cooldown
   var commentedrecently = false; //global cooldown for the comment command
 
   var thisbot = `Bot ${loginindex}`
   if (config.mode === 2 && loginindex === 0) var thisbot = "Main"
+
+  process.on('unhandledRejection', (reason, p) => {
+    logger(`Unhandled Rejection! Reason: ${reason.stack}`) });
 
   /* ------------ Login & Events: ------------ */
   var loggedininterval = setInterval(() => { //set an interval to check if previous acc is logged on
@@ -64,7 +66,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
             logger(`[${thisbot}] Added user while I was offline! User: ` + Object.keys(bot.myFriends)[i])
             bot.chatMessage(Object.keys(bot.myFriends)[i], 'Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more info!')
 
-            lastcomment[new SteamID(Object.keys(bot.myFriends)[i].getSteam3RenderedID()).getSteamID64()] = { //add user to lastcomment file in order to also unfriend him when he never used !comment
+            lastcomment[Object.keys(bot.myFriends)[i]] = { //add user to lastcomment file in order to also unfriend him when he never used !comment
               time: Date.now() - (config.commentcooldown * 60000), //subtract unfriendtime to enable comment usage immediately
               bot: loginindex }
             fs.writeFile("./lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
@@ -101,7 +103,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
         case '!comment':
           if (config.allowcommentcmdusage === false && !config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return bot.chatMessage(steamID, "The bot owner restricted this comment to himself.\nType !owner to get information who the owner is.\nType !about to get a link to the bot creator.") 
           if (config.commentcooldown !== 0) { //is the cooldown enabled?
-            if (usedcommentrecently.has(steamID.getSteam3RenderedID())) { //check if user has cooldown applied Credit: https://stackoverflow.com/questions/48432102/discord-js-cooldown-for-a-command-for-each-user-not-all-users
+            if ((Date.now() - lastcomment[new SteamID(steamID.getSteam3RenderedID()).getSteamID64()].time) < (config.commentcooldown * 60000)) { //check if user has cooldown applied
               bot.chatMessage(steamID, `You requested a comment in the last ${config.commentcooldown} minutes. Please wait a moment.`) //send error message
               return; }}
           if (config.globalcommentcooldown !== 0) { //is the cooldown enabled?
@@ -160,14 +162,6 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 start.commenteverywhere(steamID, numberofcomments) //Let all other accounts comment if mode 2 is activated
                 bot.chatMessage(steamID, `The other ${numberofcomments} comments should follow with a delay of ${config.commentdelay}ms.`) }
 
-            //Adds the user to the set so that they can't use the command for a minute
-            if (config.commentcooldown !== 0) {
-              usedcommentrecently.add(steamID.getSteam3RenderedID());
-              setTimeout(() => { //user specific cooldown
-                usedcommentrecently.delete(steamID.getSteam3RenderedID()) //Removes the user from the set after a minute
-              }, config.commentcooldown * 60000) //minutes * 60000 = cooldown in ms 
-            }
-            //sets the global cooldown to true so the account doesn't get a cooldown
             if (config.globalcommentcooldown !== 0) {
               commentedrecently = true;
               setTimeout(() => { //global cooldown
@@ -186,6 +180,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
           break;
         case '!ping':
           bot.chatMessage(steamID, 'Pong!')
+          break;
+        case '!info':
+          bot.chatMessage(steamID, `3urobeat's Comment Bot [Version ${config.version}] (More info: !about)\nUptime: ${Number(Math.round(((new Date() - start.bootstart) / 3600000)+'e'+2)+'e-'+2)} hours\n\nYour steam id: ${new SteamID(steamID.getSteam3RenderedID()).getSteamID64()}\nYour last comment: ${new Date(lastcomment[new SteamID(steamID.getSteam3RenderedID()).getSteamID64()].time)}`)
           break;
         case '!owner':
           if (config.owner.length < 1) return bot.chatMessage(steamID, "I don't know that command. Type !help for more info.\n(Bot Owner didn't include link to him/herself.)")
@@ -219,6 +216,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           bot.chatMessage(steamID, `Removed friend ${args[0]} from all bots.`)
           break;
         case '!eval':
+          if (config.enableevalcmd !== true) return bot.chatMessage(steamID, "The eval command has been turned off!")
           if (!config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return bot.chatMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
           const clean = text => {
             if (typeof(text) === "string") return text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
