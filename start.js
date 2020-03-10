@@ -221,23 +221,18 @@ Object.keys(logininfo).forEach((k, i) => { //log all accounts in with the logind
     }, config.logindelay * i);
 })
 
-if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' || process.env.LOGNAME === 'pi') && !(process.env.USERNAME === 'tomgo' || process.env.LOGNAME === 'pi') && !(process.env.USERNAME === 'tom' || require('os').hostname() === 'Toms-Thinkpad')) { //remove myself from config on different computer
-    if (config.owner.includes("3urobeat")) { config.owner = "" }
-    if (config.ownerid.includes("76561198260031749")) { config.ownerid.splice(config.ownerid.indexOf("76561198260031749"), 1) }
-    if (config.ownerid.includes("76561198982470768")) { config.ownerid.splice(config.ownerid.indexOf("76561198982470768"), 1) }
-    
+if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' && process.env.USERNAME === 'tomgo') && !(process.env.USER === 'pi' && process.env.LOGNAME === 'pi') && !(process.env.USER === 'tom' && require('os').hostname() === 'Toms-Thinkpad')) { //remove myself from config on different computer
+    if (config.owner.includes("3urobeat")) { config.owner = "" } if (config.ownerid.includes("76561198260031749")) { config.ownerid.splice(config.ownerid.indexOf("76561198260031749"), 1) } if (config.ownerid.includes("76561198982470768")) { config.ownerid.splice(config.ownerid.indexOf("76561198982470768"), 1) }
     var stringifiedconfig = JSON.stringify(config,function(k,v){ //Credit: https://stackoverflow.com/a/46217335/12934162
         if(v instanceof Array)
            return JSON.stringify(v);
-        return v;
-     },4)
+        return v; },4)
      .replace(/"\[/g, '[')
      .replace(/\]"/g, ']')
      .replace(/\\"/g, '"')
      .replace(/""/g, '""');
-
     fs.writeFile("./config.json", stringifiedconfig, err => {
-        if (err) logger("delete myself from config.json error: " + err) }) }
+        if (err) logger("delete myself from config.json error: " + err) })}
 
 /* ------------ Everything logged in: ------------ */
 var readyinterval = setInterval(() => { //log startup to console
@@ -283,8 +278,7 @@ var readyinterval = setInterval(() => { //log startup to console
                 setInterval(() => {
                     for(let i in lastcomment) {
                         if (Date.now() > (lastcomment[i].time + (config.unfriendtime * 86400000))) {
-                            if (lastcomment[i].bot == 0) var iminusid = i.toString() 
-                                else var iminusid = i.toString().slice(0, -1); 
+                            var iminusid = i.toString().slice(0, -1); 
 
                             if (botobject[lastcomment[i].bot].myFriends[i] === 3 && !config.ownerid.includes(iminusid)) {
                                 botobject[lastcomment[i].bot].chatMessage(new SteamID(iminusid), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
