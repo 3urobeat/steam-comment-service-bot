@@ -3,6 +3,8 @@
 	<strong>Request multiple comments on your profile by texting a bot!</strong><br />See how to set up the bot and customize it below.<br /><br />
 </div>
 
+If you want, you can donate a few bucks on my **[Patreon](https://www.patreon.com/3urobeat)**! I would really appreciate it!
+
 The bot will be online in form of an own account and operate through direct messages.  
 To see a list of all commands the user can send the bot a message: `!help`.  
 
