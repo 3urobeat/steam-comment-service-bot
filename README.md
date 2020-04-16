@@ -9,6 +9,7 @@ The bot will be online in form of an own account and operate through direct mess
 To see a list of all commands the user can send the bot a message: `!help`.  
 
 [Click here to see my 24/7 comment bot in action!](https://steamcommunity.com/id/3urobeatscommentbot)  
+If you want to see commits of code that is unstable or not yet tested, visit the beta-testing branch of this repository.
 
 After requesting a comment, the user will be getting a cooldown applied, changeable in the config. The comment command can also be restricted to the owner so that the owner can even **send a comment to another profile** by supplying the profile id. Type `!help` when running in Mode 2 to see the arguments.  
  
@@ -35,33 +36,13 @@ Extract the zip and open the `steam-comment-service-bot` folder.
 
 Open a command prompt or power shell in the folder and type `npm install`. Let it install the dependencies.  
 
-Rename the `logininfo.json.example` to `logininfo.json`.  
-Open the file with a text editor and fill out the user names and passwords of each bot account you wanna use.  
-You can add more login-informations based on the given pattern. The bot will start as many bot accounts as you provide login-informations for.  
+Open `logininfo.json` with a text editor and fill out the user names and passwords of each bot account you want to use.  
+You can add more login-informations by extending the list ("bot4": ["username4", "password4"], etc...). Make sure to **NOT** forget a comma after each line, **ONLY** the last line **MUST NOT** have a comma! (ignoring this will cause errors!)  
 
-Open `config.json` with a text editor. You can customize the values below `version` to your liking. The values are explained below.  
-
-| Key           | Usage            | Description  |
-| ------------- | ---------------- | ----- |
-| mode          | 1 or 2           | Mode 1: All bots you have logininformations provided for will start up and work for themselves. Mode 2: The first logininfo will start a bot and when a comment is requested all accounts you have provided logininfos for will comment under that one profile. |
-| status        | [Status Codes](https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EPersonaState.js) | Sets your status. (Online, Busy etc.) |
-| commentdelay  | Number in ms | Adds a delay between each comment to prevent a cooldown from steam. Default: 5000
-| logindelay    | Number in ms | Adds a delay between each login when the bot is started to prevent a cooldown from steam. Default: 2500 
-| logcommandusage | true or false | Enables or disables the logging of every command usage by a user in the console. Commenting will still be logged. |
-| allowcommentcmdusage | true or false | Allows other users to use the !comment command or restrict it to the owner. **ownerid needs to be set in config!**
-| skipSteamGuard | true or false | When true, the bot will skip all accounts that require a steamGuard to be typed in when logging in. Default: false |
-| commentcooldown | Number in min | Applies this cooldown in minutes to every user who used the !comment command to prevent spam. Set to 0 to disable cooldown. Default: 5
-| globalcommentcooldown | Number in ms | Applies this cooldown in milliseconds to every comment command usage to prevent getting a cooldown from steam. The user specific commentcooldown will still be applied. Set to 0 to disable. |
-| unfriendtime  | Days | Number of days the bot will wait before unfriending someone who hasn't requested a comment in that time period except the owner. Set to 0 to disable. |
-| playinggames  | ["custom game", game id] | This custom text will be shown on your profile as the name of a game you are playing. The bot will play the set game id. |
-| yourgroup     | "link to my group" | Advertise your group with the !group command. Leave it empty (like this: "") to disable the command. |
-| yourgroup64id | "my group64id" | [How do I get this ID?](https://steamcommunity.com/sharedfiles/filedetails/?id=1344514370) The bot will send a group invite instead of the link to your group from above. If no ID is provided, the bot will send the link from above but no invite. |
-| botsgroupid   | "group64id" | [How do I get this ID?](https://steamcommunity.com/sharedfiles/filedetails/?id=1344514370) The main bot will send a group invite to all other bots. Disable this feature by leaving the brackets empty (like this: ""). |
-| acceptgroupinvites | true or false | Defines if the bots will accept group invites from other users. A group invite from the main bot will always be accepted. |
-| owner         | "link to my profile" | Advertise your own profile with the !owner command. Leave it empty (like this: "") to disable the command. |
-| ownerid       | ["profile id1", "id2"] | Needs to be set to enable different bot owner only features. You can set multiple ids like in the example to have multiple owners. |
-| enableevalcmd | true or false | The eval command allows the botowner to run javascript code from the steam chat. **Warning: This can harm your machine! Leave it to false if you don't know what you are doing!** Default: false |
-
+Open `config.json` with a text editor.  
+You need to provide the link to your steam profile at "owner" and the steam64 id of your profile at "ownerid".
+If you don't know how to find your steam64id, open [SteamDB](https://steamdb.info/calculator/), search your profile and copy the ID located down below at SteamID.  
+A complete documentation of the `config.json` can be found in the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki).  
 
 Open `quotes.txt` with a text editor. You can add as many quotes as you want, line by line. **Don't leave an empty line anywhere in this file!**  
 The bot will choose a random quote for **every** comment. If you only provide one quote, the bot will only use that quote.  

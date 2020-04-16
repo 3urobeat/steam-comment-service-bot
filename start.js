@@ -278,24 +278,50 @@ var readyinterval = setInterval(() => { //log startup to console
                         if (i > 0) { botobject[0].inviteToGroup(botobject[i].steamID, config.botsgroupid); logger(`Invited Bot ${i} to the group.`, true) }} //main bot invites the other bot
             }) }
 
-/*             if (config.unfriendtime > 0) {
+            if (config.unfriendtime > 0) {
+                var accountids = {}
+                Object.keys(botobject).forEach((e, i) => {
+                    Object.keys(accountids).push(e)
+                    accountids[e] = botobject[e]['steamID']['accountid']
+                })
+
+                //Compatibility feature for updating from version <2.6
+                for(let i in lastcomment) {
+                    if (String(lastcomment[i].bot).length < 10) {
+                        if (accountids[lastcomment[i].bot]) {
+                            lastcomment[i].bot = accountids[lastcomment[i].bot]
+                        } else {
+                            delete lastcomment[i] }
+                    } }
+
+                fs.writeFile("./lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
+                    if (err) logger("lastcomment compatibility error: " + err) })
+
+                //Unfriend checker
                 setInterval(() => {
                     for(let i in lastcomment) {
-                        console.log(botobject[i])
-                        //console.log(botobject[i].steamID.accountid)
                         if (Date.now() > (lastcomment[i].time + (config.unfriendtime * 86400000))) {
-                            var iminusid = i.toString().slice(0, -1); 
+                            var iminusid = i.toString().slice(0, -1);
 
-                            if (botobject[lastcomment[i].bot].myFriends[i] === 3 && !config.ownerid.includes(iminusid)) {
-                                botobject[lastcomment[i].bot].chatMessage(new SteamID(iminusid), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
-                                botobject[lastcomment[i].bot].removeFriend(new SteamID(iminusid));
-                                logger(`[Bot ${lastcomment[i].bot}] Unfriended ${i} after ${config.unfriendtime} days of inactivity.`) 
-                                
-                                delete lastcomment[i];
-                                fs.writeFile("./lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
-                                    if (err) logger("delete user from lastcomment.json error: " + err) }) }}
-                            }
-                }, 5000) } */
+                            var targetkey = Object.keys(accountids).find(key => accountids[key] === lastcomment[i].bot) //convert bot accountid to corresponding id in botobject
+                            var targetbot = botobject[targetkey] //grab the targeted bot
+
+                            if (targetbot === undefined) { //this bot account does not seem to be in logininfo.json anymore
+                                delete logininfo[i] //delete entry
+
+                            } else { //bot does seem to be logged in
+                                if (targetbot.myFriends[iminusid] === 3 && !config.ownerid.includes(iminusid)) { //check if the targeted user is still friend and not the owner
+                                    targetbot.chatMessage(new SteamID(iminusid), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
+                                    targetbot.removeFriend(new SteamID(iminusid)); //unfriend user
+                                    logger(`[Bot ${targetkey}] Unfriended ${i} after ${config.unfriendtime} days of inactivity.`) } 
+
+                                delete lastcomment[i]; } //entry gets removed no matter what
+                        } }
+
+                    fs.writeFile("./lastcomment.json", JSON.stringify(lastcomment, null, 4), err => { //write changes
+                        if (err) logger("delete user from lastcomment.json error: " + err) })
+                }, 5000) 
+            }
         })
         clearInterval(readyinterval)
     }

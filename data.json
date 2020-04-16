@@ -1,5 +1,7 @@
 {
-    "version": "BETA 2.6 b1",
+    "version": "BETA 2.6 b2",
     "firststart": true,
-    "whatsnew": ""
+    "whatsnew": "",
+    "timesloggedin": 0,
+    "totallogintime": 0
 }

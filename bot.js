@@ -81,7 +81,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
       if (!lastcomment[Object.keys(bot.myFriends)[i] + loginindex]) { //always check if user is on lastcomment to avoid errors
         lastcomment[Object.keys(bot.myFriends)[i] + loginindex] = {
           time: Date.now() - (config.commentcooldown * 60000),
-          bot: new SteamID(bot.steamID.getSteam3RenderedID()).getSteamID64() } }
+          bot: bot.steamID.accountid } }
 
         if (bot.myFriends[Object.keys(bot.myFriends)[i]] == 2) {
             bot.addFriend(Object.keys(bot.myFriends)[i]);
@@ -90,7 +90,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
             lastcomment[Object.keys(bot.myFriends)[i] + loginindex] = { //add user to lastcomment file in order to also unfriend him when he never used !comment
               time: Date.now() - (config.commentcooldown * 60000), //subtract unfriendtime to enable comment usage immediately
-              bot: new SteamID(bot.steamID.getSteam3RenderedID()).getSteamID64() }
+              bot: bot.steamID.accountid }
             if (config.yourgroup64id.length > 1 && Object.keys(bot.myGroups).includes(config.yourgroup64id)) bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(config.yourgroup64id)); //invite the user to your group
         }
 
