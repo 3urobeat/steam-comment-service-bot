@@ -1,0 +1,7 @@
+{
+    "version": "BETA 2.6 b3",
+    "firststart": true,
+    "whatsnew": "Added option to skip steamGuard, added dynamic login time evaluation, added data.json, lastcomment functionality revamp, fixed unfriend function.",
+    "timesloggedin": 0,
+    "totallogintime": 0
+}
