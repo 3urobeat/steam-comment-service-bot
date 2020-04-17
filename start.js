@@ -1,4 +1,5 @@
 var fs = require('fs')
+var https = require('https')
 var logger = function logger(str, nodate) { //Custom logger
     if (nodate === true) { var string = str; } else {
         var string = `\x1b[96m[${(new Date(Date.now() - ((d()).getTimezoneOffset() * 60000))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}]\x1b[0m ${str}` }
@@ -10,8 +11,10 @@ var logger = function logger(str, nodate) { //Custom logger
 if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
     fs.mkdirSync('./src') 
 
-    fs.unlink("./bot.js") //delete bot.js
-    fs.rename("./lastcomment.json", "./src/lastcomment.json") //move lastcomment.js
+    fs.unlinkSync("./bot.js", err => { //delete bot.js
+        if (err) logger("error deleting bot.js: " + err, true) }) 
+    fs.renameSync("./lastcomment.json", "./src/lastcomment.json", err => { //move lastcomment.json
+        if (err) logger("error moving lastcomment.json: " + err + "\nPlease download the newest version manually! https://github.com/HerrEurobeat/steam-comment-service-bot", true) })
 
     botjs(); //update again!
 
@@ -51,16 +54,14 @@ if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
         output = ""
         try {
             logger("Updating controller.js...", true)
-            https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/tree/master/src/controller.json", function(res){
+            https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/tree/master/src/controller.js", function(res){
                 res.setEncoding('utf8');
                 res.on('data', function (chunk) {
                     output += chunk });
 
                 res.on('end', () => {
-                    output = JSON.parse(output)
-
-                    fs.writeFile("./src/controller.js", JSON.stringify(output, null, 4), err => {
-                        if (err) logger(err, true) 
+                    fs.writeFile("./src/controller.js", output, err => {
+                        if (err) logger(err, true)
                         logger("Update finished. Please restart the bot!", true); })}) });
         } catch (err) { logger('get controller.js function Error: ' + err, true) }}
 
