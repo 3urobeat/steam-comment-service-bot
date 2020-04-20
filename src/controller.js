@@ -1,11 +1,11 @@
 //Code by: https://github.com/HerrEurobeat/ 
 //If you are here, you are wrong. Open config.json and configure everything there!
 
-
 var b = require('./bot.js');
 const logininfo = require('../logininfo.json');
 const config = require('../config.json');
 const extdata = require('./data.json');
+lastcomment = require("./lastcomment.json")
 const SteamID = require('steamid');
 var fs = require("fs");
 
@@ -15,13 +15,14 @@ var botobject = new Object();
 const d = function d() { return new Date(); }
 var bootstart = 0;
 var bootstart = d();
-lastcomment = require("./lastcomment.json")
-
+var steamGuardInputTime = 0;
 
 //Remove version number from config as it was moved to data.json in version 2.6
-delete config.version
-fs.writeFile("./config.json", JSON.stringify(config, null, 4), err => {
-    if (err) logger("lastcomment compatibility error: " + err) })
+if (config.version) {
+    delete config.version
+    fs.writeFile("./config.json", JSON.stringify(config, null, 4), err => {
+        if (err) logger("lastcomment compatibility error: " + err) })
+}
 
 /* ------------ Functions: ------------ */
 var logger = function logger(str, nodate) { //Custom logger
@@ -39,192 +40,43 @@ var quotes = fs.readFileSync('quotes.txt', 'utf8').split("\n"); //get all quotes
 
 var commenteverywhere = function commenteverywhere(steamID, numberofcomments) { //function to let all bots comment
     var failedcomments = new Array();
-    Object.keys(communityobject).forEach((i) => {
-        setTimeout(() => {
-            if (i < 1) return; //first account already commented
-            if (i >= parseInt(numberofcomments)) return botobject[0].chatMessage(steamID, `All comments have been sent. Failed: ${failedcomments.length}/${numberofcomments}`); //stop if this execution is more than wanted -> maybe dirty solution but it worked best in testing
+    logger(Object.keys(communityobject))
 
-            communityobject[i].getSteamUser(botobject[i].steamID, (err, user) => { //check if acc is limited and if yes if requester is on friendlist
+    function comment(k, i) {
+        setTimeout(() => {
+            communityobject[k].getSteamUser(botobject[k].steamID, (err, user) => { //check if acc is limited and if yes if requester is on friendlist
                 if (err) { return logger("comment check acc is limited and friend error: " + err) }
-                if (user.isLimitedAccount && !Object.keys(botobject[i].myFriends).includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return failedcomments.push(botobject[i].steamID.getSteam3RenderedID())})
-            communityobject[i].getSteamUser(steamID, (err, user) => { //check if profile is private
+                if (user.isLimitedAccount && !Object.keys(botobject[k].myFriends).includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return failedcomments.push(botobject[i].steamID.getSteam3RenderedID())})
+            communityobject[k].getSteamUser(steamID, (err, user) => { //check if profile is private
                 if (err) { return logger("comment check for private account error: " + err) }
-                if (user.privacyState !== "public") return failedcomments.push(botobject[i].steamID.getSteam3RenderedID())});
+                if (user.privacyState !== "public") return failedcomments.push(botobject[k].steamID.getSteam3RenderedID())});
 
             var randomstring = arr => arr[Math.floor(Math.random() * arr.length)];
             var comment = randomstring(quotes);
 
-            //communityobject[i].postUserComment(steamID, comment, (error) => {
-                //if(error) { logger(`[Bot ${i}] postUserComment error: ${error}`); failedcomments.push(botobject[i].steamID.getSteam3RenderedID()); return; }
-                logger(`[Bot ${i}] Comment on ${new SteamID(steamID.getSteam3RenderedID()).getSteamID64()}: ${comment}`) 
+            communityobject[k].postUserComment(steamID, comment, (error) => {
+                if(error) { logger(`[Bot ${i}] postUserComment error: ${error}`); failedcomments.push(botobject[k].steamID.getSteam3RenderedID()); return; }
+                logger(`[Bot ${k}] Comment on ${new SteamID(steamID.getSteam3RenderedID()).getSteamID64()}: ${comment}`) 
 
                 if (config.unfriendtime > 0) { //add user to lastcomment list if the unfriendtime is > 0 days
-                    if (botobject[i].myFriends[new SteamID(steamID.getSteam3RenderedID()).getSteamID64()] === 3) {
+                    if (botobject[k].myFriends[new SteamID(steamID.getSteam3RenderedID()).getSteamID64()] === 3) {
                         lastcomment[new SteamID(steamID.getSteam3RenderedID()).getSteamID64().toString() + i] = { //add i to steamID to allow multiple entries for one steamID
                             time: Date.now(),
                             bot: i }
                     fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
                         if (err) logger("delete user from lastcomment.json error: " + err) }) }}
-            //})
-        }, config.commentdelay * i); //delay every comment
-    })}
+            })
 
-function checkforupdate() {
-    var https = require("https")
+            if (i == numberofcomments - 1) botobject[0].chatMessage(steamID, `All comments have been sent. Failed: ${failedcomments.length}/${numberofcomments}`); //stop if this execution is more than wanted -> stop loop
+        }, config.commentdelay * k); //delay every comment
+    }
 
-    try {
-        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/tree/master/src/data.json", function(res){
-        res.setEncoding('utf8');
-        res.on('data', function(chunk){
-            var onlineversion= JSON.parse(chunk).version
-            if (onlineversion > extdata.version) {
-                logger(`\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${extdata.version}\x1b[0m | New version: \x1b[32m${onlineversion}\x1b[0m\nUpdate now: https://github.com/HerrEurobeat/steam-comment-service-bot`, true)
-                logger("", true)
-
-                var https = require("https")
-                let output = '';
-
-                process.stdout.write(`Would you like to start the automatic updater? [y/n] `)
-                    var stdin = process.openStdin();
-
-                    stdin.addListener('data', text => {
-                    var response = text.toString().trim()
-                    if (response == "y") botjs(); //start first update function
-
-                    stdin.pause() }) //stop reading
-
-                function botjs() {
-                    output = ""
-                    try {
-                        logger("Updating bot.js...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/tree/master/src/bot.js", function(res){
-                            res.setEncoding('utf8');
-                            res.on('data', function (chunk) {
-                                output += chunk });
-
-                            res.on('end', () => {
-                                fs.writeFile("./src/bot.js", output, err => {
-                                    if (err) logger(err, true)
-                                    startjs(); })}) });
-                    } catch (err) { logger('get bot.js function Error: ' + err, true) }}
-
-                function startjs() {
-                    output = ""
-                    try {
-                        logger("Updating start.js...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/tree/master/src/start.js", function(res){
-                            res.setEncoding('utf8');
-                            res.on('data', function (chunk) {
-                                output += chunk });
-
-                            res.on('end', () => {
-                                fs.writeFile("./start.js", output, err => {
-                                    if (err) logger(err, true)
-                                    packagejson(); })}) });
-                    } catch (err) { logger('get start.js function Error: ' + err, true) }}
-
-                fs.writeFile("./package.json", "{}", err => {
-                    if (err) logger(err, true) })
-
-                function packagejson() {
-                    output = ""
-                    try {
-                        logger("Updating package.json...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/package.json", function(res){
-                            res.setEncoding('utf8');
-                            res.on('data', function (chunk) {
-                                output += chunk });
-
-                            res.on('end', () => {
-                                output = JSON.parse(output)
-
-                                fs.writeFile("./package.json", JSON.stringify(output, null, 4), err => {
-                                    if (err) logger(err, true)
-                                    packagelockjson(); })}) });
-                    } catch (err) { logger('get package.json function Error: ' + err, true) }}
-
-
-                fs.writeFile("./package-lock.json", "{}", err => {
-                    if (err) logger(err, true) })
-
-                function packagelockjson() {
-                    output = ""
-                    try {
-                        logger("Updating package-lock.json...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/package-lock.json", function(res){
-                            res.setEncoding('utf8');
-                            res.on('data', function (chunk) {
-                                output += chunk });
-
-                            res.on('end', () => {
-                                output = JSON.parse(output)
-
-                                fs.writeFile("./package-lock.json", JSON.stringify(output, null, 4), err => {
-                                    if (err) logger(err, true) 
-                                    configjson(); })}) });
-                    } catch (err) { logger('get package-lock.json function Error: ' + err, true) }}
-
-
-                function configjson() {
-                    output = ""
-                    try {
-                        logger("Updating config.json...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/config.json", function(res){
-                            res.setEncoding('utf8');
-                            res.on('data', function (chunk) {
-                                output += chunk });
-                
-                            res.on('end', () => {
-                                output = JSON.parse(output)
-                                extdata.version = output.version
-                
-                                Object.keys(output).forEach(e => {
-                                    if (!Object.keys(config).includes(e)) {
-                                        config[e] = output[e] }
-                                        
-                                    fs.writeFile("./config.json", JSON.stringify(config, null, 4), err => {
-                                        if (err) logger(err, true) 
-                                        datajson(); }) });
-                            })})
-                    } catch (err) { logger('get config.json function Error: ' + err, true) }} 
-
-                function datajson() {
-                    output = ""
-                    try {
-                        logger("Updating data.json...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/tree/master/src/data.json", function(res){
-                            res.setEncoding('utf8');
-                            res.on('data', function (chunk) {
-                                output += chunk });
-
-                            res.on('end', () => {
-                                output = JSON.parse(output)
-
-                                fs.writeFile("./src/data.json", JSON.stringify(output, null, 4), err => {
-                                    if (err) logger(err, true) 
-                                    controllerjs(); })}) });
-                    } catch (err) { logger('get data.json function Error: ' + err, true) }}
-                
-                function controllerjs() {
-                    output = ""
-                    try {
-                        logger("Updating controller.js...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/tree/master/src/controller.json", function(res){
-                            res.setEncoding('utf8');
-                            res.on('data', function (chunk) {
-                                output += chunk });
-
-                            res.on('end', () => {
-                                output = JSON.parse(output)
-
-                                fs.writeFile("./src/controller.js", JSON.stringify(output, null, 4), err => {
-                                    if (err) logger(err, true) 
-                                    logger("Update finished. Please restart the bot!", true); })}) });
-                    } catch (err) { logger('get controller.js function Error: ' + err, true) }} }
-        }) });
-        lastupdatecheckinterval = Date.now() + 43200000 //12 hours in ms
-    } catch (err) {
-        logger('checkforupdate/update function Error: ' + err, true) }}
+    for(let i = 0; i < Object.keys(communityobject).length; i++) {
+        var k = Object.keys(communityobject)[i] //set key for this iteration
+        if (i == 0) continue; //first account already commented, skip this iteration
+        if (i >= parseInt(numberofcomments)) return;
+        comment(k, i) //run actual comment function because for loops are bitchy
+    }}
 
 const round = function round(value, decimals) {
     return Number(Math.round(value+'e'+decimals)+'e-'+decimals) }
@@ -233,12 +85,14 @@ accisloggedin = true; //var to check if previous acc is logged on (in case steam
 
 module.exports={
     bootstart,
+    steamGuardInputTime,
     logger,
     skippedaccounts,
     communityobject,
     botobject, 
     commenteverywhere,
     quotes,
+    round,
     accisloggedin,
     round }
 
@@ -290,9 +144,12 @@ if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' && process.env.USERNAME ===
 /* ------------ Everything logged in: ------------ */
 var readyinterval = setInterval(() => { //log startup to console
     if (Object.keys(communityobject).length === Object.keys(logininfo).length - skippedaccounts.length) {
+        var start = require('../start.js')
+        start.botisloggedin = true //remind start.js that the bot is logged in and needs to be terminated if the updater is triggered
+
         logger(' ', true)
         logger('*------------------------------------------*', true)
-        logger(`\x1b[96m${logininfo.bot1[0]}\x1b[0m version ${extdata.version} by 3urobeat logged in.`, true)
+        logger(`\x1b[96m${logininfo.bot0[0]}\x1b[0m version ${extdata.version} by 3urobeat logged in.`, true)
         if (config.mode === 2) logger(`Using Mode 2: ${Object.keys(communityobject).length - 1} child accounts logged in.`, true); 
             else logger(`Using Mode 1: ${Object.keys(logininfo).length} account(s) logged in.`, true);
 
@@ -303,7 +160,8 @@ var readyinterval = setInterval(() => { //log startup to console
             if(config.playinggames[1]) var playinggames = "("+config.playinggames.slice(1, config.playinggames.length)+")"
             logger(`Playing status: \x1b[32m${config.playinggames[0]}\x1b[0m ${playinggames}`, true)
 
-            const bootend = d() - bootstart
+            logger(steamGuardInputTime)
+            const bootend = (d() - bootstart) - steamGuardInputTime
             var readyafter = round(bootend / 1000, 2)
             logger('Ready after ' + readyafter + 'sec!', true)
             extdata.timesloggedin++
@@ -317,14 +175,15 @@ var readyinterval = setInterval(() => { //log startup to console
             if (!config.owner.includes("steamcommunity.com")) { 
                 logger("[\x1b[31mNotice\x1b[0m] You haven't set an correct owner link to your profile in the config!\nPlease add this to refer to yourself as the owner and operator of this bot.", true) }
 
-            checkforupdate();
-            setInterval(() => {
-                if (Date.now() > lastupdatecheckinterval) {
+            setInterval(() => { //update interval
+                console.log("update from controller: " + start.lastupdatecheckinterval)
+                if (Date.now() > start.lastupdatecheckinterval) {
                     fs.readFile("./output.txt", function (err, data) {
                         if (err) logger("error checking output for update notice: " + err)
                         if (!data.toString().split('\n').slice(data.toString().split('\n').length - 21).join('\n').includes("Update available!")) { //check last 20 lines of output.txt for update notice
-                            checkforupdate() } }) }
-            }, 300000); //5 min in ms
+                            start.checkforupdate() } }) }
+            //}, 300000); //5 min in ms
+            }, 5000);
 
             if (config.botsgroupid.length > 1 && !isNaN(config.botsgroupid) && new SteamID(config.botsgroupid).isValid()) { //check if botsgroupid is set, a number and a valid id
                 Object.keys(botobject).forEach((i) => {
