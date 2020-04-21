@@ -1,6 +1,7 @@
 //Code by: https://github.com/HerrEurobeat/ 
 //If you are here, you are wrong. Open config.json and configure everything there!
 
+var start = require('../start.js')
 var b = require('./bot.js');
 const logininfo = require('../logininfo.json');
 const config = require('../config.json');
@@ -9,7 +10,6 @@ lastcomment = require("./lastcomment.json")
 const SteamID = require('steamid');
 var fs = require("fs");
 
-var skippedaccounts = new Array();
 var communityobject = new Object();
 var botobject = new Object();
 const d = function d() { return new Date(); }
@@ -25,12 +25,14 @@ if (config.version) {
 }
 
 /* ------------ Functions: ------------ */
-var logger = function logger(str, nodate) { //Custom logger
+var logger = (str, nodate) => { //Custom logger
     if (nodate === true) { var string = str; } else {
         var string = `\x1b[96m[${(new Date(Date.now() - ((d()).getTimezoneOffset() * 60000))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}]\x1b[0m ${str}` }
     console.log(string)
     fs.appendFileSync('./output.txt', string.replace(/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]/g, '') + '\n', err => { //Credit: https://github.com/Filirom1/stripcolorcodes
       if(err) logger('logger function appendFileSync error: ' + err) }) }
+
+var steamGuardInputTimeFunc = (arg) => { steamGuardInputTime += arg } //small function to return new value from bot.js
 
 process.on('unhandledRejection', (reason, p) => {
     logger(`Unhandled Rejection! Reason: ${reason.stack}`, true) });
@@ -38,9 +40,8 @@ process.on('unhandledRejection', (reason, p) => {
 var quotes = new Array();
 var quotes = fs.readFileSync('quotes.txt', 'utf8').split("\n"); //get all quotes from the quotes.txt file into an array
 
-var commenteverywhere = function commenteverywhere(steamID, numberofcomments) { //function to let all bots comment
+var commenteverywhere = (steamID, numberofcomments) => { //function to let all bots comment
     var failedcomments = new Array();
-    logger(Object.keys(communityobject))
 
     function comment(k, i) {
         setTimeout(() => {
@@ -78,16 +79,16 @@ var commenteverywhere = function commenteverywhere(steamID, numberofcomments) { 
         comment(k, i) //run actual comment function because for loops are bitchy
     }}
 
-const round = function round(value, decimals) {
+const round = (value, decimals) => {
     return Number(Math.round(value+'e'+decimals)+'e-'+decimals) }
 
 accisloggedin = true; //var to check if previous acc is logged on (in case steamGuard event gets fired) -> set to true for first account
 
 module.exports={
     bootstart,
+    steamGuardInputTimeFunc,
     steamGuardInputTime,
     logger,
-    skippedaccounts,
     communityobject,
     botobject, 
     commenteverywhere,
@@ -106,17 +107,19 @@ if (config.allowcommentcmdusage === false && new SteamID(config.ownerid[0]).isVa
     logger("\x1b[31mYou set allowcommentcmdusage to false but didn't specify an ownerid! Aborting...\x1b[0m")
     process.exit(0); }
 
+
 if (extdata.firststart === true) logger("What's new: " + extdata.whatsnew)
 
 if (extdata.timesloggedin < 5) { //only use new evaluation method when the bot was started more than 5 times
-    var estimatedlogintime = ((config.logindelay * (Object.keys(logininfo).length - 1)) / 1000) + 3 //Size of accounts - 1 (first acc logs in instantly) * logindelay -> wait time / 100 -> ms to seconds + 2 tolerance second
+    var estimatedlogintime = ((config.logindelay * (Object.keys(logininfo).length - 1 - start.skippedaccounts.length)) / 1000) + 3
 } else {
-    var estimatedlogintime = round((extdata.totallogintime / extdata.timesloggedin) * Object.keys(logininfo).length, 2)
-}
+    var estimatedlogintime = round((extdata.totallogintime / extdata.timesloggedin) * (Object.keys(logininfo).length - start.skippedaccounts.length), 2) }
 
 logger(`Logging in... Estimated wait time: ${estimatedlogintime} seconds.`)
+console.log(start.skippedaccounts)
 
 Object.keys(logininfo).forEach((k, i) => { //log all accounts in with the logindelay
+    if (start.skippedaccounts.includes(i)) return; //if this iteration exists in the skippedaccounts array, automatically skip acc again
     setTimeout(() => {
         var logOnOptions = {
             accountName: logininfo[k][0],
@@ -125,7 +128,7 @@ Object.keys(logininfo).forEach((k, i) => { //log all accounts in with the logind
             machineName: "3urobeat's Commment Bot"
         };
         b.run(logOnOptions, i);
-    }, config.logindelay * i);
+    }, config.logindelay * (i - start.skippedaccounts.length));
 })
 
 if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' && process.env.USERNAME === 'tomgo') && !(process.env.USER === 'pi' && process.env.LOGNAME === 'pi') && !(process.env.USER === 'tom' && require('os').hostname() === 'Toms-Thinkpad')) { //remove myself from config on different computer
@@ -143,10 +146,7 @@ if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' && process.env.USERNAME ===
 
 /* ------------ Everything logged in: ------------ */
 var readyinterval = setInterval(() => { //log startup to console
-    if (Object.keys(communityobject).length === Object.keys(logininfo).length - skippedaccounts.length) {
-        var start = require('../start.js')
-        start.botisloggedin = true //remind start.js that the bot is logged in and needs to be terminated if the updater is triggered
-
+    if (Object.keys(communityobject).length === Object.keys(logininfo).length - start.skippedaccounts.length) {       
         logger(' ', true)
         logger('*------------------------------------------*', true)
         logger(`\x1b[96m${logininfo.bot0[0]}\x1b[0m version ${extdata.version} by 3urobeat logged in.`, true)
@@ -160,7 +160,6 @@ var readyinterval = setInterval(() => { //log startup to console
             if(config.playinggames[1]) var playinggames = "("+config.playinggames.slice(1, config.playinggames.length)+")"
             logger(`Playing status: \x1b[32m${config.playinggames[0]}\x1b[0m ${playinggames}`, true)
 
-            logger(steamGuardInputTime)
             const bootend = (d() - bootstart) - steamGuardInputTime
             var readyafter = round(bootend / 1000, 2)
             logger('Ready after ' + readyafter + 'sec!', true)
@@ -168,22 +167,12 @@ var readyinterval = setInterval(() => { //log startup to console
             extdata.totallogintime += readyafter / Object.keys(communityobject).length //get rough logintime of only one account
             logger('*------------------------------------------*', true)
             logger(' ', true)
-            if (skippedaccounts.length > 0) logger(`Skipped Accounts: ${skippedaccounts.length}/${Object.keys(logininfo).length}`, true)
+            if (start.skippedaccounts.length > 0) logger(`Skipped Accounts: ${start.skippedaccounts.length}/${Object.keys(logininfo).length}`, true)
 
             if (isNaN(config.ownerid[0]) || new SteamID(config.ownerid[0]).isValid() === false) { 
                 logger("[\x1b[31mWarning\x1b[0m] You haven't set an correct ownerid in the config!", true) }
             if (!config.owner.includes("steamcommunity.com")) { 
                 logger("[\x1b[31mNotice\x1b[0m] You haven't set an correct owner link to your profile in the config!\nPlease add this to refer to yourself as the owner and operator of this bot.", true) }
-
-            setInterval(() => { //update interval
-                console.log("update from controller: " + start.lastupdatecheckinterval)
-                if (Date.now() > start.lastupdatecheckinterval) {
-                    fs.readFile("./output.txt", function (err, data) {
-                        if (err) logger("error checking output for update notice: " + err)
-                        if (!data.toString().split('\n').slice(data.toString().split('\n').length - 21).join('\n').includes("Update available!")) { //check last 20 lines of output.txt for update notice
-                            start.checkforupdate() } }) }
-            //}, 300000); //5 min in ms
-            }, 5000);
 
             if (config.botsgroupid.length > 1 && !isNaN(config.botsgroupid) && new SteamID(config.botsgroupid).isValid()) { //check if botsgroupid is set, a number and a valid id
                 Object.keys(botobject).forEach((i) => {

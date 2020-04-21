@@ -1,11 +1,12 @@
 var fs = require('fs')
 var https = require("https")
-botisloggedin = false
+var skippedaccounts = new Array();
+var botisloggedin = false
 var lastupdatecheckinterval = Date.now()
 
 var logger = function logger(str, nodate) { //Custom logger
     if (nodate === true) { var string = str; } else {
-        var string = `\x1b[96m[${(new Date(Date.now() - ((d()).getTimezoneOffset() * 60000))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}]\x1b[0m ${str}` }
+        var string = `\x1b[96m[${(new Date(Date.now() - (new Date().getTimezoneOffset() * 60000))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}]\x1b[0m ${str}` }
     console.log(string)
     fs.appendFileSync('./output.txt', string.replace(/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]/g, '') + '\n', err => { //Credit: https://github.com/Filirom1/stripcolorcodes
       if(err) logger('logger function appendFileSync error: ' + err) }) }
@@ -14,7 +15,9 @@ var checkforupdate = function checkforupdate(forceupdate) {
     try {
         var extdata = require('./src/data.json')
 
+        //beta thing: use config atm until the master branch has the same file structure
         https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/config.json", function(res){
+        //https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/tree/master/src/data.json", function(res){
         res.setEncoding('utf8');
         res.on('data', function(chunk){
             var onlineversion= JSON.parse(chunk).version
@@ -39,6 +42,7 @@ var checkforupdate = function checkforupdate(forceupdate) {
 
                     botisloggedin = false
                 }
+
                 botjs();
 
                 function botjs() {
@@ -167,18 +171,19 @@ var checkforupdate = function checkforupdate(forceupdate) {
 
                                 fs.writeFile("./src/controller.js", JSON.stringify(output, null, 4), err => {
                                     if (err) logger(err, true) 
-                                    logger("Update finished. Starting the bot...", true); 
-                                    require('./src/controller.js'); })}) }); //start the bot
+                                    logger("Update finished. Starting the bot in 5 seconds...", true); 
+                                    setTimeout(() => {
+                                        require('./src/controller.js');
+                                        botisloggedin = true
+                                    }, 5000); })}) }); //start the bot
 
                     } catch (err) { logger('get controller.js function Error: ' + err, true) }} 
             } else {
                 console.log("bili in updater from start.js: " + botisloggedin)
-                if (botisloggedin == false) require('./src/controller.js'); //no update, start bot
+                if (botisloggedin == false) require('./src/controller.js'); botisloggedin = true //no update, start bot
             }
         }) });
-        //lastupdatecheckinterval = Date.now() + 43200000 //12 hours in ms
-        lastupdatecheckinterval = Date.now() + 2500 //12 hours in ms
-        console.log("update from start: " + lastupdatecheckinterval)
+        lastupdatecheckinterval = Date.now() + 43200000 //12 hours in ms
     } catch (err) {
         logger('checkforupdate/update function Error: ' + err, true) }}
       
@@ -203,10 +208,20 @@ if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
     checkforupdate(true) //force to update again to get files from new structure
 }
 
-checkforupdate() //check will start the bot afterwards
-
 module.exports={
+    skippedaccounts,
     checkforupdate,
     botisloggedin,
     lastupdatecheckinterval
 }
+
+checkforupdate() //check will start the bot afterwards
+
+setInterval(() => { //update interval
+    if (Date.now() > lastupdatecheckinterval) {
+        fs.readFile("./output.txt", function (err, data) {
+            if (err) logger("error checking output for update notice: " + err)
+            if (!data.toString().split('\n').slice(data.toString().split('\n').length - 21).join('\n').includes("Update available!")) { //check last 20 lines of output.txt for update notice
+                console.log("check update")
+                checkforupdate() } }) }
+}, 300000); //5 min in ms

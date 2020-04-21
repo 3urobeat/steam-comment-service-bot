@@ -6,6 +6,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
   const SteamUser = require('steam-user');
   const SteamCommunity = require('steamcommunity');
   const SteamID = require('steamid');
+  var start = require('../start.js')
   var controller = require("./controller.js")
   const config = require('../config.json');
   const extdata = require('./data.json');
@@ -37,7 +38,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
     if (config.skipSteamGuard === true) {
       if (loginindex > 1) {
         controller.accisloggedin = true; //set to true to log next account in
-        controller.skippedaccounts.push(loginindex)
+        start.skippedaccounts.push(loginindex)
         return;
       } else {
         logger("Even with skipSteamGuard enabled, the first account always has to be logged in.", true)
@@ -57,12 +58,11 @@ module.exports.run = async (logOnOptions, loginindex) => {
           logger("The first account always has to be logged in!\nPlease restart and provide a steamGuard code!", true) 
         } else {
           controller.accisloggedin = true; //set to true to log next account in
-          controller.skippedaccounts.push(loginindex) }
+          start.skippedaccounts.push(loginindex) }
       } else {
         callback(code) }
       stdin.pause() //stop reading
-      logger(d() - steamGuardInputStart)
-      controller.steamGuardInputTime += d() - steamGuardInputStart
+      controller.steamGuardInputTimeFunc(d() - steamGuardInputStart)
     })
   });
 
