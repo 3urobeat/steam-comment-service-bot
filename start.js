@@ -43,7 +43,7 @@ var checkforupdate = function checkforupdate(forceupdate) {
                     botisloggedin = false
                 }
 
-                botjs();
+                //botjs();
 
                 function botjs() {
                     output = ""
@@ -75,11 +75,10 @@ var checkforupdate = function checkforupdate(forceupdate) {
                                     packagejson(); })}) });
                     } catch (err) { logger('get start.js function Error: ' + err, true) }}
 
-                fs.writeFile("./package.json", "{}", err => {
-                    if (err) logger(err, true) })
-
                 function packagejson() {
                     output = ""
+                    fs.writeFile("./package.json", "{}", err => {
+                        if (err) logger(err, true) })
                     try {
                         logger("Updating package.json...", true)
                         https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/package.json", function(res){
@@ -95,12 +94,10 @@ var checkforupdate = function checkforupdate(forceupdate) {
                                     packagelockjson(); })}) });
                     } catch (err) { logger('get package.json function Error: ' + err, true) }}
 
-
-                fs.writeFile("./package-lock.json", "{}", err => {
-                    if (err) logger(err, true) })
-
                 function packagelockjson() {
                     output = ""
+                    fs.writeFile("./package-lock.json", "{}", err => {
+                        if (err) logger(err, true) })
                     try {
                         logger("Updating package-lock.json...", true)
                         https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/package-lock.json", function(res){
@@ -115,7 +112,6 @@ var checkforupdate = function checkforupdate(forceupdate) {
                                     if (err) logger(err, true) 
                                     configjson(); })}) });
                     } catch (err) { logger('get package-lock.json function Error: ' + err, true) }}
-
 
                 function configjson() {
                     output = ""
@@ -179,7 +175,6 @@ var checkforupdate = function checkforupdate(forceupdate) {
 
                     } catch (err) { logger('get controller.js function Error: ' + err, true) }} 
             } else {
-                console.log("bili in updater from start.js: " + botisloggedin)
                 if (botisloggedin == false) require('./src/controller.js'); botisloggedin = true //no update, start bot
             }
         }) });
@@ -190,22 +185,33 @@ var checkforupdate = function checkforupdate(forceupdate) {
 
 //Compatibility features when updating from version <2.6
 if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
-    fs.mkdirSync('./src') 
+    try {
+        fs.mkdirSync('./src') 
 
-    fs.writeFile('./src/data.json', '{ "version": 0 }', err => { //create data.json to avoid errors
-        if (err) logger("error creating data.json: " + err, true) })
-    fs.unlinkSync("./bot.js", err => { //delete bot.js
-        if (err) logger("error deleting bot.js: " + err, true) }) 
-    fs.renameSync("./lastcomment.json", "./src/lastcomment.json", err => { //move lastcomment.json
-        if (err) logger("error moving lastcomment.json: " + err + "\nPlease download the newest version manually! https://github.com/HerrEurobeat/steam-comment-service-bot", true) })
+        fs.writeFile('./src/data.json', '{ "version": 0 }', (err) => { //create data.json to avoid errors
+            if (err) logger("error creating data.json: " + err, true) })
+        fs.unlink("./bot.js", (err) => { //delete bot.js
+            if (err) logger("error deleting bot.js: " + err, true) }) 
+        fs.rename("./lastcomment.json", "./src/lastcomment.json", (err) => { //move lastcomment.json
+            if (err) logger("error moving lastcomment.json: " + err, true) })
 
-/*     var logininfo = "./logininfo.json" //logininfo now starts with bot0 instead of bot1
-    Object.keys(logininfo).forEach((e, i) => {
-        
-    })
-    fs.writeFile("./logininfo.json") */
+        if (Object.keys(logininfo)[0] == "bot1") {
+            var logininfo = require('./logininfo.json')
+            Object.keys(logininfo).forEach((e, i) => {      
+                Object.defineProperty(logininfo, `bot${i}`, //Credit: https://stackoverflow.com/a/14592469 
+                    Object.getOwnPropertyDescriptor(logininfo, e));
+                delete logininfo[e]; })
+            
+            fs.writeFile("./logininfo.json", JSON.stringify(logininfo, null, 4), err => {
+                if(err) logger(err, true) }) }
 
-    checkforupdate(true) //force to update again to get files from new structure
+        setTimeout(() => {
+            checkforupdate(true) //force to update again to get files from new structure
+        }, 1000);
+    } catch(err) {
+        logger("\n\n\x1b[31m*------------------------------------------*\x1b[0m\nI have problems updating your bot to the new filesystem.\nPlease restart the bot. If you still encounter issues:\n\nPlease either download and setup the bot manually again (https://github.com/HerrEurobeat/steam-comment-service-bot/)\nor open an issue (https://github.com/HerrEurobeat/steam-comment-service-bot/issues) and include the errors\n(*only* if you have no GitHub account message 3urobeat#0975 on Discord).\n\x1b[31m*------------------------------------------*\x1b[0m\n\n", true) }
+} else {
+    checkforupdate() //check will start the bot afterwards
 }
 
 module.exports={
@@ -215,13 +221,10 @@ module.exports={
     lastupdatecheckinterval
 }
 
-checkforupdate() //check will start the bot afterwards
-
 setInterval(() => { //update interval
     if (Date.now() > lastupdatecheckinterval) {
         fs.readFile("./output.txt", function (err, data) {
             if (err) logger("error checking output for update notice: " + err)
             if (!data.toString().split('\n').slice(data.toString().split('\n').length - 21).join('\n').includes("Update available!")) { //check last 20 lines of output.txt for update notice
-                console.log("check update")
                 checkforupdate() } }) }
 }, 300000); //5 min in ms

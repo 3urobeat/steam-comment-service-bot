@@ -1,7 +1,7 @@
 {
-    "version": "BETA 2.6 b5",
+    "version": "BETA 2.6 b6",
     "firststart": true,
-    "whatsnew": "Added option to skip steamGuard, added dynamic login time evaluation, added data.json, changed filestructure, lastcomment functionality revamp, minor changes and other bugfixes.",
+    "whatsnew": "Added option to skip steamGuard, added dynamic login time evaluation and wait time conversion, added data.json, changed filestructure, start.js -> controller.js, changed updater functionality, lastcomment functionality revamp, added dynamic help message, cleared up startup logs, made changes and other bugfixes.",
     "timesloggedin": 0,
     "totallogintime": 0
 }

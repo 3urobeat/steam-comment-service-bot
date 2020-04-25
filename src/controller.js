@@ -12,10 +12,12 @@ var fs = require("fs");
 
 var communityobject = new Object();
 var botobject = new Object();
+var readyafterlogs = new Array();
 const d = function d() { return new Date(); }
 var bootstart = 0;
 var bootstart = d();
 var steamGuardInputTime = 0;
+var readyafter = 0
 
 //Remove version number from config as it was moved to data.json in version 2.6
 if (config.version) {
@@ -26,22 +28,29 @@ if (config.version) {
 
 /* ------------ Functions: ------------ */
 var logger = (str, nodate) => { //Custom logger
-    if (nodate === true) { var string = str; } else {
-        var string = `\x1b[96m[${(new Date(Date.now() - ((d()).getTimezoneOffset() * 60000))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}]\x1b[0m ${str}` }
+    if (str.toLowerCase().includes("error")) { var str = `\x1b[31m${str}\x1b[0m` }
+    if (str.includes("Comment(s) requested")) { var str = `\x1b[32m${str}\x1b[0m` }
+
+    if (nodate === true) {
+        var string = str; 
+    } else { //startup messages should have nodate enabled -> filter messages with date when bot is not started
+        var string = `\x1b[96m[${(new Date(Date.now() - ((d()).getTimezoneOffset() * 60000))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}]\x1b[0m ${str}` 
+        if (readyafter == 0 && !str.toLowerCase().includes("error") && !str.includes('Logging in... Estimated wait time') && !str.includes("What's new:")) { readyafterlogs.push(string); return; }}
+
     console.log(string)
-    fs.appendFileSync('./output.txt', string.replace(/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]/g, '') + '\n', err => { //Credit: https://github.com/Filirom1/stripcolorcodes
+    fs.appendFileSync('./output.txt', string.replace(/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]/g, '') + '\n', err => { //Regex Credit: https://github.com/Filirom1/stripcolorcodes
       if(err) logger('logger function appendFileSync error: ' + err) }) }
 
 var steamGuardInputTimeFunc = (arg) => { steamGuardInputTime += arg } //small function to return new value from bot.js
 
 process.on('unhandledRejection', (reason, p) => {
-    logger(`Unhandled Rejection! Reason: ${reason.stack}`, true) });
+    logger(`Unhandled Rejection Error! Reason: ${reason.stack}`, true) });
 
 var quotes = new Array();
 var quotes = fs.readFileSync('quotes.txt', 'utf8').split("\n"); //get all quotes from the quotes.txt file into an array
 
 var commenteverywhere = (steamID, numberofcomments) => { //function to let all bots comment
-    var failedcomments = new Array();
+    var failedcomments = []
 
     function comment(k, i) {
         setTimeout(() => {
@@ -52,23 +61,24 @@ var commenteverywhere = (steamID, numberofcomments) => { //function to let all b
                 if (err) { return logger("comment check for private account error: " + err) }
                 if (user.privacyState !== "public") return failedcomments.push(botobject[k].steamID.getSteam3RenderedID())});
 
-            var randomstring = arr => arr[Math.floor(Math.random() * arr.length)];
-            var comment = randomstring(quotes);
+            var comment = quotes[Math.floor(Math.random() * quotes.length)];
 
             communityobject[k].postUserComment(steamID, comment, (error) => {
-                if(error) { logger(`[Bot ${i}] postUserComment error: ${error}`); failedcomments.push(botobject[k].steamID.getSteam3RenderedID()); return; }
-                logger(`[Bot ${k}] Comment on ${new SteamID(steamID.getSteam3RenderedID()).getSteamID64()}: ${comment}`) 
+                if(error) { 
+                    logger(`[Bot ${i}] postUserComment error: ${error}`); failedcomments.push(botobject[k].steamID.getSteam3RenderedID());
+                } else {
+                    logger(`[Bot ${k}] Comment on ${new SteamID(steamID.getSteam3RenderedID()).getSteamID64()}: ${comment}`) 
 
-                if (config.unfriendtime > 0) { //add user to lastcomment list if the unfriendtime is > 0 days
-                    if (botobject[k].myFriends[new SteamID(steamID.getSteam3RenderedID()).getSteamID64()] === 3) {
-                        lastcomment[new SteamID(steamID.getSteam3RenderedID()).getSteamID64().toString() + i] = { //add i to steamID to allow multiple entries for one steamID
-                            time: Date.now(),
-                            bot: i }
-                    fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
-                        if (err) logger("delete user from lastcomment.json error: " + err) }) }}
+                    if (config.unfriendtime > 0) { //add user to lastcomment list if the unfriendtime is > 0 days
+                        if (botobject[k].myFriends[new SteamID(steamID.getSteam3RenderedID()).getSteamID64()] === 3) {
+                            lastcomment[new SteamID(steamID.getSteam3RenderedID()).getSteamID64().toString() + i] = { //add i to steamID to allow multiple entries for one steamID
+                                time: Date.now(),
+                                bot: i }
+                        fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
+                            if (err) logger("delete user from lastcomment.json error: " + err) }) }} }
+
+                if (i == numberofcomments - 1) botobject[0].chatMessage(steamID, `All comments have been sent. Failed: ${failedcomments.length}/${numberofcomments}`); //stop if this execution is more than wanted -> stop loop
             })
-
-            if (i == numberofcomments - 1) botobject[0].chatMessage(steamID, `All comments have been sent. Failed: ${failedcomments.length}/${numberofcomments}`); //stop if this execution is more than wanted -> stop loop
         }, config.commentdelay * k); //delay every comment
     }
 
@@ -101,22 +111,24 @@ module.exports={
 /* ------------ Login: ------------ */
 logger("", true) //put one line above everything that will come to make the output cleaner
 if (config.mode !== 1 && config.mode !== 2) { //wrong mode? abort.
-    logger("\x1b[31mThe mode you provided is invalid! Please choose between 1 or 2. Aborting...\x1b[0m")
+    logger("\x1b[31mThe mode you provided is invalid! Please choose between 1 or 2. Aborting...\x1b[0m", true)
     process.exit(0); }
 if (config.allowcommentcmdusage === false && new SteamID(config.ownerid[0]).isValid() === false) {
-    logger("\x1b[31mYou set allowcommentcmdusage to false but didn't specify an ownerid! Aborting...\x1b[0m")
+    logger("\x1b[31mYou set allowcommentcmdusage to false but didn't specify an ownerid! Aborting...\x1b[0m", true)
     process.exit(0); }
-
 
 if (extdata.firststart === true) logger("What's new: " + extdata.whatsnew)
 
 if (extdata.timesloggedin < 5) { //only use new evaluation method when the bot was started more than 5 times
     var estimatedlogintime = ((config.logindelay * (Object.keys(logininfo).length - 1 - start.skippedaccounts.length)) / 1000) + 3
 } else {
-    var estimatedlogintime = round((extdata.totallogintime / extdata.timesloggedin) * (Object.keys(logininfo).length - start.skippedaccounts.length), 2) }
+    var estimatedlogintime = (extdata.totallogintime / extdata.timesloggedin) * (Object.keys(logininfo).length - start.skippedaccounts.length) }
 
-logger(`Logging in... Estimated wait time: ${estimatedlogintime} seconds.`)
-console.log(start.skippedaccounts)
+var estimatedlogintimeunit = "seconds"
+if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "minutes" }
+if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "hours" }
+
+logger(`Logging in... Estimated wait time: ${round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`)
 
 Object.keys(logininfo).forEach((k, i) => { //log all accounts in with the logindelay
     if (start.skippedaccounts.includes(i)) return; //if this iteration exists in the skippedaccounts array, automatically skip acc again
@@ -161,8 +173,13 @@ var readyinterval = setInterval(() => { //log startup to console
             logger(`Playing status: \x1b[32m${config.playinggames[0]}\x1b[0m ${playinggames}`, true)
 
             const bootend = (d() - bootstart) - steamGuardInputTime
-            var readyafter = round(bootend / 1000, 2)
-            logger('Ready after ' + readyafter + 'sec!', true)
+            readyafter = bootend / 1000
+
+            var readyafterunit = "seconds"
+            if (readyafter > 60) { readyafter = readyafter / 60; var readyafterunit = "minutes" }
+            if (readyafter > 60) { readyafter = readyafter / 60; var readyafterunit = "hours" }
+            
+            logger(`Ready after ${round(readyafter, 2)} ${readyafterunit}!`, true)
             extdata.timesloggedin++
             extdata.totallogintime += readyafter / Object.keys(communityobject).length //get rough logintime of only one account
             logger('*------------------------------------------*', true)
@@ -173,6 +190,8 @@ var readyinterval = setInterval(() => { //log startup to console
                 logger("[\x1b[31mWarning\x1b[0m] You haven't set an correct ownerid in the config!", true) }
             if (!config.owner.includes("steamcommunity.com")) { 
                 logger("[\x1b[31mNotice\x1b[0m] You haven't set an correct owner link to your profile in the config!\nPlease add this to refer to yourself as the owner and operator of this bot.", true) }
+
+            readyafterlogs.forEach(e => { logger(e, true) }) //log suppressed logs
 
             if (config.botsgroupid.length > 1 && !isNaN(config.botsgroupid) && new SteamID(config.botsgroupid).isValid()) { //check if botsgroupid is set, a number and a valid id
                 Object.keys(botobject).forEach((i) => {
@@ -212,17 +231,17 @@ var readyinterval = setInterval(() => { //log startup to console
                             var targetbot = botobject[targetkey] //grab the targeted bot
 
                             if (targetbot === undefined) { //this bot account does not seem to be in logininfo.json anymore
-                                delete logininfo[i] //delete entry
-
+                                delete lastcomment[i] //delete entry
+                                
                             } else { //bot does seem to be logged in
+
                                 if (targetbot.myFriends[iminusid] === 3 && !config.ownerid.includes(iminusid)) { //check if the targeted user is still friend and not the owner
                                     targetbot.chatMessage(new SteamID(iminusid), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
                                     targetbot.removeFriend(new SteamID(iminusid)); //unfriend user
-                                    logger(`[Bot ${targetkey}] Unfriended ${i} after ${config.unfriendtime} days of inactivity.`) } 
+                                    logger(`[Bot ${targetkey}] Unfriended ${iminusid} after ${config.unfriendtime} days of inactivity.`) } 
 
                                 delete lastcomment[i]; } //entry gets removed no matter what
                         } }
-
                     fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => { //write changes
                         if (err) logger("delete user from lastcomment.json error: " + err) })
                 }, 5000) 

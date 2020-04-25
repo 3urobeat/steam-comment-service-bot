@@ -92,7 +92,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
         if (bot.myFriends[Object.keys(bot.myFriends)[i]] == 2) {
             bot.addFriend(Object.keys(bot.myFriends)[i]);
             logger(`[${thisbot}] Added user while I was offline! User: ` + Object.keys(bot.myFriends)[i])
-            bot.chatMessage(new SteamID(Object.keys(bot.myFriends)[i]), 'Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more info!')
+            bot.chatMessage(String(Object.keys(bot.myFriends)[i]), 'Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more info!')
 
             lastcomment[Object.keys(bot.myFriends)[i] + loginindex] = { //add user to lastcomment file in order to also unfriend him when he never used !comment
               time: Date.now() - (config.commentcooldown * 60000), //subtract unfriendtime to enable comment usage immediately
@@ -124,37 +124,38 @@ module.exports.run = async (logOnOptions, loginindex) => {
       var args = cont.slice(1);
       switch(cont[0].toLowerCase()) {
         case '!help':
-          if (config.owner.length > 1) var ownertext = "\nType '!owner' to check out my owner's profile!"; else var ownertext = "";
-          if (config.yourgroup.length > 1) var yourgrouptext = "\n\nJoin my '!group'"; else var yourgrouptext = "";
-          if (config.mode === 1) {
-            bot.chatMessage(steamID, `
-                Type '!comment' for a free comment!\n
-                Type '!ping' for a pong!\n
-                Type '!info' to get a few informations about the bot and you.\n
-                Type '!resetcooldown' to clear your cooldown if you are the botowner.\n
-                Type '!about' for credit (botcreator).
-                ${ownertext}
-                ${yourgrouptext}
-              `)
+          let ownercheck = config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())
+          if (ownercheck) {
+            if (Object.keys(controller.communityobject).length > 1) var commenttext = `Type '!comment number_of_comments profileid' for X many comments (max ${Object.keys(controller.communityobject).length})). Provide a profile id to comment on a specific profile.`
+              else var commenttext = `Type '!comment 1 profileid'. Provide a profile id to comment on a specific profile.`
           } else {
-            bot.chatMessage(steamID, `
-                Type '!comment number_of_comments profileid' for X many comments. profileid is botowner only.\n
-                Type '!ping' for a pong!\n
-                Type '!info' to get a few informations about the bot and you.\n
-                Type '!resetcooldown' to clear your cooldown if you are the botowner.\n
-                Type '!unfriend profileid' to unfriend this user from the bot if you are the botowner.\n
-                Type '!eval javascript code' to run javascript code from the steam chat. Botowner only.\n
-                Type '!about' for credit (botcreator).
-                ${ownertext}
-                ${yourgrouptext}
-              `)
-          }
+            if (Object.keys(controller.communityobject).length > 1) var commenttext = `Type '!comment number_of_comments' for X many comments (max ${Object.keys(controller.communityobject).length})).`
+              else var commenttext = `Type '!comment' for a comment on your profile!` }
+
+          if (ownercheck) var resetcooldowntext = `\nType '!resetcooldown' to clear your cooldown.`; else var resetcooldowntext = "";
+          if (ownercheck) var unfriendtext = `\nType '!unfriend profileid' to unfriend this user from the bot.`; else var unfriendtext = "";
+          if (ownercheck) var evaltext = `\nType '!eval javascript code' to run javascript code from the steam chat.`; else var evaltext = "";
+          if (config.yourgroup.length > 1) var yourgrouptext = "\nJoin my '!group!'"; else var yourgrouptext = "";
+          bot.chatMessage(steamID, `
+            ${commenttext}
+            Type '!ping' for a pong!
+            Type '!info' to get a few informations about the bot and you.${resetcooldowntext}${unfriendtext}
+            Type '!about' for credit (botcreator).
+            Type '!owner' to check out my owner's profile!${evaltext}
+            ${yourgrouptext}
+          `)
           break;
         case '!comment':
-          if (config.allowcommentcmdusage === false && !config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return bot.chatMessage(steamID, "The bot owner restricted this comment to himself.\nType !owner to get information who the owner is.\nType !about to get a link to the bot creator.") 
+          if (config.allowcommentcmdusage === false && !config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return bot.chatMessage(steamID, "The bot owner set this command to owners only.\nType !owner to get information who the owner is.\nType !about to get a link to the bot creator.") 
           if (config.commentcooldown !== 0) { //is the cooldown enabled?             
             if ((Date.now() - lastcomment[lastcommentsteamID].time) < (config.commentcooldown * 60000)) { //check if user has cooldown applied
-              bot.chatMessage(steamID, `You requested a comment in the last ${config.commentcooldown} minutes. Please wait a moment.`) //send error message
+
+              var remainingcooldown = Math.abs(((Date.now() - lastcomment[lastcommentsteamID].time) / 1000) - (config.commentcooldown * 60))
+              var remainingcooldownunit = "seconds"
+              if (remainingcooldown > 120) { var remainingcooldown = remainingcooldown / 60; var remainingcooldownunit = "minutes" }
+              if (remainingcooldown > 120) { var remainingcooldown = remainingcooldown / 60; var remainingcooldownunit = "hours" }
+
+              bot.chatMessage(steamID, `You requested a comment in the last ${config.commentcooldown} minutes. Please wait the remaining ${controller.round(remainingcooldown, 2)} ${remainingcooldownunit}.`) //send error message
               return; }}
           if (config.globalcommentcooldown !== 0) { //is the cooldown enabled?
             if (commentedrecently === true) { 
@@ -209,7 +210,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "hours" }
                 bot.chatMessage(steamID, `Estimated wait time for ${numberofcomments} comments: ${Number(Math.round(waittime+'e'+3)+'e-'+3)} ${waittimeunit}.`)
 
-                controller.commenteverywhere(steamID, numberofcomments) //Let all other accounts comment if mode 2 is activated
+                //controller.commenteverywhere(steamID, numberofcomments) //Let all other accounts comment if mode 2 is activated
               }
 
             if (config.globalcommentcooldown !== 0) {
@@ -219,13 +220,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
               }, config.globalcommentcooldown)
             }
 
-            if (config.unfriendtime > 0) { //add user to lastcomment list if the unfriendtime is > 0 days
-              if (controller.botobject[i].myFriends[new SteamID(steamID.getSteam3RenderedID()).getSteamID64()] === 3) {
-                lastcomment[new SteamID(steamID.getSteam3RenderedID()).getSteamID64() + loginindex] = {
-                  time: Date.now(),
-                  bot: bot.steamID.accountid }
-                fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
-                  if (err) logger(`[${thisbot}] delete user from lastcomment.json error: ${err}`) }) }}
+            if (controller.botobject[i].myFriends[new SteamID(steamID.getSteam3RenderedID()).getSteamID64()] === 3) {
+              lastcomment[new SteamID(steamID.getSteam3RenderedID()).getSteamID64() + loginindex] = {
+                time: Date.now(),
+                bot: bot.steamID.accountid }
+              fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
+                if (err) logger(`[${thisbot}] delete user from lastcomment.json error: ${err}`) }) }
           })
           break;
         case '!ping':
@@ -276,6 +276,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
             try {
               const code = args.join(" ");
+              if (code.includes('logininfo')) return bot.chatMessage(steamID, "Your code includes 'logininfo'. In order to protect passwords this is not allowed.") //not 100% save but should be at least some protection (only owners can use this cmd)
               let evaled = eval(code);
               if (typeof evaled !== "string")
               evaled = require("util").inspect(evaled);
