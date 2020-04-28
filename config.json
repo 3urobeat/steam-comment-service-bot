@@ -8,7 +8,7 @@
     "allowcommentcmdusage": true,
     "skipSteamGuard": false,
     "commentcooldown": 5,
-    "globalcommentcooldown": 5000,
+    "globalcommentcooldown": 10000,
     "unfriendtime": 31,
     "playinggames": ["!help | 3urobeat", 440, 730],
     "yourgroup": "https://steamcommunity.com/groups/3urobeatGroup",

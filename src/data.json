@@ -1,5 +1,8 @@
 {
-    "version": "BETA 2.6 b6",
+    "version": "BETA 2.6 b7",
+    "filetostart": "./updater.js",
+    "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/updater.js",
+    "botobjectfile": "./src/controller.js",
     "firststart": true,
     "whatsnew": "Added option to skip steamGuard, added dynamic login time evaluation and wait time conversion, added data.json, changed filestructure, start.js -> controller.js, changed updater functionality, lastcomment functionality revamp, added dynamic help message, cleared up startup logs, made changes and other bugfixes.",
     "timesloggedin": 0,

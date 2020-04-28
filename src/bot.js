@@ -6,7 +6,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
   const SteamUser = require('steam-user');
   const SteamCommunity = require('steamcommunity');
   const SteamID = require('steamid');
-  var start = require('../start.js')
+  var updater = require('../updater.js')
   var controller = require("./controller.js")
   const config = require('../config.json');
   const extdata = require('./data.json');
@@ -38,7 +38,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
     if (config.skipSteamGuard === true) {
       if (loginindex > 1) {
         controller.accisloggedin = true; //set to true to log next account in
-        start.skippedaccounts.push(loginindex)
+        updater.skippedaccounts.push(loginindex)
         return;
       } else {
         logger("Even with skipSteamGuard enabled, the first account always has to be logged in.", true)
@@ -58,7 +58,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           logger("The first account always has to be logged in!\nPlease restart and provide a steamGuard code!", true) 
         } else {
           controller.accisloggedin = true; //set to true to log next account in
-          start.skippedaccounts.push(loginindex) }
+          updater.skippedaccounts.push(loginindex) }
       } else {
         callback(code) }
       stdin.pause() //stop reading
@@ -134,6 +134,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
           if (ownercheck) var resetcooldowntext = `\nType '!resetcooldown' to clear your cooldown.`; else var resetcooldowntext = "";
           if (ownercheck) var unfriendtext = `\nType '!unfriend profileid' to unfriend this user from the bot.`; else var unfriendtext = "";
+          if (ownercheck) var restarttext = `\nType '!restart' to restart the bot.`; else var restarttext = "";
           if (ownercheck) var evaltext = `\nType '!eval javascript code' to run javascript code from the steam chat.`; else var evaltext = "";
           if (config.yourgroup.length > 1) var yourgrouptext = "\nJoin my '!group!'"; else var yourgrouptext = "";
           bot.chatMessage(steamID, `
@@ -141,11 +142,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
             Type '!ping' for a pong!
             Type '!info' to get a few informations about the bot and you.${resetcooldowntext}${unfriendtext}
             Type '!about' for credit (botcreator).
-            Type '!owner' to check out my owner's profile!${evaltext}
+            Type '!owner' to check out my owner's profile!${evaltext}${restarttext}
             ${yourgrouptext}
           `)
           break;
         case '!comment':
+          if (updater.activeupdate == true) return bot.chatMessage(steamID, "The bot is currently waiting for the last requested comment to be finished in order to download an update!\nPlease wait a moment and try again.");
           if (config.allowcommentcmdusage === false && !config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return bot.chatMessage(steamID, "The bot owner set this command to owners only.\nType !owner to get information who the owner is.\nType !about to get a link to the bot creator.") 
           if (config.commentcooldown !== 0) { //is the cooldown enabled?             
             if ((Date.now() - lastcomment[lastcommentsteamID].time) < (config.commentcooldown * 60000)) { //check if user has cooldown applied
@@ -156,7 +158,11 @@ module.exports.run = async (logOnOptions, loginindex) => {
               if (remainingcooldown > 120) { var remainingcooldown = remainingcooldown / 60; var remainingcooldownunit = "hours" }
 
               bot.chatMessage(steamID, `You requested a comment in the last ${config.commentcooldown} minutes. Please wait the remaining ${controller.round(remainingcooldown, 2)} ${remainingcooldownunit}.`) //send error message
-              return; }}
+              return; }
+            } else {
+              if (controller.activecommentprocess.indexOf(String(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) !== -1) {
+                return bot.chatMessage(steamID, "You are currently recieving previously requested comments. Please wait for them to be completed.") }
+            }
           if (config.globalcommentcooldown !== 0) { //is the cooldown enabled?
             if (commentedrecently === true) { 
               bot.chatMessage(steamID, `Someone else requested a comment in the last ${config.globalcommentcooldown}ms. Please wait a moment.`) //send error message
@@ -210,7 +216,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "hours" }
                 bot.chatMessage(steamID, `Estimated wait time for ${numberofcomments} comments: ${Number(Math.round(waittime+'e'+3)+'e-'+3)} ${waittimeunit}.`)
 
-                //controller.commenteverywhere(steamID, numberofcomments) //Let all other accounts comment if mode 2 is activated
+                controller.commenteverywhere(steamID, numberofcomments) //Let all other accounts comment if mode 2 is activated
               }
 
             if (config.globalcommentcooldown !== 0) {
@@ -266,6 +272,11 @@ module.exports.run = async (logOnOptions, loginindex) => {
             if (controller.botobject[i].myFriends[new SteamID(args[0])] === 3) { //check if provided user is really a friend
               controller.botobject[i].removeFriend(new SteamID(args[0])) }})
           bot.chatMessage(steamID, `Removed friend ${args[0]} from all bots.`)
+          break;
+        case '!restart':
+          if (!config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return bot.chatMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
+          bot.chatMessage(steamID, 'Restarting...')
+          require('../start.js').restart()
           break;
         case '!eval':
           if (config.enableevalcmd !== true) return bot.chatMessage(steamID, "The eval command has been turned off!")

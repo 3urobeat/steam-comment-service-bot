@@ -1,7 +1,7 @@
 //Code by: https://github.com/HerrEurobeat/ 
 //If you are here, you are wrong. Open config.json and configure everything there!
 
-var start = require('../start.js')
+var updater = require('../updater.js')
 var b = require('./bot.js');
 const logininfo = require('../logininfo.json');
 const config = require('../config.json');
@@ -18,6 +18,7 @@ var bootstart = 0;
 var bootstart = d();
 var steamGuardInputTime = 0;
 var readyafter = 0
+var activecommentprocess = new Array();
 
 //Remove version number from config as it was moved to data.json in version 2.6
 if (config.version) {
@@ -28,6 +29,7 @@ if (config.version) {
 
 /* ------------ Functions: ------------ */
 var logger = (str, nodate) => { //Custom logger
+    var str = String(str)
     if (str.toLowerCase().includes("error")) { var str = `\x1b[31m${str}\x1b[0m` }
     if (str.includes("Comment(s) requested")) { var str = `\x1b[32m${str}\x1b[0m` }
 
@@ -51,6 +53,7 @@ var quotes = fs.readFileSync('quotes.txt', 'utf8').split("\n"); //get all quotes
 
 var commenteverywhere = (steamID, numberofcomments) => { //function to let all bots comment
     var failedcomments = []
+    module.exports.activecommentprocess.push(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())
 
     function comment(k, i) {
         setTimeout(() => {
@@ -77,7 +80,10 @@ var commenteverywhere = (steamID, numberofcomments) => { //function to let all b
                         fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
                             if (err) logger("delete user from lastcomment.json error: " + err) }) }} }
 
-                if (i == numberofcomments - 1) botobject[0].chatMessage(steamID, `All comments have been sent. Failed: ${failedcomments.length}/${numberofcomments}`); //stop if this execution is more than wanted -> stop loop
+                if (i == numberofcomments - 1) {
+                    botobject[0].chatMessage(steamID, `All comments have been sent. Failed: ${failedcomments.length}/${numberofcomments}`); //stop if this execution is more than wanted -> stop loop
+                    let value = String(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())
+                    module.exports.activecommentprocess = activecommentprocess.filter(item => item !== value) }
             })
         }, config.commentdelay * k); //delay every comment
     }
@@ -102,6 +108,7 @@ module.exports={
     communityobject,
     botobject, 
     commenteverywhere,
+    activecommentprocess,
     quotes,
     round,
     accisloggedin,
@@ -120,9 +127,9 @@ if (config.allowcommentcmdusage === false && new SteamID(config.ownerid[0]).isVa
 if (extdata.firststart === true) logger("What's new: " + extdata.whatsnew)
 
 if (extdata.timesloggedin < 5) { //only use new evaluation method when the bot was started more than 5 times
-    var estimatedlogintime = ((config.logindelay * (Object.keys(logininfo).length - 1 - start.skippedaccounts.length)) / 1000) + 3
+    var estimatedlogintime = ((config.logindelay * (Object.keys(logininfo).length - 1 - updater.skippedaccounts.length)) / 1000) + 3
 } else {
-    var estimatedlogintime = (extdata.totallogintime / extdata.timesloggedin) * (Object.keys(logininfo).length - start.skippedaccounts.length) }
+    var estimatedlogintime = (extdata.totallogintime / extdata.timesloggedin) * (Object.keys(logininfo).length - updater.skippedaccounts.length) }
 
 var estimatedlogintimeunit = "seconds"
 if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "minutes" }
@@ -131,7 +138,7 @@ if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60;
 logger(`Logging in... Estimated wait time: ${round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`)
 
 Object.keys(logininfo).forEach((k, i) => { //log all accounts in with the logindelay
-    if (start.skippedaccounts.includes(i)) return; //if this iteration exists in the skippedaccounts array, automatically skip acc again
+    if (updater.skippedaccounts.includes(i)) return; //if this iteration exists in the skippedaccounts array, automatically skip acc again
     setTimeout(() => {
         var logOnOptions = {
             accountName: logininfo[k][0],
@@ -140,7 +147,7 @@ Object.keys(logininfo).forEach((k, i) => { //log all accounts in with the logind
             machineName: "3urobeat's Commment Bot"
         };
         b.run(logOnOptions, i);
-    }, config.logindelay * (i - start.skippedaccounts.length));
+    }, config.logindelay * (i - updater.skippedaccounts.length));
 })
 
 if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' && process.env.USERNAME === 'tomgo') && !(process.env.USER === 'pi' && process.env.LOGNAME === 'pi') && !(process.env.USER === 'tom' && require('os').hostname() === 'Toms-Thinkpad')) { //remove myself from config on different computer
@@ -158,7 +165,7 @@ if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' && process.env.USERNAME ===
 
 /* ------------ Everything logged in: ------------ */
 var readyinterval = setInterval(() => { //log startup to console
-    if (Object.keys(communityobject).length === Object.keys(logininfo).length - start.skippedaccounts.length) {       
+    if (Object.keys(communityobject).length === Object.keys(logininfo).length - updater.skippedaccounts.length) {       
         logger(' ', true)
         logger('*------------------------------------------*', true)
         logger(`\x1b[96m${logininfo.bot0[0]}\x1b[0m version ${extdata.version} by 3urobeat logged in.`, true)
@@ -184,7 +191,7 @@ var readyinterval = setInterval(() => { //log startup to console
             extdata.totallogintime += readyafter / Object.keys(communityobject).length //get rough logintime of only one account
             logger('*------------------------------------------*', true)
             logger(' ', true)
-            if (start.skippedaccounts.length > 0) logger(`Skipped Accounts: ${start.skippedaccounts.length}/${Object.keys(logininfo).length}`, true)
+            if (updater.skippedaccounts.length > 0) logger(`Skipped Accounts: ${updater.skippedaccounts.length}/${Object.keys(logininfo).length}`, true)
 
             if (isNaN(config.ownerid[0]) || new SteamID(config.ownerid[0]).isValid() === false) { 
                 logger("[\x1b[31mWarning\x1b[0m] You haven't set an correct ownerid in the config!", true) }
