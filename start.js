@@ -10,7 +10,7 @@ var https = require("https")
 if (fs.existsSync('./src/data.json')) {
     var data = require('./src/data.json')
 } else {
-    var data = { filetostart: "./updater.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/updater.js" } //relevant for update from <2.6
+    var data = { filetostart: "./updater.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/updater.js" } //relevant for update from <2.6
 }
 
 if (!fs.existsSync(data.filetostart)) {
