@@ -13,23 +13,6 @@ if (fs.existsSync('./src/data.json')) {
     var data = { filetostart: "./updater.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/updater.js" } //relevant for update from <2.6
 }
 
-if (!fs.existsSync(data.filetostart)) {
-    output = ""
-    try {
-        https.get(data.filetostarturl, function(res){
-            res.setEncoding('utf8');
-            res.on('data', function (chunk) {
-                output += chunk });
-
-            res.on('end', () => {
-                fs.writeFile(data.filetostart, output, err => {
-                    if (err) return logger(err, true)
-                    require(data.filetostart) })}) }); //start
-    } catch (err) { logger('start.js get updater.js function Error: ' + err, true) }
-} else {
-    require(data.filetostart) //Just passing startup to updater
-}
-
 var restart = (args) => { //Restart the application
     console.log("Restarting application...")
 
@@ -51,3 +34,20 @@ var stop = () => {
 module.exports={
     restart,
     stop }
+
+if (!fs.existsSync(data.filetostart)) {
+    output = ""
+    try {
+        https.get(data.filetostarturl, function(res){
+            res.setEncoding('utf8');
+            res.on('data', function (chunk) {
+                output += chunk });
+
+            res.on('end', () => {
+                fs.writeFile(data.filetostart, output, err => {
+                    if (err) return logger(err, true)
+                    require(data.filetostart) })}) }); //start
+    } catch (err) { logger('start.js get updater.js function Error: ' + err, true) }
+} else {
+    require(data.filetostart) //Just passing startup to updater
+}
