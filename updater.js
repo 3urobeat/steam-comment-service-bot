@@ -144,11 +144,11 @@ var checkforupdate = (forceupdate) => {
                 
                                 Object.keys(output).forEach(e => {
                                     if (!Object.keys(config).includes(e)) {
-                                        config[e] = output[e] }
+                                        config[e] = output[e] } });
                                         
-                                    fs.writeFile("./config.json", JSON.stringify(config, null, 4), err => {
-                                        if (err) logger(err, true) 
-                                        datajson(); }) });
+                                fs.writeFile("./config.json", JSON.stringify(config, null, 4), err => {
+                                    if (err) logger(err, true) 
+                                    datajson(); })
                             })})
                     } catch (err) { logger('get config.json function Error: ' + err, true) }} 
 
@@ -179,8 +179,6 @@ var checkforupdate = (forceupdate) => {
                                 output += chunk });
 
                             res.on('end', () => {
-                                output = JSON.parse(output)
-
                                 fs.writeFile("./src/controller.js", JSON.stringify(output, null, 4), err => {
                                     if (err) logger(err, true);
                                     updaterjs(); })}) });
