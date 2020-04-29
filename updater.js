@@ -179,7 +179,7 @@ var checkforupdate = (forceupdate) => {
                                 output += chunk });
 
                             res.on('end', () => {
-                                fs.writeFile("./src/controller.js", JSON.stringify(output, null, 4), err => {
+                                fs.writeFile("./src/controller.js", output, err => {
                                     if (err) logger(err, true);
                                     updaterjs(); })}) });
                     } catch (err) { logger('get controller.js function Error: ' + err, true) }} 
