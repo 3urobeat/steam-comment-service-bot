@@ -15,9 +15,8 @@ if (fs.existsSync('./src/data.json')) {
 
 var restart = (args) => { //Restart the application
     console.log("Restarting application...")
-    var data = require('./src/data.json')
 
-    var controller = require(data.botobjectfile)
+    var controller = require('./src/controller.js')
 
     Object.keys(controller.botobject).forEach((e) => { //log out all bots
         controller.botobject[e].logOff() })
