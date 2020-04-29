@@ -34,28 +34,31 @@ var checkforupdate = (forceupdate) => {
                 logger("", true)
 
                 logger('Starting the automatic updater...')
-                var controller = require('./src/controller.js')
                 module.exports.activeupdate = true
                 let output = '';
 
-                var activecommentinterval = setInterval(() => {
-                    if (controller.activecommentprocess == false) { 
-                        setTimeout(() => {
-                            botjs();
-                            clearInterval(activecommentinterval);  
-                        }, 1000); }
-                }, 1000);
+                if (botisloggedin == true) { //if bot is already logged in we need to check for ongoing comment processes and log all bots out when finished
+                    var controller = require('./src/controller.js')
 
-                if (botisloggedin == true) {
-                    Object.keys(controller.botobject).forEach((e) => {
-                        controller.botobject[e].logOff() }) 
+                    var activecommentinterval = setInterval(() => {
+                        if (controller.activecommentprocess == false) { 
+                            setTimeout(() => {
+                                Object.keys(controller.botobject).forEach((e) => {
+                                    controller.botobject[e].logOff() })
+            
+                                var controller = require.resolve('./src/controller.js')
+                                delete require.cache[controller]
+                                var bot = require.resolve('./src/bot.js')
+                                delete require.cache[bot]
+            
+                                botisloggedin = false
 
-                    var controller = require.resolve('./src/controller.js')
-                    delete require.cache[controller]
-                    var bot = require.resolve('./src/bot.js')
-                    delete require.cache[bot]
-
-                    botisloggedin = false
+                                botjs();
+                                clearInterval(activecommentinterval);
+                            }, 1000) }
+                    }, 1000) 
+                } else {
+                    botjs();
                 }
 
                 function botjs() {
@@ -130,7 +133,7 @@ var checkforupdate = (forceupdate) => {
                     output = ""
                     try {
                         logger("Updating config.json...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/config.json", function(res){
+                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/config.json", function(res){
                             res.setEncoding('utf8');
                             res.on('data', function (chunk) {
                                 output += chunk });
