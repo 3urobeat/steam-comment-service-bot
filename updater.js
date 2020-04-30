@@ -24,7 +24,7 @@ var checkforupdate = (forceupdate) => {
     try {
         var extdata = require('./src/data.json')
 
-        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/tree/master/src/data.json", function(res){
+        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/data.json", function(res){
         res.setEncoding('utf8');
         res.on('data', function(chunk){
             var onlineversion= JSON.parse(chunk).version
