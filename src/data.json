@@ -1,5 +1,5 @@
 {
-    "version": "2.6",
+    "version": "2.6.1",
     "filetostart": "./updater.js",
     "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/updater.js",
     "botobjectfile": "./src/controller.js",
