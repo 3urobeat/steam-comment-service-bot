@@ -17,7 +17,8 @@ var restart = (args, nologOff) => { //Restart the application
     console.log("Restarting application...")
 
     if (nologOff != true) {
-        var controller = require("./src/controller.js")
+        var data = require('./src/data.json')
+        var controller = require(data.botobjectfile)
 
         Object.keys(controller.botobject).forEach((e) => { //log out all bots
             controller.botobject[e].logOff() })
