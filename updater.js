@@ -24,7 +24,7 @@ var checkforupdate = (forceupdate) => {
     try {
         var extdata = require('./src/data.json')
 
-        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/data.json", function(res){
+        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/tree/master/src/data.json", function(res){
         res.setEncoding('utf8');
         res.on('data', function(chunk){
             var onlineversion= JSON.parse(chunk).version
@@ -65,7 +65,7 @@ var checkforupdate = (forceupdate) => {
                     output = ""
                     try {
                         logger("Updating bot.js...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/bot.js", function(res){
+                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/bot.js", function(res){
                             res.setEncoding('utf8');
                             res.on('data', function (chunk) {
                                 output += chunk });
@@ -80,7 +80,7 @@ var checkforupdate = (forceupdate) => {
                     output = ""
                     try {
                         logger("Updating start.js...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/start.js", function(res){
+                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/start.js", function(res){
                             res.setEncoding('utf8');
                             res.on('data', function (chunk) {
                                 output += chunk });
@@ -97,7 +97,7 @@ var checkforupdate = (forceupdate) => {
                         if (err) logger(err, true) })
                     try {
                         logger("Updating package.json...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/package.json", function(res){
+                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/package.json", function(res){
                             res.setEncoding('utf8');
                             res.on('data', function (chunk) {
                                 output += chunk });
@@ -116,7 +116,7 @@ var checkforupdate = (forceupdate) => {
                         if (err) logger(err, true) })
                     try {
                         logger("Updating package-lock.json...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/package-lock.json", function(res){
+                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/package-lock.json", function(res){
                             res.setEncoding('utf8');
                             res.on('data', function (chunk) {
                                 output += chunk });
@@ -133,7 +133,7 @@ var checkforupdate = (forceupdate) => {
                     output = ""
                     try {
                         logger("Updating config.json...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/config.json", function(res){
+                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/config.json", function(res){
                             res.setEncoding('utf8');
                             res.on('data', function (chunk) {
                                 output += chunk });
@@ -156,7 +156,7 @@ var checkforupdate = (forceupdate) => {
                     output = ""
                     try {
                         logger("Updating data.json...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/data.json", function(res){
+                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/data.json", function(res){
                             res.setEncoding('utf8');
                             res.on('data', function (chunk) {
                                 output += chunk });
@@ -173,7 +173,7 @@ var checkforupdate = (forceupdate) => {
                     output = ""
                     try {
                         logger("Updating controller.js...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/controller.js", function(res){
+                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/controller.js", function(res){
                             res.setEncoding('utf8');
                             res.on('data', function (chunk) {
                                 output += chunk });
@@ -188,7 +188,7 @@ var checkforupdate = (forceupdate) => {
                     output = ""
                     try {
                         logger("Updating updater.js...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/updater.js", function(res){
+                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/updater.js", function(res){
                             res.setEncoding('utf8');
                             res.on('data', function (chunk) {
                                 output += chunk });
