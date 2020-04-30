@@ -13,19 +13,20 @@ if (fs.existsSync('./src/data.json')) {
     var data = { filetostart: "./updater.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/updater.js" } //relevant for update from <2.6
 }
 
-var restart = (args) => { //Restart the application
+var restart = (args, nologOff) => { //Restart the application
     console.log("Restarting application...")
-    var data = require('./src/data.json')
 
-    var controller = require(data.botobjectfile)
+    if (nologOff == true) {
+        var controller = require("./src/controller.js")
 
-    Object.keys(controller.botobject).forEach((e) => { //log out all bots
-        controller.botobject[e].logOff() })
+        Object.keys(controller.botobject).forEach((e) => { //log out all bots
+            controller.botobject[e].logOff() })
+    }
 
     Object.keys(require.cache).forEach(function(key) { delete require.cache[key] }) //clear cache to include file changes
 
     setTimeout(() => {
-        require(data.filetostart).restartdata(args) //start again after 2.5 sec
+        require("./updater.js").restartdata(args) //start again after 2.5 sec
     }, 2500) }
 
 var stop = () => {

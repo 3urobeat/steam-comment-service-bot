@@ -200,7 +200,7 @@ var checkforupdate = (forceupdate) => {
                                     logger("Update finished. Restarting myself in 5 seconds...", true); 
                                     setTimeout(() => {
                                         module.exports.activeupdate = false
-                                        require('./start').restart(skippedaccounts);
+                                        require('./start').restart(skippedaccounts, true);
                                     }, 5000); })}) }); //restart the bot
                     } catch (err) { logger('get updater.js function Error: ' + err, true) }}
             } else {
