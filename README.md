@@ -21,7 +21,7 @@ Continue reading for a detailed setup guide **including the `Additional Informat
 
 **Disclaimer!** 
 >I am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.  
-If you, the user, download or use this application, you agree that only you are responsible for any action.  
+If you, the user, downloads or use this application, you agree that only you are responsible for any action.  
 
 ## Requirements
 

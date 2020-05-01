@@ -3,7 +3,7 @@
 
 var fs = require('fs')
 var https = require("https")
-var skippedaccounts = new Array();
+var skippedaccounts = []
 var botisloggedin = false
 var activeupdate = false
 var lastupdatecheckinterval = Date.now()
@@ -18,7 +18,8 @@ var logger = (str, nodate) => { //Custom logger
     fs.appendFileSync('./output.txt', string.replace(/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]/g, '') + '\n', err => { //Credit: https://github.com/Filirom1/stripcolorcodes
       if(err) logger('logger function appendFileSync error: ' + err) }) }
 
-var restartdata = (data) => { skippedaccounts = data }
+var restartdata = (data) => {
+    module.exports.skippedaccounts = data }
 
 var checkforupdate = (forceupdate) => {
     try {
@@ -38,28 +39,41 @@ var checkforupdate = (forceupdate) => {
                 let output = '';
 
                 if (botisloggedin == true) { //if bot is already logged in we need to check for ongoing comment processes and log all bots out when finished
-                    var controller = require('./src/controller.js')
 
                     var activecommentinterval = setInterval(() => {
+                        var controller = require('./src/controller.js')
+
                         if (controller.activecommentprocess == false) { 
+                            logger("Logging off your accounts...", true)
+                            Object.keys(controller.botobject).forEach((e, i) => {
+                                controller.botobject[e].logOff() }) }
+
                             setTimeout(() => {
-                                Object.keys(controller.botobject).forEach((e) => {
-                                    controller.botobject[e].logOff() })
-            
-                                var controller = require.resolve('./src/controller.js')
-                                delete require.cache[controller]
-                                var bot = require.resolve('./src/bot.js')
-                                delete require.cache[bot]
-            
                                 botisloggedin = false
 
-                                botjs();
+                                updaterjs();
                                 clearInterval(activecommentinterval);
-                            }, 1000) }
-                    }, 1000) 
+                            }, 2500);
+                    }, 2500) 
                 } else {
-                    botjs();
+                    updaterjs();
                 }
+
+                function updaterjs() { //update updater first to fix issues in updater
+                    output = ""
+                    try {
+                        logger("Updating updater.js...", true)
+                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/updater.js", function(res){
+                            res.setEncoding('utf8');
+                            res.on('data', function (chunk) {
+                                output += chunk });
+
+                            res.on('end', () => {
+                                fs.writeFile("./updater.js", output, err => {
+                                    if (err) logger(err, true)
+                                    botjs();
+                                })}) });
+                    } catch (err) { logger('get updater.js function Error: ' + err, true) }}
 
                 function botjs() {
                     output = ""
@@ -139,6 +153,7 @@ var checkforupdate = (forceupdate) => {
                                 output += chunk });
                 
                             res.on('end', () => {
+                                var config = require("./config.json")
                                 output = JSON.parse(output)
                                 extdata.version = output.version
                 
@@ -148,9 +163,25 @@ var checkforupdate = (forceupdate) => {
 
                                 fs.writeFile("./config.json", JSON.stringify(config, null, 4), err => {
                                     if (err) logger(err, true) 
-                                    datajson(); })
+                                    controllerjs(); })
                             })})
                     } catch (err) { logger('get config.json function Error: ' + err, true) }} 
+
+                function controllerjs() {
+                    output = ""
+                    try {
+                        logger("Updating controller.js...", true)
+                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/controller.js", function(res){
+                            res.setEncoding('utf8');
+                            res.on('data', function (chunk) {
+                                output += chunk });
+
+                            res.on('end', () => {
+                                fs.writeFile("./src/controller.js", output, err => {
+                                    if (err) logger(err, true);
+
+                                    datajson(); })}) });
+                    } catch (err) { logger('get controller.js function Error: ' + err, true) }}
 
                 function datajson() {
                     output = ""
@@ -166,43 +197,12 @@ var checkforupdate = (forceupdate) => {
 
                                 fs.writeFile("./src/data.json", JSON.stringify(output, null, 4), err => {
                                     if (err) logger(err, true) 
-                                    controllerjs(); })}) });
-                    } catch (err) { logger('get data.json function Error: ' + err, true) }}
-                
-                function controllerjs() {
-                    output = ""
-                    try {
-                        logger("Updating controller.js...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/controller.js", function(res){
-                            res.setEncoding('utf8');
-                            res.on('data', function (chunk) {
-                                output += chunk });
-
-                            res.on('end', () => {
-                                fs.writeFile("./src/controller.js", output, err => {
-                                    if (err) logger(err, true);
-                                    updaterjs(); })}) });
-                    } catch (err) { logger('get controller.js function Error: ' + err, true) }} 
-
-                function updaterjs() {
-                    output = ""
-                    try {
-                        logger("Updating updater.js...", true)
-                        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/updater.js", function(res){
-                            res.setEncoding('utf8');
-                            res.on('data', function (chunk) {
-                                output += chunk });
-
-                            res.on('end', () => {
-                                fs.writeFile("./updater.js", output, err => {
-                                    if (err) logger(err, true)
-
-                                    logger("Update finished. Restarting myself in 5 seconds...", true); 
+                                    logger("Update finished. Restarting myself in 5 seconds...", true);
                                     setTimeout(() => {
                                         module.exports.activeupdate = false
                                         require('./start').restart(skippedaccounts, true);
                                     }, 5000); })}) }); //restart the bot
-                    } catch (err) { logger('get updater.js function Error: ' + err, true) }}
+                    } catch (err) { logger('get data.json function Error: ' + err, true) }}
             } else {
                 if (botisloggedin == false) require('./src/controller.js'); botisloggedin = true //no update, start bot
             }

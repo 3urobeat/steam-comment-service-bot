@@ -276,7 +276,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
         case '!restart':
           if (!config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return bot.chatMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
           bot.chatMessage(steamID, 'Restarting...')
-          require('../start.js').restart()
+          require('../start.js').restart(updater.skippedaccounts)
           break;
         case '!eval':
           if (config.enableevalcmd !== true) return bot.chatMessage(steamID, "The eval command has been turned off!")
