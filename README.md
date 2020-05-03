@@ -29,7 +29,7 @@ If you, the user, downloads or use this application, you agree that only you are
 
 ## Downloading
 
-Click here: [Download](https://github.com/HerrEurobeat/steam-bots/archive/master.zip)  
+Click here: [Download](https://github.com/HerrEurobeat/steam-comment-service-bot/archive/master.zip)  
 Extract the zip and open the `steam-comment-service-bot` folder.
 
 ## Setting the bot up & Configuring
