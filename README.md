@@ -8,7 +8,7 @@
 The bot will be online in form of an own account and operate through direct messages.  
 To see a list of all commands the user can send the bot a message: `!help`.  
 
-[If you prefer a setup tutorial in the form of a **YouTube video**, click me!](https://www.youtube.com/watch?v=gmA-ccD05g4)  
+[If you prefer a setup and usage tutorial in the form of a **YouTube video**, click me!](https://www.youtube.com/watch?v=gmA-ccD05g4)  
 
 [Click here to see my 24/7 comment bot in action!](https://steamcommunity.com/id/3urobeatscommentbot)  
 If you want to see commits of code that is unstable or not yet tested, visit the beta-testing branch of this repository.
