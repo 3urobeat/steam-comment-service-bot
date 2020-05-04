@@ -76,9 +76,9 @@ var commenteverywhere = (steamID, numberofcomments) => { //function to let all b
                         if (botobject[k].myFriends[new SteamID(steamID.getSteam3RenderedID()).getSteamID64()] === 3) {
                             lastcomment[new SteamID(steamID.getSteam3RenderedID()).getSteamID64().toString() + i] = { //add i to steamID to allow multiple entries for one steamID
                                 time: Date.now(),
-                                bot: i }
+                                bot: botobject[k].steamID.accountid }
                         fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
-                            if (err) logger("delete user from lastcomment.json error: " + err) }) }} }
+                            if (err) logger("add user to lastcomment.json from updateeverywhere() error: " + err) }) }} }
 
                 if (i == numberofcomments - 1) {
                     botobject[0].chatMessage(steamID, `All comments have been sent. Failed: ${failedcomments.length}/${numberofcomments}`); //stop if this execution is more than wanted -> stop loop

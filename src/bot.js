@@ -276,7 +276,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
         case '!restart':
           if (!config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return bot.chatMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
           bot.chatMessage(steamID, 'Restarting...')
-          require('../start.js').restart()
+          require('../start.js').restart(updater.skippedaccounts)
           break;
         case '!eval':
           if (config.enableevalcmd !== true) return bot.chatMessage(steamID, "The eval command has been turned off!")
@@ -319,7 +319,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
       logger(`[${thisbot}] Added User: ` + new SteamID(steamID.getSteam3RenderedID()).getSteamID64())
       if (loginindex === 0 || config.mode === 1) {
         bot.chatMessage(steamID, 'Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more info!') }
-      if (configgroup64id.length > 1 && Object.keys(bot.myGroups).includes(configgroup64id)) bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(configgroup64id)); //invite the user to your group
+      if (configgroup64id.length > 1 && Object.keys(bot.myGroups).includes(configgroup64id)) bot.inviteToGroup(steamID, new SteamID(configgroup64id)); //invite the user to your group
 
       lastcomment[new SteamID(steamID.getSteam3RenderedID()).getSteamID64() + loginindex] = { //add user to lastcomment file in order to also unfriend him when he never used !comment
         time: Date.now() - (config.commentcooldown * 60000), //subtract unfriendtime to enable comment usage immediately
