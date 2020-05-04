@@ -1,4 +1,4 @@
-<span align="center">
+<div align="center" markdown=1>
 	<p align="center"><img width=45% src="https://3urobeat.zapto.org/steamlogo3.png"></p>
 	<strong>Request multiple profile comments by texting a bot network!</strong>
 	<br>See how to set up the bot and customize it below.<br>
@@ -12,4 +12,4 @@
 		[Steam](https://google.de)
 	</p>
 	
-</span>
+</div>
