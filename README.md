@@ -6,8 +6,8 @@
 </div>
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[![YouTube](https://img.shields.io/badge/YouTube-Tutorial-red)](https://google.de)
-![nodejs](https://img.shields.io/badge/node.js-v12-brightgreen)
-![Star](https://img.shields.io/badge/-Give%20this%20repo%20a%20star!-yellow)
-[![Steam Group](https://img.shields.io/badge/Steam%20Group-Join!-blue)](https://google.de)
-[![Donate](https://img.shields.io/badge/donate-%241-orange)](https://google.de)
+[![YouTube](https://img.shields.io/badge/YouTube-Tutorial-red)](https://youtu.be/gmA-ccD05g4)
+[![nodejs](https://img.shields.io/badge/node.js-v12-brightgreen)](https://nodejs.org/)
+[![Star](https://img.shields.io/badge/-Give%20this%20repo%20a%20star!-yellow)](https://github.com/HerrEurobeat/steam-comment-service-bot)
+[![Steam Group](https://img.shields.io/badge/Steam%20Group-Join!-blue)](https://steamcommunity.com/groups/3urobeatGroup)
+[![Donate](https://img.shields.io/badge/donate-%241-orange)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VAVVKE4L962H6&source=url)
