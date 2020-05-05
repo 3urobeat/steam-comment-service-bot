@@ -18,7 +18,7 @@
   <a href="#download-">Download</a> •
   <a href="#setup-&-config-">Setup & Config</a> •
   <a href="#usage-">Usage</a> •
-  <a href="#additional-information-">Additional information</a> •
+  <a href="#additional-informations-">Additional information</a> •
   <a href="#credits">Credits</a>
 </p>
   
