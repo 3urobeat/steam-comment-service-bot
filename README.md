@@ -38,7 +38,7 @@ If you would like to see my 24/7 comment bot in action, [click here!](https://st
 **Disclaimer!**  
 >I, the developer, am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.  
   
-## **Download:** [Tutorial section](https://youtu.be/gmA-ccD05g4?t=12)  
+## **Download:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=12)  
 Click here: [Download](https://github.com/HerrEurobeat/steam-comment-service-bot/archive/master.zip)  
 Extract the zip and open the `steam-comment-service-bot` folder.  
   
@@ -46,13 +46,13 @@ Have at least node.js version 12 installed: [Download](https://nodejs.org)
 To get your version number type `node --version` in your console or terminal.  
 If you need a tutorial for this specific node part, [click here.](https://youtu.be/gmA-ccD05g4?t=35)  
   
-## **Setup & Configuration:** [Tutorial section](https://youtu.be/gmA-ccD05g4?t=111)  
+## **Setup & Configuration:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=111)  
 Open a power shell/terminal in the `steam-comment-service-bot` folder.  
   
 Visit the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki) for more detailed documentations.
 
-## **Usage:** [Tutorial section](https://youtu.be/gmA-ccD05g4?t=385)  
+## **Usage:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=385)  
 
-## **Additional informations:** [Tutorial section](https://google.de)  
+## **Additional informations:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=611)  
 
 ## **Credits**  
