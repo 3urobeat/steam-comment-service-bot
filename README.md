@@ -14,14 +14,45 @@
 <p align="center">Click on a badge to learn more.</p>
 
 <p align="center">
-  <a href="#key-features">Key Features</a> •
+  <a href="#introduction">Introduction</a> •
   <a href="#download">Download</a> •
   <a href="#setup-&-config">Setup & Config</a> •
   <a href="#usage">Usage</a> •
   <a href="#additional-information">Additional information</a> •
   <a href="#credits">Credits</a>
 </p>
+  
+[GIF showcase placeholder]  
+  
+## **Introduction**  
+* Request many profile comments directly from the steam chat  
+* Easily host multiple steam accounts and control them from **one** console and chat with this bot cluster  
+* Send comments to other steam profiles  
+* Apply cooldowns & customize nearly any value  
+* Advertise your group & automatically invite users to it  
+  
+If you would like to see a detailed tutorial in the form of a video, [click here!](https://www.youtube.com/watch?v=gmA-ccD05g4)  
+This written tutorial will also contain a tutorial link for each specific part.
+If you would like to see my 24/7 comment bot in action, [click here!](https://steamcommunity.com/id/3urobeatscommentbot)  
+  
+**Disclaimer!**  
+>I, the developer, am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.  
+  
+## **Download:** [Tutorial section](https://youtu.be/gmA-ccD05g4?t=12)  
+Click here: [Download](https://github.com/HerrEurobeat/steam-comment-service-bot/archive/master.zip)  
+Extract the zip and open the `steam-comment-service-bot` folder.  
+  
+Have at least node.js version 12 installed: [Download](https://nodejs.org)  
+To get your version number type `node --version` in your console or terminal.  
+If you need a tutorial for this specific node part, [click here.](https://youtu.be/gmA-ccD05g4?t=35)  
+  
+## **Setup & Configuration:** [Tutorial section](https://youtu.be/gmA-ccD05g4?t=111)  
+Open a power shell/terminal in the `steam-comment-service-bot` folder.  
+  
+Visit the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki) for more detailed documentations.
 
-[GIF showcase placeholder]
+## **Usage:** [Tutorial section](https://youtu.be/gmA-ccD05g4?t=385)  
 
-##Download
+## **Additional informations:** [Tutorial section](https://google.de)  
+
+## **Credits**  
