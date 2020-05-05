@@ -12,3 +12,16 @@
 [![Steam Group](https://img.shields.io/badge/Steam%20Group-Join!-blue)](https://steamcommunity.com/groups/3urobeatGroup)
 [![Donate](https://img.shields.io/badge/donate-%241-orange)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VAVVKE4L962H6&source=url)
 <p align="center">Click on a badge to learn more.</p>
+
+<p align="center">
+  <a href="#key-features">Key Features</a> •
+  <a href="#download">Download</a> •
+  <a href="#setup-&-config">Setup & Config</a> •
+  <a href="#usage">Usage</a> •
+  <a href="#additional-information">Additional information</a> •
+  <a href="#credits">Credits</a>
+</p>
+
+[GIF showcase placeholder]
+
+##Download
