@@ -15,10 +15,10 @@
 
 <p align="center">
   <a href="#introduction">Introduction</a> •
-  <a href="#download">Download</a> •
-  <a href="#setup-&-config">Setup & Config</a> •
-  <a href="#usage">Usage</a> •
-  <a href="#additional-information">Additional information</a> •
+  <a href="#download-">Download</a> •
+  <a href="#setup-&-config-">Setup & Config</a> •
+  <a href="#usage-">Usage</a> •
+  <a href="#additional-information-">Additional information</a> •
   <a href="#credits">Credits</a>
 </p>
   
