@@ -92,7 +92,8 @@ Please visit the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bo
 #### **Steam limitations**
 Steam sadly has some strict restrictions for commenting.  
 Read all of them here: [Steam Support](https://support.steampowered.com/kb_article.php?ref=3330-IAGK-7663)  
-**Important**: If you use *limited accounts* (<$5 spend) the user will need to send all of these accounts a friend request before requesting a comment!
+**Important**: If you use *limited accounts* (<$5 spend) the user will need to send all of these accounts a friend request before requesting a comment!  
+Please be also advised that in order to comment on a profile the accounts need to have at least **email steam guard** activated. There are generators out there that can directly generate accounts with steam guard.
 
 #### **License**
 As the **license** already stated: If you want to use code from this repository in your project, feel free to do that as long as you **include credit** to this repository!  
