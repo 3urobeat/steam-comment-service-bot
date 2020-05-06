@@ -86,6 +86,9 @@ If you encountered a **bug**, you **need help** or wish a feature to be added, p
 If you are interested in beta builds of this project, visit the [beta-testing branch.](https://github.com/HerrEurobeat/steam-comment-service-bot/tree/beta-testing)  
 If you are interested in the active development progress, visit the [projects section.](https://github.com/HerrEurobeat/steam-comment-service-bot/projects)
 
+#### **Errors & FAQ**
+Please visit the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki) for a detailed description of known steam errors and bot errors.
+
 #### **Steam limitations**
 Steam sadly has some strict restrictions for commenting.  
 Read all of them here: [Steam Support](https://support.steampowered.com/kb_article.php?ref=3330-IAGK-7663)  
