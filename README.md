@@ -48,11 +48,30 @@ To get your version number type `node --version` in your console or terminal.
 If you need a tutorial for this specific node part, [click here.](https://youtu.be/gmA-ccD05g4?t=35)  
   
 ## **Setup & Configuration:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=111)  
-Open a power shell/terminal in the `steam-comment-service-bot` folder.  
+Open a power shell/terminal in the `steam-comment-service-bot` folder and type `npm install`.  
   
-Visit the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki) for more detailed documentations.
+Open `logininfo.json` with a text editor and fill out the user names and passwords of each bot account you want to use.  
+You can add more accounts by extending the list ("bot4": ["username4", "password4"], etc...). Make sure to **NOT** forget a comma after each line, **ONLY** the last line **MUST NOT** have a comma! (ignoring this will cause errors!)  
+
+Open `config.json` with a text editor.  
+You need to provide the link to your steam profile at "owner" and the steam64 id of your profile at "ownerid".
+If you don't know how to find your steam64id, open [SteamDB](https://steamdb.info/calculator/), search your profile and copy the ID located down below at SteamID.  
+A complete documentation of the `config.json` can be found in the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki).  
+  
+Open `quotes.txt` with a text editor. You can add as many quotes as you want, line by line. **Don't leave an empty line anywhere in this file!** The file already has default comments set up.  
+The bot will choose a random quote for **every** comment. If you only provide one quote, the bot will only use that quote.  
+  
+The bot(s) is/are now setup. Don't modify any of the other files.  
+You can visit the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki) for more detailed documentations.
 
 ## **Usage:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=385)  
+Type `node start.js` in the power shell/terminal you opened earlier.  
 
 ## **Additional informations:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=611)  
 Hey, if you like this project please consider donating a buck on my [PayPal!](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VAVVKE4L962H6&source=url)  
+
+#### **Steam limitations**
+Steam sadly has some strict restrictions for commenting.  
+Read all of them here: [Steam Support](https://support.steampowered.com/kb_article.php?ref=3330-IAGK-7663)  
+
+As the **license** already stated: If you want to use code from this repository in your project, feel free to do that as long as you **include credit** to this repository!  
