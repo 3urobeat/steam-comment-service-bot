@@ -33,7 +33,7 @@
 * Advertise your group & automatically invite users to it  
   
 If you would like to see a detailed tutorial in the form of a video, [click here!](https://www.youtube.com/watch?v=gmA-ccD05g4)  
-This written tutorial will also contain a video tutorial badge link for each specific part!
+This written tutorial will also contain a video tutorial badge link for each specific part!  
 If you would like to see my 24/7 comment bot in action, [click here!](https://steamcommunity.com/id/3urobeatscommentbot)  
   
 **Disclaimer!**  
