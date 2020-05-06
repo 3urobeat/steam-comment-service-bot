@@ -40,6 +40,8 @@ If you would like to see my 24/7 comment bot in action, [click here!](https://st
 >I, the developer, am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.  
   
 ## **Download:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=12)  
+*Although this may seem long, don't worry, the setup can be done in <3 minutes.*  
+
 Click here: [Download](https://github.com/HerrEurobeat/steam-comment-service-bot/archive/master.zip)  
 Extract the zip and open the `steam-comment-service-bot` folder.  
   
@@ -50,28 +52,45 @@ If you need a tutorial for this specific node part, [click here.](https://youtu.
 ## **Setup & Configuration:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=111)  
 Open a power shell/terminal in the `steam-comment-service-bot` folder and type `npm install`.  
   
+#### **Accounts**
 Open `logininfo.json` with a text editor and fill out the user names and passwords of each bot account you want to use.  
 You can add more accounts by extending the list ("bot4": ["username4", "password4"], etc...). Make sure to **NOT** forget a comma after each line, **ONLY** the last line **MUST NOT** have a comma! (ignoring this will cause errors!)  
-
+  
+#### **Config**
 Open `config.json` with a text editor.  
 You need to provide the link to your steam profile at "owner" and the steam64 id of your profile at "ownerid".
 If you don't know how to find your steam64id, open [SteamDB](https://steamdb.info/calculator/), search your profile and copy the ID located down below at SteamID.  
+
 A complete documentation of the `config.json` can be found in the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki).  
   
+#### **Quotes**
 Open `quotes.txt` with a text editor. You can add as many quotes as you want, line by line. **Don't leave an empty line anywhere in this file!** The file already has default comments set up.  
 The bot will choose a random quote for **every** comment. If you only provide one quote, the bot will only use that quote.  
   
-The bot(s) is/are now setup. Don't modify any of the other files.  
+The bot(s) is/are now setup! Don't modify any of the other files.  
 You can visit the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki) for more detailed documentations.
 
 ## **Usage:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=385)  
 Type `node start.js` in the power shell/terminal you opened earlier.  
+Add the main bot (bot0 in logininfo.json) on steam and send him the message: `!help`  
+
+To request a comment, simply type `!comment`!
+If you have more than 1 account set up in `logininfo.json` you can specify how many comments you want.
 
 ## **Additional informations:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=611)  
 Hey, if you like this project please consider donating a buck on my [PayPal!](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VAVVKE4L962H6&source=url)  
+[![Donate](https://img.shields.io/badge/donate-%241-orange)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VAVVKE4L962H6&source=url)  
+
+If you encountered a **bug**, you **need help** or wish a feature to be added, please open an [**issue!**](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose)
 
 #### **Steam limitations**
 Steam sadly has some strict restrictions for commenting.  
 Read all of them here: [Steam Support](https://support.steampowered.com/kb_article.php?ref=3330-IAGK-7663)  
+**Important**: If you use *limited accounts* (<$5 spend) the user will need to send all of these accounts a friend request before requesting a comment!
 
+#### **License**
 As the **license** already stated: If you want to use code from this repository in your project, feel free to do that as long as you **include credit** to this repository!  
+
+#### **Credits**
+Special thanks to [KNO7](https://steamcommunity.com/id/KN07Gaming/) for testing early beta versions and providing many ideas behind this project.
+I also want to thank [Stiefel](https://steamcommunity.com/id/Stiefel1234) for finding weird bugs I wouldn't have found.
