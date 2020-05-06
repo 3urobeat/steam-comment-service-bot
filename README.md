@@ -1,5 +1,5 @@
 <div align="center" markdown=1>
-	<p align="center"><img width=45% src="https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/.github/img/steamLogo.png"></p>
+	<p align="center"><img width=45% src="https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/.github/img/steamLogo.png"></p>
 	<strong>Request multiple profile comments by texting a bot network!</strong>
 	<br>See how to set up the bot and customize it below.<br>
 	<p></p>
@@ -21,10 +21,10 @@
   <a href="#additional-informations-">Additional information</a>
 </p>
   
-![Showcase](https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/.github/img/showcase.gif)
+![Showcase](https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/.github/img/showcase.gif)
   
 ## **Introduction**  
-<img align="right" width="200" height="200" src="https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/.github/img/mesh.png">  
+<img align="right" width="200" height="200" src="https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/.github/img/mesh.png">  
   
 * Request many profile comments directly from the steam chat  
 * Easily host multiple steam accounts and control them from **one** console and chat with this bot cluster  
@@ -33,15 +33,16 @@
 * Advertise your group & automatically invite users to it  
   
 If you would like to see a detailed tutorial in the form of a video, [click here!](https://www.youtube.com/watch?v=gmA-ccD05g4)  
-This written tutorial will also contain a tutorial link for each specific part.
+This written tutorial will also contain a video tutorial badge link for each specific part!
 If you would like to see my 24/7 comment bot in action, [click here!](https://steamcommunity.com/id/3urobeatscommentbot)  
   
 **Disclaimer!**  
 >I, the developer, am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.  
   
-## **Download:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=12)  
 *Although this may seem long, don't worry, the setup can be done in <3 minutes.*  
-
+This is a basic setup guide. Visit the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki) for more detailed documentations!
+  
+## **Download:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=12)  
 Click here: [Download](https://github.com/HerrEurobeat/steam-comment-service-bot/archive/master.zip)  
 Extract the zip and open the `steam-comment-service-bot` folder.  
   
@@ -68,7 +69,6 @@ Open `quotes.txt` with a text editor. You can add as many quotes as you want, li
 The bot will choose a random quote for **every** comment. If you only provide one quote, the bot will only use that quote.  
   
 The bot(s) is/are now setup! Don't modify any of the other files.  
-You can visit the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki) for more detailed documentations.
 
 ## **Usage:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=385)  
 Type `node start.js` in the power shell/terminal you opened earlier.  
@@ -81,7 +81,10 @@ If you have more than 1 account set up in `logininfo.json` you can specify how m
 Hey, if you like this project please consider donating a buck on my [PayPal!](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VAVVKE4L962H6&source=url)  
 [![Donate](https://img.shields.io/badge/donate-%241-orange)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VAVVKE4L962H6&source=url)  
 
-If you encountered a **bug**, you **need help** or wish a feature to be added, please open an [**issue!**](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose)
+#### **Bugs, Issues & Betas**
+If you encountered a **bug**, you **need help** or wish a feature to be added, please open an [**issue!**](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose)  
+If you are interested in beta builds of this project, visit the [beta-testing branch.](https://github.com/HerrEurobeat/steam-comment-service-bot/tree/beta-testing)  
+If you are interested in the active development progress, visit the [projects section.](https://github.com/HerrEurobeat/steam-comment-service-bot/projects)
 
 #### **Steam limitations**
 Steam sadly has some strict restrictions for commenting.  
@@ -92,5 +95,5 @@ Read all of them here: [Steam Support](https://support.steampowered.com/kb_artic
 As the **license** already stated: If you want to use code from this repository in your project, feel free to do that as long as you **include credit** to this repository!  
 
 #### **Credits**
-Special thanks to [KNO7](https://steamcommunity.com/id/KN07Gaming/) for testing early beta versions and providing many ideas behind this project.
-I also want to thank [Stiefel](https://steamcommunity.com/id/Stiefel1234) for finding weird bugs I wouldn't have found.
+Special thanks to [KNO7](https://steamcommunity.com/id/KN07Gaming/) for testing early beta versions and providing many ideas behind this project.  
+I also want to thank [Stiefel](https://steamcommunity.com/id/Stiefel1234) for finding weird bugs I wouldn't have found alone.  
