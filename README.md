@@ -39,7 +39,7 @@ If you would like to see my 24/7 comment bot in action, [click here!](https://st
 **Disclaimer!**  
 >I, the developer, am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.  
   
-*Although this may seem long, don't worry, the setup can be done in <3 minutes.*  
+*Although this setup may seem long, don't worry, the setup can be done in <3 minutes.*  
 This is a basic setup guide. Visit the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki) for more detailed documentations!
   
 ## **Download:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=12)  
