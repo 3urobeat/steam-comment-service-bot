@@ -1,5 +1,5 @@
 <div align="center" markdown=1>
-	<p align="center"><img width=45% src="https://3urobeat.zapto.org/steamlogo3.png"></p>
+	<p align="center"><img width=45% src="https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/.github/img/steamLogo.png"></p>
 	<strong>Request multiple profile comments by texting a bot network!</strong>
 	<br>See how to set up the bot and customize it below.<br>
 	<p></p>
@@ -16,15 +16,16 @@
 <p align="center">
   <a href="#introduction">Introduction</a> •
   <a href="#download-">Download</a> •
-  <a href="#setup-&-config-">Setup & Config</a> •
+  <a href="#setup--configuration-">Setup & Config</a> •
   <a href="#usage-">Usage</a> •
-  <a href="#additional-informations-">Additional information</a> •
-  <a href="#credits">Credits</a>
+  <a href="#additional-informations-">Additional information</a>
 </p>
   
-[GIF showcase placeholder]  
+![Showcase](https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/.github/img/showcase.gif)
   
 ## **Introduction**  
+<img align="right" width="200" height="200" src="https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/.github/img/mesh.png">  
+  
 * Request many profile comments directly from the steam chat  
 * Easily host multiple steam accounts and control them from **one** console and chat with this bot cluster  
 * Send comments to other steam profiles  
@@ -54,5 +55,4 @@ Visit the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki)
 ## **Usage:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=385)  
 
 ## **Additional informations:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=611)  
-
-## **Credits**  
+Hey, if you like this project please consider donating a buck on my [PayPal!](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VAVVKE4L962H6&source=url)  
