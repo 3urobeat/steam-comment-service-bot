@@ -100,7 +100,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
             if (configgroup64id.length > 1 && Object.keys(bot.myGroups).includes(configgroup64id)) bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(configgroup64id)); //invite the user to your group
         }
 
-        if (i + 1 === Object.keys(bot.myFriends).length) {
+        if (i + 1 === Object.keys(bot.myFriends).length) { //check for last iteration
           fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
             if (err) logger(`[${thisbot}] add user to lastcomment.json error: ${err}`) }) } }
 
@@ -149,7 +149,18 @@ module.exports.run = async (logOnOptions, loginindex) => {
         case '!comment':
           if (updater.activeupdate == true) return bot.chatMessage(steamID, "The bot is currently waiting for the last requested comment to be finished in order to download an update!\nPlease wait a moment and try again.");
           if (config.allowcommentcmdusage === false && !config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return bot.chatMessage(steamID, "The bot owner set this command to owners only.\nType !owner to get information who the owner is.\nType !about to get a link to the bot creator.") 
-          if (config.commentcooldown !== 0) { //is the cooldown enabled?             
+          if (config.commentcooldown !== 0) { //is the cooldown enabled?        
+            
+            if (!lastcomment[lastcommentsteamID]) { //user is somehow not in lastcomment.json? oh god not again... write user to lastcomment.json to avoid errors
+              logger("Missing user from lastcomment.json! Writing to prevent error...")
+
+              lastcomment[new SteamID(steamID.getSteam3RenderedID()).getSteamID64() + loginindex] = {
+                time: Date.now() - (config.commentcooldown * 60000), //subtract unfriendtime to enable comment usage immediately
+                bot: bot.steamID.accountid }
+              fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
+                if (err) logger(`[${thisbot}] delete user from lastcomment.json error: ${err}`) })
+            }
+
             if ((Date.now() - lastcomment[lastcommentsteamID].time) < (config.commentcooldown * 60000)) { //check if user has cooldown applied
 
               var remainingcooldown = Math.abs(((Date.now() - lastcomment[lastcommentsteamID].time) / 1000) - (config.commentcooldown * 60))
