@@ -54,3 +54,5 @@ if (!fs.existsSync(data.filetostart)) {
 } else {
     require(data.filetostart) //Just passing startup to updater
 }
+
+//Code by: https://github.com/HerrEurobeat/ 
