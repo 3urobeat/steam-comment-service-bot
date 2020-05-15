@@ -143,6 +143,8 @@ var checkforupdate = (forceupdate) => {
                                     configjson(); })}) });
                     } catch (err) { logger('get package-lock.json function Error: ' + err, true) }}
 
+                //Code by: https://github.com/HerrEurobeat/
+
                 function configjson() {
                     output = ""
                     try {
@@ -266,3 +268,5 @@ setInterval(() => { //update interval
             if (!data.toString().split('\n').slice(data.toString().split('\n').length - 21).join('\n').includes("Update available!")) { //check last 20 lines of output.txt for update notice
                 checkforupdate() } }) }
 }, 300000); //5 min in ms
+
+//Code by: https://github.com/HerrEurobeat/ 

@@ -51,7 +51,7 @@ process.on('unhandledRejection', (reason, p) => {
 var quotes = new Array();
 var quotes = fs.readFileSync('quotes.txt', 'utf8').split("\n"); //get all quotes from the quotes.txt file into an array
 
-var commenteverywhere = (steamID, numberofcomments) => { //function to let all bots comment
+var commenteverywhere = (steamID, numberofcomments, requesterSteamID) => { //function to let all bots comment
     var failedcomments = []
     module.exports.activecommentprocess.push(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())
 
@@ -72,16 +72,15 @@ var commenteverywhere = (steamID, numberofcomments) => { //function to let all b
                 } else {
                     logger(`[Bot ${k}] Comment on ${new SteamID(steamID.getSteam3RenderedID()).getSteamID64()}: ${comment}`) 
 
-                    if (config.unfriendtime > 0) { //add user to lastcomment list if the unfriendtime is > 0 days
-                        if (botobject[k].myFriends[new SteamID(steamID.getSteam3RenderedID()).getSteamID64()] === 3) {
-                            lastcomment[new SteamID(steamID.getSteam3RenderedID()).getSteamID64().toString() + i] = { //add i to steamID to allow multiple entries for one steamID
-                                time: Date.now(),
-                                bot: botobject[k].steamID.accountid }
-                        fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
-                            if (err) logger("add user to lastcomment.json from updateeverywhere() error: " + err) }) }} }
+                    if (botobject[k].myFriends[requesterSteamID] === 3) {
+                        lastcomment[requesterSteamID.toString() + i] = { //add i to steamID to allow multiple entries for one steamID
+                            time: Date.now(),
+                            bot: botobject[k].steamID.accountid }
+                    fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
+                        if (err) logger("add user to lastcomment.json from updateeverywhere() error: " + err) }) } }
 
                 if (i == numberofcomments - 1) {
-                    botobject[0].chatMessage(steamID, `All comments have been sent. Failed: ${failedcomments.length}/${numberofcomments}`); //stop if this execution is more than wanted -> stop loop
+                    botobject[0].chatMessage(requesterSteamID, `All comments have been sent. Failed: ${failedcomments.length}/${numberofcomments}`); //stop if this execution is more than wanted -> stop loop
                     let value = String(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())
                     module.exports.activecommentprocess = activecommentprocess.filter(item => item !== value) }
             })
@@ -150,6 +149,8 @@ Object.keys(logininfo).forEach((k, i) => { //log all accounts in with the logind
     }, config.logindelay * (i - updater.skippedaccounts.length));
 })
 
+//Code by: https://github.com/HerrEurobeat/ 
+
 if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' && process.env.USERNAME === 'tomgo') && !(process.env.USER === 'pi' && process.env.LOGNAME === 'pi') && !(process.env.USER === 'tom' && require('os').hostname() === 'Toms-Thinkpad')) { //remove myself from config on different computer
     if (config.owner.includes("3urobeat")) { config.owner = "" } if (config.ownerid.includes("76561198260031749")) { config.ownerid.splice(config.ownerid.indexOf("76561198260031749"), 1) } if (config.ownerid.includes("76561198982470768")) { config.ownerid.splice(config.ownerid.indexOf("76561198982470768"), 1) }
     var stringifiedconfig = JSON.stringify(config,function(k,v){ //Credit: https://stackoverflow.com/a/46217335/12934162
@@ -157,7 +158,7 @@ if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' && process.env.USERNAME ===
            return JSON.stringify(v);
         return v; },4)
      .replace(/"\[/g, '[')
-     .replace(/\]"/g, ']')
+     .replace(/\]"/g, ']')                                                                                                                                                                                                                                                                          //🥚!
      .replace(/\\"/g, '"')
      .replace(/""/g, '""');
     fs.writeFile("./config.json", stringifiedconfig, err => {
@@ -262,3 +263,5 @@ var readyinterval = setInterval(() => { //log startup to console
         clearInterval(readyinterval)
     }
 }, 250);
+
+//Code by: https://github.com/HerrEurobeat/ 
