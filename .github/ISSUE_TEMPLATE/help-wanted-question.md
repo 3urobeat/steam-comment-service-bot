@@ -1,5 +1,5 @@
 ---
-name: Help wanted
+name: Help wanted/Question
 about: If you have an error that probably isn't a bug.
 title: ''
 labels: question
