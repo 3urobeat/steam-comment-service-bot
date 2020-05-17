@@ -10,7 +10,8 @@ var lastupdatecheckinterval = Date.now()
 
 var logger = (str, nodate) => { //Custom logger
     var str = String(str)
-    if (str.toLowerCase().includes("error")) { var str = `\x1b[31m${str}\x1b[0m` }
+    if (str.toLowerCase().includes("error")) { var str = `\x1b[31m${str}\x1b[0m` } //make errors red in console
+    if (str.toLowerCase().includes("updating")) { var str = `\x1b[33m${str}\x1b[0m` } //make errors red in console
 
     if (nodate === true) { var string = str; } else {
         var string = `\x1b[96m[${(new Date(Date.now() - (new Date().getTimezoneOffset() * 60000))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}]\x1b[0m ${str}` }
@@ -25,33 +26,33 @@ var checkforupdate = (forceupdate) => {
     try {
         var extdata = require('./src/data.json')
 
-        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/data.json", function(res){
+        https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/data.json", function(res) {
         res.setEncoding('utf8');
-        res.on('data', function(chunk){
-            var onlineversion= JSON.parse(chunk).version
-            if (onlineversion > extdata.version || forceupdate == true) {
+        res.on('data', function(chunk) {
+            var onlineversion = JSON.parse(chunk).version //parse version number from get request
+            if (onlineversion > extdata.version || forceupdate == true) { //version number greater or forceupdate is true?
                 logger("", true)
                 logger(`\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${extdata.version}\x1b[0m | New version: \x1b[32m${onlineversion}\x1b[0m\nUpdate now: https://github.com/HerrEurobeat/steam-comment-service-bot`, true)
                 logger("", true)
 
                 logger('Starting the automatic updater...')
-                module.exports.activeupdate = true
+                module.exports.activeupdate = true //block new comment requests by setting active update to true and exporting it
                 let output = '';
 
                 if (botisloggedin == true) { //if bot is already logged in we need to check for ongoing comment processes and log all bots out when finished
 
-                    var activecommentinterval = setInterval(() => {
+                    var activecommentinterval = setInterval(() => { //check if a comment request is being processed every 2.5 secs
                         var controller = require('./src/controller.js')
 
-                        if (controller.activecommentprocess == false) { 
+                        if (controller.activecommentprocess == false) { //start logging off accounts when no comment request is being processed anymore
                             logger("Logging off your accounts...", true)
                             Object.keys(controller.botobject).forEach((e, i) => {
-                                controller.botobject[e].logOff() }) }
+                                controller.botobject[e].logOff() }) } //logging off each account
 
                             setTimeout(() => {
                                 botisloggedin = false
 
-                                updaterjs();
+                                updaterjs(); //start update
                                 clearInterval(activecommentinterval);
                             }, 2500);
                     }, 2500) 
@@ -199,7 +200,7 @@ var checkforupdate = (forceupdate) => {
 
                                 fs.writeFile("./src/data.json", JSON.stringify(output, null, 4), err => {
                                     if (err) logger(err, true) 
-                                    logger("Update finished. Restarting myself in 5 seconds...", true);
+                                    logger("\x1b[32mUpdate finished. Restarting myself in 5 seconds...\x1b[0m", true);
                                     setTimeout(() => {
                                         module.exports.activeupdate = false
                                         require('./start').restart(skippedaccounts, true);
@@ -229,7 +230,7 @@ if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
         var logininfo = require('./logininfo.json')
         var config = require("./config.json")
 
-        if (Object.keys(logininfo)[0] == "bot1") {
+        if (Object.keys(logininfo)[0] == "bot1") { //check if first bot is 1 (old) and not 0
             Object.keys(logininfo).forEach((e, i) => {      
                 Object.defineProperty(logininfo, `bot${i}`, //Credit: https://stackoverflow.com/a/14592469 
                     Object.getOwnPropertyDescriptor(logininfo, e));
@@ -238,7 +239,7 @@ if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
             fs.writeFile("./logininfo.json", JSON.stringify(logininfo, null, 4), err => {
                 if(err) logger(err, true) }) }
 
-        if (config.globalcommentcooldown == 5000) { //if the user uses default settings
+        if (config.globalcommentcooldown == 5000) { //check if the user uses default settings and raise 5 to 10 sec
             config.globalcommentcooldown = 10000
             fs.writeFile('./config.json', JSON.stringify(config, null, 4), (err) => {
                 if (err) logger('error changing default globalcommentcooldown value: ' + err, true) }) }

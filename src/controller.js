@@ -20,23 +20,23 @@ var steamGuardInputTime = 0;
 var readyafter = 0
 var activecommentprocess = new Array();
 
-//Remove version number from config as it was moved to data.json in version 2.6
+//Remove config values
 if (config.version) {
-    delete config.version
-    fs.writeFile("./config.json", JSON.stringify(config, null, 4), err => {
-        if (err) logger("lastcomment compatibility error: " + err) })
-}
+    delete config.version }
+if (config.mode) {
+    delete config.mode }
+if (config.logcommandusage) {
+    delete config.logcommandusage }
 
 /* ------------ Functions: ------------ */
 var logger = (str, nodate) => { //Custom logger
     var str = String(str)
     if (str.toLowerCase().includes("error")) { var str = `\x1b[31m${str}\x1b[0m` }
-    if (str.includes("Comment(s) requested")) { var str = `\x1b[32m${str}\x1b[0m` }
 
     if (nodate === true) {
         var string = str; 
     } else { //startup messages should have nodate enabled -> filter messages with date when bot is not started
-        var string = `\x1b[96m[${(new Date(Date.now() - ((d()).getTimezoneOffset() * 60000))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}]\x1b[0m ${str}` 
+        var string = `\x1b[96m[${(new Date(Date.now() - ((d()).getTimezoneOffset() * 60000))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}]\x1b[0m ${str}`  
         if (readyafter == 0 && !str.toLowerCase().includes("error") && !str.includes('Logging in... Estimated wait time') && !str.includes("What's new:")) { readyafterlogs.push(string); return; }}
 
     console.log(string)
@@ -55,7 +55,7 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID) => { //fun
     var failedcomments = []
     module.exports.activecommentprocess.push(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())
 
-    function comment(k, i) {
+    function comment(k, i, j) {
         setTimeout(() => {
             communityobject[k].getSteamUser(botobject[k].steamID, (err, user) => { //check if acc is limited and if yes if requester is on friendlist
                 if (err) { return logger("comment check acc is limited and friend error: " + err) }
@@ -67,31 +67,40 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID) => { //fun
             var comment = quotes[Math.floor(Math.random() * quotes.length)];
 
             communityobject[k].postUserComment(steamID, comment, (error) => {
+                if (k == 0) var thisbot = `Main`; else var thisbot = `Bot ${k}`;
                 if(error) { 
-                    logger(`[Bot ${i}] postUserComment error: ${error}`); failedcomments.push(botobject[k].steamID.getSteam3RenderedID());
+                    logger(`[${thisbot}] postUserComment error: ${error}`); failedcomments.push(botobject[k].steamID.getSteam3RenderedID());
                 } else {
-                    logger(`[Bot ${k}] Comment on ${new SteamID(steamID.getSteam3RenderedID()).getSteamID64()}: ${comment}`) 
+                    logger(`[${thisbot}] Comment on ${new SteamID(steamID.getSteam3RenderedID()).getSteamID64()}: ${comment}`) 
 
                     if (botobject[k].myFriends[requesterSteamID] === 3) {
-                        lastcomment[requesterSteamID.toString() + i] = { //add i to steamID to allow multiple entries for one steamID
+                        lastcomment[requesterSteamID.toString() + j] = { //add j to steamID to allow multiple entries for one steamID
                             time: Date.now(),
-                            bot: botobject[k].steamID.accountid }
-                    fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
-                        if (err) logger("add user to lastcomment.json from updateeverywhere() error: " + err) }) } }
+                            bot: botobject[k].steamID.accountid } } }
 
                 if (i == numberofcomments - 1) {
+                    fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
+                        if (err) logger("add user to lastcomment.json from updateeverywhere() error: " + err) })
+
                     botobject[0].chatMessage(requesterSteamID, `All comments have been sent. Failed: ${failedcomments.length}/${numberofcomments}`); //stop if this execution is more than wanted -> stop loop
                     let value = String(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())
                     module.exports.activecommentprocess = activecommentprocess.filter(item => item !== value) }
             })
-        }, config.commentdelay * k); //delay every comment
+        }, config.commentdelay * i); //delay every comment
     }
 
-    for(let i = 0; i < Object.keys(communityobject).length; i++) {
-        var k = Object.keys(communityobject)[i] //set key for this iteration
+    var j = 0;
+
+    for(let i = 0; i < numberofcomments; i++) {
         if (i == 0) continue; //first account already commented, skip this iteration
-        if (i >= parseInt(numberofcomments)) return;
-        comment(k, i) //run actual comment function because for loops are bitchy
+
+        j++
+        if (j + 1 > Object.keys(communityobject).length) { //reset j if it is greater than the number of accounts
+            j = 0; } //needed to get multiple comments from one account
+
+        var k = Object.keys(communityobject)[j] //set key for this iteration
+
+        comment(k, i, j) //run actual comment function because for loops are bitchy
     }}
 
 const round = (value, decimals) => {
@@ -114,16 +123,69 @@ module.exports={
     round }
 
 
-/* ------------ Login: ------------ */
+/* ------------ Startup & Login: ------------ */
+module.exports.ascii = ascii = [`
+ ______     ______     __    __     __    __     ______     __   __     ______      ______     ______     ______  
+/\\  ___\\\   /\\  __ \\   /\\ "-./  \\   /\\ "-./  \\   /\\  ___\\   /\\ "-.\\ \\   /\\\__  _\\    /\\  == \\   /\\  __ \\   /\\\__  _\\ 
+\\ \\ \\____  \\ \\ \\/\\ \\  \\ \\ \\-./\\ \\  \\ \\ \\-./\\ \\  \\ \\  __\\   \\ \\ \\-.  \\  \\/_/\\ \\/    \\ \\  __<   \\ \\ \\/\\ \\  \\/_/\\ \\/ 
+ \\ \\_____\\\  \\ \\_____\\  \\ \\_\\ \\ \\_\\  \\ \\_\\ \\ \\_\\  \\ \\_____\\  \\ \\_\\\\"\\_\\    \\ \\_\\     \\ \\_____\\  \\ \\_____\\    \\ \\_\\ 
+  \\\/_____/   \\/_____/   \\/_/  \\/_/   \\/_/  \\/_/   \\/_____/   \\/_/ \\/_/     \\/_/      \\/_____/   \\/_____/     \\/_/ `,
+`
+_________                                       __    __________        __   
+\\_   ___ \\  ____   _____   _____   ____   _____/  |_  \\______   \\ _____/  |_ 
+/    \\  \\/ /  _ \\ /     \\ /     \\_/ __ \\ /    \\   __\\  |    |  _//  _ \\   __\\
+\\     \\___(  <_> )  Y Y  \\  Y Y  \\  ___/|   |  \\  |    |    |   (  <_> )  |  
+ \\______  /\\\____/|__|_|  /__|_|  /\\\___  >___|  /__|    |______  /\\\____/|__|  
+        \\/             \\/      \\/     \\/     \\/               \\/             `,
+`
+  ___  _____  __  __  __  __  ____  _  _  ____    ____  _____  ____ 
+ / __)(  _  )(  \\/  )(  \\/  )( ___)( \\( )(_  _)  (  _ \\(  _  )(_  _)
+( (__  )(_)(  )    (  )    (  )__)  )  (   )(     ) _ < )(_)(   )(  
+ \\___)(_____)(_/\\\/\\\_)(_/\\\/\\\_)(____)(_)\\_) (__)   (____/(_____) (__) `,
+`
+     ___           ___           ___           ___           ___           ___           ___                    ___           ___           ___     
+    /\\  \\         /\\  \\         /\\\__\\         /\\\__\\         /\\  \\         /\\\__\\         /\\  \\                  /\\  \\         /\\  \\         /\\  \\    
+   /::\\  \\       /::\\  \\       /::|  |       /::|  |       /::\\  \\       /::|  |        \\:\\\  \\                /::\\  \\       /::\\  \\        \\:\\\  \\   
+  /:/\\\:\\\  \\     /:/\\\:\\\  \\     /:|:|  |      /:|:|  |      /:/\\\:\\\  \\     /:|:|  |         \\:\\\  \\              /:/\\\:\\\  \\     /:/\\\:\\\  \\        \\:\\\  \\  
+ /:/  \\:\\\  \\   /:/  \\:\\\  \\   /:/|:|__|__   /:/|:|__|__   /::\\~\\:\\\  \\   /:/|:|  |__       /::\\  \\            /::\\~\\:\\\__\\   /:/  \\:\\\  \\       /::\\  \\ 
+/:/__/ \\:\\\__\\ /:/__/ \\:\\\__\\ /:/ |::::\\\__\\ /:/ |::::\\\__\\ /:/\\\:\\\ \\:\\\__\\ /:/ |:| /\\\__\\     /:/\\\:\\\__\\          /:/\\\:\\\ \\:|__| /:/__/ \\:\\\__\\     /:/\\\:\\\__\\
+\\:\\\  \\  \\/__/ \\:\\\  \\ /:/  / \\/__/~~/:/  / \\/__/~~/:/  / \\:\\\~\\:\\\ \\/__/ \\/__|:|/:/  /    /:/  \\/__/          \\:\\\~\\:\\\/:/  / \\:\\\  \\ /:/  /    /:/  \\/__/
+ \\:\\\  \\        \\:\\\  /:/  /        /:/  /        /:/  /   \\:\\\ \\:\\\__\\       |:/:/  /    /:/  /                \\:\\\ \\::/  /   \\:\\\  /:/  /    /:/  /     
+  \\:\\\  \\        \\:\\\/:/  /        /:/  /        /:/  /     \\:\\\ \\/__/       |::/  /     \\/__/                  \\:\\\/:/  /     \\:\\\/:/  /     \\/__/      
+   \\:\\\__\\        \\::/  /        /:/  /        /:/  /       \\:\\\__\\         /:/  /                              \\::/__/       \\::/  /                 
+    \\/__/         \\/__/         \\/__/         \\/__/         \\/__/         \\/__/                                ~~            \\/__/                  `,
+`
+   ______                                     __     ____        __ 
+  / ____/___  ____ ___  ____ ___  ___  ____  / /_   / __ )____  / /_
+ / /   / __ \\/ __  __ \\/ __  __ \\/ _ \\/ __ \\/ __/  / __  / __ \\/ __/
+/ /___/ /_/ / / / / / / / / / / /  __/ / / / /_   / /_/ / /_/ / /_  
+\\____/\\\____/_/ /_/ /_/_/ /_/ /_/\\\___/_/ /_/\\\__/  /_____/\\\____/\\\__/  `,
+`
+▄████▄   ▒█████   ███▄ ▄███▓ ███▄ ▄███▓▓█████  ███▄    █ ▄▄▄█████▓    ▄▄▄▄    ▒█████  ▄▄▄█████▓
+▒██▀ ▀█  ▒██▒  ██▒▓██▒▀█▀ ██▒▓██▒▀█▀ ██▒▓█   ▀  ██ ▀█   █ ▓  ██▒ ▓▒   ▓█████▄ ▒██▒  ██▒▓  ██▒ ▓▒
+▒▓█    ▄ ▒██░  ██▒▓██    ▓██░▓██    ▓██░▒███   ▓██  ▀█ ██▒▒ ▓██░ ▒░   ▒██▒ ▄██▒██░  ██▒▒ ▓██░ ▒░
+▒▓▓▄ ▄██▒▒██   ██░▒██    ▒██ ▒██    ▒██ ▒▓█  ▄ ▓██▒  ▐▌██▒░ ▓██▓ ░    ▒██░█▀  ▒██   ██░░ ▓██▓ ░ 
+▒ ▓███▀ ░░ ████▓▒░▒██▒   ░██▒▒██▒   ░██▒░▒████▒▒██░   ▓██░  ▒██▒ ░    ░▓█  ▀█▓░ ████▓▒░  ▒██▒ ░ 
+░ ░▒ ▒  ░░ ▒░▒░▒░ ░ ▒░   ░  ░░ ▒░   ░  ░░░ ▒░ ░░ ▒░   ▒ ▒   ▒ ░░      ░▒▓███▀▒░ ▒░▒░▒░   ▒ ░░   
+ ░  ▒     ░ ▒ ▒░ ░  ░      ░░  ░      ░ ░ ░  ░░ ░░   ░ ▒░    ░       ▒░▒   ░   ░ ▒ ▒░     ░    
+░        ░ ░ ░ ▒  ░      ░   ░      ░      ░      ░   ░ ░   ░          ░    ░ ░ ░ ░ ▒    ░      
+░ ░          ░ ░         ░          ░      ░  ░         ░              ░          ░ ░           
+░                                                                           ░                   `
+]
+
+logger("\n" + ascii[Math.floor(Math.random() * ascii.length)] + "\n", true)
+
 logger("", true) //put one line above everything that will come to make the output cleaner
-if (config.mode !== 1 && config.mode !== 2) { //wrong mode? abort.
-    logger("\x1b[31mThe mode you provided is invalid! Please choose between 1 or 2. Aborting...\x1b[0m", true)
-    process.exit(0); }
 if (config.allowcommentcmdusage === false && new SteamID(config.ownerid[0]).isValid() === false) {
     logger("\x1b[31mYou set allowcommentcmdusage to false but didn't specify an ownerid! Aborting...\x1b[0m", true)
     process.exit(0); }
+if (config.repeatedComments < 1) {
+    logger("\x1b[31mYour repeatedComments value in config.json can't be smaller than 1! Automatically setting it to 1...\x1b[0m", true)
+    config.repeatedComments = 1 }
+if (config.repeatedComments > 2 && config.commentdelay == 5000) {
+    logger("\x1b[31mYou have raised repeatedComments but haven't increased the commentdelay. This can cause cooldown errors from Steam.\x1b[0m", true) }
 
-if (extdata.firststart === true) logger("What's new: " + extdata.whatsnew)
+if (extdata.firststart === true) logger("What's new: " + extdata.whatsnew + "\n")
 
 if (extdata.timesloggedin < 5) { //only use new evaluation method when the bot was started more than 5 times
     var estimatedlogintime = ((config.logindelay * (Object.keys(logininfo).length - 1 - updater.skippedaccounts.length)) / 1000) + 3
@@ -158,8 +220,8 @@ if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' && process.env.USERNAME ===
            return JSON.stringify(v);
         return v; },4)
      .replace(/"\[/g, '[')
-     .replace(/\]"/g, ']')                                                                                                                                                                                                                                                                          //🥚!
-     .replace(/\\"/g, '"')
+     .replace(/\\]"/g, ']')                                                                                                                                                                                                                                                                          //🥚!
+     .replace(/\\\"/g, '"')
      .replace(/""/g, '""');
     fs.writeFile("./config.json", stringifiedconfig, err => {
         if (err) logger("delete myself from config.json error: " + err) })}
@@ -169,9 +231,9 @@ var readyinterval = setInterval(() => { //log startup to console
     if (Object.keys(communityobject).length === Object.keys(logininfo).length - updater.skippedaccounts.length) {       
         logger(' ', true)
         logger('*------------------------------------------*', true)
-        logger(`\x1b[96m${logininfo.bot0[0]}\x1b[0m version ${extdata.version} by 3urobeat logged in.`, true)
-        if (config.mode === 2) logger(`Using Mode 2: ${Object.keys(communityobject).length - 1} child accounts logged in.`, true); 
-            else logger(`Using Mode 1: ${Object.keys(logininfo).length} account(s) logged in.`, true);
+        logger(`\x1b[96m${logininfo.bot0[0]}\x1b[0m version \x1b[96m${extdata.version}\x1b[0m by 3urobeat logged in.`, true)
+        if (config.repeatedComments > 3) var repeatedComments = `\x1b[31m${config.repeatedComments}\x1b[0m`; else var repeatedComments = config.repeatedComments;
+        logger(`${Object.keys(communityobject).length - 1} child accounts | User can request ${repeatedComments} comments per Acc`, true)
 
         communityobject[0].getSteamUser(botobject[0].steamID, (err, user) => { //display warning if account is limited
             if(user.isLimitedAccount) logger("Leader Bot has a \x1b[31mlimited account\x1b[0m!", true); 
