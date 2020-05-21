@@ -1,10 +1,10 @@
 {
-    "version": "2.6.3",
+    "version": "2.6.4",
     "filetostart": "./updater.js",
     "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/updater.js",
     "botobjectfile": "./src/controller.js",
     "firststart": true,
-    "whatsnew": "Fixed bot crash when checking for cooldown. Fixed messages going to the reciever when sending comments to another profile. Changed command usage messages to account for user's priviliges. Other minor fixes/changes.",
     "timesloggedin": 0,
     "totallogintime": 0
+    "whatsnew": "Fixed bot corrupting the config and crashing on restart due to simultaneous writes.",
 }

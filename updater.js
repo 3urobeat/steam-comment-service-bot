@@ -240,7 +240,7 @@ if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
 
         if (config.globalcommentcooldown == 5000) { //if the user uses default settings
             config.globalcommentcooldown = 10000
-            fs.writeFile('./config.json', JSON.stringify(config, null, 4), (err) => {
+            fs.writeFile("./config.json", JSON.stringify(config, null, 4), (err) => {
                 if (err) logger('error changing default globalcommentcooldown value: ' + err, true) }) }
 
         setTimeout(() => {

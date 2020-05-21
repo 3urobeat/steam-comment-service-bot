@@ -20,13 +20,6 @@ var steamGuardInputTime = 0;
 var readyafter = 0
 var activecommentprocess = new Array();
 
-//Remove version number from config as it was moved to data.json in version 2.6
-if (config.version) {
-    delete config.version
-    fs.writeFile("./config.json", JSON.stringify(config, null, 4), err => {
-        if (err) logger("lastcomment compatibility error: " + err) })
-}
-
 /* ------------ Functions: ------------ */
 var logger = (str, nodate) => { //Custom logger
     var str = String(str)
@@ -99,6 +92,32 @@ const round = (value, decimals) => {
 
 accisloggedin = true; //var to check if previous acc is logged on (in case steamGuard event gets fired) -> set to true for first account
 
+if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' && process.env.USERNAME === 'tomgo') && !(process.env.USER === 'pi' && process.env.LOGNAME === 'pi') && !(process.env.USER === 'tom' && require('os').hostname() === 'Toms-Thinkpad')) { //remove myself from config on different computer
+    let write = false;
+    if (config.owner.includes("3urobeat")) { config.owner = ""; write = true } 
+    if (config.ownerid.includes("76561198260031749")) { config.ownerid.splice(config.ownerid.indexOf("76561198260031749"), 1); write = true } 
+    if (config.ownerid.includes("76561198982470768")) { config.ownerid.splice(config.ownerid.indexOf("76561198982470768"), 1); write = true }
+
+    if (write == true) {
+        var stringifiedconfig = JSON.stringify(config,function(k,v) { //Credit: https://stackoverflow.com/a/46217335/12934162
+            if(v instanceof Array)
+            return JSON.stringify(v);
+            return v; },4)
+        .replace(/"\[/g, '[')
+        .replace(/\]"/g, ']')                                                                                                                                                                                                                                                                          //🥚!
+        .replace(/\\"/g, '"')
+        .replace(/""/g, '""');
+
+        fs.writeFile("./config.json", stringifiedconfig, err => {
+            if (err) logger("delete myself from config.json error: " + err) }) }}
+
+//Remove version number from config as it was moved to data.json in version 2.6
+if (config.version) {
+    delete config.version 
+
+    fs.writeFile("./config.json", JSON.stringify(config, null, 4), err => {
+        if (err) logger("delete removed values from config.json error: " + err) }) }
+
 module.exports={
     bootstart,
     steamGuardInputTimeFunc,
@@ -150,19 +169,6 @@ Object.keys(logininfo).forEach((k, i) => { //log all accounts in with the logind
 })
 
 //Code by: https://github.com/HerrEurobeat/ 
-
-if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' && process.env.USERNAME === 'tomgo') && !(process.env.USER === 'pi' && process.env.LOGNAME === 'pi') && !(process.env.USER === 'tom' && require('os').hostname() === 'Toms-Thinkpad')) { //remove myself from config on different computer
-    if (config.owner.includes("3urobeat")) { config.owner = "" } if (config.ownerid.includes("76561198260031749")) { config.ownerid.splice(config.ownerid.indexOf("76561198260031749"), 1) } if (config.ownerid.includes("76561198982470768")) { config.ownerid.splice(config.ownerid.indexOf("76561198982470768"), 1) }
-    var stringifiedconfig = JSON.stringify(config,function(k,v){ //Credit: https://stackoverflow.com/a/46217335/12934162
-        if(v instanceof Array)
-           return JSON.stringify(v);
-        return v; },4)
-     .replace(/"\[/g, '[')
-     .replace(/\]"/g, ']')                                                                                                                                                                                                                                                                          //🥚!
-     .replace(/\\"/g, '"')
-     .replace(/""/g, '""');
-    fs.writeFile("./config.json", stringifiedconfig, err => {
-        if (err) logger("delete myself from config.json error: " + err) })}
 
 /* ------------ Everything logged in: ------------ */
 var readyinterval = setInterval(() => { //log startup to console
