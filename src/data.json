@@ -3,8 +3,8 @@
     "filetostart": "./updater.js",
     "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/updater.js",
     "botobjectfile": "./src/controller.js",
-    "firststart": false,
+    "firststart": true,
     "whatsnew": "Fixed bot corrupting the config and crashing on restart due to simultaneous writes.",
-    "timesloggedin": 8,
-    "totallogintime": 24.05
+    "timesloggedin": 0,
+    "totallogintime": 0
 }
