@@ -1,10 +1,10 @@
 {
-    "version": "BETA 2.7 b1",
+    "version": "BETA 2.7 b1.5",
     "filetostart": "./updater.js",
     "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/updater.js",
     "botobjectfile": "./src/controller.js",
     "firststart": true,
-    "whatsnew": "Fixed bot crash when checking for cooldown. Fixed messages going to the reciever when sending comments to another profile. Changed command usage messages to account for user's priviliges. Other minor fixes/changes.",
+    "whatsnew": "Cool whatsnew message you got there.",
     "timesloggedin": 0,
     "totallogintime": 0
 }
