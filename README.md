@@ -101,5 +101,6 @@ Please be also advised that in order to comment on a profile the accounts need t
 As the **license** already stated: If you want to use code from this repository in your project, feel free to do that as long as you **include credit** to this repository!  
 
 #### **Credits**
-Special thanks to [KNO7](https://steamcommunity.com/id/KN07Gaming/) for testing early beta versions and providing many ideas behind this project.  
-I also want to thank [Stiefel](https://steamcommunity.com/id/Stiefel1234) for finding weird bugs I wouldn't have found alone.  
+Special thanks to [KNO7](https://steamcommunity.com/id/KN07Gaming/) for testing early beta versions, providing many ideas behind this project and donating 5€!  
+I also want to thank [Stiefel](https://steamcommunity.com/id/Stiefel1234) for finding weird bugs I wouldn't have found alone, being a cool dude and for hosting the bot with 9 unlimited accounts.  
+Another thank you goes out to [effex1337](https://github.com/effex1337) for donating $5 via bitcoin, helping in issues and for supporting the project!  
