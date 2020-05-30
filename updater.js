@@ -26,40 +26,61 @@ var checkforupdate = (forceupdate) => {
     try {
         var extdata = require('./src/data.json')
 
+        /* ------------------ Check for new version ------------------ */
         https.get("https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/data.json", function(res) {
         res.setEncoding('utf8');
         res.on('data', function(chunk) {
             var onlineversion = JSON.parse(chunk).version //parse version number from get request
             if (onlineversion > extdata.version || forceupdate == true) { //version number greater or forceupdate is true?
                 logger("", true)
-                logger(`\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${extdata.version}\x1b[0m | New version: \x1b[32m${onlineversion}\x1b[0m\nUpdate now: https://github.com/HerrEurobeat/steam-comment-service-bot`, true)
+                logger(`\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${extdata.version}\x1b[0m | New version: \x1b[32m${onlineversion}\x1b[0m`, true)
                 logger("", true)
 
-                logger('Starting the automatic updater...')
-                module.exports.activeupdate = true //block new comment requests by setting active update to true and exporting it
-                let output = '';
+                /* ------------------ Check for permission to update ------------------ */
+                var config = require("./config.json")
 
-                if (botisloggedin == true) { //if bot is already logged in we need to check for ongoing comment processes and log all bots out when finished
+                if (config.disableautoupdate == false) { //check if the user has disabled the automatic updater
+                    logger('Starting the automatic updater...')
+                    startupdate();
+                } else { //user has it disabled, ask for confirmation
+                    process.stdout.write(`You have disabled to automatic updater.\nWould you like to update now? [y/n] `)
+                    var stdin = process.openStdin();
 
-                    var activecommentinterval = setInterval(() => { //check if a comment request is being processed every 2.5 secs
-                        var controller = require('./src/controller.js')
+                    stdin.addListener('data', text => {
+                    var response = text.toString().trim()
+                    if (response == "y") startupdate();
+                        else { if (botisloggedin == false) require('./src/controller.js'); botisloggedin = true } //start bot or do nothing
 
-                        if (controller.activecommentprocess == false) { //start logging off accounts when no comment request is being processed anymore
-                            logger("Logging off your accounts...", true)
-                            Object.keys(controller.botobject).forEach((e, i) => {
-                                controller.botobject[e].logOff() }) } //logging off each account
-
-                            setTimeout(() => {
-                                botisloggedin = false
-
-                                updaterjs(); //start update
-                                clearInterval(activecommentinterval);
-                            }, 2500);
-                    }, 2500) 
-                } else {
-                    updaterjs();
+                    stdin.pause() }) //stop reading
                 }
 
+                /* ------------------ Initiate updater & logging out ------------------ */
+                function startupdate() {
+                    module.exports.activeupdate = true //block new comment requests by setting active update to true and exporting it
+                    let output = '';
+
+                    if (botisloggedin == true) { //if bot is already logged in we need to check for ongoing comment processes and log all bots out when finished
+
+                        var activecommentinterval = setInterval(() => { //check if a comment request is being processed every 2.5 secs
+                            var controller = require('./src/controller.js')
+
+                            if (controller.activecommentprocess == false) { //start logging off accounts when no comment request is being processed anymore
+                                logger("Logging off your accounts...", true)
+                                Object.keys(controller.botobject).forEach((e, i) => {
+                                    controller.botobject[e].logOff() }) } //logging off each account
+
+                                setTimeout(() => {
+                                    botisloggedin = false
+
+                                    updaterjs(); //start update
+                                    clearInterval(activecommentinterval);
+                                }, 2500);
+                        }, 2500) 
+                    } else {
+                        updaterjs();
+                    } }
+
+                /* ------------------ Start updating files ------------------ */
                 function updaterjs() { //update updater first to fix issues in updater
                     output = ""
                     try {
@@ -156,7 +177,6 @@ var checkforupdate = (forceupdate) => {
                                 output += chunk });
                 
                             res.on('end', () => {
-                                var config = require("./config.json")
                                 output = JSON.parse(output)
                                 extdata.version = output.version
                 

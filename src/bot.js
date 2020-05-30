@@ -12,7 +12,6 @@ module.exports.run = async (logOnOptions, loginindex) => {
   const extdata = require('./data.json');
   var lastcomment = require("./lastcomment.json")
   var fs = require("fs");
-  const d = function d() { return new Date(); }
   var logger = controller.logger
 
   const bot = new SteamUser();
@@ -33,7 +32,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
   }, 250);
 
   bot.on('steamGuard', function(domain, callback) {
-    var steamGuardInputStart = d();
+    var steamGuardInputStart = Date.now();
     if (config.skipSteamGuard === true) {
       if (loginindex > 1) {
         controller.accisloggedin = true; //set to true to log next account in
@@ -61,7 +60,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
       } else {
         callback(code) }
       stdin.pause() //stop reading
-      controller.steamGuardInputTimeFunc(d() - steamGuardInputStart)
+      controller.steamGuardInputTimeFunc(Date.now() - steamGuardInputStart)
     })
   });
 
@@ -111,6 +110,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
   /* ------------ Message interactions: ------------ */
   bot.on('friendMessage', function(steamID, message) {
+    var msgrecievedtime = Date.now() //timestamp to calculate time needed to process request
     var lastcommentsteamID = new SteamID(steamID.getSteam3RenderedID()).getSteamID64() + loginindex
     logger(`[${thisbot}] Friend message from ${new SteamID(steamID.getSteam3RenderedID()).getSteamID64()}: ${message}`); //log message
 
@@ -121,10 +121,10 @@ module.exports.run = async (logOnOptions, loginindex) => {
         case '!help':
           var ownercheck = config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())
           if (ownercheck) {
-            if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commenttext = `Type '!comment number_of_comments profileid' for X many comments (max ${Object.keys(controller.communityobject).length * config.repeatedComments})). Provide a profile id to comment on a specific profile.`
+            if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commenttext = `Type '!comment number_of_comments/"all" profileid' for X many or the max amount of comments (max ${Object.keys(controller.communityobject).length * config.repeatedComments})). Provide a profile id to comment on a specific profile.`
               else var commenttext = `Type '!comment 1 profileid'. Provide a profile id to comment on a specific profile.`
           } else {
-            if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commenttext = `Type '!comment number_of_comments' for X many comments (max ${Object.keys(controller.communityobject).length * config.repeatedComments})).`
+            if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commenttext = `Type '!comment number_of_comments/"all"' for X many or the max amount of comments (max ${Object.keys(controller.communityobject).length * config.repeatedComments})).`
               else var commenttext = `Type '!comment' for a comment on your profile!` }
 
           if (ownercheck) var resetcooldowntext = `\nType '!resetcooldown' to clear your cooldown.`; else var resetcooldowntext = "";
@@ -153,10 +153,10 @@ module.exports.run = async (logOnOptions, loginindex) => {
           /* --------- Define command usage messages for each user's priviliges --------- */
           var ownercheck = config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())
           if (ownercheck) {
-            if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commentcmdusage = `'!comment number_of_comments profileid' for X many comments (max ${Object.keys(controller.communityobject).length * config.repeatedComments}). Provide a profile id to comment on a specific profile.`
+            if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commentcmdusage = `'!comment number_of_comments/"all" profileid' for X many or the max amount of comments (max ${Object.keys(controller.communityobject).length * config.repeatedComments}). Provide a profile id to comment on a specific profile.`
               else var commentcmdusage = `'!comment 1 profileid'. Provide a profile id to comment on a specific profile.`
           } else {
-            if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commentcmdusage = `'!comment number_of_comments' for X many comments (max ${Object.keys(controller.communityobject).length * config.repeatedComments}).`
+            if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commentcmdusage = `'!comment number_of_comments/"all"' for X many or the max amount of comments (max ${Object.keys(controller.communityobject).length * config.repeatedComments}).`
               else var commentcmdusage = `'!comment' for a comment on your profile!` }
 
 
@@ -195,7 +195,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
           /* --------- Check numberofcomments argument if it was provided --------- */
           if (args[0] !== undefined) {
             if (isNaN(args[0])) { //isn't a number?
-              return bot.chatMessage(steamID, `This is not a valid number!\nCommand usage: ${commentcmdusage}`) }
+              if (args[0].toLowerCase() == "all") {
+                args[0] = Object.keys(controller.communityobject).length * config.repeatedComments //replace the argument with the max amount of comments
+              } else {
+                return bot.chatMessage(steamID, `This is not a valid number!\nCommand usage: ${commentcmdusage}`) 
+              }
+            }
 
             if (args[0] > Object.keys(controller.communityobject).length * config.repeatedComments) { //number is greater than accounts * repeatedComments?
               return bot.chatMessage(steamID, `You can request max. ${Object.keys(controller.communityobject).length * config.repeatedComments} comments.\nCommand usage: ${commentcmdusage}`) }
@@ -270,17 +275,18 @@ module.exports.run = async (logOnOptions, loginindex) => {
           break;
 
         case '!ping':
-          bot.chatMessage(steamID, 'Pong!')
+          bot.chatMessage(steamID, `Pong!\nHeartbeat: ${Date.now() - msgrecievedtime}ms`)
           break;
         case '!info':
           bot.chatMessage(steamID, `
             -----------------------------------~~~~~------------------------------------ 
-            |   3urobeat's Comment Bot [Version ${extdata.version}] (More info: !about)
-            |   Uptime: ${Number(Math.round(((new Date() - controller.bootstart) / 3600000)+'e'+2)+'e-'+2)} hours
-            |   Accounts logged in: ${Object.keys(controller.communityobject).length}
+            >   3urobeat's Comment Bot [Version ${extdata.version}] (More info: !about)
+            >   Uptime: ${Number(Math.round(((new Date() - controller.bootstart) / 3600000)+'e'+2)+'e-'+2)} hours
+            >   Heartbeat: ${Date.now() - msgrecievedtime}ms
+            >   Accounts logged in: ${Object.keys(controller.communityobject).length}
             |
-            |   Your steam64ID: ${new SteamID(steamID.getSteam3RenderedID()).getSteamID64()}
-            |   Your last comment request: ${(new Date(lastcomment[lastcommentsteamID].time)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (UTC/GMT time)
+            >   Your steam64ID: ${new SteamID(steamID.getSteam3RenderedID()).getSteamID64()}
+            >   Your last comment request: ${(new Date(lastcomment[lastcommentsteamID].time)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (UTC/GMT time)
             -----------------------------------~~~~~------------------------------------
           `)
           break;
@@ -297,16 +303,21 @@ module.exports.run = async (logOnOptions, loginindex) => {
           if (!config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return bot.chatMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
           if (config.commentcooldown === 0) { //is the cooldown enabled?
             return bot.chatMessage(steamID, "The cooldown is disabled in the config!") }
+          if (args[0]) { 
+            if (isNaN(args[0])) return bot.chatMessage(steamID, "This is not a valid profileid! A profile id must look like this: 76561198260031749") 
+            if (new SteamID(args[0]).isValid() === false) return bot.chatMessage(steamID, "This is not a valid profileid! A profile id must look like this: 76561198260031749") 
+            var lastcommentsteamID = args[0] + loginindex }
+
           if ((Date.now() - lastcomment[lastcommentsteamID].time) < (config.commentcooldown * 60000)) { //check if user has cooldown applied
             lastcomment[lastcommentsteamID].time = Date.now() - (config.commentcooldown * 60000)
             fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
-              if (err) logger(`[${thisbot}] remove user from lastcomment.json error: ${err}`) })
-            bot.chatMessage(steamID, "Your cooldown has been cleared.") } else {
-              bot.chatMessage(steamID, "There is no cooldown for you applied.") }
+              if (err) logger(`[${thisbot}] remove ${lastcommentsteamID} from lastcomment.json error: ${err}`) })
+            bot.chatMessage(steamID, `${lastcommentsteamID}'s cooldown has been cleared.`) } else {
+              bot.chatMessage(steamID, `There is no cooldown for ${lastcommentsteamID} applied.`) }
           break;
         case '!about':
           if (config.owner.length > 1) var ownertext = config.owner; else var ownertext = "anonymous (no owner link provided)";
-          bot.chatMessage(steamID, `This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VAVVKE4L962H6 \n\nDisclaimer: I (the developer) am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.\nThis instance of the bot is used and operated by: ${ownertext}`)
+          bot.chatMessage(steamID, `This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \n\nDisclaimer: I (the developer) am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.\nThis instance of the bot is used and operated by: ${ownertext}`)
           break;
         case '!unfriend':
           if (!config.ownerid.includes(new SteamID(steamID.getSteam3RenderedID()).getSteamID64())) return bot.chatMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")

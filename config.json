@@ -1,5 +1,6 @@
 {
     "version": "2.6",
+    "disableautoupdate": false,
     "status": 1,
     "commentdelay": 5000,
     "logindelay": 2500,
