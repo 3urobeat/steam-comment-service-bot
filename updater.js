@@ -3,6 +3,7 @@
 
 var fs = require('fs')
 var https = require("https")
+var config = require("./config.json")
 var skippedaccounts = []
 var botisloggedin = false
 var activeupdate = false
@@ -92,7 +93,7 @@ var checkforupdate = (forceupdate) => {
 
                             res.on('end', () => {
                                 fs.writeFile("./updater.js", output, err => {
-                                    if (err) logger(err, true)
+                                    if (err) logger("error writing updater.js: " + err, true)
                                     botjs();
                                 })}) });
                     } catch (err) { logger('get updater.js function Error: ' + err, true) }}
@@ -108,7 +109,7 @@ var checkforupdate = (forceupdate) => {
 
                             res.on('end', () => {
                                 fs.writeFile("./src/bot.js", output, err => {
-                                    if (err) logger(err, true)
+                                    if (err) logger("error writing bot.js: " + err, true)
                                     startjs(); })}) });
                     } catch (err) { logger('get bot.js function Error: ' + err, true) }}
 
@@ -123,7 +124,7 @@ var checkforupdate = (forceupdate) => {
 
                             res.on('end', () => {
                                 fs.writeFile("./start.js", output, err => {
-                                    if (err) logger(err, true)
+                                    if (err) logger("error writing start.js: " + err, true)
                                     packagejson(); })}) });
                     } catch (err) { logger('get start.js function Error: ' + err, true) }}
 
@@ -142,7 +143,7 @@ var checkforupdate = (forceupdate) => {
                                 output = JSON.parse(output)
 
                                 fs.writeFile("./package.json", JSON.stringify(output, null, 4), err => {
-                                    if (err) logger(err, true)
+                                    if (err) logger("error writing package.json: " + err, true)
                                     packagelockjson(); })}) });
                     } catch (err) { logger('get package.json function Error: ' + err, true) }}
 
@@ -161,7 +162,7 @@ var checkforupdate = (forceupdate) => {
                                 output = JSON.parse(output)
 
                                 fs.writeFile("./package-lock.json", JSON.stringify(output, null, 4), err => {
-                                    if (err) logger(err, true) 
+                                    if (err) logger("error writing package-lock.json" + err, true) 
                                     configjson(); })}) });
                     } catch (err) { logger('get package-lock.json function Error: ' + err, true) }}
 
@@ -178,14 +179,15 @@ var checkforupdate = (forceupdate) => {
                 
                             res.on('end', () => {
                                 output = JSON.parse(output)
-                                extdata.version = output.version
-                
-                                Object.keys(output).forEach(e => {
-                                    if (!Object.keys(config).includes(e)) {
-                                        config[e] = output[e] } });
+                                extdata.version = output.version //refresh version in data.json
 
-                                fs.writeFile("./config.json", JSON.stringify(config, null, 4), err => {
-                                    if (err) logger(err, true) 
+                                Object.keys(output).forEach(e => {
+                                    if (!Object.keys(config).includes(e)) return; //config value seems to have gotten deleted
+                                    output[e] = config[e]
+                                });
+
+                                fs.writeFile("./config.json", JSON.stringify(output, null, 4), err => {
+                                    if (err) logger("error writing config.json: " + err, true) 
                                     controllerjs(); })
                             })})
                     } catch (err) { logger('get config.json function Error: ' + err, true) }} 
@@ -201,7 +203,7 @@ var checkforupdate = (forceupdate) => {
 
                             res.on('end', () => {
                                 fs.writeFile("./src/controller.js", output, err => {
-                                    if (err) logger(err, true);
+                                    if (err) logger("error writing controller.js: " + err, true);
 
                                     datajson(); })}) });
                     } catch (err) { logger('get controller.js function Error: ' + err, true) }}
@@ -219,7 +221,7 @@ var checkforupdate = (forceupdate) => {
                                 output = JSON.parse(output)
 
                                 fs.writeFile("./src/data.json", JSON.stringify(output, null, 4), err => {
-                                    if (err) logger(err, true) 
+                                    if (err) logger("error writing data.json: " + err, true) 
                                     logger("\x1b[32mUpdate finished. Restarting myself in 5 seconds...\x1b[0m", true);
                                     setTimeout(() => {
                                         module.exports.activeupdate = false
@@ -235,7 +237,7 @@ var checkforupdate = (forceupdate) => {
         logger('checkforupdate/update function Error: ' + err, true) }}
       
 
-//Compatibility features when updating from version <2.6
+//Compatibility features
 if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
     try {
         fs.mkdirSync('./src') 
@@ -248,7 +250,6 @@ if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
             if (err) logger("error moving lastcomment.json: " + err, true) })
 
         var logininfo = require('./logininfo.json')
-        var config = require("./config.json")
 
         if (Object.keys(logininfo)[0] == "bot1") { //check if first bot is 1 (old) and not 0
             Object.keys(logininfo).forEach((e, i) => {      
@@ -257,7 +258,7 @@ if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
                 delete logininfo[e]; })
             
             fs.writeFile("./logininfo.json", JSON.stringify(logininfo, null, 4), err => {
-                if(err) logger(err, true) }) }
+                if(err) logger("error writing changes to logininfo.json: " + err, true) }) }
 
         if (config.globalcommentcooldown == 5000) { //check if the user uses default settings and raise 5 to 10 sec
             config.globalcommentcooldown = 10000
@@ -269,6 +270,32 @@ if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
         }, 1000);
     } catch(err) {
         logger("\n\n\x1b[31m*------------------------------------------*\x1b[0m\nI have problems updating your bot to the new filesystem.\nPlease restart the bot. If you still encounter issues:\n\nPlease either download and setup the bot manually again (https://github.com/HerrEurobeat/steam-comment-service-bot/)\nor open an issue (https://github.com/HerrEurobeat/steam-comment-service-bot/issues) and include the errors\n(*only* if you have no GitHub account message 3urobeat#0975 on Discord).\n\x1b[31m*------------------------------------------*\x1b[0m\n\nError: \n" + err + "\n", true) }
+
+} else if (Object.keys(config).includes("botsgroupid")) { //this has to trigger if user was on version <2.7
+    if (config.botsgroupid != "") {
+        const xml2js = require("xml2js")
+        Object.keys(config).push("botsgroup") //add new key
+
+        try {
+            output = ""
+            https.get(`https://steamcommunity.com/gid/${config.botsgroupid}/memberslistxml/?xml=1`, function(res) { //get group64id from code to simplify config
+                res.on('data', function (chunk) {
+                output += chunk });
+
+                res.on('end', () => {
+                    new xml2js.Parser().parseString(output, function(err, result) {
+                        if (err) loffer("error parsing botsgroupid xml: " + err)
+                        config.botsgroup = `https://steamcommunity.com/groups/${result.memberList.groupDetails.groupURL}` //assign old value to new key 
+
+                        fs.writeFile("./config.json", JSON.stringify(config, null, 4), (err) => {
+                            if (err) logger('error writing botsgroupid to botsgroup: ' + err, true) })
+                            checkforupdate(true) //force update so that config gets cleaned up
+                    }) }) })
+        } catch (err) {
+            if (err) logger("error getting groupurl of botsgroupid or getting new config: " + err) } 
+    } else {
+        checkforupdate(true) }
+
 } else {
     checkforupdate() //check will start the bot afterwards
 }
