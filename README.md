@@ -21,7 +21,7 @@
   <a href="#additional-informations-">Additional information</a>
 </p>
   
-![Showcase](https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/.github/img/showcase.gif)
+![Showcase](https://i.imgur.com/9JEO0fM.gif)
   
 ## **Introduction**  
 <img align="right" width="200" height="200" src="https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/.github/img/mesh.png">  
