@@ -72,6 +72,7 @@ The bot(s) is/are now setup! Don't modify any of the other files.
 
 ## **Usage:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=385)  
 Type `node start.js` in the power shell/terminal you opened earlier.  
+**Disclaimer:** Do not start the bot with a tool that restarts on changes (like nodemon etc)! Just use normal `node`.  
 Add the main bot (bot0 in logininfo.json) on steam and send him the message: `!help`  
 
 To request a comment, simply type `!comment`!
