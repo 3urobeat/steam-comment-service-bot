@@ -56,7 +56,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
   /* ------------ Login & Events: ------------ */
   var loggedininterval = setInterval(() => { //set an interval to check if previous acc is logged on
-    if(controller.accisloggedin === true) {
+    if(controller.accisloggedin) {
       logger(`[${thisbot}] Trying to log in...`, false, true)
       bot.logOn(logOnOptions) 
       controller.accisloggedin = false; //set to false again
@@ -67,7 +67,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
   bot.on('steamGuard', function(domain, callback) {
     logger(`[${thisbot}] Steam Guard code requested...`, false, true)
     var steamGuardInputStart = Date.now();
-    if (config.skipSteamGuard === true) {
+    if (config.skipSteamGuard) {
       if (loginindex > 1) {
         logger(`[${thisbot}] Skipping account because skipSteamGuard is enabled...`, false, true)
         controller.accisloggedin = true; //set to true to log next account in
@@ -188,6 +188,15 @@ module.exports.run = async (logOnOptions, loginindex) => {
       var cont = message.slice("!").split(" ");
       var args = cont.slice(1);
 
+      if (!lastcomment[lastcommentsteamID]) { //user is somehow not in lastcomment.json? oh god not again... write user to lastcomment.json to avoid errors
+        logger(`Missing user (${steam64id}) from lastcomment.json! Writing to prevent error...`)
+
+        lastcomment[steam64id + loginindex] = {
+          time: Date.now() - (config.commentcooldown * 60000), //subtract unfriendtime to enable comment usage immediately
+          bot: bot.steamID.accountid }
+        fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
+          if (err) logger(`[${thisbot}] add missing user to lastcomment.json error: ${err}`) }) }
+
       switch(cont[0].toLowerCase()) {
         case '!help':
           var ownercheck = config.ownerid.includes(steam64id)
@@ -209,6 +218,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
             ${commenttext}
             '!ping'                                                       - Get a pong and heartbeat in ms.
             '!info'                                                        - Get useful information about the bot and you.${resetcooldowntext}${unfriendtext}${leavegrouptext}
+            '!failed'                                                     - See the exact errors of your last comment request.
             '!about'                                                    - Returns information what this is about.
             '!owner'                                                   - Get a link to the profile of the operator of this bot instance.${evaltext}${restarttext}
             ${yourgrouptext}
@@ -219,7 +229,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
         case '!comment':
 
           /* --------- Check for disabled comment cmd or if update is queued --------- */
-          if (updater.activeupdate == true) return bot.chatMessage(steamID, "The bot is currently waiting for the last requested comment to be finished in order to download an update!\nPlease wait a moment and try again.");
+          if (updater.activeupdate) return bot.chatMessage(steamID, "The bot is currently waiting for the last requested comment to be finished in order to download an update!\nPlease wait a moment and try again.");
           if (config.allowcommentcmdusage === false && !config.ownerid.includes(steam64id)) return bot.chatMessage(steamID, "The bot owner set this command to owners only.\nType !owner to get information who the owner is.\nType !about to get a link to the bot creator.") 
 
 
@@ -235,15 +245,6 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
           /* ------------------ Check for cooldowns ------------------ */
           if (config.commentcooldown !== 0) { //check for user specific cooldown
-            if (!lastcomment[lastcommentsteamID]) { //user is somehow not in lastcomment.json? oh god not again... write user to lastcomment.json to avoid errors
-              logger(`Missing user (${steam64id}) from lastcomment.json! Writing to prevent error...`)
-
-              lastcomment[steam64id + loginindex] = {
-                time: Date.now() - (config.commentcooldown * 60000), //subtract unfriendtime to enable comment usage immediately
-                bot: bot.steamID.accountid }
-              fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
-                if (err) logger(`[${thisbot}] add missing user to lastcomment.json error: ${err}`) }) }
-
             if ((Date.now() - lastcomment[lastcommentsteamID].time) < (config.commentcooldown * 60000)) { //check if user has cooldown applied
               var remainingcooldown = Math.abs(((Date.now() - lastcomment[lastcommentsteamID].time) / 1000) - (config.commentcooldown * 60))
               var remainingcooldownunit = "seconds"
@@ -257,7 +258,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 return bot.chatMessage(steamID, "You are currently recieving previously requested comments. Please wait for them to be completed.") }}
 
           if (config.globalcommentcooldown !== 0) { //check for global cooldown
-            if (commentedrecently === true) { 
+            if (commentedrecently) { 
               bot.chatMessage(steamID, `Someone else requested a comment in the last ${config.globalcommentcooldown / 1000} seconds. Please wait a moment.`) //send error message
               return; }}
 
@@ -306,11 +307,11 @@ module.exports.run = async (logOnOptions, loginindex) => {
           accstoadd[requesterSteamID] = []
 
           for (i in controller.botobject) {
-            if (Number(i) + 1 <= numberofcomments) { //only check accounts that will be used for commenting
+            if (Number(i) + 1 <= numberofcomments || Number(i) + 1 <= Object.keys(controller.botobject).length) { //only check accounts that will be used for commenting
               if (controller.botobject[i].limitations.limited == true && !Object.keys(controller.botobject[i].myFriends).includes(steam64id)) {
                 accstoadd[requesterSteamID].push(`\n 'https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[i].steamID)).getSteamID64()}'`) }
 
-              if (Number(i) + 1 == numberofcomments && accstoadd[requesterSteamID].length > 0) {
+              if (Number(i) + 1 == numberofcomments || Number(i) + 1 == Object.keys(controller.botobject).length && accstoadd[requesterSteamID].length > 0) {
                 bot.chatMessage(steamID, `In order to request ${numberofcomments} comments you will first need to add this/these accounts: (limited bot accounts)\n` + accstoadd[requesterSteamID])
                 return; }} } //stop right here criminal
 
@@ -350,7 +351,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 commentedrecently = false;
               }, config.globalcommentcooldown) }
 
-            if (controller.botobject[i].myFriends[requesterSteamID] === 3) {
+            if (controller.botobject[loginindex].myFriends[requesterSteamID] === 3) {
               lastcomment[requesterSteamID + loginindex] = {
                 time: Date.now(),
                 bot: bot.steamID.accountid }
@@ -364,21 +365,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
           bot.chatMessage(steamID, `Pong!\nHeartbeat: ${Date.now() - msgrecievedtime}ms`)
           break;
         case '!info':
-          if (!lastcomment[lastcommentsteamID]) { //user is somehow not in lastcomment.json? oh god not again... write user to lastcomment.json to avoid errors
-            logger(`Missing user (${steam64id}) from lastcomment.json! Writing to prevent error...`)
-
-            lastcomment[steam64id + loginindex] = {
-              time: Date.now() - (config.commentcooldown * 60000), //subtract unfriendtime to enable comment usage immediately
-              bot: bot.steamID.accountid }
-            fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
-              if (err) logger(`[${thisbot}] add missing user to lastcomment.json error: ${err}`) }) }
-
           bot.chatMessage(steamID, `
             -----------------------------------~~~~~------------------------------------ 
             >   3urobeat's Comment Bot [Version ${extdata.version}] (More info: !about)
             >   Uptime: ${Number(Math.round(((new Date() - controller.bootstart) / 3600000)+'e'+2)+'e-'+2)} hours | Heartbeat: ${Date.now() - msgrecievedtime}ms
             >   'node.js' Version: ${process.version} | RAM Usage (RSS): ${Math.round(process.memoryUsage()["rss"] / 1024 / 1024 * 100) / 100} MB
-            >   Accounts logged in: ${Object.keys(controller.communityobject).length}
+            >   Accounts logged in: ${Object.keys(controller.communityobject).length} | Branch: ${updater.releasemode}
             |
             >   Your steam64ID: ${steam64id}
             >   Your last comment request: ${(new Date(lastcomment[lastcommentsteamID].time)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (UTC/GMT time)
@@ -387,7 +379,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           break;
         case '!owner':
           if (config.owner.length < 1) return bot.chatMessage(steamID, "I don't know that command. Type !help for more info.\n(Bot Owner didn't include link to him/herself.)")
-          bot.chatMessage(steamID, "Check my owner's profile: " + config.owner)
+          bot.chatMessage(steamID, "Check out my owner's profile: (for more information about the bot type !about)" + config.owner)
           break;
         case '!group':
           if (config.yourgroup.length < 1 && configgroup64id.length < 1) return bot.chatMessage(steamID, "I don't know that command. Type !help for more info.") //no group info at all? stop.
@@ -407,8 +399,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
             lastcomment[lastcommentsteamID].time = Date.now() - (config.commentcooldown * 60000)
             fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
               if (err) logger(`[${thisbot}] remove ${lastcommentsteamID} from lastcomment.json error: ${err}`) })
-            bot.chatMessage(steamID, `${lastcommentsteamID}'s cooldown has been cleared.`) } else {
-              bot.chatMessage(steamID, `There is no cooldown for ${lastcommentsteamID} applied.`) }
+            bot.chatMessage(steamID, `${lastcommentsteamID.toString().slice(0, -1)}'s cooldown has been cleared.`) } else {
+              bot.chatMessage(steamID, `There is no cooldown for ${lastcommentsteamID.toString().slice(0, -1)} applied.`) }
+          break;
+        case '!failed':
+          if (!controller.failedcomments[steam64id] || Object.keys(controller.failedcomments[steam64id]).length < 1) return bot.chatMessage(steamID, "I can't remember any failed comments you have requested.");
+          bot.chatMessage(steamID, `Your last request for '${steam64id}' from '${(new Date(lastcomment[lastcommentsteamID].time)).toISOString().replace(/T/, ' ').replace(/\..+/, '')}' (UTC/GMT time) had these errors:\n\n${JSON.stringify(controller.failedcomments[steam64id], null, 4)}`)
           break;
         case '!about':
           if (config.owner.length > 1) var ownertext = config.owner; else var ownertext = "anonymous (no owner link provided)";

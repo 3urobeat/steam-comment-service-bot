@@ -30,13 +30,13 @@ var logger = (str, nodate, remove) => { //Custom logger
     var str = String(str)
     if (str.toLowerCase().includes("error")) { var str = `\x1b[31m${str}\x1b[0m` }
 
-    if (nodate === true) {
+    if (nodate) {
         var string = str; 
     } else { //startup messages should have nodate enabled -> filter messages with date when bot is not started
         var string = `\x1b[96m[${(new Date(Date.now() - (new Date().getTimezoneOffset() * 60000))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}]\x1b[0m ${str}`  
         if (readyafter == 0 && !str.toLowerCase().includes("error") && !str.includes('Logging in... Estimated wait time') && !str.includes("What's new:") && remove !== true) { readyafterlogs.push(string); return; }}
         
-    if (remove == true) {
+    if (remove) {
         process.stdout.clearLine()
         process.stdout.write(`${string}\r`) //probably dirty solution but these spaces clear up previous lines that were longer
     } else { 
@@ -60,23 +60,43 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID) => { //fun
 
     function comment(k, i, j) {
         setTimeout(() => {
+            if (Object.values(failedcomments[requesterSteamID]).includes("postUserComment error: Error: HTTP error 429")) {
+                if (Object.keys(failedcomments[requesterSteamID]).length > 0) { failedcmdreference = "To get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
+                    } else { failedcmdreference = "" }
+    
+                if (!Object.values(failedcomments[requesterSteamID]).includes("postUserComment error: Skipped because of previous HTTP 429 error.")) { //send chatMessage only the first time
+                    botobject[0].chatMessage(requesterSteamID, `Stopped comment process because of a HTTP 429 (cooldown) error. Please try again later. Failed: ${numberofcomments - i + 1}/${numberofcomments}\n\n${failedcmdreference}`) 
+
+                    var m = 0;
+                    for (var l = i + 1; l <= numberofcomments; l++) { //push all other comments to instanly complete the failedcomments obj
+                        if (m + 1 > Object.keys(communityobject).length) {
+                            m = 0; }
+
+                        failedcomments[requesterSteamID][`Comment ${l} (bot${m})`] = `postUserComment error: Skipped because of previous HTTP 429 error.`
+                        m++ //get bot number (for code comments see the for loop below that calls the comment() function)
+                    } }
+                return; }
+
             var comment = quotes[Math.floor(Math.random() * quotes.length)];
 
             communityobject[k].postUserComment(steamID, comment, (error) => {
                 if (k == 0) var thisbot = `Main`; else var thisbot = `Bot ${k}`;
-                if(error) { 
+                if (error) {
                     logger(`[${thisbot}] postUserComment error: ${error}`); 
-                    failedcomments[requesterSteamID][`Comment ${i} (bot${j})`] = `postUserComment error: ${error}`
+                    failedcomments[requesterSteamID][`Comment ${i + 1} (bot${j})`] = `postUserComment error: ${error}`
                 } else {
                     logger(`[${thisbot}] Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${comment}`) 
 
-                    if (botobject[k].myFriends[requesterSteamID] === 3) {
+                    if (botobject[k].myFriends[requesterSteamID] == 3) {
                         lastcomment[requesterSteamID.toString() + j] = { //add j to steamID to allow multiple entries for one steamID
                             time: Date.now(),
                             bot: botobject[k].steamID.accountid } } }
 
+
                 if (i == numberofcomments - 1) { //last iteration
-                    botobject[0].chatMessage(requesterSteamID, `All comments have been sent. Failed: ${Object.keys(failedcomments[requesterSteamID]).length}/${numberofcomments}`); //stop if this execution is more than wanted -> stop loop
+                    if (Object.keys(failedcomments[requesterSteamID]).length > 0) { failedcmdreference = "To get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
+                        } else { failedcmdreference = "" }
+                    botobject[0].chatMessage(requesterSteamID, `All comments have been sent. Failed: ${Object.keys(failedcomments[requesterSteamID]).length}/${numberofcomments}\n${failedcmdreference}`);
 
                     fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => { //write all lastcomment changes on last iteration
                         if (err) logger("add user to lastcomment.json from updateeverywhere() error: " + err) })
@@ -93,10 +113,9 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID) => { //fun
                         } }
 
                     module.exports.activecommentprocess = activecommentprocess.filter(item => item !== requesterSteamID) 
-                }
-            })
-        }, config.commentdelay * i); //delay every comment
-    }
+                } }) 
+            }, config.commentdelay * i); //delay every comment
+        }
 
     var j = 0;
 
@@ -130,7 +149,7 @@ if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' && process.env.USERNAME ===
     //Dieses Projekt war das erste Projekt welches wirklich ein wenig Aufmerksamkeit bekommen hat. (1,5k Aufrufe in den letzten 14 Tagen auf GitHub, 1,3k Aufrufe auf mein YouTube Tutorial, 15k Aufrufe auf ein Tutorial zu meinem Bot von jemand fremden)
     //Das Projekt hat schon bis jetzt viel Zeit in Anspruch genommen, die ersten Klausuren nach der Corona Pandemie haben bisschen darunter gelitten. All der Code ist bis auf einzelne, markierte Schnipsel selbst geschrieben. Node Version zum aktuellen Zeitpunkt: v12.16.3
 
-    if (write == true) {
+    if (write) {
         var stringifiedconfig = JSON.stringify(config,function(k,v) { //Credit: https://stackoverflow.com/a/46217335/12934162
             if(v instanceof Array)
             return JSON.stringify(v);
@@ -152,7 +171,7 @@ if (config.repeatedComments < 1) {
     logger("\x1b[31mYour repeatedComments value in config.json can't be smaller than 1! Automatically setting it to 1...\x1b[0m", true)
     config.repeatedComments = 1 }
 if (config.repeatedComments > 2 && config.commentdelay == 5000) {
-    logger("\x1b[31mYou have raised repeatedComments but haven't increased the commentdelay. This can cause cooldown errors from Steam.\x1b[0m", true) }
+    logger("\x1b[0m[\x1b[31mWarning\x1b[0m]: \x1b[31mYou have raised repeatedComments but haven't increased the commentdelay. This can cause cooldown errors from Steam.\x1b[0m", true) }
 
 //Check lastcomment.json
 logger("Checking if lastcomment.json is valid...", false, true) //file can get broken regularly when exiting while the bot was writing etc
@@ -183,11 +202,11 @@ var isSteamOnline = function isSteamOnline(continuewithlogin, stoponerr) {
     logger("Checking if Steam is reachable...", false, true)
     https.get('https://steamcommunity.com', function (res) {
         logger(`SteamCommunity is up! Status code: ${res.statusCode}`, false, true)
-        if (continuewithlogin == true) startlogin();
+        if (continuewithlogin) startlogin();
 
     }).on('error', function(err) {
         logger(`\x1b[0m[\x1b[31mWarning\x1b[0m]: SteamCommunity seems to be down or your internet isn't working! Aborting...\n           Error: ` + err, true)
-        if (stoponerr == true) process.exit(0) }) }
+        if (stoponerr) process.exit(0) }) }
 
 
 module.exports={
@@ -262,7 +281,7 @@ function startlogin() { //function will be called when steamcommunity status che
     logger(ascii[Math.floor(Math.random() * ascii.length)] + "\n", true)
     logger("", true) //put one line above everything that will come to make the output cleaner
 
-    if (extdata.firststart === true) logger("What's new: " + extdata.whatsnew + "\n")
+    if (extdata.firststart) logger("What's new: " + extdata.whatsnew + "\n")
 
     //Evaluate estimated wait time for login:
     logger("Evaluating estimated login time...", false, true)
@@ -326,7 +345,7 @@ var readyinterval = setInterval(() => { //log startup to console
             } else {
                 logger(`failed to check if bot${i} is limited. Showing account in startup message as unlimited...`, false, true) } }
 
-        if (config.disableautoupdate == true) logger("> Automatic updating is \x1b[31mturned off\x1b[0m!", true)
+        if (config.disableautoupdate) logger("> Automatic updating is \x1b[31mturned off\x1b[0m!", true)
 
         var playinggames = ""
         if (config.playinggames[1]) var playinggames = `(${config.playinggames.slice(1, config.playinggames.length)})`
@@ -459,7 +478,7 @@ var readyinterval = setInterval(() => { //log startup to console
                     } }
                 fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => { //write changes
                     if (err) logger("delete user from lastcomment.json error: " + err) })
-            }, 5000) 
+            }, 30000) 
         }
 
         //Write logintime stuff to data.json

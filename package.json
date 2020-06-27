@@ -6,7 +6,7 @@
   "dependencies": {
     "htmlparser2": "^4.1.0",
     "https": "^1.0.0",
-    "steam-user": "^4.13.2",
+    "steam-user": "^4.16.2",
     "steamcommunity": "^3.41.4"
   },
   "devDependencies": {},

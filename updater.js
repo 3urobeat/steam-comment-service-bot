@@ -4,23 +4,22 @@
 var fs = require('fs')
 var https = require("https")
 var config = require("./config.json")
+var extdata = require('./src/data.json')
 var skippedaccounts = []
 var botisloggedin = false
 var activeupdate = false
 var lastupdatecheckinterval = Date.now()
-
-//var releasemode = "master"
-var releasemode = "beta-testing"
+var releasemode = extdata.branch
 
 var logger = (str, nodate, remove) => { //Custom logger
     var str = String(str)
     if (str.toLowerCase().includes("error")) { var str = `\x1b[31m${str}\x1b[0m` } //make errors red in console
     if (str.toLowerCase().includes("updating")) { var str = `\x1b[33m${str}\x1b[0m` } //make errors red in console
 
-    if (nodate === true) { var string = str; } else {
+    if (nodate) { var string = str; } else {
         var string = `\x1b[96m[${(new Date(Date.now() - (new Date().getTimezoneOffset() * 60000))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}]\x1b[0m ${str}` }
 
-    if (remove == true) {
+    if (remove) {
         process.stdout.clearLine()
         process.stdout.write(`${string}\r`) //probably dirty solution but these spaces clear up previous lines that were longer
     } else { 
@@ -35,14 +34,12 @@ var restartdata = (data) => {
 
 var checkforupdate = (forceupdate) => {
     try {
-        var extdata = require('./src/data.json')
-
         /* ------------------ Check for new version ------------------ */
         var httpsrequest = https.get(`https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${releasemode}/src/data.json`, function(res) {
             res.setEncoding('utf8');
             res.on('data', function(chunk) {
                 var onlineversion = JSON.parse(chunk).version //parse version number from get request
-                if (onlineversion > extdata.version || forceupdate == true) { //version number greater or forceupdate is true?
+                if (onlineversion > extdata.version || forceupdate == true || releasemode == "beta-testing" && !onlineversion.includes("BETA")) { //version number greater or forceupdate is true?
                     logger("", true)
                     logger(`\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${extdata.version}\x1b[0m | New version: \x1b[32m${onlineversion}\x1b[0m`, true)
                     logger("", true)
@@ -69,7 +66,7 @@ var checkforupdate = (forceupdate) => {
                     function startupdate() {
                         module.exports.activeupdate = true //block new comment requests by setting active update to true and exporting it
 
-                        if (botisloggedin == true) { //if bot is already logged in we need to check for ongoing comment processes and log all bots out when finished
+                        if (botisloggedin) { //if bot is already logged in we need to check for ongoing comment processes and log all bots out when finished
 
                             logger(`Bot is logged in. Checking for active comment process...`, false, true)
                             var activecommentinterval = setInterval(() => { //check if a comment request is being processed every 2.5 secs
@@ -266,7 +263,9 @@ var checkforupdate = (forceupdate) => {
                 } else {
                     if (botisloggedin == false) require('./src/controller.js'); botisloggedin = true //no update, start bot
                 }
-            }) });
+            }) }).on("error", function(err) {
+                logger("\x1b[0m[\x1b[31mNotice\x1b[0m]: Couldn't check the newest version on GitHub. You can ignore this error.\n          Error: " + err, true) })
+
             lastupdatecheckinterval = Date.now() + 43200000 //12 hours in ms
 
             httpsrequest.on("error", function(err) {
@@ -355,6 +354,7 @@ module.exports={
     skippedaccounts,
     checkforupdate,
     activeupdate,
+    releasemode,
     lastupdatecheckinterval
 }
 
