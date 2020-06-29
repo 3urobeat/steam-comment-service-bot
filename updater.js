@@ -53,15 +53,17 @@ var checkforupdate = (forceupdate) => {
                         logger('Starting the automatic updater...')
                         startupdate();
                     } else { //user has it disabled, ask for confirmation
-                        process.stdout.write(`You have disabled the automatic updater.\nWould you like to update now? [y/n] `)
-                        var stdin = process.openStdin();
+                        if (botisloggedin == false) { //only ask on start, otherwise this will annoy the user
+                            process.stdout.write(`You have disabled the automatic updater.\nWould you like to update now? [y/n] `)
+                            var stdin = process.openStdin();
 
-                        stdin.addListener('data', text => {
-                        var response = text.toString().trim()
-                        if (response == "y") startupdate();
-                            else { if (botisloggedin == false) require('./src/controller.js'); botisloggedin = true } //start bot or do nothing
+                            stdin.addListener('data', text => {
+                            var response = text.toString().trim()
+                            if (response == "y") startupdate();
+                                else { require('./src/controller.js'); botisloggedin = true } //start bot or do nothing
 
-                        stdin.pause() }) //stop reading
+                            stdin.pause() }) //stop reading
+                        }
                     }
 
                     /* ------------------ Check stuff & Initiate updater & log out ------------------ */
