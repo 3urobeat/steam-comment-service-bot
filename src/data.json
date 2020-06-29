@@ -7,7 +7,7 @@
     "mestr": "3urobeat",
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://paypal.me/3urobeat",
     "firststart": true,
-    "whatsnew": "One account can now comment multiple times (repeatedComments in config)! Added !failed command to see all detailed comment errors. Revamped the console interface. Reworked the updater with master and beta branch updating. If your lastcomment.json got corrupted the bot will now erase the content instead of crash. The bot will now list accounts the user has to add if they are limited instead of waiting for a steam error. Removed a few widely unused config options. Added heartbeat to !ping and more info to !info cmd. You can now reset the cooldown of another user. Added disableautoupdate to config. Changed botsgroupid to botsgroup and made it a url. Added more default quotes. Many many more behind the scene changes (check out beta-testing branch commits for way more detail!).",
+    "whatsnew": "",
     "timesloggedin": 0,
     "totallogintime": 0
 }
