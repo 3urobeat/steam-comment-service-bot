@@ -39,6 +39,8 @@ var checkforupdate = (forceupdate) => {
             res.setEncoding('utf8');
             res.on('data', function(chunk) {
                 var onlineversion = JSON.parse(chunk).version //parse version number from get request
+                module.exports.onlinemestr = JSON.parse(chunk).mestr //get mestr and aboutstr from GitHub to check for modification
+                module.exports.onlineaboutstr = JSON.parse(chunk).aboutstr
                 if (onlineversion > extdata.version || forceupdate == true || releasemode == "beta-testing" && !onlineversion.includes("BETA")) { //version number greater or forceupdate is true?
                     logger("", true)
                     logger(`\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${extdata.version}\x1b[0m | New version: \x1b[32m${onlineversion}\x1b[0m`, true)
@@ -51,7 +53,7 @@ var checkforupdate = (forceupdate) => {
                         logger('Starting the automatic updater...')
                         startupdate();
                     } else { //user has it disabled, ask for confirmation
-                        process.stdout.write(`You have disabled to automatic updater.\nWould you like to update now? [y/n] `)
+                        process.stdout.write(`You have disabled the automatic updater.\nWould you like to update now? [y/n] `)
                         var stdin = process.openStdin();
 
                         stdin.addListener('data', text => {
@@ -257,7 +259,7 @@ var checkforupdate = (forceupdate) => {
                                         logger("\x1b[32mUpdate finished. Restarting myself in 5 seconds...\x1b[0m", true);
                                         setTimeout(() => {
                                             module.exports.activeupdate = false
-                                            require('./start').restart(skippedaccounts, true);
+                                            require('./start.js').restart(skippedaccounts, true);
                                         }, 5000); })}) }); //restart the bot
                         } catch (err) { logger('get data.json function Error: ' + err, true) }}
                 } else {

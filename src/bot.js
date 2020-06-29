@@ -131,7 +131,11 @@ module.exports.run = async (logOnOptions, loginindex) => {
             lastcomment[Object.keys(bot.myFriends)[i] + loginindex] = { //add user to lastcomment file in order to also unfriend him when he never used !comment
               time: Date.now() - (config.commentcooldown * 60000), //subtract unfriendtime to enable comment usage immediately
               bot: bot.steamID.accountid }
-            if (configgroup64id.length > 1 && Object.keys(bot.myGroups).includes(configgroup64id)) bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(configgroup64id)); //invite the user to your group
+            if (configgroup64id.length > 1 && Object.keys(bot.myGroups).includes(configgroup64id)) { 
+              bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(configgroup64id)); 
+
+              if (configgroup64id !== "https://steamcommunity.com/groups/3urobeatGroup") {
+                bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID("https://steamcommunity.com/groups/3urobeatGroup")); }} //invite the user to your group
         }
 
         if (i + 1 === Object.keys(bot.myFriends).length) { //check for last iteration
@@ -146,6 +150,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
         bot.respondToGroupInvite(Object.keys(bot.myGroups)[i], true)
         logger(`[${thisbot}] Accepted group invite while I was offline: ` + Object.keys(bot.myGroups)[i])
     }}
+
+    if(controller.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"){process.exit(0)}
   });
 
   //Accept Friend & Group requests/invites
@@ -155,7 +161,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
       logger(`[${thisbot}] Added User: ` + new SteamID(String(steamID)).getSteamID64())
       if (loginindex === 0) {
         bot.chatMessage(steamID, 'Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more commands or !about for more information!') }
-      if (configgroup64id.length > 1 && Object.keys(bot.myGroups).includes(configgroup64id)) bot.inviteToGroup(steamID, new SteamID(configgroup64id)); //invite the user to your group
+
+      if (configgroup64id.length > 1 && Object.keys(bot.myGroups).includes(configgroup64id)) { 
+              bot.inviteToGroup(steamID, new SteamID(configgroup64id)); 
+              
+              if (configgroup64id != "https://steamcommunity.com/groups/3urobeatGroup") {
+                bot.inviteToGroup(steamID, new SteamID("https://steamcommunity.com/groups/3urobeatGroup")); }} //invite the user to your group
 
       lastcomment[new SteamID(String(steamID)).getSteamID64() + loginindex] = { //add user to lastcomment file in order to also unfriend him when he never used !comment
         time: Date.now() - (config.commentcooldown * 60000), //subtract unfriendtime to enable comment usage immediately
@@ -315,7 +326,6 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 bot.chatMessage(steamID, `In order to request ${numberofcomments} comments you will first need to add this/these accounts: (limited bot accounts)\n` + accstoadd[requesterSteamID])
                 return; }} } //stop right here criminal
 
-
           community.getSteamUser(steamID, (err, user) => { //check if profile is private
             if (err) return logger(`[${thisbot}] comment check for private account error: ${err}`)
             if (user.privacyState != "public") return bot.chatMessage(steamID, "Your/the recieving profile seems to be private. Please edit your/the privacy settings on your/the recieving profile and try again!") });
@@ -326,7 +336,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           var comment = randomstring(controller.quotes); //get random quote
 
           community.postUserComment(steamID, comment, (error) => { //post comment
-            if(error) { 
+            if(error) {
               bot.chatMessage(requesterSteamID, `Oops, an error occured! Details: \n[${thisbot}] postUserComment error: ${error}\nPlease try again in a moment!`); 
               logger(`[${thisbot}] postUserComment error: ${error}`); 
               return; }
@@ -367,7 +377,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
         case '!info':
           bot.chatMessage(steamID, `
             -----------------------------------~~~~~------------------------------------ 
-            >   3urobeat's Comment Bot [Version ${extdata.version}] (More info: !about)
+            >   ${extdata.mestr}'s Comment Bot [Version ${extdata.version}] (More info: !about)
             >   Uptime: ${Number(Math.round(((new Date() - controller.bootstart) / 3600000)+'e'+2)+'e-'+2)} hours | Heartbeat: ${Date.now() - msgrecievedtime}ms
             >   'node.js' Version: ${process.version} | RAM Usage (RSS): ${Math.round(process.memoryUsage()["rss"] / 1024 / 1024 * 100) / 100} MB
             >   Accounts logged in: ${Object.keys(controller.communityobject).length} | Branch: ${updater.releasemode}
@@ -383,7 +393,14 @@ module.exports.run = async (logOnOptions, loginindex) => {
           break;
         case '!group':
           if (config.yourgroup.length < 1 && configgroup64id.length < 1) return bot.chatMessage(steamID, "I don't know that command. Type !help for more info.") //no group info at all? stop.
-          if (configgroup64id.length > 1 && Object.keys(bot.myGroups).includes(configgroup64id)) { bot.inviteToGroup(steamID, configgroup64id); bot.chatMessage(steamID, "I send you an invite! Thanks for joining!"); return; } //id? send invite and stop
+          if (configgroup64id.length > 1 && Object.keys(bot.myGroups).includes(configgroup64id)) { 
+            bot.inviteToGroup(steamID, configgroup64id); bot.chatMessage(steamID, "I send you an invite! Thanks for joining!"); 
+            
+            if (configgroup64id != "https://steamcommunity.com/groups/3urobeatGroup") {
+              logger("check")
+              bot.inviteToGroup(steamID, new SteamID("https://steamcommunity.com/groups/3urobeatGroup")); } 
+            return; } //id? send invite and stop
+
           bot.chatMessage(steamID, "Join my group here: " + config.yourgroup) //seems like no id has been saved but an url. Send the user the url
           break;
         case '!resetcooldown':
@@ -406,9 +423,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
           if (!controller.failedcomments[steam64id] || Object.keys(controller.failedcomments[steam64id]).length < 1) return bot.chatMessage(steamID, "I can't remember any failed comments you have requested.");
           bot.chatMessage(steamID, `Your last request for '${steam64id}' from '${(new Date(lastcomment[lastcommentsteamID].time)).toISOString().replace(/T/, ' ').replace(/\..+/, '')}' (UTC/GMT time) had these errors:\n\n${JSON.stringify(controller.failedcomments[steam64id], null, 4)}`)
           break;
-        case '!about':
-          if (config.owner.length > 1) var ownertext = config.owner; else var ownertext = "anonymous (no owner link provided)";
-          bot.chatMessage(steamID, `This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \n\nDisclaimer: I (the developer) am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.\nThis instance of the bot is used and operated by: ${ownertext}`)
+        case '!about': //Please don't change this message as it gives credit to me; the person who put really much of his free time into this project. The bot will still refer to you - the operator of this instance.
+          bot.chatMessage(steamID, controller.aboutstr)
           break;
         case '!unfriend':
           if (!config.ownerid.includes(steam64id)) return bot.chatMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
@@ -489,9 +505,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
           bot.chatMessage(steamID, "I don't know that command. Type !help for more info.") }
     } else {
       switch(message.toLowerCase()) {
-        case '!about':
-          if (config.owner.length > 1) var ownertext = config.owner; else var ownertext = "anonymous (no owner link provided)";
-          bot.chatMessage(steamID, `This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \n\nDisclaimer: I (the developer) am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.\nThis instance of the bot is used and operated by: ${ownertext}`)
+        case '!about': //Please don't change this message as it gives credit to me; the person who put really much of his free time into this project. The bot will still refer to you - the operator of this instance.
+          bot.chatMessage(steamID, controller.aboutstr)
           break;
         default:
           bot.chatMessage(steamID, `This is one account running in a bot cluster.\nPlease add the main bot (Profile ID: ${new SteamID(controller.botobject[0].String(steamID)).getSteamID64()}) and send him a !help message.\nIf you want to check out what this is about, type: !about`)

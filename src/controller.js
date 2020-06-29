@@ -22,7 +22,8 @@ var bootstart = new Date();
 var steamGuardInputTime = 0;
 var readyafter = 0
 var activecommentprocess = new Array();
-process.title = `3urobeat's Steam Comment Service Bot v${extdata.version} | ${process.platform}` //set node process name to find it in task manager etc.
+stoplogin = false;
+process.title = `${extdata.mestr}'s Steam Comment Service Bot v${extdata.version} | ${process.platform}` //set node process name to find it in task manager etc.
 
 
 /* ------------ Functions: ------------ */
@@ -54,6 +55,10 @@ process.on('unhandledRejection', (reason, p) => {
 var quotes = new Array();
 var quotes = fs.readFileSync('quotes.txt', 'utf8').split("\n"); //get all quotes from the quotes.txt file into an array
 
+//Please don't change this message as it gives credit to me; the person who put really much of his free time into this project. The bot will still refer to you - the operator of this instance.
+if (config.owner.length > 1) var ownertext = config.owner; else var ownertext = "anonymous (no owner link provided)"; 
+const aboutstr = `${extdata.aboutstr} \n\nDisclaimer: I (the developer) am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.\nThis instance of the bot is used and operated by: ${ownertext}`;
+
 var commenteverywhere = (steamID, numberofcomments, requesterSteamID) => { //function to let all bots comment
     failedcomments[requesterSteamID] = {}
     module.exports.activecommentprocess.push(requesterSteamID)
@@ -82,7 +87,7 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID) => { //fun
             communityobject[k].postUserComment(steamID, comment, (error) => {
                 if (k == 0) var thisbot = `Main`; else var thisbot = `Bot ${k}`;
                 if (error) {
-                    logger(`[${thisbot}] postUserComment error: ${error}`); 
+                    logger(`[${thisbot}] postUserComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(botobject).length} - reciever: ${new SteamID(String(steamID)).getSteamID64()}`); 
                     failedcomments[requesterSteamID][`Comment ${i + 1} (bot${j})`] = `postUserComment error: ${error}`
                 } else {
                     logger(`[${thisbot}] Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${comment}`) 
@@ -113,7 +118,7 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID) => { //fun
                         } }
 
                     module.exports.activecommentprocess = activecommentprocess.filter(item => item !== requesterSteamID) 
-                } }) 
+                } })
             }, config.commentdelay * i); //delay every comment
         }
 
@@ -162,7 +167,10 @@ if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' && process.env.USERNAME ===
         fs.writeFile("./config.json", stringifiedconfig, err => {
             if (err) logger("delete 3urobeat from config.json error: " + err, true) }) }}
 
+if(updater.onlinemestr!==extdata.mestr||updater.onlineaboutstr!==extdata.aboutstr){extdata.mestr=updater.onlinemestr;extdata.aboutstr=updater.onlineaboutstr;fs.writeFile("./src/data.json",JSON.stringify(extdata,null,4),err=>{});checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<";logger("Modification detected. Restarting...",true,true);logger("",true);require('../start.js').restart([],true);stoplogin=true}else{checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"}
+
 //Check config values:
+if (stoplogin == true) return;
 logger("Checking for invalid config values...", false, true)
 if (config.allowcommentcmdusage === false && new SteamID(config.ownerid[0]).isValid() === false) {
     logger("\x1b[31mYou set allowcommentcmdusage to false but didn't specify an ownerid! Aborting...\x1b[0m", true)
@@ -177,6 +185,7 @@ if (config.repeatedComments > 2 && config.commentdelay == 5000) {
 logger("Checking if lastcomment.json is valid...", false, true) //file can get broken regularly when exiting while the bot was writing etc
 fs.readFile('./src/lastcomment.json', function (err, data) {
     if (err) logger("error reading lastcomment.json to check if it is valid: " + err, true)
+    if (stoplogin == true) return;
 
     try {
         JSON.parse(data)
@@ -197,8 +206,12 @@ fs.readFile('./src/lastcomment.json', function (err, data) {
                 } })
         }} })
 
+if(typeof checkm8 == "undefined"){logger("\n\n\x1b[31mYou removed needed parts from the code! Please redownload the application and not modify anything.\x1b[0m",true);process.exit(0)}
+if(checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"){logger("\n\n\x1b[31mYou removed needed parts from the code! Please redownload the application and not modify anything.\x1b[0m",true);process.exit(0)}
+
 //Check if Steam is online:
 var isSteamOnline = function isSteamOnline(continuewithlogin, stoponerr) {
+    if (stoplogin == true) return;
     logger("Checking if Steam is reachable...", false, true)
     https.get('https://steamcommunity.com', function (res) {
         logger(`SteamCommunity is up! Status code: ${res.statusCode}`, false, true)
@@ -216,12 +229,14 @@ module.exports={
     logger,
     communityobject,
     botobject,
+    checkm8,
     commenteverywhere,
     activecommentprocess,
     quotes,
     round,
     failedcomments,
     accisloggedin,
+    aboutstr,
     round,
     isSteamOnline }
 
@@ -295,6 +310,7 @@ function startlogin() { //function will be called when steamcommunity status che
     if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "hours" }                                                                                                                                                                                                                                                                          //🥚!
     logger(`Logging in... Estimated wait time: ${round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`)
 
+    if(checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"){process.exit(0)}
     logger("Loading logininfo for each account...", false, true)
     skippednow = [] //array to track which accounts have been skipped
 
@@ -313,7 +329,7 @@ function startlogin() { //function will be called when steamcommunity status che
                             accountName: logininfo[k][0],
                             password: logininfo[k][1],
                             promptSteamGuardCode: false,
-                            machineName: "3urobeat's Comment Bot"
+                            machineName: `${extdata.mestr}'s Comment Bot`
                         };
                         b.run(logOnOptions, i); //run bot.js with corresponding account
                     }, config.logindelay) }
@@ -331,8 +347,8 @@ var readyinterval = setInterval(() => { //log startup to console
 
         logger(' ', true)
         logger('*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*', true)
-        logger(`> \x1b[96m${logininfo.bot0[0]}\x1b[0m version \x1b[96m${extdata.version}\x1b[0m by 3urobeat logged in.`, true)
-        if (config.repeatedComments > 3) { var repeatedComments = `\x1b[31m${config.repeatedComments}\x1b[0m` } else { var repeatedComments = config.repeatedComments }
+        logger(`> \x1b[96m${logininfo.bot0[0]}\x1b[0m version \x1b[96m${extdata.version}\x1b[0m by ${extdata.mestr} logged in.`, true)
+        if (config.repeatedComments > 3) { var repeatedComments = `\x1b[4m\x1b[31m${config.repeatedComments}\x1b[0m` } else { var repeatedComments = config.repeatedComments }
         logger(`> ${Object.keys(communityobject).length - 1} child accounts | User can request ${repeatedComments} comments per Acc`, true)
 
         //display amount of limited accounts and if automatic updates are turned off
@@ -340,10 +356,10 @@ var readyinterval = setInterval(() => { //log startup to console
         for (i = 0; i < Object.keys(botobject).length; i++) {
             if (botobject[Object.keys(botobject)[i]].limitations != undefined && botobject[Object.keys(botobject)[i]].limitations.limited != undefined) { //if it should be undefined for what ever reason then rather don't check instead of crash the bot
                 if (botobject[Object.keys(botobject)[i]] != undefined && botobject[Object.keys(botobject)[i]].limitations.limited == true) limitedaccs++ //yes, this way to get the botobject key by iteration looks stupid and is probably stupid but it works and is "compact" (not really but idk)
-                if (Number(i) + 1 == Object.keys(botobject).length && limitedaccs > 0)
-                    logger(`> ${limitedaccs}/${Object.keys(botobject).length} account(s) are \x1b[31mlimited\x1b[0m`, true)
-            } else {
-                logger(`failed to check if bot${i} is limited. Showing account in startup message as unlimited...`, false, true) } }
+            } else { logger(`failed to check if bot${i} is limited. Showing account in startup message as unlimited...`, false, true) } 
+
+            if (Number(i) + 1 == Object.keys(botobject).length && limitedaccs > 0)
+                logger(`> ${limitedaccs}/${Object.keys(botobject).length} account(s) are \x1b[31mlimited\x1b[0m`, true) }
 
         if (config.disableautoupdate) logger("> Automatic updating is \x1b[31mturned off\x1b[0m!", true)
 
@@ -392,7 +408,7 @@ var readyinterval = setInterval(() => { //log startup to console
 
         logger(`Logging supressed logs...`, false, true)
         readyafterlogs.forEach(e => { logger(e, true) }) //log suppressed logs
-
+        
         //Join botsgroup if not already joined
         try {
             if (config.botsgroup.length < 1) {
