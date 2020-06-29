@@ -7,7 +7,7 @@
     "mestr": "3urobeat",
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://paypal.me/3urobeat",
     "firststart": true,
-    "whatsnew": "",
+    "whatsnew": "One account can now comment multiple times (repeatedComments in config)! Added !failed command to see all detailed comment errors. Revamped the console interface. For more way more changes visit the GitHub Repo!",
     "timesloggedin": 0,
     "totallogintime": 0
 }
