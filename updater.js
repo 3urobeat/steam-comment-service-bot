@@ -76,19 +76,19 @@ var checkforupdate = (forceupdate) => {
                             var activecommentinterval = setInterval(() => { //check if a comment request is being processed every 2.5 secs
                                 var controller = require('./src/controller.js')
 
-                                if (Array(controller.activecommentprocess).length == 0) { //start logging off accounts when no comment request is being processed anymore
+                                if (controller.activecommentprocess.length == 0) { //start logging off accounts when no comment request is being processed anymore
                                     logger("Logging off your accounts...", true)
                                     Object.keys(controller.botobject).forEach((e, i) => {
                                         logger(`Logging off bot${e}...`, false, true)
                                         controller.botobject[e].logOff() }) } //logging off each account
 
-                                    setTimeout(() => {
-                                        botisloggedin = false
+                                setTimeout(() => {
+                                    botisloggedin = false
 
-                                        updaterjs(); //start update
-                                        logger(`Starting update...`, false, true)
-                                        clearInterval(activecommentinterval);
-                                    }, 2500);
+                                    updaterjs(); //start update
+                                    logger(`Starting update...`, false, true)
+                                    clearInterval(activecommentinterval);
+                                }, 2500);
                             }, 2500) 
                         } else {
                             updaterjs();
