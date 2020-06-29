@@ -296,7 +296,7 @@ function startlogin() { //function will be called when steamcommunity status che
     logger(ascii[Math.floor(Math.random() * ascii.length)] + "\n", true)
     logger("", true) //put one line above everything that will come to make the output cleaner
 
-    if (extdata.firststart) logger("What's new: " + extdata.whatsnew + "\n")
+    if (extdata.firststart) logger("\x1b[0mWhat's new: " + extdata.whatsnew + "\n")
 
     //Evaluate estimated wait time for login:
     logger("Evaluating estimated login time...", false, true)
