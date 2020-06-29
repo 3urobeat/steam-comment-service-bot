@@ -41,7 +41,7 @@ var checkforupdate = (forceupdate) => {
                 var onlineversion = JSON.parse(chunk).version //parse version number from get request
                 module.exports.onlinemestr = JSON.parse(chunk).mestr //get mestr and aboutstr from GitHub to check for modification
                 module.exports.onlineaboutstr = JSON.parse(chunk).aboutstr
-                if (onlineversion > extdata.version || forceupdate == true || releasemode == "beta-testing" && !onlineversion.includes("BETA")) { //version number greater or forceupdate is true?
+                if (onlineversion > extdata.version || forceupdate == true || releasemode == "beta-testing" && !onlineversion.includes("BETA") && extdata.version.includes("BETA")) { //version number greater or forceupdate is true?
                     logger("", true)
                     logger(`\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${extdata.version}\x1b[0m | New version: \x1b[32m${onlineversion}\x1b[0m`, true)
                     logger("", true)
