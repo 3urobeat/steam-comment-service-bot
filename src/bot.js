@@ -175,8 +175,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
     for (let i = 0; i < Object.keys(bot.myGroups).length; i++) {
       if (bot.myGroups[Object.keys(bot.myGroups)[i]] == 2) {
         if (config.acceptgroupinvites !== true) { //check if group accept is false
-          if (config.botsgroupid.length < 1) return; 
-          if (Object.keys(bot.myGroups)[i] !== config.botsgroupid) { return; }} //check if group id is bot group           
+          if (config.botsgroup.length < 1) return; 
+          if (Object.keys(bot.myGroups)[i] !== config.botsgroup) { return; }} //check if group id is bot group           
         bot.respondToGroupInvite(Object.keys(bot.myGroups)[i], true)
         logger(`[${thisbot}] Accepted group invite while I was offline: ` + Object.keys(bot.myGroups)[i])
     }}
@@ -209,8 +209,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
   bot.on('groupRelationship', (steamID, relationship) => {
     if (relationship === 2) {
       if (config.acceptgroupinvites !== true) { //check if group accept is false
-        if (config.botsgroupid.length < 1) return; 
-        if (new SteamID(String(steamID)).getSteamID64() !== config.botsgroupid) { return; }} //check if group id is bot group  
+        if (config.botsgroup.length < 1) return; 
+        if (new SteamID(String(steamID)).getSteamID64() !== config.botsgroup) { return; }} //check if group id is bot group  
 
       bot.respondToGroupInvite(steamID, true)
       logger(`[${thisbot}] Accepted group invite: ` + new SteamID(String(steamID)).getSteamID64())
