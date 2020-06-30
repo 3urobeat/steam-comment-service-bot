@@ -100,6 +100,7 @@ Please be also advised that in order to comment on a profile the accounts need t
 
 #### **License**
 As the **license** already stated: If you want to use code from this repository in your project, feel free to do that as long as you **include credit** to this repository!  
+If you are using this bot as a whole: You are allowed to change bot messages (for translation). You are **not** allowed to remove any credit to myself.  
 
 #### **Credits**
 Special thanks to [KNO7](https://steamcommunity.com/id/KN07Gaming/) for testing early beta versions, providing many ideas behind this project and donating 5€!  
