@@ -1,5 +1,5 @@
 {
-    "version": "2.7",
+    "version": "2.7.1",
     "branch": "master",
     "filetostart": "./updater.js",
     "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/updater.js",
@@ -7,7 +7,7 @@
     "mestr": "3urobeat",
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://paypal.me/3urobeat",
     "firststart": true,
-    "whatsnew": "One account can now comment multiple times (repeatedComments in config)! Added !failed command to see all detailed comment errors. Revamped the console interface. For more way more changes visit the GitHub Repo!",
+    "whatsnew": "Fixed crash when child bot recieved message. Fixed limited check crash when skipping account. Fixed comment limited & not friend check. Fixed auto skipSteamGuard.",
     "timesloggedin": 0,
     "totallogintime": 0
 }

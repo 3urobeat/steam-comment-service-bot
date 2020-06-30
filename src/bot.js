@@ -27,7 +27,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
     else var thisbot = `Bot ${loginindex}`
   
   if (loginindex == 0) { //group64id only needed by main bot -> remove unnecessary load from other bots
-    if (config.yourgroup.length < 1) {    
+    configgroup64id = "" //define to avoid not defined errors
+    if (config.yourgroup.length < 1) {
       logger('Skipping group64id request of yourgroup because config.yourgroup is empty.', false, true); //log to output for debugging
       configgroup64id = "" 
     } else {
@@ -57,48 +58,76 @@ module.exports.run = async (logOnOptions, loginindex) => {
   /* ------------ Login & Events: ------------ */
   var loggedininterval = setInterval(() => { //set an interval to check if previous acc is logged on
     if(controller.accisloggedin) {
-      logger(`[${thisbot}] Trying to log in...`, false, true)
-      bot.logOn(logOnOptions) 
-      controller.accisloggedin = false; //set to false again
       clearInterval(loggedininterval) //stop interval
+      controller.accisloggedin = false; //set to false again
+      logger(`[${thisbot}] Trying to log in...`, false, true)
+      try {
+        bot.logOn(logOnOptions)
+      } catch (err) {
+        logger("Error: " + err, true)
+        controller.accisloggedin = true; //set to true to log next account in
+        updater.skippedaccounts.push(loginindex)
+      } 
     }
   }, 250);
 
-  bot.on('steamGuard', function(domain, callback) {
-    logger(`[${thisbot}] Steam Guard code requested...`, false, true)
-    var steamGuardInputStart = Date.now();
-    if (config.skipSteamGuard) {
-      if (loginindex > 1) {
-        logger(`[${thisbot}] Skipping account because skipSteamGuard is enabled...`, false, true)
-        controller.accisloggedin = true; //set to true to log next account in
-        updater.skippedaccounts.push(loginindex)
-        return;
-      } else {
-        logger("Even with skipSteamGuard enabled, the first account always has to be logged in.", true)
-      } }
-
-    if (loginindex == 0) {
-      process.stdout.write(`[${logOnOptions.accountName}] Steam Guard Code: `)
-    } else {
-      process.stdout.write(`[${logOnOptions.accountName}] Steam Guard Code (leave empty and press ENTER to skip account): `)
-    }
-    var stdin = process.openStdin();
-
-    stdin.addListener('data', text => {
-      var code = text.toString().trim()
-      if (code == "") {
-        if (loginindex == 0) {
-          logger("The first account always has to be logged in!\nPlease restart and provide a steamGuard code!", true) 
-        } else {
-          logger(`[${thisbot}] steamGuard input empty, skipping account...`, false, true)
+  bot.on('steamGuard', function(domain, callback, lastCodeWrong) {
+    function askforcode() {
+      logger(`[${thisbot}] Steam Guard code requested...`, false, true)
+      
+      if (config.skipSteamGuard) {
+        if (loginindex > 0) {
+          logger(`[${thisbot}] Skipping account because skipSteamGuard is enabled...`, false, true)
           controller.accisloggedin = true; //set to true to log next account in
-          updater.skippedaccounts.push(loginindex) }
+          updater.skippedaccounts.push(loginindex)
+          return;
+        } else {
+          logger("Even with skipSteamGuard enabled, the first account always has to be logged in.", true)
+        } }
+
+      var steamGuardInputStart = Date.now();
+
+      if (loginindex == 0) {
+        process.stdout.write(`[${logOnOptions.accountName}] Steam Guard Code: `)
       } else {
-        logger(`[${thisbot}] Accepting steamGuard code...`, false, true)
-        callback(code) }
-      stdin.pause() //stop reading
-      controller.steamGuardInputTimeFunc(Date.now() - steamGuardInputStart)
-    })
+        process.stdout.write(`[${logOnOptions.accountName}] Steam Guard Code (leave empty and press ENTER to skip account): `)
+      }
+      var stdin = process.openStdin();
+
+      stdin.addListener('data', text => {
+        var code = text.toString().trim()
+        stdin.pause() //stop reading
+
+        if (code == "") { //skip initated
+          if (loginindex == 0) {
+            logger("The first account always has to be logged in!", true)
+            setTimeout(() => {
+              askforcode();
+            }, 500);
+          } else {
+            logger(`[${thisbot}] steamGuard input empty, skipping account...`, false, true)
+            controller.accisloggedin = true; //set to true to log next account in
+            updater.skippedaccounts.push(loginindex) }
+
+        } else { //code provided
+          logger(`[${thisbot}] Accepting steamGuard code...`, false, true)
+          callback(code)
+        }
+
+        controller.steamGuardInputTimeFunc(Date.now() - steamGuardInputStart)
+      })
+    } //function end
+
+    //calling the function:
+    if (lastCodeWrong) { //last code seems to be wrong
+      logger("", true, true)
+      logger(`Your code seems to be wrong, please try again!`, true)
+      setTimeout(() => {
+        askforcode(); //code seems to be wrong! ask again...
+      }, 500);
+    } else {
+      askforcode(); //ask first time
+    }
   });
 
   bot.on('loggedOn', () => { //this account is now logged on
@@ -108,15 +137,16 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
     controller.communityobject[loginindex] = community //export this community instance to the communityobject to access it from controller.js
     controller.botobject[loginindex] = bot //export this bot instance to the botobject to access it from controller.js
-    if (loginindex == 0) controller.botobject[0]["configgroup64id"] = configgroup64id //export configgroup64id to access it from controller.js when botsgroup == yourgroup
   });
 
   bot.on("webSession", (sessionID, cookies) => { //get websession (log in to chat)
     community.setCookies(cookies); //set cookies (otherwise the bot is unable to comment)
+    if (loginindex == 0) controller.botobject[0]["configgroup64id"] = configgroup64id //export configgroup64id to access it from controller.js when botsgroup == yourgroup
     controller.accisloggedin = true; //set to true to log next account in
 
     //Accept offline group & friend invites
-    logger(`[${thisbot}] Got websession and set cookies. Accepting offline friend & group invites...`, false, true)
+    logger(`[${thisbot}] Got websession and set cookies.`, false, true)
+    logger(`[${thisbot}] Accepting offline friend & group invites...`, false, true)
     for (let i = 0; i < Object.keys(bot.myFriends).length; i++) { //Credit: https://dev.doctormckay.com/topic/1694-accept-friend-request-sent-in-offline/  
       if (!lastcomment[Object.keys(bot.myFriends)[i] + loginindex]) { //always check if user is on lastcomment to avoid errors
         lastcomment[Object.keys(bot.myFriends)[i] + loginindex] = {
@@ -318,13 +348,13 @@ module.exports.run = async (logOnOptions, loginindex) => {
           accstoadd[requesterSteamID] = []
 
           for (i in controller.botobject) {
-            if (Number(i) + 1 <= numberofcomments || Number(i) + 1 <= Object.keys(controller.botobject).length) { //only check accounts that will be used for commenting
+            if (Number(i) + 1 <= numberofcomments && Number(i) + 1 <= Object.keys(controller.botobject).length) { //only check if this acc is wanted for a comment
               if (controller.botobject[i].limitations.limited == true && !Object.keys(controller.botobject[i].myFriends).includes(steam64id)) {
-                accstoadd[requesterSteamID].push(`\n 'https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[i].steamID)).getSteamID64()}'`) }
+                accstoadd[requesterSteamID].push(`\n 'https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[i].steamID)).getSteamID64()}'`) }}
 
-              if (Number(i) + 1 == numberofcomments || Number(i) + 1 == Object.keys(controller.botobject).length && accstoadd[requesterSteamID].length > 0) {
-                bot.chatMessage(steamID, `In order to request ${numberofcomments} comments you will first need to add this/these accounts: (limited bot accounts)\n` + accstoadd[requesterSteamID])
-                return; }} } //stop right here criminal
+            if (Number(i) + 1 == numberofcomments && accstoadd[requesterSteamID].length > 0 || Number(i) + 1 == Object.keys(controller.botobject).length && accstoadd[requesterSteamID].length > 0) {
+              bot.chatMessage(steamID, `In order to request ${numberofcomments} comments you will first need to add this/these accounts: (limited bot accounts)\n` + accstoadd[requesterSteamID])
+              return; } } //stop right here criminal
 
           community.getSteamUser(steamID, (err, user) => { //check if profile is private
             if (err) return logger(`[${thisbot}] comment check for private account error: ${err}`)
@@ -389,7 +419,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           break;
         case '!owner':
           if (config.owner.length < 1) return bot.chatMessage(steamID, "I don't know that command. Type !help for more info.\n(Bot Owner didn't include link to him/herself.)")
-          bot.chatMessage(steamID, "Check out my owner's profile: (for more information about the bot type !about)" + config.owner)
+          bot.chatMessage(steamID, "Check out my owner's profile: (for more information about the bot type !about)\n" + config.owner)
           break;
         case '!group':
           if (config.yourgroup.length < 1 && configgroup64id.length < 1) return bot.chatMessage(steamID, "I don't know that command. Type !help for more info.") //no group info at all? stop.
@@ -509,7 +539,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           bot.chatMessage(steamID, controller.aboutstr)
           break;
         default:
-          bot.chatMessage(steamID, `This is one account running in a bot cluster.\nPlease add the main bot (Profile ID: ${new SteamID(controller.botobject[0].String(steamID)).getSteamID64()}) and send him a !help message.\nIf you want to check out what this is about, type: !about`)
+          bot.chatMessage(steamID, `This is one account running in a bot cluster.\nPlease add the main bot and send him a !help message.\nIf you want to check out what this is about, type: !about\nhttps://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[0].steamID)).getSteamID64()}`)
       }
     }
   });
