@@ -342,7 +342,7 @@ function startlogin() { //function will be called when steamcommunity status che
 
 /* ------------ Everything logged in: ------------ */
 var readyinterval = setInterval(() => { //log startup to console
-    if (Object.keys(communityobject).length == (Object.keys(logininfo).length - updater.skippedaccounts.length) && botobject[Object.keys(logininfo).length - 1].limitations != undefined && module.exports.accisloggedin == true) {
+    if (Object.keys(communityobject).length == (Object.keys(logininfo).length - updater.skippedaccounts.length) && botobject[Object.keys(botobject).length - 1].limitations != undefined && module.exports.accisloggedin == true) {
         clearInterval(readyinterval)
 
         logger(' ', true)
