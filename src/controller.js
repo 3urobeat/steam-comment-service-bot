@@ -39,7 +39,7 @@ var logger = (str, nodate, remove) => { //Custom logger
         
     if (remove) {
         process.stdout.clearLine()
-        process.stdout.write(`${string}\r`) //probably dirty solution but these spaces clear up previous lines that were longer
+        process.stdout.write(`${string}\r`)
     } else { 
         process.stdout.clearLine()
         console.log(`${string}`) }
@@ -180,6 +180,29 @@ if (config.repeatedComments < 1) {
     config.repeatedComments = 1 }
 if (config.repeatedComments > 2 && config.commentdelay == 5000) {
     logger("\x1b[0m[\x1b[31mWarning\x1b[0m]: \x1b[31mYou have raised repeatedComments but haven't increased the commentdelay. This can cause cooldown errors from Steam.\x1b[0m", true) }
+
+//Check cache.json
+logger("Checking if cache.json is valid...", false, true) //file can get broken regularly when exiting while the bot was writing etc
+fs.readFile('./src/cache.json', function (err, data) {
+    if (err) logger("error reading cache.json to check if it is valid: " + err, true)
+    if (stoplogin == true) return;
+
+    try {
+        JSON.parse(data)
+        cachefile = require("./cache.json")
+    } catch (err) {
+        if (err) {
+            logger("Your cache.json is broken. No worries I will apply duct tape.\nError: " + err + "\n", true) 
+
+            fs.writeFile('./src/cache.json', "{}", (err) => { //write empty valid json
+                if (err) { 
+                    logger("Error writing {} to cache.json.\nPlease do this manually: Go into 'src' folder, open 'cache.json', write '{}' and save.\nOtherwise the bot will always crash.\nError: " + err + "\n\nAborting...", true); 
+                    process.exit(0) //abort since writeFile was unable to write and any further execution would crash
+                } else {
+                    logger("Successfully cleared cache.json.", false, true)
+                    cachefile = require("./cache.json")
+                } })
+        }} })
 
 //Check lastcomment.json
 logger("Checking if lastcomment.json is valid...", false, true) //file can get broken regularly when exiting while the bot was writing etc
@@ -379,7 +402,8 @@ var readyinterval = setInterval(() => { //log startup to console
         extdata.totallogintime += readyafter / Object.keys(communityobject).length //get rough logintime of only one account
         logger('*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*', true)
         logger(' ', true)
-        if (updater.skippedaccounts.length > 0) logger(`Skipped Accounts: ${updater.skippedaccounts.length}/${Object.keys(logininfo).length}`, true)
+        if (updater.skippedaccounts.length > 0) logger(`Skipped Accounts: ${updater.skippedaccounts.length}/${Object.keys(logininfo).length}\n`, true)
+        if (extdata.firststart) logger(`If you like my work please consider giving my repository a star! I would really appreciate it!\nhttps://github.com/HerrEurobeat/steam-comment-service-bot`, true)
 
         //Check if ownerids are correct:
         logger(`Checking for invalid ownerids...`, false, true)
@@ -424,29 +448,37 @@ var readyinterval = setInterval(() => { //log startup to console
                             communityobject[e].joinGroup(`${botsgroupid}`)
                             logger(`[Bot ${e}] Joined/Requested to join steam group that has been set in the config (botsgroup).`) } })
                 } else {
-                    https.get(`${config.botsgroup}/memberslistxml/?xml=1`, function(botsgroupres) { //get group64id from code to simplify config
-                        botsgroupres.on('data', function (chunk) {
-                            botsgroupoutput += chunk });
-                
-                        botsgroupres.on('end', () => {
-                            if (!String(botsgroupoutput).includes("<?xml") || !String(botsgroupoutput).includes("<groupID64>")) { //Check if botsgroupoutput is steam group xml data before parsing it
-                                logger("\x1b[0m[\x1b[31mNotice\x1b[0m] Your bots group (botsgroup in config) doesn't seem to be valid!\n         Error: " + config.botsgroup + " contains no xml or groupID64 data", true); 
-                                botsgroupid = "" 
-                            } else {
-                                new xml2js.Parser().parseString(botsgroupoutput, function(botsgrouperr, botsgroupResult) {
-                                    if (botsgrouperr) return logger("error parsing botsgroup xml: " + botsgrouperr, true)
+                    if (cachefile.botsgroup == config.botsgroup) {
 
-                                    botsgroupid = botsgroupResult.memberList.groupID64
-                        
-                                    Object.keys(botobject).forEach((e) => {
-                                        if (!Object.keys(botobject[e].myGroups).includes(String(botsgroupid))) {
-                                            communityobject[e].joinGroup(`${botsgroupid}`)
-                                            logger(`[Bot ${e}] Joined/Requested to join steam group that has been set in the config (botsgroup).`) }
-                                    }) }) } })
-                        }).on("error", function(err) {
-                            logger("\x1b[0m[\x1b[31mNotice\x1b[0m]: Couldn't get botsgroup 64id. Either Steam is down or your internet isn't working.\n          Error: " + err, true)
-                            botsgroupid = ""
-                    }) } }
+                    } else {
+                        https.get(`${config.botsgroup}/memberslistxml/?xml=1`, function(botsgroupres) { //get group64id from code to simplify config
+                            botsgroupres.on('data', function (chunk) {
+                                botsgroupoutput += chunk });
+                    
+                            botsgroupres.on('end', () => {
+                                if (!String(botsgroupoutput).includes("<?xml") || !String(botsgroupoutput).includes("<groupID64>")) { //Check if botsgroupoutput is steam group xml data before parsing it
+                                    logger("\x1b[0m[\x1b[31mNotice\x1b[0m] Your bots group (botsgroup in config) doesn't seem to be valid!\n         Error: " + config.botsgroup + " contains no xml or groupID64 data", true); 
+                                    botsgroupid = "" 
+                                } else {
+                                    new xml2js.Parser().parseString(botsgroupoutput, function(botsgrouperr, botsgroupResult) {
+                                        if (botsgrouperr) return logger("error parsing botsgroup xml: " + botsgrouperr, true)
+
+                                        botsgroupid = botsgroupResult.memberList.groupID64
+
+                                        cachefile.botsgroup = config.botsgroup
+                                        cachefile.botsgroupid = String(botsgroupResult.memberList.groupID64)
+                                        fs.writeFile("./src/cache.json", JSON.stringify(cachefile, null, 4), err => { 
+                                          if (err) logger(`[${thisbot}] error writing configgroup64id to cache.json: ${err}`) })
+                            
+                                        Object.keys(botobject).forEach((e) => {
+                                            if (!Object.keys(botobject[e].myGroups).includes(String(botsgroupid))) {
+                                                communityobject[e].joinGroup(`${botsgroupid}`)
+                                                logger(`[Bot ${e}] Joined/Requested to join steam group that has been set in the config (botsgroup).`) }
+                                        }) }) } })
+                            }).on("error", function(err) {
+                                logger("\x1b[0m[\x1b[31mNotice\x1b[0m]: Couldn't get botsgroup 64id. Either Steam is down or your internet isn't working.\n          Error: " + err, true)
+                                botsgroupid = ""
+                        }) }} }
         } catch (err) {
             if (err) return logger("error getting botsgroup xml info: " + err, true) }
 
