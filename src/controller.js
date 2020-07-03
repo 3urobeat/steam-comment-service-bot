@@ -4,6 +4,7 @@
 const SteamID = require('steamid');
 const fs = require('fs');
 const https = require('https')
+const readline = require("readline")
 const xml2js = require('xml2js')
 
 var updater = require('../updater.js')
@@ -22,6 +23,7 @@ var bootstart = new Date();
 var steamGuardInputTime = 0;
 var readyafter = 0
 var activecommentprocess = new Array();
+skippednow = [] //array to track which accounts have been skipped
 stoplogin = false;
 process.title = `${extdata.mestr}'s Steam Comment Service Bot v${extdata.version} | ${process.platform}` //set node process name to find it in task manager etc.
 
@@ -38,10 +40,10 @@ var logger = (str, nodate, remove) => { //Custom logger
         if (readyafter == 0 && !str.toLowerCase().includes("error") && !str.includes('Logging in... Estimated wait time') && !str.includes("What's new:") && remove !== true) { readyafterlogs.push(string); return; }}
         
     if (remove) {
-        process.stdout.clearLine()
-        process.stdout.write(`${string}\r`) //probably dirty solution but these spaces clear up previous lines that were longer
+        readline.clearLine(process.stdout, 0) //0 clears entire line
+        process.stdout.write(`${string}\r`)
     } else { 
-        process.stdout.clearLine()
+        readline.clearLine(process.stdout, 0)
         console.log(`${string}`) }
 
     fs.appendFileSync('./output.txt', string.replace(/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]/g, '') + '\n', err => { //Regex Credit: https://github.com/Filirom1/stripcolorcodes
@@ -180,6 +182,31 @@ if (config.repeatedComments < 1) {
     config.repeatedComments = 1 }
 if (config.repeatedComments > 2 && config.commentdelay == 5000) {
     logger("\x1b[0m[\x1b[31mWarning\x1b[0m]: \x1b[31mYou have raised repeatedComments but haven't increased the commentdelay. This can cause cooldown errors from Steam.\x1b[0m", true) }
+if (logininfo.bot0 == undefined) { //check real quick if logininfo is empty
+    logger("\x1b[31mYour logininfo doesn't contain a bot0 or is empty! Aborting...\x1b[0m", true); process.exit(0) }
+
+//Check cache.json
+logger("Checking if cache.json is valid...", false, true) //file can get broken regularly when exiting while the bot was writing etc
+fs.readFile('./src/cache.json', function (err, data) {
+    if (err) logger("error reading cache.json to check if it is valid: " + err, true)
+    if (stoplogin == true) return;
+
+    try {
+        JSON.parse(data)
+        cachefile = require("./cache.json")
+    } catch (err) {
+        if (err) {
+            logger("Your cache.json is broken. No worries I will apply duct tape.\nError: " + err + "\n", true) 
+
+            fs.writeFile('./src/cache.json', "{}", (err) => { //write empty valid json
+                if (err) { 
+                    logger("Error writing {} to cache.json.\nPlease do this manually: Go into 'src' folder, open 'cache.json', write '{}' and save.\nOtherwise the bot will always crash.\nError: " + err + "\n\nAborting...", true); 
+                    process.exit(0) //abort since writeFile was unable to write and any further execution would crash
+                } else {
+                    logger("Successfully cleared cache.json.", false, true)
+                    cachefile = require("./cache.json")
+                } })
+        }} })
 
 //Check lastcomment.json
 logger("Checking if lastcomment.json is valid...", false, true) //file can get broken regularly when exiting while the bot was writing etc
@@ -238,62 +265,16 @@ module.exports={
     accisloggedin,
     aboutstr,
     round,
-    isSteamOnline }
+    isSteamOnline,
+    skippednow }
 
 
 /* ------------ Startup & Login: ------------ */
-module.exports.ascii = ascii = [`
- ______     ______     __    __     __    __     ______     __   __     ______      ______     ______     ______  
-/\\  ___\\\   /\\  __ \\   /\\ "-./  \\   /\\ "-./  \\   /\\  ___\\   /\\ "-.\\ \\   /\\\__  _\\    /\\  == \\   /\\  __ \\   /\\\__  _\\ 
-\\ \\ \\____  \\ \\ \\/\\ \\  \\ \\ \\-./\\ \\  \\ \\ \\-./\\ \\  \\ \\  __\\   \\ \\ \\-.  \\  \\/_/\\ \\/    \\ \\  __<   \\ \\ \\/\\ \\  \\/_/\\ \\/ 
- \\ \\_____\\\  \\ \\_____\\  \\ \\_\\ \\ \\_\\  \\ \\_\\ \\ \\_\\  \\ \\_____\\  \\ \\_\\\\"\\_\\    \\ \\_\\     \\ \\_____\\  \\ \\_____\\    \\ \\_\\ 
-  \\\/_____/   \\/_____/   \\/_/  \\/_/   \\/_/  \\/_/   \\/_____/   \\/_/ \\/_/     \\/_/      \\/_____/   \\/_____/     \\/_/ `,
-`
-_________                                       __    __________        __   
-\\_   ___ \\  ____   _____   _____   ____   _____/  |_  \\______   \\ _____/  |_ 
-/    \\  \\/ /  _ \\ /     \\ /     \\_/ __ \\ /    \\   __\\  |    |  _//  _ \\   __\\
-\\     \\___(  <_> )  Y Y  \\  Y Y  \\  ___/|   |  \\  |    |    |   (  <_> )  |  
- \\______  /\\\____/|__|_|  /__|_|  /\\\___  >___|  /__|    |______  /\\\____/|__|  
-        \\/             \\/      \\/     \\/     \\/               \\/             `,
-`
-  ___  _____  __  __  __  __  ____  _  _  ____    ____  _____  ____ 
- / __)(  _  )(  \\/  )(  \\/  )( ___)( \\( )(_  _)  (  _ \\(  _  )(_  _)
-( (__  )(_)(  )    (  )    (  )__)  )  (   )(     ) _ < )(_)(   )(  
- \\___)(_____)(_/\\\/\\\_)(_/\\\/\\\_)(____)(_)\\_) (__)   (____/(_____) (__) `,
-`
-     ___           ___           ___           ___           ___           ___           ___                    ___           ___           ___     
-    /\\  \\         /\\  \\         /\\\__\\         /\\\__\\         /\\  \\         /\\\__\\         /\\  \\                  /\\  \\         /\\  \\         /\\  \\    
-   /::\\  \\       /::\\  \\       /::|  |       /::|  |       /::\\  \\       /::|  |        \\:\\\  \\                /::\\  \\       /::\\  \\        \\:\\\  \\   
-  /:/\\\:\\\  \\     /:/\\\:\\\  \\     /:|:|  |      /:|:|  |      /:/\\\:\\\  \\     /:|:|  |         \\:\\\  \\              /:/\\\:\\\  \\     /:/\\\:\\\  \\        \\:\\\  \\  
- /:/  \\:\\\  \\   /:/  \\:\\\  \\   /:/|:|__|__   /:/|:|__|__   /::\\~\\:\\\  \\   /:/|:|  |__       /::\\  \\            /::\\~\\:\\\__\\   /:/  \\:\\\  \\       /::\\  \\ 
-/:/__/ \\:\\\__\\ /:/__/ \\:\\\__\\ /:/ |::::\\\__\\ /:/ |::::\\\__\\ /:/\\\:\\\ \\:\\\__\\ /:/ |:| /\\\__\\     /:/\\\:\\\__\\          /:/\\\:\\\ \\:|__| /:/__/ \\:\\\__\\     /:/\\\:\\\__\\
-\\:\\\  \\  \\/__/ \\:\\\  \\ /:/  / \\/__/~~/:/  / \\/__/~~/:/  / \\:\\\~\\:\\\ \\/__/ \\/__|:|/:/  /    /:/  \\/__/          \\:\\\~\\:\\\/:/  / \\:\\\  \\ /:/  /    /:/  \\/__/
- \\:\\\  \\        \\:\\\  /:/  /        /:/  /        /:/  /   \\:\\\ \\:\\\__\\       |:/:/  /    /:/  /                \\:\\\ \\::/  /   \\:\\\  /:/  /    /:/  /     
-  \\:\\\  \\        \\:\\\/:/  /        /:/  /        /:/  /     \\:\\\ \\/__/       |::/  /     \\/__/                  \\:\\\/:/  /     \\:\\\/:/  /     \\/__/      
-   \\:\\\__\\        \\::/  /        /:/  /        /:/  /       \\:\\\__\\         /:/  /                              \\::/__/       \\::/  /                 
-    \\/__/         \\/__/         \\/__/         \\/__/         \\/__/         \\/__/                                ~~            \\/__/                  `,
-`
-   ______                                     __     ____        __ 
-  / ____/___  ____ ___  ____ ___  ___  ____  / /_   / __ )____  / /_
- / /   / __ \\/ __  __ \\/ __  __ \\/ _ \\/ __ \\/ __/  / __  / __ \\/ __/
-/ /___/ /_/ / / / / / / / / / / /  __/ / / / /_   / /_/ / /_/ / /_  
-\\____/\\\____/_/ /_/ /_/_/ /_/ /_/\\\___/_/ /_/\\\__/  /_____/\\\____/\\\__/  `,
-`
-▄████▄   ▒█████   ███▄ ▄███▓ ███▄ ▄███▓▓█████  ███▄    █ ▄▄▄█████▓    ▄▄▄▄    ▒█████  ▄▄▄█████▓
-▒██▀ ▀█  ▒██▒  ██▒▓██▒▀█▀ ██▒▓██▒▀█▀ ██▒▓█   ▀  ██ ▀█   █ ▓  ██▒ ▓▒   ▓█████▄ ▒██▒  ██▒▓  ██▒ ▓▒
-▒▓█    ▄ ▒██░  ██▒▓██    ▓██░▓██    ▓██░▒███   ▓██  ▀█ ██▒▒ ▓██░ ▒░   ▒██▒ ▄██▒██░  ██▒▒ ▓██░ ▒░
-▒▓▓▄ ▄██▒▒██   ██░▒██    ▒██ ▒██    ▒██ ▒▓█  ▄ ▓██▒  ▐▌██▒░ ▓██▓ ░    ▒██░█▀  ▒██   ██░░ ▓██▓ ░ 
-▒ ▓███▀ ░░ ████▓▒░▒██▒   ░██▒▒██▒   ░██▒░▒████▒▒██░   ▓██░  ▒██▒ ░    ░▓█  ▀█▓░ ████▓▒░  ▒██▒ ░ 
-░ ░▒ ▒  ░░ ▒░▒░▒░ ░ ▒░   ░  ░░ ▒░   ░  ░░░ ▒░ ░░ ▒░   ▒ ▒   ▒ ░░      ░▒▓███▀▒░ ▒░▒░▒░   ▒ ░░   
- ░  ▒     ░ ▒ ▒░ ░  ░      ░░  ░      ░ ░ ░  ░░ ░░   ░ ▒░    ░       ▒░▒   ░   ░ ▒ ▒░     ░    
-░        ░ ░ ░ ▒  ░      ░   ░      ░      ░      ░   ░ ░   ░          ░    ░ ░ ░ ░ ▒    ░      
-░ ░          ░ ░         ░          ░      ░  ░         ░              ░          ░ ░           
-░                                                                           ░                   `
-]
-
 function startlogin() { //function will be called when steamcommunity status check is done
     logger("", true)
-    logger(ascii[Math.floor(Math.random() * ascii.length)] + "\n", true)
+    if (Math.floor(Math.random() * 100) <= 2) logger(hellothereascii + "\n", true)
+        else if (Math.floor(Math.random() * 100) <= 10) logger(binaryascii + "\n", true)
+        else logger(ascii[Math.floor(Math.random() * ascii.length)] + "\n", true)
     logger("", true) //put one line above everything that will come to make the output cleaner
 
     if (extdata.firststart) logger("\x1b[0mWhat's new: " + extdata.whatsnew + "\n")
@@ -312,12 +293,11 @@ function startlogin() { //function will be called when steamcommunity status che
 
     if(checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"){process.exit(0)}
     logger("Loading logininfo for each account...", false, true)
-    skippednow = [] //array to track which accounts have been skipped
 
     Object.keys(logininfo).forEach((k, i) => { //log all accounts in with the logindelay             
         setTimeout(() => { //wait before interval to reduce ram usage on startup
             var startnextinterval = setInterval(() => { //check if previous account is logged in
-                if (module.exports.accisloggedin == true && i == Object.keys(botobject).length || module.exports.accisloggedin == true && skippednow.includes(i - 1)) { //i is being counted from 0, length from 1 -> checks if last iteration is as long as botobject
+                if (module.exports.accisloggedin == true && i == Object.keys(botobject).length + skippednow.length || module.exports.accisloggedin == true && skippednow.includes(i - 1)) { //i is being counted from 0, length from 1 -> checks if last iteration is as long as botobject
                     clearInterval(startnextinterval)
                     if (updater.skippedaccounts.includes(i)) { logger(`[skippedaccounts] Automatically skipped ${k}!`, false, true); skippednow.push(i); return; } //if this iteration exists in the skippedaccounts array, automatically skip acc again
 
@@ -342,30 +322,37 @@ function startlogin() { //function will be called when steamcommunity status che
 
 /* ------------ Everything logged in: ------------ */
 var readyinterval = setInterval(() => { //log startup to console
-    if (Object.keys(communityobject).length == (Object.keys(logininfo).length - updater.skippedaccounts.length) && botobject[Object.keys(botobject).length - 1].limitations != undefined && module.exports.accisloggedin == true) {
+    if (Object.keys(communityobject).length + skippednow.length == Object.keys(logininfo).length && module.exports.accisloggedin == true) {
         clearInterval(readyinterval)
 
         logger(' ', true)
         logger('*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*', true)
-        logger(`> \x1b[96m${logininfo.bot0[0]}\x1b[0m version \x1b[96m${extdata.version}\x1b[0m by ${extdata.mestr} logged in.`, true)
+        logger(`\x1b[95m>\x1b[0m \x1b[96m${logininfo.bot0[0]}\x1b[0m version \x1b[96m${extdata.version}\x1b[0m by ${extdata.mestr} logged in.`, true)
         if (config.repeatedComments > 3) { var repeatedComments = `\x1b[4m\x1b[31m${config.repeatedComments}\x1b[0m` } else { var repeatedComments = config.repeatedComments }
-        logger(`> ${Object.keys(communityobject).length - 1} child accounts | User can request ${repeatedComments} comments per Acc`, true)
+        logger(`\x1b[94m>\x1b[0m ${Object.keys(communityobject).length - 1} child accounts | User can request ${repeatedComments} comments per Acc`, true)
 
         //display amount of limited accounts and if automatic updates are turned off
         limitedaccs = 0
-        for (i = 0; i < Object.keys(botobject).length; i++) {
-            if (botobject[Object.keys(botobject)[i]].limitations != undefined && botobject[Object.keys(botobject)[i]].limitations.limited != undefined) { //if it should be undefined for what ever reason then rather don't check instead of crash the bot
-                if (botobject[Object.keys(botobject)[i]] != undefined && botobject[Object.keys(botobject)[i]].limitations.limited == true) limitedaccs++ //yes, this way to get the botobject key by iteration looks stupid and is probably stupid but it works and is "compact" (not really but idk)
-            } else { logger(`failed to check if bot${i} is limited. Showing account in startup message as unlimited...`, false, true) } 
+        failedtocheck = 0
+        try {
+            for (i = 0; i < Object.keys(botobject).length; i++) {
+                if (botobject[Object.keys(botobject)[i]].limitations != undefined && botobject[Object.keys(botobject)[i]].limitations.limited != undefined) { //if it should be undefined for what ever reason then rather don't check instead of crash the bot
+                    if (botobject[Object.keys(botobject)[i]] != undefined && botobject[Object.keys(botobject)[i]].limitations.limited == true) limitedaccs++ //yes, this way to get the botobject key by iteration looks stupid and is probably stupid but it works and is "compact" (not really but idk)
+                } else { logger(`failed to check if bot${i} is limited. Showing account in startup message as unlimited...`, false, true); failedtocheck++ }
 
-            if (Number(i) + 1 == Object.keys(botobject).length && limitedaccs > 0)
-                logger(`> ${limitedaccs}/${Object.keys(botobject).length} account(s) are \x1b[31mlimited\x1b[0m`, true) }
+                if (Number(i) + 1 == Object.keys(botobject).length && limitedaccs > 0) {
+                    if (failedtocheck > 0) { var failedtocheckmsg = `(Couldn't check ${failedtocheck} account(s))`; }
+                        else { var failedtocheckmsg = ""; }
+                    logger(`\x1b[92m>\x1b[0m ${limitedaccs}/${Object.keys(botobject).length} account(s) are \x1b[31mlimited\x1b[0m ${failedtocheckmsg}`, true) }}
+        } catch (err) {
+            logger(`Error in limited checker: ${err}`)
+        }
 
-        if (config.disableautoupdate) logger("> Automatic updating is \x1b[31mturned off\x1b[0m!", true)
+        if (config.disableautoupdate) logger("\x1b[41m\x1b[30m>\x1b[0m Automatic updating is \x1b[4m\x1b[31mturned off\x1b[0m!", true)
 
         var playinggames = ""
         if (config.playinggames[1]) var playinggames = `(${config.playinggames.slice(1, config.playinggames.length)})`
-        logger(`> Playing status: \x1b[32m${config.playinggames[0]}\x1b[0m ${playinggames}`, true)
+        logger(`\x1b[93m>\x1b[0m Playing status: \x1b[32m${config.playinggames[0]}\x1b[0m ${playinggames}`, true)
 
         const bootend = (new Date() - bootstart) - steamGuardInputTime
         readyafter = bootend / 1000
@@ -374,12 +361,13 @@ var readyinterval = setInterval(() => { //log startup to console
         if (readyafter > 60) { readyafter = readyafter / 60; var readyafterunit = "minutes" }
         if (readyafter > 60) { readyafter = readyafter / 60; var readyafterunit = "hours" }
         
-        logger(`> Ready after ${round(readyafter, 2)} ${readyafterunit}!`, true)
+        logger(`\x1b[91m>\x1b[0m Ready after ${round(readyafter, 2)} ${readyafterunit}!`, true)
         extdata.timesloggedin++
         extdata.totallogintime += readyafter / Object.keys(communityobject).length //get rough logintime of only one account
         logger('*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*', true)
         logger(' ', true)
-        if (updater.skippedaccounts.length > 0) logger(`Skipped Accounts: ${updater.skippedaccounts.length}/${Object.keys(logininfo).length}`, true)
+        if (updater.skippedaccounts.length > 0) logger(`Skipped Accounts: ${updater.skippedaccounts.length}/${Object.keys(logininfo).length}\n`, true)
+        if (extdata.firststart) logger(`If you like my work please consider giving my repository a star! I would really appreciate it!\nhttps://github.com/HerrEurobeat/steam-comment-service-bot`, true)
 
         //Check if ownerids are correct:
         logger(`Checking for invalid ownerids...`, false, true)
@@ -424,29 +412,37 @@ var readyinterval = setInterval(() => { //log startup to console
                             communityobject[e].joinGroup(`${botsgroupid}`)
                             logger(`[Bot ${e}] Joined/Requested to join steam group that has been set in the config (botsgroup).`) } })
                 } else {
-                    https.get(`${config.botsgroup}/memberslistxml/?xml=1`, function(botsgroupres) { //get group64id from code to simplify config
-                        botsgroupres.on('data', function (chunk) {
-                            botsgroupoutput += chunk });
-                
-                        botsgroupres.on('end', () => {
-                            if (!String(botsgroupoutput).includes("<?xml") || !String(botsgroupoutput).includes("<groupID64>")) { //Check if botsgroupoutput is steam group xml data before parsing it
-                                logger("\x1b[0m[\x1b[31mNotice\x1b[0m] Your bots group (botsgroup in config) doesn't seem to be valid!\n         Error: " + config.botsgroup + " contains no xml or groupID64 data", true); 
-                                botsgroupid = "" 
-                            } else {
-                                new xml2js.Parser().parseString(botsgroupoutput, function(botsgrouperr, botsgroupResult) {
-                                    if (botsgrouperr) return logger("error parsing botsgroup xml: " + botsgrouperr, true)
+                    if (cachefile.botsgroup == config.botsgroup) {
 
-                                    botsgroupid = botsgroupResult.memberList.groupID64
-                        
-                                    Object.keys(botobject).forEach((e) => {
-                                        if (!Object.keys(botobject[e].myGroups).includes(String(botsgroupid))) {
-                                            communityobject[e].joinGroup(`${botsgroupid}`)
-                                            logger(`[Bot ${e}] Joined/Requested to join steam group that has been set in the config (botsgroup).`) }
-                                    }) }) } })
-                        }).on("error", function(err) {
-                            logger("\x1b[0m[\x1b[31mNotice\x1b[0m]: Couldn't get botsgroup 64id. Either Steam is down or your internet isn't working.\n          Error: " + err, true)
-                            botsgroupid = ""
-                    }) } }
+                    } else {
+                        https.get(`${config.botsgroup}/memberslistxml/?xml=1`, function(botsgroupres) { //get group64id from code to simplify config
+                            botsgroupres.on('data', function (chunk) {
+                                botsgroupoutput += chunk });
+                    
+                            botsgroupres.on('end', () => {
+                                if (!String(botsgroupoutput).includes("<?xml") || !String(botsgroupoutput).includes("<groupID64>")) { //Check if botsgroupoutput is steam group xml data before parsing it
+                                    logger("\x1b[0m[\x1b[31mNotice\x1b[0m] Your bots group (botsgroup in config) doesn't seem to be valid!\n         Error: " + config.botsgroup + " contains no xml or groupID64 data", true); 
+                                    botsgroupid = "" 
+                                } else {
+                                    new xml2js.Parser().parseString(botsgroupoutput, function(botsgrouperr, botsgroupResult) {
+                                        if (botsgrouperr) return logger("error parsing botsgroup xml: " + botsgrouperr, true)
+
+                                        botsgroupid = botsgroupResult.memberList.groupID64
+
+                                        cachefile.botsgroup = config.botsgroup
+                                        cachefile.botsgroupid = String(botsgroupResult.memberList.groupID64)
+                                        fs.writeFile("./src/cache.json", JSON.stringify(cachefile, null, 4), err => { 
+                                          if (err) logger(`[${thisbot}] error writing configgroup64id to cache.json: ${err}`) })
+                            
+                                        Object.keys(botobject).forEach((e) => {
+                                            if (!Object.keys(botobject[e].myGroups).includes(String(botsgroupid))) {
+                                                communityobject[e].joinGroup(`${botsgroupid}`)
+                                                logger(`[Bot ${e}] Joined/Requested to join steam group that has been set in the config (botsgroup).`) }
+                                        }) }) } })
+                            }).on("error", function(err) {
+                                logger("\x1b[0m[\x1b[31mNotice\x1b[0m]: Couldn't get botsgroup 64id. Either Steam is down or your internet isn't working.\n          Error: " + err, true)
+                                botsgroupid = ""
+                        }) }} }
         } catch (err) {
             if (err) return logger("error getting botsgroup xml info: " + err, true) }
 
@@ -504,14 +500,142 @@ var readyinterval = setInterval(() => { //log startup to console
         fs.writeFile("./src/data.json", JSON.stringify(extdata, null, 4), err => { //write changes
             if (err) logger("change extdata to false error: " + err) 
 
-            //Startup is done, clean up
-            delete readyafterlogs; //delete var as the logs got logged by now
-            delete skippednow;
             logger('Startup complete!', false, true) })
 
         setTimeout(() => {
+            //Startup is done, clean up
+            delete readyafterlogs; //delete var as the logs got logged by now
+            delete skippednow;
             logger(` `, true, true) //clear out last remove message
         }, 5000); }
 }, 500);
 
 //Code by: https://github.com/HerrEurobeat/
+
+hellothereascii =
+` _   _      _ _         _   _                   
+| | | |    | | |       | | | |                  
+| |_| | ___| | | ___   | |_| |__   ___ _ __ ___ 
+|  _  |/ _ | | |/ _ \\  | __| '_ \\ / _ | '__/ _ \\
+| | | |  __| | | (_) | | |_| | | |  __| | |  __/
+\\_| |_/\\___|_|_|\\___/   \\__|_| |_|\\___|_|  \\___|
+                                                
+General Kenobi `
+
+binaryascii = "01000011 01101111 01101101 01101101 01100101 01101110 01110100  01000010 01101111 01110100"
+
+ascii = ascii = [`
+ ______     ______     __    __     __    __     ______     __   __     ______      ______     ______     ______  
+/\\  ___\\\   /\\  __ \\   /\\ "-./  \\   /\\ "-./  \\   /\\  ___\\   /\\ "-.\\ \\   /\\\__  _\\    /\\  == \\   /\\  __ \\   /\\\__  _\\ 
+\\ \\ \\____  \\ \\ \\/\\ \\  \\ \\ \\-./\\ \\  \\ \\ \\-./\\ \\  \\ \\  __\\   \\ \\ \\-.  \\  \\/_/\\ \\/    \\ \\  __<   \\ \\ \\/\\ \\  \\/_/\\ \\/ 
+ \\ \\_____\\\  \\ \\_____\\  \\ \\_\\ \\ \\_\\  \\ \\_\\ \\ \\_\\  \\ \\_____\\  \\ \\_\\\\"\\_\\    \\ \\_\\     \\ \\_____\\  \\ \\_____\\    \\ \\_\\ 
+  \\\/_____/   \\/_____/   \\/_/  \\/_/   \\/_/  \\/_/   \\/_____/   \\/_/ \\/_/     \\/_/      \\/_____/   \\/_____/     \\/_/ `,
+`
+_________                                       __    __________        __   
+\\_   ___ \\  ____   _____   _____   ____   _____/  |_  \\______   \\ _____/  |_ 
+/    \\  \\/ /  _ \\ /     \\ /     \\_/ __ \\ /    \\   __\\  |    |  _//  _ \\   __\\
+\\     \\___(  <_> )  Y Y  \\  Y Y  \\  ___/|   |  \\  |    |    |   (  <_> )  |  
+ \\______  /\\\____/|__|_|  /__|_|  /\\\___  >___|  /__|    |______  /\\\____/|__|  
+        \\/             \\/      \\/     \\/     \\/               \\/             `,
+`
+  ___  _____  __  __  __  __  ____  _  _  ____    ____  _____  ____ 
+ / __)(  _  )(  \\/  )(  \\/  )( ___)( \\( )(_  _)  (  _ \\(  _  )(_  _)
+( (__  )(_)(  )    (  )    (  )__)  )  (   )(     ) _ < )(_)(   )(  
+ \\___)(_____)(_/\\\/\\\_)(_/\\\/\\\_)(____)(_)\\_) (__)   (____/(_____) (__) `,
+`
+     ___           ___           ___           ___           ___           ___           ___                    ___           ___           ___     
+    /\\  \\         /\\  \\         /\\\__\\         /\\\__\\         /\\  \\         /\\\__\\         /\\  \\                  /\\  \\         /\\  \\         /\\  \\    
+   /::\\  \\       /::\\  \\       /::|  |       /::|  |       /::\\  \\       /::|  |        \\:\\\  \\                /::\\  \\       /::\\  \\        \\:\\\  \\   
+  /:/\\\:\\\  \\     /:/\\\:\\\  \\     /:|:|  |      /:|:|  |      /:/\\\:\\\  \\     /:|:|  |         \\:\\\  \\              /:/\\\:\\\  \\     /:/\\\:\\\  \\        \\:\\\  \\  
+ /:/  \\:\\\  \\   /:/  \\:\\\  \\   /:/|:|__|__   /:/|:|__|__   /::\\~\\:\\\  \\   /:/|:|  |__       /::\\  \\            /::\\~\\:\\\__\\   /:/  \\:\\\  \\       /::\\  \\ 
+/:/__/ \\:\\\__\\ /:/__/ \\:\\\__\\ /:/ |::::\\\__\\ /:/ |::::\\\__\\ /:/\\\:\\\ \\:\\\__\\ /:/ |:| /\\\__\\     /:/\\\:\\\__\\          /:/\\\:\\\ \\:|__| /:/__/ \\:\\\__\\     /:/\\\:\\\__\\
+\\:\\\  \\  \\/__/ \\:\\\  \\ /:/  / \\/__/~~/:/  / \\/__/~~/:/  / \\:\\\~\\:\\\ \\/__/ \\/__|:|/:/  /    /:/  \\/__/          \\:\\\~\\:\\\/:/  / \\:\\\  \\ /:/  /    /:/  \\/__/
+ \\:\\\  \\        \\:\\\  /:/  /        /:/  /        /:/  /   \\:\\\ \\:\\\__\\       |:/:/  /    /:/  /                \\:\\\ \\::/  /   \\:\\\  /:/  /    /:/  /     
+  \\:\\\  \\        \\:\\\/:/  /        /:/  /        /:/  /     \\:\\\ \\/__/       |::/  /     \\/__/                  \\:\\\/:/  /     \\:\\\/:/  /     \\/__/      
+   \\:\\\__\\        \\::/  /        /:/  /        /:/  /       \\:\\\__\\         /:/  /                              \\::/__/       \\::/  /                 
+    \\/__/         \\/__/         \\/__/         \\/__/         \\/__/         \\/__/                                ~~            \\/__/                  `,
+`
+   ______                                     __     ____        __ 
+  / ____/___  ____ ___  ____ ___  ___  ____  / /_   / __ )____  / /_
+ / /   / __ \\/ __  __ \\/ __  __ \\/ _ \\/ __ \\/ __/  / __  / __ \\/ __/
+/ /___/ /_/ / / / / / / / / / / /  __/ / / / /_   / /_/ / /_/ / /_  
+\\____/\\\____/_/ /_/ /_/_/ /_/ /_/\\\___/_/ /_/\\\__/  /_____/\\\____/\\\__/  `,
+`
+▄████▄   ▒█████   ███▄ ▄███▓ ███▄ ▄███▓▓█████  ███▄    █ ▄▄▄█████▓    ▄▄▄▄    ▒█████  ▄▄▄█████▓
+▒██▀ ▀█  ▒██▒  ██▒▓██▒▀█▀ ██▒▓██▒▀█▀ ██▒▓█   ▀  ██ ▀█   █ ▓  ██▒ ▓▒   ▓█████▄ ▒██▒  ██▒▓  ██▒ ▓▒
+▒▓█    ▄ ▒██░  ██▒▓██    ▓██░▓██    ▓██░▒███   ▓██  ▀█ ██▒▒ ▓██░ ▒░   ▒██▒ ▄██▒██░  ██▒▒ ▓██░ ▒░
+▒▓▓▄ ▄██▒▒██   ██░▒██    ▒██ ▒██    ▒██ ▒▓█  ▄ ▓██▒  ▐▌██▒░ ▓██▓ ░    ▒██░█▀  ▒██   ██░░ ▓██▓ ░ 
+▒ ▓███▀ ░░ ████▓▒░▒██▒   ░██▒▒██▒   ░██▒░▒████▒▒██░   ▓██░  ▒██▒ ░    ░▓█  ▀█▓░ ████▓▒░  ▒██▒ ░ 
+░ ░▒ ▒  ░░ ▒░▒░▒░ ░ ▒░   ░  ░░ ▒░   ░  ░░░ ▒░ ░░ ▒░   ▒ ▒   ▒ ░░      ░▒▓███▀▒░ ▒░▒░▒░   ▒ ░░   
+ ░  ▒     ░ ▒ ▒░ ░  ░      ░░  ░      ░ ░ ░  ░░ ░░   ░ ▒░    ░       ▒░▒   ░   ░ ▒ ▒░     ░    
+░        ░ ░ ░ ▒  ░      ░   ░      ░      ░      ░   ░ ░   ░          ░    ░ ░ ░ ░ ▒    ░      
+░ ░          ░ ░         ░          ░      ░  ░         ░              ░          ░ ░           
+░                                                                           ░                   `,
+
+`  ██████╗ ██████╗ ███╗   ███╗███╗   ███╗███████╗███╗   ██╗████████╗    ██████╗  ██████╗ ████████╗
+ ██╔════╝██╔═══██╗████╗ ████║████╗ ████║██╔════╝████╗  ██║╚══██╔══╝    ██╔══██╗██╔═══██╗╚══██╔══╝
+ ██║     ██║   ██║██╔████╔██║██╔████╔██║█████╗  ██╔██╗ ██║   ██║       ██████╔╝██║   ██║   ██║   
+ ██║     ██║   ██║██║╚██╔╝██║██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║       ██╔══██╗██║   ██║   ██║   
+ ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║ ╚═╝ ██║███████╗██║ ╚████║   ██║       ██████╔╝╚██████╔╝   ██║   
+  ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝       ╚═════╝  ╚═════╝    ╚═╝   `,
+
+`    (                                        )     (           )  
+    )\\           )       )      (         ( /(   ( )\\       ( /(  
+  (((_)   (     (       (      ))\\  (     )\\())  )((_)  (   )\\()) 
+  )\\___   )\\    )\\  '   )\\  ' /((_) )\\ ) (_))/  ((_)_   )\\ (_))/  
+ ((/ __| ((_) _((_))  _((_)) (_))  _(_/( | |_    | _ ) ((_)| |_   
+  | (__ / _ \\| '  \\()| '  \\()/ -_)| ' \\))|  _|   | _ \\/ _ \\|  _|  
+   \\___|\\___/|_|_|_| |_|_|_| \\___||_||_|  \\__|   |___/\\___/ \\__| `,
+
+`      _____           _____         ______  _______        ______  _______        ______  _____   ______   _________________             _____          _____   _________________ 
+  ___|\\    \\     ____|\\    \\       |      \\/       \\      |      \\/       \\   ___|\\     \\|\\    \\ |\\     \\ /                 \\       ___|\\     \\    ____|\\    \\ /                 \\
+/    /\\    \\   /     /\\    \\     /          /\\     \\    /          /\\     \\ |     \\     \\\\\\    \\| \\     \\\\______     ______/      |    |\\     \\  /     /\\    \\\\______     ______/
+|    |  |    | /     /  \\    \\   /     /\\   / /\\     |  /     /\\   / /\\     ||     ,_____/|\\|    \\  \\     |  \\( /    /  )/         |    | |     |/     /  \\    \\  \\( /    /  )/   
+|    |  |____||     |    |    | /     /\\ \\_/ / /    /| /     /\\ \\_/ / /    /||     \\--'\\_|/ |     \\  |    |   ' |   |   '          |    | /_ _ /|     |    |    |  ' |   |   '    
+|    |   ____ |     |    |    ||     |  \\|_|/ /    / ||     |  \\|_|/ /    / ||     /___/|   |      \\ |    |     |   |              |    |\\    \\ |     |    |    |    |   |        
+|    |  |    ||\\     \\  /    /||     |       |    |  ||     |       |    |  ||     \\____|\\  |    |\\ \\|    |    /   //              |    | |    ||\\     \\  /    /|   /   //        
+|\\ ___\\/    /|| \\_____\\/____/ ||\\____\\       |____|  /|\\____\\       |____|  /|____ '     /| |____||\\_____/|   /___//               |____|/____/|| \\_____\\/____/ |  /___//         
+| |   /____/ | \\ |    ||    | /| |    |      |    | / | |    |      |    | / |    /_____/ | |    |/ \\|   ||  |\`   |                |    /     || \\ |    ||    | / |\`   |          
+\\|___|    | /  \\|____||____|/  \\|____|      |____|/   \\|____|      |____|/  |____|     | / |____|   |___|/  |____|                |____|_____|/  \\|____||____|/  |____|          
+  \\( |____|/      \\(    )/        \\(          )/         \\(          )/       \\( |_____|/    \\(       )/      \\(                    \\(    )/        \\(    )/       \\(            
+    '   )/          '    '          '          '           '          '         '    )/        '       '        '                     '    '          '    '         '            
+        '                                                                            '                                                                                            `,
+
+` .d8888b.                                                         888         888888b.            888    
+d88P  Y88b                                                        888         888  "88b           888    
+888    888                                                        888         888  .88P           888    
+888         .d88b.  88888b.d88b.  88888b.d88b.   .d88b.  88888b.  888888      8888888K.   .d88b.  888888 
+888        d88""88b 888 "888 "88b 888 "888 "88b d8P  Y8b 888 "88b 888         888  "Y88b d88""88b 888    
+888    888 888  888 888  888  888 888  888  888 88888888 888  888 888         888    888 888  888 888    
+Y88b  d88P Y88..88P 888  888  888 888  888  888 Y8b.     888  888 Y88b.       888   d88P Y88..88P Y88b.  
+ "Y8888P"   "Y88P"  888  888  888 888  888  888  "Y8888  888  888  "Y888      8888888P"   "Y88P"   "Y888 `,
+
+`    /$$$$$$                                                              /$$           /$$$$$$$              /$$    
+   /$$__  $$                                                            | $$          | $$__  $$            | $$    
+  | $$  \\__/  /$$$$$$  /$$$$$$/$$$$  /$$$$$$/$$$$   /$$$$$$  /$$$$$$$  /$$$$$$        | $$  \\ $$  /$$$$$$  /$$$$$$  
+  | $$       /$$__  $$| $$_  $$_  $$| $$_  $$_  $$ /$$__  $$| $$__  $$|_  $$_/        | $$$$$$$  /$$__  $$|_  $$_/  
+  | $$      | $$  \\ $$| $$ \\ $$ \\ $$| $$ \\ $$ \\ $$| $$$$$$$$| $$  \\ $$  | $$          | $$__  $$| $$  \\ $$  | $$    
+  | $$    $$| $$  | $$| $$ | $$ | $$| $$ | $$ | $$| $$_____/| $$  | $$  | $$ /$$      | $$  \\ $$| $$  | $$  | $$ /$$
+  |  $$$$$$/|  $$$$$$/| $$ | $$ | $$| $$ | $$ | $$|  $$$$$$$| $$  | $$  |  $$$$/      | $$$$$$$/|  $$$$$$/  |  $$$$/
+   \\______/  \\______/ |__/ |__/ |__/|__/ |__/ |__/ \\_______/|__/  |__/   \\___/        |_______/  \\______/    \\___/  `,
+
+  `      ::::::::   ::::::::    :::   :::     :::   :::   :::::::::: ::::    ::: :::::::::::          :::::::::   :::::::: ::::::::::: 
+    :+:    :+: :+:    :+:  :+:+: :+:+:   :+:+: :+:+:  :+:        :+:+:   :+:     :+:              :+:    :+: :+:    :+:    :+:      
+   +:+        +:+    +:+ +:+ +:+:+ +:+ +:+ +:+:+ +:+ +:+        :+:+:+  +:+     +:+              +:+    +:+ +:+    +:+    +:+       
+  +#+        +#+    +:+ +#+  +:+  +#+ +#+  +:+  +#+ +#++:++#   +#+ +:+ +#+     +#+              +#++:++#+  +#+    +:+    +#+        
+ +#+        +#+    +#+ +#+       +#+ +#+       +#+ +#+        +#+  +#+#+#     +#+              +#+    +#+ +#+    +#+    +#+         
+#+#    #+# #+#    #+# #+#       #+# #+#       #+# #+#        #+#   #+#+#     #+#              #+#    #+# #+#    #+#    #+#          
+########   ########  ###       ### ###       ### ########## ###    ####     ###              #########   ########     ###           `,
+
+`  _____                                     _     ____        _   
+/ ____|                                   | |   |  _ \\      | |  
+| |     ___  _ __ ___  _ __ ___   ___ _ __ | |_  | |_) | ___ | |_ 
+| |    / _ \\| '_ \` _ \\| '_ \` _ \\ / _ \\ '_ \\| __| |  _ < / _ \\| __|
+| |___| (_) | | | | | | | | | | |  __/ | | | |_  | |_) | (_) | |_ 
+\\_____\\___/|_| |_| |_|_| |_| |_|\\___|_| |_|\\__| |____/ \\___/ \\__|`,
+
+`  _|_|_|                                                                  _|          _|_|_|                _|      
+_|          _|_|    _|_|_|  _|_|    _|_|_|  _|_|      _|_|    _|_|_|    _|_|_|_|      _|    _|    _|_|    _|_|_|_|  
+_|        _|    _|  _|    _|    _|  _|    _|    _|  _|_|_|_|  _|    _|    _|          _|_|_|    _|    _|    _|      
+_|        _|    _|  _|    _|    _|  _|    _|    _|  _|        _|    _|    _|          _|    _|  _|    _|    _|      
+  _|_|_|    _|_|    _|    _|    _|  _|    _|    _|    _|_|_|  _|    _|      _|_|      _|_|_|      _|_|        _|_|  `]

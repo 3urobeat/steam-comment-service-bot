@@ -1,11 +1,12 @@
 //Code by: https://github.com/HerrEurobeat/ 
 //If you are here, you are wrong. Open config.json and configure everything there!
 
-var fs = require('fs')
-var https = require("https")
+const fs = require('fs')
+const https = require("https")
+const readline = require("readline")
 var config = require("./config.json")
 var extdata = require('./src/data.json')
-var skippedaccounts = []
+var skippedaccounts = [] //array to save which accounts have been skipped to skip them automatically when restarting
 var botisloggedin = false
 var activeupdate = false
 var lastupdatecheckinterval = Date.now()
@@ -20,10 +21,10 @@ var logger = (str, nodate, remove) => { //Custom logger
         var string = `\x1b[96m[${(new Date(Date.now() - (new Date().getTimezoneOffset() * 60000))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}]\x1b[0m ${str}` }
 
     if (remove) {
-        process.stdout.clearLine()
-        process.stdout.write(`${string}\r`) //probably dirty solution but these spaces clear up previous lines that were longer
+        readline.clearLine(process.stdout, 0) //0 clears entire line
+        process.stdout.write(`${string}\r`)
     } else { 
-        process.stdout.clearLine()
+        readline.clearLine(process.stdout, 0)
         console.log(`${string}`) }
 
     fs.appendFileSync('./output.txt', string.replace(/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]/g, '') + '\n', err => { //Credit: https://github.com/Filirom1/stripcolorcodes
@@ -35,13 +36,14 @@ var restartdata = (data) => {
 var checkforupdate = (forceupdate) => {
     try {
         /* ------------------ Check for new version ------------------ */
+        logger(`Checking for update in ${releasemode} branch...`, false, true)
         var httpsrequest = https.get(`https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${releasemode}/src/data.json`, function(res) {
             res.setEncoding('utf8');
             res.on('data', function(chunk) {
                 var onlineversion = JSON.parse(chunk).version //parse version number from get request
                 module.exports.onlinemestr = JSON.parse(chunk).mestr //get mestr and aboutstr from GitHub to check for modification
                 module.exports.onlineaboutstr = JSON.parse(chunk).aboutstr
-                if (onlineversion > extdata.version || forceupdate == true || releasemode == "beta-testing" && !onlineversion.includes("BETA") && extdata.version.includes("BETA")) { //version number greater or forceupdate is true?
+                if (onlineversion > extdata.version || forceupdate == true || releasemode == "beta-testing" && !onlineversion.includes("BETA") && extdata.version.includes("BETA") || releasemode == "beta-testing" && onlineversion.includes("BETA") && !extdata.version.includes("BETA")) { //version number greater or forceupdate is true?
                     logger("", true)
                     logger(`\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${extdata.version}\x1b[0m | New version: \x1b[32m${onlineversion}\x1b[0m`, true)
                     logger("", true)
@@ -265,10 +267,10 @@ var checkforupdate = (forceupdate) => {
                                         }, 5000); })}) }); //restart the bot
                         } catch (err) { logger('get data.json function Error: ' + err, true) }}
                 } else {
+                    logger(`No available update found. (online: ${onlineversion} | local: ${extdata.version})`, false, true)
                     if (botisloggedin == false) require('./src/controller.js'); botisloggedin = true //no update, start bot
                 }
-            }) }).on("error", function(err) {
-                logger("\x1b[0m[\x1b[31mNotice\x1b[0m]: Couldn't check the newest version on GitHub. You can ignore this error.\n          Error: " + err, true) })
+            }) })
 
             lastupdatecheckinterval = Date.now() + 43200000 //12 hours in ms
 
@@ -348,8 +350,7 @@ if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
         checkforupdate(true) }
 
 } else {
-    logger("Checking for update...", false, true)
-    if (releasemode == "beta-testing") logger("\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater is running in beta mode. These versions could be more unstable than master versions.\nIf you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
+    if (releasemode == "beta-testing") logger("\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
     checkforupdate() //check will start the bot afterwards
 }
 
