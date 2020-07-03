@@ -72,67 +72,82 @@ module.exports.run = async (logOnOptions, loginindex) => {
       clearInterval(loggedininterval) //stop interval
       controller.accisloggedin = false; //set to false again
       logger(`[${thisbot}] Trying to log in...`, false, true)
-      try {
-        bot.logOn(logOnOptions)
-      } catch (err) {
-        logger("Error: " + err, true)
-        controller.accisloggedin = true; //set to true to log next account in
-        updater.skippedaccounts.push(loginindex)
-      } 
+      bot.logOn(logOnOptions)
     }
   }, 250);
 
-  bot.on('steamGuard', function(domain, callback, lastCodeWrong) {
-    function askforcode() {
-      logger(`[${thisbot}] Steam Guard code requested...`, false, true)
-      
-      if (config.skipSteamGuard) {
-        if (loginindex > 0) {
-          logger(`[${thisbot}] Skipping account because skipSteamGuard is enabled...`, false, true)
-          controller.accisloggedin = true; //set to true to log next account in
-          updater.skippedaccounts.push(loginindex)
-          return;
-        } else {
-          logger("Even with skipSteamGuard enabled, the first account always has to be logged in.", true)
-        } }
+  bot.on('error', (err) => { //Handle errors that were caused during logOn
+    logger(`Error while trying to log in bot${loginindex}: ${err}`, true)
 
-      var steamGuardInputStart = Date.now();
+    if (loginindex == 0) {
+      logger("\nAborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true)
+      process.exit(0)
+    } else {
+      logger(`Failed account is not bot0. Skipping account...`, true)
+      controller.accisloggedin = true; //set to true to log next account in
+      updater.skippedaccounts.push(loginindex)
+      controller.skippednow.push(loginindex) }
+  })
+
+  bot.on('steamGuard', function(domain, callback, lastCodeWrong) { //fired when steamGuard code is requested when trying to log in
+    function askforcode() { //function to handle code input, manual skipping with empty input and automatic skipping with skipSteamGuard 
+      logger(`[${thisbot}] Steam Guard code requested...`, false, true)
+      logger('Code Input', true, true) //extra line with info for output.txt because otherwise the text from above get's halfway stuck in the steamGuard input field
+
+      var steamGuardInputStart = Date.now(); //measure time to subtract it later from readyafter time
 
       if (loginindex == 0) {
         process.stdout.write(`[${logOnOptions.accountName}] Steam Guard Code: `)
       } else {
-        process.stdout.write(`[${logOnOptions.accountName}] Steam Guard Code (leave empty and press ENTER to skip account): `)
-      }
-      var stdin = process.openStdin();
+        process.stdout.write(`[${logOnOptions.accountName}] Steam Guard Code (leave empty and press ENTER to skip account): `) }
 
-      stdin.addListener('data', text => {
+      var stdin = process.openStdin(); //start reading input in terminal
+
+      stdin.resume()
+      stdin.addListener('data', text => { //fired when input was submitted
         var code = text.toString().trim()
         stdin.pause() //stop reading
+        stdin.removeAllListeners('data')
 
-        if (code == "") { //skip initated
-          if (loginindex == 0) {
+        if (code == "") { //manual skip initated
+
+          if (loginindex == 0) { //first account can't be skipped
             logger("The first account always has to be logged in!", true)
             setTimeout(() => {
-              askforcode();
+              askforcode(); //run function again
             }, 500);
           } else {
             logger(`[${thisbot}] steamGuard input empty, skipping account...`, false, true)
+            bot.logOff() //Seems to prevent the steamGuard lastCodeWrong check from requesting again every few seconds
             controller.accisloggedin = true; //set to true to log next account in
-            updater.skippedaccounts.push(loginindex) }
+            updater.skippedaccounts.push(loginindex)
+            controller.skippednow.push(loginindex) }
 
         } else { //code provided
           logger(`[${thisbot}] Accepting steamGuard code...`, false, true)
-          callback(code)
-        }
+          callback(code) } //give code back to node-steam-user
 
-        controller.steamGuardInputTimeFunc(Date.now() - steamGuardInputStart)
+        controller.steamGuardInputTimeFunc(Date.now() - steamGuardInputStart) //measure time and subtract it from readyafter time
       })
     } //function end
 
+    //check if skipSteamGuard is on so we don't need to prompt the user for a code
+    if (config.skipSteamGuard) {
+      if (loginindex > 0) {
+        logger(`[${thisbot}] Skipping account because skipSteamGuard is enabled...`, false, true)
+        bot.logOff() //Seems to prevent the steamGuard lastCodeWrong check from requesting again every few seconds
+        controller.accisloggedin = true; //set to true to log next account in
+        updater.skippedaccounts.push(loginindex)
+        controller.skippednow.push(loginindex)
+        return;
+      } else {
+        logger("Even with skipSteamGuard enabled, the first account always has to be logged in.", true)
+      } }
+
     //calling the function:
-    if (lastCodeWrong) { //last code seems to be wrong
-      logger("", true, true)
-      logger(`Your code seems to be wrong, please try again!`, true)
+    if (lastCodeWrong && !controller.skippednow.includes(loginindex)) { //last submitted code seems to be wrong and the loginindex wasn't already skipped (just to make sure)
+      logger('', true, true)
+      logger('Your code seems to be wrong, please try again!', true)
       setTimeout(() => {
         askforcode(); //code seems to be wrong! ask again...
       }, 500);
@@ -143,8 +158,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
   bot.on('loggedOn', () => { //this account is now logged on
     logger(`[${thisbot}] Account logged in! Waiting for websession...`, false, true)
-    bot.setPersona(config.status); //set online status
+    bot.setPersona(1); //set online status
     if (loginindex == 0) bot.gamesPlayed(config.playinggames); //set game only for the "leader" bot
+      else if (config.childaccsplaygames) { config.playinggames.shift(); bot.gamesPlayed(config.playinggames); }
 
     controller.communityobject[loginindex] = community //export this community instance to the communityobject to access it from controller.js
     controller.botobject[loginindex] = bot //export this bot instance to the botobject to access it from controller.js
@@ -307,7 +323,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
               bot.chatMessage(steamID, `You requested a comment in the last ${config.commentcooldown} minutes. Please wait the remaining ${controller.round(remainingcooldown, 2)} ${remainingcooldownunit}.`) //send error message
               return; }
             } else {
-              if (controller.activecommentprocess.indexOf(String(steam64id)) !== -1) { //is the user already getting comments?
+              if (controller.activecommentprocess.indexOf(String(steam64id)) !== -1) { //is the user already getting comments? (-1 means not included)
                 return bot.chatMessage(steamID, "You are currently recieving previously requested comments. Please wait for them to be completed.") }}
 
           if (config.globalcommentcooldown !== 0) { //check for global cooldown
@@ -379,7 +395,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
           community.postUserComment(steamID, comment, (error) => { //post comment
             if(error) {
-              bot.chatMessage(requesterSteamID, `Oops, an error occured! Details: \n[${thisbot}] postUserComment error: ${error}\nPlease try again in a moment!`); 
+              bot.chatMessage(requesterSteamID, `Oops, an error occurred! Details: \n[${thisbot}] postUserComment error: ${error}\nPlease try again in a moment!`); 
               logger(`[${thisbot}] postUserComment error: ${error}`); 
               return; }
 
@@ -581,6 +597,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
       }
     }
   });
+
+  bot.on("disconnected", (eresult, msg) => {
+    logger(`[${thisbot}] Lost connection to Steam. EResult: ${eresult} | Message: ${msg}`) })
 
   module.exports={
     bot

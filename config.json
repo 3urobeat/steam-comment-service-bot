@@ -1,6 +1,6 @@
 {
     "disableautoupdate": false,
-    "status": 1,
+    "childaccsplaygames": false,
     "commentdelay": 5000,
     "logindelay": 2500,
     "allowcommentcmdusage": true,
