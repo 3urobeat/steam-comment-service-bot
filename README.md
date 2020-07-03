@@ -10,7 +10,7 @@
 [![nodejs](https://img.shields.io/badge/node.js-v12-brightgreen)](https://nodejs.org/)
 [![Star](https://img.shields.io/badge/-Give%20this%20repo%20a%20star!-yellow)](https://github.com/HerrEurobeat/steam-comment-service-bot)
 [![Steam Group](https://img.shields.io/badge/Steam%20Group-Join!-blue)](https://steamcommunity.com/groups/3urobeatGroup)
-[![Donate](https://img.shields.io/badge/donate-%241-orange)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VAVVKE4L962H6&source=url)
+[![Donate](https://img.shields.io/badge/donate-%241-orange)](https://paypal.me/3urobeat)
 <p align="center">Click on a badge to learn more.</p>
 
 <p align="center">
@@ -100,9 +100,12 @@ Please be also advised that in order to comment on a profile the accounts need t
 
 #### **License**
 As the **license** already stated: If you want to use code from this repository in your project, feel free to do that as long as you **include credit** to this repository!  
+If you are using this bot as a whole: You are allowed to change bot messages (for translation). You are **not** allowed to remove any credit to myself.  
 
 #### **Credits**
 Special thanks to [KNO7](https://steamcommunity.com/id/KN07Gaming/) for testing early beta versions, providing many ideas behind this project and donating 5€!  
 I also want to thank [Stiefel](https://steamcommunity.com/id/Stiefel1234) for finding weird bugs I wouldn't have found alone, being a cool dude and for hosting the bot with 9 unlimited accounts.  
 Another thank you goes out to [effex1337](https://github.com/effex1337) for donating $5 via bitcoin, helping in issues and for supporting the project!  
 Also thank you [steel4me](https://github.com/steel4me) for donating 5€!  
+Thanks [mikelobam](https://github.com/mikelobam) for contributing to this project!  
+Thanks [dunderzutt](https://steamcommunity.com/id/Dunderzutt/) for donating 25€! Really appreciate it!  
