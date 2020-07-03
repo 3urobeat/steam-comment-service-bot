@@ -79,8 +79,8 @@ To request a comment, simply type `!comment`!
 If you have more than 1 account set up in `logininfo.json` you can specify how many comments you want.
 
 ## **Additional informations:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=611)  
-Hey, if you like this project please consider donating a buck on my [PayPal!](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VAVVKE4L962H6&source=url)  
-[![Donate](https://img.shields.io/badge/donate-%241-orange)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VAVVKE4L962H6&source=url)  
+Hey, if you like this project please consider donating a buck on my [PayPal!](https://paypal.me/3urobeat)  
+[![Donate](https://img.shields.io/badge/donate-%241-orange)](https://paypal.me/3urobeat)  
 If you like the work I put into this project, please give this repository a star!  
 ![Star](https://img.shields.io/github/stars/HerrEurobeat/steam-comment-service-bot)
 
