@@ -18,11 +18,13 @@ var botobject = new Object();
 var readyafterlogs = new Array();
 var failedcomments = new Array();
 var accstoadd = new Array();
-var bootstart = 0;
+var bootstart = 0
 var bootstart = new Date();
-var steamGuardInputTime = 0;
+var steamGuardInputTime = 0
 var readyafter = 0
 var activecommentprocess = new Array();
+var logindelay = 2500
+var proxyShift = 0
 skippednow = [] //array to track which accounts have been skipped
 stoplogin = false;
 process.title = `${extdata.mestr}'s Steam Comment Service Bot v${extdata.version} | ${process.platform}` //set node process name to find it in task manager etc.
@@ -56,6 +58,7 @@ process.on('unhandledRejection', (reason, p) => {
 
 var quotes = new Array();
 var quotes = fs.readFileSync('quotes.txt', 'utf8').split("\n"); //get all quotes from the quotes.txt file into an array
+var quotes = quotes.filter(str => str != "") //remove empty quotes as empty comments will not work/make no sense
 
 //Please don't change this message as it gives credit to me; the person who put really much of his free time into this project. The bot will still refer to you - the operator of this instance.
 if (config.owner.length > 1) var ownertext = config.owner; else var ownertext = "anonymous (no owner link provided)"; 
@@ -227,11 +230,21 @@ fs.readFile('./src/lastcomment.json', function (err, data) {
                     logger("Error writing {} to lastcomment.json.\nPlease do this manually: Go into 'src' folder, open 'lastcomment.json', write '{}' and save.\nOtherwise the bot will always crash.\nError: " + err + "\n\nAborting...", true); 
                     process.exit(0) //abort since writeFile was unable to write and any further execution would crash
                 } else {
-                    logger("Successfully cleared logininfo.json.", false, true)
+                    logger("Successfully cleared lastcomment.json.", false, true)
                     lastcomment = require("./lastcomment.json")
                     isSteamOnline(true, true); //Continue startup
                 } })
         }} })
+
+//Check proxies.txt
+if (!fs.existsSync('./proxies.txt')){
+    fs.writeFile("./proxies.txt", "", err => { if (err) logger("error creating proxies.txt file: ") + err }) }
+
+var proxies = []
+var proxies = fs.readFileSync('./proxies.txt', 'utf8').split("\n");
+var proxies = proxies.filter(str => str != "") //remove empty lines
+proxies.unshift(null) //add no proxy (default)
+
 
 if(typeof checkm8 == "undefined"){logger("\n\n\x1b[31mYou removed needed parts from the code! Please redownload the application and not modify anything.\x1b[0m",true);process.exit(0)}
 if(checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"){logger("\n\n\x1b[31mYou removed needed parts from the code! Please redownload the application and not modify anything.\x1b[0m",true);process.exit(0)}
@@ -266,7 +279,10 @@ module.exports={
     aboutstr,
     round,
     isSteamOnline,
-    skippednow }
+    skippednow,
+    proxies,
+    proxyShift,
+    logininfo }
 
 
 /* ------------ Startup & Login: ------------ */
@@ -282,7 +298,7 @@ function startlogin() { //function will be called when steamcommunity status che
     //Evaluate estimated wait time for login:
     logger("Evaluating estimated login time...", false, true)
     if (extdata.timesloggedin < 5) { //only use new evaluation method when the bot was started more than 5 times
-        var estimatedlogintime = ((config.logindelay * (Object.keys(logininfo).length - 1 - updater.skippedaccounts.length)) / 1000) + 10 //10 seconds tolerance
+        var estimatedlogintime = ((logindelay * (Object.keys(logininfo).length - 1 - updater.skippedaccounts.length)) / 1000) + 10 //10 seconds tolerance
     } else {
         var estimatedlogintime = (extdata.totallogintime / extdata.timesloggedin) * (Object.keys(logininfo).length - updater.skippedaccounts.length) }
 
@@ -301,7 +317,7 @@ function startlogin() { //function will be called when steamcommunity status che
                     clearInterval(startnextinterval)
                     if (updater.skippedaccounts.includes(i)) { logger(`[skippedaccounts] Automatically skipped ${k}!`, false, true); skippednow.push(i); return; } //if this iteration exists in the skippedaccounts array, automatically skip acc again
 
-                    if (i > 0) logger(`Waiting ${config.logindelay / 1000} seconds... (config logindelay)`, false, true) //first iteration doesn't need to wait duh
+                    if (i > 0) logger(`Waiting ${logindelay / 1000} seconds... (config logindelay)`, false, true) //first iteration doesn't need to wait duh
 
                     setTimeout(() => { //wait logindelay
                         logger(`Starting bot.js for ${k}...`, false, true)
@@ -312,7 +328,7 @@ function startlogin() { //function will be called when steamcommunity status che
                             machineName: `${extdata.mestr}'s Comment Bot`
                         };
                         b.run(logOnOptions, i); //run bot.js with corresponding account
-                    }, config.logindelay) }
+                    }, logindelay) }
             }, 250);
         }, 1500 * (i - skippednow.length)); //1.5 seconds before checking if next account can be logged in should be ok
     }) }

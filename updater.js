@@ -33,7 +33,7 @@ var logger = (str, nodate, remove) => { //Custom logger
 var restartdata = (data) => {
     module.exports.skippedaccounts = data }
 
-var checkforupdate = (forceupdate) => {
+var checkforupdate = (forceupdate, responseSteamID) => {
     try {
         /* ------------------ Check for new version ------------------ */
         logger(`Checking for update in ${releasemode} branch...`, false, true)
@@ -48,14 +48,17 @@ var checkforupdate = (forceupdate) => {
                     logger(`\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${extdata.version}\x1b[0m | New version: \x1b[32m${onlineversion}\x1b[0m`, true)
                     logger("", true)
 
-                    /* ------------------ Check for permission to update ------------------ */
                     var config = require("./config.json")
 
-                    if (config.disableautoupdate == false) { //check if the user has disabled the automatic updater
+                    if (responseSteamID) { require('./src/controller.js').botobject[0].chatMessage(responseSteamID, `Update available! Your version: ${extdata.version} | New version: ${onlineversion}`)
+                        if (config.disableautoupdate == true && !forceupdate) { require('./src/controller.js').botobject[0].chatMessage(responseSteamID, "You have turned automatic updating off. You need to confirm the update in the console!") }}
+
+                    /* ------------------ Check for permission to update ------------------ */
+                    if (config.disableautoupdate == false || forceupdate) { //check if the user has disabled the automatic updater or an update was forced
                         logger('Starting the automatic updater...')
                         startupdate();
                     } else { //user has it disabled, ask for confirmation
-                        if (botisloggedin == false) { //only ask on start, otherwise this will annoy the user
+                        if (botisloggedin == false || responseSteamID) { //only ask on start, otherwise this will annoy the user
                             process.stdout.write(`You have disabled the automatic updater.\nWould you like to update now? [y/n] `)
                             var stdin = process.openStdin();
 
@@ -269,6 +272,7 @@ var checkforupdate = (forceupdate) => {
                 } else {
                     logger(`No available update found. (online: ${onlineversion} | local: ${extdata.version})`, false, true)
                     if (botisloggedin == false) require('./src/controller.js'); botisloggedin = true //no update, start bot
+                    if (responseSteamID) require('./src/controller.js').botobject[0].chatMessage(responseSteamID, `No available update in the ${releasemode} branch found.`)
                 }
             }) })
 

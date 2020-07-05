@@ -2,18 +2,24 @@
     "disableautoupdate": false,
     "childaccsplaygames": false,
     "commentdelay": 5000,
-    "logindelay": 2500,
     "allowcommentcmdusage": true,
     "skipSteamGuard": false,
     "commentcooldown": 5,
     "globalcommentcooldown": 10000,
     "repeatedComments": 2,
     "unfriendtime": 31,
-    "playinggames": ["!help | 3urobeat", 440, 730],
+    "playinggames": [
+        "!help | 3urobeat",
+        440,
+        730
+    ],
     "yourgroup": "https://steamcommunity.com/groups/3urobeatGroup",
     "botsgroup": "https://steamcommunity.com/groups/3urobeatGroup",
     "acceptgroupinvites": true,
     "owner": "https://steamcommunity.com/id/3urobeat",
-    "ownerid": ["76561198260031749"],
-    "enableevalcmd": false
+    "ownerid": [
+        "76561198260031749"
+    ],
+    "enableevalcmd": true,
+    "enableurltocomment": false
 }

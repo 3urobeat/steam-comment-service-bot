@@ -18,14 +18,19 @@ module.exports.run = async (logOnOptions, loginindex) => {
   var lastcomment = require("./lastcomment.json");
 
   var logger = controller.logger
-
-  const bot = new SteamUser();
-  const community = new SteamCommunity();
   var commentedrecently = false; //global cooldown for the comment command
   accstoadd = []
 
   if (loginindex == 0) var thisbot = "Main"
     else var thisbot = `Bot ${loginindex}`
+
+  //Get proxy of this bot account
+  if ((loginindex + 1) - (Object.keys(controller.logininfo).length / controller.proxies.length * controller.proxyShift) > Object.keys(controller.logininfo).length / controller.proxies.length) controller.proxyShift++ //if loginindex is greater than how often one proxie can be used -> raise proxy number
+  var thisproxy = controller.proxies[controller.proxyShift]
+
+  const bot = new SteamUser({ httpProxy: thisproxy });
+  const community = new SteamCommunity();
+
   
   if (loginindex == 0) { //group64id only needed by main bot -> remove unnecessary load from other bots
     if (cachefile.configgroup == config.yourgroup) { //id is stored in cache file, no need to get it again
@@ -71,13 +76,15 @@ module.exports.run = async (logOnOptions, loginindex) => {
     if(controller.accisloggedin) {
       clearInterval(loggedininterval) //stop interval
       controller.accisloggedin = false; //set to false again
-      logger(`[${thisbot}] Trying to log in...`, false, true)
+      if (thisproxy == null) logger(`[${thisbot}] Trying to log in without proxy...`, false, true)
+        else logger(`[${thisbot}] Trying to log in with proxy ${controller.proxyShift}...`, false, true)
       bot.logOn(logOnOptions)
     }
   }, 250);
 
   bot.on('error', (err) => { //Handle errors that were caused during logOn
     logger(`Error while trying to log in bot${loginindex}: ${err}`, true)
+    if (thisproxy != null) logger(`Your proxy ${controller.proxyShift} might be blocked by Steam...`, true)
 
     if (loginindex == 0) {
       logger("\nAborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true)
@@ -281,6 +288,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           if (ownercheck) var leavegrouptext =    `\n'!leavegroup (groupid64/group url)' - Leave this group with all bot accounts.`; else var leavegrouptext = "";
           if (ownercheck) var evaltext =          `\n'!eval (javascript code)'                       - Run javascript code from the steam chat.`; else var evaltext = "";
           if (ownercheck) var restarttext =       `\n'!restart'                                                  - Restart the bot.`; else var restarttext = "";
+          if (ownercheck) var updatetext =        `\n'!update [true]'                                      - Check for an available update. 'true' forces an update.`; else var updatetext = "";
           if (config.yourgroup.length > 1) var yourgrouptext = "\nJoin my '!group'!"; else var yourgrouptext = "";
           bot.chatMessage(steamID, `
             () <-- needed argument\n[] <-- optional argument\n\nCommand list:\n
@@ -289,7 +297,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
             '!info'                                                        - Get useful information about the bot and you.${resetcooldowntext}${addfriendtext}${unfriendtext}${leavegrouptext}
             '!failed'                                                     - See the exact errors of your last comment request.
             '!about'                                                    - Returns information what this is about.
-            '!owner'                                                   - Get a link to the profile of the operator of this bot instance.${evaltext}${restarttext}
+            '!owner'                                                   - Get a link to the profile of the operator of this bot instance.${evaltext}${restarttext}${updatetext}
             ${yourgrouptext}
           `)
           break;
@@ -563,6 +571,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
           if (!config.ownerid.includes(steam64id)) return bot.chatMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
           bot.chatMessage(steamID, 'Restarting...')
           require('../start.js').restart(updater.skippedaccounts)
+          break;
+        case '!update':
+          if (!config.ownerid.includes(steam64id)) return bot.chatMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
+
+          if (args[0] == "true") { updater.checkforupdate(true, steamID); bot.chatMessage(steamID, `Forcing an update from the ${extdata.branch} branch...`) }
+            else { updater.checkforupdate(false, steamID); bot.chatMessage(steamID, `Checking for an update in the ${extdata.branch} branch...`) }
           break;
         case '!eval':
           if (config.enableevalcmd !== true) return bot.chatMessage(steamID, "The eval command has been turned off!")
