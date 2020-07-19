@@ -263,11 +263,19 @@ var checkforupdate = (forceupdate, responseSteamID) => {
                                     logger(`Writing new data to data.json...`, false, true)
                                     fs.writeFile("./src/data.json", JSON.stringify(output, null, 4), err => {
                                         if (err) logger("error writing data.json: " + err, true) 
-                                        logger("\x1b[32mUpdate finished. Restarting myself in 5 seconds...\x1b[0m", true);
-                                        setTimeout(() => {
-                                            module.exports.activeupdate = false
-                                            require('./start.js').restart(skippedaccounts, true);
-                                        }, 5000); })}) }); //restart the bot
+
+                                        logger("Loading npm...", false, true) //Update installed packages with npm
+                                        var npm = require("npm")
+                                        npm.load(() => {
+                                            logger("Updating packages...", false, true)
+                                            npm.commands.install(() => {
+                                                logger("\x1b[32mUpdate finished. Restarting myself in 5 seconds...\x1b[0m", true);
+                                                logger("", true, true)
+                                                setTimeout(() => {
+                                                    module.exports.activeupdate = false
+                                                    require('./start.js').restart(skippedaccounts, true);
+                                                }, 5000); })}) }); //restart the bot
+                                            }) })
                         } catch (err) { logger('get data.json function Error: ' + err, true) }}
                 } else {
                     logger(`No available update found. (online: ${onlineversion} | local: ${extdata.version})`, false, true)
@@ -329,7 +337,7 @@ if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
 
 } else if (Object.keys(config).includes("botsgroupid")) { //this has to trigger if user was on version <2.7
     if (config.botsgroupid != "") {
-        logger("Applying 2.7 compatibility changes...", false, true)
+        logger("Applying 2.7 compatibility changes...")
         const xml2js = require("xml2js")
         Object.keys(config).push("botsgroup") //add new key
 
@@ -353,6 +361,19 @@ if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
     } else {
         checkforupdate(true) }
 
+} else if ((extdata.version == "2.8" || extdata.version == "BETA 2.8 b2") && extdata.firststart == true) {
+    logger("Applying 2.8 compatibility changes...")
+    const { exec } = require('child_process');
+    
+    logger("Installing npm...")
+    exec('npm install npm', (err, stdout) => {
+        if (err) {
+            logger("Error running the npm install command: " + err)
+            return; }
+
+        // Entire stdout (buffered)
+        logger(`Log: ${stdout}`, false, true) 
+        checkforupdate(true); });
 } else {
     if (releasemode == "beta-testing") logger("\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
     checkforupdate() //check will start the bot afterwards

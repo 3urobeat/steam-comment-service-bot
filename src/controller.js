@@ -64,7 +64,14 @@ var quotes = quotes.filter(str => str != "") //remove empty quotes as empty comm
 if (config.owner.length > 1) var ownertext = config.owner; else var ownertext = "anonymous (no owner link provided)"; 
 const aboutstr = `${extdata.aboutstr} \n\nDisclaimer: I (the developer) am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.\nThis instance of the bot is used and operated by: ${ownertext}`;
 
-var commenteverywhere = (steamID, numberofcomments, requesterSteamID) => { //function to let all bots comment
+var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res) => { //function to let all bots comment
+    function respondmethod(msg) { //we need a function to get each response back to the user (web request & steam chat)
+        if (res) {
+          logger("Web Comment Request: " + msg)
+        } else {
+          botobject[0].chatMessage(requesterSteamID, msg)
+        } }
+
     failedcomments[requesterSteamID] = {}
     module.exports.activecommentprocess.push(requesterSteamID)
 
@@ -75,7 +82,7 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID) => { //fun
                     } else { failedcmdreference = "" }
     
                 if (!Object.values(failedcomments[requesterSteamID]).includes("postUserComment error: Skipped because of previous HTTP 429 error.")) { //send chatMessage only the first time
-                    botobject[0].chatMessage(requesterSteamID, `Stopped comment process because of a HTTP 429 (cooldown) error. Please try again later. Failed: ${numberofcomments - i + 1}/${numberofcomments}\n\n${failedcmdreference}`) 
+                    respondmethod(`Stopped comment process because of a HTTP 429 (cooldown) error. Please try again later. Failed: ${numberofcomments - i + 1}/${numberofcomments}\n\n${failedcmdreference}`) 
 
                     var m = 0;
                     for (var l = i + 1; l <= numberofcomments; l++) { //push all other comments to instanly complete the failedcomments obj
@@ -104,9 +111,9 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID) => { //fun
 
 
                 if (i == numberofcomments - 1) { //last iteration
-                    if (Object.keys(failedcomments[requesterSteamID]).length > 0) { failedcmdreference = "To get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
+                    if (Object.keys(failedcomments[requesterSteamID]).length > 0) { failedcmdreference = "\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
                         } else { failedcmdreference = "" }
-                    botobject[0].chatMessage(requesterSteamID, `All comments have been sent. Failed: ${Object.keys(failedcomments[requesterSteamID]).length}/${numberofcomments}\n${failedcmdreference}`);
+                    respondmethod(`All comments have been sent. Failed: ${Object.keys(failedcomments[requesterSteamID]).length}/${numberofcomments}${failedcmdreference}`);
 
                     fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => { //write all lastcomment changes on last iteration
                         if (err) logger("add user to lastcomment.json from updateeverywhere() error: " + err) })
@@ -119,7 +126,7 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID) => { //fun
                                 accstoadd[requesterSteamID].push(`\n 'https://steamcommunity.com/profiles/${new SteamID(String(botobject[i].steamID)).getSteamID64()}'`) }
 
                             if (i == Object.keys(botobject).length - 1)
-                                botobject[0].chatMessage(requesterSteamID, "-----------------------------------\nIt seems like at least one of the requested comments could have failed because you/the recieving account aren't/isn't friend with the commenting bot account.\n\nPlease make sure that you have added these accounts in order to eventually avoid this error in the future: \n" + accstoadd[requesterSteamID] + "\n-----------------------------------")
+                                respondmethod("-----------------------------------\nIt seems like at least one of the requested comments could have failed because you/the recieving account aren't/isn't friend with the commenting bot account.\n\nPlease make sure that you have added these accounts in order to eventually avoid this error in the future: \n" + accstoadd[requesterSteamID] + "\n-----------------------------------")
                         } }
 
                     module.exports.activecommentprocess = activecommentprocess.filter(item => item !== requesterSteamID) 
@@ -177,7 +184,7 @@ if(updater.onlinemestr!==extdata.mestr||updater.onlineaboutstr!==extdata.aboutst
 //Check config values:
 if (stoplogin == true) return;
 logger("Checking for invalid config values...", false, true)
-if (config.allowcommentcmdusage === false && new SteamID(config.ownerid[0]).isValid() === false) {
+if (config.allowcommentcmdusage === false && new SteamID(String(config.ownerid[0])).isValid() === false) {
     logger("\x1b[31mYou set allowcommentcmdusage to false but didn't specify an ownerid! Aborting...\x1b[0m", true)
     process.exit(0); }
 if (config.repeatedComments < 1) {
@@ -237,17 +244,28 @@ fs.readFile('./src/lastcomment.json', function (err, data) {
         }} })
 
 //Check proxies.txt
-if (!fs.existsSync('./proxies.txt')){
-    fs.writeFile("./proxies.txt", "", err => { if (err) logger("error creating proxies.txt file: ") + err }) }
+var proxies = [] //when the file is just created there can't be proxies in it (this bot doesn't support magic)
 
-var proxies = []
-var proxies = fs.readFileSync('./proxies.txt', 'utf8').split("\n");
-var proxies = proxies.filter(str => str != "") //remove empty lines
-proxies.unshift(null) //add no proxy (default)
+if (!fs.existsSync('./proxies.txt')){
+    fs.writeFile("./proxies.txt", "", err => { 
+        if (err) logger("error creating proxies.txt file: ") + err }) 
+} else { //file does seem to exist so now we can try and read it
+    var proxies = fs.readFileSync('./proxies.txt', 'utf8').split("\n");
+    var proxies = proxies.filter(str => str != "") //remove empty lines
+    proxies.unshift(null) } //add no proxy (default)
 
 
 if(typeof checkm8 == "undefined"){logger("\n\n\x1b[31mYou removed needed parts from the code! Please redownload the application and not modify anything.\x1b[0m",true);process.exit(0)}
 if(checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"){logger("\n\n\x1b[31mYou removed needed parts from the code! Please redownload the application and not modify anything.\x1b[0m",true);process.exit(0)}
+
+//Generate urlrequestsecretkey if it is not created already
+if (extdata.urlrequestsecretkey == "") {
+    extdata.urlrequestsecretkey = Math.random().toString(36).slice(-10); //Credit: https://stackoverflow.com/a/9719815/12934162
+    logger("Generated a secret key for comment requests via url. You can find the key in the 'data.json' file, located in the 'src' folder.\nTo turn on the web comment requests, set enableurltocomment in your 'config.json' to true.", true)
+
+    fs.writeFile('./src/data.json', JSON.stringify(extdata, null, 4), (err) => {
+        if (err) logger("error writing created urlrequestsecretkey to data.json: " + err) })
+}
 
 //Check if Steam is online:
 var isSteamOnline = function isSteamOnline(continuewithlogin, stoponerr) {
@@ -388,7 +406,7 @@ var readyinterval = setInterval(() => { //log startup to console
         //Check if ownerids are correct:
         logger(`Checking for invalid ownerids...`, false, true)
         config.ownerid.forEach((e) => {
-            if (isNaN(e) || new SteamID(e).isValid() === false) { 
+            if (isNaN(e) || new SteamID(String(e)).isValid() == false) { 
                 logger(`[\x1b[31mWarning\x1b[0m] ${e} is not a valid ownerid!`, true) } })
         
         //Check if owner link is correct
@@ -517,6 +535,51 @@ var readyinterval = setInterval(() => { //log startup to console
             if (err) logger("change extdata to false error: " + err) 
 
             logger('Startup complete!', false, true) })
+
+        if (config.enableurltocomment) {
+            var express = require("express")
+            var app = express()
+            
+            app.get('/', (req, res) => {
+                res.send("<b>3urobeat's Comment Bot | Comment Web Request</b></br>Please use /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.</br></br>https://github.com/HerrEurobeat/steam-comment-service-bot") })
+            
+            app.get('/comment', (req, res) => {
+                logger("Web Comment Request recieved by: " + req.ip)
+            
+                if (req.query.n == undefined) {
+                    logger("Web Request denied. Reason: numberofcomments (n) is not specified.")
+                    return res.send("You have to provide an amount of comments.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.") }
+            
+                if (req.query.id == undefined) {
+                    logger("Web Request denied. Reason: Steam profileid (id) is not specified.")
+                    return res.send("You have to provide a profile id where I should comment.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.") }
+            
+                if (req.query.key == undefined || req.query.key != extdata.urlrequestsecretkey) {
+                    logger("Web Request denied. Reason: Invalid secret key.")
+                    return res.status(403).send("Your secret key is not defined or invalid. Request denied.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.") }
+            
+                if (isNaN(config.ownerid[0]) || new SteamID(String(config.ownerid[0])).isValid() == false) {
+                    logger("Web Request denied. Reason: Config's first ownerid is invalid.")
+                    return res.status(403).send("You can't use the web request feature unless you provided a valid ownerid in your config!") }
+                
+                logger(`Web Comment Request accepted. Amount: ${req.query.n} | Profile: ${req.query.id}`)
+                botobject[0].commentcmd(new SteamID(String(config.ownerid[0])), [req.query.n, req.query.id], res) //steamID: Make the bot owner responsible for request
+            });
+            
+            app.get('/output', (req, res) => { //Show output
+                fs.readFile("./output.txt", (err, data) => {
+                    if(err) logger("urltocomment: error reading output.txt: " + err)
+                
+                    res.write(String(data))
+                    res.end()
+                }) })
+            
+            app.use((req, res) => { //Show idk page thanks
+                res.status(404).send("404: Page not Found.</br>Please use /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.") });
+            
+            app.listen(3034, () => {
+                logger('EnableURLToComment is on: Server is listening on port 3034.\nVisit it on: localhost:3034', true) });
+        }
 
         setTimeout(() => {
             //Startup is done, clean up
