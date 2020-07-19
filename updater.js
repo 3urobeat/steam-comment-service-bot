@@ -33,7 +33,7 @@ var logger = (str, nodate, remove) => { //Custom logger
 var restartdata = (data) => {
     module.exports.skippedaccounts = data }
 
-var checkforupdate = (forceupdate, responseSteamID) => {
+var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) => {
     try {
         /* ------------------ Check for new version ------------------ */
         logger(`Checking for update in ${releasemode} branch...`, false, true)
@@ -261,6 +261,7 @@ var checkforupdate = (forceupdate, responseSteamID) => {
                                     output = JSON.parse(output)
 
                                     logger(`Writing new data to data.json...`, false, true)
+                                    if (compatibilityfeaturedone) output.compatibilityfeaturedone = true //prevents compatibility feature from running again
                                     fs.writeFile("./src/data.json", JSON.stringify(output, null, 4), err => {
                                         if (err) logger("error writing data.json: " + err, true) 
 
@@ -270,8 +271,8 @@ var checkforupdate = (forceupdate, responseSteamID) => {
                                             logger("Updating packages...", false, true)
                                             npm.commands.install(() => {
                                                 logger("\x1b[32mUpdate finished. Restarting myself in 5 seconds...\x1b[0m", true);
-                                                logger("", true, true)
                                                 setTimeout(() => {
+                                                    logger("", true, true)
                                                     module.exports.activeupdate = false
                                                     require('./start.js').restart(skippedaccounts, true);
                                                 }, 5000); })}) }); //restart the bot
@@ -364,7 +365,7 @@ if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
 } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2.8" || extdata.version == "BETA 2.8 b2")) {
     logger("Applying 2.8 compatibility changes...")
     const { exec } = require('child_process');
-    
+   
     logger("Installing npm as package. Please wait!")
     exec('npm install npm', (err, stdout) => {
         if (err) {
@@ -373,13 +374,9 @@ if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
 
         logger(`Log: ${stdout}`, true) //entire log
 
-        extdata.compatibilityfeaturedone = true //done!
-        fs.writeFile('./src/data.json', JSON.stringify(extdata, null, 4), err => {
-            if (err) logger("Error changing compatibilityfeaturedone value in data.json: " + err, true) })
-
         logger("Continuing in 2.5 seconds...", false, true)
         setTimeout(() => {
-            checkforupdate(true)
+            checkforupdate(true, null, true)
         }, 2500) });
 } else {
     if (releasemode == "beta-testing") logger("\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
