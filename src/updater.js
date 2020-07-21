@@ -107,7 +107,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                         try {
                             logger("Updating updater.js...", true)
                             logger(`Getting updater.js code from GitHub...`, false, true)
-                            https.get(`https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${releasemode}/updater.js`, function(res){
+                            https.get(`https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${releasemode}/src/updater.js`, function(res){
                                 res.setEncoding('utf8');
                                 res.on('data', function (chunk) {
                                     output += chunk });
