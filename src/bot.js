@@ -1,6 +1,7 @@
 //Code by: https://github.com/HerrEurobeat/ 
 //If you are here, you are wrong. Open config.json and configure everything there!
 
+//This file contains: Code for each bot instance (most of the code only affects the main bot) and handling most of the talking with Steam.
 
 module.exports.run = async (logOnOptions, loginindex) => {
   const SteamUser = require('steam-user');
@@ -10,7 +11,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
   const xml2js = require('xml2js');
   const https = require('https')
 
-  var updater = require('../updater.js');
+  var updater = require('./updater.js');
   var controller = require("./controller.js");
   var config = require('../config.json');
   var extdata = require('./data.json');

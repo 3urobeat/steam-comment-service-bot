@@ -1,13 +1,15 @@
 //Code by: https://github.com/HerrEurobeat/ 
 //If you are here, you are wrong. Open config.json and configure everything there!
 
+//This file contains: Controlling bot.js instances, processing instance over-reaching requests, handling web comment requests and saving stuff in variables.
+
 const SteamID = require('steamid');
 const fs = require('fs');
 const https = require('https')
 const readline = require("readline")
 const xml2js = require('xml2js')
 
-var updater = require('../updater.js')
+var updater = require('./updater.js')
 var b = require('./bot.js');
 var logininfo = require('../logininfo.json');
 var config = require('../config.json');
@@ -27,8 +29,11 @@ var logindelay = 2500
 var proxyShift = 0
 skippednow = [] //array to track which accounts have been skipped
 stoplogin = false;
-process.title = `${extdata.mestr}'s Steam Comment Service Bot v${extdata.version} | ${process.platform}` //set node process name to find it in task manager etc.
 
+if (process.platform == "win32") { //set node process name to find it in task manager etc.
+    process.title = `${extdata.mestr}'s Steam Comment Service Bot v${extdata.version} | ${process.platform}` //Windows allows long terminal/process names
+} else {
+    process.title = `CommentBot` } //Linux has a length limit of 10
 
 /* ------------ Functions: ------------ */
 var logger = (str, nodate, remove) => { //Custom logger
@@ -206,14 +211,14 @@ fs.readFile('./src/cache.json', function (err, data) {
         cachefile = require("./cache.json")
     } catch (err) {
         if (err) {
-            logger("Your cache.json is broken. No worries I will apply duct tape.\nError: " + err + "\n", true) 
+            if (!extdata.firststart) logger("Your cache.json is broken. No worries I will apply duct tape.\nError: " + err + "\n", true);
 
             fs.writeFile('./src/cache.json', "{}", (err) => { //write empty valid json
                 if (err) { 
                     logger("Error writing {} to cache.json.\nPlease do this manually: Go into 'src' folder, open 'cache.json', write '{}' and save.\nOtherwise the bot will always crash.\nError: " + err + "\n\nAborting...", true); 
                     process.exit(0) //abort since writeFile was unable to write and any further execution would crash
                 } else {
-                    logger("Successfully cleared cache.json.", false, true)
+                    logger("Successfully cleared/created cache.json.", false, true)
                     cachefile = require("./cache.json")
                 } })
         }} })
@@ -484,6 +489,7 @@ var readyinterval = setInterval(() => { //log startup to console
         if (config.unfriendtime > 0) {
             logger(`Associating bot's accountids with botobject entries...`, false, true)
             var accountids = {}
+            var lastcomment = require('./lastcomment.json')
             Object.keys(botobject).forEach((e, i) => {
                 Object.keys(accountids).push(e)
                 accountids[e] = botobject[e]['steamID']['accountid']
@@ -707,11 +713,11 @@ Y88b  d88P Y88..88P 888  888  888 888  888  888 Y8b.     888  888 Y88b.       88
 ########   ########  ###       ### ###       ### ########## ###    ####     ###              #########   ########     ###           `,
 
 `  _____                                     _     ____        _   
-/ ____|                                   | |   |  _ \\      | |  
+ / ____|                                   | |   |  _ \\      | |  
 | |     ___  _ __ ___  _ __ ___   ___ _ __ | |_  | |_) | ___ | |_ 
 | |    / _ \\| '_ \` _ \\| '_ \` _ \\ / _ \\ '_ \\| __| |  _ < / _ \\| __|
 | |___| (_) | | | | | | | | | | |  __/ | | | |_  | |_) | (_) | |_ 
-\\_____\\___/|_| |_| |_|_| |_| |_|\\___|_| |_|\\__| |____/ \\___/ \\__|`,
+ \\_____\\___/|_| |_| |_|_| |_| |_|\\___|_| |_|\\__| |____/ \\___/ \\__|`,
 
 `  _|_|_|                                                                  _|          _|_|_|                _|      
 _|          _|_|    _|_|_|  _|_|    _|_|_|  _|_|      _|_|    _|_|_|    _|_|_|_|      _|    _|    _|_|    _|_|_|_|  
