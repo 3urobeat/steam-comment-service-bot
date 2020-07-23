@@ -289,6 +289,7 @@ module.exports={
     bootstart,
     steamGuardInputTimeFunc,
     steamGuardInputTime,
+    readyafter,
     logger,
     communityobject,
     botobject,
@@ -395,6 +396,7 @@ var readyinterval = setInterval(() => { //log startup to console
 
         const bootend = (new Date() - bootstart) - steamGuardInputTime
         readyafter = bootend / 1000
+        module.exports.readyafter = readyafter //refresh exported variable to now allow cmd usage
 
         var readyafterunit = "seconds"
         if (readyafter > 60) { readyafter = readyafter / 60; var readyafterunit = "minutes" }
@@ -584,7 +586,7 @@ var readyinterval = setInterval(() => { //log startup to console
                 res.status(404).send("404: Page not Found.</br>Please use /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.") });
             
             app.listen(3034, () => {
-                logger('EnableURLToComment is on: Server is listening on port 3034.\nVisit it on: localhost:3034', true) });
+                logger('EnableURLToComment is on: Server is listening on port 3034.\nVisit it on: localhost:3034\n', true) });
         }
 
         setTimeout(() => {

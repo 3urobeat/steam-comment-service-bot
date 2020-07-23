@@ -287,7 +287,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                                     logger("Error running the npm install command: " + err)
                                     return; }
 
-                                logger(`Log:\n${stdout}`) //entire log
+                                logger(`Log:\n${stdout}`, true) //entire log
 
                                 logger("\x1b[32mUpdate finished. Restarting myself in 5 seconds...\x1b[0m", true);
                                 setTimeout(() => {
@@ -383,9 +383,10 @@ if (!fs.existsSync('./src')) { //this has to trigger if user was on version <2.6
     if (fs.existsSync('./updater.js')) {
         logger("Applying 2.8 compatibility changes...")
         fs.unlink("./updater.js", (err) => { //delete old updater.js
-            if (err) logger("error deleting old updater.js: " + err, true) }) 
+            if (err) logger("error deleting old updater.js: " + err, true) 
+            checkforupdate(true, null, true) }) 
     } else {
-        checkforupdate(true) }
+        checkforupdate(true, null, true) }
 
 } else {
     if (releasemode == "beta-testing") logger("\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)

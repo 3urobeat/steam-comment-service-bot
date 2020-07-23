@@ -410,7 +410,13 @@ module.exports.run = async (logOnOptions, loginindex) => {
     var steam64id = new SteamID(String(steamID)).getSteamID64()
     logger(`[${thisbot}] Friend message from ${steam64id}: ${message}`); //log message
 
+    //Deny non-friends the use of any command
+    if (bot.myFriends[steam64id] != 3) return bot.chatMessage(steamID, "Please add me before using a command!")
+
     if (loginindex === 0) { //check if this is the main bot
+      //Check if bot is not fully started yet and block cmd usage if that is the case to prevent errors
+      if (controller.readyafter == 0) return bot.chatMessage(steamID, "The bot is not completely started yet. Please wait a moment before using a command.")
+
       var msgrecievedtime = Date.now() //timestamp to calculate time needed to process request
       var lastcommentsteamID = steam64id + loginindex
 
@@ -460,7 +466,6 @@ module.exports.run = async (logOnOptions, loginindex) => {
         case '!comment':
           commentcmd(steamID, args) //Just call the function like normal when the command was used
           break;
-
         case '!ping':
           bot.chatMessage(steamID, `Pong!\nHeartbeat: ${Date.now() - msgrecievedtime}ms`)
           break;
@@ -492,6 +497,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
           bot.chatMessage(steamID, "Join my group here: " + config.yourgroup) //seems like no id has been saved but an url. Send the user the url
           break;
+        case '!rc':
         case '!resetcooldown':
           if (!config.ownerid.includes(steam64id)) return bot.chatMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
           if (config.commentcooldown === 0) { //is the cooldown enabled?

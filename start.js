@@ -8,6 +8,7 @@
 //To be able to change the file it is supposed to start on the fly it pulls the necessary file path from the data.json file
 
 var data = require('./src/data.json')
+var fs = require("fs")
 
 /* ------------------ Restart function ------------------ */
 var restart = (args, nologOff) => { //Restart the application
@@ -37,6 +38,21 @@ module.exports={
     stop }
 
 
-require(data.filetostart) //Just passing startup to updater
+if (!fs.existsSync(data.filetostart)) { //Function that downloads filetostart if it doesn't exist (file location change etc.)
+    output = ""
+    try {
+	var https = require("https")
+        https.get(data.filetostarturl, function(res){
+            res.setEncoding('utf8');
+            res.on('data', function (chunk) {
+                output += chunk });
+
+            res.on('end', () => {
+                fs.writeFile(data.filetostart, output, err => {
+                    if (err) return logger(err, true)
+                    require(data.filetostart) })}) }); //start
+    } catch (err) { console.log('start.js get updater.js function Error: ' + err) }
+} else {
+    require(data.filetostart) } //Just passing startup to updater
 
 //Code by: https://github.com/HerrEurobeat/ 
