@@ -15,8 +15,12 @@ var restart = (args, nologOff) => { //Restart the application
     console.log("Restarting application...")
     var data = require('./src/data.json')
 
-    if (nologOff != true) {
+    if (!nologOff) {
         var controller = require(data.botobjectfile) //get the file we want from data.json
+
+        if (typeof controller.server != "undefined") { //check if the server was exported instead of checking config.json to require less files
+            console.log("Stopping URLToComment webserver...")
+            controller.server.close() }
 
         Object.keys(controller.botobject).forEach((e) => { //log out all bots
             controller.botobject[e].logOff() }) }

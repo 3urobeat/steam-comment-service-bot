@@ -1,14 +1,14 @@
 {
-    "version": "BETA 2.8 b4",
+    "version": "BETA 2.8 b5",
     "branch": "beta-testing",
     "filetostart": "./src/updater.js",
-    "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/updater.js",
+    "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/updater.js",
     "botobjectfile": "./src/controller.js",
     "mestr": "3urobeat",
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://paypal.me/3urobeat",
     "firststart": true,
     "compatibilityfeaturedone": false,
-    "whatsnew": "This and that.",
+    "whatsnew": "All features for 2.8 implemented!",
     "urlrequestsecretkey": "",
     "timesloggedin": 0,
     "totallogintime": 0

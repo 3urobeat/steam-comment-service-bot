@@ -74,7 +74,7 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res) => { 
         if (res) {
           logger("Web Comment Request: " + msg)
         } else {
-          botobject[0].chatMessage(requesterSteamID, msg)
+          botobject[0].chat.sendFriendMessage(requesterSteamID, msg)
         } }
 
     failedcomments[requesterSteamID] = {}
@@ -86,7 +86,7 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res) => { 
                 if (Object.keys(failedcomments[requesterSteamID]).length > 0) { failedcmdreference = "To get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
                     } else { failedcmdreference = "" }
     
-                if (!Object.values(failedcomments[requesterSteamID]).includes("postUserComment error: Skipped because of previous HTTP 429 error.")) { //send chatMessage only the first time
+                if (!Object.values(failedcomments[requesterSteamID]).includes("postUserComment error: Skipped because of previous HTTP 429 error.")) { //send chat.sendFriendMessage only the first time
                     respondmethod(`Stopped comment process because of a HTTP 429 (cooldown) error. Please try again later. Failed: ${numberofcomments - i + 1}/${numberofcomments}\n\n${failedcmdreference}`) 
 
                     var m = 0;
@@ -385,8 +385,7 @@ var readyinterval = setInterval(() => { //log startup to console
                         else { var failedtocheckmsg = ""; }
                     logger(`\x1b[92m>\x1b[0m ${limitedaccs}/${Object.keys(botobject).length} account(s) are \x1b[31mlimited\x1b[0m ${failedtocheckmsg}`, true) }}
         } catch (err) {
-            logger(`Error in limited checker: ${err}`)
-        }
+            logger(`Error in limited checker: ${err}`) }
 
         if (config.disableautoupdate) logger("\x1b[41m\x1b[30m>\x1b[0m Automatic updating is \x1b[4m\x1b[31mturned off\x1b[0m!", true)
 
@@ -524,7 +523,7 @@ var readyinterval = setInterval(() => { //log startup to console
                         } else { //bot does seem to be logged in
 
                             if (targetbot.myFriends[iminusid] === 3 && !config.ownerid.includes(iminusid)) { //check if the targeted user is still friend and not the owner
-                                targetbot.chatMessage(new SteamID(iminusid), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
+                                targetbot.chat.sendFriendMessage(new SteamID(iminusid), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
                                 targetbot.removeFriend(new SteamID(iminusid)); //unfriend user
                                 logger(`[Bot ${targetkey}] Unfriended ${iminusid} after ${config.unfriendtime} days of inactivity.`) } 
 
@@ -549,7 +548,7 @@ var readyinterval = setInterval(() => { //log startup to console
             var app = express()
             
             app.get('/', (req, res) => {
-                res.send("<b>3urobeat's Comment Bot | Comment Web Request</b></br>Please use /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.</br></br>https://github.com/HerrEurobeat/steam-comment-service-bot") })
+                res.send("<title>Comment Bot Web Request</title><b>3urobeat's Comment Bot | Comment Web Request</b></br>Please use /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.</br></br>Visit /output to see the complete output.txt in your browser!</b></br></br>https://github.com/HerrEurobeat/steam-comment-service-bot") })
             
             app.get('/comment', (req, res) => {
                 logger("Web Comment Request recieved by: " + req.ip)
@@ -585,7 +584,7 @@ var readyinterval = setInterval(() => { //log startup to console
             app.use((req, res) => { //Show idk page thanks
                 res.status(404).send("404: Page not Found.</br>Please use /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.") });
             
-            app.listen(3034, () => {
+            module.exports.server = app.listen(3034, () => {
                 logger('EnableURLToComment is on: Server is listening on port 3034.\nVisit it on: localhost:3034\n', true) });
         }
 

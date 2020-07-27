@@ -52,8 +52,8 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
 
                     var config = require("../config.json")
 
-                    if (responseSteamID) { require('./controller.js').botobject[0].chatMessage(responseSteamID, `Update available! Your version: ${extdata.version} | New version: ${onlineversion}`)
-                        if (config.disableautoupdate == true && !forceupdate) { require('./controller.js').botobject[0].chatMessage(responseSteamID, "You have turned automatic updating off. You need to confirm the update in the console!") }}
+                    if (responseSteamID) { require('./controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `Update available! Your version: ${extdata.version} | New version: ${onlineversion}`)
+                        if (config.disableautoupdate == true && !forceupdate) { require('./controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, "You have turned automatic updating off. You need to confirm the update in the console!") }}
 
                     /* ------------------ Check for permission to update ------------------ */
                     if (config.disableautoupdate == false || forceupdate) { //check if the user has disabled the automatic updater or an update was forced
@@ -298,7 +298,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                 } else {
                     logger(`No available update found. (online: ${onlineversion} | local: ${extdata.version})`, false, true)
                     if (botisloggedin == false) require('./controller.js'); botisloggedin = true //no update, start bot
-                    if (responseSteamID) require('./controller.js').botobject[0].chatMessage(responseSteamID, `No available update in the ${releasemode} branch found.`)
+                    if (responseSteamID) require('./controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `No available update in the ${releasemode} branch found.`)
                 }
             }) })
 
