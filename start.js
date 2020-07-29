@@ -45,7 +45,7 @@ module.exports={
 if (!fs.existsSync(data.filetostart)) { //Function that downloads filetostart if it doesn't exist (file location change etc.)
     output = ""
     try {
-	var https = require("https")
+	    var https = require("https")
         https.get(data.filetostarturl, function(res){
             res.setEncoding('utf8');
             res.on('data', function (chunk) {

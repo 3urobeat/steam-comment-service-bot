@@ -494,7 +494,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           bot.chat.sendFriendMessage(steamID, `
             -----------------------------------~~~~~------------------------------------ 
             >   ${extdata.mestr}'s Comment Bot [Version ${extdata.version}] (More info: !about)
-            >   Uptime: ${Number(Math.round(((new Date() - controller.bootstart) / 3600000)+'e'+2)+'e-'+2)} hours | Heartbeat: ${Date.now() - msgrecievedtime}ms
+            >   Uptime: ${Number(Math.round(((new Date() - controller.bootstart) / 3600000)+'e'+2)+'e-'+2)} hours
             >   'node.js' Version: ${process.version} | RAM Usage (RSS): ${Math.round(process.memoryUsage()["rss"] / 1024 / 1024 * 100) / 100} MB
             >   Accounts logged in: ${Object.keys(controller.communityobject).length} | repeatedComments: ${config.repeatedComments} | Branch: ${updater.releasemode}
             |
