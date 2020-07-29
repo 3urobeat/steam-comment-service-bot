@@ -27,7 +27,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
     else var thisbot = `Bot ${loginindex}`
 
   //Get proxy of this bot account
-  if ((loginindex + 1) - (Object.keys(controller.logininfo).length / controller.proxies.length * controller.proxyShift) > Object.keys(controller.logininfo).length / controller.proxies.length) controller.proxyShift++ //if loginindex is greater than how often one proxie can be used -> raise proxy number
+  if (controller.proxyShift >= controller.proxies.length) controller.proxyShift = 0; //reset proxy counter
+  controller.proxyShift++ //switch to next proxy
   var thisproxy = controller.proxies[controller.proxyShift]
 
   const bot = new SteamUser({ httpProxy: thisproxy });
