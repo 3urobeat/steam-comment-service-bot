@@ -31,6 +31,7 @@
 * Send comments to other steam profiles  
 * Apply cooldowns & customize nearly any value  
 * Advertise your group & automatically invite users to it  
+* Use proxies and requests comments via URL in your browser  
   
 If you would like to see a detailed tutorial in the form of a video, [click here!](https://www.youtube.com/watch?v=gmA-ccD05g4)  
 This written tutorial will also contain a video tutorial badge link for each specific part!  
@@ -82,7 +83,14 @@ If you have more than 1 account set up in `logininfo.json` you can specify how m
 Hey, if you like this project please consider donating a buck on my [PayPal!](https://paypal.me/3urobeat)  
 [![Donate](https://img.shields.io/badge/donate-%241-orange)](https://paypal.me/3urobeat)  
 If you like the work I put into this project, please give this repository a star!  
-![Star](https://img.shields.io/github/stars/HerrEurobeat/steam-comment-service-bot)
+![Star](https://img.shields.io/github/stars/HerrEurobeat/steam-comment-service-bot)  
+
+#### **Web (URL) Comment Requests**
+To requests comment with an URL in your browser you need to turn the feature on.  
+Go into your `config.json` and set `enableurltocomment` to `true` and restart the bot.  
+
+Open localhost:3034 in your browser and follow the instructions there.  
+To request comments from outside your network you need to allow the port `3034` in your router settings and visit the server with your public ip address.  
 
 #### **Bugs, Issues & Betas**
 If you encountered a **bug**, you **need help** or wish a feature to be added, please open an [**issue!**](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose)  

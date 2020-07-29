@@ -4,10 +4,11 @@
   "description": "Request multiple steam profile comments by texting a bot network!",
   "main": "start.js",
   "dependencies": {
+    "express": "^4.17.1",
     "htmlparser2": "^4.1.0",
     "https": "^1.0.0",
-    "steam-user": "^4.16.2",
-    "steamcommunity": "^3.41.4"
+    "steam-user": "^4.17.0",
+    "steamcommunity": "^3.41.6"
   },
   "devDependencies": {},
   "scripts": {

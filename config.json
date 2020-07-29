@@ -2,11 +2,10 @@
     "disableautoupdate": false,
     "childaccsplaygames": false,
     "commentdelay": 5000,
-    "logindelay": 2500,
     "allowcommentcmdusage": true,
     "skipSteamGuard": false,
     "commentcooldown": 5,
-    "globalcommentcooldown": 10000,
+    "globalcommentcooldown": 60000,
     "repeatedComments": 2,
     "unfriendtime": 31,
     "playinggames": ["!help | 3urobeat", 440, 730],
@@ -15,5 +14,6 @@
     "acceptgroupinvites": true,
     "owner": "https://steamcommunity.com/id/3urobeat",
     "ownerid": ["76561198260031749"],
-    "enableevalcmd": false
+    "enableevalcmd": true,
+    "enableurltocomment": true
 }

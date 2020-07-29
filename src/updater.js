@@ -1,11 +1,13 @@
 //Code by: https://github.com/HerrEurobeat/ 
 //If you are here, you are wrong. Open config.json and configure everything there!
 
+//This file contains: Checking for updates, updating the bot's files and starting the controller.js.
+
 const fs = require('fs')
 const https = require("https")
 const readline = require("readline")
-var config = require("./config.json")
-var extdata = require('./src/data.json')
+var config = require("../config.json")
+var extdata = require('./data.json')
 var skippedaccounts = [] //array to save which accounts have been skipped to skip them automatically when restarting
 var botisloggedin = false
 var activeupdate = false
@@ -33,7 +35,7 @@ var logger = (str, nodate, remove) => { //Custom logger
 var restartdata = (data) => {
     module.exports.skippedaccounts = data }
 
-var checkforupdate = (forceupdate) => {
+var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) => {
     try {
         /* ------------------ Check for new version ------------------ */
         logger(`Checking for update in ${releasemode} branch...`, false, true)
@@ -48,21 +50,24 @@ var checkforupdate = (forceupdate) => {
                     logger(`\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${extdata.version}\x1b[0m | New version: \x1b[32m${onlineversion}\x1b[0m`, true)
                     logger("", true)
 
-                    /* ------------------ Check for permission to update ------------------ */
-                    var config = require("./config.json")
+                    var config = require("../config.json")
 
-                    if (config.disableautoupdate == false) { //check if the user has disabled the automatic updater
+                    if (responseSteamID) { require('./controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `Update available! Your version: ${extdata.version} | New version: ${onlineversion}`)
+                        if (config.disableautoupdate == true && !forceupdate) { require('./controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, "You have turned automatic updating off. You need to confirm the update in the console!") }}
+
+                    /* ------------------ Check for permission to update ------------------ */
+                    if (config.disableautoupdate == false || forceupdate) { //check if the user has disabled the automatic updater or an update was forced
                         logger('Starting the automatic updater...')
                         startupdate();
                     } else { //user has it disabled, ask for confirmation
-                        if (botisloggedin == false) { //only ask on start, otherwise this will annoy the user
+                        if (botisloggedin == false || responseSteamID) { //only ask on start, otherwise this will annoy the user
                             process.stdout.write(`You have disabled the automatic updater.\nWould you like to update now? [y/n] `)
                             var stdin = process.openStdin();
 
                             stdin.addListener('data', text => {
                             var response = text.toString().trim()
                             if (response == "y") startupdate();
-                                else { require('./src/controller.js'); botisloggedin = true } //start bot or do nothing
+                                else { require('./controller.js'); botisloggedin = true } //start bot or do nothing
 
                             stdin.pause() }) //stop reading
                         }
@@ -76,7 +81,7 @@ var checkforupdate = (forceupdate) => {
 
                             logger(`Bot is logged in. Checking for active comment process...`, false, true)
                             var activecommentinterval = setInterval(() => { //check if a comment request is being processed every 2.5 secs
-                                var controller = require('./src/controller.js')
+                                var controller = require('./controller.js')
 
                                 if (controller.activecommentprocess.length == 0) { //start logging off accounts when no comment request is being processed anymore
                                     logger("Logging off your accounts...", true)
@@ -102,14 +107,14 @@ var checkforupdate = (forceupdate) => {
                         try {
                             logger("Updating updater.js...", true)
                             logger(`Getting updater.js code from GitHub...`, false, true)
-                            https.get(`https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${releasemode}/updater.js`, function(res){
+                            https.get(`https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${releasemode}/src/updater.js`, function(res){
                                 res.setEncoding('utf8');
                                 res.on('data', function (chunk) {
                                     output += chunk });
 
                                 res.on('end', () => {
                                     logger(`Writing new code to updater.js...`, false, true)
-                                    fs.writeFile("./updater.js", output, err => {
+                                    fs.writeFile("./src/updater.js", output, err => {
                                         if (err) logger("error writing updater.js: " + err, true)
                                         botjs();
                                     })}) });
@@ -119,7 +124,7 @@ var checkforupdate = (forceupdate) => {
                         output = ""
                         try {
                             logger("Updating bot.js...", true)
-                            logger(`Getting updater.js code from GitHub...`, false, true)
+                            logger(`Getting bot.js code from GitHub...`, false, true)
                             https.get(`https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${releasemode}/src/bot.js`, function(res){
                                 res.setEncoding('utf8');
                                 res.on('data', function (chunk) {
@@ -236,7 +241,7 @@ var checkforupdate = (forceupdate) => {
                                     output += chunk });
 
                                 res.on('end', () => {
-                                    logger(`Writing new code to updater.js...`, false, true)
+                                    logger(`Writing new code to controller.js...`, false, true)
                                     fs.writeFile("./src/controller.js", output, err => {
                                         if (err) logger("error writing controller.js: " + err, true);
                                         datajson(); })
@@ -256,19 +261,44 @@ var checkforupdate = (forceupdate) => {
                                 res.on('end', () => {
                                     logger(`Parsing new json data...`, false, true)
                                     output = JSON.parse(output)
+                                    output.urlrequestsecretkey = extdata.urlrequestsecretkey //keep these 3 values
+                                    output.timesloggedin = extdata.timesloggedin
+                                    output.totallogintime = extdata.totallogintime
+
+                                    if (compatibilityfeaturedone) output.compatibilityfeaturedone = true //prevents compatibility feature from running again
 
                                     logger(`Writing new data to data.json...`, false, true)
                                     fs.writeFile("./src/data.json", JSON.stringify(output, null, 4), err => {
                                         if (err) logger("error writing data.json: " + err, true) 
-                                        logger("\x1b[32mUpdate finished. Restarting myself in 5 seconds...\x1b[0m", true);
-                                        setTimeout(() => {
-                                            module.exports.activeupdate = false
-                                            require('./start.js').restart(skippedaccounts, true);
-                                        }, 5000); })}) }); //restart the bot
-                        } catch (err) { logger('get data.json function Error: ' + err, true) }}
+                                        npmupdate(); })
+                                    })});
+                        } catch (err) { 
+                            logger('get data.json function Error: ' + err, true); 
+                            logger("The updater failed to update data.json. Please restart the bot and try again - if this error still happens please open an issue: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose", true);
+                            return; }}
+
+                    function npmupdate() {
+                        try {
+                            const { exec } = require('child_process');
+   
+                            logger("Updating packages with npm...", true)
+                            exec('npm install', (err, stdout) => { //wanted to do it with the npm package but that didn't work out (BETA 2.8 b2)
+                                if (err) {
+                                    logger("Error running the npm install command: " + err)
+                                    return; }
+
+                                logger(`Log:\n${stdout}`, true) //entire log
+
+                                logger("\x1b[32mUpdate finished. Restarting myself in 5 seconds...\x1b[0m", true);
+                                setTimeout(() => {
+                                    module.exports.activeupdate = false
+                                    require('../start.js').restart(skippedaccounts, true); //restart the bot
+                                }, 5000); })                                    
+                        } catch (err) { logger('update npm packages Error: ' + err, true) }}
                 } else {
                     logger(`No available update found. (online: ${onlineversion} | local: ${extdata.version})`, false, true)
-                    if (botisloggedin == false) require('./src/controller.js'); botisloggedin = true //no update, start bot
+                    if (botisloggedin == false) require('./controller.js'); botisloggedin = true //no update, start bot
+                    if (responseSteamID) require('./controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `No available update in the ${releasemode} branch found.`)
                 }
             }) })
 
@@ -279,7 +309,7 @@ var checkforupdate = (forceupdate) => {
                 if (botisloggedin == false) {
                     logger("\nTrying to start the bot anyway in 5 seconds...", true)
                     setTimeout(() => {
-                        require('./src/controller.js'); 
+                        require('./controller.js'); 
                         botisloggedin = true //try to start bot anyway
                     }, 5000);
             } })
@@ -289,7 +319,7 @@ var checkforupdate = (forceupdate) => {
 logger("\nBootup sequence started...", true, true) //mark new execution in output.txt
         
 //Compatibility features
-if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
+if (!fs.existsSync('./src')) { //this has to trigger if user was on version <2.6
     try {
         logger("Applying 2.6 compatibility changes...", false, true)
         fs.mkdirSync('./src') 
@@ -301,7 +331,7 @@ if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
         fs.rename("./lastcomment.json", "./src/lastcomment.json", (err) => { //move lastcomment.json
             if (err) logger("error moving lastcomment.json: " + err, true) })
 
-        var logininfo = require('./logininfo.json')
+        var logininfo = require('../logininfo.json')
 
         if (Object.keys(logininfo)[0] == "bot1") { //check if first bot is 1 (old) and not 0
             Object.keys(logininfo).forEach((e, i) => {      
@@ -325,7 +355,7 @@ if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
 
 } else if (Object.keys(config).includes("botsgroupid")) { //this has to trigger if user was on version <2.7
     if (config.botsgroupid != "") {
-        logger("Applying 2.7 compatibility changes...", false, true)
+        logger("Applying 2.7 compatibility changes...")
         const xml2js = require("xml2js")
         Object.keys(config).push("botsgroup") //add new key
 
@@ -345,14 +375,22 @@ if (!fs.existsSync('./src')){ //this has to trigger if user was on version <2.6
                             checkforupdate(true) //force update so that config gets cleaned up
                     }) }) })
         } catch (err) {
-            if (err) logger("error getting groupurl of botsgroupid or getting new config: " + err) } 
+            if (err) logger("error getting groupurl of botsgroupid or getting new config: " + err) }
     } else {
         checkforupdate(true) }
 
+} else if (!extdata.compatibilityfeaturedone && (extdata.version == "2.8" || extdata.version == "BETA 2.8 b3")) {
+    if (fs.existsSync('./updater.js')) {
+        logger("Applying 2.8 compatibility changes...")
+        fs.unlink("./updater.js", (err) => { //delete old updater.js
+            if (err) logger("error deleting old updater.js: " + err, true) 
+            checkforupdate(true, null, true) }) 
+    } else {
+        checkforupdate(true, null, true) }
+
 } else {
     if (releasemode == "beta-testing") logger("\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
-    checkforupdate() //check will start the bot afterwards
-}
+    checkforupdate() } //check will start the bot afterwards
 
 module.exports={
     restartdata,

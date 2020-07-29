@@ -1,13 +1,15 @@
 {
-    "version": "2.7.2",
+    "version": "2.8",
     "branch": "master",
-    "filetostart": "./updater.js",
-    "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/updater.js",
+    "filetostart": "./src/updater.js",
+    "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/updater.js",
     "botobjectfile": "./src/controller.js",
     "mestr": "3urobeat",
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://paypal.me/3urobeat",
     "firststart": true,
-    "whatsnew": "New !addfriend command. Added cache.json file. Fixed group invite crash. Fixed steam guard code issues. Added more ascii arts. Fixed limitedaccs crashes. Added childaccsplaygames in config.",
+    "compatibilityfeaturedone": false,
+    "whatsnew": "Added proxy support. Added webserver to request comments with URL. Fixed a lot of bugs and made other changes. (see more on GitHub)",
+    "urlrequestsecretkey": "",
     "timesloggedin": 0,
     "totallogintime": 0
 }
