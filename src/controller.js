@@ -266,7 +266,7 @@ if(checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"){logger("\n\n\x1b[31mYou re
 //Generate urlrequestsecretkey if it is not created already
 if (extdata.urlrequestsecretkey == "") {
     extdata.urlrequestsecretkey = Math.random().toString(36).slice(-10); //Credit: https://stackoverflow.com/a/9719815/12934162
-    logger("Generated a secret key for comment requests via url. You can find the key in the 'data.json' file, located in the 'src' folder.\nTo turn on the web comment requests, set enableurltocomment in your 'config.json' to true.", true)
+    logger("Generated a secret key for comment requests via url. You can find the key in the 'data.json' file, located in the 'src' folder.", true)
 
     fs.writeFile('./src/data.json', JSON.stringify(extdata, null, 4), (err) => {
         if (err) logger("error writing created urlrequestsecretkey to data.json: " + err) })
