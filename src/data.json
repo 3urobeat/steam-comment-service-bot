@@ -1,5 +1,5 @@
 {
-    "version": "2.8",
+    "version": "2.8.1",
     "branch": "beta-testing",
     "filetostart": "./src/updater.js",
     "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/updater.js",
@@ -8,7 +8,7 @@
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://paypal.me/3urobeat",
     "firststart": true,
     "compatibilityfeaturedone": false,
-    "whatsnew": "Added proxy support. Added webserver to request comments with URL. Fixed a lot of bugs and made other changes. (see more on GitHub)",
+    "whatsnew": "Added multi-line support for quotes. Added more default quotes. Fixed a few bugs (see GitHub commit description for more detail).",
     "urlrequestsecretkey": "",
     "timesloggedin": 0,
     "totallogintime": 0

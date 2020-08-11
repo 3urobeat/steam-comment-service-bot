@@ -15,16 +15,16 @@ var logininfo = require('../logininfo.json');
 var config = require('../config.json');
 var extdata = require('./data.json');
 
-var communityobject = new Object();
-var botobject = new Object();
-var readyafterlogs = new Array();
-var failedcomments = new Array();
-var accstoadd = new Array();
+var communityobject = {}
+var botobject = {}
+var readyafterlogs = []
+var failedcomments = []
+var accstoadd = []
 var bootstart = 0
 var bootstart = new Date();
 var steamGuardInputTime = 0
 var readyafter = 0
-var activecommentprocess = new Array();
+var activecommentprocess = []
 var logindelay = 2500
 var proxyShift = 0
 skippednow = [] //array to track which accounts have been skipped
@@ -33,7 +33,8 @@ stoplogin = false;
 if (process.platform == "win32") { //set node process name to find it in task manager etc.
     process.title = `${extdata.mestr}'s Steam Comment Service Bot v${extdata.version} | ${process.platform}` //Windows allows long terminal/process names
 } else {
-    process.title = `CommentBot` } //Linux has a length limit of 10
+    process.title = `CommentBot` //sets process title in task manager etc.
+    process.stdout.write(`${String.fromCharCode(27)}]0;${extdata.mestr}'s Steam Comment Service Bot v${extdata.version} | ${process.platform}${String.fromCharCode(7)}`) } //sets terminal title (thanks: https://stackoverflow.com/a/30360821/12934162)
 
 /* ------------ Functions: ------------ */
 var logger = (str, nodate, remove) => { //Custom logger
@@ -61,9 +62,10 @@ var steamGuardInputTimeFunc = (arg) => { steamGuardInputTime += arg } //small fu
 process.on('unhandledRejection', (reason, p) => {
     logger(`Unhandled Rejection Error! Reason: ${reason.stack}`, true) });
 
-var quotes = new Array();
-var quotes = fs.readFileSync('quotes.txt', 'utf8').split("\n"); //get all quotes from the quotes.txt file into an array
+var quotes = []
+var quotes = fs.readFileSync('quotes.txt', 'utf8').split("\n") //get all quotes from the quotes.txt file into an array
 var quotes = quotes.filter(str => str != "") //remove empty quotes as empty comments will not work/make no sense
+quotes.forEach((e, i) => { quotes[i] = e.replace(/\\n/g, "\n").replace("\\n", "\n") }) //mult line strings that contain \n will get splitted to \\n -> remove second \ so that node-steamcommunity understands the quote when commenting
 
 //Please don't change this message as it gives credit to me; the person who put really much of his free time into this project. The bot will still refer to you - the operator of this instance.
 if (config.owner.length > 1) var ownertext = config.owner; else var ownertext = "anonymous (no owner link provided)"; 
@@ -548,18 +550,18 @@ var readyinterval = setInterval(() => { //log startup to console
             var app = express()
             
             app.get('/', (req, res) => {
-                res.send("<title>Comment Bot Web Request</title><b>3urobeat's Comment Bot | Comment Web Request</b></br>Please use /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.</br></br>Visit /output to see the complete output.txt in your browser!</b></br></br>https://github.com/HerrEurobeat/steam-comment-service-bot") })
+                res.status(200).send("<title>Comment Bot Web Request</title><b>3urobeat's Comment Bot | Comment Web Request</b></br>Please use /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.</br></br>Visit /output to see the complete output.txt in your browser!</b></br></br>https://github.com/HerrEurobeat/steam-comment-service-bot") })
             
             app.get('/comment', (req, res) => {
                 logger("Web Comment Request recieved by: " + req.ip)
             
                 if (req.query.n == undefined) {
                     logger("Web Request denied. Reason: numberofcomments (n) is not specified.")
-                    return res.send("You have to provide an amount of comments.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.") }
+                    return res.status(400).send("You have to provide an amount of comments.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.") }
             
                 if (req.query.id == undefined) {
                     logger("Web Request denied. Reason: Steam profileid (id) is not specified.")
-                    return res.send("You have to provide a profile id where I should comment.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.") }
+                    return res.status(400).send("You have to provide a profile id where I should comment.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.") }
             
                 if (req.query.key == undefined || req.query.key != extdata.urlrequestsecretkey) {
                     logger("Web Request denied. Reason: Invalid secret key.")
@@ -578,6 +580,7 @@ var readyinterval = setInterval(() => { //log startup to console
                     if(err) logger("urltocomment: error reading output.txt: " + err)
                 
                     res.write(String(data))
+                    res.status(200)
                     res.end()
                 }) })
             
