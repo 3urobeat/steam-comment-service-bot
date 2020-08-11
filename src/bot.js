@@ -28,8 +28,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
   //Get proxy of this bot account
   if (controller.proxyShift >= controller.proxies.length) controller.proxyShift = 0; //reset proxy counter
-  controller.proxyShift++ //switch to next proxy
   var thisproxy = controller.proxies[controller.proxyShift]
+  controller.proxyShift++ //switch to next proxy
 
   const bot = new SteamUser({ httpProxy: thisproxy });
   const community = new SteamCommunity();
@@ -80,7 +80,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
       clearInterval(loggedininterval) //stop interval
       controller.accisloggedin = false; //set to false again
       if (thisproxy == null) logger(`[${thisbot}] Trying to log in without proxy...`, false, true)
-        else logger(`[${thisbot}] Trying to log in with proxy ${controller.proxyShift}...`, false, true)
+        else logger(`[${thisbot}] Trying to log in with proxy ${controller.proxyShift - 1}...`, false, true)
       bot.logOn(logOnOptions)
     }
   }, 250);
@@ -182,10 +182,10 @@ module.exports.run = async (logOnOptions, loginindex) => {
       commentcmd = function commentcmd(steamID, args, res) {
         var requesterSteamID = new SteamID(String(steamID)).getSteamID64() //save steamID of comment requesting user so that messages are being send to the requesting user and not to the reciever if a profileid has been provided
 
-        function respondmethod(msg) { //we need a function to get each response back to the user (web request & steam chat)
+        function respondmethod(rescode, msg) { //we need a function to get each response back to the user (web request & steam chat)
           if (res) {
             logger("Web Comment Request response: " + msg)
-            res.send(msg + "</br></br>The log will contain further information and errors (if one should occur). You can display it by visiting: /output")
+            res.status(rescode).send(msg + "</br></br>The log will contain further information and errors (if one should occur). You can display it by visiting: /output")
           } else {
             bot.chat.sendFriendMessage(requesterSteamID, msg)
           } }
@@ -195,13 +195,13 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
         /* --------- Check for cmd spamming --------- */
         if (Date.now() - lastcommentrequestmsg[requesterSteamID] < 2500) {
-          return bot.chat.sendFriendMessage(steamID, "Please don't spam this command.") }
+          return respondmethod(403, "Please don't spam this command.") }
 
         lastcommentrequestmsg[requesterSteamID] = Date.now()
 
         /* --------- Check for disabled comment cmd or if update is queued --------- */
-        if (updater.activeupdate) return respondmethod("The bot is currently waiting for the last requested comment to be finished in order to download an update!\nPlease wait a moment and try again.");
-        if (config.allowcommentcmdusage === false && !config.ownerid.includes(steam64id)) return respondmethod("The bot owner set this command to owners only.\nType !owner to get information who the owner is.\nType !about to get a link to the bot creator.") 
+        if (updater.activeupdate) return respondmethod(403, "The bot is currently waiting for the last requested comment to be finished in order to download an update!\nPlease wait a moment and try again.");
+        if (config.allowcommentcmdusage === false && !config.ownerid.includes(steam64id)) return respondmethod(403, "The bot owner set this command to owners only.\nType !owner to get information who the owner is.\nType !about to get a link to the bot creator.") 
 
 
         /* --------- Define command usage messages for each user's priviliges --------- */ //Note: Web Comment Requests always use config.ownerid[0]
@@ -222,11 +222,11 @@ module.exports.run = async (logOnOptions, loginindex) => {
             if (remainingcooldown > 120) { var remainingcooldown = remainingcooldown / 60; var remainingcooldownunit = "minutes" }
             if (remainingcooldown > 120) { var remainingcooldown = remainingcooldown / 60; var remainingcooldownunit = "hours" }
 
-            respondmethod(`You requested a comment in the last ${config.commentcooldown} minutes. Please wait the remaining ${controller.round(remainingcooldown, 2)} ${remainingcooldownunit}.`) //send error message
+            respondmethod(403, `You requested a comment in the last ${config.commentcooldown} minutes. Please wait the remaining ${controller.round(remainingcooldown, 2)} ${remainingcooldownunit}.`) //send error message
             return; }
           } else {
             if (controller.activecommentprocess.indexOf(String(steam64id)) !== -1) { //is the user already getting comments? (-1 means not included)
-              return respondmethod("You are currently recieving previously requested comments. Please wait for them to be completed.") }}
+              return respondmethod(403, "You are currently recieving previously requested comments. Please wait for them to be completed.") }}
 
         if (config.globalcommentcooldown != 0) { //check for global cooldown
           if ((Date.now() - commentedrecently) < config.globalcommentcooldown) { 
@@ -235,7 +235,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
             if (remainingglobalcooldown > 120) { var remainingglobalcooldown = remainingglobalcooldown / 60; var remainingglobalcooldownunit = "minutes" }
             if (remainingglobalcooldown > 120) { var remainingglobalcooldown = remainingglobalcooldown / 60; var remainingglobalcooldownunit = "hours" }
 
-            respondmethod(`Someone else requested a comment in the last ${controller.round(remainingglobalcooldown, 2)} ${remainingglobalcooldownunit} or a cooldown error occurred. Please wait a moment before trying again.`) //send error message
+            respondmethod(403, `Someone else requested a comment in the last ${controller.round(remainingglobalcooldown, 2)} ${remainingglobalcooldownunit} or a cooldown error occurred. Please wait a moment before trying again.`) //send error message
             return; }}
 
         /* --------- Check numberofcomments argument if it was provided --------- */
@@ -244,12 +244,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
             if (args[0].toLowerCase() == "all") {
               args[0] = Object.keys(controller.communityobject).length * config.repeatedComments //replace the argument with the max amount of comments
             } else {
-              return respondmethod(`This is not a valid number!\nCommand usage: ${commentcmdusage}`) 
+              return respondmethod(400, `This is not a valid number!\nCommand usage: ${commentcmdusage}`) 
             }
           }
 
           if (args[0] > Object.keys(controller.communityobject).length * config.repeatedComments) { //number is greater than accounts * repeatedComments?
-            return respondmethod(`You can request max. ${Object.keys(controller.communityobject).length * config.repeatedComments} comments.\nCommand usage: ${commentcmdusage}`) }
+            return respondmethod(403, `You can request max. ${Object.keys(controller.communityobject).length * config.repeatedComments} comments.\nCommand usage: ${commentcmdusage}`) }
           var numberofcomments = args[0]
 
           //Code by: https://github.com/HerrEurobeat/ 
@@ -258,19 +258,19 @@ module.exports.run = async (logOnOptions, loginindex) => {
           /* --------- Check profileid argument if it was provided --------- */
           if (args[1] !== undefined) {
             if (config.ownerid.includes(new SteamID(String(steamID)).getSteamID64()) || args[1] == new SteamID(String(steamID)).getSteamID64()) { //check if user is a bot owner or if he provided his own profile id
-              if (isNaN(args[1])) return respondmethod(`This is not a valid profileid! A profile id must look like this: 76561198260031749\nCommand usage: ${commentcmdusage}`)
-              if (new SteamID(args[1]).isValid() == false) return respondmethod(`This is not a valid profileid! A profile id must look like this: 76561198260031749\nCommand usage: ${commentcmdusage}`)
+              if (isNaN(args[1])) return respondmethod(400, `This is not a valid profileid! A profile id must look like this: 76561198260031749\nCommand usage: ${commentcmdusage}`)
+              if (new SteamID(args[1]).isValid() == false) return respondmethod(400, `This is not a valid profileid! A profile id must look like this: 76561198260031749\nCommand usage: ${commentcmdusage}`)
 
               steamID.accountid = parseInt(new SteamID(args[1]).accountid) //edit accountid value of steamID parameter of friendMessage event and replace requester's accountid with the new one
             } else {
-              respondmethod("Specifying a profileid is only allowed for bot owners.\nIf you are a bot owner, make sure you added your ownerid to the config.json.")
+              respondmethod(403, "Specifying a profileid is only allowed for bot owners.\nIf you are a bot owner, make sure you added your ownerid to the config.json.")
               return; }} } //arg[0] if statement ends here
 
 
         /* --------- Check if user did not provide numberofcomments --------- */
         if (numberofcomments === undefined) { //no numberofcomments given? ask again
           if (Object.keys(controller.botobject).length == 1 && config.repeatedComments == 1) { var numberofcomments = 1 } else { //if only one account is active, set 1 automatically
-            respondmethod(`Please specify how many comments out of ${Object.keys(controller.communityobject).length * config.repeatedComments} you would like to request.\nCommand usage: ${commentcmdusage}`)
+            respondmethod(400, `Please specify how many comments out of ${Object.keys(controller.communityobject).length * config.repeatedComments} you would like to request.\nCommand usage: ${commentcmdusage}`)
             return; }}
 
 
@@ -288,12 +288,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
 
           if (Number(i) + 1 == numberofcomments && accstoadd[requesterSteamID].length > 0 || Number(i) + 1 == Object.keys(controller.botobject).length && accstoadd[requesterSteamID].length > 0) {
-            respondmethod(`In order to request ${numberofcomments} comments you/the recieving user will first need to add this/these accounts: (limited bot accounts)\n` + accstoadd[requesterSteamID])
+            respondmethod(403, `In order to request ${numberofcomments} comments you/the recieving user will first need to add this/these accounts: (limited bot accounts)\n` + accstoadd[requesterSteamID])
             return; } } //stop right here criminal
 
         community.getSteamUser(steamID, (err, user) => { //check if profile is private
-          if (err) return logger(`[${thisbot}] comment check for private account error: ${err}`)
-          if (user.privacyState != "public") return respondmethod("Your/the recieving profile seems to be private. Please edit your/the privacy settings on your/the recieving profile and try again!")
+          if (err) logger(`[${thisbot}] comment check for private account error: ${err}\nTrying to comment anyway and hoping no error occurs...`)
+          if (user.privacyState != "public") return respondmethod(403, "Your/the recieving profile seems to be private. Please edit your/the privacy settings on your/the recieving profile and try again!")
 
           /* --------- Actually start the commenting process --------- */
           var randomstring = arr => arr[Math.floor(Math.random() * arr.length)]; 
@@ -301,20 +301,20 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
           community.postUserComment(steamID, comment, (error) => { //post comment
             if(error) {
-              respondmethod(`Oops, an error occurred! Details: \n[${thisbot}] postUserComment error: ${error}\nPlease try again in a moment!`); 
+              respondmethod(500, `Oops, an error occurred! Details: \n[${thisbot}] postUserComment error: ${error}\nPlease try again in a moment!`); 
               logger(`[${thisbot}] postUserComment error: ${error}`); 
 
               if (error == "Error: HTTP error 429" || error == "Error: You've been posting too frequently, and can't make another post right now") commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
               return; }
 
             logger(`\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment on ${steam64id}: ${comment}\x1b[0m`)
-            if (numberofcomments == 1) respondmethod('Okay I commented on your/the recieving profile! If you are a nice person then leave a +rep on my profile!')
+            if (numberofcomments == 1) respondmethod(200, 'Okay I commented on your/the recieving profile! If you are a nice person then leave a +rep on my profile!')
               else {
                 var waittime = ((numberofcomments - 1) * config.commentdelay) / 1000 //calculate estimated wait time (first comment is instant -> remove 1 from numberofcomments)
                 var waittimeunit = "seconds"
                 if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "minutes" }
                 if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "hours" }
-                respondmethod(`Estimated wait time for ${numberofcomments} comments: ${Number(Math.round(waittime+'e'+3)+'e-'+3)} ${waittimeunit}.`)
+                respondmethod(200, `Estimated wait time for ${numberofcomments} comments: ${Number(Math.round(waittime+'e'+3)+'e-'+3)} ${waittimeunit}.`)
 
                 controller.commenteverywhere(steamID, numberofcomments, requesterSteamID, res) } //Let all other accounts comment
 

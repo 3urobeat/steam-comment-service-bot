@@ -61,6 +61,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                         startupdate();
                     } else { //user has it disabled, ask for confirmation
                         if (botisloggedin == false || responseSteamID) { //only ask on start, otherwise this will annoy the user
+                            logger(`What's new: ${JSON.parse(chunk).whatsnew}\n`, true)
                             process.stdout.write(`You have disabled the automatic updater.\nWould you like to update now? [y/n] `)
                             var stdin = process.openStdin();
 
