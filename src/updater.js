@@ -60,17 +60,26 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                         logger('Starting the automatic updater...')
                         startupdate();
                     } else { //user has it disabled, ask for confirmation
-                        if (botisloggedin == false || responseSteamID) { //only ask on start, otherwise this will annoy the user
-                            logger(`What's new: ${JSON.parse(chunk).whatsnew}\n`, true)
-                            process.stdout.write(`You have disabled the automatic updater.\nWould you like to update now? [y/n] `)
+                        if (botisloggedin == false || responseSteamID) { //only ask on start (or when user checked for an update from the Steam chat), otherwise this will annoy the user
+                            logger(`\x1b[4mWhat's new:\x1b[0m ${JSON.parse(chunk).whatsnew}\n`, true)
+                            process.stdout.write(`You have disabled the automatic updater.\n\x1b[93mWould you like to update now?\x1b[0m [y/n] `)
                             var stdin = process.openStdin();
 
-                            stdin.addListener('data', text => {
-                            var response = text.toString().trim()
-                            if (response == "y") startupdate();
-                                else { require('./controller.js'); botisloggedin = true } //start bot or do nothing
+                            let noresponsetimeout = setTimeout(() => { //skip update after 7.5 sec if the user doesn't respond
+                                stdin.pause()
+                                process.stdout.write("\x1b[31mX\n\x1b[93mStarting the bot since you haven't replied in 7.5 seconds...\x1b[0m\n\n", true)
 
-                            stdin.pause() }) //stop reading
+                                require('./controller.js')
+                                botisloggedin = true
+                            }, 7500);
+
+                            stdin.addListener('data', text => {
+                                var response = text.toString().trim()
+                                if (response == "y") startupdate();
+                                    else { require('./controller.js'); botisloggedin = true } //start bot or do nothing
+
+                                stdin.pause() //stop reading
+                                clearTimeout(noresponsetimeout) })
                         }
                     }
 

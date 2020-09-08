@@ -293,7 +293,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
         community.getSteamUser(steamID, (err, user) => { //check if profile is private
           if (err) logger(`[${thisbot}] comment check for private account error: ${err}\nTrying to comment anyway and hoping no error occurs...`)
-          if (user.privacyState != "public") return respondmethod(403, "Your/the recieving profile seems to be private. Please edit your/the privacy settings on your/the recieving profile and try again!")
+            else { if (user.privacyState != "public") { return respondmethod(403, "Your/the recieving profile seems to be private. Please edit your/the privacy settings on your/the recieving profile and try again!") }} //only check if getting the Steam user's data didn't result in an error
 
           /* --------- Actually start the commenting process --------- */
           var randomstring = arr => arr[Math.floor(Math.random() * arr.length)]; 

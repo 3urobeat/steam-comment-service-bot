@@ -56,7 +56,8 @@ Open a power shell/terminal in the `steam-comment-service-bot` folder and type `
   
 #### **Accounts**
 Open `logininfo.json` with a text editor and fill out the user names and passwords of each bot account you want to use.  
-You can add more accounts by extending the list ("bot4": ["username4", "password4"], etc...). Make sure to **NOT** forget a comma after each line, **ONLY** the last line **MUST NOT** have a comma! (ignoring this will cause errors!)  
+If you have a shared_secret then you can add it there too, otherwise just leave the brackets empty.  
+You can add more accounts by extending the list ("bot4": ["username4", "password4", "shared_secret"], etc...). Make sure to **NOT** forget a comma after each line, **ONLY** the last line **MUST NOT** have a comma! (ignoring this will cause errors!)  
   
 #### **Config**
 Open `config.json` with a text editor.  

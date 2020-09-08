@@ -3,10 +3,16 @@
 
 //This file contains: Controlling bot.js instances, processing instance over-reaching requests, handling web comment requests and saving stuff in variables.
 
-const SteamID = require('steamid');
 const fs = require('fs');
 const https = require('https')
 const readline = require("readline")
+
+if (!fs.existsSync('./node_modules/steam-user') || !fs.existsSync('./node_modules/steamcommunity')) { //Quickly check if user forgot to run npm install and display custom error message
+    console.log(`\n\n\x1b[31mIt seems like you haven't installed the needed npm packages yet.\nPlease run the following command in this terminal once: "npm install"\nAborting...\x1b[0m\n`)
+    process.exit(0) }
+
+const SteamID = require('steamid');
+const SteamTotp = require('steam-totp');
 const xml2js = require('xml2js')
 
 var updater = require('./updater.js')
@@ -123,7 +129,7 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res) => { 
                     respondmethod(`All comments have been sent. Failed: ${Object.keys(failedcomments[requesterSteamID]).length}/${numberofcomments}${failedcmdreference}`);
 
                     fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => { //write all lastcomment changes on last iteration
-                        if (err) logger("add user to lastcomment.json from updateeverywhere() error: " + err) })
+                        if (err) logger("add user to lastcomment.json from commenteverywhere() error: " + err) })
 
                     if (Object.values(failedcomments[requesterSteamID]).includes("Error: The settings on this account do not allow you to add comments.")) {
                         accstoadd[requesterSteamID] = []
@@ -353,6 +359,10 @@ function startlogin() { //function will be called when steamcommunity status che
                             promptSteamGuardCode: false,
                             machineName: `${extdata.mestr}'s Comment Bot`
                         };
+
+                        //If a shared secret was provided in the logininfo then add it to logOnOptions object
+                        if (logininfo[k][2] != "" && logininfo[k][2] != "shared_secret") { logOnOptions["twoFactorCode"] = SteamTotp.generateAuthCode(logininfo[k][2]) }
+
                         b.run(logOnOptions, i); //run bot.js with corresponding account
                     }, logindelay) }
             }, 250);
