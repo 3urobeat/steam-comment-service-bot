@@ -361,7 +361,7 @@ function startlogin() { //function will be called when steamcommunity status che
                         };
 
                         //If a shared secret was provided in the logininfo then add it to logOnOptions object
-                        if (logininfo[k][2] != "" && logininfo[k][2] != "shared_secret") { logOnOptions["twoFactorCode"] = SteamTotp.generateAuthCode(logininfo[k][2]) }
+                        if (logininfo[k][2] && logininfo[k][2] != "" && logininfo[k][2] != "shared_secret") { logOnOptions["twoFactorCode"] = SteamTotp.generateAuthCode(logininfo[k][2]) }
 
                         b.run(logOnOptions, i); //run bot.js with corresponding account
                     }, logindelay) }
