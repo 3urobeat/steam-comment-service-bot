@@ -179,6 +179,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
     if (loginindex == 0) {
       /* --------- The comment command (outside of friendMessage Event to be able to call it from controller.js) --------- */
 
+      /**
+        * The comment command as a function to be able to call it from outside the file
+        * @param {Object} steamID steamID Object of the profile to comment on
+        * @param {Array<String>} args An array containing all arguments provided in the message by the user
+        * @param {Object} res An express response object that will be available if the function is called from the express webserver
+        */
       commentcmd = function commentcmd(steamID, args, res) {
         var requesterSteamID = new SteamID(String(steamID)).getSteamID64() //save steamID of comment requesting user so that messages are being send to the requesting user and not to the reciever if a profileid has been provided
 
@@ -192,6 +198,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
         var steam64id = new SteamID(String(steamID)).getSteamID64()
         var lastcommentsteamID = steam64id + loginindex
+        var quoteselection = controller.quotes
 
         /* --------- Check for cmd spamming --------- */
         if (Date.now() - lastcommentrequestmsg[requesterSteamID] < 2500) {
@@ -264,8 +271,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
               steamID.accountid = parseInt(new SteamID(args[1]).accountid) //edit accountid value of steamID parameter of friendMessage event and replace requester's accountid with the new one
             } else {
               respondmethod(403, "Specifying a profileid is only allowed for bot owners.\nIf you are a bot owner, make sure you added your ownerid to the config.json.")
-              return; }} } //arg[0] if statement ends here
+              return; }}
 
+          /* --------- Check if custom quotes were provided --------- */
+          if (args[2] !== undefined) {
+            quoteselection = args.slice(2).join(" ").replace(/^\[|\]$/g, "").split(", "); //change default quotes to custom quotes
+          } } //arg[0] if statement ends here
 
         /* --------- Check if user did not provide numberofcomments --------- */
         if (numberofcomments === undefined) { //no numberofcomments given? ask again
@@ -297,7 +308,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
           /* --------- Actually start the commenting process --------- */
           var randomstring = arr => arr[Math.floor(Math.random() * arr.length)]; 
-          var comment = randomstring(controller.quotes); //get random quote
+          var comment = randomstring(quoteselection); //get random quote
 
           community.postUserComment(steamID, comment, (error) => { //post comment
             if(error) {
@@ -316,7 +327,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "hours" }
                 respondmethod(200, `Estimated wait time for ${numberofcomments} comments: ${Number(Math.round(waittime+'e'+3)+'e-'+3)} ${waittimeunit}.`)
 
-                controller.commenteverywhere(steamID, numberofcomments, requesterSteamID, res) } //Let all other accounts comment
+                controller.commenteverywhere(steamID, numberofcomments, requesterSteamID, res, quoteselection) } //Let all other accounts comment
 
 
             /* --------- Activate globalcooldown & give user cooldown --------- */ 
@@ -402,6 +413,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
         bot: bot.steamID.accountid }
       fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
         if (err) logger(`[${thisbot}] delete user from lastcomment.json error: ${err}`) })
+
+      controller.friendlistcapacitycheck(loginindex); //check remaining friendlist space
     }
   });
 
@@ -430,6 +443,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
       if (controller.readyafter == 0) return bot.chat.sendFriendMessage(steamID, "The bot is not completely started yet. Please wait a moment before using a command.")
 
       var lastcommentsteamID = steam64id + loginindex
+      var ownercheck = config.ownerid.includes(steam64id)
+      var notownerresponse = (() => { return bot.chat.sendFriendMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.") })
 
       var cont = message.slice("!").split(" ");
       var args = cont.slice(1);
@@ -441,14 +456,14 @@ module.exports.run = async (logOnOptions, loginindex) => {
           time: Date.now() - (config.commentcooldown * 60000), //subtract unfriendtime to enable comment usage immediately
           bot: bot.steamID.accountid }
         fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
-          if (err) logger(`[${thisbot}] add missing user to lastcomment.json error: ${err}`) }) }
+          if (err) logger(`[${thisbot}] add missing user to lastcomment.json error: ${err}`) }) }     
 
       switch(cont[0].toLowerCase()) {
+        case '!h':
         case '!help':
-          var ownercheck = config.ownerid.includes(steam64id)
           if (ownercheck) {
-            if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commenttext = `'!comment (amount/"all") [profileid]' - Request x many or the max amount of comments (max ${Object.keys(controller.communityobject).length * config.repeatedComments}). Provide a profileid to comment on a specific profile.`
-              else var commenttext = `'!comment ("1") [profileid]' - Request 1 comment (max amount with current settings). Provide a profile id to comment on a specific profile.`
+            if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commenttext = `'!comment (amount/"all") [profileid] ["custom", "quotes"]' - Request x many or the max amount of comments (max ${Object.keys(controller.communityobject).length * config.repeatedComments}). Provide a profileid to comment on a specific profile.`
+              else var commenttext = `'!comment ("1") [profileid] ["custom", "quotes"]' - Request 1 comment (max amount with current settings). Provide a profile id to comment on a specific profile.`
           } else {
             if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commenttext = `'!comment (amount/"all")' - Request x many or the max amount of comments (max ${Object.keys(controller.communityobject).length * config.repeatedComments}).`
               else var commenttext = `'!comment' - Request a comment on your profile!` }
@@ -459,16 +474,17 @@ module.exports.run = async (logOnOptions, loginindex) => {
           if (ownercheck) var leavegrouptext =    `\n'!leavegroup (groupid64/group url)' - Leave this group with all bot accounts.`; else var leavegrouptext = "";
           if (ownercheck) var evaltext =          `\n'!eval (javascript code)'                       - Run javascript code from the steam chat.`; else var evaltext = "";
           if (ownercheck) var restarttext =       `\n'!restart'                                                  - Restart the bot.`; else var restarttext = "";
+          if (ownercheck) var logtext =           `\n'!log'                                                         - Shows the last 25 lines of the log.`; else var logtext = "";
           if (ownercheck) var updatetext =        `\n'!update [true]'                                      - Check for an available update. 'true' forces an update.`; else var updatetext = "";
           if (config.yourgroup.length > 1) var yourgrouptext = "\nJoin my '!group'!"; else var yourgrouptext = "";
           bot.chat.sendFriendMessage(steamID, `
             () <-- needed argument\n[] <-- optional argument\n\nCommand list:\n
-            ${commenttext}
+            ${commenttext}\n
             '!ping'                                                       - Get a pong and heartbeat in ms.
             '!info'                                                        - Get useful information about the bot and you.${resetcooldowntext}${addfriendtext}${unfriendtext}${leavegrouptext}
             '!failed'                                                     - See the exact errors of your last comment request.
             '!about'                                                    - Returns information what this is about.
-            '!owner'                                                   - Get a link to the profile of the operator of this bot instance.${evaltext}${restarttext}${updatetext}
+            '!owner'                                                   - Get a link to the profile of the operator of this bot instance.${evaltext}${restarttext}${logtext}${updatetext}
             ${yourgrouptext}
           `)
           break;
@@ -520,7 +536,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           break;
         case '!rc':
         case '!resetcooldown':
-          if (!config.ownerid.includes(steam64id)) return bot.chat.sendFriendMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
+          if (!ownercheck) return notownerresponse();
           if (config.commentcooldown === 0) { //is the cooldown enabled?
             return bot.chat.sendFriendMessage(steamID, "The cooldown is disabled in the config!") }
           if (args[0]) { 
@@ -547,7 +563,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           bot.chat.sendFriendMessage(steamID, controller.aboutstr)
           break;
         case '!addfriend':
-          if (!config.ownerid.includes(steam64id)) return bot.chat.sendFriendMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
+          if (!ownercheck) return 
           if (isNaN(args[0])) return bot.chat.sendFriendMessage(steamID, "This is not a valid profileid! A profile id must look like this: 76561198260031749")
           if (new SteamID(args[0]).isValid() === false) return bot.chat.sendFriendMessage(steamID, "This is not a valid profileid! A profile id must look like this: 76561198260031749")
           if (controller.botobject[0].limitations.limited == true) {
@@ -568,13 +584,15 @@ module.exports.run = async (logOnOptions, loginindex) => {
                   if (err) logger(`error adding ${args[0]} with bot${i}: ${err}`) 
                     else logger(`Added ${args[0]} with bot${i} as friend.`)
                   })
+                
+                controller.friendlistcapacitycheck(i); //check remaining friendlist space
               }, 5000 * i);
             } else {
               logger(`bot${i} is already friend with ${args[0]} or the account was blocked/blocked you.`) //somehow logs steamIDs in seperate row?!
             } })
           break;
         case '!unfriend':
-          if (!config.ownerid.includes(steam64id)) return bot.chat.sendFriendMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
+          if (!ownercheck) return notownerresponse();
           if (isNaN(args[0])) return bot.chat.sendFriendMessage(steamID, "This is not a valid profileid! A profile id must look like this: 76561198260031749")
           if (new SteamID(args[0]).isValid() === false) return bot.chat.sendFriendMessage(steamID, "This is not a valid profileid! A profile id must look like this: 76561198260031749")
 
@@ -585,7 +603,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           logger(`Removed friend ${args[0]} from all bots.`)
           break;
         case '!leavegroup':
-          if (!config.ownerid.includes(steam64id)) return bot.chat.sendFriendMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
+          if (!ownercheck) return notownerresponse();
           if (isNaN(args[0]) && !String(args[0]).startsWith('https://steamcommunity.com/groups/')) return bot.chat.sendFriendMessage(steamID, "This is not a valid group id or group url! \nA groupid must look like this: '103582791464712227' \n...or a group url like this: 'https://steamcommunity.com/groups/3urobeatGroup'")
 
           if (String(args[0]).startsWith('https://steamcommunity.com/groups/')) {
@@ -622,20 +640,28 @@ module.exports.run = async (logOnOptions, loginindex) => {
             bot.chat.sendFriendMessage(steamID, `Left group '${args[0]}' with all bots.`)
             logger(`Left group ${args[0]} with all bots.`) }
           break;
+        case '!rs':
         case '!restart':
-          if (!config.ownerid.includes(steam64id)) return bot.chat.sendFriendMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
+          if (!ownercheck) return notownerresponse();
           bot.chat.sendFriendMessage(steamID, 'Restarting...')
           require('../start.js').restart(updater.skippedaccounts)
           break;
         case '!update':
-          if (!config.ownerid.includes(steam64id)) return bot.chat.sendFriendMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
+          if (!ownercheck) return notownerresponse();
 
           if (args[0] == "true") { updater.checkforupdate(true, steamID); bot.chat.sendFriendMessage(steamID, `Forcing an update from the ${extdata.branch} branch...`) }
             else { updater.checkforupdate(false, steamID); bot.chat.sendFriendMessage(steamID, `Checking for an update in the ${extdata.branch} branch...`) }
           break;
+        case '!log':
+        case '!output':
+          if (!ownercheck) return notownerresponse();
+          fs.readFile("./output.txt", function (err, data) {
+            if (err) logger("error getting last 25 lines from output for log cmd: " + err)
+            bot.chat.sendFriendMessage(steamID, "These are the last 25 lines:\n\n" + data.toString().split('\n').slice(data.toString().split('\n').length - 25).join('\n')) })
+          break;
         case '!eval':
           if (config.enableevalcmd !== true) return bot.chat.sendFriendMessage(steamID, "The eval command has been turned off!")
-          if (!config.ownerid.includes(steam64id)) return bot.chat.sendFriendMessage(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.")
+          if (!ownercheck) return notownerresponse();
           const clean = text => {
             if (typeof(text) === "string") return text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
               else return text; }
@@ -668,7 +694,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
   });
 
   bot.on("disconnected", (eresult, msg) => {
-    logger(`[${thisbot}] Lost connection to Steam. EResult: ${eresult} | Message: ${msg}`) })
+    logger(`[${thisbot}] Lost connection to Steam. EResult: ${eresult} | Message: ${msg}\n         Check: https://steamstat.us`) })
 
   module.exports={
     bot
