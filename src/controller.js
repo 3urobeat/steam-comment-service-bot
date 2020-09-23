@@ -74,6 +74,18 @@ var steamGuardInputTimeFunc = (arg) => { steamGuardInputTime += arg } //small fu
 process.on('unhandledRejection', (reason, p) => {
     logger(`Unhandled Rejection Error! Reason: ${reason.stack}`, true) });
 
+//Either use logininfo.json or accounts.txt:
+if (fs.existsSync("./accounts.txt")) {
+    var data = fs.readFileSync("./accounts.txt", "utf8").replace("\r", "").split("\n")
+    if (data != "") {
+        logger("Accounts.txt does exist and is not empty - using it instead of logininfo.json.", false, true)
+
+        logininfo = {} //Empty other object
+        data.forEach((e, i) => {
+            e = e.split(":")
+            logininfo["bot" + i] = [e[0], e[1], e[2]]
+        }) }}
+
 var quotes = []
 var quotes = fs.readFileSync('quotes.txt', 'utf8').split("\n") //get all quotes from the quotes.txt file into an array
 var quotes = quotes.filter(str => str != "") //remove empty quotes as empty comments will not work/make no sense
@@ -124,9 +136,45 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res, quote
 
             communityobject[k].postUserComment(steamID, comment, (error) => {
                 if (k == 0) var thisbot = `Main`; else var thisbot = `Bot ${k}`;
+
                 if (error) {
+                    var errordesc = ""
+        
+                    switch (error) {
+                        case "Error: HTTP error 429":
+                        errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes."
+                        commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
+                        break;
+                        case "Error: HTTP Error 502":
+                        errordesc = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us"
+                        break;
+                        case "Error: HTTP Error 504":
+                        errordesc = "The steam servers are slow atm/are down. Check Steam's status here: https://steamstat.us"
+                        break;
+                        case "Error: You've been posting too frequently, and can't make another post right now":
+                        errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes. Please wait a moment and then try again."
+                        commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
+                        break;
+                        case "Error: There was a problem posting your comment. Please try again":
+                        errordesc = "Unknown reason - please wait a minute and try again."
+                        break;
+                        case "Error: The settings on this account do not allow you to add comments":
+                        errordesc = "The profile's comment section the account is trying to comment on is private or the account doesn't meet steams regulations."
+                        break;
+                        case "Error: To post this comment, your account must have Steam Guard enabled":
+                        errordesc = "The account trying to comment doesn't seem to have steam guard enabled."
+                        break;
+                        case "Error: socket hang up":
+                        errordesc = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us"
+                        break;
+                        default:
+                        errordesc = "Please wait a moment and try again!"
+                    }
+        
+                    respondmethod(500, `Oops, an error occurred!\n${errordesc}\n\nDetails: Please wait a moment and then try again.\n[${thisbot}] postUserComment error: ${error}`); 
+        
                     logger(`[${thisbot}] postUserComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(botobject).length} - reciever: ${new SteamID(String(steamID)).getSteamID64()}`); 
-                    failedcomments[requesterSteamID][`Comment ${i + 1} (bot${j})`] = `postUserComment error: ${error}`
+                    failedcomments[requesterSteamID][`Comment ${i + 1} (bot${j})`] = `postUserComment error: ${error} [${errordesc}]`
                 } else {
                     logger(`[${thisbot}] Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${comment}`) 
 
