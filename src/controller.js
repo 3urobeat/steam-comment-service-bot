@@ -76,13 +76,14 @@ process.on('unhandledRejection', (reason, p) => {
 
 //Either use logininfo.json or accounts.txt:
 if (fs.existsSync("./accounts.txt")) {
-    var data = fs.readFileSync("./accounts.txt", "utf8").replace("\r", "").split("\n")
+    var data = fs.readFileSync("./accounts.txt", "utf8").split("\n")
     if (data != "") {
         logger("Accounts.txt does exist and is not empty - using it instead of logininfo.json.", false, true)
 
         logininfo = {} //Empty other object
         data.forEach((e, i) => {
             e = e.split(":")
+            e[e.length - 1] = e[e.length - 1].replace("\r", "") //remove Windows next line character from last index (which has to be the end of the line)
             logininfo["bot" + i] = [e[0], e[1], e[2]]
         }) }}
 
@@ -176,21 +177,13 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res, quote
                     logger(`[${thisbot}] postUserComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(botobject).length} - reciever: ${new SteamID(String(steamID)).getSteamID64()}`); 
                     failedcomments[requesterSteamID][`Comment ${i + 1} (bot${j})`] = `postUserComment error: ${error} [${errordesc}]`
                 } else {
-                    logger(`[${thisbot}] Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${comment}`) 
-
-                    if (botobject[k].myFriends[requesterSteamID] == 3) {
-                        lastcomment[requesterSteamID.toString() + j] = { //add j to steamID to allow multiple entries for one steamID
-                            time: Date.now(),
-                            bot: botobject[k].steamID.accountid } } }
+                    logger(`[${thisbot}] Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${comment}`) }
 
 
                 if (i == numberofcomments - 1) { //last iteration
                     if (Object.keys(failedcomments[requesterSteamID]).length > 0) { failedcmdreference = "\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
                         } else { failedcmdreference = "" }
                     respondmethod(`All comments have been sent. Failed: ${Object.keys(failedcomments[requesterSteamID]).length}/${numberofcomments}${failedcmdreference}`);
-
-                    fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => { //write all lastcomment changes on last iteration
-                        if (err) logger("add user to lastcomment.json from commenteverywhere() error: " + err) })
 
                     if (Object.values(failedcomments[requesterSteamID]).includes("Error: The settings on this account do not allow you to add comments.")) {
                         accstoadd[requesterSteamID] = []
@@ -597,54 +590,27 @@ var readyinterval = setInterval(() => { //log startup to console
         //Friendlist capacity check
         Object.keys(botobject).forEach((e, i) => {
             friendlistcapacitycheck(i) })
-
-        //Unfriend stuff
+       
+        //Unfriend check
         if (config.unfriendtime > 0) {
-            logger(`Associating bot's accountids with botobject entries...`, false, true)
-            var accountids = {}
-            var lastcomment = require('./lastcomment.json')
-            Object.keys(botobject).forEach((e, i) => {
-                Object.keys(accountids).push(e)
-                accountids[e] = botobject[e]['steamID']['accountid']
-            })
+            try {
+                setInterval(() => {
+                    for(let i in lastcomment) {
+                        if (Date.now() > (lastcomment[i].time + (config.unfriendtime * 86400000))) {
+                            Object.values(botobject).forEach((e, botindex) => {
+                                if (e.myFriends[i] === 3 && !config.ownerid.includes(i)) { //check if the targeted user is still friend and not the owner
+                                    if (botindex == 0) botobject[0].chat.sendFriendMessage(new SteamID(i), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
+                                    e.removeFriend(new SteamID(i)) //unfriend user with each bot
+                                    logger(`Unfriended ${i} after ${config.unfriendtime} days of inactivity.`) } })
 
-            //Compatibility feature for updating from version <2.6
-            for(let i in lastcomment) {
-                if (String(lastcomment[i].bot).length < 10) {
-                    if (accountids[lastcomment[i].bot]) {
-                        lastcomment[i].bot = accountids[lastcomment[i].bot] //converts loginindex to accountid
-                    } else {
-                        delete lastcomment[i] }
-                } }
+                            if (!config.ownerid.includes(i)) delete lastcomment[i]; //entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
+                        } }
 
-            fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
-                if (err) logger("lastcomment compatibility error: " + err) })
-
-            //Unfriend checker
-            setInterval(() => {
-                for(let i in lastcomment) {
-                    if (Date.now() > (lastcomment[i].time + (config.unfriendtime * 86400000))) {
-                        var iminusid = i.toString().slice(0, -1);
-
-                        var targetkey = Object.keys(accountids).find(key => accountids[key] === lastcomment[i].bot) //convert bot accountid to corresponding id in botobject
-                        var targetbot = botobject[targetkey] //grab the targeted bot
-
-                        if (targetbot === undefined) { //this bot account does not seem to be in logininfo.json anymore
-                            delete lastcomment[i] //delete entry
-                            
-                        } else { //bot does seem to be logged in
-
-                            if (targetbot.myFriends[iminusid] === 3 && !config.ownerid.includes(iminusid)) { //check if the targeted user is still friend and not the owner
-                                targetbot.chat.sendFriendMessage(new SteamID(iminusid), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
-                                targetbot.removeFriend(new SteamID(iminusid)); //unfriend user
-                                logger(`[Bot ${targetkey}] Unfriended ${iminusid} after ${config.unfriendtime} days of inactivity.`) } 
-
-                            if (!config.ownerid.includes(iminusid)) delete lastcomment[i]; } //entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
-                    } }
-                fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => { //write changes
-                    if (err) logger("delete user from lastcomment.json error: " + err) })
-            }, 30000) 
-        }
+                    fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => { //write changes
+                        if (err) logger("delete user from lastcomment.json error: " + err) })
+                }, 30000) //30 seconds
+            } catch (err) {
+                logger("error in unfriend check interval: " + err) } }
 
         //Write logintime stuff to data.json
         logger(`Writing logintime...`, false, true)

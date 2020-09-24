@@ -201,7 +201,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           } }
 
         var steam64id = new SteamID(String(steamID)).getSteamID64()
-        var lastcommentsteamID = steam64id + loginindex
+        var lastcommentsteamID = steam64id
         var quoteselection = controller.quotes
 
         /* --------- Check for cmd spamming --------- */
@@ -372,9 +372,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
               commentedrecently = Date.now() }
 
             if (controller.botobject[loginindex].myFriends[requesterSteamID] === 3) {
-              lastcomment[requesterSteamID + loginindex] = {
-                time: Date.now(),
-                bot: bot.steamID.accountid }
+              lastcomment[requesterSteamID] = {
+                time: Date.now() + (waittime * 1000) } //add estimated wait time in ms to start the cooldown after the last recieved comment
+
               fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
                 if (err) logger(`[${thisbot}] delete user from lastcomment.json error: ${err}`) }) } })
         }) } //This was the critical part of this bot. Let's carry on and hope that everything holds together.
@@ -395,28 +395,27 @@ module.exports.run = async (logOnOptions, loginindex) => {
     logger(`[${thisbot}] Got websession and set cookies.`, false, true)
     logger(`[${thisbot}] Accepting offline friend & group invites...`, false, true)
     for (let i = 0; i < Object.keys(bot.myFriends).length; i++) { //Credit: https://dev.doctormckay.com/topic/1694-accept-friend-request-sent-in-offline/  
-      if (!lastcomment[Object.keys(bot.myFriends)[i] + loginindex]) { //always check if user is on lastcomment to avoid errors
-        lastcomment[Object.keys(bot.myFriends)[i] + loginindex] = {
-          time: Date.now() - (config.commentcooldown * 60000),
-          bot: bot.steamID.accountid } }
+      if (!lastcomment[Object.keys(bot.myFriends)[i]]) { //always check if user is on lastcomment to avoid errors
+        lastcomment[Object.keys(bot.myFriends)[i]] = {
+          time: Date.now() - (config.commentcooldown * 60000) } }
 
         if (bot.myFriends[Object.keys(bot.myFriends)[i]] == 2) {
             bot.addFriend(Object.keys(bot.myFriends)[i]); //accept friend request
             logger(`[${thisbot}] Added user while I was offline! User: ` + Object.keys(bot.myFriends)[i])
             chatmsg(String(Object.keys(bot.myFriends)[i]), 'Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more commands or !about for more information!')
 
-            lastcomment[Object.keys(bot.myFriends)[i] + loginindex] = { //add user to lastcomment file in order to also unfriend him when he never used !comment
-              time: Date.now() - (config.commentcooldown * 60000), //subtract unfriendtime to enable comment usage immediately
-              bot: bot.steamID.accountid }
+            lastcomment[Object.keys(bot.myFriends)[i]] = { //add user to lastcomment file in order to also unfriend him when he never used !comment
+              time: Date.now() - (config.commentcooldown * 60000) } //subtract unfriendtime to enable comment usage immediately
+
             if (configgroup64id.length > 1 && Object.keys(bot.myGroups).includes(configgroup64id)) { 
-              bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(configgroup64id)); 
+              bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(configgroup64id));
 
               if (configgroup64id !== "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
                 bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID("103582791464712227")); }} //invite the user to your group
         }
 
         if (i + 1 === Object.keys(bot.myFriends).length) { //check for last iteration
-          fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
+          fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => { //this will also write all friends the account has to the lastcomment.json
             if (err) logger(`[${thisbot}] add user to lastcomment.json error: ${err}`) }) } }
 
     for (let i = 0; i < Object.keys(bot.myGroups).length; i++) {
@@ -445,9 +444,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
               if (configgroup64id != "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
                 bot.inviteToGroup(steamID, new SteamID("103582791464712227")); }}
 
-      lastcomment[new SteamID(String(steamID)).getSteamID64() + loginindex] = { //add user to lastcomment file in order to also unfriend him when he never used !comment
-        time: Date.now() - (config.commentcooldown * 60000), //subtract unfriendtime to enable comment usage immediately
-        bot: bot.steamID.accountid }
+      lastcomment[new SteamID(String(steamID)).getSteamID64()] = { //add user to lastcomment file in order to also unfriend him when he never used !comment
+        time: Date.now() - (config.commentcooldown * 60000) } //subtract unfriendtime to enable comment usage immediately
+
       fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
         if (err) logger(`[${thisbot}] delete user from lastcomment.json error: ${err}`) })
 
@@ -479,7 +478,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
       //Check if bot is not fully started yet and block cmd usage if that is the case to prevent errors
       if (controller.readyafter == 0) return chatmsg(steamID, "The bot is not completely started yet. Please wait a moment before using a command.")
 
-      var lastcommentsteamID = steam64id + loginindex
+      var lastcommentsteamID = steam64id
       var ownercheck = config.ownerid.includes(steam64id)
       var notownerresponse = (() => { return chatmsg(steamID, "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.") })
 
@@ -489,9 +488,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
       if (!lastcomment[lastcommentsteamID]) { //user is somehow not in lastcomment.json? oh god not again... write user to lastcomment.json to avoid errors
         logger(`Missing user (${steam64id}) from lastcomment.json! Writing to prevent error...`)
 
-        lastcomment[steam64id + loginindex] = {
-          time: Date.now() - (config.commentcooldown * 60000), //subtract unfriendtime to enable comment usage immediately
-          bot: bot.steamID.accountid }
+        lastcomment[steam64id] = {
+          time: Date.now() - (config.commentcooldown * 60000) } //subtract unfriendtime to enable comment usage immediately
+
         fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
           if (err) logger(`[${thisbot}] add missing user to lastcomment.json error: ${err}`) }) }     
 
@@ -583,7 +582,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
             if (isNaN(args[0])) return chatmsg(steamID, "This is not a valid profileid! A profile id must look like this: 76561198260031749") 
             if (new SteamID(args[0]).isValid() === false) return chatmsg(steamID, "This is not a valid profileid! A profile id must look like this: 76561198260031749") 
-            var lastcommentsteamID = args[0] + loginindex }
+            var lastcommentsteamID = args[0] }
 
           if ((Date.now() - lastcomment[lastcommentsteamID].time) < (config.commentcooldown * 60000)) { //check if user has cooldown applied
             lastcomment[lastcommentsteamID].time = Date.now() - (config.commentcooldown * 60000)
