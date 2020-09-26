@@ -1,5 +1,5 @@
 {
-    "version": "BETA 2.9 b4",
+    "version": "BETA 2.9 b5",
     "branch": "beta-testing",
     "filetostart": "./src/updater.js",
     "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/updater.js",

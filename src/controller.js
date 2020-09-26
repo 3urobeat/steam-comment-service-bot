@@ -116,6 +116,10 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res, quote
 
     function comment(k, i, j) {
         setTimeout(() => {
+            if (!module.exports.activecommentprocess.includes(requesterSteamID)) { 
+                failedcomments[requesterSteamID][`Comment ${i} (bot${k})`] = "Skipped because user aborted comment process."
+                return; } //Stop process if the user isn't in the array anymore (user typed !abort for example)
+
             if (Object.values(failedcomments[requesterSteamID]).includes("postUserComment error: Error: HTTP error 429")) {
                 if (Object.keys(failedcomments[requesterSteamID]).length > 0) { failedcmdreference = "To get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
                     } else { failedcmdreference = "" }
@@ -196,7 +200,7 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res, quote
                                 respondmethod("-----------------------------------\nIt seems like at least one of the requested comments could have failed because you/the recieving account aren't/isn't friend with the commenting bot account.\n\nPlease make sure that you have added these accounts in order to eventually avoid this error in the future: \n" + accstoadd[requesterSteamID] + "\n-----------------------------------")
                         } }
 
-                    module.exports.activecommentprocess = activecommentprocess.filter(item => item !== requesterSteamID) 
+                    module.exports.activecommentprocess = activecommentprocess.filter(item => item !== requesterSteamID)
                 } })
             }, config.commentdelay * i); //delay every comment
         }
@@ -231,14 +235,14 @@ const round = (value, decimals) => {
 var friendlistcapacitycheck = (botindex) => {
     try {
         botobject[0].getSteamLevels([botobject[botindex].steamID], (err, users) => {
+            if (users == undefined || users == null) return; //users was undefined one time (I hope this will (hopefully) supress an error?)
             let friendlistlimit = Object.values(users)[0] * 5 + 250 //Profile Level * 5 + 250
             let friendsamount = Object.keys(botobject[0].myFriends).length
             if (friendlistlimit - friendsamount < 25) {
                 logger(`The friendlist space of bot${botindex} is running low! (${friendlistlimit - friendsamount} remaining)`) }
         })
     } catch (err) {
-        logger(`Failed to check friendlist space for bot${botindex}. Error: ${err}`)
-    }
+        logger(`Failed to check friendlist space for bot${botindex}. Error: ${err}`) }
 }
 
 accisloggedin = true; //var to check if previous acc is logged on (in case steamGuard event gets fired) -> set to true for first account
@@ -257,6 +261,7 @@ if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' && process.env.USERNAME ===
     //Das Projekt hat schon bis jetzt viel Zeit in Anspruch genommen, die ersten Klausuren nach der Corona Pandemie haben bisschen darunter gelitten. All der Code ist bis auf einzelne, markierte Schnipsel selbst geschrieben. Node Version zum aktuellen Zeitpunkt: v12.16.3
 
     if (write) {
+        //Get arrays on one line
         var stringifiedconfig = JSON.stringify(config,function(k,v) { //Credit: https://stackoverflow.com/a/46217335/12934162
             if(v instanceof Array)
             return JSON.stringify(v);
@@ -596,9 +601,9 @@ var readyinterval = setInterval(() => { //log startup to console
             try {
                 setInterval(() => {
                     for(let i in lastcomment) {
-                        if (Date.now() > (lastcomment[i].time + (config.unfriendtime * 86400000))) {
+                        if (Date.now() > (lastcomment[i].time + (config.unfriendtime * 86400000)) && !config.ownerid.includes(i)) { //also check if id is not an owner
                             Object.values(botobject).forEach((e, botindex) => {
-                                if (e.myFriends[i] === 3 && !config.ownerid.includes(i)) { //check if the targeted user is still friend and not the owner
+                                if (e.myFriends[i] === 3) { //check if the targeted user is still friend
                                     if (botindex == 0) botobject[0].chat.sendFriendMessage(new SteamID(i), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
                                     e.removeFriend(new SteamID(i)) //unfriend user with each bot
                                     logger(`Unfriended ${i} after ${config.unfriendtime} days of inactivity.`) } })

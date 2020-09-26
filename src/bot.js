@@ -38,6 +38,17 @@ module.exports.run = async (logOnOptions, loginindex) => {
   function chatmsg(steamID, txt) {
     bot.chat.sendFriendMessage(steamID, txt) }
 
+  //Function to return last successful comment from lastcomment.json
+  function lastsuccessfulcomment(callback) {
+    var greatesttimevalue = 0
+
+    Object.values(lastcomment).forEach((e, i) => {
+      if (e["time"] > greatesttimevalue) greatesttimevalue = Number(e["time"])
+
+      if (i == Object.keys(lastcomment).length - 1) {
+        return callback(greatesttimevalue) }
+    }) }
+
   //Group stuff
   if (loginindex == 0) { //group64id only needed by main bot -> remove unnecessary load from other bots
     if (cachefile.configgroup == config.yourgroup) { //id is stored in cache file, no need to get it again
@@ -246,7 +257,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
             if (remainingglobalcooldown > 120) { var remainingglobalcooldown = remainingglobalcooldown / 60; var remainingglobalcooldownunit = "minutes" }
             if (remainingglobalcooldown > 120) { var remainingglobalcooldown = remainingglobalcooldown / 60; var remainingglobalcooldownunit = "hours" }
 
-            respondmethod(403, `Someone else requested a comment in the last ${controller.round(remainingglobalcooldown, 2)} ${remainingglobalcooldownunit} or Steam has blocked this account from posting comments for a few minutes.\nPlease wait a moment before trying again.`) //send error message
+            respondmethod(403, `Someone else requested a comment in the last ${controller.round(remainingglobalcooldown, 2)} ${remainingglobalcooldownunit} or Steam has applied a cooldown on this account.\nPlease wait a few minutes before trying again.`) //send error message
             return; }}
 
         /* --------- Check numberofcomments argument if it was provided --------- */
@@ -349,8 +360,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
                   errordesc = "Please wait a moment and try again!"
               }
 
-              respondmethod(500, `Oops, an error occurred!\n${errordesc}\n\nDetails: \n[${thisbot}] postUserComment error: ${error}`); 
-              logger(`[${thisbot}] postUserComment error: ${error}\n${errordesc}`); 
+              //Get last successful comment time to display it in error message
+              lastsuccessfulcomment(function(callback) {
+                lastsuccessfulcommenttime = (new Date(callback)).toISOString().replace(/T/, ' ').replace(/\..+/, '') + " (UTC/GMT time)" })
+
+              respondmethod(500, `Oops, an error occurred!\n${errordesc}\n\nDetails: \n[${thisbot}] postUserComment error: ${error}\n\nLast successful comment: ${lastsuccessfulcommenttime}`); 
+              logger(`[${thisbot}] postUserComment error: ${error}\n${errordesc}\nLast successful comment: ${lastsuccessfulcommenttime}`); 
 
               if (error == "Error: HTTP error 429" || error == "Error: You've been posting too frequently, and can't make another post right now") commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
               return; }
@@ -510,6 +525,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           if (ownercheck) var leavegrouptext =    `\n'!leavegroup (groupid64/group url)' - Leave this group with all bot accounts.`; else var leavegrouptext = "";
           if (ownercheck) var evaltext =          `\n'!eval (javascript code)'                       - Run javascript code from the steam chat.`; else var evaltext = "";
           if (ownercheck) var restarttext =       `\n'!restart'                                                  - Restart the bot.`; else var restarttext = "";
+          if (ownercheck) var settingstext =      `\n'!settings' (config key) (new value)  - Change a config value.`; else var settingstext = "";
           if (ownercheck) var logtext =           `\n'!log'                                                         - Shows the last 25 lines of the log.`; else var logtext = "";
           if (ownercheck) var updatetext =        `\n'!update [true]'                                      - Check for an available update. 'true' forces an update.`; else var updatetext = "";
           if (config.yourgroup.length > 1) var yourgrouptext = "\nJoin my '!group'!"; else var yourgrouptext = "";
@@ -517,7 +533,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
             () <-- needed argument\n[] <-- optional argument\n\nCommand list:\n
             ${commenttext}\n
             '!ping'                                                       - Get a pong and heartbeat in ms.
-            '!info'                                                        - Get useful information about the bot and you.${resetcooldowntext}${addfriendtext}${unfriendtext}${leavegrouptext}
+            '!info'                                                        - Get useful information about the bot and you.
+            '!abort'                                                     - Abort your own comment process.${resetcooldowntext}${settingstext}${addfriendtext}${unfriendtext}${leavegrouptext}
             '!failed'                                                     - See the exact errors of your last comment request.
             '!about'                                                    - Returns information what this is about.
             '!owner'                                                   - Get a link to the profile of the operator of this bot instance.${evaltext}${restarttext}${logtext}${updatetext}
@@ -570,6 +587,13 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
           chatmsg(steamID, "Join my group here: " + config.yourgroup) //seems like no id has been saved but an url. Send the user the url
           break;
+        case '!abort':
+          if (!controller.activecommentprocess.includes(steam64id)) return chatmsg(steamID, "You have no active comment process running.")
+          let index = controller.activecommentprocess.indexOf(steam64id) //get index of this steam64id
+          controller.activecommentprocess.splice(index, 1)
+          logger(`Aborting ${steam64id}'s comment process...`)
+          chatmsg(steamID, "Aborting your active comment process...")
+          break;
         case '!rc':
         case '!resetcooldown':
           if (!ownercheck) return notownerresponse();
@@ -591,6 +615,39 @@ module.exports.run = async (logOnOptions, loginindex) => {
             chatmsg(steamID, `${lastcommentsteamID.toString().slice(0, -1)}'s cooldown has been cleared.`) } else {
               chatmsg(steamID, `There is no cooldown for ${lastcommentsteamID.toString().slice(0, -1)} applied.`) }
           break;
+        case '!config':
+        case '!settings':
+          if (!ownercheck) return notownerresponse();
+
+          if (!args[0]) return chatmsg(steamID, "Please provide a config key. You can see all config keys, their description and default values here:\nhttps://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Config-documentation")
+          let keyvalue = config[args[0]]
+          if (keyvalue == undefined) return chatmsg(steamID, "I can't find this key in the config.")
+          if (keyvalue == args[1]) return chatmsg(steamID, `The requested key is already ${args[1]}.`)
+
+          chatmsg(steamID, `${args[0]} has been changed from ${keyvalue} to ${args[1]}.`)
+          logger(`${args[0]} has been changed from ${keyvalue} to ${args[1]}.`)
+
+          if (typeof(keyvalue) == "number") args[1] = Number(args[1])
+          if (typeof(keyvalue) == "boolean") args[1] = Boolean(args[1])
+          config[args[0]] = args[1]
+
+          //Get arrays on one line
+          var stringifiedconfig = JSON.stringify(config,function(k,v) { //Credit: https://stackoverflow.com/a/46217335/12934162
+            if(v instanceof Array)
+            return JSON.stringify(v);
+            return v; },4)
+          .replace(/"\[/g, '[')
+          .replace(/\]"/g, ']')
+          .replace(/\\"/g, '"')
+          .replace(/""/g, '""');
+
+          fs.writeFile("./config.json", stringifiedconfig, err => {
+            if (err) return logger(`write settings cmd changes to config error: ${err}`)
+          
+            delete require.cache[require.resolve("../config")]
+            config = require("../config.json")
+          })
+          break;
         case '!failed':
           if (!controller.failedcomments[steam64id] || Object.keys(controller.failedcomments[steam64id]).length < 1) return chatmsg(steamID, "I can't remember any failed comments you have requested.");
           chatmsg(steamID, `Your last request for '${steam64id}' from '${(new Date(lastcomment[lastcommentsteamID].time)).toISOString().replace(/T/, ' ').replace(/\..+/, '')}' (UTC/GMT time) had these errors:\n\n${JSON.stringify(controller.failedcomments[steam64id], null, 4)}`)
@@ -599,7 +656,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           chatmsg(steamID, controller.aboutstr)
           break;
         case '!addfriend':
-          if (!ownercheck) return 
+          if (!ownercheck) return notownerresponse();
           if (isNaN(args[0])) return chatmsg(steamID, "This is not a valid profileid! A profile id must look like this: 76561198260031749")
           if (new SteamID(args[0]).isValid() === false) return chatmsg(steamID, "This is not a valid profileid! A profile id must look like this: 76561198260031749")
           if (controller.botobject[0].limitations.limited == true) {
