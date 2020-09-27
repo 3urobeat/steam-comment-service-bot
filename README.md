@@ -71,6 +71,10 @@ A complete documentation of the `config.json` can be found in the [Wiki](https:/
 #### **Quotes**
 Open `quotes.txt` with a text editor. You can add as many quotes as you want, line by line. **Don't leave an empty line anywhere in this file!** The file already has default comments set up.  
 The bot will choose a random quote for **every** comment. If you only provide one quote, the bot will only use that quote.  
+
+You can also use comments that go over multiple lines (ASCII-Art, etc.).  
+To do that, just put a `\n` at the end of each line of the multi-line comment. Then move the next line of your comment behind the `\n` so that your multi line comment is **only one line** in your quotes.txt, with each line of the actual comment seperated by a `\n`.  
+Example: `My cool comment: \nline1\nline2\nline3`  
   
 The bot(s) is/are now setup! Don't modify any of the other files.  
 
