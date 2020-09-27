@@ -296,7 +296,7 @@ if (config.commentdelay * config.repeatedComments * Object.keys(logininfo).lengt
 //Check cache.json
 logger("Checking if cache.json is valid...", false, true) //file can get broken regularly when exiting while the bot was writing etc
 fs.readFile('./src/cache.json', function (err, data) {
-    if (err && !extdata.firststart) logger("error reading cache.json to check if it is valid: " + err, true)
+    if (err) { if (!extdata.firststart) logger("error reading cache.json to check if it is valid: " + err, true) }
     if (stoplogin == true) return;
 
     try {
@@ -319,7 +319,7 @@ fs.readFile('./src/cache.json', function (err, data) {
 //Check lastcomment.json
 logger("Checking if lastcomment.json is valid...", false, true) //file can get broken regularly when exiting while the bot was writing etc
 fs.readFile('./src/lastcomment.json', function (err, data) {
-    if (err) //logger("error reading lastcomment.json to check if it is valid: " + err, true) //Basically useless since the next check will output the same
+    if (err) { if (!extdata.firststart) logger("error reading lastcomment.json to check if it is valid: " + err, true) } //Basically useless since the next check will output the same
     if (stoplogin == true) return;
 
     try {
@@ -327,8 +327,8 @@ fs.readFile('./src/lastcomment.json', function (err, data) {
         lastcomment = require("./lastcomment.json")
         isSteamOnline(true, true); //Continue startup
     } catch (err) {
-        if (err && !extdata.firststart) {
-            logger("\nYour lastcomment.json is broken and has lost it's data. This will mean that comment cooldowns are lost and the unfriend time has been reset.\nWriting {} to prevent error...\nError: " + err + "\n", true) 
+        if (err) {
+            if (!extdata.firststart) logger("\nYour lastcomment.json is broken and has lost it's data. This will mean that comment cooldowns are lost and the unfriend time has been reset.\nWriting {} to prevent error...\nError: " + err + "\n", true) 
 
             fs.writeFile('./src/lastcomment.json', "{}", (err) => { //write empty valid json
                 if (err) { 
