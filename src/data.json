@@ -1,5 +1,5 @@
 {
-    "version": "2.8.1",
+    "version": "2.9",
     "branch": "master",
     "filetostart": "./src/updater.js",
     "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/updater.js",
@@ -8,7 +8,7 @@
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://paypal.me/3urobeat",
     "firststart": true,
     "compatibilityfeaturedone": false,
-    "whatsnew": "Added multi-line support for quotes. Added more default quotes. Fixed a few bugs (see GitHub commit description for more detail).",
+    "whatsnew": "Added shared_secret support. Added 7 commands. Added custom error msgs. Many other improvements in commit description.",
     "urlrequestsecretkey": "",
     "timesloggedin": 0,
     "totallogintime": 0

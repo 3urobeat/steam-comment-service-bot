@@ -3,10 +3,16 @@
 
 //This file contains: Controlling bot.js instances, processing instance over-reaching requests, handling web comment requests and saving stuff in variables.
 
-const SteamID = require('steamid');
 const fs = require('fs');
 const https = require('https')
 const readline = require("readline")
+
+if (!fs.existsSync('./node_modules/steam-user') || !fs.existsSync('./node_modules/steamcommunity')) { //Quickly check if user forgot to run npm install and display custom error message
+    console.log(`\n\n\x1b[31mIt seems like you haven't installed the needed npm packages yet.\nPlease run the following command in this terminal once: "npm install"\nAborting...\x1b[0m\n`)
+    process.exit(0) }
+
+const SteamID = require('steamid');
+const SteamTotp = require('steam-totp');
 const xml2js = require('xml2js')
 
 var updater = require('./updater.js')
@@ -33,10 +39,16 @@ stoplogin = false;
 if (process.platform == "win32") { //set node process name to find it in task manager etc.
     process.title = `${extdata.mestr}'s Steam Comment Service Bot v${extdata.version} | ${process.platform}` //Windows allows long terminal/process names
 } else {
-    process.title = `CommentBot` //sets process title in task manager etc.
-    process.stdout.write(`${String.fromCharCode(27)}]0;${extdata.mestr}'s Steam Comment Service Bot v${extdata.version} | ${process.platform}${String.fromCharCode(7)}`) } //sets terminal title (thanks: https://stackoverflow.com/a/30360821/12934162)
+    process.stdout.write(`${String.fromCharCode(27)}]0;${extdata.mestr}'s Steam Comment Service Bot v${extdata.version} | ${process.platform}${String.fromCharCode(7)}`) //sets terminal title (thanks: https://stackoverflow.com/a/30360821/12934162)
+    process.title = `CommentBot` } //sets process title in task manager etc.
 
 /* ------------ Functions: ------------ */
+/**
+  * Logs text to the terminal and appends it to the output.txt file.
+  * @param {String} str The text to log into the terminal
+  * @param {Boolean} nodate Setting to true will hide date and time in the message
+  * @param {Boolean} remove Setting to true will remove this message with the next one
+  */
 var logger = (str, nodate, remove) => { //Custom logger
     var str = String(str)
     if (str.toLowerCase().includes("error")) { var str = `\x1b[31m${str}\x1b[0m` }
@@ -62,6 +74,19 @@ var steamGuardInputTimeFunc = (arg) => { steamGuardInputTime += arg } //small fu
 process.on('unhandledRejection', (reason, p) => {
     logger(`Unhandled Rejection Error! Reason: ${reason.stack}`, true) });
 
+//Either use logininfo.json or accounts.txt:
+if (fs.existsSync("./accounts.txt")) {
+    var data = fs.readFileSync("./accounts.txt", "utf8").split("\n")
+    if (data != "") {
+        logger("Accounts.txt does exist and is not empty - using it instead of logininfo.json.", false, true)
+
+        logininfo = {} //Empty other object
+        data.forEach((e, i) => {
+            e = e.split(":")
+            e[e.length - 1] = e[e.length - 1].replace("\r", "") //remove Windows next line character from last index (which has to be the end of the line)
+            logininfo["bot" + i] = [e[0], e[1], e[2]]
+        }) }}
+
 var quotes = []
 var quotes = fs.readFileSync('quotes.txt', 'utf8').split("\n") //get all quotes from the quotes.txt file into an array
 var quotes = quotes.filter(str => str != "") //remove empty quotes as empty comments will not work/make no sense
@@ -71,7 +96,14 @@ quotes.forEach((e, i) => { quotes[i] = e.replace(/\\n/g, "\n").replace("\\n", "\
 if (config.owner.length > 1) var ownertext = config.owner; else var ownertext = "anonymous (no owner link provided)"; 
 const aboutstr = `${extdata.aboutstr} \n\nDisclaimer: I (the developer) am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.\nThis instance of the bot is used and operated by: ${ownertext}`;
 
-var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res) => { //function to let all bots comment
+/**
+ * Comments with all bot accounts on one profile.
+ * @param {Object} steamID steamID Object of the profile to comment on
+ * @param {Number} numberofcomments Amount of comments requested
+ * @param {Number} requesterSteamID steam64ID of the comment requesting user
+ * @param {Object} res An express response object that will be available if the comments were requested via the express webserver
+ */
+var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res, quoteselection) => { //function to let all bots comment
     function respondmethod(msg) { //we need a function to get each response back to the user (web request & steam chat)
         if (res) {
           logger("Web Comment Request: " + msg)
@@ -84,6 +116,10 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res) => { 
 
     function comment(k, i, j) {
         setTimeout(() => {
+            if (!module.exports.activecommentprocess.includes(requesterSteamID)) { 
+                failedcomments[requesterSteamID][`Comment ${i} (bot${k})`] = "Skipped because user aborted comment process."
+                return; } //Stop process if the user isn't in the array anymore (user typed !abort for example)
+
             if (Object.values(failedcomments[requesterSteamID]).includes("postUserComment error: Error: HTTP error 429")) {
                 if (Object.keys(failedcomments[requesterSteamID]).length > 0) { failedcmdreference = "To get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
                     } else { failedcmdreference = "" }
@@ -101,29 +137,57 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res) => { 
                     } }
                 return; }
 
-            var comment = quotes[Math.floor(Math.random() * quotes.length)];
+            var comment = quoteselection[Math.floor(Math.random() * quoteselection.length)];
 
             communityobject[k].postUserComment(steamID, comment, (error) => {
                 if (k == 0) var thisbot = `Main`; else var thisbot = `Bot ${k}`;
-                if (error) {
-                    logger(`[${thisbot}] postUserComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(botobject).length} - reciever: ${new SteamID(String(steamID)).getSteamID64()}`); 
-                    failedcomments[requesterSteamID][`Comment ${i + 1} (bot${j})`] = `postUserComment error: ${error}`
-                } else {
-                    logger(`[${thisbot}] Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${comment}`) 
 
-                    if (botobject[k].myFriends[requesterSteamID] == 3) {
-                        lastcomment[requesterSteamID.toString() + j] = { //add j to steamID to allow multiple entries for one steamID
-                            time: Date.now(),
-                            bot: botobject[k].steamID.accountid } } }
+                if (error) {
+                    var errordesc = ""
+        
+                    switch (error) {
+                        case "Error: HTTP error 429":
+                        errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes."
+                        commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
+                        break;
+                        case "Error: HTTP Error 502":
+                        errordesc = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us"
+                        break;
+                        case "Error: HTTP Error 504":
+                        errordesc = "The steam servers are slow atm/are down. Check Steam's status here: https://steamstat.us"
+                        break;
+                        case "Error: You've been posting too frequently, and can't make another post right now":
+                        errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes. Please wait a moment and then try again."
+                        commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
+                        break;
+                        case "Error: There was a problem posting your comment. Please try again":
+                        errordesc = "Unknown reason - please wait a minute and try again."
+                        break;
+                        case "Error: The settings on this account do not allow you to add comments":
+                        errordesc = "The profile's comment section the account is trying to comment on is private or the account doesn't meet steams regulations."
+                        break;
+                        case "Error: To post this comment, your account must have Steam Guard enabled":
+                        errordesc = "The account trying to comment doesn't seem to have steam guard enabled."
+                        break;
+                        case "Error: socket hang up":
+                        errordesc = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us"
+                        break;
+                        default:
+                        errordesc = "Please wait a moment and try again!"
+                    }
+        
+                    respondmethod(500, `Oops, an error occurred!\n${errordesc}\n\nDetails: Please wait a moment and then try again.\n[${thisbot}] postUserComment error: ${error}`); 
+        
+                    logger(`[${thisbot}] postUserComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(botobject).length} - reciever: ${new SteamID(String(steamID)).getSteamID64()}`); 
+                    failedcomments[requesterSteamID][`Comment ${i + 1} (bot${j})`] = `postUserComment error: ${error} [${errordesc}]`
+                } else {
+                    logger(`[${thisbot}] Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${comment}`) }
 
 
                 if (i == numberofcomments - 1) { //last iteration
                     if (Object.keys(failedcomments[requesterSteamID]).length > 0) { failedcmdreference = "\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
                         } else { failedcmdreference = "" }
                     respondmethod(`All comments have been sent. Failed: ${Object.keys(failedcomments[requesterSteamID]).length}/${numberofcomments}${failedcmdreference}`);
-
-                    fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => { //write all lastcomment changes on last iteration
-                        if (err) logger("add user to lastcomment.json from updateeverywhere() error: " + err) })
 
                     if (Object.values(failedcomments[requesterSteamID]).includes("Error: The settings on this account do not allow you to add comments.")) {
                         accstoadd[requesterSteamID] = []
@@ -136,7 +200,7 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res) => { 
                                 respondmethod("-----------------------------------\nIt seems like at least one of the requested comments could have failed because you/the recieving account aren't/isn't friend with the commenting bot account.\n\nPlease make sure that you have added these accounts in order to eventually avoid this error in the future: \n" + accstoadd[requesterSteamID] + "\n-----------------------------------")
                         } }
 
-                    module.exports.activecommentprocess = activecommentprocess.filter(item => item !== requesterSteamID) 
+                    module.exports.activecommentprocess = activecommentprocess.filter(item => item !== requesterSteamID)
                 } })
             }, config.commentdelay * i); //delay every comment
         }
@@ -155,8 +219,31 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res) => { 
         comment(k, i, j) //run actual comment function because for loops are bitchy
     }}
 
+/**
+ * Rounds a number with x decimals
+ * @param {Number} value Number to round 
+ * @param {Number} decimals Amount of decimals
+ * @returns {Number} Rounded number
+ */
 const round = (value, decimals) => {
     return Number(Math.round(value+'e'+decimals)+'e-'+decimals) }
+
+/**
+ * Checks the remaining space on the friendlist of a bot account and sends a warning message if it is less than 10.
+ * @param {Number} botindex The index of the bot account to be checked
+ */
+var friendlistcapacitycheck = (botindex) => {
+    try {
+        botobject[0].getSteamLevels([botobject[botindex].steamID], (err, users) => {
+            if (users == undefined || users == null) return; //users was undefined one time (I hope this will (hopefully) supress an error?)
+            let friendlistlimit = Object.values(users)[0] * 5 + 250 //Profile Level * 5 + 250
+            let friendsamount = Object.keys(botobject[0].myFriends).length
+            if (friendlistlimit - friendsamount < 25) {
+                logger(`The friendlist space of bot${botindex} is running low! (${friendlistlimit - friendsamount} remaining)`) }
+        })
+    } catch (err) {
+        logger(`Failed to check friendlist space for bot${botindex}. Error: ${err}`) }
+}
 
 accisloggedin = true; //var to check if previous acc is logged on (in case steamGuard event gets fired) -> set to true for first account
 
@@ -165,7 +252,7 @@ accisloggedin = true; //var to check if previous acc is logged on (in case steam
 logger("Checking config for 3urobeat's leftovers...", false, true)
 if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' && process.env.USERNAME === 'tomgo') && !(process.env.USER === 'pi' && process.env.LOGNAME === 'pi') && !(process.env.USER === 'tom' && require('os').hostname() === 'Toms-Thinkpad')) { //remove myself from config on different computer
     let write = false;
-    if (config.owner.includes("3urobeat")) { config.owner = ""; write = true } 
+    if (config.owner.includes(extdata.mestr)) { config.owner = ""; write = true } 
     if (config.ownerid.includes("76561198260031749")) { config.ownerid.splice(config.ownerid.indexOf("76561198260031749"), 1); write = true } 
     if (config.ownerid.includes("76561198982470768")) { config.ownerid.splice(config.ownerid.indexOf("76561198982470768"), 1); write = true }
 
@@ -174,6 +261,7 @@ if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' && process.env.USERNAME ===
     //Das Projekt hat schon bis jetzt viel Zeit in Anspruch genommen, die ersten Klausuren nach der Corona Pandemie haben bisschen darunter gelitten. All der Code ist bis auf einzelne, markierte Schnipsel selbst geschrieben. Node Version zum aktuellen Zeitpunkt: v12.16.3
 
     if (write) {
+        //Get arrays on one line
         var stringifiedconfig = JSON.stringify(config,function(k,v) { //Credit: https://stackoverflow.com/a/46217335/12934162
             if(v instanceof Array)
             return JSON.stringify(v);
@@ -197,15 +285,18 @@ if (config.allowcommentcmdusage === false && new SteamID(String(config.ownerid[0
 if (config.repeatedComments < 1) {
     logger("\x1b[31mYour repeatedComments value in config.json can't be smaller than 1! Automatically setting it to 1...\x1b[0m", true)
     config.repeatedComments = 1 }
-if (config.repeatedComments > 2 && config.commentdelay == 5000) {
-    logger("\x1b[0m[\x1b[31mWarning\x1b[0m]: \x1b[31mYou have raised repeatedComments but haven't increased the commentdelay. This can cause cooldown errors from Steam.\x1b[0m", true) }
+if (config.commentdelay / (config.repeatedComments * Object.keys(logininfo).length / 2) < 1250) {
+    logger("\x1b[0m[\x1b[31mWarning\x1b[0m]: \x1b[31mYou have raised repeatedComments but I would recommend to raise the commentdelay further. Not increasing the commentdelay further raises the probability to get cooldown errors from Steam.\x1b[0m", true) }
 if (logininfo.bot0 == undefined) { //check real quick if logininfo is empty
     logger("\x1b[31mYour logininfo doesn't contain a bot0 or is empty! Aborting...\x1b[0m", true); process.exit(0) }
+if (config.commentdelay * config.repeatedComments * Object.keys(logininfo).length > 2147483647) { //check for 32-bit integer limit for commenteverywhere() timeout
+    logger("\x1b[31mYour repeatedComments and/or commentdelay value in the config are too high.\nPlease lower these values so that 'commentdelay * repeatedComments * amount_of_accounts' is not bigger than 2147483647.\n\nThis will otherwise cause an error when trying to comment (32-bit integer limit). Aborting...\x1b[0m\n", true)
+    process.exit(0) }
 
 //Check cache.json
 logger("Checking if cache.json is valid...", false, true) //file can get broken regularly when exiting while the bot was writing etc
 fs.readFile('./src/cache.json', function (err, data) {
-    if (err) logger("error reading cache.json to check if it is valid: " + err, true)
+    if (err) { if (!extdata.firststart) logger("error reading cache.json to check if it is valid: " + err, true) }
     if (stoplogin == true) return;
 
     try {
@@ -228,7 +319,7 @@ fs.readFile('./src/cache.json', function (err, data) {
 //Check lastcomment.json
 logger("Checking if lastcomment.json is valid...", false, true) //file can get broken regularly when exiting while the bot was writing etc
 fs.readFile('./src/lastcomment.json', function (err, data) {
-    if (err) logger("error reading lastcomment.json to check if it is valid: " + err, true)
+    if (err) { if (!extdata.firststart) logger("error reading lastcomment.json to check if it is valid: " + err, true) } //Basically useless since the next check will output the same
     if (stoplogin == true) return;
 
     try {
@@ -237,7 +328,7 @@ fs.readFile('./src/lastcomment.json', function (err, data) {
         isSteamOnline(true, true); //Continue startup
     } catch (err) {
         if (err) {
-            logger("\nYour lastcomment.json is broken and has lost it's data. This will mean that comment cooldowns are lost and the unfriend time has been reset.\nWriting {} to prevent error...\nError: " + err + "\n", true) 
+            if (!extdata.firststart) logger("\nYour lastcomment.json is broken and has lost it's data. This will mean that comment cooldowns are lost and the unfriend time has been reset.\nWriting {} to prevent error...\nError: " + err + "\n", true) 
 
             fs.writeFile('./src/lastcomment.json', "{}", (err) => { //write empty valid json
                 if (err) { 
@@ -275,6 +366,11 @@ if (extdata.urlrequestsecretkey == "") {
 }
 
 //Check if Steam is online:
+/**
+  * Checks if Steam is online and proceeds with the startup.
+  * @param {Boolean} continuewithlogin If true, the function will call startlogin() if Steam is online
+  * @param {Boolean} stoponerr If true, the function will stop the bot if Steam seems to be offline
+  */
 var isSteamOnline = function isSteamOnline(continuewithlogin, stoponerr) {
     if (stoplogin == true) return;
     logger("Checking if Steam is reachable...", false, true)
@@ -283,7 +379,7 @@ var isSteamOnline = function isSteamOnline(continuewithlogin, stoponerr) {
         if (continuewithlogin) startlogin();
 
     }).on('error', function(err) {
-        logger(`\x1b[0m[\x1b[31mWarning\x1b[0m]: SteamCommunity seems to be down or your internet isn't working! Aborting...\n           Error: ` + err, true)
+        logger(`\x1b[0m[\x1b[31mWarning\x1b[0m]: SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n           Error: ` + err, true)
         if (stoponerr) process.exit(0) }) }
 
 
@@ -300,6 +396,7 @@ module.exports={
     activecommentprocess,
     quotes,
     round,
+    friendlistcapacitycheck,
     failedcomments,
     accisloggedin,
     aboutstr,
@@ -312,6 +409,9 @@ module.exports={
 
 
 /* ------------ Startup & Login: ------------ */
+/**
+  * Prints an ASCII Art and starts to login all bot accounts
+  */
 function startlogin() { //function will be called when steamcommunity status check is done
     logger("", true)
     if (Math.floor(Math.random() * 100) <= 2) logger(hellothereascii + "\n", true)
@@ -353,6 +453,10 @@ function startlogin() { //function will be called when steamcommunity status che
                             promptSteamGuardCode: false,
                             machineName: `${extdata.mestr}'s Comment Bot`
                         };
+
+                        //If a shared secret was provided in the logininfo then add it to logOnOptions object
+                        if (logininfo[k][2] && logininfo[k][2] != "" && logininfo[k][2] != "shared_secret") { logOnOptions["twoFactorCode"] = SteamTotp.generateAuthCode(logininfo[k][2]) }
+
                         b.run(logOnOptions, i); //run bot.js with corresponding account
                     }, logindelay) }
             }, 250);
@@ -488,53 +592,35 @@ var readyinterval = setInterval(() => { //log startup to console
         } catch (err) {
             if (err) return logger("error getting botsgroup xml info: " + err, true) }
 
-        //Unfriend stuff
+        //Friendlist capacity check
+        Object.keys(botobject).forEach((e, i) => {
+            friendlistcapacitycheck(i) })
+        
+        //Message owners if firststart is true that the bot just updated itself
+        if (extdata.firststart) {
+            config.ownerid.forEach(e => {
+                botobject[0].chat.sendFriendMessage(e, `I have updated myself to version ${extdata.version}!\nWhat's new: ${extdata.whatsnew}`) }) }
+       
+        //Unfriend check
         if (config.unfriendtime > 0) {
-            logger(`Associating bot's accountids with botobject entries...`, false, true)
-            var accountids = {}
-            var lastcomment = require('./lastcomment.json')
-            Object.keys(botobject).forEach((e, i) => {
-                Object.keys(accountids).push(e)
-                accountids[e] = botobject[e]['steamID']['accountid']
-            })
+            try {
+                setInterval(() => {
+                    for(let i in lastcomment) {
+                        if (Date.now() > (lastcomment[i].time + (config.unfriendtime * 86400000)) && !config.ownerid.includes(i)) { //also check if id is not an owner
+                            Object.values(botobject).forEach((e, botindex) => {
+                                if (e.myFriends[i] === 3) { //check if the targeted user is still friend
+                                    if (botindex == 0) botobject[0].chat.sendFriendMessage(new SteamID(i), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
+                                    e.removeFriend(new SteamID(i)) //unfriend user with each bot
+                                    logger(`Unfriended ${i} after ${config.unfriendtime} days of inactivity.`) } })
 
-            //Compatibility feature for updating from version <2.6
-            for(let i in lastcomment) {
-                if (String(lastcomment[i].bot).length < 10) {
-                    if (accountids[lastcomment[i].bot]) {
-                        lastcomment[i].bot = accountids[lastcomment[i].bot] //converts loginindex to accountid
-                    } else {
-                        delete lastcomment[i] }
-                } }
+                            if (!config.ownerid.includes(i)) delete lastcomment[i]; //entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
+                        } }
 
-            fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
-                if (err) logger("lastcomment compatibility error: " + err) })
-
-            //Unfriend checker
-            setInterval(() => {
-                for(let i in lastcomment) {
-                    if (Date.now() > (lastcomment[i].time + (config.unfriendtime * 86400000))) {
-                        var iminusid = i.toString().slice(0, -1);
-
-                        var targetkey = Object.keys(accountids).find(key => accountids[key] === lastcomment[i].bot) //convert bot accountid to corresponding id in botobject
-                        var targetbot = botobject[targetkey] //grab the targeted bot
-
-                        if (targetbot === undefined) { //this bot account does not seem to be in logininfo.json anymore
-                            delete lastcomment[i] //delete entry
-                            
-                        } else { //bot does seem to be logged in
-
-                            if (targetbot.myFriends[iminusid] === 3 && !config.ownerid.includes(iminusid)) { //check if the targeted user is still friend and not the owner
-                                targetbot.chat.sendFriendMessage(new SteamID(iminusid), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
-                                targetbot.removeFriend(new SteamID(iminusid)); //unfriend user
-                                logger(`[Bot ${targetkey}] Unfriended ${iminusid} after ${config.unfriendtime} days of inactivity.`) } 
-
-                            if (!config.ownerid.includes(iminusid)) delete lastcomment[i]; } //entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
-                    } }
-                fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => { //write changes
-                    if (err) logger("delete user from lastcomment.json error: " + err) })
-            }, 30000) 
-        }
+                    fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => { //write changes
+                        if (err) logger("delete user from lastcomment.json error: " + err) })
+                }, 30000) //30 seconds
+            } catch (err) {
+                logger("error in unfriend check interval: " + err) } }
 
         //Write logintime stuff to data.json
         logger(`Writing logintime...`, false, true)
@@ -550,7 +636,7 @@ var readyinterval = setInterval(() => { //log startup to console
             var app = express()
             
             app.get('/', (req, res) => {
-                res.status(200).send("<title>Comment Bot Web Request</title><b>3urobeat's Comment Bot | Comment Web Request</b></br>Please use /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.</br></br>Visit /output to see the complete output.txt in your browser!</b></br></br>https://github.com/HerrEurobeat/steam-comment-service-bot") })
+                res.status(200).send(`<title>Comment Bot Web Request</title><b>${extdata.mestr}'s Comment Bot | Comment Web Request</b></br>Please use /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.</br></br>Visit /output to see the complete output.txt in your browser!</b></br></br>https://github.com/HerrEurobeat/steam-comment-service-bot`) })
             
             app.get('/comment', (req, res) => {
                 logger("Web Comment Request recieved by: " + req.ip)

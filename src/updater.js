@@ -60,17 +60,26 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                         logger('Starting the automatic updater...')
                         startupdate();
                     } else { //user has it disabled, ask for confirmation
-                        if (botisloggedin == false || responseSteamID) { //only ask on start, otherwise this will annoy the user
-                            logger(`What's new: ${JSON.parse(chunk).whatsnew}\n`, true)
-                            process.stdout.write(`You have disabled the automatic updater.\nWould you like to update now? [y/n] `)
-                            var stdin = process.openStdin();
+                        if (botisloggedin == false || responseSteamID) { //only ask on start (or when user checked for an update from the Steam chat), otherwise this will annoy the user
+                            logger(`\x1b[4mWhat's new:\x1b[0m ${JSON.parse(chunk).whatsnew}\n`, true)
+                            process.stdout.write(`You have disabled the automatic updater.\n\x1b[93mWould you like to update now?\x1b[0m [y/n] `)
+                            var updatestdin = process.openStdin();
 
-                            stdin.addListener('data', text => {
-                            var response = text.toString().trim()
-                            if (response == "y") startupdate();
-                                else { require('./controller.js'); botisloggedin = true } //start bot or do nothing
+                            let noresponsetimeout = setTimeout(() => { //skip update after 7.5 sec if the user doesn't respond
+                                updatestdin.pause()
+                                process.stdout.write("\x1b[31mX\n\x1b[93mStarting the bot since you haven't replied in 7.5 seconds...\x1b[0m\n\n", true)
 
-                            stdin.pause() }) //stop reading
+                                require('./controller.js')
+                                botisloggedin = true
+                            }, 7500);
+
+                            updatestdin.addListener('data', text => {
+                                var response = text.toString().trim()
+                                if (response == "y") startupdate();
+                                    else { require('./controller.js'); botisloggedin = true } //start bot or do nothing
+
+                                updatestdin.pause() //stop reading
+                                clearTimeout(noresponsetimeout) })
                         }
                     }
 
@@ -352,7 +361,7 @@ if (!fs.existsSync('./src')) { //this has to trigger if user was on version <2.6
             checkforupdate(true) //force to update again to get files from new structure
         }, 1000);
     } catch(err) {
-        logger("\n\n\x1b[31m*------------------------------------------*\x1b[0m\nI have problems updating your bot to the new filesystem.\nPlease restart the bot. If you still encounter issues:\n\nPlease either download and setup the bot manually again (https://github.com/HerrEurobeat/steam-comment-service-bot/)\nor open an issue (https://github.com/HerrEurobeat/steam-comment-service-bot/issues) and include the errors\n(*only* if you have no GitHub account message 3urobeat#0975 on Discord).\n\x1b[31m*------------------------------------------*\x1b[0m\n\nError: \n" + err + "\n", true) }
+        logger(`\n\n\x1b[31m*------------------------------------------*\x1b[0m\nI have problems updating your bot to the new filesystem.\nPlease restart the bot. If you still encounter issues:\n\nPlease either download and setup the bot manually again (https://github.com/HerrEurobeat/steam-comment-service-bot/)\nor open an issue (https://github.com/HerrEurobeat/steam-comment-service-bot/issues) and include the errors\n(*only* if you have no GitHub account message ${extdata.mestr}#0975 on Discord).\n\x1b[31m*------------------------------------------*\x1b[0m\n\nError: \n${err}\n`, true) }
 
 } else if (Object.keys(config).includes("botsgroupid")) { //this has to trigger if user was on version <2.7
     if (config.botsgroupid != "") {
