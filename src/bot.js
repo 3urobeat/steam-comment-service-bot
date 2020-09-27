@@ -18,8 +18,10 @@ module.exports.run = async (logOnOptions, loginindex) => {
   var cachefile = require('./cache.json');
   var lastcomment = require("./lastcomment.json");
 
+  var commandcooldown = 12000 //The bot won't respond if a user sends more than 5 messages in this time frame
   var logger = controller.logger
   var commentedrecently = false; //global cooldown for the comment command
+  var lastmessage = {}
   accstoadd = []
   lastcommentrequestmsg = []
 
@@ -484,6 +486,19 @@ module.exports.run = async (logOnOptions, loginindex) => {
   /* ------------ Message interactions: ------------ */
   bot.on('friendMessage', function(steamID, message) {
     var steam64id = new SteamID(String(steamID)).getSteamID64()
+    if (bot.myFriends[steam64id] == 1 || bot.myFriends[steam64id] == 6) return; //User is blocked.
+
+    //Spam "protection" because spamming the bot is bad!
+    if (!lastmessage[steam64id] || lastmessage[steam64id][0] + commandcooldown < Date.now()) lastmessage[steam64id] = [Date.now(), 0] //Add user to array or Reset time
+    if (lastmessage[steam64id] && lastmessage[steam64id][0] + commandcooldown > Date.now() && lastmessage[steam64id][1] > 5) return; //Just don't respond
+    if (lastmessage[steam64id] && lastmessage[steam64id][0] + commandcooldown > Date.now() && lastmessage[steam64id][1] > 4) { //Inform the user about the cooldown
+      chatmsg(steamID, "You have been blocked for 60 seconds for spamming.")
+      logger(`${steam64id} has been blocked for 60 seconds for spamming.`)
+      lastmessage[steam64id][0] += 60000
+      lastmessage[steam64id][1]++
+      return; }
+    lastmessage[steam64id][1]++
+
     logger(`[${thisbot}] Friend message from ${steam64id}: ${message}`); //log message
 
     //Deny non-friends the use of any command
@@ -519,22 +534,30 @@ module.exports.run = async (logOnOptions, loginindex) => {
             if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commenttext = `'!comment (amount/"all")' - Request x many or the max amount of comments (max ${Object.keys(controller.communityobject).length * config.repeatedComments}).`
               else var commenttext = `'!comment' - Request a comment on your profile!` }
 
-          if (ownercheck) var resetcooldowntext = `\n'!resetcooldown [profileid/"global"]' - Clear your, the profileid's or the global comment cooldown. Alias: !rc`; else var resetcooldowntext = "";
-          if (ownercheck) var addfriendtext =     `\n'!addfriend (profileid)'                          - Add friend with all bot accounts.`; else var addfriendtext = "";
-          if (ownercheck) var unfriendtext =      `\n'!unfriend (profileid)'                            - Unfriend the user from all bot accounts.`; else var unfriendtext = "";
-          if (ownercheck) var leavegrouptext =    `\n'!leavegroup (groupid64/group url)' - Leave this group with all bot accounts.`; else var leavegrouptext = "";
-          if (ownercheck) var evaltext =          `\n'!eval (javascript code)'                       - Run javascript code from the steam chat.`; else var evaltext = "";
-          if (ownercheck) var restarttext =       `\n'!restart'                                                  - Restart the bot.`; else var restarttext = "";
-          if (ownercheck) var settingstext =      `\n'!settings' (config key) (new value)  - Change a config value.`; else var settingstext = "";
-          if (ownercheck) var logtext =           `\n'!log'                                                         - Shows the last 25 lines of the log.`; else var logtext = "";
-          if (ownercheck) var updatetext =        `\n'!update [true]'                                      - Check for an available update. 'true' forces an update.`; else var updatetext = "";
+          if (ownercheck) { //idk if this is a good practice to define owner only commands in the same steam message but there are probably worse examples out there
+            var resetcooldowntext =  `\n'!resetcooldown [profileid/"global"]' - Clear your, the profileid's or the global comment cooldown. Alias: !rc`;
+            var addfriendtext =      `\n'!addfriend (profileid)'                          - Add friend with all bot accounts.`; 
+            var unfriendtext =       `\n'!unfriend (profileid)'                            - Unfriend the user from all bot accounts.`; 
+            var unfriendalltext =    `\n'!unfriendall ["abort"]'                          - Unfriends everyone with all bot accounts.`
+            var leavegrouptext =     `\n'!leavegroup (groupid64/group url)' - Leave this group with all bot accounts.`;
+            var leaveallgroupstext = `\n'!leaveallgroups ["abort"]'                   - Leaves all groups with all bot accounts.`
+            var blocktext =          `\n'!block (profileid)'                                  - Blocks the user on Steam.`
+            var unblocktext =        `\n'!unblock (profileid)'                             - Unblocks the user on Steam. Note: The user still seems to be ignored for a few days by Steam.`
+            var evaltext =           `\n'!eval (javascript code)'                       - Run javascript code from the steam chat.`; 
+            var restarttext =        `\n'!restart'                                                  - Restart the bot.`; 
+            var settingstext =       `\n'!settings' (config key) (new value)  - Change a config value.`; 
+            var logtext =            `\n'!log'                                                        - Shows the last 25 lines of the log.`; 
+            var updatetext =         `\n'!update [true]'                                      - Check for an available update. 'true' forces an update.`; 
+          } else {
+            var resetcooldowntext = addfriendtext = unfriendtext = unfriendalltext = leavegrouptext = leaveallgroupstext = blocktext = unblocktext = evaltext = restarttext = settingstext = logtext = updatetext = ""; } //I'm really not proud of this line of "code"
+
           if (config.yourgroup.length > 1) var yourgrouptext = "\nJoin my '!group'!"; else var yourgrouptext = "";
           chatmsg(steamID, `
             () <-- needed argument\n[] <-- optional argument\n\nCommand list:\n
             ${commenttext}\n
             '!ping'                                                       - Get a pong and heartbeat in ms.
             '!info'                                                        - Get useful information about the bot and you.
-            '!abort'                                                     - Abort your own comment process.${resetcooldowntext}${settingstext}${addfriendtext}${unfriendtext}${leavegrouptext}
+            '!abort'                                                     - Abort your own comment process.${resetcooldowntext}${settingstext}${addfriendtext}${unfriendtext}${unfriendalltext}${leavegrouptext}${leaveallgroupstext}${blocktext}${unblocktext}
             '!failed'                                                     - See the exact errors of your last comment request.
             '!about'                                                    - Returns information what this is about.
             '!owner'                                                   - Get a link to the profile of the operator of this bot instance.${evaltext}${restarttext}${logtext}${updatetext}
@@ -663,8 +686,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
             chatmsg(steamID, `Can't add friend ${args[0]} with bot0 because the bot account is limited.`) 
             return; }
 
-          chatmsg(steamID, `Adding friend ${args[0]} with all bots... This will take ~${5 * Object.keys(controller.botobject).length} seconds. Please check the terminal for potential errors.`)
-          logger(`Adding friend ${args[0]} with all bots. This will take ~${5 * Object.keys(controller.botobject).length} seconds.`)
+          chatmsg(steamID, `Adding friend ${args[0]} with all bot accounts... This will take ~${5 * Object.keys(controller.botobject).length} seconds. Please check the terminal for potential errors.`)
+          logger(`Adding friend ${args[0]} with all bot accounts... This will take ~${5 * Object.keys(controller.botobject).length} seconds.`)
 
           Object.keys(controller.botobject).forEach((i) => {
             if (controller.botobject[i].limitations.limited == true) {
@@ -692,8 +715,28 @@ module.exports.run = async (logOnOptions, loginindex) => {
           Object.keys(controller.botobject).forEach((i) => {
             if (controller.botobject[i].myFriends[new SteamID(args[0])] === 3) { //check if provided user is really a friend
               controller.botobject[i].removeFriend(new SteamID(args[0])) }})
-          chatmsg(steamID, `Removed friend ${args[0]} from all bots.`)
-          logger(`Removed friend ${args[0]} from all bots.`)
+          chatmsg(steamID, `Removed friend ${args[0]} from all bot accounts.`)
+          logger(`Removed friend ${args[0]} from all bot accounts.`)
+          break;
+        case '!unfriendall':
+          if (!ownercheck) return notownerresponse();
+
+          if (args[0] == "abort") { chatmsg(steamID, "Aborting unfriendall process if one is active..."); return abortunfriendall = true; }
+          abortunfriendall = false
+          chatmsg(steamID, "Unfriending all people (except owners) with all bot accounts in 30 seconds...\nType '!unfriendall abort' to abort/stop the process.")
+
+          setTimeout(() => {
+            if (abortunfriendall) return logger("unfriendall process was aborted.");
+
+            for (let i in controller.botobject) {
+              for (let friend in controller.botobject[i].myFriends) {
+                try {
+                  if (controller.botobject[i].myFriends[friend] == 3 && !config.ownerid.includes(friend)) { 
+                    controller.botobject[i].removeFriend(new SteamID(friend)) }
+                } catch (err) {
+                  logger(`[Bot ${i}] unfriendall error unfriending ${friend}: ${err}`)
+                }}}
+          }, 30000);
           break;
         case '!leavegroup':
           if (!ownercheck) return notownerresponse();
@@ -730,8 +773,50 @@ module.exports.run = async (logOnOptions, loginindex) => {
             Object.keys(controller.botobject).forEach((i) => {
               if (controller.botobject[i].myGroups[argsSteamID] === 3) {
                 controller.communityobject[i].leaveGroup(argsSteamID) }})
-            chatmsg(steamID, `Left group '${args[0]}' with all bots.`)
-            logger(`Left group ${args[0]} with all bots.`) }
+            chatmsg(steamID, `Left group '${args[0]}' with all bot accounts.`)
+            logger(`Left group ${args[0]} with all bot accounts.`) }
+          break;
+        case '!leaveallgroups':
+          if (!ownercheck) return notownerresponse();
+
+          if (args[0] == "abort") { chatmsg(steamID, "Aborting leaveallgroups process if one is active..."); return abortleaveallgroups = true; }
+          abortleaveallgroups = false
+          chatmsg(steamID, "Leaving all groups (except yourgroup and botsgroup) with all bot accounts in 10 seconds...\nType '!leaveallgroups abort' to abort/stop the process.")
+
+          setTimeout(() => {
+            if (abortleaveallgroups) return logger("leaveallgroups process was aborted.");
+
+            for (let i in controller.botobject) {
+              for (let group in controller.botobject[i].myGroups) {
+                try {
+                  if (controller.botobject[i].myGroups[group] == 3) {
+                    if (group != cachefile.botsgroupid && group != cachefile.configgroup64id) {
+                      controller.communityobject[i].leaveGroup(String(group)) }}
+                } catch (err) {
+                  logger(`[Bot ${i}] leaveallgroups error leaving ${group}: ${err}`)
+                }}}
+          }, 10000);
+          break;
+        case '!block': //Well it kinda works but unblocking doesn't. The friend relationship enum stays at 6
+          if (!ownercheck) return notownerresponse();
+          if (isNaN(args[0])) return chatmsg(steamID, "This is not a valid profileid! A profile id must look like this: 76561198260031749")
+          if (new SteamID(args[0]).isValid() === false) return chatmsg(steamID, "This is not a valid profileid! A profile id must look like this: 76561198260031749")
+
+          Object.keys(controller.botobject).forEach((i) => {
+            controller.botobject[i].blockUser(new SteamID(args[0]), err => { if (err) logger(`[Bot ${i}] error blocking user ${args[0]}: ${err}`) }) })
+          chatmsg(steamID, `Blocked ${args[0]} with all bot accounts.`)
+          logger(`Blocked ${args[0]} with all bot accounts.`)
+          break;
+        case '!unblock':
+          if (!ownercheck) return notownerresponse();
+          if (isNaN(args[0])) return chatmsg(steamID, "This is not a valid profileid! A profile id must look like this: 76561198260031749")
+          if (new SteamID(args[0]).isValid() === false) return chatmsg(steamID, "This is not a valid profileid! A profile id must look like this: 76561198260031749")
+
+          Object.keys(controller.botobject).forEach((i) => {
+            if (controller.botobject[i].myFriends[new SteamID(args[0])] === 1) {
+              controller.botobject[i].unblockUser(new SteamID(args[0]), err => { if (err) logger(`[Bot ${i}] error blocking user ${args[0]}: ${err}`) }) }})
+          chatmsg(steamID, `Unblocked ${args[0]} with all bot accounts.`)
+          logger(`Unblocked ${args[0]} with all bot accounts.`)
           break;
         case '!rs':
         case '!restart':
@@ -787,7 +872,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
   });
 
   bot.on("disconnected", (eresult, msg) => {
-    logger(`[${thisbot}] Lost connection to Steam. EResult: ${eresult} | Message: ${msg}\n                               Check: https://steamstat.us`) })
+    logger(`[${thisbot}] Lost connection to Steam. EResult: ${eresult} | Message: ${msg}\n                              Check: https://steamstat.us`) })
 
   module.exports={
     bot

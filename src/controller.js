@@ -595,6 +595,11 @@ var readyinterval = setInterval(() => { //log startup to console
         //Friendlist capacity check
         Object.keys(botobject).forEach((e, i) => {
             friendlistcapacitycheck(i) })
+        
+        //Message owners if firststart is true that the bot just updated itself
+        if (extdata.firststart) {
+            config.ownerid.forEach(e => {
+                botobject[0].chat.sendFriendMessage(e, `I have updated myself to version ${extdata.version}!\nWhat's new: ${extdata.whatsnew}`) }) }
        
         //Unfriend check
         if (config.unfriendtime > 0) {
