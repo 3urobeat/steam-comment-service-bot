@@ -181,13 +181,13 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res, quote
                     logger(`[${thisbot}] postUserComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(botobject).length} - reciever: ${new SteamID(String(steamID)).getSteamID64()}`); 
                     failedcomments[requesterSteamID][`Comment ${i + 1} (bot${j})`] = `postUserComment error: ${error} [${errordesc}]`
                 } else {
-                    logger(`[${thisbot}] Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${comment}`) }
+                    logger(`[${thisbot}] Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${String(comment).split("\n")[0]}`) } //splitting \n to only get first line of multi line comments
 
 
                 if (i == numberofcomments - 1) { //last iteration
                     if (Object.keys(failedcomments[requesterSteamID]).length > 0) { failedcmdreference = "\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
                         } else { failedcmdreference = "" }
-                    respondmethod(`All comments have been sent. Failed: ${Object.keys(failedcomments[requesterSteamID]).length}/${numberofcomments}${failedcmdreference}`);
+                    respondmethod(`All comments have been sent. Failed: ${Object.keys(failedcomments[requesterSteamID]).length}/${numberofcomments}\nIf you are a nice person then please comment on my profile too!${failedcmdreference}`);
 
                     if (Object.values(failedcomments[requesterSteamID]).includes("Error: The settings on this account do not allow you to add comments.")) {
                         accstoadd[requesterSteamID] = []
@@ -237,9 +237,12 @@ var friendlistcapacitycheck = (botindex) => {
         botobject[0].getSteamLevels([botobject[botindex].steamID], (err, users) => {
             if (users == undefined || users == null) return; //users was undefined one time (I hope this will (hopefully) supress an error?)
             let friendlistlimit = Object.values(users)[0] * 5 + 250 //Profile Level * 5 + 250
-            let friendsamount = Object.keys(botobject[0].myFriends).length
-            if (friendlistlimit - friendsamount < 25) {
-                logger(`The friendlist space of bot${botindex} is running low! (${friendlistlimit - friendsamount} remaining)`) }
+            let friends = Object.values(botobject[botindex].myFriends)
+            let friendsamount = friends.length - friends.filter(val => val == 0).length - friends.filter(val => val == 5).length //Subtract friend enums 0 & 5
+
+            let remaining = friendlistlimit - friendsamount
+            if (remaining < 25) {
+                logger(`The friendlist space of bot${botindex} is running low! (${remaining} remaining)`) }
         })
     } catch (err) {
         logger(`Failed to check friendlist space for bot${botindex}. Error: ${err}`) }
@@ -304,7 +307,7 @@ fs.readFile('./src/cache.json', function (err, data) {
         cachefile = require("./cache.json")
     } catch (err) {
         if (err) {
-            if (!extdata.firststart) logger("Your cache.json is broken. No worries I will apply duct tape.\nError: " + err + "\n", true);
+            if (!extdata.firststart) logger("Your cache.json is broken. No worries I will apply duct tape.\nError that was triggered: " + err + "\n", true);
 
             fs.writeFile('./src/cache.json', "{}", (err) => { //write empty valid json
                 if (err) { 
@@ -328,7 +331,7 @@ fs.readFile('./src/lastcomment.json', function (err, data) {
         isSteamOnline(true, true); //Continue startup
     } catch (err) {
         if (err) {
-            if (!extdata.firststart) logger("\nYour lastcomment.json is broken and has lost it's data. This will mean that comment cooldowns are lost and the unfriend time has been reset.\nWriting {} to prevent error...\nError: " + err + "\n", true) 
+            if (!extdata.firststart) logger(`\nYour lastcomment.json is broken and has lost it's data. This will mean that comment cooldowns are lost and the unfriend time has been reset.\nError that was triggered: ${err}\nWriting {} to prevent further errors...\n`, true) 
 
             fs.writeFile('./src/lastcomment.json', "{}", (err) => { //write empty valid json
                 if (err) { 
