@@ -363,17 +363,18 @@ module.exports.run = async (logOnOptions, loginindex) => {
               }
 
               //Get last successful comment time to display it in error message
-              lastsuccessfulcomment(function(callback) {
-                lastsuccessfulcommenttime = (new Date(callback)).toISOString().replace(/T/, ' ').replace(/\..+/, '') + " (UTC/GMT time)" })
+              lastsuccessfulcomment(cb => {
+                let localoffset = new Date().getTimezoneOffset() * 60000
 
-              respondmethod(500, `Oops, an error occurred!\n${errordesc}\n\nDetails: \n[${thisbot}] postUserComment error: ${error}\n\nLast successful comment: ${lastsuccessfulcommenttime}`); 
-              logger(`[${thisbot}] postUserComment error: ${error}\n${errordesc}\nLast successful comment: ${lastsuccessfulcommenttime}`); 
+                respondmethod(500, `Oops, an error occurred!\n${errordesc}\n\nDetails: \n[${thisbot}] postUserComment error: ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (UTC/GMT time)`)
+                logger(`[${thisbot}] postUserComment error: ${error}\n${errordesc}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`) }) //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
 
               if (error == "Error: HTTP error 429" || error == "Error: You've been posting too frequently, and can't make another post right now") commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
               return; }
 
-            logger(`\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment on ${steam64id}: ${comment}\x1b[0m`)
-            if (numberofcomments == 1) respondmethod(200, 'Okay I commented on your/the recieving profile! If you are a nice person then leave a +rep on my profile!')
+            logger(`\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment on ${steam64id}: ${String(comment).split("\n")[0]}\x1b[0m`) //splitting \n to only get first line of multi line comments
+
+            if (numberofcomments == 1) respondmethod(200, 'Okay I commented on your/the recieving profile! If you are a nice person then please comment on my profile too!')
               else {
                 var waittime = ((numberofcomments - 1) * config.commentdelay) / 1000 //calculate estimated wait time (first comment is instant -> remove 1 from numberofcomments)
                 var waittimeunit = "seconds"
@@ -390,7 +391,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
             if (controller.botobject[loginindex].myFriends[requesterSteamID] === 3) {
               lastcomment[requesterSteamID] = {
-                time: Date.now() + (waittime * 1000) } //add estimated wait time in ms to start the cooldown after the last recieved comment
+                time: Date.now() + (((numberofcomments - 1) * config.commentdelay) * 1000) } //add estimated wait time in ms to start the cooldown after the last recieved comment
 
               fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
                 if (err) logger(`[${thisbot}] delete user from lastcomment.json error: ${err}`) }) } })
@@ -583,17 +584,19 @@ module.exports.run = async (logOnOptions, loginindex) => {
             }) })
           break;
         case '!info':
-          chatmsg(steamID, `
-            -----------------------------------~~~~~------------------------------------ 
-            >   ${extdata.mestr}'s Comment Bot [Version ${extdata.version}] (More info: !about)
-            >   Uptime: ${Number(Math.round(((new Date() - controller.bootstart) / 3600000)+'e'+2)+'e-'+2)} hours
-            >   'node.js' Version: ${process.version} | RAM Usage (RSS): ${Math.round(process.memoryUsage()["rss"] / 1024 / 1024 * 100) / 100} MB
-            >   Accounts logged in: ${Object.keys(controller.communityobject).length} | repeatedComments: ${config.repeatedComments} | Branch: ${updater.releasemode}
-            |
-            >   Your steam64ID: ${steam64id}
-            >   Your last comment request: ${(new Date(lastcomment[lastcommentsteamID].time)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (UTC/GMT time)
-            -----------------------------------~~~~~------------------------------------
-          `)
+          lastsuccessfulcomment(cb => {
+            chatmsg(steamID, `
+              -----------------------------------~~~~~------------------------------------ 
+              >   ${extdata.mestr}'s Comment Bot [Version ${extdata.version}] (More info: !about)
+              >   Uptime: ${Number(Math.round(((new Date() - controller.bootstart) / 3600000)+'e'+2)+'e-'+2)} hours
+              >   'node.js' Version: ${process.version} | RAM Usage (RSS): ${Math.round(process.memoryUsage()["rss"] / 1024 / 1024 * 100) / 100} MB
+              >   Accounts logged in: ${Object.keys(controller.communityobject).length} | repeatedComments: ${config.repeatedComments} | Branch: ${updater.releasemode}
+              |
+              >   Your steam64ID: ${steam64id}
+              >   Your last comment request: ${(new Date(lastcomment[lastcommentsteamID].time)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (UTC/GMT time)
+              >   Last processed comment request: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (UTC/GMT time)
+              -----------------------------------~~~~~------------------------------------
+            `) })
           break;
         case '!owner':
           if (config.owner.length < 1) return chatmsg(steamID, "I don't know that command. Type !help for more info.\n(Bot Owner didn't include link to him/herself.)")
@@ -641,18 +644,42 @@ module.exports.run = async (logOnOptions, loginindex) => {
         case '!config':
         case '!settings':
           if (!ownercheck) return notownerresponse();
+  
+          if (!args[0]) { 
+            fs.readFile('./config.json', function(err, data) { //Use readFile to get an unprocessed object
+              if (err) return chatmsg(steamID, "Failed to read config to output current settings: " + err)
+              chatmsg(steamID, "Current settings:\n" + data.toString().slice(1, -1)) }) //remove first and last character which are brackets
+            return; }
+          if (!args[1]) return chatmsg(steamID, "Please provide a new value for the key you want to change!")
 
-          if (!args[0]) return chatmsg(steamID, "Please provide a config key. You can see all config keys, their description and default values here:\nhttps://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Config-documentation")
-          let keyvalue = config[args[0]]
+          //Block those 3 values to don't allow another owner to take over ownership
+          if (args[0] == "enableevalcmd") return chatmsg(steamID, "enableevalcmd, ownerid and owner can't be changed via the settings command for security reasons. Please do it directly in the config file.")
+          if (args[0] == "ownerid") return chatmsg(steamID, "enableevalcmd, ownerid and owner can't be changed via the settings command for security reasons. Please do it directly in the config file.")
+          if (args[0] == "owner") return chatmsg(steamID, "enableevalcmd, ownerid and owner can't be changed via the settings command for security reasons. Please do it directly in the config file.")
+
+          let keyvalue = config[args[0]] //save old value to be able to reset changes
+
+          //Convert to number or boolean as input is always a String
+          if (typeof(keyvalue) == "number") args[1] = Number(args[1])
+          if (typeof(keyvalue) == "boolean") { //prepare for stupid code because doing Boolean(value) will always return true
+            if (args[1] == "true") args[1] = true
+            if (args[1] == "false") args[1] = false } //could have been worse tbh
+
           if (keyvalue == undefined) return chatmsg(steamID, "I can't find this key in the config.")
           if (keyvalue == args[1]) return chatmsg(steamID, `The requested key is already ${args[1]}.`)
 
-          chatmsg(steamID, `${args[0]} has been changed from ${keyvalue} to ${args[1]}.`)
-          logger(`${args[0]} has been changed from ${keyvalue} to ${args[1]}.`)
+          config[args[0]] = args[1] //apply changes
 
-          if (typeof(keyvalue) == "number") args[1] = Number(args[1])
-          if (typeof(keyvalue) == "boolean") args[1] = Boolean(args[1])
-          config[args[0]] = args[1]
+          //32-bit integer limit check from controller.js's startup checks
+          if (typeof(keyvalue) == "number" && config.commentdelay * config.repeatedComments * Object.keys(controller.logininfo).length > 2147483647) { //check this here after the key has been set and reset the changes if it should be true
+            config[args[0]] = keyvalue
+            return chatmsg(steamID, "Your new value is too big. (32-bit integer limit)\nPlease choose a smaller value.") }//Just using the check from controller.js
+
+          console.log(keyvalue)
+          console.log(args[1])
+
+          chatmsg(steamID, `${args[0]} has been changed from ${keyvalue} to ${args[1]}.\nPlease remember that certain values might need a restart to take effect. You can do that by typing !restart.`)
+          logger(`${args[0]} has been changed from ${keyvalue} to ${args[1]}.`)
 
           //Get arrays on one line
           var stringifiedconfig = JSON.stringify(config,function(k,v) { //Credit: https://stackoverflow.com/a/46217335/12934162
@@ -713,8 +740,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
           if (new SteamID(args[0]).isValid() === false) return chatmsg(steamID, "This is not a valid profileid! A profile id must look like this: 76561198260031749")
 
           Object.keys(controller.botobject).forEach((i) => {
-            if (controller.botobject[i].myFriends[new SteamID(args[0])] === 3) { //check if provided user is really a friend
-              controller.botobject[i].removeFriend(new SteamID(args[0])) }})
+            controller.botobject[i].removeFriend(new SteamID(args[0])) })
+
           chatmsg(steamID, `Removed friend ${args[0]} from all bot accounts.`)
           logger(`Removed friend ${args[0]} from all bot accounts.`)
           break;
@@ -727,11 +754,13 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
           setTimeout(() => {
             if (abortunfriendall) return logger("unfriendall process was aborted.");
+            chatmsg(steamID, "Starting to unfriend everyone...")
+            logger("Starting to unfriend everyone...")
 
             for (let i in controller.botobject) {
               for (let friend in controller.botobject[i].myFriends) {
                 try {
-                  if (controller.botobject[i].myFriends[friend] == 3 && !config.ownerid.includes(friend)) { 
+                  if (!config.ownerid.includes(friend)) { 
                     controller.botobject[i].removeFriend(new SteamID(friend)) }
                 } catch (err) {
                   logger(`[Bot ${i}] unfriendall error unfriending ${friend}: ${err}`)
@@ -785,6 +814,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
           setTimeout(() => {
             if (abortleaveallgroups) return logger("leaveallgroups process was aborted.");
+            chatmsg(steamID, "Starting to leave all groups...")
+            logger("Starting to leave all groups...")
 
             for (let i in controller.botobject) {
               for (let group in controller.botobject[i].myGroups) {
