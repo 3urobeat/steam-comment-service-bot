@@ -391,7 +391,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
             if (controller.botobject[loginindex].myFriends[requesterSteamID] === 3) {
               lastcomment[requesterSteamID] = {
-                time: Date.now() + (((numberofcomments - 1) * config.commentdelay) * 1000) } //add estimated wait time in ms to start the cooldown after the last recieved comment
+                time: Date.now() + (((numberofcomments - 1) * config.commentdelay)) } //add estimated wait time in ms to start the cooldown after the last recieved comment
 
               fs.writeFile("./src/lastcomment.json", JSON.stringify(lastcomment, null, 4), err => {
                 if (err) logger(`[${thisbot}] delete user from lastcomment.json error: ${err}`) }) } })
@@ -590,7 +590,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
               >   ${extdata.mestr}'s Comment Bot [Version ${extdata.version}] (More info: !about)
               >   Uptime: ${Number(Math.round(((new Date() - controller.bootstart) / 3600000)+'e'+2)+'e-'+2)} hours
               >   'node.js' Version: ${process.version} | RAM Usage (RSS): ${Math.round(process.memoryUsage()["rss"] / 1024 / 1024 * 100) / 100} MB
-              >   Accounts logged in: ${Object.keys(controller.communityobject).length} | repeatedComments: ${config.repeatedComments} | Branch: ${updater.releasemode}
+              >   Accounts logged in: ${Object.keys(controller.communityobject).length} | repeatedComments: ${config.repeatedComments} | Branch: ${extdata.branch}
               |
               >   Your steam64ID: ${steam64id}
               >   Your last comment request: ${(new Date(lastcomment[lastcommentsteamID].time)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (UTC/GMT time)

@@ -20,6 +20,7 @@ var b = require('./bot.js');
 var logininfo = require('../logininfo.json');
 var config = require('../config.json');
 var extdata = require('./data.json');
+var cache = require('./cache.json')
 
 var communityobject = {}
 var botobject = {}
@@ -90,11 +91,8 @@ if (fs.existsSync("./accounts.txt")) {
 var quotes = []
 var quotes = fs.readFileSync('quotes.txt', 'utf8').split("\n") //get all quotes from the quotes.txt file into an array
 var quotes = quotes.filter(str => str != "") //remove empty quotes as empty comments will not work/make no sense
-quotes.forEach((e, i) => { quotes[i] = e.replace(/\\n/g, "\n").replace("\\n", "\n") }) //mult line strings that contain \n will get splitted to \\n -> remove second \ so that node-steamcommunity understands the quote when commenting
-
-//Please don't change this message as it gives credit to me; the person who put really much of his free time into this project. The bot will still refer to you - the operator of this instance.
-if (config.owner.length > 1) var ownertext = config.owner; else var ownertext = "anonymous (no owner link provided)"; 
-const aboutstr = `${extdata.aboutstr} \n\nDisclaimer: I (the developer) am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.\nThis instance of the bot is used and operated by: ${ownertext}`;
+quotes.forEach((e, i) => { quotes[i] = e.replace(/\\n/g, "\n").replace("\\n", "\n") }) //multi line strings that contain \n will get splitted to \\n -> remove second \ so that node-steamcommunity understands the quote when commenting
+logger(`${quotes.length} quotes found.`, false, true)
 
 /**
  * Comments with all bot accounts on one profile.
@@ -250,8 +248,24 @@ var friendlistcapacitycheck = (botindex) => {
 
 accisloggedin = true; //var to check if previous acc is logged on (in case steamGuard event gets fired) -> set to true for first account
 
+//Check if Steam is online:
+/**
+  * Checks if Steam is online and proceeds with the startup.
+  * @param {Boolean} continuewithlogin If true, the function will call startlogin() if Steam is online
+  * @param {Boolean} stoponerr If true, the function will stop the bot if Steam seems to be offline
+  */
+ var isSteamOnline = function isSteamOnline(continuewithlogin, stoponerr) {
+    if (stoplogin == true) return;
+    logger("Checking if Steam is reachable...", false, true)
+    https.get('https://steamcommunity.com', function (res) {
+        logger(`SteamCommunity is up! Status code: ${res.statusCode}`, false, true)
+        if (continuewithlogin) startlogin();
 
-/* ------------ Checks: ------------ */
+    }).on('error', function(err) {
+        logger(`\x1b[0m[\x1b[31mWarning\x1b[0m]: SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n           Error: ` + err, true)
+        if (stoponerr) process.exit(0) }) }
+
+/* ------------ Checks & co: ------------ */
 logger("Checking config for 3urobeat's leftovers...", false, true)
 if (!(process.env.COMPUTERNAME === 'HÖLLENMASCHINE' && process.env.USERNAME === 'tomgo') && !(process.env.USER === 'pi' && process.env.LOGNAME === 'pi') && !(process.env.USER === 'tom' && require('os').hostname() === 'Toms-Thinkpad')) { //remove myself from config on different computer
     let write = false;
@@ -296,53 +310,46 @@ if (config.commentdelay * config.repeatedComments * Object.keys(logininfo).lengt
     logger("\x1b[31mYour repeatedComments and/or commentdelay value in the config are too high.\nPlease lower these values so that 'commentdelay * repeatedComments * amount_of_accounts' is not bigger than 2147483647.\n\nThis will otherwise cause an error when trying to comment (32-bit integer limit). Aborting...\x1b[0m\n", true)
     process.exit(0) }
 
-//Check cache.json
-logger("Checking if cache.json is valid...", false, true) //file can get broken regularly when exiting while the bot was writing etc
-fs.readFile('./src/cache.json', function (err, data) {
-    if (err) { if (!extdata.firststart) logger("error reading cache.json to check if it is valid: " + err, true) }
-    if (stoplogin == true) return;
-
-    try {
-        JSON.parse(data)
-        cachefile = require("./cache.json")
-    } catch (err) {
-        if (err) {
-            if (!extdata.firststart) logger("Your cache.json is broken. No worries I will apply duct tape.\nError that was triggered: " + err + "\n", true);
-
-            fs.writeFile('./src/cache.json', "{}", (err) => { //write empty valid json
-                if (err) { 
-                    logger("Error writing {} to cache.json.\nPlease do this manually: Go into 'src' folder, open 'cache.json', write '{}' and save.\nOtherwise the bot will always crash.\nError: " + err + "\n\nAborting...", true); 
-                    process.exit(0) //abort since writeFile was unable to write and any further execution would crash
-                } else {
-                    logger("Successfully cleared/created cache.json.", false, true)
-                    cachefile = require("./cache.json")
-                } })
-        }} })
+if (stoplogin == true) return;
 
 //Check lastcomment.json
 logger("Checking if lastcomment.json is valid...", false, true) //file can get broken regularly when exiting while the bot was writing etc
-fs.readFile('./src/lastcomment.json', function (err, data) {
-    if (err) { if (!extdata.firststart) logger("error reading lastcomment.json to check if it is valid: " + err, true) } //Basically useless since the next check will output the same
-    if (stoplogin == true) return;
+try {
+    lastcomment = require("./lastcomment.json")
+    isSteamOnline(true, true); //Continue startup
+} catch (err) {
+    if (err) { //Corrupted!
+        if (!extdata.firststart) logger("lastcomment.json seems to have lost it's data/is corrupted. Trying to restore from backup...", true)
 
-    try {
-        JSON.parse(data)
-        lastcomment = require("./lastcomment.json")
-        isSteamOnline(true, true); //Continue startup
-    } catch (err) {
-        if (err) {
-            if (!extdata.firststart) logger(`\nYour lastcomment.json is broken and has lost it's data. This will mean that comment cooldowns are lost and the unfriend time has been reset.\nError that was triggered: ${err}\nWriting {} to prevent further errors...\n`, true) 
+        fs.writeFile('./src/lastcomment.json', JSON.stringify(cache.lastcommentjson, null, 2), (err) => { //write last backup to it from cache.json
+            if (err) {
+                logger("Error writing data to lastcomment.json.\nPlease do this manually: Go into 'src' folder, open 'lastcomment.json', write '{}' and save.\nOtherwise the bot will always crash.\nError: " + err + "\n\nAborting...", true); 
+                process.exit(0) //abort since writeFile was unable to write and any further execution would crash
 
-            fs.writeFile('./src/lastcomment.json', "{}", (err) => { //write empty valid json
-                if (err) { 
-                    logger("Error writing {} to lastcomment.json.\nPlease do this manually: Go into 'src' folder, open 'lastcomment.json', write '{}' and save.\nOtherwise the bot will always crash.\nError: " + err + "\n\nAborting...", true); 
-                    process.exit(0) //abort since writeFile was unable to write and any further execution would crash
-                } else {
-                    logger("Successfully cleared lastcomment.json.", false, true)
+            } else {
+                //Test backup:
+                logger("Testing lastcomment.json backup...", false, true)
+
+                try { //Yes, this is a try catch inside a try catch please forgive me
                     lastcomment = require("./lastcomment.json")
                     isSteamOnline(true, true); //Continue startup
-                } })
-        }} })
+                    logger("Successfully restored backup and written it to lastcomment.json!", true)
+
+                } catch (err) { //Worst case, even the backup seems to be broken
+                    logger("Backup seems to be broken/not available!", false, true)
+                    if (!extdata.firststart) logger(`\nYour lastcomment.json is broken and has lost it's data. This will mean that comment cooldowns are lost and the unfriend time has been reset.\nError that was triggered: ${err}\nWriting {} to prevent further errors...\n`, true) 
+
+                    fs.writeFile('./src/lastcomment.json', "{}", (err) => { //write empty valid json
+                        if (err) { 
+                            logger("Error writing {} to lastcomment.json.\nPlease do this manually: Go into 'src' folder, open 'lastcomment.json', write '{}' and save.\nOtherwise the bot will always crash.\nError: " + err + "\n\nAborting...", true); 
+                            process.exit(0) //abort since writeFile was unable to write and any further execution would crash
+                        } else {
+                            logger("Successfully cleared lastcomment.json.", false, true)
+                            lastcomment = require("./lastcomment.json")
+                            isSteamOnline(true, true); //Continue startup
+                        } }) }
+            } })
+    }}
 
 //Check proxies.txt
 var proxies = [] //when the file is just created there can't be proxies in it (this bot doesn't support magic)
@@ -356,8 +363,8 @@ if (!fs.existsSync('./proxies.txt')){
     proxies.unshift(null) } //add no proxy (default)
 
 
-if(typeof checkm8 == "undefined"){logger("\n\n\x1b[31mYou removed needed parts from the code! Please redownload the application and not modify anything.\x1b[0m",true);process.exit(0)}
-if(checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"){logger("\n\n\x1b[31mYou removed needed parts from the code! Please redownload the application and not modify anything.\x1b[0m",true);process.exit(0)}
+if(typeof checkm8 == "undefined"){process.stdout.write("\x07");logger("\n\n\x1b[31mYou removed needed parts from the code! Please redownload the application and not modify anything.\x1b[0m",true);process.exit(0)}
+if(checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"){process.stdout.write("\x07");logger("\n\n\x1b[31mYou removed needed parts from the code! Please redownload the application and not modify anything.\x1b[0m",true);process.exit(0)}
 
 //Generate urlrequestsecretkey if it is not created already
 if (extdata.urlrequestsecretkey == "") {
@@ -368,23 +375,9 @@ if (extdata.urlrequestsecretkey == "") {
         if (err) logger("error writing created urlrequestsecretkey to data.json: " + err) })
 }
 
-//Check if Steam is online:
-/**
-  * Checks if Steam is online and proceeds with the startup.
-  * @param {Boolean} continuewithlogin If true, the function will call startlogin() if Steam is online
-  * @param {Boolean} stoponerr If true, the function will stop the bot if Steam seems to be offline
-  */
-var isSteamOnline = function isSteamOnline(continuewithlogin, stoponerr) {
-    if (stoplogin == true) return;
-    logger("Checking if Steam is reachable...", false, true)
-    https.get('https://steamcommunity.com', function (res) {
-        logger(`SteamCommunity is up! Status code: ${res.statusCode}`, false, true)
-        if (continuewithlogin) startlogin();
-
-    }).on('error', function(err) {
-        logger(`\x1b[0m[\x1b[31mWarning\x1b[0m]: SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n           Error: ` + err, true)
-        if (stoponerr) process.exit(0) }) }
-
+//Please don't change this message as it gives credit to me; the person who put really much of his free time into this project. The bot will still refer to you - the operator of this instance.
+if (config.owner.length > 1) var ownertext = config.owner; else var ownertext = "anonymous (no owner link provided)"; 
+const aboutstr = `${extdata.aboutstr} \n\nDisclaimer: I (the developer) am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.\nThis instance of the bot is used and operated by: ${ownertext}`;
 
 module.exports={
     bootstart,
@@ -436,7 +429,7 @@ function startlogin() { //function will be called when steamcommunity status che
     if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "hours" }                                                                                                                                                                                                                                                                          //🥚!
     logger(`Logging in... Estimated wait time: ${round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`)
 
-    if(checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"){process.exit(0)}
+    if(checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"){process.stdout.write("\x07");process.exit(0)}
     logger("Loading logininfo for each account...", false, true)
 
     Object.keys(logininfo).forEach((k, i) => { //log all accounts in with the logindelay             
@@ -545,6 +538,15 @@ var readyinterval = setInterval(() => { //log startup to console
 
         logger(`Logging supressed logs...`, false, true)
         readyafterlogs.forEach(e => { logger(e, true) }) //log suppressed logs
+
+        //Add backups to cache.json
+        logger("Writing backups to cache.json...", false, true)
+        cache["lastcommentjson"] = lastcomment
+        cache["configjson"] = config
+        cache["datajson"] = extdata
+
+        fs.writeFile('./src/cache.json', JSON.stringify(cache, null, 2), err => {
+            if (err) logger("error writing file backups to cache.json: " + err) }) 
         
         //Join botsgroup if not already joined
         try {
@@ -561,7 +563,7 @@ var readyinterval = setInterval(() => { //log startup to console
                             communityobject[e].joinGroup(`${botsgroupid}`)
                             logger(`[Bot ${e}] Joined/Requested to join steam group that has been set in the config (botsgroup).`) } })
                 } else {
-                    if (cachefile.botsgroup == config.botsgroup) {
+                    if (cache.botsgroup == config.botsgroup) {
 
                     } else {
                         https.get(`${config.botsgroup}/memberslistxml/?xml=1`, function(botsgroupres) { //get group64id from code to simplify config
@@ -578,9 +580,9 @@ var readyinterval = setInterval(() => { //log startup to console
 
                                         botsgroupid = botsgroupResult.memberList.groupID64
 
-                                        cachefile.botsgroup = config.botsgroup
-                                        cachefile.botsgroupid = String(botsgroupResult.memberList.groupID64)
-                                        fs.writeFile("./src/cache.json", JSON.stringify(cachefile, null, 4), err => { 
+                                        cache.botsgroup = config.botsgroup
+                                        cache.botsgroupid = String(botsgroupResult.memberList.groupID64)
+                                        fs.writeFile("./src/cache.json", JSON.stringify(cache, null, 4), err => { 
                                           if (err) logger(`[${thisbot}] error writing configgroup64id to cache.json: ${err}`) })
                             
                                         Object.keys(botobject).forEach((e) => {

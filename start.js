@@ -3,20 +3,24 @@
 
 //This file contains: Starting the updater.js and restarting the whole application without restarting the node process. Very cool!
 
-//This file can't get updated automatically. 
+//This file can't get refreshed automatically after an update. 
 //It is designed to be modular and to start and restart the whole application. 
 //To be able to change the file it is supposed to start on the fly it pulls the necessary file path from the data.json file
 
-var data = require('./src/data.json')
+try { //Just try to require, if it should fail then the actual restoring process will be handled later
+    extdata = require("./src/data.json")
+} catch (err) {
+    extdata = { filetostart: "./src/updater.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/updater.js" }
+}
 var fs = require("fs")
 
 /* ------------------ Restart function ------------------ */
 var restart = (args, nologOff) => { //Restart the application
     console.log("Restarting application...")
-    var data = require('./src/data.json')
+    var extdata = require('./src/data.json')
 
     if (!nologOff) {
-        var controller = require(data.botobjectfile) //get the file we want from data.json
+        var controller = require(extdata.botobjectfile) //get the file we want from data.json
 
         if (typeof controller.server != "undefined") { //check if the server was exported instead of checking config.json to require less files
             console.log("Stopping URLToComment webserver...")
@@ -28,7 +32,7 @@ var restart = (args, nologOff) => { //Restart the application
     Object.keys(require.cache).forEach(function(key) { delete require.cache[key] }) //clear cache to include file changes
 
     setTimeout(() => {
-        require(data.filetostart).restartdata(args) //start again after 2.5 sec
+        require(extdata.filetostart).restartdata(args) //start again after 2.5 sec
     }, 2500) }
 
 /* ------------------ Stop function ------------------ */
@@ -42,21 +46,21 @@ module.exports={
     stop }
 
 
-if (!fs.existsSync(data.filetostart)) { //Function that downloads filetostart if it doesn't exist (file location change etc.)
+if (!fs.existsSync(extdata.filetostart)) { //Function that downloads filetostart if it doesn't exist (file location change etc.)
     output = ""
     try {
 	    var https = require("https")
-        https.get(data.filetostarturl, function(res){
+        https.get(extdata.filetostarturl, function(res){
             res.setEncoding('utf8');
             res.on('data', function (chunk) {
                 output += chunk });
 
             res.on('end', () => {
-                fs.writeFile(data.filetostart, output, err => {
+                fs.writeFile(extdata.filetostart, output, err => {
                     if (err) return logger(err, true)
-                    require(data.filetostart) })}) }); //start
+                    require(extdata.filetostart) })}) }); //start
     } catch (err) { console.log('start.js get updater.js function Error: ' + err) }
 } else {
-    require(data.filetostart) } //Just passing startup to updater
+    require(extdata.filetostart) } //Just passing startup to updater
 
 //Code by: https://github.com/HerrEurobeat/ 
