@@ -63,7 +63,6 @@ function downloadandupdate(url, name, callback) {
 
                     if (name == "data.json") { //Special code for data.json to keep 4 values
                         if (Object.keys(extdata).length > 2) { //Only do this if the data.json update call originates from the updater and not from the integrity check
-                            output.compatibilityfeaturedone = extdata.compatibilityfeaturedone
                             output.urlrequestsecretkey = extdata.urlrequestsecretkey
                             output.timesloggedin = extdata.timesloggedin
                             output.totallogintime = extdata.totallogintime
@@ -415,7 +414,9 @@ function compatibilityfeatures() {
             checkforupdate(true, null, true) }
 
     } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2.10" || extdata.version == "BETA 2.10 b1")) {
-        if (!fs.existsSync('./src/lastcomment.json')) return checkforupdate(true, null, true); //skip the compatibility stuff and continue with updater
+        if (!fs.existsSync('./src/lastcomment.json')) {
+            logger("Skipping 2.10 compatibility changes...")
+            return checkforupdate(true, null, true); } //skip the compatibility stuff and continue with updater
         logger("Applying 2.10 compatibility changes...")
 
         const nedb = require("nedb")
