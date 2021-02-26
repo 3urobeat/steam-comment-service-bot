@@ -246,6 +246,7 @@ logger(`Using node.js version ${process.version}...`, false, true)
 
 /* ------------ File integrity checks: ------------ */
 //Check cache.json
+logger("Checking if cache.json is valid...", false, true)
 try {
     cache = require("./cache.json")
     datajsoncheck();
@@ -413,17 +414,38 @@ function compatibilityfeatures() {
         } else {
             checkforupdate(true, null, true) }
 
+    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2.10" || extdata.version == "BETA 2.10 b1")) {
+        if (!fs.existsSync('./src/lastcomment.json')) return checkforupdate(true, null, true); //skip the compatibility stuff and continue with updater
+        logger("Applying 2.10 compatibility changes...")
+
+        const nedb = require("nedb")
+        const lastcomment = new nedb("./src/lastcomment.db")
+        const lastcommentjson = require("./lastcomment.json")
+
+        lastcomment.loadDatabase((err) => {
+            if (err) return logger("Error creating lastcomment.db database! Error: " + err, true)
+            logger("Successfully created lastcomment database.", false, true) })
+
+        Object.keys(lastcommentjson).forEach((e, i) => {
+            lastcomment.insert({ id: e, time: e.time }, (err) => {
+                if (err) logger("Error adding lastcomment.json entries to new lastcomment database! This is not good.\nError: " + err, true)
+            }) })
+
+        fs.unlink("./src/lastcomment.json", (err) => { //delete lastcomment.json
+            if (err) logger("error deleting lastcomment.json: " + err, true) })
+        checkforupdate(true, null, true)
+        
     } else {
         if (releasemode == "beta-testing") logger("\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
         checkforupdate() } //check will start the bot afterwards
+}
 
-    module.exports={
-        restartdata,
-        skippedaccounts,
-        checkforupdate,
-        activeupdate,
-        lastupdatecheckinterval
-    }
+module.exports={
+    restartdata,
+    skippedaccounts,
+    checkforupdate,
+    activeupdate,
+    lastupdatecheckinterval
 }
 
 setInterval(() => { //update interval
@@ -431,7 +453,8 @@ setInterval(() => { //update interval
         fs.readFile("./output.txt", function (err, data) {
             if (err) logger("error checking output for update notice: " + err)
             if (!data.toString().split('\n').slice(data.toString().split('\n').length - 21).join('\n').includes("Update available!")) { //check last 20 lines of output.txt for update notice
-                checkforupdate() } }) }
+                checkforupdate() } })
+    }
 }, 300000); //5 min in ms
 
 //Code by: https://github.com/HerrEurobeat/ 
