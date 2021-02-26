@@ -36,9 +36,10 @@ var restartdata = (data) => {
  * Comments with all bot accounts on one profile.
  * @param {String} url The folder/file ending of the GitHub URL
  * @param {String} name Filename.Ending of the file
+ * @param {Boolean} compatibilityfeaturedone Update function parameter passthrough
  * @param {any} callback Response when function finished
  */
-function downloadandupdate(url, name, callback) {
+function downloadandupdate(url, name, compatibilityfeaturedone, callback) {
     let path = `./${url}`
     output = ""
     try {
@@ -63,6 +64,7 @@ function downloadandupdate(url, name, callback) {
 
                     if (name == "data.json") { //Special code for data.json to keep 4 values
                         if (Object.keys(extdata).length > 2) { //Only do this if the data.json update call originates from the updater and not from the integrity check
+                            if (compatibilityfeaturedone) output.compatibilityfeaturedone = true
                             output.urlrequestsecretkey = extdata.urlrequestsecretkey
                             output.timesloggedin = extdata.timesloggedin
                             output.totallogintime = extdata.totallogintime
@@ -168,37 +170,36 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
 
                     /* ------------------ Start updating files ------------------ */
                     function updaterjs() { //update updater first to fix issues in updater
-                        downloadandupdate("src/updater.js", "updater.js", function() { botjs(); }) }
+                        downloadandupdate("src/updater.js", "updater.js", compatibilityfeaturedone, function() { botjs(); }) }
 
                     function botjs() {
-                        downloadandupdate("src/bot.js", "bot.js", function() { startjs(); }) }
+                        downloadandupdate("src/bot.js", "bot.js", compatibilityfeaturedone, function() { startjs(); }) }
 
                     function startjs() {
-                        downloadandupdate("start.js", "start.js", function() { packagejson(); }) }
+                        downloadandupdate("start.js", "start.js", compatibilityfeaturedone, function() { packagejson(); }) }
 
                     function packagejson() {
-                        logger(`Clearing package.json data...`, false, true)
+                        logger(`Clearing package.json data...`, true)
                         fs.writeFile("./package.json", "{}", err => {
                             if (err) logger(err, true) })
-                        downloadandupdate("package.json", "package.json", function() { packagelockjson(); }) }
+                        downloadandupdate("package.json", "package.json", compatibilityfeaturedone, function() { packagelockjson(); }) }
 
                     function packagelockjson() {
-                        logger(`Clearing package-lock.json data...`, false, true)
+                        logger(`Clearing package-lock.json data...`, true)
                         fs.writeFile("./package-lock.json", "{}", err => {
                             if (err) logger(err, true) })
-                        downloadandupdate("package-lock.json", "package-lock.json", function() { configjson(); }) }
+                        downloadandupdate("package-lock.json", "package-lock.json", compatibilityfeaturedone, function() { configjson(); }) }
 
                     //Code by: https://github.com/HerrEurobeat/
 
                     function configjson() {
-                        downloadandupdate("config.json", "config.json", function() { controllerjs(); }) }
+                        downloadandupdate("config.json", "config.json", compatibilityfeaturedone, function() { controllerjs(); }) }
 
                     function controllerjs() {
-                        downloadandupdate("src/controller.js", "controller.js", function() { datajson(); }) }
+                        downloadandupdate("src/controller.js", "controller.js", compatibilityfeaturedone, function() { datajson(); }) }
 
                     function datajson() {
-                        if (compatibilityfeaturedone) extdata.compatibilityfeaturedone = true //prevents compatibility feature from running again
-                        downloadandupdate("src/data.json", "data.json", function() { npmupdate(); }) }
+                        downloadandupdate("src/data.json", "data.json", compatibilityfeaturedone, function() { npmupdate(); }) }
 
                     function npmupdate() {
                         try {
@@ -344,6 +345,11 @@ function configjsoncheck() {
 
 function compatibilityfeatures() {
     //Compatibility features
+    try { //this is sadly needed when updating to 2.10 because I forgot in 2.9.x to set compatibilityfeature to false again which completly skips the comp feature
+        let extdata = require("./data.json")
+        if (extdata.firststart && fs.existsSync('./src/lastcomment.json') && (extdata.version == "2.10" || extdata.version == "BETA 2.10 b1")) extdata.compatibilityfeaturedone = false
+    } catch (err) {}
+
     if (!fs.existsSync('./src')) { //this has to trigger if user was on version <2.6
         try {
             logger("Applying 2.6 compatibility changes...", false, true)
