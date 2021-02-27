@@ -1,0 +1,90 @@
+{
+    "note": "This file contains nearly all messages the bot sends via the steam chat. If you want to modify messages, read here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/How-to-add-custom-messages",
+
+    "pleasedontspam": "/me Please don't spam this command.",
+    "commentactiveupdate": "The bot is currently waiting for the last requested comment to be finished in order to download an update!\nPlease wait a moment and try again.",
+    "commentcmdowneronly": "The bot owner set this command to owners only.\nType !owner to get information who the owner is.\nType !about to get a link to the bot creator.",
+    "commentcmdusageowner": "'!comment number_of_comments/\"all\" profileid' for X many or the max amount of comments (max maxrequestamount). Provide a profile id to comment on a specific profile.",
+    "commentcmdusageowner2": "'!comment 1 profileid'. Provide a profile id to comment on a specific profile.",
+    "commentcmdusage": "'!comment number_of_comments/\"all\"' for X many or the max amount of comments (max maxrequestamount).",
+    "commentcmdusage2": "'!comment' for a comment on your profile!",
+    "commentuseroncooldown": "You requested a comment in the last commentcooldown minutes. Please wait the remaining remainingcooldown timeunit.",
+    "commentuseralreadyrecieving": "You are currently recieving previously requested comments. Please wait for them to be completed.",
+    "commentglobaloncooldown": "Someone else requested a comment in the last remainingglobalcooldown timeunit or Steam has applied a cooldown on this account.\nPlease wait a few minutes before trying again.",
+    "commentinvalidnumber": "This is not a valid number!\nCommand usage: commentcmdusage",
+    "commentrequesttoohigh": "You can request max. maxrequestamount comments.\nCommand usage: commentcmdusage",
+    "commentinvalidprofileid": "This is not a valid profileid! A profile id must look like this: 76561198260031749\nCommand usage: commentcmdusage",
+    "commentprofileidowneronly": "Specifying a profileid is only allowed for bot owners.\nIf you are a bot owner, make sure you added your ownerid to the config.json.",
+    "commentmissingnumberofcomments": "Please specify how many comments out of maxrequestamount you would like to request.\nCommand usage: commentcmdusage",
+    "commentaddbotaccounts": "In order to request numberofcomments comments you/the recieving user will first need to add this/these accounts: (limited bot accounts)",
+    "commentuserprofileprivate": "Your/the recieving profile seems to be private. Please edit your/the privacy settings on your/the recieving profile and try again!",
+    "commenterroroccurred": "Oops, an error occurred!",
+    "commentsuccess": "Okay I commented on your/the recieving profile! If you are a nice person then please comment on my profile too!",
+    "commentprocessstarted": "Estimated wait time for numberofcomments comments: waittime timeunit.",
+
+    "commenteverywherefailedcmdreference": "To get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems",
+    "commenteverywhere429stop": "Stopped comment process because of a HTTP 429 (cooldown) error. Please try again later. Failed: failedamount/numberofcomments",
+    "commenteverywheresuccess": "All comments have been sent. Failed: failedamount/numberofcomments\nIf you are a nice person then please comment on my profile too!",
+    "commenteverywherelimitederror": "-----------------------------------\nIt seems like at least one of the requested comments could have failed because you/the recieving account aren't/isn't friend with the commenting bot account.\n\nPlease make sure that you have added these accounts in order to eventually avoid this error in the future: \naccstoadd\n-----------------------------------",
+
+    "useradded": "Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more commands or !about for more information!",
+    "userspamblock": "/me You have been blocked for 60 seconds for spamming.",
+    "usernotfriend": "/me Please add me before using a command!",
+    "botnotready": "/me The bot is not completely started yet. Please wait a moment before using a command.",
+    "commandowneronly": "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.",
+    "invalidprofileid": "This is not a valid profileid! A profile id must look like this: 76561198260031749",
+
+    "pingcmdmessage": "Pong! 🏓\nTime to steamcommunity.com/ping response: pingtimems",
+    "ownercmdnolink": "The operator of this bot didn't include a link to him/herself.)",
+    "ownercmdmsg": "Check out my owner's profile: (for more information about the bot type !about)",
+    "groupcmdnolink": "The botowner of this instance hasn't provided any group or the group doesn't exist.",
+    "groupcmdinvitesent": "I sent you an invite! Thanks for joining!",
+    "groupcmdinvitelink": "Join my group here: ",
+    "abortcmdnoprocess": "/me You have no active comment process running.",
+    "abortcmdsuccess": "/me Aborting your active comment process...",
+
+    "resetcooldowncmdcooldowndisabled": "The cooldown is disabled in the config!",
+    "resetcooldowncmdglobalreset": "The global comment cooldown has been reset.",
+    "resetcooldowncmdsuccess": "profileid's cooldown has been cleared.",
+
+    "settingscmdfailedread": "Failed to read config to output current settings: ",
+    "settingscmdcurrentsettings": "Current settings:",
+    "settingscmdblockedvalues": "enableevalcmd, ownerid and owner can't be changed via the settings command for security reasons. Please do it directly in the config file.",
+    "settingscmdkeynotfound": "I can't find this key in the config.",
+    "settingscmdsamevalue": "The requested key is already value.",
+    "settingscmdvaluetoobig": "Your new value is too big. (32-bit integer limit)\nPlease choose a smaller value.",
+    "settingscmdvaluechanged": "targetkey has been changed from oldvalue to newvalue.\nPlease remember that certain values might need a restart to take effect. You can do that by typing !restart.",
+
+    "failedcmdnothingfound": "I can't remember any failed comments you have requested.",
+    "failedcmdmsg": "Your last request for '${steam64id}' from 'requesttime' (GMT time) had these errors:",
+
+    "addfriendcmdacclimited": "Can't add friend profileid with bot0 because the bot account is limited.",
+    "addfriendcmdsuccess": "Adding friend profileid with all bot accounts... This will take ~estimatedtime seconds. Please check the terminal for potential errors.",
+    "unfriendcmdsuccess": "Removed friend profileid from all bot accounts.",
+
+    "unfriendallcmdabort": "Aborting unfriendall process if one is active...",
+    "unfriendallcmdpending": "Unfriending all people (except owners) with all bot accounts in 30 seconds...\nType '!unfriendall abort' to abort/stop the process.",
+    "unfriendallcmdstart": "/me Starting to unfriend everyone...",
+
+    "leavegroupcmdinvalidgroup": "This is not a valid group id or group url! \nA groupid must look like this: '103582791464712227' \n...or a group url like this: 'https://steamcommunity.com/groups/3urobeatGroup'",
+    "leavegroupcmdnotfound": "I was unable to find a group with the URL you specified!",
+    "leavegroupcmderror": "Couldn't get leavegroup information. Either Steam is down or your internet isn't working.\nError: ",
+    "leavegroupcmdsuccess": "Left group 'profileid' with all bot accounts.",
+
+    "leaveallgroupscmdabort": "/me Aborting leaveallgroups process if one is active...",
+    "leaveallgroupscmdpending": "Leaving all groups (except yourgroup and botsgroup) with all bot accounts in 10 seconds...\nType '!leaveallgroups abort' to abort/stop the process.",
+    "leaveallgroupscmdstart": "/me Starting to leave all groups...",
+
+    "blockcmdsuccess": "/me Blocked profileid with all bot accounts.",
+    "unblockcmdsuccess": "/me Unblocked profileid with all bot accounts.",
+    "restartcmdrestarting": "/me Restarting...",
+    "stopcmdstopping": "/me Stopping...",
+    "updatecmdforce": "/me Forcing an update from the branchname branch...",
+    "updatecmdcheck": "/me Checking for an update in the branchname branch...",
+
+    "evalcmdturnedoff": "/me The eval command has been turned off!",
+    "evalcmdlogininfoblock": "Your code includes 'logininfo'. In order to protect passwords this is not allowed.",
+
+    "commandnotfound": "I don't know that command. Type !help for more info.",
+    "childbotmessage": "This is one account running in a bot cluster.\nPlease add the main bot and send him a !help message.\nIf you want to check out what this is about, type: !about"
+}

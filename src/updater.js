@@ -196,8 +196,11 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                         downloadandupdate("config.json", "config.json", compatibilityfeaturedone, function() { controllerjs(); }) }
 
                     function controllerjs() {
-                        downloadandupdate("src/controller.js", "controller.js", compatibilityfeaturedone, function() { datajson(); }) }
+                        downloadandupdate("src/controller.js", "controller.js", compatibilityfeaturedone, function() { defaultlangjson(); }) }
 
+                    function defaultlangjson() {
+                        downloadandupdate("src/defaultlang.json", "defaultlang.json", compatibilityfeaturedone, function() { datajson(); }) }
+                    
                     function datajson() {
                         downloadandupdate("src/data.json", "data.json", compatibilityfeaturedone, function() { npmupdate(); }) }
 
@@ -419,7 +422,7 @@ function compatibilityfeatures() {
         } else {
             checkforupdate(true, null, true) }
 
-    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2.10" || extdata.version == "BETA 2.10 b1")) {
+    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2.10" || extdata.version == "BETA 2.10 b2")) {
         if (!fs.existsSync('./src/lastcomment.json')) {
             logger("Skipping 2.10 compatibility changes...")
             return checkforupdate(true, null, true); } //skip the compatibility stuff and continue with updater

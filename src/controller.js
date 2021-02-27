@@ -73,8 +73,11 @@ var logger = (str, nodate, remove) => { //Custom logger
 
 var steamGuardInputTimeFunc = (arg) => { steamGuardInputTime += arg } //small function to return new value from bot.js
 
+//Should keep the bot at least from crashing
 process.on('unhandledRejection', (reason, p) => {
     logger(`Unhandled Rejection Error! Reason: ${reason.stack}`, true) });
+process.on('uncaughtException', (reason, p) => {
+    logger(`Uncaught Exception Error! Reason: ${reason.stack}`, true) });
 
 //Either use logininfo.json or accounts.txt:
 if (fs.existsSync("./accounts.txt")) {
@@ -120,11 +123,11 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res, quote
                 return; } //Stop process if the user isn't in the array anymore (user typed !abort for example)
 
             if (Object.values(failedcomments[requesterSteamID]).includes("postUserComment error: Error: HTTP error 429")) {
-                if (Object.keys(failedcomments[requesterSteamID]).length > 0) { failedcmdreference = "To get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
+                if (Object.keys(failedcomments[requesterSteamID]).length > 0) { failedcmdreference = lang.commenteverywherefailedcmdreference
                     } else { failedcmdreference = "" }
     
                 if (!Object.values(failedcomments[requesterSteamID]).includes("postUserComment error: Skipped because of previous HTTP 429 error.")) { //send chat.sendFriendMessage only the first time
-                    respondmethod(`Stopped comment process because of a HTTP 429 (cooldown) error. Please try again later. Failed: ${numberofcomments - i + 1}/${numberofcomments}\n\n${failedcmdreference}`) 
+                    respondmethod(`${lang.commenteverywhere429stop.replace("failedamount", numberofcomments - i + 1).replace("numberofcomments", numberofcomments)}\n\n${failedcmdreference}`) 
 
                     var m = 0;
                     for (var l = i + 1; l <= numberofcomments; l++) { //push all other comments to instanly complete the failedcomments obj
@@ -175,7 +178,7 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res, quote
                             errordesc = "Please wait a moment and try again!"
                     }
         
-                    respondmethod(500, `Oops, an error occurred!\n${errordesc}\n\nDetails: Please wait a moment and then try again.\n[${thisbot}] postUserComment error: ${error}`); 
+                    respondmethod(500, `${lang.commenterroroccurred}\n${errordesc}\n\nDetails: Please wait a moment and then try again.\n[${thisbot}] postUserComment error: ${error}`); 
         
                     logger(`[${thisbot}] postUserComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(botobject).length} - reciever: ${new SteamID(String(steamID)).getSteamID64()}`); 
                     failedcomments[requesterSteamID][`Comment ${i + 1} (bot${j})`] = `postUserComment error: ${error} [${errordesc}]`
@@ -186,7 +189,7 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res, quote
                 if (i == numberofcomments - 1) { //last iteration
                     if (Object.keys(failedcomments[requesterSteamID]).length > 0) { failedcmdreference = "\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
                         } else { failedcmdreference = "" }
-                    respondmethod(`All comments have been sent. Failed: ${Object.keys(failedcomments[requesterSteamID]).length}/${numberofcomments}\nIf you are a nice person then please comment on my profile too!${failedcmdreference}`);
+                    respondmethod(`${lang.commenteverywheresuccess.replace("failedamount", Object.keys(failedcomments[requesterSteamID]).length).replace("numberofcomments", numberofcomments)}\n${failedcmdreference}`);
 
                     if (Object.values(failedcomments[requesterSteamID]).includes("Error: The settings on this account do not allow you to add comments.")) {
                         accstoadd[requesterSteamID] = []
@@ -196,7 +199,7 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res, quote
                                 accstoadd[requesterSteamID].push(`\n 'https://steamcommunity.com/profiles/${new SteamID(String(botobject[i].steamID)).getSteamID64()}'`) }
 
                             if (i == Object.keys(botobject).length - 1)
-                                respondmethod("-----------------------------------\nIt seems like at least one of the requested comments could have failed because you/the recieving account aren't/isn't friend with the commenting bot account.\n\nPlease make sure that you have added these accounts in order to eventually avoid this error in the future: \n" + accstoadd[requesterSteamID] + "\n-----------------------------------")
+                                respondmethod(lang.commenteverywherelimitederror.replace("accstoadd", accstoadd[requesterSteamID])) //this error message should never show as the bot will always check for limited bot accounts before starting to comment
                         } }
 
                     module.exports.activecommentprocess = activecommentprocess.filter(item => item !== requesterSteamID)
@@ -345,6 +348,16 @@ if (extdata.urlrequestsecretkey == "") {
         if (err) logger("error writing created urlrequestsecretkey to data.json: " + err) })
 }
 
+//Get default language and overwrite keys if some are set in the customlang.json
+logger("Loading defaultlang.json and customlang.json...", false, true)
+var lang = require("./defaultlang.json")
+if (fs.existsSync("./customlang.json")) {
+    let customlang = require("../customlang.json")
+    
+    Object.keys(customlang).forEach((e, i) => {
+        lang[e] = customlang[e] }) //overwrite each defaultlang key with a corresponding customlang key if one is set
+}
+
 //Please don't change this message as it gives credit to me; the person who put really much of his free time into this project. The bot will still refer to you - the operator of this instance.
 if (config.owner.length > 1) var ownertext = config.owner; else var ownertext = "anonymous (no owner link provided)"; 
 const aboutstr = `${extdata.aboutstr} \n\nDisclaimer: I (the developer) am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.\nThis instance of the bot is used and operated by: ${ownertext}`;
@@ -372,7 +385,8 @@ module.exports={
     skippednow,
     proxies,
     proxyShift,
-    logininfo }
+    logininfo,
+    lang }
 
 
 /* ------------ Startup & Login: ------------ */
