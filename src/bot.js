@@ -23,8 +23,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
   var lang = controller.lang
   var commentedrecently = false; //global cooldown for the comment command
   var lastmessage = {}
-  accstoadd = []
-  lastcommentrequestmsg = []
+  var lastcommentrequestmsg = []
+  var failedcomments = []
+  var activecommentprocess = []
 
   if (loginindex == 0) var thisbot = "Main"
     else var thisbot = `Bot ${loginindex}`
@@ -56,19 +57,19 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
   //Group stuff
   if (loginindex == 0) { //group64id only needed by main bot -> remove unnecessary load from other bots
+    var configgroup64id = ""
+    var yourgroupoutput = ""
+
     if (cachefile.configgroup == config.yourgroup) { //id is stored in cache file, no need to get it again
       logger(`group64id of yourgroup is stored in cache.json...`, false, true)
       configgroup64id = cachefile.configgroup64id
     } else {
       logger(`group64id of yourgroup not in cache.json...`, false, true)
-      configgroup64id = "" //define to avoid not defined errors
       if (config.yourgroup.length < 1) {
         logger('Skipping group64id request of yourgroup because config.yourgroup is empty.', false, true); //log to output for debugging
-        configgroup64id = "" 
       } else {
 
         logger(`Getting group64id of yourgroup...`, false, true)
-        yourgroupoutput = ""
         https.get(`${config.yourgroup}/memberslistxml/?xml=1`, function(yourgroupres) { //get group64id from code to simplify config
           yourgroupres.on('data', function (chunk) {
             yourgroupoutput += chunk });
@@ -76,7 +77,6 @@ module.exports.run = async (logOnOptions, loginindex) => {
           yourgroupres.on('end', () => {
             if (!String(yourgroupoutput).includes("<?xml") || !String(yourgroupoutput).includes("<groupID64>")) { //Check if botsgroupoutput is steam group xml data before parsing it
               logger("\x1b[0m[\x1b[31mNotice\x1b[0m] Your group (yourgroup in config) doesn't seem to be valid!", true); 
-              configgroup64id = "" 
             } else {
               new xml2js.Parser().parseString(yourgroupoutput, function(err, yourgroupResult) {
                 if (err) return logger("error parsing yourgroup xml: " + err, true)
@@ -90,15 +90,36 @@ module.exports.run = async (logOnOptions, loginindex) => {
               }) } })
         }).on("error", function(err) { 
           logger("\x1b[0m[\x1b[31mNotice\x1b[0m]: Couldn't get yourgroup 64id. Either Steam is down or your internet isn't working.\n          Error: " + err, true)
-          configgroup64id = ""
       }) } } }
- 
+
+  //Comment command (outside of friendMessage Event to be able to call it from controller.js)
+  var commentcmd = undefined //this is just here to make eslint happy so that the export in loggedOn is not undefined
+
+  if (loginindex == 0) {
+    /**
+      * The comment command
+      * @param {Object} steamID steamID of message author
+      * @param {Array<String>} args An array containing all arguments provided in the message by the user
+      * @param {Object} res An express response object that will be available if the function is called from the express webserver
+      */
+    commentcmd = (steamID, args, res) => {
+      controller.lastcomment.findOne({ id: new SteamID(String(steamID)).getSteamID64() }, (err, lastcommentdoc) => {
+        if (!lastcommentdoc) logger("User is missing from database?? How is this possible?! Error maybe: " + err)
+
+        require("./comment.js").run(logger, chatmsg, lang, community, thisbot, steamID, args, res, lastcommentdoc, failedcomments, activecommentprocess, lastcommentrequestmsg, commentedrecently, lastsuccessfulcomment, (fc, acp, cr) => { //callback transports stuff back to be able to store the stuff here
+          failedcomments = fc //update failedcomments
+          activecommentprocess = acp
+          commentedrecently = cr
+        })
+      })
+    }
+  }
 
   /* ------------ Login & Events: ------------ */
   //Should keep the bot at least from crashing
-  process.on('unhandledRejection', (reason, p) => {
+  process.on('unhandledRejection', (reason) => {
     logger(`Unhandled Rejection Error! Reason: ${reason.stack}`, true) });
-  process.on('uncaughtException', (reason, p) => {
+  process.on('uncaughtException', (reason) => {
     logger(`Uncaught Exception Error! Reason: ${reason.stack}`, true) });
   
   let logOnTries = 0;
@@ -222,219 +243,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
     controller.communityobject[loginindex] = community //export this community instance to the communityobject to access it from controller.js
     controller.botobject[loginindex] = bot //export this bot instance to the botobject to access it from controller.js
 
-
     if (loginindex == 0) {
-      /* --------- The comment command (outside of friendMessage Event to be able to call it from controller.js) --------- */
-
-      /**
-        * The comment command as a function to be able to call it from outside the file
-        * @param {Object} steamID steamID Object of the profile to comment on
-        * @param {Array<String>} args An array containing all arguments provided in the message by the user
-        * @param {Object} res An express response object that will be available if the function is called from the express webserver
-        */
-      commentcmd = function commentcmd(steamID, args, res) {
-        var requesterSteamID = new SteamID(String(steamID)).getSteamID64() //save steamID of comment requesting user so that messages are being send to the requesting user and not to the reciever if a profileid has been provided
-
-        function respondmethod(rescode, msg) { //we need a function to get each response back to the user (web request & steam chat)
-          if (res) {
-            logger("Web Comment Request response: " + msg.replace("/me ", "")) //replace steam chat format prefix with nothing if this message should use one
-            res.status(rescode).send(msg + "</br></br>The log will contain further information and errors (if one should occur). You can display it by visiting: /output")
-          } else {
-            chatmsg(requesterSteamID, msg)
-          } }
-
-        var steam64id = new SteamID(String(steamID)).getSteamID64()
-        var ownercheck = config.ownerid.includes(steam64id)
-        var lastcommentsteamID = steam64id
-        var quoteselection = controller.quotes
-
-        /* --------- Check for cmd spamming --------- */
-        if (Date.now() - lastcommentrequestmsg[requesterSteamID] < 2500 && !ownercheck) {
-          return respondmethod(403, lang.pleasedontspam) }
-
-        lastcommentrequestmsg[requesterSteamID] = Date.now()
-
-        /* --------- Check for disabled comment cmd or if update is queued --------- */
-        if (updater.activeupdate) return respondmethod(403, lang.commentactiveupdate);
-        if (config.allowcommentcmdusage === false && !config.ownerid.includes(steam64id)) return respondmethod(403, lang.commentcmdowneronly) 
-
-
-        /* --------- Define command usage messages for each user's priviliges --------- */ //Note: Web Comment Requests always use config.ownerid[0]
-        if (ownercheck) {
-          if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commentcmdusage = lang.commentcmdusageowner.replace("maxrequestamount", Object.keys(controller.communityobject).length * config.repeatedComments)
-            else var commentcmdusage = lang.commentcmdusageowner2
-        } else {
-          if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commentcmdusage = lang.commentcmdusage.replace("maxrequestamount", Object.keys(controller.communityobject).length * config.repeatedComments)
-            else var commentcmdusage = lang.commentcmdusage2 }
-
-
-        /* ------------------ Check for cooldowns ------------------ */
-        if (config.commentcooldown !== 0) { //check for user specific cooldown
-          controller.lastcomment.findOne({ id: lastcommentsteamID }, (err, doc) => {
-            if (!doc) logger("User is missing from database?? How is this possible?! Error maybe: " + err)
-
-            if ((Date.now() - doc.time) < (config.commentcooldown * 60000)) { //check if user has cooldown applied
-              var remainingcooldown = Math.abs(((Date.now() - doc.time) / 1000) - (config.commentcooldown * 60))
-              var remainingcooldownunit = "seconds"
-              if (remainingcooldown > 120) { var remainingcooldown = remainingcooldown / 60; var remainingcooldownunit = "minutes" }
-              if (remainingcooldown > 120) { var remainingcooldown = remainingcooldown / 60; var remainingcooldownunit = "hours" }
-  
-              respondmethod(403, lang.commentuseroncooldown.replace("commentcooldown", config.commentcooldown).replace("remainingcooldown", controller.round(remainingcooldown, 2)).replace("timeunit", remainingcooldownunit)) //send error message
-              return;
-            } else {
-              if (controller.activecommentprocess.indexOf(String(steam64id)) !== -1) { //is the user already getting comments? (-1 means not included)
-                return respondmethod(403, lang.commentuseralreadyrecieving)
-            } }
-          }) }
-
-        if (config.globalcommentcooldown != 0) { //check for global cooldown
-          if ((Date.now() - commentedrecently) < config.globalcommentcooldown) { 
-            var remainingglobalcooldown = Math.abs((((Date.now() - commentedrecently)) - (config.globalcommentcooldown)) / 1000)
-            var remainingglobalcooldownunit = "seconds"
-            if (remainingglobalcooldown > 120) { var remainingglobalcooldown = remainingglobalcooldown / 60; var remainingglobalcooldownunit = "minutes" }
-            if (remainingglobalcooldown > 120) { var remainingglobalcooldown = remainingglobalcooldown / 60; var remainingglobalcooldownunit = "hours" }
-
-            respondmethod(403, lang.commentglobaloncooldown.replace("remainingglobalcooldown", controller.round(remainingglobalcooldown, 2)).replace("timeunit", remainingglobalcooldownunit)) //send error message
-            return; }}
-
-        /* --------- Check numberofcomments argument if it was provided --------- */
-        if (args[0] !== undefined) {
-          if (isNaN(args[0])) { //isn't a number?
-            if (args[0].toLowerCase() == "all") {
-              args[0] = Object.keys(controller.communityobject).length * config.repeatedComments //replace the argument with the max amount of comments
-            } else {
-              return respondmethod(400, lang.commentinvalidnumber.replace("commentcmdusage", commentcmdusage)) 
-            }
-          }
-
-          if (args[0] > Object.keys(controller.communityobject).length * config.repeatedComments) { //number is greater than accounts * repeatedComments?
-            return respondmethod(403, lang.commentrequesttoohigh.replace("maxrequestamount", Object.keys(controller.communityobject).length * config.repeatedComments).replace("commentcmdusage", commentcmdusage)) }
-          var numberofcomments = args[0]
-
-          //Code by: https://github.com/HerrEurobeat/ 
-
-
-          /* --------- Check profileid argument if it was provided --------- */
-          if (args[1] !== undefined) {
-            if (config.ownerid.includes(new SteamID(String(steamID)).getSteamID64()) || args[1] == new SteamID(String(steamID)).getSteamID64()) { //check if user is a bot owner or if he provided his own profile id
-              if (isNaN(args[1])) return respondmethod(400, lang.commentinvalidprofileid.replace("commentcmdusage", commentcmdusage))
-              if (new SteamID(args[1]).isValid() == false) return respondmethod(400, lang.commentinvalidprofileid.replace("commentcmdusage", commentcmdusage))
-
-              steamID.accountid = parseInt(new SteamID(args[1]).accountid) //edit accountid value of steamID parameter of friendMessage event and replace requester's accountid with the new one
-            } else {
-              respondmethod(403, lang.commentprofileidowneronly)
-              return; }}
-
-          /* --------- Check if custom quotes were provided --------- */
-          if (args[2] !== undefined) {
-            quoteselection = args.slice(2).join(" ").replace(/^\[|\]$/g, "").split(", "); //change default quotes to custom quotes
-          } } //arg[0] if statement ends here
-
-        /* --------- Check if user did not provide numberofcomments --------- */
-        if (numberofcomments === undefined) { //no numberofcomments given? ask again
-          if (Object.keys(controller.botobject).length == 1 && config.repeatedComments == 1) { var numberofcomments = 1 } else { //if only one account is active, set 1 automatically
-            respondmethod(400, lang.commentmissingnumberofcommentsreplace("maxrequestamount", Object.keys(controller.communityobject).length * config.repeatedComments).replace("commentcmdusage", commentcmdusage))
-            return; }}
-
-
-        /* --------- Check for steamcommunity related errors/limitations --------- */
-        //Check all accounts if they are limited and send user profile link if not friends
-        accstoadd[requesterSteamID] = []
-
-        for (i in controller.botobject) {
-          if (Number(i) + 1 <= numberofcomments && Number(i) + 1 <= Object.keys(controller.botobject).length) { //only check if this acc is needed for a comment
-            try {
-              if (controller.botobject[i].limitations.limited == true && !Object.keys(controller.botobject[i].myFriends).includes(new SteamID(String(steamID)).getSteamID64())) {
-                accstoadd[requesterSteamID].push(`\n 'https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[i].steamID)).getSteamID64()}'`) }
-            } catch (err) {
-              logger("Error checking if comment requester is friend with limited bot accounts: " + err) }} //This error check was implemented as a temporary solution to fix this error (and should be fine since it seems that this error is rare and at least prevents from crashing the bot): https://github.com/HerrEurobeat/steam-comment-service-bot/issues/54
-
-
-          if (Number(i) + 1 == numberofcomments && accstoadd[requesterSteamID].length > 0 || Number(i) + 1 == Object.keys(controller.botobject).length && accstoadd[requesterSteamID].length > 0) {
-            respondmethod(403, lang.commentaddbotaccounts.replace("numberofcomments", numberofcomments) + "\n" + accstoadd[requesterSteamID])
-            return; } } //stop right here criminal
-
-        community.getSteamUser(steamID, (err, user) => { //check if profile is private
-          if (err) logger(`[${thisbot}] comment check for private account error: ${err}\nTrying to comment anyway and hoping no error occurs...`)
-            else { if (user.privacyState != "public") { return respondmethod(403, lang.commentuserprofileprivate) }} //only check if getting the Steam user's data didn't result in an error
-
-          /* --------- Actually start the commenting process --------- */
-          var randomstring = arr => arr[Math.floor(Math.random() * arr.length)]; 
-          var comment = randomstring(quoteselection); //get random quote
-
-          community.postUserComment(steamID, comment, (error) => { //post comment
-            if(error) {
-              var errordesc = ""
-
-              switch (error) {
-                case "Error: HTTP error 429":
-                  errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes.\nPlease wait a moment and then try again."
-                  commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
-                  break;
-                case "Error: HTTP Error 502":
-                  errordesc = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us"
-                  break;
-                case "Error: HTTP Error 504":
-                  errordesc = "The steam servers are slow atm/are down. Check Steam's status here: https://steamstat.us"
-                  break;
-                case "Error: You've been posting too frequently, and can't make another post right now":
-                  errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes.\nPlease wait a moment and then try again."
-                  commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
-                  break;
-                case "Error: There was a problem posting your comment. Please try again":
-                  errordesc = "Unknown reason - please wait a minute and try again."
-                  break;
-                case "Error: The settings on this account do not allow you to add comments":
-                  errordesc = "The profile's comment section the account is trying to comment on is private or the account doesn't meet steams regulations."
-                  break;
-                case "Error: To post this comment, your account must have Steam Guard enabled":
-                  errordesc = "The account trying to comment doesn't seem to have steam guard enabled."
-                  break;
-                case "Error: socket hang up":
-                  errordesc = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us"
-                  break;
-                default:
-                  errordesc = "Please wait a moment and try again!"
-              }
-
-              //Get last successful comment time to display it in error message
-              lastsuccessfulcomment(cb => {
-                let localoffset = new Date().getTimezoneOffset() * 60000
-
-                respondmethod(500, `${lang.commenterroroccurred}\n${errordesc}\n\nDetails: \n[${thisbot}] postUserComment error: ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
-                logger(`[${thisbot}] postUserComment error: ${error}\n${errordesc}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`) }) //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
-
-              if (error == "Error: HTTP error 429" || error == "Error: You've been posting too frequently, and can't make another post right now") commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
-              return; }
-
-            logger(`\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment on ${steam64id}: ${String(comment).split("\n")[0]}\x1b[0m`) //splitting \n to only get first line of multi line comments
-
-            if (numberofcomments == 1) respondmethod(200, lang.commentsuccess)
-              else {
-                var waittime = ((numberofcomments - 1) * config.commentdelay) / 1000 //calculate estimated wait time (first comment is instant -> remove 1 from numberofcomments)
-                var waittimeunit = "seconds"
-                if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "minutes" }
-                if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "hours" }
-                respondmethod(200, lang.commentprocessstarted.replace("numberofcomments", numberofcomments).replace("waittime", Number(Math.round(waittime+'e'+3)+'e-'+3)).replace("timeunit", waittimeunit))
-
-                controller.commenteverywhere(steamID, numberofcomments, requesterSteamID, res, quoteselection) } //Let all other accounts comment
-
-
-            /* --------- Activate globalcooldown & give user cooldown --------- */ 
-            if (config.globalcommentcooldown !== 0) {
-              commentedrecently = Date.now() }
-
-            //add estimated wait time in ms to start the cooldown after the last recieved comment
-            controller.lastcomment.update({ id: requesterSteamID }, { $set: { time: Date.now() + (((numberofcomments - 1) * config.commentdelay)) } }, {}, (err) => { 
-              if (err) logger("Error adding cooldown to user in database! You should probably *not* ignore this error!\nError: " + err) })
-          })
-        }) } //This was the critical part of this bot. Let's carry on and hope that everything holds together.
-
       Object.keys(controller.botobject[0]).push(commentcmd)
-      controller.botobject[0].commentcmd = commentcmd
-
-      /* --------- End of comment command --------- */
-    }
+      controller.botobject[0].commentcmd = commentcmd }
   });
 
   bot.on("webSession", (sessionID, cookies) => { //get websession (log in to chat)
@@ -651,9 +462,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
           chatmsg(steamID, lang.groupcmdinvitelink + config.yourgroup) //seems like no id has been saved but an url. Send the user the url
           break;
         case '!abort':
-          if (!controller.activecommentprocess.includes(steam64id)) return chatmsg(steamID, lang.abortcmdnoprocess)
-          let index = controller.activecommentprocess.indexOf(steam64id) //get index of this steam64id
-          controller.activecommentprocess.splice(index, 1)
+          if (!activecommentprocess.includes(steam64id)) return chatmsg(steamID, lang.abortcmdnoprocess)
+          var index = activecommentprocess.indexOf(steam64id) //get index of this steam64id
+          activecommentprocess.splice(index, 1)
           logger(`Aborting ${steam64id}'s comment process...`)
           chatmsg(steamID, lang.abortcmdsuccess)
           break;
@@ -752,8 +563,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
           break;
         case '!failed':
           controller.lastcomment.findOne({ id: steam64id }, (err, doc) => {
-            if (!controller.failedcomments[steam64id] || Object.keys(controller.failedcomments[steam64id]).length < 1) return chatmsg(steamID, lang.failedcmdnothingfound);
-            chatmsg(steamID, lang.failedcmdmsg.replace("requesttime", new Date(doc.time).toISOString().replace(/T/, ' ').replace(/\..+/, '')) + "\n\n" + JSON.stringify(controller.failedcomments[steam64id], null, 4))
+            if (!failedcomments[steam64id] || Object.keys(failedcomments[steam64id]).length < 1) return chatmsg(steamID, lang.failedcmdnothingfound);
+            chatmsg(steamID, lang.failedcmdmsg.replace("requesttime", new Date(doc.time).toISOString().replace(/T/, ' ').replace(/\..+/, '')) + "\n\n" + JSON.stringify(failedcomments[steam64id], null, 4))
           })
           break;
         case '!about': //Please don't change this message as it gives credit to me; the person who put really much of his free time into this project. The bot will still refer to you - the operator of this instance.

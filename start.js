@@ -8,9 +8,9 @@
 //To be able to change the file it is supposed to start on the fly it pulls the necessary file path from the data.json file
 
 try { //Just try to require, if it should fail then the actual restoring process will be handled later
-    extdata = require("./src/data.json")
+    var extdata = require("./src/data.json")
 } catch (err) {
-    extdata = { filetostart: "./src/updater.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/updater.js" }
+    var extdata = { filetostart: "./src/updater.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/updater.js" }
 }
 var fs = require("fs")
 
@@ -47,9 +47,9 @@ module.exports={
 
 
 if (!fs.existsSync(extdata.filetostart)) { //Function that downloads filetostart if it doesn't exist (file location change etc.)
-    output = ""
+    var output = ""
     try {
-	    var https = require("https")
+        var https = require("https")
         https.get(extdata.filetostarturl, function(res){
             res.setEncoding('utf8');
             res.on('data', function (chunk) {
@@ -57,7 +57,7 @@ if (!fs.existsSync(extdata.filetostart)) { //Function that downloads filetostart
 
             res.on('end', () => {
                 fs.writeFile(extdata.filetostart, output, err => {
-                    if (err) return logger(err, true)
+                    if (err) return console.log(err)
                     require(extdata.filetostart) })}) }); //start
     } catch (err) { console.log('start.js get updater.js function Error: ' + err) }
 } else {

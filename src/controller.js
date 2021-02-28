@@ -26,17 +26,15 @@ var cache = require('./cache.json')
 var communityobject = {}
 var botobject = {}
 var readyafterlogs = []
-var failedcomments = []
 var accstoadd = []
 var bootstart = 0
 var bootstart = new Date();
 var steamGuardInputTime = 0
 var readyafter = 0
-var activecommentprocess = []
 var logindelay = 2500
 var proxyShift = 0
-skippednow = [] //array to track which accounts have been skipped
-stoplogin = false;
+var skippednow = [] //array to track which accounts have been skipped
+var stoplogin = false;
 
 if (process.platform == "win32") { //set node process name to find it in task manager etc.
     process.title = `${extdata.mestr}'s Steam Comment Service Bot v${extdata.version} | ${process.platform}` //Windows allows long terminal/process names
@@ -68,6 +66,7 @@ var logger = (str, nodate, remove) => { //Custom logger
         readline.clearLine(process.stdout, 0)
         console.log(`${string}`) }
 
+    //eslint-disable-next-line
     fs.appendFileSync('./output.txt', string.replace(/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]/g, '') + '\n', err => { //Regex Credit: https://github.com/Filirom1/stripcolorcodes
       if(err) logger('logger function appendFileSync error: ' + err) }) }
 
@@ -113,113 +112,9 @@ var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res, quote
           botobject[0].chat.sendFriendMessage(requesterSteamID, msg)
         } }
 
-    failedcomments[requesterSteamID] = {}
-    module.exports.activecommentprocess.push(requesterSteamID)
-
-    function comment(k, i, j) {
-        setTimeout(() => {
-            if (!module.exports.activecommentprocess.includes(requesterSteamID)) { 
-                failedcomments[requesterSteamID][`Comment ${i} (bot${k})`] = "Skipped because user aborted comment process."
-                return; } //Stop process if the user isn't in the array anymore (user typed !abort for example)
-
-            if (Object.values(failedcomments[requesterSteamID]).includes("postUserComment error: Error: HTTP error 429")) {
-                if (Object.keys(failedcomments[requesterSteamID]).length > 0) { failedcmdreference = lang.commenteverywherefailedcmdreference
-                    } else { failedcmdreference = "" }
-    
-                if (!Object.values(failedcomments[requesterSteamID]).includes("postUserComment error: Skipped because of previous HTTP 429 error.")) { //send chat.sendFriendMessage only the first time
-                    respondmethod(`${lang.commenteverywhere429stop.replace("failedamount", numberofcomments - i + 1).replace("numberofcomments", numberofcomments)}\n\n${failedcmdreference}`) 
-
-                    var m = 0;
-                    for (var l = i + 1; l <= numberofcomments; l++) { //push all other comments to instanly complete the failedcomments obj
-                        if (m + 1 > Object.keys(communityobject).length) {
-                            m = 0; }
-
-                        failedcomments[requesterSteamID][`Comment ${l} (bot${m})`] = `postUserComment error: Skipped because of previous HTTP 429 error.`
-                        m++ //get bot number (for code comments see the for loop below that calls the comment() function)
-                    } }
-                return; }
-
-            var comment = quoteselection[Math.floor(Math.random() * quoteselection.length)];
-
-            communityobject[k].postUserComment(steamID, comment, (error) => {
-                if (k == 0) var thisbot = `Main`; else var thisbot = `Bot ${k}`;
-
-                if (error) {
-                    var errordesc = ""
-        
-                    switch (error) {
-                        case "Error: HTTP error 429":
-                            errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes."
-                            commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
-                            break;
-                        case "Error: HTTP Error 502":
-                            errordesc = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us"
-                            break;
-                        case "Error: HTTP Error 504":
-                            errordesc = "The steam servers are slow atm/are down. Check Steam's status here: https://steamstat.us"
-                            break;
-                        case "Error: You've been posting too frequently, and can't make another post right now":
-                            errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes. Please wait a moment and then try again."
-                            commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
-                            break;
-                        case "Error: There was a problem posting your comment. Please try again":
-                            errordesc = "Unknown reason - please wait a minute and try again."
-                            break;
-                        case "Error: The settings on this account do not allow you to add comments":
-                            errordesc = "The profile's comment section the account is trying to comment on is private or the account doesn't meet steams regulations."
-                            break;
-                        case "Error: To post this comment, your account must have Steam Guard enabled":
-                            errordesc = "The account trying to comment doesn't seem to have steam guard enabled."
-                            break;
-                        case "Error: socket hang up":
-                            errordesc = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us"
-                            break;
-                        default:
-                            errordesc = "Please wait a moment and try again!"
-                    }
-        
-                    respondmethod(500, `${lang.commenterroroccurred}\n${errordesc}\n\nDetails: Please wait a moment and then try again.\n[${thisbot}] postUserComment error: ${error}`); 
-        
-                    logger(`[${thisbot}] postUserComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(botobject).length} - reciever: ${new SteamID(String(steamID)).getSteamID64()}`); 
-                    failedcomments[requesterSteamID][`Comment ${i + 1} (bot${j})`] = `postUserComment error: ${error} [${errordesc}]`
-                } else {
-                    logger(`[${thisbot}] Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${String(comment).split("\n")[0]}`) } //splitting \n to only get first line of multi line comments
 
 
-                if (i == numberofcomments - 1) { //last iteration
-                    if (Object.keys(failedcomments[requesterSteamID]).length > 0) { failedcmdreference = "\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
-                        } else { failedcmdreference = "" }
-                    respondmethod(`${lang.commenteverywheresuccess.replace("failedamount", Object.keys(failedcomments[requesterSteamID]).length).replace("numberofcomments", numberofcomments)}\n${failedcmdreference}`);
-
-                    if (Object.values(failedcomments[requesterSteamID]).includes("Error: The settings on this account do not allow you to add comments.")) {
-                        accstoadd[requesterSteamID] = []
-
-                        for (i in botobject) {
-                            if (!Object.keys(botobject[i].myFriends).includes(new SteamID(String(steamID)).getSteamID64())) {
-                                accstoadd[requesterSteamID].push(`\n 'https://steamcommunity.com/profiles/${new SteamID(String(botobject[i].steamID)).getSteamID64()}'`) }
-
-                            if (i == Object.keys(botobject).length - 1)
-                                respondmethod(lang.commenteverywherelimitederror.replace("accstoadd", accstoadd[requesterSteamID])) //this error message should never show as the bot will always check for limited bot accounts before starting to comment
-                        } }
-
-                    module.exports.activecommentprocess = activecommentprocess.filter(item => item !== requesterSteamID)
-                } })
-            }, config.commentdelay * i); //delay every comment
-        }
-
-    var j = 0;
-
-    for(let i = 0; i < numberofcomments; i++) {
-        if (i == 0) continue; //first account already commented, skip this iteration
-
-        j++ //j is for defining k without an error when repeatedComments should start from the beginning again
-        if (j + 1 > Object.keys(communityobject).length) { //reset j if it is greater than the number of accounts
-            j = 0; } //needed to get multiple comments from one account
-
-        var k = Object.keys(communityobject)[j] //set key for this iteration
-
-        comment(k, i, j) //run actual comment function because for loops are bitchy
-    }}
+    }
 
 /**
  * Rounds a number with x decimals
@@ -251,7 +146,7 @@ var friendlistcapacitycheck = (botindex) => {
         logger(`Failed to check friendlist space for bot${botindex}. Error: ${err}`) }
 }
 
-accisloggedin = true; //var to check if previous acc is logged on (in case steamGuard event gets fired) -> set to true for first account
+var accisloggedin = true; //var to check if previous acc is logged on (in case steamGuard event gets fired) -> set to true for first account
 
 //Check if Steam is online:
 /**
@@ -371,12 +266,9 @@ module.exports={
     communityobject,
     botobject,
     checkm8,
-    commenteverywhere,
-    activecommentprocess,
     quotes,
     round,
     friendlistcapacitycheck,
-    failedcomments,
     accisloggedin,
     aboutstr,
     round,
@@ -592,7 +484,7 @@ var readyinterval = setInterval(() => { //log startup to console
        
         //Unfriend check            
         let lastcommentUnfriendCheck = Date.now() //this is useful because intervals can get unprecise over time
-        var unfriendloop = setInterval(() => {
+        var unfriendloop = setInterval(() => { //eslint-disable-line
             if (lastcommentUnfriendCheck + 30000 > Date.now()) return; //last check is more recent than 30 seconds
 
             lastcomment.find({ time: { $lte: Date.now() - (config.unfriendtime * 86400000) } }, (err, docs) => { //until is a date in ms, so we check if it is less than right now
@@ -674,15 +566,14 @@ var readyinterval = setInterval(() => { //log startup to console
         }
 
         setTimeout(() => {
-            //Startup is done, clean up
-            delete readyafterlogs; //delete var as the logs got logged by now
-            //delete skippednow; //could have caused an error for someone else and since it doesn't serve that much of a purpose anyway I am going to remove it
             logger(` `, true, true) //clear out last remove message
-        }, 5000); }
+        }, 5000); 
+    }
 }, 500);
 
 //Code by: https://github.com/HerrEurobeat/
 
+/* eslint-disable */
 hellothereascii =
 ` _   _      _ _         _   _                   
 | | | |    | | |       | | | |                  

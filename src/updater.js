@@ -26,6 +26,7 @@ var logger = (str, nodate, remove) => { //Custom logger
         readline.clearLine(process.stdout, 0)
         console.log(`${string}`) }
 
+    //eslint-disable-next-line
     fs.appendFileSync('./output.txt', string.replace(/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]/g, '') + '\n', err => { //Credit: https://github.com/Filirom1/stripcolorcodes
       if(err) logger('logger function appendFileSync error: ' + err) }) }
 
@@ -41,7 +42,7 @@ var restartdata = (data) => {
  */
 function downloadandupdate(url, name, compatibilityfeaturedone, callback) {
     let path = `./${url}`
-    output = ""
+    var output = ""
     try {
         logger(`Updating ${name}...`, true)
         logger(`Getting ${name} code from GitHub...`, false, true)
@@ -139,6 +140,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                     }
 
                     /* ------------------ Check stuff & Initiate updater & log out ------------------ */
+                    /* eslint-disable no-inner-declarations */
                     function startupdate() {
                         module.exports.activeupdate = true //block new comment requests by setting active update to true and exporting it
 
@@ -147,10 +149,11 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                             logger(`Bot is logged in. Checking for active comment process...`, false, true)
 
                             var controller = require('./controller.js')
-                            if (controller.activecommentprocess.length != 0) logger("Waiting for an active comment process to finish...")
+                            var bot = require('./bot.js')
+                            if (bot.activecommentprocess.length != 0) logger("Waiting for an active comment process to finish...")
 
                             var activecommentinterval = setInterval(() => { //check if a comment request is being processed every 2.5 secs
-                                if (controller.activecommentprocess.length == 0) { //start logging off accounts when no comment request is being processed anymore
+                                if (bot.activecommentprocess.length == 0) { //start logging off accounts when no comment request is being processed anymore
                                     logger("Active comment process finished. Starting to update...", true)
                                     Object.keys(controller.botobject).forEach((e, i) => {
                                         logger(`Logging off bot${e}...`, false, true)
@@ -196,7 +199,10 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                         downloadandupdate("config.json", "config.json", compatibilityfeaturedone, function() { controllerjs(); }) }
 
                     function controllerjs() {
-                        downloadandupdate("src/controller.js", "controller.js", compatibilityfeaturedone, function() { defaultlangjson(); }) }
+                        downloadandupdate("src/controller.js", "controller.js", compatibilityfeaturedone, function() { commentjs(); }) }
+
+                    function commentjs() {
+                        downloadandupdate("src/comment.js", "comment.js", compatibilityfeaturedone, function() { defaultlangjson(); }) }
 
                     function defaultlangjson() {
                         downloadandupdate("src/defaultlang.json", "defaultlang.json", compatibilityfeaturedone, function() { datajson(); }) }
@@ -250,6 +256,8 @@ logger(`Using node.js version ${process.version}...`, false, true)
 /* ------------ File integrity checks: ------------ */
 //Check cache.json
 logger("Checking if cache.json is valid...", false, true)
+var cache = {}
+
 try {
     cache = require("./cache.json")
     datajsoncheck();
@@ -272,6 +280,9 @@ try {
 //Check data.json
 function datajsoncheck() {
     logger("Checking if data.json is valid...", false, true)
+    var extdata = {}
+    var releasemode = "master" //set this now to make eslint happy as it will stay like this or get changed when extdata is loaded
+
     try {
         extdata = require("./data.json")
         releasemode = extdata.branch
@@ -279,7 +290,6 @@ function datajsoncheck() {
     } catch (err) {
         if (err) { //Corrupted!
             readytostart = false //let the interval wait for the recovery to finish
-            releasemode = "master" //Set this real quick to prevent a further error and it will be refreshed after restoring from the backup
             logger("data.json seems to have lost it's data/is corrupted. Trying to restore from backup...", true)
     
             fs.writeFile('./src/data.json', JSON.stringify(cache.datajson, null, 2), (err) => { //write last backup to it from cache.json
@@ -312,6 +322,8 @@ function datajsoncheck() {
 //Check config.json
 function configjsoncheck() {
     logger("Checking if config.json is valid...", false, true)
+    var config = {}
+
     try {
         config = require("../config.json")
         compatibilityfeatures();
@@ -422,7 +434,7 @@ function compatibilityfeatures() {
         } else {
             checkforupdate(true, null, true) }
 
-    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2.10" || extdata.version == "BETA 2.10 b2")) {
+    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2.10" || extdata.version == "BETA 2.10 b3")) {
         if (!fs.existsSync('./src/lastcomment.json')) {
             logger("Skipping 2.10 compatibility changes...")
             return checkforupdate(true, null, true); } //skip the compatibility stuff and continue with updater
@@ -443,6 +455,8 @@ function compatibilityfeatures() {
 
         fs.unlink("./src/lastcomment.json", (err) => { //delete lastcomment.json
             if (err) logger("error deleting lastcomment.json: " + err, true) })
+
+        logger("I will now update again. Please wait a moment...")
         checkforupdate(true, null, true)
         
     } else {
