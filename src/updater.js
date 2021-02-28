@@ -355,7 +355,7 @@ function compatibilityfeatures() {
     //Compatibility features
     try { //this is sadly needed when updating to 2.10 because I forgot in 2.9.x to set compatibilityfeature to false again which completly skips the comp feature
         let extdata = require("./data.json")
-        if (extdata.firststart && fs.existsSync('./src/lastcomment.json') && (extdata.version == "2.10" || extdata.version == "BETA 2.10 b1")) extdata.compatibilityfeaturedone = false
+        if (extdata.firststart && fs.existsSync('./src/lastcomment.json') && (extdata.version == "2.10" || extdata.version == "BETA 2.10 b3")) extdata.compatibilityfeaturedone = false
     } catch (err) {}
 
     if (!fs.existsSync('./src')) { //this has to trigger if user was on version <2.6
