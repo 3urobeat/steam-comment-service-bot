@@ -256,8 +256,6 @@ logger(`Using node.js version ${process.version}...`, false, true)
 /* ------------ File integrity checks: ------------ */
 //Check cache.json
 logger("Checking if cache.json is valid...", false, true)
-var cache = {}
-
 try {
     cache = require("./cache.json")
     datajsoncheck();
@@ -280,9 +278,6 @@ try {
 //Check data.json
 function datajsoncheck() {
     logger("Checking if data.json is valid...", false, true)
-    var extdata = {}
-    var releasemode = "master" //set this now to make eslint happy as it will stay like this or get changed when extdata is loaded
-
     try {
         extdata = require("./data.json")
         releasemode = extdata.branch
@@ -322,8 +317,6 @@ function datajsoncheck() {
 //Check config.json
 function configjsoncheck() {
     logger("Checking if config.json is valid...", false, true)
-    var config = {}
-
     try {
         config = require("../config.json")
         compatibilityfeatures();
