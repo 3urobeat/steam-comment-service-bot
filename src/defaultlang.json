@@ -19,13 +19,12 @@
     "commentaddbotaccounts": "In order to request numberofcomments comments you/the recieving user will first need to add this/these accounts: (limited bot accounts)",
     "commentuserprofileprivate": "Your/the recieving profile seems to be private. Please edit your/the privacy settings on your/the recieving profile and try again!",
     "commenterroroccurred": "Oops, an error occurred!",
-    "commentsuccess": "Okay I commented on your/the recieving profile! If you are a nice person then please comment on my profile too!",
+    "commentsuccess1": "Okay I commented on your/the recieving profile! If you are a nice person then please comment on my profile too!",
     "commentprocessstarted": "Estimated wait time for numberofcomments comments: waittime timeunit.",
-
-    "commenteverywherefailedcmdreference": "To get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems",
-    "commenteverywhere429stop": "Stopped comment process because of a HTTP 429 (cooldown) error. Please try again later. Failed: failedamount/numberofcomments",
-    "commenteverywheresuccess": "All comments have been sent. Failed: failedamount/numberofcomments\nIf you are a nice person then please comment on my profile too!",
-    "commenteverywherelimitederror": "-----------------------------------\nIt seems like at least one of the requested comments could have failed because you/the recieving account aren't/isn't friend with the commenting bot account.\n\nPlease make sure that you have added these accounts in order to eventually avoid this error in the future: \naccstoadd\n-----------------------------------",
+    "commentfailedcmdreference": "To get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems",
+    "comment429stop": "Stopped comment process because of a HTTP 429 (cooldown) error. Please try again later. Failed: failedamount/numberofcomments",
+    "commentsuccess2": "All comments have been sent. Failed: failedamount/numberofcomments\nIf you are a nice person then please comment on my profile too!",
+    "commentlimitederror": "-----------------------------------\nIt seems like at least one of the requested comments could have failed because you/the recieving account aren't/isn't friend with the commenting bot account.\n\nPlease make sure that you have added these accounts in order to eventually avoid this error in the future: \naccstoadd\n-----------------------------------",
 
     "useradded": "Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more commands or !about for more information!",
     "userspamblock": "/me You have been blocked for 60 seconds for spamming.",
@@ -72,7 +71,7 @@
     "leavegroupcmdsuccess": "Left group 'profileid' with all bot accounts.",
 
     "leaveallgroupscmdabort": "/me Aborting leaveallgroups process if one is active...",
-    "leaveallgroupscmdpending": "Leaving all groups (except yourgroup and botsgroup) with all bot accounts in 10 seconds...\nType '!leaveallgroups abort' to abort/stop the process.",
+    "leaveallgroupscmdpending": "Leaving all groups (except yourgroup and botsgroup) with all bot accounts in 15 seconds...\nType '!leaveallgroups abort' to abort/stop the process.",
     "leaveallgroupscmdstart": "/me Starting to leave all groups...",
 
     "blockcmdsuccess": "/me Blocked profileid with all bot accounts.",

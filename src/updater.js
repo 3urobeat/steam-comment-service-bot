@@ -9,7 +9,6 @@ const readline = require("readline")
 var skippedaccounts = [] //array to save which accounts have been skipped to skip them automatically when restarting
 var botisloggedin = false
 var activeupdate = false
-var lastupdatecheckinterval = Date.now()
 
 var logger = (str, nodate, remove) => { //Custom logger
     var str = String(str)
@@ -32,6 +31,12 @@ var logger = (str, nodate, remove) => { //Custom logger
 
 var restartdata = (data) => {
     module.exports.skippedaccounts = data }
+
+//Should keep the bot at least from crashing
+process.on('unhandledRejection', (reason, p) => {
+    logger(`Unhandled Rejection Error! Reason: ${reason.stack}`, true) });
+process.on('uncaughtException', (reason, p) => {
+    logger(`Uncaught Exception Error! Reason: ${reason.stack}`, true) });
 
 /**
  * Comments with all bot accounts on one profile.
@@ -258,7 +263,6 @@ logger(`Using node.js version ${process.version}...`, false, true)
 logger("Checking if cache.json is valid...", false, true)
 try {
     cache = require("./cache.json")
-    datajsoncheck();
 } catch (err) {
     if (err) {
         readytostart = false //let the interval wait for the recovery to finish
@@ -271,9 +275,11 @@ try {
             } else {
                 logger("Successfully cleared/created cache.json.\n", false, true)
                 cache = require("./cache.json")
-                datajsoncheck();
             } })
-    }}
+    }
+} finally {
+    datajsoncheck(); //Continue startup
+}
 
 //Check data.json
 function datajsoncheck() {
@@ -281,7 +287,6 @@ function datajsoncheck() {
     try {
         extdata = require("./data.json")
         releasemode = extdata.branch
-        configjsoncheck();
     } catch (err) {
         if (err) { //Corrupted!
             readytostart = false //let the interval wait for the recovery to finish
@@ -308,10 +313,12 @@ function datajsoncheck() {
                         downloadandupdate("src/data.json", "data.json", function() {
                             logger("Successfully pulled new data.json from GitHub.\n", true)
                             extdata = require("./data.json")
-                            releasemode = extdata.branch
-                            configjsoncheck() }) } //Continue startup 
+                            releasemode = extdata.branch }) }
                 } })
-        }}
+        }
+    } finally {
+        configjsoncheck(); //Continue startup
+    }
 }
 
 //Check config.json
@@ -319,7 +326,6 @@ function configjsoncheck() {
     logger("Checking if config.json is valid...", false, true)
     try {
         config = require("../config.json")
-        compatibilityfeatures();
     } catch (err) {
         if (err) { //Corrupted!
             readytostart = false //let the interval wait for the recovery to finish
@@ -345,17 +351,19 @@ function configjsoncheck() {
 
                         downloadandupdate("config.json", "config.json", function() {
                             logger("Successfully pulled new config.json from GitHub. Please configure it again!\n", true)
-                            config = require("../config.json")
-                            compatibilityfeatures(); }) } //Continue startup
+                            config = require("../config.json") }) }
                 } })
-        }}
+        }
+    } finally {
+        compatibilityfeatures(); //Continue startup
+    }
 }
 
 function compatibilityfeatures() {
     //Compatibility features
     try { //this is sadly needed when updating to 2.10 because I forgot in 2.9.x to set compatibilityfeature to false again which completly skips the comp feature
         let extdata = require("./data.json")
-        if (extdata.firststart && fs.existsSync('./src/lastcomment.json') && (extdata.version == "2.10" || extdata.version == "BETA 2.10 b3")) extdata.compatibilityfeaturedone = false
+        if (extdata.firststart && fs.existsSync('./src/lastcomment.json') && (extdata.version == "2.10" || extdata.version == "BETA 2.10 b4")) extdata.compatibilityfeaturedone = false
     } catch (err) {}
 
     if (!fs.existsSync('./src')) { //this has to trigger if user was on version <2.6
@@ -428,35 +436,37 @@ function compatibilityfeatures() {
             checkforupdate(true, null, true) }
 
     } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2.10" || extdata.version == "BETA 2.10 b3")) {
-        if (!fs.existsSync('./src/lastcomment.json')) {
-            logger("Skipping 2.10 compatibility changes...")
-            return checkforupdate(true, null, true); } //skip the compatibility stuff and continue with updater
         logger("Applying 2.10 compatibility changes...")
 
-        const nedb = require("nedb")
-        const lastcomment = new nedb("./src/lastcomment.db")
-        const lastcommentjson = require("./lastcomment.json")
+        if (fs.existsSync('./src/lastcomment.json')) {     
+            const nedb = require("nedb")
+            const lastcomment = new nedb("./src/lastcomment.db")
+            const lastcommentjson = require("./lastcomment.json")
 
-        lastcomment.loadDatabase((err) => {
-            if (err) return logger("Error creating lastcomment.db database! Error: " + err, true)
-            logger("Successfully created lastcomment database.", false, true) })
+            lastcomment.loadDatabase((err) => {
+                if (err) return logger("Error creating lastcomment.db database! Error: " + err, true)
+                logger("Successfully created lastcomment database.", false, true) })
 
-        Object.keys(lastcommentjson).forEach((e, i) => {
-            lastcomment.insert({ id: e, time: e.time }, (err) => {
-                if (err) logger("Error adding lastcomment.json entries to new lastcomment database! This is not good.\nError: " + err, true)
-            }) })
+            Object.keys(lastcommentjson).forEach((e, i) => {
+                lastcomment.insert({ id: e, time: e.time }, (err) => {
+                    if (err) logger("Error adding lastcomment.json entries to new lastcomment database! This is not good.\nError: " + err, true)
+                }) })
 
-        fs.unlink("./src/lastcomment.json", (err) => { //delete lastcomment.json
-            if (err) logger("error deleting lastcomment.json: " + err, true) })
+            fs.unlink("./src/lastcomment.json", (err) => { //delete lastcomment.json
+                if (err) logger("error deleting lastcomment.json: " + err, true) })
+        }
 
         logger("I will now update again. Please wait a moment...")
         checkforupdate(true, null, true)
-        
+
     } else {
         if (releasemode == "beta-testing") logger("\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
         checkforupdate() } //check will start the bot afterwards
 }
 
+var lastupdatecheckinterval = Date.now()
+
+//Export some stuff
 module.exports={
     restartdata,
     skippedaccounts,

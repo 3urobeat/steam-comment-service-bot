@@ -26,7 +26,6 @@ var cache = require('./cache.json')
 var communityobject = {}
 var botobject = {}
 var readyafterlogs = []
-var accstoadd = []
 var bootstart = 0
 var bootstart = new Date();
 var steamGuardInputTime = 0
@@ -98,25 +97,6 @@ quotes.forEach((e, i) => { quotes[i] = e.replace(/\\n/g, "\n").replace("\\n", "\
 logger(`${quotes.length} quotes found.`, false, true)
 
 /**
- * Comments with all bot accounts on one profile.
- * @param {Object} steamID steamID Object of the profile to comment on
- * @param {Number} numberofcomments Amount of comments requested
- * @param {Number} requesterSteamID steam64ID of the comment requesting user
- * @param {Object} res An express response object that will be available if the comments were requested via the express webserver
- */
-var commenteverywhere = (steamID, numberofcomments, requesterSteamID, res, quoteselection) => { //function to let all bots comment
-    function respondmethod(msg) { //we need a function to get each response back to the user (web request & steam chat)
-        if (res) {
-          logger("Web Comment Request: " + msg)
-        } else {
-          botobject[0].chat.sendFriendMessage(requesterSteamID, msg)
-        } }
-
-
-
-    }
-
-/**
  * Rounds a number with x decimals
  * @param {Number} value Number to round 
  * @param {Number} decimals Amount of decimals
@@ -153,17 +133,30 @@ var accisloggedin = true; //var to check if previous acc is logged on (in case s
   * Checks if Steam is online and proceeds with the startup.
   * @param {Boolean} continuewithlogin If true, the function will call startlogin() if Steam is online
   * @param {Boolean} stoponerr If true, the function will stop the bot if Steam seems to be offline
+  * @param {Boolean} throwtimeout If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
   */
-var isSteamOnline = function isSteamOnline(continuewithlogin, stoponerr) {
+var isSteamOnline = function isSteamOnline(continuewithlogin, stoponerr, throwtimeout) {
     if (stoplogin == true) return;
     logger("Checking if Steam is reachable...", false, true)
+    
+    //Start a 20 sec timeout to display an error when Steam can't be reached but also doesn't throw an error
+    if (throwtimeout) {
+        var timeoutTimeout = setTimeout(() => { //phenomenal name I know
+            logger(`\x1b[0m[\x1b[31mWarning\x1b[0m]: I can't reach SteamCommunity! Is your internet source maybe blocking it?\n           Error: Timeout after 20 seconds`, true)
+            if (stoponerr) process.exit(0)
+        }, 20000) }
+
     https.get('https://steamcommunity.com', function (res) {
         logger(`SteamCommunity is up! Status code: ${res.statusCode}`, false, true)
-        if (continuewithlogin) startlogin();
+        if (continuewithlogin) {
+            if (throwtimeout) clearTimeout(timeoutTimeout)
+            startlogin() }
 
     }).on('error', function(err) {
         logger(`\x1b[0m[\x1b[31mWarning\x1b[0m]: SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n           Error: ` + err, true)
-        if (stoponerr) process.exit(0) }) }
+        if (throwtimeout) clearTimeout(throwtimeout)
+        if (stoponerr) process.exit(0)
+    }) }
 
 /* ------------ Checks & co: ------------ */
 logger("Checking config for 3urobeat's leftovers...", false, true)
@@ -206,7 +199,7 @@ if (config.commentdelay / (config.repeatedComments * Object.keys(logininfo).leng
     logger("\x1b[0m[\x1b[31mWarning\x1b[0m]: \x1b[31mYou have raised repeatedComments but I would recommend to raise the commentdelay further. Not increasing the commentdelay further raises the probability to get cooldown errors from Steam.\x1b[0m", true) }
 if (logininfo.bot0 == undefined) { //check real quick if logininfo is empty
     logger("\x1b[31mYour logininfo doesn't contain a bot0 or is empty! Aborting...\x1b[0m", true); process.exit(0) }
-if (config.commentdelay * config.repeatedComments * Object.keys(logininfo).length > 2147483647) { //check for 32-bit integer limit for commenteverywhere() timeout
+if (config.commentdelay * config.repeatedComments * Object.keys(logininfo).length > 2147483647) { //check for 32-bit integer limit for commentcmd timeout
     logger("\x1b[31mYour repeatedComments and/or commentdelay value in the config are too high.\nPlease lower these values so that 'commentdelay * repeatedComments * amount_of_accounts' is not bigger than 2147483647.\n\nThis will otherwise cause an error when trying to comment (32-bit integer limit). Aborting...\x1b[0m\n", true)
     process.exit(0) }
 
@@ -217,7 +210,7 @@ const lastcomment = new nedb("./src/lastcomment.db")
 lastcomment.loadDatabase((err) => {
     if (err) return logger("Error loading lastcomment.db database! Error: " + err, true)
     logger("Successfully loaded lastcomment database.", false, true) 
-    isSteamOnline(true, true); }) //Continue startup
+    isSteamOnline(true, true, true); }) //Continue startup
 
 //Check proxies.txt
 var proxies = [] //when the file is just created there can't be proxies in it (this bot doesn't support magic)

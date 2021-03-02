@@ -6,6 +6,7 @@ var updater = require('./updater.js');
 var controller = require("./controller.js");
 var config = require('../config.json');
 var accstoadd = []
+var lastquotes = [] //array to track last comments
 
 module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, res, lastcommentdoc, failedcomments, activecommentprocess, lastcommentrequestmsg, commentedrecently, lastsuccessfulcomment, callback) => {
     var requesterSteamID = new SteamID(String(steamID)).getSteamID64() //save steamID of comment requesting user so that messages are being send to the requesting user and not to the reciever if a profileid has been provided
@@ -44,7 +45,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
 
 
     /* ------------------ Check for cooldowns ------------------ */
-    if (config.commentcooldown !== 0) { //check for user specific cooldown
+    if (config.commentcooldown !== 0 && !res) { //check for user specific cooldown (ignore if it is a webrequest)
         if ((Date.now() - lastcommentdoc.time) < (config.commentcooldown * 60000)) { //check if user has cooldown applied
             var remainingcooldown = Math.abs(((Date.now() - lastcommentdoc.time) / 1000) - (config.commentcooldown * 60))
             var remainingcooldownunit = "seconds"
@@ -154,7 +155,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
     
                 if (Object.values(failedcomments[requesterSteamID]).includes("postUserComment error: Error: HTTP error 429")) { //Check if we got IP blocked (cooldown) by checking for a HTTP 429 error pushed into the failedcomments array by a previous iteration and send message
                     if (!Object.values(failedcomments[requesterSteamID]).includes("postUserComment error: Skipped because of previous HTTP 429 error.")) { //send chat.sendFriendMessage only the first time
-                        respondmethod(500, `${lang.commenteverywhere429stop.replace("failedamount", numberofcomments - i + 1).replace("numberofcomments", numberofcomments)}\n\n${lang.commenteverywherefailedcmdreference}`) //add !failed cmd reference to message
+                        respondmethod(500, `${lang.comment429stop.replace("failedamount", numberofcomments - i + 1).replace("numberofcomments", numberofcomments)}\n\n${lang.commentfailedcmdreference}`) //add !failed cmd reference to message
 
                         //push all other comments to instanly complete the failedcomments obj
                         var m = 0;
@@ -174,121 +175,133 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
 
 
                 /* --------- Try to comment --------- */
-                var randomstring = arr => arr[Math.floor(Math.random() * arr.length)]; //smol function to get random string from array
-                var comment = randomstring(quoteselection); //get random quote for this iteration
 
-                controller.communityobject[k].postUserComment(steamID, comment, (error) => { //post comment
-                    if (k == 0) var thisbot = `Main`; else var thisbot = `Bot ${k}`; //call bot 0 the main bot in logging messages
+                //Function to get random quote that wasn't chosen for a comment that is more recent than 5 comments
+                function getQuote(callback) {
+                    var randomstring = arr => arr[Math.floor(Math.random() * arr.length)]; //smol function to get random string from array
+                    let selection = randomstring(quoteselection); //get random quote for this iteration
 
-                    /* --------- Handle errors thrown by this comment attempt --------- */
-                    if (error) {
-                        var errordesc = ""
+                    if (lastquotes.length > 4) lastquotes.splice(0, 1) //remove first element from array if we have more than 4 in it
+                    if (lastquotes.includes(selection)) getQuote(cb => { callback(cb) }); //call this function again to get a new quote and pass cb to get callback from another execution back to the first one
+                        else { 
+                            if (quoteselection.length > 5) lastquotes.push(selection) //push this comment to lastquotes array to not get it the next 5 times if the quotes.txt has more than 5 quotes
+                            callback(selection) }
+                }
+                
+                getQuote(comment => { //get a random quote to comment with and wait for callback to ensure a quote has been found before trying to comment
+                    controller.communityobject[k].postUserComment(steamID, comment, (error) => { //post comment
+                        if (k == 0) var thisbot = `Main`; else var thisbot = `Bot ${k}`; //call bot 0 the main bot in logging messages
 
-                        switch (error) {
-                            case "Error: HTTP error 429":
-                                errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes.\nPlease wait a moment and then try again."
-                                commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
-                                break;
-                            case "Error: HTTP Error 502":
-                                errordesc = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us"
-                                break;
-                            case "Error: HTTP Error 504":
-                                errordesc = "The steam servers are slow atm/are down. Check Steam's status here: https://steamstat.us"
-                                break;
-                            case "Error: You've been posting too frequently, and can't make another post right now":
-                                errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes.\nPlease wait a moment and then try again."
-                                commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
-                                break;
-                            case "Error: There was a problem posting your comment. Please try again":
-                                errordesc = "Unknown reason - please wait a minute and try again."
-                                break;
-                            case "Error: The settings on this account do not allow you to add comments":
-                                errordesc = "The profile's comment section the account is trying to comment on is private or the account doesn't meet steams regulations."
-                                break;
-                            case "Error: To post this comment, your account must have Steam Guard enabled":
-                                errordesc = "The account trying to comment doesn't seem to have steam guard enabled."
-                                break;
-                            case "Error: socket hang up":
-                                errordesc = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us"
-                                break;
-                            default:
-                                errordesc = "Please wait a moment and try again!"
-                        }
+                        /* --------- Handle errors thrown by this comment attempt --------- */
+                        if (error) {
+                            var errordesc = ""
 
-                        if (i == 0) { //If the error occurred on the main bot then stop and return an error message
-                            //Get last successful comment time to display it in error message
-                            lastsuccessfulcomment(cb => {
-                                let localoffset = new Date().getTimezoneOffset() * 60000
-
-                                respondmethod(500, `${lang.commenterroroccurred}\n${errordesc}\n\nDetails: \n[${thisbot}] postUserComment error: ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
-                                logger(`[${thisbot}] postUserComment error: ${error}\n${errordesc}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`) }) //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
-
-                            if (error == "Error: HTTP error 429" || error == "Error: You've been posting too frequently, and can't make another post right now") {
-                                commentedrecently = Date.now() + 300000 } //add 5 minutes to commentedrecently if cooldown error
-
-                            breakloop = true; //stop whole loop when an error occurred
-                            callback(failedcomments, activecommentprocess.filter(item => item != requesterSteamID), commentedrecently)
-                            return; //stop further execution in this iteration
-
-                        } else { //if the error occurred on a child account then log the error and push the error to failedcomments
-
-                            logger(`[${thisbot}] postUserComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - reciever: ${new SteamID(String(steamID)).getSteamID64()}`); 
-                            failedcomments[requesterSteamID][`Comment ${i + 1} (bot${k})`] = `postUserComment error: ${error} [${errordesc}]`
-                        }
-                    }
-
-
-                    /* --------- No error, run this on every successful iteration --------- */
-                    if (i == 0) { //Stuff below should only run in first iteration (main bot)
-                        //converting steamID again to SteamID64 because it could have changed by a profileid argument
-                        logger(`\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${String(comment).split("\n")[0]}\x1b[0m`) //splitting \n to only get first line of multi line comments
-
-                        if (numberofcomments == 1) respondmethod(200, lang.commentsuccess)
-                            else {
-                                var waittime = ((numberofcomments - 1) * config.commentdelay) / 1000 //calculate estimated wait time (first comment is instant -> remove 1 from numberofcomments)
-                                var waittimeunit = "seconds"
-                                if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "minutes" }
-                                if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "hours" }
-                                respondmethod(200, lang.commentprocessstarted.replace("numberofcomments", numberofcomments).replace("waittime", Number(Math.round(waittime+'e'+3)+'e-'+3)).replace("timeunit", waittimeunit))
+                            switch (error) {
+                                case "Error: HTTP error 429":
+                                    errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes.\nPlease wait a moment and then try again."
+                                    commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
+                                    break;
+                                case "Error: HTTP Error 502":
+                                    errordesc = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us"
+                                    break;
+                                case "Error: HTTP Error 504":
+                                    errordesc = "The steam servers are slow atm/are down. Check Steam's status here: https://steamstat.us"
+                                    break;
+                                case "Error: You've been posting too frequently, and can't make another post right now":
+                                    errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes.\nPlease wait a moment and then try again."
+                                    commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
+                                    break;
+                                case "Error: There was a problem posting your comment. Please try again":
+                                    errordesc = "Unknown reason - please wait a minute and try again."
+                                    break;
+                                case "Error: The settings on this account do not allow you to add comments":
+                                    errordesc = "The profile's comment section the account is trying to comment on is private or the account doesn't meet steams regulations."
+                                    break;
+                                case "Error: To post this comment, your account must have Steam Guard enabled":
+                                    errordesc = "The account trying to comment doesn't seem to have steam guard enabled."
+                                    break;
+                                case "Error: socket hang up":
+                                    errordesc = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us"
+                                    break;
+                                default:
+                                    errordesc = "Please wait a moment and try again!"
                             }
 
+                            if (i == 0) { //If the error occurred on the main bot then stop and return an error message
+                                //Get last successful comment time to display it in error message
+                                lastsuccessfulcomment(cb => {
+                                    let localoffset = new Date().getTimezoneOffset() * 60000
 
-                        /* --------- Activate globalcooldown & give user cooldown --------- */ 
-                        if (config.globalcommentcooldown !== 0) {
-                            commentedrecently = Date.now() }
+                                    respondmethod(500, `${lang.commenterroroccurred}\n${errordesc}\n\nDetails: \n[${thisbot}] postUserComment error: ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
+                                    logger(`[${thisbot}] postUserComment error: ${error}\n${errordesc}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`) }) //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
 
-                        //add estimated wait time in ms to start the cooldown after the last recieved comment
-                        controller.lastcomment.update({ id: requesterSteamID }, { $set: { time: Date.now() + (((numberofcomments - 1) * config.commentdelay)) } }, {}, (err) => { 
-                            if (err) logger("Error adding cooldown to user in database! You should probably *not* ignore this error!\nError: " + err) 
-                        })
+                                if (error == "Error: HTTP error 429" || error == "Error: You've been posting too frequently, and can't make another post right now") {
+                                    commentedrecently = Date.now() + 300000 } //add 5 minutes to commentedrecently if cooldown error
 
-                    } else { //Stuff below should only run for child accounts
-                        logger(`[${thisbot}] Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
-                    }
+                                breakloop = true; //stop whole loop when an error occurred
+                                callback(failedcomments, activecommentprocess.filter(item => item != requesterSteamID), commentedrecently)
+                                return; //stop further execution in this iteration
 
+                            } else { //if the error occurred on a child account then log the error and push the error to failedcomments
 
-                    /* --------- Run this code on last iteration --------- */
-                    if (i == numberofcomments - 1) { //last iteration
-                        var failedcmdreference = ""
-
-                        if (Object.keys(failedcomments[requesterSteamID]).length > 0) {
-                            failedcmdreference = "\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
+                                logger(`[${thisbot}] postUserComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - reciever: ${new SteamID(String(steamID)).getSteamID64()}`); 
+                                failedcomments[requesterSteamID][`Comment ${i + 1} (bot${k})`] = `postUserComment error: ${error} [${errordesc}]`
+                            }
                         }
 
-                        respondmethod(200, `${lang.commenteverywheresuccess.replace("failedamount", Object.keys(failedcomments[requesterSteamID]).length).replace("numberofcomments", numberofcomments)}\n${failedcmdreference}`);
-                        callback(failedcomments, activecommentprocess.filter(item => item != requesterSteamID), commentedrecently)
 
-                        if (Object.values(failedcomments[requesterSteamID]).includes("Error: The settings on this account do not allow you to add comments.")) {
-                            accstoadd[requesterSteamID] = []
+                        /* --------- No error, run this on every successful iteration --------- */
+                        if (i == 0) { //Stuff below should only run in first iteration (main bot)
+                            //converting steamID again to SteamID64 because it could have changed by a profileid argument
+                            logger(`\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${String(comment).split("\n")[0]}\x1b[0m`) //splitting \n to only get first line of multi line comments
 
-                            for (i in controller.botobject) {
-                                if (!Object.keys(controller.botobject[i].myFriends).includes(new SteamID(String(steamID)).getSteamID64())) {
-                                    accstoadd[requesterSteamID].push(`\n 'https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[i].steamID)).getSteamID64()}'`) }
+                            if (numberofcomments == 1) respondmethod(200, lang.commentsuccess1)
+                                else {
+                                    var waittime = ((numberofcomments - 1) * config.commentdelay) / 1000 //calculate estimated wait time (first comment is instant -> remove 1 from numberofcomments)
+                                    var waittimeunit = "seconds"
+                                    if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "minutes" }
+                                    if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "hours" }
+                                    respondmethod(200, lang.commentprocessstarted.replace("numberofcomments", numberofcomments).replace("waittime", Number(Math.round(waittime+'e'+3)+'e-'+3)).replace("timeunit", waittimeunit))
+                                }
 
-                                if (i == Object.keys(controller.botobject).length - 1)
-                                    respondmethod(403, lang.commenteverywherelimitederror.replace("accstoadd", accstoadd[requesterSteamID])) //this error message should never show as the bot will always check for limited bot accounts before starting to comment
-                            } }
-                    }
+
+                            /* --------- Activate globalcooldown & give user cooldown --------- */ 
+                            if (config.globalcommentcooldown !== 0) {
+                                commentedrecently = Date.now() }
+
+                            //add estimated wait time in ms to start the cooldown after the last recieved comment
+                            controller.lastcomment.update({ id: requesterSteamID }, { $set: { time: Date.now() + (((numberofcomments - 1) * config.commentdelay)) } }, {}, (err) => { 
+                                if (err) logger("Error adding cooldown to user in database! You should probably *not* ignore this error!\nError: " + err) 
+                            })
+
+                        } else { //Stuff below should only run for child accounts
+                            logger(`[${thisbot}] Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
+                        }
+
+
+                        /* --------- Run this code on last iteration --------- */
+                        if (i == numberofcomments - 1 && numberofcomments > 1) { //last iteration (run only when more than one comment is requested)
+                            var failedcmdreference = ""
+
+                            if (Object.keys(failedcomments[requesterSteamID]).length > 0) {
+                                failedcmdreference = "\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
+                            }
+
+                            if (!res) respondmethod(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(failedcomments[requesterSteamID]).length).replace("numberofcomments", numberofcomments)}\n${failedcmdreference}`); //only send if not a webrequest
+                            callback(failedcomments, activecommentprocess.filter(item => item != requesterSteamID), commentedrecently)
+
+                            if (Object.values(failedcomments[requesterSteamID]).includes("Error: The settings on this account do not allow you to add comments.") && !res) {
+                                accstoadd[requesterSteamID] = []
+
+                                for (i in controller.botobject) {
+                                    if (!Object.keys(controller.botobject[i].myFriends).includes(new SteamID(String(steamID)).getSteamID64())) {
+                                        accstoadd[requesterSteamID].push(`\n 'https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[i].steamID)).getSteamID64()}'`) }
+
+                                    if (i == Object.keys(controller.botobject).length - 1)
+                                        respondmethod(403, lang.commentlimitederror.replace("accstoadd", accstoadd[requesterSteamID])) //this error message should never show as the bot will always check for limited bot accounts before starting to comment
+                                } }
+                        }
+                    })
                 })
             }, config.commentdelay * i); //delay every comment
         }

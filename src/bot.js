@@ -148,7 +148,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
     if (logOnTries > maxLogOnRetries || blockedEnumsForRetries.includes(err.eresult)) {
       logger(`\nCouldn't log in bot${loginindex} after ${logOnTries} attempt(s). Error ${err.eresult}: ${err}`, true)
-      if (err.eresult = 5) logger(`Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try leaving the shared_secret field empty and check the username & password of bot${loginindex}.`, true)
+      if (err.eresult == 5) logger(`Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try leaving the shared_secret field empty and check the username & password of bot${loginindex}.`, true)
       if (thisproxy != null) logger(`Is your proxy ${controller.proxyShift} offline or blocked by Steam?`, true)
 
       if (loginindex == 0) {
@@ -238,7 +238,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
     logger(`[${thisbot}] Account logged in! Waiting for websession...`, false, true)
     bot.setPersona(1); //set online status
     if (loginindex == 0) bot.gamesPlayed(config.playinggames); //set game only for the main bot
-    if (loginindex != 0 && config.childaccsplaygames) bot.gamesPlayed(config.playinggames.slice(1, config.playinggames.length)) //play game with child bots but remove the custom game
+    if (loginindex != 0) bot.gamesPlayed(config.childaccplayinggames) //set games for child accounts that are set in the config
 
     controller.communityobject[loginindex] = community //export this community instance to the communityobject to access it from controller.js
     controller.botobject[loginindex] = bot //export this bot instance to the botobject to access it from controller.js
@@ -267,7 +267,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
               id: Object.keys(bot.myFriends)[i],
               time: Date.now() - (config.commentcooldown * 60000) } //subtract commentcooldown so that the user is able to use the command instantly
 
-            controller.lastcomment.remove({ id: Object.keys(bot.myFriends)[i] }, {}, (err) => { }) //remove any old entries
+            controller.lastcomment.remove({ id: Object.keys(bot.myFriends)[i] }, {}, () => { }) //remove any old entries
             controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("Error inserting new user into lastcomment.db database! Error: " + err) })
 
             if (configgroup64id.length > 1 && Object.keys(bot.myGroups).includes(configgroup64id)) { 
@@ -308,7 +308,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
         id: new SteamID(String(steamID)).getSteamID64(),
         time: Date.now() - (config.commentcooldown * 60000) } //subtract commentcooldown so that the user is able to use the command instantly
 
-      controller.lastcomment.remove({ id: new SteamID(String(steamID)).getSteamID64() }, {}, (err) => { }) //remove any old entries
+      controller.lastcomment.remove({ id: new SteamID(String(steamID)).getSteamID64() }, {}, () => { }) //remove any old entries
       controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("Error inserting new user into lastcomment.db database! Error: " + err) })
 
       controller.friendlistcapacitycheck(loginindex); //check remaining friendlist space
@@ -381,6 +381,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
             if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commenttext = `'!comment (amount/"all")' - Request x many or the max amount of comments (max ${Object.keys(controller.communityobject).length * config.repeatedComments}).`
               else var commenttext = `'!comment' - Request a comment on your profile!` }
 
+          /* eslint-disable no-irregular-whitespace */
           if (ownercheck) { //idk if this is a good practice to define owner only commands in the same steam message but there are probably worse examples out there
             var resetcooldowntext =  `\n'!resetcooldown [profileid/"global"]' - Clear your, the profileid's or the global comment cooldown. Alias: !rc`;
             var addfriendtext =      `\n'!addfriend (profileid)'                          - Add friend with all bot accounts.`; 
@@ -410,6 +411,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
             '!owner'                                                   - Get a link to the profile of the operator of this bot instance.${evaltext}${restarttext}${logtext}${updatetext}
             ${yourgrouptext}
           `)
+          /* eslint-enable no-irregular-whitespace */
           break;
 
         /* ------------------ Comment command ------------------ */
@@ -419,19 +421,19 @@ module.exports.run = async (logOnOptions, loginindex) => {
         case '!ping':
           var pingstart = Date.now()
 
-          output = ""
-          https.get(`https://steamcommunity.com/ping`, function(res){
+          https.get(`https://steamcommunity.com/ping`, function(res) { //ping steamcommunity.com/ping and measure time
             res.setEncoding('utf8');
-            res.on('data', function (chunk) {
-              output += chunk });
+            res.on('data', () => {}) //seems like this is needed to be able to catch 'end' but since we don't need to collect anything this stays empty
 
             res.on('end', () => {
               chatmsg(steamID, lang.pingcmdmessage.replace("pingtime", Date.now() - pingstart))
-            }) })
+            })
+          })
           break;
         case '!info':
           controller.lastcomment.findOne({ id: steam64id }, (err, doc) => {
             lastsuccessfulcomment(cb => {
+              /* eslint-disable no-irregular-whitespace */
               chatmsg(steamID, `
                 -----------------------------------~~~~~------------------------------------ 
                 >   ${extdata.mestr}'s Comment Bot [Version ${extdata.version}] (More info: !about)
@@ -444,6 +446,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 >   Last processed comment request: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)
                 -----------------------------------~~~~~------------------------------------
               `) 
+              /* eslint-enable no-irregular-whitespace */
             }) })
           break;
         case '!owner':
@@ -501,7 +504,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           if (args[0] == "enableevalcmd" || args[0] == "ownerid" || args[0] == "owner") {
             return chatmsg(steamID, lang.settingscmdblockedvalues) }
 
-          let keyvalue = config[args[0]] //save old value to be able to reset changes
+          var keyvalue = config[args[0]] //save old value to be able to reset changes
 
           //I'm not proud of this code but whatever -> used to convert array into usable array
           if (Array.isArray(keyvalue)) {
@@ -637,7 +640,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           if (isNaN(args[0]) && !String(args[0]).startsWith('https://steamcommunity.com/groups/')) return chatmsg(steamID, lang.leavegroupcmdinvalidgroup)
 
           if (String(args[0]).startsWith('https://steamcommunity.com/groups/')) {
-            leavegroupoutput = ""
+            var leavegroupoutput = ""
             https.get(`${args[0]}/memberslistxml/?xml=1`, function(leavegroupres) { //get group64id from code to simplify config
               leavegroupres.on('data', function (chunk) {
                 leavegroupoutput += chunk });
@@ -659,7 +662,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
             })
             } else { startleavegroup() }
 
-          function startleavegroup() {
+          function startleavegroup() { //eslint-disable-line no-inner-declarations, no-case-declarations
             var argsSteamID = new SteamID(String(args[0]))
             if (argsSteamID.isValid() === false || argsSteamID["type"] !== 7) return chatmsg(steamID, lang.leavegroupcmdinvalidgroup)
 
@@ -690,7 +693,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 } catch (err) {
                   logger(`[Bot ${i}] leaveallgroups error leaving ${group}: ${err}`)
                 }}}
-          }, 10000);
+          }, 15000);
           break;
         case '!block': //Well it kinda works but unblocking doesn't. The friend relationship enum stays at 6
           if (!ownercheck) return notownerresponse();
@@ -728,7 +731,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
           if (!ownercheck) return notownerresponse();
 
           if (args[0] == "true") { updater.checkforupdate(true, steamID); chatmsg(steamID, lang.updatecmdforce.replace("branchname", extdata.branch)) }
-            else { updater.checkforupdate(false, steamID); chatmsg(steamID, lang.updatecmdcheck.replace(branchname, extdata.branch)) }
+            else { updater.checkforupdate(false, steamID); chatmsg(steamID, lang.updatecmdcheck.replace("branchname", extdata.branch)) }
           break;
         case '!log':
         case '!output':
@@ -740,7 +743,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
         case '!eval':
           if (config.enableevalcmd !== true) return chatmsg(steamID, lang.evalcmdturnedoff)
           if (!ownercheck) return notownerresponse();
-          const clean = text => {
+          const clean = text => { //eslint-disable-line no-case-declarations
             if (typeof(text) === "string") return text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
               else return text; }
 
