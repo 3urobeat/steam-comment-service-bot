@@ -435,7 +435,7 @@ function compatibilityfeatures() {
         } else {
             checkforupdate(true, null, true) }
 
-    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2.10" || extdata.version == "BETA 2.10 b3")) {
+    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2.10" || extdata.version == "BETA 2.10 b4")) {
         logger("Applying 2.10 compatibility changes...")
 
         if (fs.existsSync('./src/lastcomment.json')) {     
