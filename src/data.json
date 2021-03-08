@@ -1,5 +1,5 @@
 {
-    "version": "BETA 2.10 b5",
+    "version": "2.10",
     "branch": "beta-testing",
     "filetostart": "./src/updater.js",
     "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/updater.js",
@@ -8,7 +8,7 @@
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://paypal.me/3urobeat",
     "firststart": true,
     "compatibilityfeaturedone": false,
-    "whatsnew": "Read commit description to see changes.",
+    "whatsnew": "New lastcomment storage system. Added custom language support. Errors won't crash the bot anymore. Added account randomization option and better childacc play status support. Many other changes...",
     "urlrequestsecretkey": "",
     "timesloggedin": 0,
     "totallogintime": 0
