@@ -55,7 +55,7 @@
     "settingscmdvaluechanged": "targetkey has been changed from oldvalue to newvalue.\nPlease remember that certain values might need a restart to take effect. You can do that by typing !restart.",
 
     "failedcmdnothingfound": "I can't remember any failed comments you have requested.",
-    "failedcmdmsg": "Your last request for '${steam64id}' from 'requesttime' (GMT time) had these errors:",
+    "failedcmdmsg": "Your last request for 'steam64id' from 'requesttime' (GMT time) had these errors:",
 
     "addfriendcmdacclimited": "Can't add friend profileid with bot0 because the bot account is limited.",
     "addfriendcmdsuccess": "Adding friend profileid with all bot accounts... This will take ~estimatedtime seconds. Please check the terminal for potential errors.",

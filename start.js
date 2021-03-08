@@ -24,33 +24,40 @@ var restart = (args, nologOff) => { //Restart the application
 
         if (typeof controller.server != "undefined") { //check if the server was exported instead of checking config.json to require less files
             console.log("Stopping URLToComment webserver...")
-            controller.server.close() }
+            controller.server.close() 
+        }
 
         Object.keys(controller.botobject).forEach((e) => { //log out all bots
-            controller.botobject[e].logOff() }) }
+            controller.botobject[e].logOff() 
+        }) 
+    }
 
-    Object.keys(require.cache).forEach(function(key) { delete require.cache[key] }) //clear cache to include file changes
+    Object.keys(require.cache).forEach(function(key) { 
+        delete require.cache[key] //clear cache to include file changes
+    })
 
     setTimeout(() => {
         require(extdata.filetostart).restartdata(args) //start again after 2.5 sec
-    }, 2500) }
+    }, 2500) 
+}
 
 /* ------------------ Stop function ------------------ */
 var stop = () => {
     console.log("Stopping application...")
-    process.exit(1) }
+    process.exit(1) 
+}
 
 //Exporting functions to be able to call them
 module.exports={
     restart,
-    stop }
-
+    stop 
+}
 
 if (!fs.existsSync(extdata.filetostart)) { //Function that downloads filetostart if it doesn't exist (file location change etc.)
     var output = ""
     try {
         var https = require("https")
-        https.get(extdata.filetostarturl, function(res){
+        https.get(extdata.filetostarturl, function (res){
             res.setEncoding('utf8');
             res.on('data', function (chunk) {
                 output += chunk });
@@ -58,9 +65,14 @@ if (!fs.existsSync(extdata.filetostart)) { //Function that downloads filetostart
             res.on('end', () => {
                 fs.writeFile(extdata.filetostart, output, err => {
                     if (err) return console.log(err)
-                    require(extdata.filetostart) })}) }); //start
-    } catch (err) { console.log('start.js get updater.js function Error: ' + err) }
+                    require(extdata.filetostart) //start
+                })
+            }) 
+        }); 
+    } catch (err) { 
+        console.log('start.js get updater.js function Error: ' + err) }
 } else {
-    require(extdata.filetostart) } //Just passing startup to updater
+    require(extdata.filetostart) //Just passing startup to updater
+}
 
 //Code by: https://github.com/HerrEurobeat/ 

@@ -306,18 +306,29 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
             }, config.commentdelay * i); //delay every comment
         }
 
-        
+
         var k = 0;
+        var accountorder = [ ... Object.keys(controller.communityobject)]
+        if (config.randomizeAccounts) accountorder.sort(() => Math.random() - 0.5); //randomize order if enabled in config
 
         for (var i = 0; i < numberofcomments && !breakloop; i++) {  //run comment process for as many times as numberofcomments when breakloop is false (Remember: i starts to count at 0, noc at 1)
             /* 
-                i = counts total executions (numberofcomments)
-                k = defines account to use for this iteration and resets if greater than amount of bot accounts
+                i = integer, counts total executions (numberofcomments)
+                k = integer, defines account to use for this iteration and resets if greater than amount of bot accounts
             */
-            comment(k, i) //run actual comment function
+            comment(accountorder[k], i) //run actual comment function
             
             k++
-            if (k + 1 > Object.keys(controller.communityobject).length) k = 0; //reset k if it is greater than the amount of accounts
+
+            if (k + 1 > Object.keys(controller.communityobject).length) {
+                const lastaccountint = String(accountorder[k - 1]) //save last used account (which is -1 because k++ was already executed again)
+
+                k = 0; //reset k if it is greater than the amount of accounts
+
+                //shuffle accountorder again if randomizeAccounts is true but check that the last used account isn't the first one
+                if (config.randomizeAccounts) accountorder.sort(() => Math.random() - 0.5);
+                if (config.randomizeAccounts && accountorder[0] == lastaccountint) accountorder.push(accountorder.shift()) //if lastaccountint is first account in new order then move it to the end
+            }
         }
     }) //This was the critical part of this bot. Let's carry on and hope that everything holds together.
 }

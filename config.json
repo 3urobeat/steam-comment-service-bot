@@ -6,6 +6,7 @@
     "commentcooldown": 5,
     "globalcommentcooldown": 90000,
     "repeatedComments": 2,
+    "randomizeAccounts": false,
     "unfriendtime": 31,
     "playinggames": ["!help | 3urobeat", 440, 730],
     "childaccplayinggames": [],
