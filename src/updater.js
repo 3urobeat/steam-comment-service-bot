@@ -127,18 +127,20 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
 
             res.on('data', function(chunk) {
                 var onlineversion = JSON.parse(chunk).version //parse version number from get request
+                var onlineversionstr = JSON.parse(chunk).versionstr
+
                 module.exports.onlinemestr = JSON.parse(chunk).mestr //get mestr and aboutstr from GitHub to check for modification
                 module.exports.onlineaboutstr = JSON.parse(chunk).aboutstr
 
                 if (onlineversion > extdata.version || forceupdate == true || releasemode == "beta-testing" && !onlineversion.includes("BETA") && extdata.version.includes("BETA") || releasemode == "beta-testing" && onlineversion.includes("BETA") && !extdata.version.includes("BETA")) { //version number greater or forceupdate is true?
                     logger("", true)
-                    logger(`\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${extdata.version}\x1b[0m | New version: \x1b[32m${onlineversion}\x1b[0m`, true)
+                    logger(`\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${extdata.versionstr}\x1b[0m | New version: \x1b[32m${onlineversionstr}\x1b[0m`, true)
                     logger("", true)
 
                     var config = require("../config.json")
 
                     if (responseSteamID) { 
-                        require('./controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `Update available! Your version: ${extdata.version} | New version: ${onlineversion}`)
+                        require('./controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `Update available! Your version: ${extdata.versionstr} | New version: ${onlineversionstr}`)
 
                         if (config.disableautoupdate == true && !forceupdate) { 
                             require('./controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, "You have turned automatic updating off. You need to confirm the update in the console!") 
@@ -283,7 +285,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                     }
 
                 } else {
-                    logger(`No available update found. (online: ${onlineversion} | local: ${extdata.version})`, false, true)
+                    logger(`No available update found. (online: ${onlineversionstr} | local: ${extdata.versionstr})`, false, true)
                     if (botisloggedin == false) require('./controller.js'); botisloggedin = true //no update, start bot
                     if (responseSteamID) require('./controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `No available update in the ${releasemode} branch found.`)
                 }
@@ -419,7 +421,7 @@ function compatibilityfeatures() {
     //Compatibility features
     try { //this is sadly needed when updating to 2.10 because I forgot in 2.9.x to set compatibilityfeature to false again which completly skips the comp feature
         var extdata = require("./data.json")
-        if (extdata.firststart && fs.existsSync('./src/lastcomment.json') && (extdata.version == "2.10" || extdata.version == "BETA 2.10 b5")) extdata.compatibilityfeaturedone = false
+        if (extdata.firststart && fs.existsSync('./src/lastcomment.json') && (extdata.version == "2100" || extdata.version == "BETA 2.10 b5")) extdata.compatibilityfeaturedone = false
     } catch (err) { } //eslint-disable-line
 
     if (!fs.existsSync('./src')) { //this has to trigger if user was on version <2.6
@@ -510,7 +512,7 @@ function compatibilityfeatures() {
             checkforupdate(true, null, true) 
         }
 
-    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2.10" || extdata.version == "BETA 2.10 b5")) {
+    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2100" || extdata.version == "BETA 2.10 b5")) {
         logger("Applying 2.10 compatibility changes...")
 
         if (fs.existsSync('./src/lastcomment.json')) {     

@@ -37,9 +37,9 @@ var skippednow = [] //array to track which accounts have been skipped
 var stoplogin = false;
 
 if (process.platform == "win32") { //set node process name to find it in task manager etc.
-    process.title = `${extdata.mestr}'s Steam Comment Service Bot v${extdata.version} | ${process.platform}` //Windows allows long terminal/process names
+    process.title = `${extdata.mestr}'s Steam Comment Service Bot v${extdata.versionstr} | ${process.platform}` //Windows allows long terminal/process names
 } else {
-    process.stdout.write(`${String.fromCharCode(27)}]0;${extdata.mestr}'s Steam Comment Service Bot v${extdata.version} | ${process.platform}${String.fromCharCode(7)}`) //sets terminal title (thanks: https://stackoverflow.com/a/30360821/12934162)
+    process.stdout.write(`${String.fromCharCode(27)}]0;${extdata.mestr}'s Steam Comment Service Bot v${extdata.versionstr} | ${process.platform}${String.fromCharCode(7)}`) //sets terminal title (thanks: https://stackoverflow.com/a/30360821/12934162)
     process.title = `CommentBot` //sets process title in task manager etc.
 }
 
@@ -393,7 +393,7 @@ var readyinterval = setInterval(() => { //log startup to console
 
         logger(' ', true)
         logger('*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*', true)
-        logger(`\x1b[95m>\x1b[0m \x1b[96m${logininfo.bot0[0]}\x1b[0m version \x1b[96m${extdata.version}\x1b[0m by ${extdata.mestr} logged in.`, true)
+        logger(`\x1b[95m>\x1b[0m \x1b[96m${logininfo.bot0[0]}\x1b[0m version \x1b[96m${extdata.versionstr}\x1b[0m by ${extdata.mestr} logged in.`, true)
 
         if (config.repeatedComments > 3) var repeatedComments = `\x1b[4m\x1b[31m${config.repeatedComments}\x1b[0m` 
             else var repeatedComments = config.repeatedComments
@@ -559,7 +559,7 @@ var readyinterval = setInterval(() => { //log startup to console
         //Message owners if firststart is true that the bot just updated itself
         if (extdata.firststart) {
             config.ownerid.forEach(e => {
-                botobject[0].chat.sendFriendMessage(e, `I have updated myself to version ${extdata.version}!\nWhat's new: ${extdata.whatsnew}`) 
+                botobject[0].chat.sendFriendMessage(e, `I have updated myself to version ${extdata.versionstr}!\nWhat's new: ${extdata.whatsnew}`) 
             }) 
         }
        
