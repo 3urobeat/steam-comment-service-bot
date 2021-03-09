@@ -1,24 +1,25 @@
 {
-  "name": "steam-comment-service-bot",
-  "version": "2.9.0",
-  "description": "Request multiple steam profile comments by texting a bot network!",
-  "main": "start.js",
-  "dependencies": {
-    "express": "^4.17.1",
-    "htmlparser2": "^4.1.0",
-    "https": "^1.0.0",
-    "steam-user": "^4.18.0",
-    "steamcommunity": "^3.41.6"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "start": "node start.js"
-  },
-  "author": "3urobeat",
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/HerrEurobeat/steam-comment-service-bot/issues"
-  },
-  "homepage": "https://github.com/HerrEurobeat",
-  "repository": "https://github.com/HerrEurobeat/steam-comment-service-bot"
+    "name": "steam-comment-service-bot",
+    "version": "2.10.0",
+    "description": "Request multiple steam profile comments by texting a bot network!",
+    "main": "start.js",
+    "dependencies": {
+        "express": "^4.17.1",
+        "htmlparser2": "^4.1.0",
+        "https": "^1.0.0",
+        "nedb": "^1.8.0",
+        "steam-user": "^4.19.3",
+        "steamcommunity": "^3.42.0"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "start": "node start.js"
+    },
+    "author": "3urobeat",
+    "license": "GPL-3.0",
+    "bugs": {
+        "url": "https://github.com/HerrEurobeat/steam-comment-service-bot/issues"
+    },
+    "homepage": "https://github.com/HerrEurobeat",
+    "repository": "https://github.com/HerrEurobeat/steam-comment-service-bot"
 }
