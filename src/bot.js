@@ -900,7 +900,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
     })
 
     module.exports={
-        bot
+        bot,
+        activecommentprocess
     }
 }
 
