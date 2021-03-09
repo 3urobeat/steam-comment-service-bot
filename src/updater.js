@@ -526,7 +526,7 @@ function compatibilityfeatures() {
             })
 
             Object.keys(lastcommentjson).forEach((e) => {
-                lastcomment.insert({ id: e, time: e.time }, (err) => {
+                lastcomment.insert({ id: e, time: lastcommentjson[e].time }, (err) => {
                     if (err) logger("Error adding lastcomment.json entries to new lastcomment database! This is not good.\nError: " + err, true)
                 }) 
             })
