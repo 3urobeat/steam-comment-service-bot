@@ -89,7 +89,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                                 cachefile.configgroup = config.yourgroup
                                 cachefile.configgroup64id = String(yourgroupResult.memberList.groupID64)
                                 fs.writeFile("./src/cache.json", JSON.stringify(cachefile, null, 4), err => { 
-                                if (err) logger(`[${thisbot}] error writing configgroup64id to cache.json: ${err}`) 
+                                    if (err) logger(`[${thisbot}] error writing configgroup64id to cache.json: ${err}`) 
                             })
                         }) 
                     } 
@@ -328,7 +328,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 chatmsg(steamID, lang.useradded) 
             }
 
-            if (configgroup64id.length > 1 && Object.keys(bot.myGroups).includes(configgroup64id)) { 
+            if (loginindex == 0 && configgroup64id.length > 1 && Object.keys(bot.myGroups).includes(configgroup64id)) { 
                 bot.inviteToGroup(steamID, new SteamID(configgroup64id)); //invite the user to your group
                 
                 if (configgroup64id != "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
