@@ -21,7 +21,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
     var maxLogOnRetries = 1 //How often a failed logOn will be retried
     var logger = controller.logger
     var lang = controller.lang
-    var commentedrecently = false; //global cooldown for the comment command
+    var commentedrecently = 0; //global cooldown for the comment command
     var lastmessage = {}
     var lastcommentrequestmsg = []
     var failedcomments = []
@@ -125,13 +125,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
         }
     }
 
-    /* ------------ Login & Events: ------------ */
-    //Should keep the bot at least from crashing
-    process.on('unhandledRejection', (reason) => {
-        logger(`Unhandled Rejection Error! Reason: ${reason.stack}`, true) });
-    process.on('uncaughtException', (reason) => {
-        logger(`Uncaught Exception Error! Reason: ${reason.stack}`, true) });
-    
+    /* ------------ Login & Events: ------------ */ 
     let logOnTries = 0;
 
     function logOnAccount() {
@@ -260,6 +254,24 @@ module.exports.run = async (logOnOptions, loginindex) => {
         if (loginindex == 0) bot.gamesPlayed(config.playinggames); //set game only for the main bot
         if (loginindex != 0) bot.gamesPlayed(config.childaccplayinggames) //set games for child accounts that are set in the config
 
+        //Check if all friends are in lastcomment database
+        if (loginindex == 0) {
+            controller.lastcomment.find({}, (err, docs) => {
+                Object.keys(bot.myFriends).forEach(e => {
+
+                    if (bot.myFriends[e] == 3 && !docs.find(el => el.id == e)) {
+                        let lastcommentobj = {
+                            id: e,
+                            time: Date.now() - (config.commentcooldown * 60000) //subtract commentcooldown so that the user is able to use the command instantly
+                        }
+
+                        controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("Error inserting existing user into lastcomment.db database! Error: " + err) })
+                    }
+                })
+            })
+        }
+        
+
         controller.communityobject[loginindex] = community //export this community instance to the communityobject to access it from controller.js
         controller.botobject[loginindex] = bot //export this bot instance to the botobject to access it from controller.js
 
@@ -293,7 +305,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 controller.lastcomment.remove({ id: Object.keys(bot.myFriends)[i] }, {}, (err) => { if (err) logger("Error removing duplicate steamid from lastcomment.db on offline friend accept! Error: " + err) }) //remove any old entries
                 controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("Error inserting new user into lastcomment.db database! Error: " + err) })
 
-                if (configgroup64id.length > 1 && Object.keys(bot.myGroups).includes(configgroup64id)) { 
+                if (configgroup64id && configgroup64id.length > 1 && Object.keys(bot.myGroups).includes(configgroup64id)) { 
                     bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(configgroup64id));
 
                     if (configgroup64id !== "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
@@ -527,7 +539,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
                     if (args[0]) {
                         if (args[0] == "global") { //Check if user wants to reset the global cooldown
-                            commentedrecently -= config.globalcommentcooldown //subtract cooldown on top the stored time
+                            commentedrecently = 0
                             return chatmsg(steamID, lang.resetcooldowncmdglobalreset) 
                         }
 
