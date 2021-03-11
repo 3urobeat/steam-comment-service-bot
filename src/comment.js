@@ -123,7 +123,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
     for (let i in controller.botobject) {
         if (Number(i) + 1 <= numberofcomments && Number(i) + 1 <= Object.keys(controller.botobject).length) { //only check if this acc is needed for a comment
             try {
-                if (controller.botobject[i].limitations.limited == true && !Object.keys(controller.botobject[i].myFriends).includes(new SteamID(String(steamID)).getSteamID64())) {
+                if (controller.botobject[i].limitations && controller.botobject[i].limitations.limited == true && !Object.keys(controller.botobject[i].myFriends).includes(new SteamID(String(steamID)).getSteamID64())) {
                     accstoadd[requesterSteamID].push(`\n 'https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[i].steamID)).getSteamID64()}'`) }
             } catch (err) {
                 logger("Error checking if comment requester is friend with limited bot accounts: " + err) } } //This error check was implemented as a temporary solution to fix this error (and should be fine since it seems that this error is rare and at least prevents from crashing the bot): https://github.com/HerrEurobeat/steam-comment-service-bot/issues/54
@@ -177,15 +177,15 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                 /* --------- Try to comment --------- */
 
                 //Function to get random quote that wasn't chosen for a comment that is more recent than 5 comments
-                function getQuote(callback) {
+                function getQuote(quotecallback) {
                     var randomstring = arr => arr[Math.floor(Math.random() * arr.length)]; //smol function to get random string from array
                     let selection = randomstring(quoteselection); //get random quote for this iteration
 
                     if (lastquotes.length > 4) lastquotes.splice(0, 1) //remove first element from array if we have more than 4 in it
-                    if (lastquotes.includes(selection)) getQuote(cb => { callback(cb) }); //call this function again to get a new quote and pass cb to get callback from another execution back to the first one
+                    if (lastquotes.includes(selection)) getQuote(cb => { quotecallback(cb) }); //call this function again to get a new quote and pass cb to get callback from another execution back to the first one
                         else { 
                             if (quoteselection.length > 5) lastquotes.push(selection) //push this comment to lastquotes array to not get it the next 5 times if the quotes.txt has more than 5 quotes
-                            callback(selection) }
+                            quotecallback(selection) }
                 }
                 
                 getQuote(comment => { //get a random quote to comment with and wait for callback to ensure a quote has been found before trying to comment
@@ -275,7 +275,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                             })
 
                         } else { //Stuff below should only run for child accounts
-                            logger(`[${thisbot}] Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
+                            if (!error) logger(`[${thisbot}] Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
                         }
 
 

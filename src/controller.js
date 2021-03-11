@@ -80,12 +80,6 @@ var logger = (str, nodate, remove) => { //Custom logger
 
 var steamGuardInputTimeFunc = (arg) => { steamGuardInputTime += arg } //small function to return new value from bot.js
 
-//Should keep the bot at least from crashing
-process.on('unhandledRejection', (reason) => {
-    logger(`Unhandled Rejection Error! Reason: ${reason.stack}`, true) });
-process.on('uncaughtException', (reason) => {
-    logger(`Uncaught Exception Error! Reason: ${reason.stack}`, true) });
-
 //Either use logininfo.json or accounts.txt:
 if (fs.existsSync("./accounts.txt")) {
     var data = fs.readFileSync("./accounts.txt", "utf8").split("\n")
@@ -570,17 +564,17 @@ var readyinterval = setInterval(() => { //log startup to console
             if (lastcommentUnfriendCheck + 30000 > Date.now()) return; //last check is more recent than 30 seconds
 
             lastcomment.find({ time: { $lte: Date.now() - (config.unfriendtime * 86400000) } }, (err, docs) => { //until is a date in ms, so we check if it is less than right now
-                if (docs.length < 1) return; //nothing found
                 lastcommentUnfriendCheck = Date.now()
+                if (docs.length < 1) return; //nothing found
 
                 docs.forEach((e) => { //take action for all results
                     Object.keys(botobject).forEach((f, j) => {
-                        if (f.myFriends[e.id] == 3) { //check if the targeted user is still friend
+                        if (botobject[f].myFriends[e.id] == 3 && !config.ownerid.includes(e.id)) { //check if the targeted user is still friend
                             if (j == 0) botobject[0].chat.sendFriendMessage(new SteamID(e.id), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
 
-                            f.removeFriend(new SteamID(e.id)) //unfriend user with each bot
-                            logger(`Unfriended ${e.id} after ${config.unfriendtime} days of inactivity.`) 
-                        } 
+                            botobject[f].removeFriend(new SteamID(e.id)) //unfriend user with each bot
+                            logger(`Unfriended ${e.id} after ${config.unfriendtime} days of inactivity.`)
+                        }
                         
                         if (!config.ownerid.includes(e.id)) lastcomment.remove({ id: e.id }) //entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
                     })
