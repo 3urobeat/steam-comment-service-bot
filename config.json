@@ -1,6 +1,6 @@
 {
     "disableautoupdate": false,
-    "commentdelay": 7500,
+    "commentdelay": 15000,
     "allowcommentcmdusage": true,
     "skipSteamGuard": false,
     "commentcooldown": 5,

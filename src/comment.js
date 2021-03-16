@@ -8,7 +8,7 @@ var config = require('../config.json');
 var accstoadd = []
 var lastquotes = [] //array to track last comments
 
-module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, res, lastcommentdoc, failedcomments, activecommentprocess, lastcommentrequestmsg, commentedrecently, lastsuccessfulcomment, callback) => {
+module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, res, lastcommentdoc, failedcomments, activecommentprocess, lastcommentrequestmsg, commentedrecently, commentcounter, lastsuccessfulcomment, callback) => {
     var requesterSteamID = new SteamID(String(steamID)).getSteamID64() //save steamID of comment requesting user so that messages are being send to the requesting user and not to the reciever if a profileid has been provided
 
     function respondmethod(rescode, msg) { //we need a function to get each response back to the user (web request & steam chat)
@@ -16,7 +16,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
 
         if (res) {
             logger("Web Comment Request response: " + msg.replace("/me ", "")) //replace steam chat format prefix with nothing if this message should use one
-            res.status(rescode).send(msg + "</br></br>The log will contain further information and errors (if one should occur). You can display it by visiting: /output")
+            res.status(rescode).send(msg + "</br></br>The log will contain further information and errors (if one should occur). You can display the log in your browser by visiting: /output")
         } else {
             chatmsg(requesterSteamID, msg) }
     }
@@ -124,7 +124,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
         if (Number(i) + 1 <= numberofcomments && Number(i) + 1 <= Object.keys(controller.botobject).length) { //only check if this acc is needed for a comment
             try {
                 if (controller.botobject[i].limitations && controller.botobject[i].limitations.limited == true && !Object.keys(controller.botobject[i].myFriends).includes(new SteamID(String(steamID)).getSteamID64())) {
-                    accstoadd[requesterSteamID].push(`\n 'https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[i].steamID)).getSteamID64()}'`) }
+                    accstoadd[requesterSteamID].push(`\n ' https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[i].steamID)).getSteamID64()} '`) }
             } catch (err) {
                 logger("Error checking if comment requester is friend with limited bot accounts: " + err) } } //This error check was implemented as a temporary solution to fix this error (and should be fine since it seems that this error is rare and at least prevents from crashing the bot): https://github.com/HerrEurobeat/steam-comment-service-bot/issues/54
 
@@ -143,7 +143,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
         var breakloop = false
         failedcomments[requesterSteamID] = {}
         activecommentprocess.push(requesterSteamID)
-        callback(failedcomments, activecommentprocess, commentedrecently) //callback updated acp
+        callback(failedcomments, activecommentprocess, commentedrecently, commentcounter) //callback updated acp
 
         function comment(k, i) {
             setTimeout(() => {
@@ -167,7 +167,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                             m++
                         }
 
-                        callback(failedcomments, activecommentprocess.filter(item => item != requesterSteamID), commentedrecently)
+                        callback(failedcomments, activecommentprocess.filter(item => item != requesterSteamID), commentedrecently, commentcounter += numberofcomments - (numberofcomments - i + 1)) //add numberofcomments minus failedamount to commentcounter
                     }
                     return; } //stop further execution
 
@@ -239,12 +239,12 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                                     commentedrecently = Date.now() + 300000 } //add 5 minutes to commentedrecently if cooldown error
 
                                 breakloop = true; //stop whole loop when an error occurred
-                                callback(failedcomments, activecommentprocess.filter(item => item != requesterSteamID), commentedrecently)
+                                callback(failedcomments, activecommentprocess.filter(item => item != requesterSteamID), commentedrecently, commentcounter)
                                 return; //stop further execution in this iteration
 
                             } else { //if the error occurred on a child account then log the error and push the error to failedcomments
 
-                                logger(`[${thisbot}] postUserComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - reciever: ${new SteamID(String(steamID)).getSteamID64()}`); 
+                                logger(`[${thisbot}] postUserComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - reciever: ${new SteamID(String(steamID)).getSteamID64()}`); 
                                 failedcomments[requesterSteamID][`Comment ${i + 1} (bot${k})`] = `postUserComment error: ${error} [${errordesc}]`
                             }
                         }
@@ -255,14 +255,16 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                             //converting steamID again to SteamID64 because it could have changed by a profileid argument
                             logger(`\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${String(comment).split("\n")[0]}\x1b[0m`) //splitting \n to only get first line of multi line comments
 
-                            if (numberofcomments == 1) respondmethod(200, lang.commentsuccess1)
-                                else {
-                                    var waittime = ((numberofcomments - 1) * config.commentdelay) / 1000 //calculate estimated wait time (first comment is instant -> remove 1 from numberofcomments)
-                                    var waittimeunit = "seconds"
-                                    if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "minutes" }
-                                    if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "hours" }
-                                    respondmethod(200, lang.commentprocessstarted.replace("numberofcomments", numberofcomments).replace("waittime", Number(Math.round(waittime+'e'+3)+'e-'+3)).replace("timeunit", waittimeunit))
-                                }
+                            if (numberofcomments == 1) {
+                                respondmethod(200, lang.commentsuccess1)
+                                callback(failedcomments, activecommentprocess.filter(item => item != requesterSteamID), commentedrecently, commentcounter += 1)
+                            } else {
+                                var waittime = ((numberofcomments - 1) * config.commentdelay) / 1000 //calculate estimated wait time (first comment is instant -> remove 1 from numberofcomments)
+                                var waittimeunit = "seconds"
+                                if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "minutes" }
+                                if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "hours" }
+                                respondmethod(200, lang.commentprocessstarted.replace("numberofcomments", numberofcomments).replace("waittime", Number(Math.round(waittime+'e'+3)+'e-'+3)).replace("timeunit", waittimeunit))
+                            }
 
 
                             /* --------- Activate globalcooldown & give user cooldown --------- */ 
@@ -288,18 +290,20 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                             }
 
                             if (!res) respondmethod(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(failedcomments[requesterSteamID]).length).replace("numberofcomments", numberofcomments)}\n${failedcmdreference}`); //only send if not a webrequest
-                            callback(failedcomments, activecommentprocess.filter(item => item != requesterSteamID), commentedrecently)
+                            callback(failedcomments, activecommentprocess.filter(item => item != requesterSteamID), commentedrecently, commentcounter += numberofcomments - Object.keys(failedcomments[requesterSteamID]).length) //remove user from activecommentprocess array and add numberofcomments minus failedamount to commentcounter
 
                             if (Object.values(failedcomments[requesterSteamID]).includes("Error: The settings on this account do not allow you to add comments.") && !res) {
                                 accstoadd[requesterSteamID] = []
 
                                 for (i in controller.botobject) {
                                     if (!Object.keys(controller.botobject[i].myFriends).includes(new SteamID(String(steamID)).getSteamID64())) {
-                                        accstoadd[requesterSteamID].push(`\n 'https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[i].steamID)).getSteamID64()}'`) }
+                                        accstoadd[requesterSteamID].push(`\n ' https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[i].steamID)).getSteamID64()} '`)
+                                    }
 
                                     if (i == Object.keys(controller.botobject).length - 1)
                                         respondmethod(403, lang.commentlimitederror.replace("accstoadd", accstoadd[requesterSteamID])) //this error message should never show as the bot will always check for limited bot accounts before starting to comment
-                                } }
+                                }
+                            }
                         }
                     })
                 })

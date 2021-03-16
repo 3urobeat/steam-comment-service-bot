@@ -58,7 +58,7 @@
     "failedcmdmsg": "Your last request for 'steam64id' from 'requesttime' (GMT time) had these errors:",
 
     "addfriendcmdacclimited": "Can't add friend profileid with bot0 because the bot account is limited.",
-    "addfriendcmdsuccess": "Adding friend profileid with all bot accounts... This will take ~estimatedtime seconds. Please check the terminal for potential errors.",
+    "addfriendcmdsuccess": "Adding friend profileid with all bot accounts... This will take ~estimatedtime seconds. Please check the log for potential errors.",
     "unfriendcmdsuccess": "Removed friend profileid from all bot accounts.",
 
     "unfriendallcmdabort": "Aborting unfriendall process if one is active...",
