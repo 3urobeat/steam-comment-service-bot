@@ -22,6 +22,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
     var logger = controller.logger
     var lang = controller.lang
     var commentedrecently = 0; //global cooldown for the comment command
+    var commentcounter = 0; //this will count the total of comments requested since the last reboot
     var lastmessage = {}
     var lastcommentrequestmsg = []
     var failedcomments = []
@@ -116,10 +117,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
             controller.lastcomment.findOne({ id: new SteamID(String(steamID)).getSteamID64() }, (err, lastcommentdoc) => {
                 if (!lastcommentdoc) logger("User is missing from database?? How is this possible?! Error maybe: " + err)
 
-                require("./comment.js").run(logger, chatmsg, lang, community, thisbot, steamID, args, res, lastcommentdoc, failedcomments, activecommentprocess, lastcommentrequestmsg, commentedrecently, lastsuccessfulcomment, (fc, acp, cr) => { //callback transports stuff back to be able to store the stuff here
+                require("./comment.js").run(logger, chatmsg, lang, community, thisbot, steamID, args, res, lastcommentdoc, failedcomments, activecommentprocess, lastcommentrequestmsg, commentedrecently, commentcounter, lastsuccessfulcomment, (fc, acp, cr, cc) => { //callback transports stuff back to be able to store the stuff here
                     failedcomments = fc //update failedcomments
                     activecommentprocess = acp
+                    module.exports.activecommentprocess = acp //update exported value so that updater knows whats up
                     commentedrecently = cr
+                    commentcounter = cc
                 })
             })
         }
@@ -442,11 +445,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
                         var unblocktext =        `\n'!unblock (profileid)'                             - Unblocks the user on Steam. Note: The user still seems to be ignored for a few days by Steam.`
                         var evaltext =           `\n'!eval (javascript code)'                       - Run javascript code from the steam chat.`; 
                         var restarttext =        `\n'!restart'                                                  - Restart the bot.`; 
+                        var stoptext =           `\n'!stop'                                                      - Stops the bot.`; 
                         var settingstext =       `\n'!settings' (config key) (new value)  - Change a config value.`; 
                         var logtext =            `\n'!log'                                                        - Shows the last 25 lines of the log.`; 
                         var updatetext =         `\n'!update [true]'                                      - Check for an available update. 'true' forces an update.`; 
                     } else {
-                        var resetcooldowntext = addfriendtext = unfriendtext = unfriendalltext = leavegrouptext = leaveallgroupstext = blocktext = unblocktext = evaltext = restarttext = settingstext = logtext = updatetext = ""; //I'm really not proud of this line of "code"
+                        var resetcooldowntext = addfriendtext = unfriendtext = unfriendalltext = leavegrouptext = leaveallgroupstext = blocktext = unblocktext = evaltext = restarttext = stoptext = settingstext = logtext = updatetext = ""; //I'm really not proud of this line of "code"
                     }
 
                     if (config.yourgroup.length > 1) var yourgrouptext = "\nJoin my '!group'!"; 
@@ -460,7 +464,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                         '!abort'                                                     - Abort your own comment process.${resetcooldowntext}${settingstext}${addfriendtext}${unfriendtext}${unfriendalltext}${leavegrouptext}${leaveallgroupstext}${blocktext}${unblocktext}
                         '!failed'                                                     - See the exact errors of your last comment request.
                         '!about'                                                    - Returns information what this is about.
-                        '!owner'                                                   - Get a link to the profile of the operator of this bot instance.${evaltext}${restarttext}${logtext}${updatetext}
+                        '!owner'                                                   - Get a link to the profile of the operator of this bot instance.${evaltext}${restarttext}${stoptext}${logtext}${updatetext}
                         ${yourgrouptext}
                     `)
                     /* eslint-enable no-irregular-whitespace */
@@ -497,6 +501,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                                 >   Your steam64ID: ${steam64id}
                                 >   Your last comment request: ${(new Date(doc.time)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)
                                 >   Last processed comment request: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)
+                                >   I have commented ${commentcounter} times since my last restart and completed request!
                                 -----------------------------------~~~~~------------------------------------
                             `) 
                             /* eslint-enable no-irregular-whitespace */
@@ -656,7 +661,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     if (isNaN(args[0])) return chatmsg(steamID, lang.invalidprofileid)
                     if (new SteamID(args[0]).isValid() === false) return chatmsg(steamID, lang.invalidprofileid)
 
-                    if (controller.botobject[0].limitations.limited == true) {
+                    if (controller.botobject[0].limitations && controller.botobject[0].limitations.limited == true) {
                         chatmsg(steamID, lang.addfriendcmdacclimited.replace("profileid", args[0])) 
                         return; 
                     }
@@ -665,7 +670,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     logger(`Adding friend ${args[0]} with all bot accounts... This will take ~${5 * Object.keys(controller.botobject).length} seconds.`)
 
                     Object.keys(controller.botobject).forEach((i) => {
-                        if (controller.botobject[i].limitations.limited == true) {
+                        if (controller.botobject[0].limitations && controller.botobject[i].limitations.limited == true) {
                             logger(`Can't add friend ${args[0]} with bot${i} because the bot account is limited.`) 
                             return;
                         }
@@ -673,10 +678,10 @@ module.exports.run = async (logOnOptions, loginindex) => {
                         if (controller.botobject[i].myFriends[new SteamID(args[0])] != 3 && controller.botobject[i].myFriends[new SteamID(args[0])] != 1) { //check if provided user is not friend and not blocked
                             setTimeout(() => {
                                 controller.communityobject[i].addFriend(new SteamID(args[0]).getSteam3RenderedID(), (err) => {
-                                if (err) logger(`error adding ${args[0]} with bot${i}: ${err}`) 
-                                    else logger(`Added ${args[0]} with bot${i} as friend.`)
+                                    if (err) logger(`error adding ${args[0]} with bot${i}: ${err}`) 
+                                        else logger(`Added ${args[0]} with bot${i} as friend.`)
                                 })
-                                
+
                                 controller.friendlistcapacitycheck(i); //check remaining friendlist space
                             }, 5000 * i);
                         } else {

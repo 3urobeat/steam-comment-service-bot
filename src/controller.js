@@ -19,13 +19,13 @@ const nedb = require("nedb")
 
 var updater = require('./updater.js')
 var b = require('./bot.js');
-var logininfo = require('../logininfo.json');
 var config = require('../config.json');
 var extdata = require('./data.json');
 var cache = require('./cache.json')
 
 var communityobject = {}
 var botobject = {}
+var logininfo = {}
 var readyafterlogs = []
 var bootstart = 0
 var bootstart = new Date();
@@ -80,6 +80,14 @@ var logger = (str, nodate, remove) => { //Custom logger
 
 var steamGuardInputTimeFunc = (arg) => { steamGuardInputTime += arg } //small function to return new value from bot.js
 
+//Check logininfo for Syntax errors and display custom error message
+try {
+    logininfo = require("../logininfo.json")
+} catch (err) {
+    logger("Error: It seems like you made a mistake in your logininfo.json. Please check if your Syntax looks exactly like in the example/template and try again.\nError: " + err, true)
+    process.exit(1)
+}
+
 //Either use logininfo.json or accounts.txt:
 if (fs.existsSync("./accounts.txt")) {
     var data = fs.readFileSync("./accounts.txt", "utf8").split("\n")
@@ -89,6 +97,7 @@ if (fs.existsSync("./accounts.txt")) {
 
         logininfo = {} //Empty other object
         data.forEach((e, i) => {
+            if (e.length < 2) return; //if the line is empty ignore it to avoid issues like this: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/80
             e = e.split(":")
             e[e.length - 1] = e[e.length - 1].replace("\r", "") //remove Windows next line character from last index (which has to be the end of the line)
             logininfo["bot" + i] = [e[0], e[1], e[2]]
@@ -179,7 +188,7 @@ var isSteamOnline = function isSteamOnline(continuewithlogin, stoponerr, throwti
 
 /* ------------ Checks & co: ------------ */
 logger("Checking config for 3urobeat's leftovers...", false, true)
-if ((process.env.LOGNAME !== 'tomg' && process.env.LOGNAME !== 'pi' && process.env.USER !== 'tom') || (require('os').hostname() !== 'Toms-Hoellenmaschine' && require('os').hostname() !== 'raspberrypi' && require('os').hostname() !== 'Toms-Thinkpad')) { //remove myself from config on different computer
+if ((process.env.LOGNAME !== 'tomg' && process.env.LOGNAME !== 'pi') || (require('os').hostname() !== 'Toms-Hoellenmaschine' && require('os').hostname() !== 'raspberrypi' && require('os').hostname() !== 'TomsThinkpad')) { //remove myself from config on different computer
     let write = false;
     if (config.owner.includes(extdata.mestr)) { config.owner = ""; write = true } 
     if (config.ownerid.includes("76561198260031749")) { config.ownerid.splice(config.ownerid.indexOf("76561198260031749"), 1); write = true } 
@@ -573,7 +582,7 @@ var readyinterval = setInterval(() => { //log startup to console
                             if (j == 0) botobject[0].chat.sendFriendMessage(new SteamID(e.id), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
 
                             botobject[f].removeFriend(new SteamID(e.id)) //unfriend user with each bot
-                            logger(`Unfriended ${e.id} after ${config.unfriendtime} days of inactivity.`)
+                            logger(`[Bot ${j}] Unfriended ${e.id} after ${config.unfriendtime} days of inactivity.`)
                         }
                         
                         if (!config.ownerid.includes(e.id)) lastcomment.remove({ id: e.id }) //entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
@@ -604,7 +613,7 @@ var readyinterval = setInterval(() => { //log startup to console
             })
             
             app.get('/comment', (req, res) => {
-                let ip = String(req.headers['x-forwarded-for'] || req.connection.remoteAddress).replace("::ffff:", "") //get IP of visitor
+                let ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress).replace("::ffff:", "") //get IP of visitor
 
                 if (req.query.n == undefined) {
                     logger(`Web Request by ${ip} denied. Reason: numberofcomments (n) is not specified.`)
