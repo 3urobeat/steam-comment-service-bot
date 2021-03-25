@@ -118,6 +118,12 @@ function downloadandupdate(url, name, compatibilityfeaturedone, callback) {
     }
 }
 
+/**
+ * Checks for an available update from the GitHub repo
+ * @param {Boolean} forceupdate Force an update
+ * @param {Object} responseSteamID If defined bot0 will respond to that steamID telling if an update was found
+ * @param {Boolean} compatibilityfeaturedone Only works with forceupdate! Changes compatibilityfeaturedone in data.json to true
+ */
 var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) => {
     try {
         /* ------------------ Check for new version ------------------ */
@@ -126,13 +132,13 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
             res.setEncoding('utf8');
 
             res.on('data', function(chunk) {
-                var onlineversion = JSON.parse(chunk).version //parse version number from get request
+                var onlineversion = Number(JSON.parse(chunk).version) //parse version number from get request
                 var onlineversionstr = JSON.parse(chunk).versionstr
 
                 module.exports.onlinemestr = JSON.parse(chunk).mestr //get mestr and aboutstr from GitHub to check for modification
                 module.exports.onlineaboutstr = JSON.parse(chunk).aboutstr
 
-                if (onlineversion > extdata.version || forceupdate == true || releasemode == "beta-testing" && !onlineversion.includes("BETA") && extdata.version.includes("BETA") || releasemode == "beta-testing" && onlineversion.includes("BETA") && !extdata.version.includes("BETA")) { //version number greater or forceupdate is true?
+                if (onlineversion > Number(extdata.version) || forceupdate == true || releasemode == "beta-testing" && !onlineversionstr.includes("BETA") && extdata.versionstr.includes("BETA") || releasemode == "beta-testing" && onlineversionstr.includes("BETA") && !extdata.versionstr.includes("BETA")) { //version number greater or forceupdate is true?
                     logger("", true)
                     logger(`\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${extdata.versionstr}\x1b[0m | New version: \x1b[32m${onlineversionstr}\x1b[0m`, true)
                     logger("", true)
@@ -421,7 +427,7 @@ function compatibilityfeatures() {
     //Compatibility features
     try { //this is sadly needed when updating to 2.10 because I forgot in 2.9.x to set compatibilityfeature to false again which completly skips the comp feature
         var extdata = require("./data.json")
-        if (extdata.firststart && fs.existsSync('./src/lastcomment.json') && (extdata.version == "2100" || extdata.version == "BETA 2.10 b5")) extdata.compatibilityfeaturedone = false
+        if (extdata.firststart && fs.existsSync('./src/lastcomment.json') && (extdata.version == "2100" || extdata.versionstr == "BETA 2.10 b5")) extdata.compatibilityfeaturedone = false
     } catch (err) { } //eslint-disable-line
 
     if (!fs.existsSync('./src')) { //this has to trigger if user was on version <2.6
@@ -500,7 +506,7 @@ function compatibilityfeatures() {
             checkforupdate(true) 
         }
 
-    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2.8" || extdata.version == "BETA 2.8 b3")) {
+    } else if (!extdata.compatibilityfeaturedone && (extdata.versionstr == "2.8" || extdata.versionstr == "BETA 2.8 b3")) {
         if (fs.existsSync('./updater.js')) {
             logger("Applying 2.8 compatibility changes...")
 
@@ -512,7 +518,7 @@ function compatibilityfeatures() {
             checkforupdate(true, null, true) 
         }
 
-    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2100" || extdata.version == "BETA 2.10 b5")) {
+    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2100" || extdata.versionstr == "BETA 2.10 b5")) {
         logger("Applying 2.10 compatibility changes...")
 
         if (fs.existsSync('./src/lastcomment.json')) {     
@@ -538,6 +544,21 @@ function compatibilityfeatures() {
 
         logger("I will now update again. Please wait a moment...")
         checkforupdate(true, null, true)
+
+    } else if (!extdata.compatibilityfeaturedone && extdata.version == "2103" && config.globalcommentcooldown != 10) {
+        config.globalcommentcooldown = config.globalcommentcooldown / 60000
+
+        fs.writeFile('./config.json', JSON.stringify(config, null, 2), (err) => { 
+            if (err) logger("Error writing converted globalcommentcooldown to config. Please change globalcommentcooldown in the config to 10 yourself. Error: " + err, true)
+        })
+
+        extdata.compatibilityfeaturedone = true
+
+        fs.writeFile('./src/data.json', JSON.stringify(extdata, null, 2), (err) => { 
+            if (err) logger("Error in compatibilityfeature changing compatibilityfeaturedone to true! Please open 'data.json' in the 'src' folder and do this manually!\nOtherwise this will be retried on every startup. Error: " + err, true)
+        })
+
+        checkforupdate() //check will start the bot afterwards
 
     } else {
         if (releasemode == "beta-testing") logger("\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)

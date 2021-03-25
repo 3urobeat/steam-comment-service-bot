@@ -61,13 +61,13 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
     }
 
     if (config.globalcommentcooldown != 0) { //check for global cooldown
-        if ((Date.now() - commentedrecently) < config.globalcommentcooldown) {
-            var remainingglobalcooldown = Math.abs((((Date.now() - commentedrecently)) - (config.globalcommentcooldown)) / 1000)
+        if ((Date.now() - commentedrecently) < (config.globalcommentcooldown * 60000)) {
+            var remainingglobalcooldown = Math.abs(((Date.now() - commentedrecently) - (config.globalcommentcooldown * 60000)) / 1000)
             var remainingglobalcooldownunit = "seconds"
             if (remainingglobalcooldown > 120) { var remainingglobalcooldown = remainingglobalcooldown / 60; var remainingglobalcooldownunit = "minutes" }
             if (remainingglobalcooldown > 120) { var remainingglobalcooldown = remainingglobalcooldown / 60; var remainingglobalcooldownunit = "hours" }
 
-            respondmethod(403, lang.commentglobaloncooldown.replace("remainingglobalcooldown", controller.round(remainingglobalcooldown, 2)).replace("timeunit", remainingglobalcooldownunit)) //send error message
+            respondmethod(403, lang.commentglobaloncooldown.replace("globalcommentcooldown", config.globalcommentcooldown).replace("remainingglobalcooldown", controller.round(remainingglobalcooldown, 2)).replace("timeunit", remainingglobalcooldownunit)) //send error message
             return; } }
 
     /* --------- Check numberofcomments argument if it was provided --------- */
@@ -143,7 +143,12 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
         var breakloop = false
         failedcomments[requesterSteamID] = {}
         activecommentprocess.push(requesterSteamID)
-        callback(failedcomments, activecommentprocess, commentedrecently, commentcounter) //callback updated acp
+
+        if (config.globalcommentcooldown !== 0) { //activate globalcommentcooldown
+            commentedrecently = Date.now() + (numberofcomments + config.commentdelay) //globalcommentcooldown should start after the last comment was processed
+        }
+
+        callback(failedcomments, activecommentprocess, commentedrecently, commentcounter) //callback updated acp and cr
 
         function comment(k, i) {
             setTimeout(() => {
@@ -152,9 +157,14 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                 if (!activecommentprocess.includes(requesterSteamID)) { //Check if user is not anymore in activecommentprocess array (for example by using !abort)
                     failedcomments[requesterSteamID][`Comment ${i} (bot${k})`] = "Skipped because user aborted comment process." //push reason to failedcomments obj
                     return; } //Stop further execution and skip to next iteration
-    
-                if (Object.values(failedcomments[requesterSteamID]).includes("postUserComment error: Error: HTTP error 429")) { //Check if we got IP blocked (cooldown) by checking for a HTTP 429 error pushed into the failedcomments array by a previous iteration and send message
-                    if (!Object.values(failedcomments[requesterSteamID]).includes("postUserComment error: Skipped because of previous HTTP 429 error.")) { //send chat.sendFriendMessage only the first time
+
+                //regex is confusing so I hope this pattern isn't too terrible
+                let regexPattern1 = /postUserComment error: Error: HTTP error 429.*\n.*/gm //Thanks: https://stackoverflow.com/a/49277142
+                let regexPattern2 = /postUserComment error: Skipped because of previous HTTP 429 error.*/gm
+
+                //Array.includes() needs an exact match and since we already want to match with only a part of the string we can do it using Array.some() and regex
+                if (Object.values(failedcomments[requesterSteamID]).some(e => regexPattern1.test(e))) { //Check if we got IP blocked (cooldown) by checking for a HTTP 429 error pushed into the failedcomments array by a previous iteration and send message
+                    if (!Object.values(failedcomments[requesterSteamID]).some(e => regexPattern2.test(e))) { //send chat.sendFriendMessage only the first time
                         respondmethod(500, `${lang.comment429stop.replace("failedamount", numberofcomments - i + 1).replace("numberofcomments", numberofcomments)}\n\n${lang.commentfailedcmdreference}`) //add !failed cmd reference to message
 
                         //push all other comments to instanly complete the failedcomments obj
@@ -267,12 +277,9 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                             }
 
 
-                            /* --------- Activate globalcooldown & give user cooldown --------- */ 
-                            if (config.globalcommentcooldown !== 0) {
-                                commentedrecently = Date.now() }
-
+                            /* --------- Give user cooldown --------- */ 
                             //add estimated wait time in ms to start the cooldown after the last recieved comment
-                            controller.lastcomment.update({ id: requesterSteamID }, { $set: { time: Date.now() + (((numberofcomments - 1) * config.commentdelay)) } }, {}, (err) => { 
+                            controller.lastcomment.update({ id: requesterSteamID }, { $set: { time: Date.now() + ((numberofcomments - 1) * config.commentdelay) } }, {}, (err) => { 
                                 if (err) logger("Error adding cooldown to user in database! You should probably *not* ignore this error!\nError: " + err) 
                             })
 

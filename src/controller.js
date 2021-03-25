@@ -571,9 +571,9 @@ var readyinterval = setInterval(() => { //log startup to console
 
         var unfriendloop = setInterval(() => { //eslint-disable-line
             if (lastcommentUnfriendCheck + 30000 > Date.now()) return; //last check is more recent than 30 seconds
+            lastcommentUnfriendCheck = Date.now()
 
             lastcomment.find({ time: { $lte: Date.now() - (config.unfriendtime * 86400000) } }, (err, docs) => { //until is a date in ms, so we check if it is less than right now
-                lastcommentUnfriendCheck = Date.now()
                 if (docs.length < 1) return; //nothing found
 
                 docs.forEach((e) => { //take action for all results

@@ -114,16 +114,23 @@ module.exports.run = async (logOnOptions, loginindex) => {
          * @param {Object} res An express response object that will be available if the function is called from the express webserver
          */
         commentcmd = (steamID, args, res) => {
-            controller.lastcomment.findOne({ id: new SteamID(String(steamID)).getSteamID64() }, (err, lastcommentdoc) => {
+            var steam64id = new SteamID(String(steamID)).getSteamID64()
+
+            controller.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {
                 if (!lastcommentdoc) logger("User is missing from database?? How is this possible?! Error maybe: " + err)
 
-                require("./comment.js").run(logger, chatmsg, lang, community, thisbot, steamID, args, res, lastcommentdoc, failedcomments, activecommentprocess, lastcommentrequestmsg, commentedrecently, commentcounter, lastsuccessfulcomment, (fc, acp, cr, cc) => { //callback transports stuff back to be able to store the stuff here
-                    failedcomments = fc //update failedcomments
-                    activecommentprocess = acp
-                    module.exports.activecommentprocess = acp //update exported value so that updater knows whats up
-                    commentedrecently = cr
-                    commentcounter = cc
-                })
+                try { //catch any unhandled error to be able to remove user from activecommentprocess array
+                    require("./comment.js").run(logger, chatmsg, lang, community, thisbot, steamID, args, res, lastcommentdoc, failedcomments, activecommentprocess, lastcommentrequestmsg, commentedrecently, commentcounter, lastsuccessfulcomment, (fc, acp, cr, cc) => { //callback transports stuff back to be able to store the stuff here
+                        failedcomments = fc //update failedcomments
+                        activecommentprocess = acp
+                        module.exports.activecommentprocess = acp //update exported value so that updater knows whats up
+                        commentedrecently = cr
+                        commentcounter = cc
+                    })
+                } catch (err) {
+                    activecommentprocess = activecommentprocess.filter(item => item != steam64id) //Remove user from array to make sure you can't get stuck in there (not perfect as this won't trigger when the error occurrs in a nested function)
+                    logger("Error while processing comment request: " + err)
+                }
             })
         }
     }
@@ -392,8 +399,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
         if (!ownercheck) lastmessage[steam64id][1]++ //push new message to array if user isn't an owner
 
-
-        logger(`[${thisbot}] Friend message from ${steam64id}: ${message}`); //log message
+        //log friend message but cut it if it is >= 75 chars
+        if (message.length >= 75) logger(`[${thisbot}] Friend message from ${steam64id}: ${message.slice(0, 75) + "..."}`);
+            else logger(`[${thisbot}] Friend message from ${steam64id}: ${message}`);
             
         //Deny non-friends the use of any command
         if (bot.myFriends[steam64id] != 3) return chatmsg(steamID, lang.usernotfriend)
