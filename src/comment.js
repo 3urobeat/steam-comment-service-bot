@@ -145,7 +145,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
         activecommentprocess.push(requesterSteamID)
 
         if (config.globalcommentcooldown !== 0) { //activate globalcommentcooldown
-            commentedrecently = Date.now() + (numberofcomments + config.commentdelay) //globalcommentcooldown should start after the last comment was processed
+            commentedrecently = Date.now() + (numberofcomments * config.commentdelay) //globalcommentcooldown should start after the last comment was processed
         }
 
         callback(failedcomments, activecommentprocess, commentedrecently, commentcounter) //callback updated acp and cr
