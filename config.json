@@ -4,7 +4,7 @@
     "allowcommentcmdusage": true,
     "skipSteamGuard": false,
     "commentcooldown": 5,
-    "globalcommentcooldown": 90000,
+    "globalcommentcooldown": 10,
     "repeatedComments": 2,
     "randomizeAccounts": false,
     "unfriendtime": 31,
