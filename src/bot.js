@@ -19,6 +19,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
     var commandcooldown = 12000 //The bot won't respond if a user sends more than 5 messages in this time frame
     var maxLogOnRetries = 1 //How often a failed logOn will be retried
+    var lastWebSessionRefresh = Date.now(); //Track when the last refresh was to avoid spamming webLogOn() on sessionExpired
     var logger = controller.logger
     var lang = controller.lang
     var commentedrecently = 0; //global cooldown for the comment command
@@ -293,6 +294,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
     bot.on("webSession", (sessionID, cookies) => { //get websession (log in to chat)
         community.setCookies(cookies); //set cookies (otherwise the bot is unable to comment)
+
         if (loginindex == 0) controller.botobject[0]["configgroup64id"] = configgroup64id //export configgroup64id to access it from controller.js when botsgroup == yourgroup
         controller.accisloggedin = true; //set to true to log next account in
 
@@ -300,6 +302,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
         logger(`[${thisbot}] Got websession and set cookies.`, false, true)
         logger(`[${thisbot}] Accepting offline friend & group invites...`, false, true)
 
+        //Friends:
         for (let i = 0; i < Object.keys(bot.myFriends).length; i++) { //Credit: https://dev.doctormckay.com/topic/1694-accept-friend-request-sent-in-offline/  
             if (bot.myFriends[Object.keys(bot.myFriends)[i]] == 2) {
                 bot.addFriend(Object.keys(bot.myFriends)[i]); //accept friend request
@@ -325,6 +328,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
             } 
         }
 
+        //Groups:
         for (let i = 0; i < Object.keys(bot.myGroups).length; i++) {
             if (bot.myGroups[Object.keys(bot.myGroups)[i]] == 2) {
                 if (config.acceptgroupinvites !== true) { //check if group accept is false
@@ -434,10 +438,10 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 case '!h':
                 case '!help':
                     if (ownercheck) {
-                        if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commenttext = `'!comment (amount/"all") [profileid] [custom, quotes]' - Request x many or the max amount of comments (max ${Object.keys(controller.communityobject).length * config.repeatedComments}). Provide a profileid to comment on a specific profile.`
+                        if (Object.keys(controller.communityobject).length > 1 || config.maxOwnerComments) var commenttext = `'!comment (amount/"all") [profileid] [custom, quotes]' - Request x many or the max amount of comments (max ${config.maxOwnerComments}). Provide a profileid to comment on a specific profile.`
                             else var commenttext = `'!comment ("1") [profileid] [custom, quotes]' - Request 1 comment (max amount with current settings). Provide a profile id to comment on a specific profile.`
                     } else {
-                        if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commenttext = `'!comment (amount/"all")' - Request x many or the max amount of comments (max ${Object.keys(controller.communityobject).length * config.repeatedComments}).`
+                        if (Object.keys(controller.communityobject).length > 1 || config.maxComments) var commenttext = `'!comment (amount/"all")' - Request x many or the max amount of comments (max ${config.maxComments}).`
                             else var commenttext = `'!comment' - Request a comment on your profile!` 
                     }
 
@@ -502,9 +506,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
                             chatmsg(steamID, `
                                 -----------------------------------~~~~~------------------------------------ 
                                 >   ${extdata.mestr}'s Comment Bot [Version ${extdata.versionstr}] (More info: !about)
-                                >   Uptime: ${Number(Math.round(((new Date() - controller.bootstart) / 3600000)+'e'+2)+'e-'+2)} hours
+                                >   Uptime: ${Number(Math.round(((new Date() - controller.bootstart) / 3600000)+'e'+2)+'e-'+2)} hours | Branch: ${extdata.branch}
                                 >   'node.js' Version: ${process.version} | RAM Usage (RSS): ${Math.round(process.memoryUsage()["rss"] / 1024 / 1024 * 100) / 100} MB
-                                >   Accounts logged in: ${Object.keys(controller.communityobject).length} | repeatedComments: ${config.repeatedComments} | Branch: ${extdata.branch}
+                                >   Accounts: ${Object.keys(controller.communityobject).length} | maxComments/owner: ${config.maxComments}/${config.maxOwnerComments} | delay: ${config.commentdelay}
                                 |
                                 >   Your steam64ID: ${steam64id}
                                 >   Your last comment request: ${(new Date(doc.time)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)
@@ -611,14 +615,17 @@ module.exports.run = async (logOnOptions, loginindex) => {
                         if (args[1] == "true") args[1] = true
                         if (args[1] == "false") args[1] = false //could have been worse tbh
                     }
-                    
+
+                    //round maxComments value in order to avoid the possibility of weird amounts
+                    if (args[0] == "maxComments" || args[0] == "maxOwnerComments") args[1] = Math.round(args[1])
+
                     if (keyvalue == undefined) return chatmsg(steamID, lang.settingscmdkeynotfound)
                     if (keyvalue == args[1]) return chatmsg(steamID, lang.settingscmdsamevalue.replace("value", args[1]))
 
                     config[args[0]] = args[1] //apply changes
 
                     //32-bit integer limit check from controller.js's startup checks
-                    if (typeof(keyvalue) == "number" && config.commentdelay * config.repeatedComments * Object.keys(controller.logininfo).length > 2147483647) { //check this here after the key has been set and reset the changes if it should be true
+                    if (typeof(keyvalue) == "number" && config.commentdelay * config.maxComments > 2147483647 || typeof(keyvalue) == "number" && config.commentdelay * config.maxOwnerComments > 2147483647) { //check this here after the key has been set and reset the changes if it should be true
                         config[args[0]] = keyvalue
                         return chatmsg(steamID, lang.settingscmdvaluetoobig) //Just using the check from controller.js
                     }
@@ -669,6 +676,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     if (isNaN(args[0])) return chatmsg(steamID, lang.invalidprofileid)
                     if (new SteamID(args[0]).isValid() === false) return chatmsg(steamID, lang.invalidprofileid)
 
+                    //Check if first bot account is limited to be able to display error message instantly
                     if (controller.botobject[0].limitations && controller.botobject[0].limitations.limited == true) {
                         chatmsg(steamID, lang.addfriendcmdacclimited.replace("profileid", args[0])) 
                         return; 
@@ -678,7 +686,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     logger(`Adding friend ${args[0]} with all bot accounts... This will take ~${5 * Object.keys(controller.botobject).length} seconds.`)
 
                     Object.keys(controller.botobject).forEach((i) => {
-                        if (controller.botobject[0].limitations && controller.botobject[i].limitations.limited == true) {
+                        //Check if this bot account is limited
+                        if (controller.botobject[i].limitations && controller.botobject[i].limitations.limited == true) {
                             logger(`Can't add friend ${args[0]} with bot${i} because the bot account is limited.`) 
                             return;
                         }
@@ -848,7 +857,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     if (!ownercheck) return notownerresponse();
 
                     chatmsg(steamID, lang.restartcmdrestarting)
-                    require('../start.js').restart(updater.skippedaccounts)
+                    require('../start.js').restart({ skippedaccounts: updater.skippedaccounts })
                     break;
 
                 case '!stop':
@@ -920,8 +929,18 @@ module.exports.run = async (logOnOptions, loginindex) => {
         }
     });
 
+    //Display message when connection was lost to Steam
     bot.on("disconnected", (eresult, msg) => {
         logger(`\x1b[31m[${thisbot}] Lost connection to Steam. Bot should relog automatically. Message: ${msg} | Check: https://steamstat.us\x1b[0m`) 
+    })
+
+    //Get new websession as sometimes the bot would relog after a lost connection but wouldn't get a websession. Read more about cookies & expiration: https://dev.doctormckay.com/topic/365-cookies/
+    community.on("sessionExpired", () => {
+        if (Date.now() - lastWebSessionRefresh < 15000) return; //last refresh was 15 seconds ago so ignore this call
+
+        logger(`[${thisbot}] Session seems to be expired. Trying to get new websession...`)
+        lastWebSessionRefresh = Date.now() //update time
+        bot.webLogOn()
     })
 
     module.exports={

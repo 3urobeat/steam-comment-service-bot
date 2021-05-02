@@ -1,4 +1,5 @@
 {
+    "_help_": "Read the docs: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Config-documentation",
     "disableautoupdate": false,
     "commentdelay": 15000,
     "allowcommentcmdusage": true,
@@ -6,6 +7,8 @@
     "commentcooldown": 5,
     "globalcommentcooldown": 10,
     "repeatedComments": 2,
+    "maxComments": 0,
+    "maxOwnerComments": 0,
     "randomizeAccounts": false,
     "unfriendtime": 31,
     "playinggames": ["!help | 3urobeat", 440, 730],
@@ -16,5 +19,5 @@
     "owner": "https://steamcommunity.com/id/3urobeat",
     "ownerid": ["76561198260031749"],
     "enableevalcmd": false,
-    "enableurltocomment": true
+    "enableurltocomment": false
 }
