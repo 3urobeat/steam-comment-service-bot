@@ -44,6 +44,8 @@ var logger = (str, nodate, remove) => { //Custom logger
 
 //start.js restart function calls this function and provides any data that should be kept over restarts
 var restartdata = (data) => {
+    if (!Object.keys(data).includes("skippedaccounts")) return; //stop any further execution if data structure is <2.10.4 (only an array containing skippedaccounts)
+
     if (data.oldconfig) oldconfig = data.oldconfig //eslint-disable-line
     module.exports.skippedaccounts = data.skippedaccounts
 }
