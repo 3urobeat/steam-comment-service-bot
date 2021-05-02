@@ -6,6 +6,7 @@
 const fs = require('fs')
 const https = require("https")
 const readline = require("readline")
+var oldconfig = {} //obj that can get populated by restart data to keep config through restarts
 var skippedaccounts = [] //array to save which accounts have been skipped to skip them automatically when restarting
 var botisloggedin = false
 var activeupdate = false
@@ -41,8 +42,12 @@ var logger = (str, nodate, remove) => { //Custom logger
     }) 
 }
 
+//start.js restart function calls this function and provides any data that should be kept over restarts
 var restartdata = (data) => {
-    module.exports.skippedaccounts = data 
+    if (!Object.keys(data).includes("skippedaccounts")) return; //stop any further execution if data structure is <2.10.4 (only an array containing skippedaccounts)
+
+    if (data.oldconfig) oldconfig = data.oldconfig //eslint-disable-line
+    module.exports.skippedaccounts = data.skippedaccounts
 }
 
 //Should keep the bot at least from crashing
@@ -282,7 +287,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                                 logger("\x1b[32mUpdate finished. Restarting myself in 5 seconds...\x1b[0m", true);
                                 setTimeout(() => {
                                     module.exports.activeupdate = false
-                                    require('../start.js').restart(skippedaccounts, true); //restart the bot
+                                    require('../start.js').restart({ skippedaccounts: skippedaccounts, oldconfig: config }, true); //restart the bot and remember clone of oldconfig
                                 }, 5000); 
                             })                                    
                         } catch (err) { 
@@ -548,13 +553,42 @@ function compatibilityfeatures() {
     } else if (!extdata.compatibilityfeaturedone && extdata.version == "2103" && config.globalcommentcooldown != 10) {
         config.globalcommentcooldown = config.globalcommentcooldown / 60000
 
-        fs.writeFile('./config.json', JSON.stringify(config, null, 2), (err) => { 
+        fs.writeFile('./config.json', JSON.stringify(config, null, 4), (err) => { 
             if (err) logger("Error writing converted globalcommentcooldown to config. Please change globalcommentcooldown in the config to 10 yourself. Error: " + err, true)
         })
 
         extdata.compatibilityfeaturedone = true
 
-        fs.writeFile('./src/data.json', JSON.stringify(extdata, null, 2), (err) => { 
+        fs.writeFile('./src/data.json', JSON.stringify(extdata, null, 4), (err) => { 
+            if (err) logger("Error in compatibilityfeature changing compatibilityfeaturedone to true! Please open 'data.json' in the 'src' folder and do this manually!\nOtherwise this will be retried on every startup. Error: " + err, true)
+        })
+
+        checkforupdate() //check will start the bot afterwards
+
+    } else if (!extdata.compatibilityfeaturedone && extdata.version == "2104") {
+        let logininfo = require("../logininfo.json")
+        
+        config.maxComments = Object.keys(logininfo).length * config.repeatedComments //calculate new value which is just amount_of_accounts * repeatedComments
+        config.maxOwnerComments = config.maxComments //set max comments allowed for owners to the same value - user can configure it differently later if he/she/it wishes to
+        delete config.repeatedComments //remove value from config as it got removed with 2.10.4
+
+        var stringifiedconfig = JSON.stringify(config,function(k,v) { //Credit: https://stackoverflow.com/a/46217335/12934162
+            if(v instanceof Array)
+            return JSON.stringify(v);
+            return v; 
+        }, 4)
+            .replace(/"\[/g, '[')
+            .replace(/\]"/g, ']')
+            .replace(/\\"/g, '"')
+            .replace(/""/g, '""');
+
+        fs.writeFile('./config.json', stringifiedconfig, (err) => { 
+            if (err) logger("Error writing converted globalcommentcooldown to config. Please change globalcommentcooldown in the config to 10 yourself. Error: " + err, true)
+        })
+
+        extdata.compatibilityfeaturedone = true //set compatibilityfeaturedone to true here because we don't need to make another force update through checkforupdate() which would be necessary in order to set it to true from there
+
+        fs.writeFile('./src/data.json', JSON.stringify(extdata, null, 4), (err) => { 
             if (err) logger("Error in compatibilityfeature changing compatibilityfeaturedone to true! Please open 'data.json' in the 'src' folder and do this manually!\nOtherwise this will be retried on every startup. Error: " + err, true)
         })
 

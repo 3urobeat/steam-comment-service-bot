@@ -109,7 +109,17 @@ if (fs.existsSync("./accounts.txt")) {
 var quotes = []
 var quotes = fs.readFileSync('quotes.txt', 'utf8').split("\n") //get all quotes from the quotes.txt file into an array
 var quotes = quotes.filter(str => str != "") //remove empty quotes as empty comments will not work/make no sense
-quotes.forEach((e, i) => { quotes[i] = e.replace(/\\n/g, "\n").replace("\\n", "\n") }) //multi line strings that contain \n will get splitted to \\n -> remove second \ so that node-steamcommunity understands the quote when commenting
+
+quotes.forEach((e, i) => { //multi line strings that contain \n will get splitted to \\n -> remove second \ so that node-steamcommunity understands the quote when commenting
+    if (e.length > 999) {
+        logger(`The quote.txt line ${i} is longer than the limit of 999 characters. This quote will be ignored for now.`, true)
+        quotes.splice(i, 1) //remove this item from the array
+        return;
+    }
+
+    quotes[i] = e.replace(/\\n/g, "\n").replace("\\n", "\n")
+})
+
 logger(`${quotes.length} quotes found.`, false, true)
 
 if (quotes.length == 0) { //check if quotes.txt is empty to avoid errors further down when trying to comment
@@ -216,33 +226,43 @@ if ((process.env.LOGNAME !== 'tomg' && process.env.LOGNAME !== 'pi') || (require
     }
 }
 
-if(updater.onlinemestr!==extdata.mestr||updater.onlineaboutstr!==extdata.aboutstr){extdata.mestr=updater.onlinemestr;extdata.aboutstr=updater.onlineaboutstr;fs.writeFile("./src/data.json",JSON.stringify(extdata,null,4),()=>{});var checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<";logger("Modification detected. Restarting...",true,true);logger("",true);require('../start.js').restart([],true);stoplogin=true}else{var checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"}
+if(updater.onlinemestr!==extdata.mestr||updater.onlineaboutstr!==extdata.aboutstr){extdata.mestr=updater.onlinemestr;extdata.aboutstr=updater.onlineaboutstr;fs.writeFile("./src/data.json",JSON.stringify(extdata,null,4),()=>{});var checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<";logger("Modification detected. Restarting...",true,true);logger("",true);require('../start.js').restart({},true);stoplogin=true}else{var checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"}
 
 //Check config values:
 if (stoplogin == true) return;
 logger("Checking for invalid config values...", false, true)
 
+config.maxComments = Math.round(config.maxComments) //round maxComments number everytime to avoid user being able to set weird numbers (who can comment 4.8 times? right - no one)
+config.maxOwnerComments = Math.round(config.maxOwnerComments)
+
+var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
+if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
+
 if (config.allowcommentcmdusage === false && new SteamID(String(config.ownerid[0])).isValid() === false) {
     logger("\x1b[31mYou set allowcommentcmdusage to false but didn't specify an ownerid! Aborting...\x1b[0m", true)
     process.exit(0); 
 }
-if (config.repeatedComments < 1) {
-    logger("\x1b[31mYour repeatedComments value in config.json can't be smaller than 1! Automatically setting it to 1...\x1b[0m", true)
-    config.repeatedComments = 1 
+if (config.maxComments < 1) {
+    logger("\x1b[31mYour maxComments value in config.json can't be smaller than 1! Automatically setting it to 1...\x1b[0m", true)
+    config.maxComments = 1
 }
-if (config.commentdelay / (config.repeatedComments * Object.keys(logininfo).length / 2) < 1250) {
-    logger("\x1b[0m[\x1b[31mWarning\x1b[0m]: \x1b[31mYou have raised repeatedComments but I would recommend to raise the commentdelay further. Not increasing the commentdelay further raises the probability to get cooldown errors from Steam.\x1b[0m", true) 
+if (config.maxOwnerComments < 1) {
+    logger("\x1b[31mYour maxOwnerComments value in config.json can't be smaller than 1! Automatically setting it to 1...\x1b[0m", true)
+    config.maxOwnerComments = 1
+}
+if (config.commentdelay / (maxCommentsOverall / 2) < 1250) {
+    logger("\x1b[0m[\x1b[31mWarning\x1b[0m]: \x1b[31mYou have raised maxComments or maxOwnerComments but I would recommend to raise the commentdelay further. Not increasing the commentdelay further raises the probability to get cooldown errors from Steam.\x1b[0m", true) 
 }
 if (logininfo.bot0 == undefined) { //check real quick if logininfo is empty
     logger("\x1b[31mYour logininfo doesn't contain a bot0 or is empty! Aborting...\x1b[0m", true); 
     process.exit(0) 
 }
-if (config.commentdelay * config.repeatedComments * Object.keys(logininfo).length > 2147483647) { //check for 32-bit integer limit for commentcmd timeout
-    logger("\x1b[31mYour repeatedComments and/or commentdelay value in the config are too high.\nPlease lower these values so that 'commentdelay * repeatedComments * amount_of_accounts' is not bigger than 2147483647.\n\nThis will otherwise cause an error when trying to comment (32-bit integer limit). Aborting...\x1b[0m\n", true)
+if (config.commentdelay * maxCommentsOverall > 2147483647) { //check for 32-bit integer limit for commentcmd timeout
+    logger("\x1b[31mYour maxComments and/or maxOwnerComments and/or commentdelay value in the config are too high.\nPlease lower these values so that 'commentdelay * maxComments' is not bigger than 2147483647.\n\nThis will otherwise cause an error when trying to comment (32-bit integer limit). Aborting...\x1b[0m\n", true)
     process.exit(0) 
 }
-if (config.randomizeAccounts && Object.keys(logininfo).length <= 5 && config.repeatedComments > 1) {
-    logger("\x1b[0m[\x1b[31mWarning\x1b[0m]: \x1b[31mI wouldn't recommend using randomizeAccounts with 5 or less accounts when repeatedComments is greater than 1. The chance of an account getting a cooldown could be higher. Please make sure your commentdelay is set a adequately to reduce the chance of this happening.\x1b[0m", true) 
+if (config.randomizeAccounts && Object.keys(logininfo).length <= 5 && maxCommentsOverall > 10) {
+    logger("\x1b[0m[\x1b[31mWarning\x1b[0m]: \x1b[31mI wouldn't recommend using randomizeAccounts with 5 or less accounts when each account can/has to comment multiple times. The chance of an account getting a cooldown is higher. Please make sure your commentdelay is set adequately to reduce the chance of this happening.\x1b[0m", true) 
 }
 
 if (stoplogin == true) return;
@@ -361,7 +381,12 @@ function startlogin() { //function will be called when steamcommunity status che
             var startnextinterval = setInterval(() => { //check if previous account is logged in
                 if (module.exports.accisloggedin == true && i == Object.keys(botobject).length + skippednow.length || module.exports.accisloggedin == true && skippednow.includes(i - 1)) { //i is being counted from 0, length from 1 -> checks if last iteration is as long as botobject
                     clearInterval(startnextinterval)
-                    if (updater.skippedaccounts.includes(i)) { logger(`[skippedaccounts] Automatically skipped ${k}!`, false, true); skippednow.push(i); return; } //if this iteration exists in the skippedaccounts array, automatically skip acc again
+
+                    if (updater.skippedaccounts.includes(i)) { //if this iteration exists in the skippedaccounts array, automatically skip acc again
+                        logger(`[skippedaccounts] Automatically skipped ${k}!`, false, true);
+                        skippednow.push(i);
+                        return;
+                    } 
 
                     if (i > 0) logger(`Waiting ${logindelay / 1000} seconds... (config logindelay)`, false, true) //first iteration doesn't need to wait duh
 
@@ -376,7 +401,8 @@ function startlogin() { //function will be called when steamcommunity status che
 
                         //If a shared secret was provided in the logininfo then add it to logOnOptions object
                         if (logininfo[k][2] && logininfo[k][2] != "" && logininfo[k][2] != "shared_secret") { 
-                            logOnOptions["twoFactorCode"] = SteamTotp.generateAuthCode(logininfo[k][2]) }
+                            logOnOptions["twoFactorCode"] = SteamTotp.generateAuthCode(logininfo[k][2])
+                        }
 
                         b.run(logOnOptions, i); //run bot.js with corresponding account
                     }, logindelay) 
@@ -398,9 +424,9 @@ var readyinterval = setInterval(() => { //log startup to console
         logger('*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*', true)
         logger(`\x1b[95m>\x1b[0m \x1b[96m${logininfo.bot0[0]}\x1b[0m version \x1b[96m${extdata.versionstr}\x1b[0m by ${extdata.mestr} logged in.`, true)
 
-        if (config.repeatedComments > 3) var repeatedComments = `\x1b[4m\x1b[31m${config.repeatedComments}\x1b[0m` 
-            else var repeatedComments = config.repeatedComments
-        logger(`\x1b[94m>\x1b[0m ${Object.keys(communityobject).length - 1} child accounts | User can request ${repeatedComments} comments per Acc`, true)
+        if (maxCommentsOverall > 3) var repeatedCommentsStr = `\x1b[4m\x1b[31m${maxCommentsOverall / Object.keys(botobject).length}\x1b[0m` 
+            else var repeatedCommentsStr = maxCommentsOverall / Object.keys(botobject).length
+        logger(`\x1b[94m>\x1b[0m ${Object.keys(communityobject).length} total account(s) | ${repeatedCommentsStr} comments per account allowed`, true)
 
         //display amount of limited accounts and if automatic updates are turned off
         var limitedaccs = 0
@@ -410,7 +436,7 @@ var readyinterval = setInterval(() => { //log startup to console
                 if (botobject[Object.keys(botobject)[i]].limitations != undefined && botobject[Object.keys(botobject)[i]].limitations.limited != undefined) { //if it should be undefined for what ever reason then rather don't check instead of crash the bot
                     if (botobject[Object.keys(botobject)[i]] != undefined && botobject[Object.keys(botobject)[i]].limitations.limited == true) limitedaccs++ //yes, this way to get the botobject key by iteration looks stupid and is probably stupid but it works and is "compact" (not really but idk)
                 } else { 
-                    logger(`failed to check if bot${i} is limited. Showing account in startup message as unlimited...`, false, true); 
+                    //logger(`failed to check if bot${i} is limited. Showing account in startup message as unlimited...`, false, true); //removed as of now to remove confusion and the message below already shows how many couldn't be checked
                     failedtocheck++ 
                 }
 
@@ -446,6 +472,9 @@ var readyinterval = setInterval(() => { //log startup to console
         logger('*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*', true)
         logger(' ', true)
 
+        //Show disclaimer message to not misuse this bot
+        if (extdata.firststart) logger(`\x1b[0m[\x1b[31mDisclaimer\x1b[0m]: Please don't misuse this bot by spamming or posting malicious comments. Your accounts can get banned from Steam if you do that.\n              You are responsible for the actions of your bot instance.\n`, true)
+        
         if (updater.skippedaccounts.length > 0) logger(`Skipped Accounts: ${updater.skippedaccounts.length}/${Object.keys(logininfo).length}\n`, true)
         if (extdata.firststart) logger(`If you like my work please consider giving my repository a star! I would really appreciate it!\nhttps://github.com/HerrEurobeat/steam-comment-service-bot\n`, true)
 

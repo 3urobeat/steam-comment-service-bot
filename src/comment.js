@@ -4,11 +4,12 @@
 const SteamID = require('steamid');
 var updater = require('./updater.js');
 var controller = require("./controller.js");
-var config = require('../config.json');
 var accstoadd = []
 var lastquotes = [] //array to track last comments
 
 module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, res, lastcommentdoc, failedcomments, activecommentprocess, lastcommentrequestmsg, commentedrecently, commentcounter, lastsuccessfulcomment, callback) => {
+    var config = require('../config.json'); //import config here to refresh settings (so that changing for example commentdelay using the !settings cmd doesn't need a restart to apply the changes)
+
     var requesterSteamID = new SteamID(String(steamID)).getSteamID64() //save steamID of comment requesting user so that messages are being send to the requesting user and not to the reciever if a profileid has been provided
 
     function respondmethod(rescode, msg) { //we need a function to get each response back to the user (web request & steam chat)
@@ -35,13 +36,18 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
     if (config.allowcommentcmdusage === false && !config.ownerid.includes(requesterSteamID)) return respondmethod(403, lang.commentcmdowneronly) 
 
 
-    /* --------- Define command usage messages for each user's privileges --------- */ //Note: Web Comment Requests always use config.ownerid[0]
+    /* --------- Define command usage messages & maxrequestamount for each user's privileges --------- */ //Note: Web Comment Requests always use config.ownerid[0]
+    var maxrequestamount = config.maxComments //set to default value and if the requesting user is an owner it gets changed below
+
     if (ownercheck) {
-        if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commentcmdusage = lang.commentcmdusageowner.replace("maxrequestamount", Object.keys(controller.communityobject).length * config.repeatedComments)
+        maxrequestamount = config.maxOwnerComments
+
+        if (Object.keys(controller.communityobject).length > 1 || maxrequestamount) var commentcmdusage = lang.commentcmdusageowner.replace("maxrequestamount", maxrequestamount) //typed confog here accidentaly and somehow found that really funny
             else var commentcmdusage = lang.commentcmdusageowner2
     } else {
-        if (Object.keys(controller.communityobject).length > 1 || config.repeatedComments > 1) var commentcmdusage = lang.commentcmdusage.replace("maxrequestamount", Object.keys(controller.communityobject).length * config.repeatedComments)
-            else var commentcmdusage = lang.commentcmdusage2 }
+        if (Object.keys(controller.communityobject).length > 1 || maxrequestamount) var commentcmdusage = lang.commentcmdusage.replace("maxrequestamount", maxrequestamount)
+            else var commentcmdusage = lang.commentcmdusage2 
+    }
 
 
     /* ------------------ Check for cooldowns ------------------ */
@@ -74,14 +80,16 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
     if (args[0] !== undefined) {
         if (isNaN(args[0])) { //isn't a number?
             if (args[0].toLowerCase() == "all") {
-                args[0] = Object.keys(controller.communityobject).length * config.repeatedComments //replace the argument with the max amount of comments
+                args[0] = maxrequestamount //replace the argument with the max amount of comments this user is allowed to request
             } else {
                 return respondmethod(400, lang.commentinvalidnumber.replace("commentcmdusage", commentcmdusage)) 
             }
         }
 
-        if (args[0] > Object.keys(controller.communityobject).length * config.repeatedComments) { //number is greater than accounts * repeatedComments?
-            return respondmethod(403, lang.commentrequesttoohigh.replace("maxrequestamount", Object.keys(controller.communityobject).length * config.repeatedComments).replace("commentcmdusage", commentcmdusage)) }
+        if (args[0] > maxrequestamount) { //number is greater than maxrequestamount?
+            return respondmethod(403, lang.commentrequesttoohigh.replace("maxrequestamount", maxrequestamount).replace("commentcmdusage", commentcmdusage)) 
+        }
+
         var numberofcomments = args[0]
 
         //Code by: https://github.com/HerrEurobeat/ 
@@ -108,30 +116,39 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
 
     /* --------- Check if user did not provide numberofcomments --------- */
     if (numberofcomments === undefined) { //no numberofcomments given? ask again
-        if (Object.keys(controller.botobject).length == 1 && config.repeatedComments == 1) { 
+        if (Object.keys(controller.botobject).length == 1 && maxrequestamount == 1) { 
             var numberofcomments = 1 //if only one account is active, set 1 automatically
         } else {
-            respondmethod(400, lang.commentmissingnumberofcomments.replace("maxrequestamount", Object.keys(controller.communityobject).length * config.repeatedComments).replace("commentcmdusage", commentcmdusage))
+            respondmethod(400, lang.commentmissingnumberofcomments.replace("maxrequestamount", maxrequestamount).replace("commentcmdusage", commentcmdusage))
             return; } 
     }
 
 
     /* --------- Check for steamcommunity related errors/limitations --------- */
+    //Randomize order of accounts already here so that the new order will be used for the next limited & not friend check
+    var accountorder = [ ... Object.keys(controller.communityobject)]
+    if (config.randomizeAccounts) accountorder.sort(() => Math.random() - 0.5); //randomize order if enabled in config
+
     //Check all accounts if they are limited and send user profile link if not friends
     accstoadd[requesterSteamID] = []
 
-    for (let i in controller.botobject) {
+    for (let i in accountorder) {       
         if (Number(i) + 1 <= numberofcomments && Number(i) + 1 <= Object.keys(controller.botobject).length) { //only check if this acc is needed for a comment
             try {
-                if (controller.botobject[i].limitations && controller.botobject[i].limitations.limited == true && !Object.keys(controller.botobject[i].myFriends).includes(new SteamID(String(steamID)).getSteamID64())) {
-                    accstoadd[requesterSteamID].push(`\n ' https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[i].steamID)).getSteamID64()} '`) }
+                //if bot account limitations can be read from obj and bot account is limited and hasn't target account in friend list
+                if (controller.botobject[accountorder[i]].limitations && controller.botobject[accountorder[i]].limitations.limited == true && !Object.keys(controller.botobject[accountorder[i]].myFriends).includes(new SteamID(String(steamID)).getSteamID64())) {
+                    accstoadd[requesterSteamID].push(`\n ' https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[accountorder[i]].steamID)).getSteamID64()} '`) //...then push profile URL into array
+                }
             } catch (err) {
-                logger("Error checking if comment requester is friend with limited bot accounts: " + err) } } //This error check was implemented as a temporary solution to fix this error (and should be fine since it seems that this error is rare and at least prevents from crashing the bot): https://github.com/HerrEurobeat/steam-comment-service-bot/issues/54
+                logger("Error checking if comment requester is friend with limited bot accounts: " + err) //This error check was implemented as a temporary solution to fix this error (and should be fine since it seems that this error is rare and at least prevents from crashing the bot): https://github.com/HerrEurobeat/steam-comment-service-bot/issues/54
+            }
+        } 
 
-        if (Number(i) + 1 == numberofcomments && accstoadd[requesterSteamID].length > 0 || Number(i) + 1 == Object.keys(controller.botobject).length && accstoadd[requesterSteamID].length > 0) {
-            respondmethod(403, lang.commentaddbotaccounts.replace("numberofcomments", numberofcomments) + "\n" + accstoadd[requesterSteamID])
-            return; } //stop right here criminal
-    } 
+        if (Number(i) + 1 == numberofcomments && accstoadd[requesterSteamID].length > 0 || Number(i) + 1 == Object.keys(controller.botobject).length && accstoadd[requesterSteamID].length > 0) { //if all accounts needed for this request are processed and at least one account to add was found
+            respondmethod(403, lang.commentaddbotaccounts.replace("numberofcomments", numberofcomments) + "\n" + accstoadd[requesterSteamID]) //send message
+            return; //stop right here criminal
+        }
+    }
 
     community.getSteamUser(steamID, (err, user) => { //check if profile is private
         if (err) {
@@ -146,6 +163,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
 
         if (config.globalcommentcooldown !== 0) { //activate globalcommentcooldown
             commentedrecently = Date.now() + (numberofcomments * config.commentdelay) //globalcommentcooldown should start after the last comment was processed
+            if (numberofcomments == 1) commentedrecently -= config.commentdelay //subtract commentdelay again if only one comment was requested because there is nothing to wait for
         }
 
         callback(failedcomments, activecommentprocess, commentedrecently, commentcounter) //callback updated acp and cr
@@ -237,7 +255,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                                     errordesc = "Please wait a moment and try again!"
                             }
 
-                            if (i == 0) { //If the error occurred on the main bot then stop and return an error message
+                            if (i == 0) { //If the error occurred on the first comment then stop and return an error message
                                 //Get last successful comment time to display it in error message
                                 lastsuccessfulcomment(cb => {
                                     let localoffset = new Date().getTimezoneOffset() * 60000
@@ -252,7 +270,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                                 callback(failedcomments, activecommentprocess.filter(item => item != requesterSteamID), commentedrecently, commentcounter)
                                 return; //stop further execution in this iteration
 
-                            } else { //if the error occurred on a child account then log the error and push the error to failedcomments
+                            } else { //if the error occurred on another account then log the error and push the error to failedcomments
 
                                 logger(`[${thisbot}] postUserComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - reciever: ${new SteamID(String(steamID)).getSteamID64()}`); 
                                 failedcomments[requesterSteamID][`Comment ${i + 1} (bot${k})`] = `postUserComment error: ${error} [${errordesc}]`
@@ -319,8 +337,6 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
 
 
         var k = 0;
-        var accountorder = [ ... Object.keys(controller.communityobject)]
-        if (config.randomizeAccounts) accountorder.sort(() => Math.random() - 0.5); //randomize order if enabled in config
 
         for (var i = 0; i < numberofcomments && !breakloop; i++) {  //run comment process for as many times as numberofcomments when breakloop is false (Remember: i starts to count at 0, noc at 1)
             /* 
