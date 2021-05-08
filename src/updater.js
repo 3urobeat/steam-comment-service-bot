@@ -6,6 +6,13 @@
 const fs = require('fs')
 const https = require("https")
 const readline = require("readline")
+
+//Quickly check if user forgot to run npm install and display custom error message
+if (!fs.existsSync('./node_modules/steam-user') || !fs.existsSync('./node_modules/steamcommunity')) {
+    console.log(`\n\n\x1b[31mIt seems like you haven't installed the needed npm packages yet.\nPlease run the following command in this terminal once: 'npm install'\nAborting...\x1b[0m\n`)
+    process.exit(0) 
+}
+
 var oldconfig = {} //obj that can get populated by restart data to keep config through restarts
 var skippedaccounts = [] //array to save which accounts have been skipped to skip them automatically when restarting
 var botisloggedin = false
@@ -143,7 +150,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                 module.exports.onlinemestr = JSON.parse(chunk).mestr //get mestr and aboutstr from GitHub to check for modification
                 module.exports.onlineaboutstr = JSON.parse(chunk).aboutstr
 
-                if (onlineversion > Number(extdata.version) || forceupdate == true || releasemode == "beta-testing" && !onlineversionstr.includes("BETA") && extdata.versionstr.includes("BETA") || releasemode == "beta-testing" && onlineversionstr.includes("BETA") && !extdata.versionstr.includes("BETA")) { //version number greater or forceupdate is true?
+                if (onlineversion > Number(extdata.version) || forceupdate == true || releasemode == "beta-testing" && !onlineversionstr.includes("BETA") && extdata.versionstr.includes("BETA") || releasemode == "beta-testing" && onlineversionstr.includes("BETA") && !extdata.versionstr.includes("BETA")) { //version number greater, forceupdate is true, release or beta version available?
                     logger("", true)
                     logger(`\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${extdata.versionstr}\x1b[0m | New version: \x1b[32m${onlineversionstr}\x1b[0m`, true)
                     logger("", true)
@@ -172,7 +179,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
 
                             let noresponsetimeout = setTimeout(() => { //skip update after 7.5 sec if the user doesn't respond
                                 updatestdin.pause()
-                                process.stdout.write("\x1b[31mX\n\x1b[93mStarting the bot since you haven't replied in 7.5 seconds...\x1b[0m\n\n", true)
+                                process.stdout.write("\x1b[31mX\n\x1b[93mStarting the bot since you haven't replied in 7.5 seconds...\x1b[0m\n\n")
 
                                 require('./controller.js')
                                 botisloggedin = true
@@ -208,6 +215,8 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                             var activecommentinterval = setInterval(() => { //check if a comment request is being processed every 2.5 secs
                                 if (bot.activecommentprocess.length == 0) { //start logging off accounts when no comment request is being processed anymore
                                     logger("Active comment process finished. Starting to update...", true)
+
+                                    controller.relogAfterDisconnect = false; //Prevents disconnect event (which will be called by logOff) to relog accounts
 
                                     Object.keys(controller.botobject).forEach((e) => {
                                         logger(`Logging off bot${e}...`, false, true)
