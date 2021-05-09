@@ -150,7 +150,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                 module.exports.onlinemestr = JSON.parse(chunk).mestr //get mestr and aboutstr from GitHub to check for modification
                 module.exports.onlineaboutstr = JSON.parse(chunk).aboutstr
 
-                if (onlineversion > Number(extdata.version) || forceupdate == true || releasemode == "beta-testing" && !onlineversionstr.includes("BETA") && extdata.versionstr.includes("BETA") || releasemode == "beta-testing" && onlineversionstr.includes("BETA") && !extdata.versionstr.includes("BETA")) { //version number greater, forceupdate is true, release or beta version available?
+                if (onlineversion > Number(extdata.version) || forceupdate == true || !onlineversionstr.includes("BETA") && extdata.versionstr.includes("BETA") || onlineversionstr.includes("BETA") && !extdata.versionstr.includes("BETA")) { //version number greater, forceupdate is true, release or beta version available?
                     logger("", true)
                     logger(`\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${extdata.versionstr}\x1b[0m | New version: \x1b[32m${onlineversionstr}\x1b[0m`, true)
                     logger("", true)

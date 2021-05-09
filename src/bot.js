@@ -471,6 +471,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
         if (loginindex === 0) { //check if this is the main bot
             //Check if bot is not fully started yet and block cmd usage if that is the case to prevent errors
             if (controller.readyafter == 0) return chatmsg(steamID, lang.botnotready)
+            if (controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready)
 
             var lastcommentsteamID = steam64id
             var notownerresponse = (() => { return chatmsg(steamID, lang.commandowneronly) })
@@ -541,7 +542,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     break;
                 
                 case '!comment':
-                    if (disablecommentcmd) return chatmsg(steamID, "The comment command is currently unavailable for maintenance. Please wait a bit.")
+                    if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
 
                     commentcmd(steamID, args) //Just call the function like normal when the command was used
                     break;
@@ -612,7 +613,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 case '!rc':
                 case '!resetcooldown':
                     if (!ownercheck) return notownerresponse();
-                    if (disablecommentcmd) return chatmsg(steamID, "The comment command is currently unavailable for maintenance. Please wait a bit.")
+                    if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
 
                     if (config.commentcooldown === 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the cooldown enabled?
 
@@ -993,13 +994,17 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
     //Display message when connection was lost to Steam
     bot.on("disconnected", (eresult, msg) => {
-        if (!controller.relogQueue.includes(loginindex)) logger(`\x1b[31m[${thisbot}] Lost connection to Steam. Bot should relog automatically. Message: ${msg} | Check: https://steamstat.us\x1b[0m`)
+        if (controller.relogQueue.includes(loginindex)) return; //disconnect is already handled
 
-        if (!controller.relogQueue.includes(loginindex) && !controller.skippednow.includes(loginindex) && controller.relogAfterDisconnect) { //bot.logOff() also calls this event with NoConnection. To ensure the relog function doesn't call itself again here we better check if the account is already being relogged
+        logger(`\x1b[31m[${thisbot}] Lost connection to Steam. Bot should relog automatically. Message: ${msg} | Check: https://steamstat.us\x1b[0m`)
+
+        if (!controller.skippednow.includes(loginindex) && controller.relogAfterDisconnect) { //bot.logOff() also calls this event with NoConnection. To ensure the relog function doesn't call itself again here we better check if the account is already being relogged
             logger(`[${thisbot}] Initiating a relog in 30 seconds.`, false, true) //Announce relog
             setTimeout(() => {
                 relogAccount()
             }, 30000);
+        } else {
+            logger(`[${thisbot}] I won't queue myself for a relog because this account is either already being relogged, was skipped or this is an intended logOff.`, false, true)
         }
     })
 
