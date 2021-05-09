@@ -27,6 +27,8 @@ var restart = (args, nologOff) => { //Restart the application
             controller.server.close() 
         }
 
+        controller.relogAfterDisconnect = false; //Prevents disconnect event (which will be called by logOff) to relog accounts
+
         Object.keys(controller.botobject).forEach((e) => { //log out all bots
             controller.botobject[e].logOff() 
         }) 

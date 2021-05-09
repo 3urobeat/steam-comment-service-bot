@@ -21,7 +21,7 @@
   <a href="#additional-informations-">Additional information</a>
 </p>
   
-![Showcase](https://drive.google.com/uc?export=view&id=1FAzvJBbYys9tGePCD8Gc2VEjg3gHIT7y) 
+![Showcase](https://drive.google.com/uc?export=view&id=1FAzvJBbYys9tGePCD8Gc2VEjg3gHIT7y)
   
 ## **Introduction**  
 <img align="right" width="200" height="200" src="https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/.github/img/mesh.png">  
@@ -118,6 +118,8 @@ As the **license** already stated: If you want to use code from this repository 
 If you are using this bot as a whole: You are allowed to change bot messages (for translation). You are **not** allowed to remove any credit to myself.  
 
 #### **Credits**
+Thank you [DoctorMcKay](https://github.com/DoctorMcKay) for creating the [steam-user](https://github.com/DoctorMcKay/node-steam-user) and [steamcommunity](https://github.com/DoctorMcKay/node-steamcommunity) libraries!  
+
 Special thanks to [KNO7](https://steamcommunity.com/id/KN07Gaming/) for testing early beta versions, providing many ideas behind this project and donating 5€!  
 I also want to thank [Stiefel](https://steamcommunity.com/id/Stiefel1234) for finding weird bugs I wouldn't have found alone, being a cool dude and for hosting the bot with 9 unlimited accounts.  
 Another thank you goes out to [effex1337](https://github.com/effex1337) for donating $5 via bitcoin, helping in issues and for supporting the project!  

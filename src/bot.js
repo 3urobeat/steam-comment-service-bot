@@ -17,6 +17,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
     var extdata = require('./data.json');
     var cachefile = require('./cache.json');
 
+    var enabledebugmode = false; //if enabled debug and debug-verbose events from the steam-user library will be logged (will absolutely spam your output.txt file!)
+    var disablecommentcmd = false; //disables the comment and resetcooldown command and responds with maintenance message 
+
     var commandcooldown = 12000 //The bot won't respond if a user sends more than 5 messages in this time frame
     var maxLogOnRetries = 1 //How often a failed logOn will be retried
     var lastWebSessionRefresh = Date.now(); //Track when the last refresh was to avoid spamming webLogOn() on sessionExpired
@@ -37,8 +40,18 @@ module.exports.run = async (logOnOptions, loginindex) => {
     var thisproxy = controller.proxies[controller.proxyShift]
     controller.proxyShift++ //switch to next proxy
 
-    const bot = new SteamUser({ httpProxy: thisproxy });
+    const bot = new SteamUser({ autoRelogin: false, httpProxy: thisproxy });
     const community = new SteamCommunity();
+
+    if (enabledebugmode) {
+        bot.on("debug", (msg) => {
+            logger("debug: " + msg, false, true)
+        })
+
+        bot.on("debug-verbose", (msg) => {
+            logger("debug-verbose: " + msg, false, true)
+        })
+    }
 
     //Make chat message method shorter
     function chatmsg(steamID, txt) {
@@ -153,6 +166,26 @@ module.exports.run = async (logOnOptions, loginindex) => {
             }
         }, 250) 
     }
+
+    function relogAccount() { //Function to regulate automatic relogging and delay it to 
+        if (!controller.relogQueue.includes(loginindex)) controller.relogQueue.push(loginindex)
+        logger(`[${thisbot}] Queueing for a relog. ${controller.relogQueue.length - 1} other accounts are waiting...`, false, true)
+
+        var relogInterval = setInterval(() => {
+            if (controller.relogQueue.indexOf(loginindex) != 0) return; //not our turn? stop and retry in the next iteration
+
+            clearInterval(relogInterval) //prevent any retries
+            bot.logOff()
+
+            logger(`[${thisbot}] It is now my turn. Waiting ${controller.relogdelay / 1000} seconds before attempting to relog...`, false, true)
+            setTimeout(() => {
+                if (thisproxy == null) logger(`[${thisbot}] Trying to relog without proxy...`, false, true)
+                    else logger(`[${thisbot}] Trying to relog with proxy ${controller.proxyShift - 1}...`, false, true)
+                
+                bot.logOn(logOnOptions)
+            }, controller.relogdelay);
+        }, 1000);
+    }
   
     logOnAccount();
 
@@ -162,9 +195,24 @@ module.exports.run = async (logOnOptions, loginindex) => {
             if (loginindex == 0) { logger(`\x1b[31mAccount is bot0. Aborting...\x1b[0m`, true); process.exit(0) }
             return; 
         }
+
+        if (err.eresult == 3) { //NoConnection will be thrown here when autoRelogin is false instead of the disconnected event
+            if (!controller.relogQueue.includes(loginindex)) logger(`\x1b[31m[${thisbot}] Lost connection to Steam. Reason: NoConnection\x1b[0m`)
+            
+            if (!controller.relogQueue.includes(loginindex) && !controller.skippednow.includes(loginindex) && controller.relogAfterDisconnect) { //bot.logOff() also calls this event with NoConnection. To ensure the relog function doesn't call itself again here we better check if the account is already being relogged
+                logger(`[${thisbot}] Initiating a relog in 30 seconds.`, false, true) //Announce relog
+                setTimeout(() => {
+                    relogAccount()
+                }, 30000);
+            }
+
+            return; 
+        }
+
+        //Actual error handling:
         let blockedEnumsForRetries = [5, 12, 13, 17, 18] //Enums: https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EResult.js
 
-        if (logOnTries > maxLogOnRetries || blockedEnumsForRetries.includes(err.eresult)) {
+        if ((logOnTries > maxLogOnRetries || blockedEnumsForRetries.includes(err.eresult)) && !controller.relogQueue.includes(loginindex)) {
             logger(`\nCouldn't log in bot${loginindex} after ${logOnTries} attempt(s). Error ${err.eresult}: ${err}`, true)
             if (err.eresult == 5) logger(`Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try leaving the shared_secret field empty and check the username & password of bot${loginindex}.`, true)
             if (thisproxy != null) logger(`Is your proxy ${controller.proxyShift} offline or blocked by Steam?`, true)
@@ -179,10 +227,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 controller.skippednow.push(loginindex) 
             }
         } else {
-            //Got retries left...
+            //Got retries left or it is a relog...
             logger(`Error ${err.eresult} while trying to log in bot${loginindex}. Retrying in 5 seconds...`)
             setTimeout(() => {
-                logOnAccount();
+                //Call either relogAccount or logOnAccount function to continue where we started at
+                if (controller.relogQueue.includes(loginindex)) relogAccount();
+                    else logOnAccount();
             }, 5000) 
         }
     })
@@ -214,11 +264,11 @@ module.exports.run = async (logOnOptions, loginindex) => {
                         }, 500);
                     } else {
                         logger(`[${thisbot}] steamGuard input empty, skipping account...`, false, true)
-                        bot.logOff() //Seems to prevent the steamGuard lastCodeWrong check from requesting again every few seconds
-
                         controller.accisloggedin = true; //set to true to log next account in
                         updater.skippedaccounts.push(loginindex)
                         controller.skippednow.push(loginindex) 
+
+                        bot.logOff() //Seems to prevent the steamGuard lastCodeWrong check from requesting again every few seconds
                     }
 
                 } else { //code provided
@@ -234,11 +284,11 @@ module.exports.run = async (logOnOptions, loginindex) => {
         if (config.skipSteamGuard) {
             if (loginindex > 0) {
                 logger(`[${thisbot}] Skipping account because skipSteamGuard is enabled...`, false, true)
-                bot.logOff() //Seems to prevent the steamGuard lastCodeWrong check from requesting again every few seconds
-
                 controller.accisloggedin = true; //set to true to log next account in
                 updater.skippedaccounts.push(loginindex)
                 controller.skippednow.push(loginindex)
+
+                bot.logOff() //Seems to prevent the steamGuard lastCodeWrong check from requesting again every few seconds
                 return;
             } else {
                 logger("Even with skipSteamGuard enabled, the first account always has to be logged in.", true)
@@ -283,10 +333,11 @@ module.exports.run = async (logOnOptions, loginindex) => {
         }
         
 
+        //If the loginindex is already included then this is a restart
         controller.communityobject[loginindex] = community //export this community instance to the communityobject to access it from controller.js
         controller.botobject[loginindex] = bot //export this bot instance to the botobject to access it from controller.js
 
-        if (loginindex == 0) {
+        if (loginindex == 0 && !Object.keys(controller.botobject[0]).includes(commentcmd)) {
             Object.keys(controller.botobject[0]).push(commentcmd)
             controller.botobject[0].commentcmd = commentcmd 
         }
@@ -300,6 +351,13 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
         //Accept offline group & friend invites
         logger(`[${thisbot}] Got websession and set cookies.`, false, true)
+
+        //If this is a relog then remove this account from the queue and let the next account be able to relog
+        if (controller.relogQueue.includes(loginindex)) {
+            logger(`[${thisbot}] Relog successful.`)
+            controller.relogQueue = controller.relogQueue.slice(1) //remove first element from the queue
+        }
+
         logger(`[${thisbot}] Accepting offline friend & group invites...`, false, true)
 
         //Friends:
@@ -413,6 +471,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
         if (loginindex === 0) { //check if this is the main bot
             //Check if bot is not fully started yet and block cmd usage if that is the case to prevent errors
             if (controller.readyafter == 0) return chatmsg(steamID, lang.botnotready)
+            if (controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready)
 
             var lastcommentsteamID = steam64id
             var notownerresponse = (() => { return chatmsg(steamID, lang.commandowneronly) })
@@ -483,6 +542,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     break;
                 
                 case '!comment':
+                    if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
+
                     commentcmd(steamID, args) //Just call the function like normal when the command was used
                     break;
                 
@@ -552,6 +613,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 case '!rc':
                 case '!resetcooldown':
                     if (!ownercheck) return notownerresponse();
+                    if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
+
                     if (config.commentcooldown === 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the cooldown enabled?
 
                     if (args[0]) {
@@ -931,7 +994,18 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
     //Display message when connection was lost to Steam
     bot.on("disconnected", (eresult, msg) => {
-        logger(`\x1b[31m[${thisbot}] Lost connection to Steam. Bot should relog automatically. Message: ${msg} | Check: https://steamstat.us\x1b[0m`) 
+        if (controller.relogQueue.includes(loginindex)) return; //disconnect is already handled
+
+        logger(`\x1b[31m[${thisbot}] Lost connection to Steam. Bot should relog automatically. Message: ${msg} | Check: https://steamstat.us\x1b[0m`)
+
+        if (!controller.skippednow.includes(loginindex) && controller.relogAfterDisconnect) { //bot.logOff() also calls this event with NoConnection. To ensure the relog function doesn't call itself again here we better check if the account is already being relogged
+            logger(`[${thisbot}] Initiating a relog in 30 seconds.`, false, true) //Announce relog
+            setTimeout(() => {
+                relogAccount()
+            }, 30000);
+        } else {
+            logger(`[${thisbot}] I won't queue myself for a relog because this account is either already being relogged, was skipped or this is an intended logOff.`, false, true)
+        }
     })
 
     //Get new websession as sometimes the bot would relog after a lost connection but wouldn't get a websession. Read more about cookies & expiration: https://dev.doctormckay.com/topic/365-cookies/

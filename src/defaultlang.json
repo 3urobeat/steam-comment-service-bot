@@ -30,6 +30,7 @@
     "userspamblock": "/me You have been blocked for 60 seconds for spamming.",
     "usernotfriend": "/me Please add me before using a command!",
     "botnotready": "/me The bot is not completely started yet. Please wait a moment before using a command.",
+    "botmaintenance": "/me The comment command is currently unavailable for maintenance. Please wait a bit.",
     "commandowneronly": "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.",
     "invalidprofileid": "This is not a valid profileid! A profile id must look like this: 76561198260031749",
 

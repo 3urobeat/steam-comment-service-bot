@@ -7,11 +7,6 @@ const fs = require('fs');
 const https = require('https')
 const readline = require("readline")
 
-if (!fs.existsSync('./node_modules/steam-user') || !fs.existsSync('./node_modules/steamcommunity')) { //Quickly check if user forgot to run npm install and display custom error message
-    console.log(`\n\n\x1b[31mIt seems like you haven't installed the needed npm packages yet.\nPlease run the following command in this terminal once: "npm install"\nAborting...\x1b[0m\n`)
-    process.exit(0) 
-}
-
 const SteamID = require('steamid');
 const SteamTotp = require('steam-totp');
 const xml2js = require('xml2js')
@@ -31,7 +26,11 @@ var bootstart = 0
 var bootstart = new Date();
 var steamGuardInputTime = 0
 var readyafter = 0
-var logindelay = 2500
+var logindelay = 2500 //time to wait between logins
+var relogdelay = 10000 //time to wait between relog attempts (for example after loosing connection to Steam)
+var relogQueue = []
+var relogAfterDisconnect = true; //allows to prevent accounts from relogging when calling bot.logOff()
+var lastRelogTime = 0;
 var proxyShift = 0
 var skippednow = [] //array to track which accounts have been skipped
 var stoplogin = false;
@@ -328,6 +327,10 @@ module.exports={
     steamGuardInputTimeFunc,
     steamGuardInputTime,
     readyafter,
+    relogdelay,
+    relogQueue,
+    relogAfterDisconnect,
+    lastRelogTime,
     logger,
     communityobject,
     botobject,
@@ -343,7 +346,7 @@ module.exports={
     proxies,
     proxyShift,
     logininfo,
-    lang 
+    lang
 }
 
 
