@@ -34,6 +34,16 @@ var restart = (args, nologOff) => { //Restart the application
         }) 
     }
 
+    //Clear all intervals & timeouts that have been set to avoid issues like this: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/94
+    for(var i in global.intervalList) {
+        clearInterval(global.intervalList[i]);
+    }
+
+    for(var i in global.timeoutList) {
+        clearTimeout(global.timeoutList[i]);
+    }
+    
+
     Object.keys(require.cache).forEach(function(key) { 
         delete require.cache[key] //clear cache to include file changes
     })

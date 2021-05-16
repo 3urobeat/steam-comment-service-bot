@@ -302,7 +302,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                             })
 
                         } else { //Stuff below should only run for child accounts
-                            if (!error) logger(`[${thisbot}] Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
+                            if (!error) logger(`[${thisbot}] Comment ${i + 1}/${numberofcomments} on ${new SteamID(String(steamID)).getSteamID64()}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
                         }
 
 
@@ -325,8 +325,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                                         accstoadd[requesterSteamID].push(`\n ' https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[i].steamID)).getSteamID64()} '`)
                                     }
 
-                                    if (i == Object.keys(controller.botobject).length - 1)
-                                        respondmethod(403, lang.commentlimitederror.replace("accstoadd", accstoadd[requesterSteamID])) //this error message should never show as the bot will always check for limited bot accounts before starting to comment
+                                    if (i == Object.keys(controller.botobject).length - 1) respondmethod(403, lang.commentlimitederror.replace("accstoadd", accstoadd[requesterSteamID])) //this error message should never show as the bot will always check for limited bot accounts before starting to comment
                                 }
                             }
                         }
