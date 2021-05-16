@@ -24,6 +24,12 @@ var config = {} //set those 3 here already to an empty obj to make eslint happy
 var cache = {}
 var extdata = {}
 
+/**
+  * Logs text to the terminal and appends it to the output.txt file.
+  * @param {String} str The text to log into the terminal
+  * @param {Boolean} nodate Setting to true will hide date and time in the message
+  * @param {Boolean} remove Setting to true will remove this message with the next one
+  */
 var logger = (str, nodate, remove) => { //Custom logger
     var str = String(str)
     if (str.toLowerCase().includes("error")) var str = `\x1b[31m${str}\x1b[0m` //make errors red in console
@@ -49,6 +55,7 @@ var logger = (str, nodate, remove) => { //Custom logger
     }) 
 }
 
+
 //start.js restart function calls this function and provides any data that should be kept over restarts
 var restartdata = (data) => {
     if (!Object.keys(data).includes("skippedaccounts")) return; //stop any further execution if data structure is <2.10.4 (only an array containing skippedaccounts)
@@ -56,6 +63,30 @@ var restartdata = (data) => {
     if (data.oldconfig) oldconfig = data.oldconfig //eslint-disable-line
     module.exports.skippedaccounts = data.skippedaccounts
 }
+
+
+//Modify original setInterval function to be able to track all intervals being set which allows the restart function to clear all intervals (Issue reference: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/94)
+//Credit for the idea: https://stackoverflow.com/a/8524313
+global.intervalList = []
+global.timeoutList = []
+
+//Declare oldSetInterval only if it isn't set already. Global vars aren't getting reset during restart and setting this again would lead to a circular statement (if that's the right
+// term for Zirkelschluss in German) which causes the function below to run like a thousand times and cause a MaxListenersExceededWarning (omg I feel so smart rn it's unbelievable)
+if (!global.oldSetInterval) global.oldSetInterval = setInterval;
+if (!global.oldSetTimeout) global.oldSetTimeout = setTimeout; 
+
+global.setInterval = function(code, delay) {
+    var retval = global.oldSetInterval(code, delay);
+    global.intervalList.push(retval);
+    return retval;
+};
+
+global.setTimeout = function(code, delay) {
+    var retval = global.oldSetTimeout(code, delay);
+    global.timeoutList.push(retval);
+    return retval;
+};
+
 
 //Should keep the bot at least from crashing
 process.on('unhandledRejection', (reason) => {
@@ -174,12 +205,16 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                         if (botisloggedin == false || responseSteamID) { //only ask on start (or when user checked for an update from the Steam chat), otherwise this will annoy the user
 
                             logger(`\x1b[4mWhat's new:\x1b[0m ${JSON.parse(chunk).whatsnew}\n`, true)
+                            logger("You have disabled the automatic updater.", true, true) //Log once for output.txt (gets overwritten by the next line)
+                            logger(`\x1b[93mWould you like to update now?\x1b[0m [y/n] `, true, true) //Split into two logger calls so that remove works correctly
+
                             process.stdout.write(`You have disabled the automatic updater.\n\x1b[93mWould you like to update now?\x1b[0m [y/n] `)
                             var updatestdin = process.openStdin();
 
                             let noresponsetimeout = setTimeout(() => { //skip update after 7.5 sec if the user doesn't respond
                                 updatestdin.pause()
-                                process.stdout.write("\x1b[31mX\n\x1b[93mStarting the bot since you haven't replied in 7.5 seconds...\x1b[0m\n\n")
+                                process.stdout.write("\x1b[31mX\n") //write a X behind the y/n question
+                                logger("\x1b[93mStarting the bot since you haven't replied in 7.5 seconds...\x1b[0m\n\n", true)
 
                                 require('./controller.js')
                                 botisloggedin = true
@@ -210,11 +245,16 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
 
                             var controller = require('./controller.js')
                             var bot = require('./bot.js')
-                            if (bot.activecommentprocess.length != 0) logger("Waiting for an active comment process to finish...")
+                            if (bot.activecommentprocess.length != 0) {
+                                logger("Waiting for an active comment process to finish...")
+
+                                if (responseSteamID) require('./controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `/me Waiting for an active comment process to finish...`)
+                            }
 
                             var activecommentinterval = setInterval(() => { //check if a comment request is being processed every 2.5 secs
                                 if (bot.activecommentprocess.length == 0) { //start logging off accounts when no comment request is being processed anymore
                                     logger("Active comment process finished. Starting to update...", true)
+                                    if (responseSteamID) require('./controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `/me Active comment process finished. Starting to update...`)
 
                                     controller.relogAfterDisconnect = false; //Prevents disconnect event (which will be called by logOff) to relog accounts
 
@@ -536,7 +576,7 @@ function compatibilityfeatures() {
         logger("Applying 2.10 compatibility changes...")
 
         if (fs.existsSync('./src/lastcomment.json')) {     
-            const nedb = require("nedb")
+            const nedb = require("@yetzt/nedb")
             const lastcomment = new nedb("./src/lastcomment.db")
             const lastcommentjson = require("./lastcomment.json")
 

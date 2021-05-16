@@ -10,7 +10,7 @@ const readline = require("readline")
 const SteamID = require('steamid');
 const SteamTotp = require('steam-totp');
 const xml2js = require('xml2js')
-const nedb = require("nedb")
+const nedb = require("@yetzt/nedb")
 
 var updater = require('./updater.js')
 var b = require('./bot.js');
@@ -27,7 +27,7 @@ var bootstart = new Date();
 var steamGuardInputTime = 0
 var readyafter = 0
 var logindelay = 2500 //time to wait between logins
-var relogdelay = 10000 //time to wait between relog attempts (for example after loosing connection to Steam)
+var relogdelay = 5000 //time to wait between relog attempts (for example after loosing connection to Steam)
 var relogQueue = []
 var relogAfterDisconnect = true; //allows to prevent accounts from relogging when calling bot.logOff()
 var lastRelogTime = 0;
@@ -601,27 +601,32 @@ var readyinterval = setInterval(() => { //log startup to console
         //Unfriend check loop
         let lastcommentUnfriendCheck = Date.now() //this is useful because intervals can get unprecise over time
 
-        var unfriendloop = setInterval(() => { //eslint-disable-line
-            if (lastcommentUnfriendCheck + 30000 > Date.now()) return; //last check is more recent than 30 seconds
+        setInterval(() => {
+            if (lastcommentUnfriendCheck + 60000 > Date.now()) return; //last check is more recent than 60 seconds
             lastcommentUnfriendCheck = Date.now()
 
             lastcomment.find({ time: { $lte: Date.now() - (config.unfriendtime * 86400000) } }, (err, docs) => { //until is a date in ms, so we check if it is less than right now
                 if (docs.length < 1) return; //nothing found
 
-                docs.forEach((e) => { //take action for all results
-                    Object.keys(botobject).forEach((f, j) => {
-                        if (botobject[f].myFriends[e.id] == 3 && !config.ownerid.includes(e.id)) { //check if the targeted user is still friend
-                            if (j == 0) botobject[0].chat.sendFriendMessage(new SteamID(e.id), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
+                docs.forEach((e, i) => { //take action for all results
+                    setTimeout(() => {
+                        Object.keys(botobject).forEach((f, j) => {
+                            if (botobject[f].myFriends[e.id] == 3 && !config.ownerid.includes(e.id)) { //check if the targeted user is still friend
+                                if (j == 0) botobject[0].chat.sendFriendMessage(new SteamID(e.id), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
 
-                            botobject[f].removeFriend(new SteamID(e.id)) //unfriend user with each bot
-                            logger(`[Bot ${j}] Unfriended ${e.id} after ${config.unfriendtime} days of inactivity.`)
-                        }
-                        
-                        if (!config.ownerid.includes(e.id)) lastcomment.remove({ id: e.id }) //entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
-                    })
+                                setTimeout(() => {
+                                    botobject[f].removeFriend(new SteamID(e.id)) //unfriend user with each bot
+                                    logger(`[Bot ${j}] Unfriended ${e.id} after ${config.unfriendtime} days of inactivity.`)
+                                }, 1000 * j); //delay every iteration so that we don't make a ton of requests at once (IP)
+                            }
+                            
+                            if (!config.ownerid.includes(e.id)) lastcomment.remove({ id: e.id }) //entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
+                        })
+                    }, 1000 * i); //delay every iteration so that we don't make a ton of requests at once (account)
+                    
                 })                
             })
-        }, 30000); //30 seconds
+        }, 60000); //60 seconds
 
         
         //Write logintime stuff to data.json

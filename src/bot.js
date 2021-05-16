@@ -45,17 +45,18 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
     if (enabledebugmode) {
         bot.on("debug", (msg) => {
-            logger("debug: " + msg, false, true)
+            logger(`[${thisbot}] debug: ${msg}`, false, true)
         })
 
         bot.on("debug-verbose", (msg) => {
-            logger("debug-verbose: " + msg, false, true)
+            logger(`[${thisbot}] debug-verbose: ${msg}`, false, true)
         })
     }
 
     //Make chat message method shorter
     function chatmsg(steamID, txt) {
-        bot.chat.sendFriendMessage(steamID, txt) }
+        bot.chat.sendFriendMessage(steamID, txt)
+    }
 
     //Function to return last successful comment from lastcomment.json
     function lastsuccessfulcomment(callback) {
@@ -168,8 +169,11 @@ module.exports.run = async (logOnOptions, loginindex) => {
     }
 
     function relogAccount() { //Function to regulate automatic relogging and delay it to 
-        if (!controller.relogQueue.includes(loginindex)) controller.relogQueue.push(loginindex)
-        logger(`[${thisbot}] Queueing for a relog. ${controller.relogQueue.length - 1} other accounts are waiting...`, false, true)
+        if (!controller.relogQueue.includes(loginindex)) {
+            controller.relogQueue.push(loginindex)
+            logOnTries = 0;
+            logger(`[${thisbot}] Queueing for a relog. ${controller.relogQueue.length - 1} other accounts are waiting...`, false, true)
+        }
 
         var relogInterval = setInterval(() => {
             if (controller.relogQueue.indexOf(loginindex) != 0) return; //not our turn? stop and retry in the next iteration
@@ -190,50 +194,55 @@ module.exports.run = async (logOnOptions, loginindex) => {
     logOnAccount();
 
     bot.on('error', (err) => { //Handle errors that were caused during logOn
-        if (err.eresult == 34) { //LogonSessionReplaced will be thrown here instead of the disconnected event so just log it
+        if (err.eresult == 34) {
             logger(`\x1b[31m[${thisbot}] Lost connection to Steam. Reason: LogonSessionReplaced\x1b[0m`)
             if (loginindex == 0) { logger(`\x1b[31mAccount is bot0. Aborting...\x1b[0m`, true); process.exit(0) }
             return; 
         }
 
-        if (err.eresult == 3) { //NoConnection will be thrown here when autoRelogin is false instead of the disconnected event
-            if (!controller.relogQueue.includes(loginindex)) logger(`\x1b[31m[${thisbot}] Lost connection to Steam. Reason: NoConnection\x1b[0m`)
-            
-            if (!controller.relogQueue.includes(loginindex) && !controller.skippednow.includes(loginindex) && controller.relogAfterDisconnect) { //bot.logOff() also calls this event with NoConnection. To ensure the relog function doesn't call itself again here we better check if the account is already being relogged
-                logger(`[${thisbot}] Initiating a relog in 30 seconds.`, false, true) //Announce relog
+        //Check if this is a connection loss and not a login error (because disconnects will be thrown here when autoRelogin is false)
+        if (Object.keys(controller.botobject).includes(String(loginindex)) && !controller.relogQueue.includes(loginindex)) { //it must be a disconnect when the bot was once logged in and is not yet in the queue
+            logger(`\x1b[31m[${thisbot}] Lost connection to Steam. Reason: ${err}\x1b[0m`)
+
+            if (controller.relogAfterDisconnect && !controller.skippednow.includes(loginindex)) { 
+                logger(`\x1b[32m[${thisbot}] Initiating a relog in 30 seconds.\x1b[0m`) //Announce relog
                 setTimeout(() => {
                     relogAccount()
                 }, 30000);
-            }
-
-            return; 
-        }
-
-        //Actual error handling:
-        let blockedEnumsForRetries = [5, 12, 13, 17, 18] //Enums: https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EResult.js
-
-        if ((logOnTries > maxLogOnRetries || blockedEnumsForRetries.includes(err.eresult)) && !controller.relogQueue.includes(loginindex)) {
-            logger(`\nCouldn't log in bot${loginindex} after ${logOnTries} attempt(s). Error ${err.eresult}: ${err}`, true)
-            if (err.eresult == 5) logger(`Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try leaving the shared_secret field empty and check the username & password of bot${loginindex}.`, true)
-            if (thisproxy != null) logger(`Is your proxy ${controller.proxyShift} offline or blocked by Steam?`, true)
-
-            if (loginindex == 0) {
-                logger("\nAborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true)
-                process.exit(0)
             } else {
-                logger(`Failed account is not bot0. Skipping account...`, true)
-                controller.accisloggedin = true; //set to true to log next account in
-                updater.skippedaccounts.push(loginindex)
-                controller.skippednow.push(loginindex) 
+                logger(`[${thisbot}] I won't queue myself for a relog because this account was skipped or this is an intended logOff.`)
             }
         } else {
-            //Got retries left or it is a relog...
-            logger(`Error ${err.eresult} while trying to log in bot${loginindex}. Retrying in 5 seconds...`)
-            setTimeout(() => {
-                //Call either relogAccount or logOnAccount function to continue where we started at
-                if (controller.relogQueue.includes(loginindex)) relogAccount();
-                    else logOnAccount();
-            }, 5000) 
+            //Actual error durin login or relog:
+            let blockedEnumsForRetries = [5, 12, 13, 17, 18] //Enums: https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EResult.js
+
+            if ((logOnTries > maxLogOnRetries && !controller.relogQueue.includes(loginindex)) || blockedEnumsForRetries.includes(err.eresult)) { //check if this is an initial login error and it is either a fatal error or all retries are used
+                logger(`\nCouldn't log in bot${loginindex} after ${logOnTries} attempt(s). ${err} (${err.eresult})`, true)
+
+                //Add additional messages for specific errors to hopefully help the user diagnose the cause
+                if (err.eresult == 5) logger(`Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try leaving the shared_secret field empty and check the username & password of bot${loginindex}.`, true)
+                if (thisproxy != null) logger(`Is your proxy ${controller.proxyShift} offline or blocked by Steam?`, true)
+
+                if (loginindex == 0) {
+                    logger("\nAborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true)
+                    process.exit(0)
+                } else {
+                    logger(`Failed account is not bot0. Skipping account...`, true)
+                    controller.accisloggedin = true; //set to true to log next account in
+
+                    updater.skippedaccounts.push(loginindex)
+                    controller.skippednow.push(loginindex) 
+                }
+            } else {
+                //Got retries left or it is a relog...
+                logger(`${err} (${err.eresult}) while trying to log in bot${loginindex}. Retrying in 5 seconds...`)
+
+                setTimeout(() => {
+                    //Call either relogAccount or logOnAccount function to continue where we started at
+                    if (controller.relogQueue.includes(loginindex)) relogAccount();
+                        else logOnAccount();
+                }, 5000)
+            }
         }
     })
 
@@ -355,7 +364,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
         //If this is a relog then remove this account from the queue and let the next account be able to relog
         if (controller.relogQueue.includes(loginindex)) {
             logger(`[${thisbot}] Relog successful.`)
-            controller.relogQueue = controller.relogQueue.slice(1) //remove first element from the queue
+            controller.relogQueue.splice(controller.relogQueue.indexOf(loginindex), 1) //remove this loginindex from the queue
         }
 
         logger(`[${thisbot}] Accepting offline friend & group invites...`, false, true)
@@ -776,7 +785,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     if (new SteamID(args[0]).isValid() === false) return chatmsg(steamID, lang.invalidprofileid)
 
                     Object.keys(controller.botobject).forEach((i) => {
-                        controller.botobject[i].removeFriend(new SteamID(args[0])) 
+                        setTimeout(() => {
+                            controller.botobject[i].removeFriend(new SteamID(args[0])) 
+                        }, 1000 * i); //delay every iteration so that we don't make a ton of requests at once
                     })
 
                     chatmsg(steamID, lang.unfriendcmdsuccess.replace("profileid", args[0]))
@@ -802,7 +813,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
                         for (let i in controller.botobject) {
                             for (let friend in controller.botobject[i].myFriends) {
                                 try {
-                                    if (!config.ownerid.includes(friend)) controller.botobject[i].removeFriend(new SteamID(friend))
+                                    setTimeout(() => {
+                                        if (!config.ownerid.includes(friend)) controller.botobject[i].removeFriend(new SteamID(friend))
+                                    }, 1000 * i); //delay every iteration so that we don't make a ton of requests at once
                                 } catch (err) {
                                     logger(`[Bot ${i}] unfriendall error unfriending ${friend}: ${err}`)
                                 }
@@ -849,7 +862,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
                         if (argsSteamID.isValid() === false || argsSteamID["type"] !== 7) return chatmsg(steamID, lang.leavegroupcmdinvalidgroup)
 
                         Object.keys(controller.botobject).forEach((i) => {
-                            if (controller.botobject[i].myGroups[argsSteamID] === 3) controller.communityobject[i].leaveGroup(argsSteamID)
+                            setTimeout(() => {
+                                if (controller.botobject[i].myGroups[argsSteamID] === 3) controller.communityobject[i].leaveGroup(argsSteamID)
+                            }, 1000 * i); //delay every iteration so that we don't make a ton of requests at once
                         })
 
                         chatmsg(steamID, lang.leavegroupcmdsuccess.replace("profileid", args[0]))
@@ -876,9 +891,11 @@ module.exports.run = async (logOnOptions, loginindex) => {
                         for (let i in controller.botobject) {
                             for (let group in controller.botobject[i].myGroups) {
                                 try {
-                                    if (controller.botobject[i].myGroups[group] == 3) {
-                                        if (group != cachefile.botsgroupid && group != cachefile.configgroup64id) controller.communityobject[i].leaveGroup(String(group)) 
-                                    }
+                                    setTimeout(() => {
+                                        if (controller.botobject[i].myGroups[group] == 3) {
+                                            if (group != cachefile.botsgroupid && group != cachefile.configgroup64id) controller.communityobject[i].leaveGroup(String(group)) 
+                                        }
+                                    }, 1000 * i); //delay every iteration so that we don't make a ton of requests at once
                                 } catch (err) {
                                     logger(`[Bot ${i}] leaveallgroups error leaving ${group}: ${err}`)
                                 }
@@ -969,7 +986,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
                         if (typeof evaled !== "string")
                         evaled = require("util").inspect(evaled);
                 
-                        chatmsg(steamID, `Code executed. Result:\n\n${clean(evaled)}`)
+                        //Check for character limit and cut message (seems to be 5000)
+                        let chatResult = clean(evaled)
+
+                        if (chatResult.length >= 4950) chatmsg(steamID, `Code executed. Result:\n\n${chatResult.slice(0, 4950)}.......\n\n\nResult too long for chat.`)
+                            else chatmsg(steamID, `Code executed. Result:\n\n${clean(evaled)}`)
+                        
                         logger('\n\x1b[33mEval result:\x1b[0m \n' + clean(evaled) + "\n", true)
                     } catch (err) {
                         chatmsg(steamID, `Error:\n${clean(err)}`)
@@ -996,15 +1018,15 @@ module.exports.run = async (logOnOptions, loginindex) => {
     bot.on("disconnected", (eresult, msg) => {
         if (controller.relogQueue.includes(loginindex)) return; //disconnect is already handled
 
-        logger(`\x1b[31m[${thisbot}] Lost connection to Steam. Bot should relog automatically. Message: ${msg} | Check: https://steamstat.us\x1b[0m`)
+        logger(`\x1b[31m[${thisbot}] Lost connection to Steam. Message: ${msg} | Check: https://steamstat.us\x1b[0m`)
 
         if (!controller.skippednow.includes(loginindex) && controller.relogAfterDisconnect) { //bot.logOff() also calls this event with NoConnection. To ensure the relog function doesn't call itself again here we better check if the account is already being relogged
-            logger(`[${thisbot}] Initiating a relog in 30 seconds.`, false, true) //Announce relog
+            logger(`\x1b[32m[${thisbot}] Initiating a relog in 30 seconds.\x1b[0m`) //Announce relog
             setTimeout(() => {
                 relogAccount()
             }, 30000);
         } else {
-            logger(`[${thisbot}] I won't queue myself for a relog because this account is either already being relogged, was skipped or this is an intended logOff.`, false, true)
+            logger(`[${thisbot}] I won't queue myself for a relog because this account is either already being relogged, was skipped or this is an intended logOff.`)
         }
     })
 
