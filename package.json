@@ -8,7 +8,7 @@
         "express": "^4.17.1",
         "htmlparser2": "^4.1.0",
         "https": "^1.0.0",
-        "steam-user": "^4.19.7",
+        "steam-user": "^4.19.10",
         "steamcommunity": "^3.42.0"
     },
     "scripts": {

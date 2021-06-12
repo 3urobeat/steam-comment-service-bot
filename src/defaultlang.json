@@ -16,7 +16,7 @@
     "commentinvalidprofileid": "This is not a valid profileid! A profile id must look like this: 76561198260031749\nCommand usage: commentcmdusage",
     "commentprofileidowneronly": "Specifying a profileid is only allowed for bot owners.\nIf you are a bot owner, make sure you added your ownerid to the config.json.",
     "commentmissingnumberofcomments": "Please specify how many comments out of maxrequestamount you would like to request.\nCommand usage: commentcmdusage",
-    "commentaddbotaccounts": "In order to request numberofcomments comments you/the recieving user will first need to add this/these accounts: (limited bot accounts)",
+    "commentaddbotaccounts": "In order to request numberofcomments comments you/the recieving user will need to add these accounts and then request comments again: (limited bot accounts)",
     "commentuserprofileprivate": "Your/the recieving profile seems to be private. Please edit your/the privacy settings on your/the recieving profile and try again!",
     "commenterroroccurred": "Oops, an error occurred!",
     "commentsuccess1": "Okay I commented on your/the recieving profile! If you are a nice person then please comment on my profile too!",

@@ -32,6 +32,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
     var failedcomments = []
     var activecommentprocess = []
 
+    var abortunfriendall;
+    var abortleaveallgroups;
+
     if (loginindex == 0) var thisbot = "Main"
         else var thisbot = `Bot ${loginindex}`
 
