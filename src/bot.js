@@ -511,26 +511,26 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 case '!help':
                 case '!commands':
                     if (ownercheck) {
-                        if (Object.keys(controller.communityobject).length > 1 || config.maxOwnerComments) var commenttext = `'!comment (amount/"all") [profileid] [custom, quotes]' - Request x many or the max amount of comments (max ${config.maxOwnerComments}). Provide a profileid to comment on a specific profile.`
-                            else var commenttext = `'!comment ("1") [profileid] [custom, quotes]' - Request 1 comment (max amount with current settings). Provide a profile id to comment on a specific profile.`
+                        if (Object.keys(controller.communityobject).length > 1 || config.maxOwnerComments) var commenttext = `'!comment (amount/"all") [profileid] [custom, quotes]' - ${lang.helpcommentowner1.replace("maxOwnerComments", config.maxOwnerComments)}`
+                            else var commenttext = `'!comment ("1") [profileid] [custom, quotes]' - ${lang.helpcommentowner2}`
                     } else {
-                        if (Object.keys(controller.communityobject).length > 1 || config.maxComments) var commenttext = `'!comment (amount/"all")' - Request x many or the max amount of comments (max ${config.maxComments}).`
-                            else var commenttext = `'!comment' - Request a comment on your profile!` 
+                        if (Object.keys(controller.communityobject).length > 1 || config.maxComments) var commenttext = `'!comment (amount/"all")' - ${lang.helpcommentuser1.replace("maxComments", config.maxComments)}`
+                            else var commenttext = `'!comment' - ${lang.helpcommentuser2}` 
                     }
 
-                    if (config.yourgroup.length > 1) var yourgrouptext = "Join my '!group'!";
+                    if (config.yourgroup.length > 1) var yourgrouptext = lang.helpjoingroup;
                         else var yourgrouptext = "";
 
-                    chatmsg(steamID, `${extdata.mestr}'s Comment Bot | Command list:\n
+                    chatmsg(steamID, `${extdata.mestr}'s Comment Bot | ${lang.helpcommandlist}\n
                         ${commenttext}\n
-                        '!ping' - Get a pong and response time from Steam in ms.
-                        '!info' - Get useful information about the bot and you.
-                        '!abort' - Abort your own requested comment process.
-                        '!about' - Returns information about this bot, including a link to GitHub.
-                        '!owner' - Get a link to the profile of the operator/host of this bot instance.
+                        '!ping' - ${lang.helpping}
+                        '!info' - ${lang.helpinfo}
+                        '!abort' - ${lang.helpabort}
+                        '!about' - ${lang.helpabout}
+                        '!owner' - ${lang.helpowner}
                         ${yourgrouptext}
 
-                        To keep this message short please read all other commands here: ' https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Commands-documentation '`)
+                        ${lang.helpreadothercmdshere} ' https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Commands-documentation '`)
                     break;
                 
                 case '!comment':
