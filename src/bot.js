@@ -32,6 +32,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
     var failedcomments = []
     var activecommentprocess = []
 
+    var abortunfriendall;
+    var abortleaveallgroups;
+
     if (loginindex == 0) var thisbot = "Main"
         else var thisbot = `Bot ${loginindex}`
 
@@ -504,50 +507,30 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
             switch(cont[0].toLowerCase()) {
                 case '!h':
+                case 'help':
                 case '!help':
+                case '!commands':
                     if (ownercheck) {
-                        if (Object.keys(controller.communityobject).length > 1 || config.maxOwnerComments) var commenttext = `'!comment (amount/"all") [profileid] [custom, quotes]' - Request x many or the max amount of comments (max ${config.maxOwnerComments}). Provide a profileid to comment on a specific profile.`
-                            else var commenttext = `'!comment ("1") [profileid] [custom, quotes]' - Request 1 comment (max amount with current settings). Provide a profile id to comment on a specific profile.`
+                        if (Object.keys(controller.communityobject).length > 1 || config.maxOwnerComments) var commenttext = `'!comment (amount/"all") [profileid] [custom, quotes]' - ${lang.helpcommentowner1.replace("maxOwnerComments", config.maxOwnerComments)}`
+                            else var commenttext = `'!comment ("1") [profileid] [custom, quotes]' - ${lang.helpcommentowner2}`
                     } else {
-                        if (Object.keys(controller.communityobject).length > 1 || config.maxComments) var commenttext = `'!comment (amount/"all")' - Request x many or the max amount of comments (max ${config.maxComments}).`
-                            else var commenttext = `'!comment' - Request a comment on your profile!` 
+                        if (Object.keys(controller.communityobject).length > 1 || config.maxComments) var commenttext = `'!comment (amount/"all")' - ${lang.helpcommentuser1.replace("maxComments", config.maxComments)}`
+                            else var commenttext = `'!comment' - ${lang.helpcommentuser2}` 
                     }
 
-                    /* eslint-disable no-irregular-whitespace */
-                    if (ownercheck) { //idk if this is a good practice to define owner only commands in the same steam message but there are probably worse examples out there
-                        var resetcooldowntext =  `\n'!resetcooldown [profileid/"global"]' - Clear your, the profileid's or the global comment cooldown. Alias: !rc`;
-                        var addfriendtext =      `\n'!addfriend (profileid)'                          - Add friend with all bot accounts.`; 
-                        var unfriendtext =       `\n'!unfriend (profileid)'                            - Unfriend the user from all bot accounts.`; 
-                        var unfriendalltext =    `\n'!unfriendall ["abort"]'                          - Unfriends everyone with all bot accounts.`
-                        var leavegrouptext =     `\n'!leavegroup (groupid64/group url)' - Leave this group with all bot accounts.`;
-                        var leaveallgroupstext = `\n'!leaveallgroups ["abort"]'                   - Leaves all groups with all bot accounts.`
-                        var blocktext =          `\n'!block (profileid)'                                  - Blocks the user on Steam.`
-                        var unblocktext =        `\n'!unblock (profileid)'                             - Unblocks the user on Steam. Note: The user still seems to be ignored for a few days by Steam.`
-                        var evaltext =           `\n'!eval (javascript code)'                       - Run javascript code from the steam chat.`; 
-                        var restarttext =        `\n'!restart'                                                  - Restart the bot.`; 
-                        var stoptext =           `\n'!stop'                                                      - Stops the bot.`; 
-                        var settingstext =       `\n'!settings' (config key) (new value)  - Change a config value.`; 
-                        var logtext =            `\n'!log'                                                        - Shows the last 25 lines of the log.`; 
-                        var updatetext =         `\n'!update [true]'                                      - Check for an available update. 'true' forces an update.`; 
-                    } else {
-                        var resetcooldowntext = addfriendtext = unfriendtext = unfriendalltext = leavegrouptext = leaveallgroupstext = blocktext = unblocktext = evaltext = restarttext = stoptext = settingstext = logtext = updatetext = ""; //I'm really not proud of this line of "code"
-                    }
-
-                    if (config.yourgroup.length > 1) var yourgrouptext = "\nJoin my '!group'!"; 
+                    if (config.yourgroup.length > 1) var yourgrouptext = lang.helpjoingroup;
                         else var yourgrouptext = "";
-                    
-                    chatmsg(steamID, `
-                        () <-- needed argument\n[] <-- optional argument\n\nCommand list:\n
+
+                    chatmsg(steamID, `${extdata.mestr}'s Comment Bot | ${lang.helpcommandlist}\n
                         ${commenttext}\n
-                        '!ping'                                                       - Get a pong and heartbeat in ms.
-                        '!info'                                                        - Get useful information about the bot and you.
-                        '!abort'                                                     - Abort your own comment process.${resetcooldowntext}${settingstext}${addfriendtext}${unfriendtext}${unfriendalltext}${leavegrouptext}${leaveallgroupstext}${blocktext}${unblocktext}
-                        '!failed'                                                     - See the exact errors of your last comment request.
-                        '!about'                                                    - Returns information what this is about.
-                        '!owner'                                                   - Get a link to the profile of the operator of this bot instance.${evaltext}${restarttext}${stoptext}${logtext}${updatetext}
+                        '!ping' - ${lang.helpping}
+                        '!info' - ${lang.helpinfo}
+                        '!abort' - ${lang.helpabort}
+                        '!about' - ${lang.helpabout}
+                        '!owner' - ${lang.helpowner}
                         ${yourgrouptext}
-                    `)
-                    /* eslint-enable no-irregular-whitespace */
+
+                        ${lang.helpreadothercmdshere} ' https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Commands-documentation '`)
                     break;
                 
                 case '!comment':
