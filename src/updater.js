@@ -372,6 +372,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
 
 logger("\nBootup sequence started...", true, true) //mark new execution in output.txt
 logger(`Using node.js version ${process.version}...`, false, true)
+logger(`Running on ${process.platform}...`, false, true)
 
 /* ------------ File integrity checks: ------------ */
 //Check cache.json

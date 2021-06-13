@@ -91,6 +91,8 @@ try {
 if (fs.existsSync("./accounts.txt")) {
     var data = fs.readFileSync("./accounts.txt", "utf8").split("\n")
 
+    if (data[0].startsWith("//Comment")) data = data.slice(1); //Remove comment from array
+
     if (data != "") {
         logger("Accounts.txt does exist and is not empty - using it instead of logininfo.json.", false, true)
 
