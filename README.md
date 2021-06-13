@@ -55,11 +55,14 @@ If you need a tutorial for this specific node part, [click here.](https://youtu.
 Open a power shell/terminal in the `steam-comment-service-bot` folder and type `npm install`.  
   
 #### **Accounts**
-Open `logininfo.json` with a text editor and fill out the user names and passwords of each bot account you want to use.  
+You have two options to provide the login informations for your bot accounts.  
+You can either use the `accounts.txt` file to provide login informations in the `username:password:shared_secret` format (shared_secret is optional) or the `logininfo.json` file to provide them in an object notation.  
+
+To use the first method, open the `accounts.txt` file and provide your accounts in the `username:password:shared_secret` format, one account per line. If you don't want to use a shared_secret just leave it out and only provide the account in the `username:password` format. Be advised that as soon as you have provided at least one account in the `accounts.txt` file you can't use the `logininfo.json` file anymore.
+
+To use the `logininfo.json` open the file with a text editor and fill out the usernames and passwords of each bot account you want to use, following the existing format.  
 If you have a shared_secret then you can add it there too, otherwise just leave the brackets empty.  
 You can add more accounts by extending the list ("bot4": ["username4", "password4", "shared_secret"], etc...). Make sure to **NOT** forget a comma after each line, **ONLY** the last line **MUST NOT** have a comma! (ignoring this will cause errors!)  
-
-If you want to provide accounts in a `username:password:shared_secret` format (`shared_secret` is optional) then create an accounts.txt file and provide each account line by line. Be sure that none of the account's credentials contain a ':' as this will otherwise lead to errors in splitting the data.  
   
 #### **Config**
 Open `config.json` with a text editor.  
