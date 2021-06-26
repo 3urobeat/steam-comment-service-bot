@@ -1,5 +1,5 @@
 {
-    "version": "2110",
+    "version": "2110b1",
     "versionstr": "BETA 2.11 b1",
     "branch": "beta-testing",
     "filetostart": "./src/updater.js",
