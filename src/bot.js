@@ -123,6 +123,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
     //Comment command (outside of friendMessage Event to be able to call it from controller.js)
     var commentcmd = undefined //this is just here to make eslint happy so that the export in loggedOn is not undefined
+    var groupcommentcmd = undefined
 
     if (loginindex == 0) {
         /**
@@ -148,6 +149,33 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 } catch (err) {
                     activecommentprocess = activecommentprocess.filter(item => item != steam64id) //Remove user from array to make sure you can't get stuck in there (not perfect as this won't trigger when the error occurrs in a nested function)
                     logger("Error while processing comment request: " + err)
+                }
+            })
+        }
+
+        /**
+         * The group comment command
+         * @param {Object} steamID steamID of message author
+         * @param {Array<String>} args An array containing all arguments provided in the message by the user
+         * @param {Object} res An express response object that will be available if the function is called from the express webserver
+         */
+        groupcommentcmd = (steamID, args, res) => {
+            var steam64id = new SteamID(String(steamID)).getSteamID64()
+
+            controller.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {
+                if (!lastcommentdoc) logger("User is missing from database?? How is this possible?! Error maybe: " + err)
+
+                try { //catch any unhandled error to be able to remove user from activecommentprocess array
+                    require("./comment.js").grouprun(logger, chatmsg, lang, community, thisbot, steamID, args, res, lastcommentdoc, failedcomments, activecommentprocess, lastcommentrequestmsg, commentedrecently, commentcounter, lastsuccessfulcomment, (fc, acp, cr, cc) => { //callback transports stuff back to be able to store the stuff here
+                        failedcomments = fc //update failedcomments
+                        activecommentprocess = acp
+                        module.exports.activecommentprocess = acp //update exported value so that updater knows whats up
+                        commentedrecently = cr
+                        commentcounter = cc
+                    })
+                } catch (err) {
+                    activecommentprocess = activecommentprocess.filter(item => item != steam64id) //Remove user from array to make sure you can't get stuck in there (not perfect as this won't trigger when the error occurrs in a nested function)
+                    logger("Error while processing group comment request: " + err)
                 }
             })
         }
@@ -537,6 +565,14 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
 
                     commentcmd(steamID, args) //Just call the function like normal when the command was used
+                    break;
+
+                
+                case '!gcomment':
+                case '!groupcomment':
+                    if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
+
+                    groupcommentcmd(steamID, args)
                     break;
                 
                 case '!ping':
