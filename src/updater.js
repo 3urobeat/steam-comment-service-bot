@@ -6,12 +6,15 @@
 const fs = require('fs')
 const https = require("https")
 const readline = require("readline")
+const download = require("download")
+
 
 //Quickly check if user forgot to run npm install and display custom error message
 if (!fs.existsSync('./node_modules/steam-user') || !fs.existsSync('./node_modules/steamcommunity')) {
     console.log(`\n\n\x1b[31mIt seems like you haven't installed the needed npm packages yet.\nPlease run the following command in this terminal once: 'npm install'\nAborting...\x1b[0m\n`)
     process.exit(0) 
 }
+
 
 var oldconfig = {} //obj that can get populated by restart data to keep config through restarts
 var skippedaccounts = [] //array to save which accounts have been skipped to skip them automatically when restarting
@@ -23,6 +26,7 @@ var lastupdatecheckinterval = Date.now()
 var config = {} //set those 3 here already to an empty obj to make eslint happy
 var cache = {}
 var extdata = {}
+
 
 /**
   * Logs text to the terminal and appends it to the output.txt file.
@@ -94,6 +98,7 @@ process.on('unhandledRejection', (reason) => {
 process.on('uncaughtException', (reason) => {
     logger(`Uncaught Exception Error! Reason: ${reason.stack}`, true) });
 
+
 /**
  * Comments with all bot accounts on one profile.
  * @param {String} url The folder/file ending of the GitHub URL
@@ -101,7 +106,7 @@ process.on('uncaughtException', (reason) => {
  * @param {Boolean} compatibilityfeaturedone Update function parameter passthrough
  * @param {any} callback Response when function finished
  */
-function downloadandupdate(url, name, compatibilityfeaturedone, callback) {
+function updatesinglefile(url, name, compatibilityfeaturedone, callback) {
     let path = `./${url}`
     var output = ""
 
@@ -122,7 +127,7 @@ function downloadandupdate(url, name, compatibilityfeaturedone, callback) {
                     if (name == "config.json") { //Special code for config.json to transfer user changes
                         logger(`Transfering your changes to new config...`, false, true)
                         Object.keys(output).forEach(e => {
-                            if (!Object.keys(config).includes(e)) return; //config value seems to have gotten deleted
+                            if (!Object.keys(config).includes(e)) return; //config value seems to be new
                             output[e] = config[e]
                         }) 
                     }
@@ -214,7 +219,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                             let noresponsetimeout = setTimeout(() => { //skip update after 7.5 sec if the user doesn't respond
                                 updatestdin.pause()
                                 process.stdout.write("\x1b[31mX\n") //write a X behind the y/n question
-                                logger("\x1b[93mStarting the bot since you haven't replied in 7.5 seconds...\x1b[0m\n\n", true)
+                                logger("\x1b[93mStarting the bot since you didn't reply in 7.5 seconds...\x1b[0m\n\n", true)
 
                                 require('./controller.js')
                                 botisloggedin = true
@@ -266,59 +271,106 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                                     setTimeout(() => {
                                         botisloggedin = false
 
-                                        updaterjs(); //start update
+                                        downloadupdate(); //start update
                                         logger(`Starting to update...`, false, true)
                                         clearInterval(activecommentinterval);
                                     }, 2500) 
                                 }
                             }, 2500);
                         } else {
-                            updaterjs();
+                            downloadupdate();
                         } 
                     }
 
                     /* ------------------ Start updating files ------------------ */
-                    function updaterjs() { //update updater first to fix issues in updater
-                        downloadandupdate("src/updater.js", "updater.js", compatibilityfeaturedone, function() { botjs(); }) }
+                    const url = `https://github.com/HerrEurobeat/steam-comment-service-bot/archive/${releasemode}.zip`
+                    const dontdelete = [".git", "node_modules", "cache.json", "lastcomment.db", "accounts.txt", "customlang.json", "logininfo.json", "output.txt", "proxies.txt", "quotes.txt"]
 
-                    function botjs() {
-                        downloadandupdate("src/bot.js", "bot.js", compatibilityfeaturedone, function() { startjs(); }) }
+                    function downloadupdate() {
+                        const oldconfig = Object.assign(config)
+                        const oldextdata = Object.assign(extdata)
 
-                    function startjs() {
-                        downloadandupdate("start.js", "start.js", compatibilityfeaturedone, function() { packagejson(); }) }
+                        download(url, "./", { extract: true }).then(() => {
+                            //Delete old files except dontdelete
+                            let files = fs.readdirSync("./")
+                            
+                            logger("Deleting old files...", false, true)
+                            files.forEach((e, i) => {
+                                if (!dontdelete.includes(e) && e != `steam-comment-service-bot-${releasemode}`) {
+                                    if (fs.statSync("./" + e).isDirectory()) fs.rmdirSync("./" + e, { recursive: true })
+                                        else fs.unlinkSync("./" + e) 
+                                }
+                        
+                                //Continue if finished
+                                if (files.length == i + 1) {
+                        
+                                    //Move new files out of directory
+                                    let newfiles = fs.readdirSync(`./steam-comment-service-bot-${releasemode}`)
+                        
+                                    logger("Moving new files...", false, true)
+                                    newfiles.forEach((e, i) => {
+                                        if (!dontdelete.includes(e)) fs.renameSync(`./steam-comment-service-bot-${releasemode}/${e}`, `./${e}`)
+                        
+                                        //Continue if finished
+                                        if (newfiles.length == i + 1) {
+                                            fs.rmdirSync(`./steam-comment-service-bot-${releasemode}`, { recursive: true })
+                                            
+                                            //Custom update rules for a few files
+                                            //config.json
+                                            delete require.cache[require.resolve("./config.json")] //delete cache
+                                            let newconfig = require("./config.json")
 
-                    function packagejson() {
-                        logger(`Clearing package.json data...`, true)
-                        fs.writeFile("./package.json", "{}", err => {
-                            if (err) logger(err, true) 
+                                            logger(`Transfering your changes to new config.json...`, false, true)
+                                            
+                                            Object.keys(newconfig).forEach(e => {
+                                                if (!Object.keys(oldconfig).includes(e)) return; //config value seems to be new
+
+                                                newconfig[e] = oldconfig[e] //transfer setting
+                                            })
+
+                                            logger(`Writing new data to config.json...`, false, true)
+                                            fs.writeFile("./config.json", JSON.stringify(newconfig, null, 4), err => {
+                                                if (err) {
+                                                    logger(`error writing changes to config.json: ${err}`, true)
+                                                }
+                                            })
+
+                                            //data.json
+                                            delete require.cache[require.resolve("./src/data.json")] //delete cache
+                                            let newextdata = require("./src/data.json")
+
+                                            logger("Transfering changes to new data.json...", false, true)
+
+                                            if (Object.keys(extdata).length > 2) { //Only do this if the data.json update call originates from the updater and not from the integrity check
+                                                if (compatibilityfeaturedone) newextdata.compatibilityfeaturedone = true
+
+                                                newextdata = oldextdata.urlrequestsecretkey
+                                                newextdata = oldextdata.timesloggedin
+                                                newextdata = oldextdata.totallogintime
+                                            }
+
+                                            logger(`Writing new data to data.json...`, false, true)
+                                            fs.writeFile("./src/data.json", JSON.stringify(newextdata, null, 4), err => {
+                                                if (err) {
+                                                    logger(`error writing changes to data.json: ${err}`, true)
+                                                    logger("\n\nThe updater failed to update data.json. Please restart the bot and try again. \nIf this error still happens please contact the developer by opening an issue: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose \nor by writing me a message on Discord or Steam. Contact details are on my GitHub Profile: https://github.com/HerrEurobeat", true); 
+                                                    return;
+                                                }
+                                            })
+
+                                            
+                                            //Update/Install new packages according to new package.json
+                                            npmupdate();
+                                        }
+                                    })
+                                } 
+                            }) 
+                        }).catch((err) => {
+                            if (err) return logger("info", "updater.js", "Error while trying to download: " + err.stack) 
                         })
-                        downloadandupdate("package.json", "package.json", compatibilityfeaturedone, function() { packagelockjson(); }) 
-                    }
-
-                    function packagelockjson() {
-                        logger(`Clearing package-lock.json data...`, true)
-                        fs.writeFile("./package-lock.json", "{}", err => {
-                            if (err) logger(err, true) 
-                        })
-                        downloadandupdate("package-lock.json", "package-lock.json", compatibilityfeaturedone, function() { configjson(); }) 
                     }
 
                     //Code by: https://github.com/HerrEurobeat/
-
-                    function configjson() {
-                        downloadandupdate("config.json", "config.json", compatibilityfeaturedone, function() { controllerjs(); }) }
-
-                    function controllerjs() {
-                        downloadandupdate("src/controller.js", "controller.js", compatibilityfeaturedone, function() { commentjs(); }) }
-
-                    function commentjs() {
-                        downloadandupdate("src/comment.js", "comment.js", compatibilityfeaturedone, function() { defaultlangjson(); }) }
-
-                    function defaultlangjson() {
-                        downloadandupdate("src/defaultlang.json", "defaultlang.json", compatibilityfeaturedone, function() { datajson(); }) }
-                    
-                    function datajson() {
-                        downloadandupdate("src/data.json", "data.json", compatibilityfeaturedone, function() { npmupdate(); }) }
 
                     function npmupdate() {
                         try {
@@ -369,6 +421,8 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
         logger('checkforupdate/update function Error: ' + err, true) 
     }
 }
+
+
 
 logger("\nBootup sequence started...", true, true) //mark new execution in output.txt
 logger(`Using node.js version ${process.version}...`, false, true)
@@ -425,7 +479,7 @@ function datajsoncheck() {
                     } catch (err) { //Worst case, even the backup seems to be broken
                         logger("Backup seems to be broken/not available! Pulling file from GitHub...", true)
     
-                        downloadandupdate("src/data.json", "data.json", function() {
+                        updatesinglefile("src/data.json", "data.json", function() {
                             logger("Successfully pulled new data.json from GitHub.\n", true)
                             extdata = require("./data.json")
                             releasemode = extdata.branch 
@@ -465,7 +519,7 @@ function configjsoncheck() {
                     } catch (err) { //Worst case, even the backup seems to be broken
                         logger("Backup seems to be broken/not available! Pulling file from GitHub...", true)
 
-                        downloadandupdate("config.json", "config.json", function() {
+                        updatesinglefile("config.json", "config.json", function() {
                             logger("Successfully pulled new config.json from GitHub. Please configure it again!\n", true)
                             config = require("../config.json") 
                         }) 
