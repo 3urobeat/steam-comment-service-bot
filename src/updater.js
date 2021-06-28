@@ -290,15 +290,15 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                         const oldconfig = Object.assign(config)
                         const oldextdata = Object.assign(extdata)
 
+                        logger("Downloading new files...", true)
                         download(url, "./", { extract: true }).then(() => {
                             //Delete old files except dontdelete
                             let files = fs.readdirSync("./")
                             
-                            logger("Deleting old files...", false, true)
+                            logger("Deleting old files...", true)
                             files.forEach((e, i) => {
                                 if (!dontdelete.includes(e) && e != `steam-comment-service-bot-${releasemode}`) {
-                                    if (fs.statSync("./" + e).isDirectory()) fs.rmdirSync("./" + e, { recursive: true })
-                                        else fs.unlinkSync("./" + e) 
+                                    fs.rmSync("./" + e, { recursive: true })
                                 }
                         
                                 //Continue if finished
@@ -307,20 +307,20 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                                     //Move new files out of directory
                                     let newfiles = fs.readdirSync(`./steam-comment-service-bot-${releasemode}`)
                         
-                                    logger("Moving new files...", false, true)
+                                    logger("Moving new files...", true)
                                     newfiles.forEach((e, i) => {
                                         if (!dontdelete.includes(e)) fs.renameSync(`./steam-comment-service-bot-${releasemode}/${e}`, `./${e}`)
                         
                                         //Continue if finished
                                         if (newfiles.length == i + 1) {
-                                            fs.rmdirSync(`./steam-comment-service-bot-${releasemode}`, { recursive: true })
+                                            fs.rmSync(`./steam-comment-service-bot-${releasemode}`, { recursive: true })
                                             
                                             //Custom update rules for a few files
                                             //config.json
-                                            delete require.cache[require.resolve("./config.json")] //delete cache
-                                            let newconfig = require("./config.json")
+                                            delete require.cache[require.resolve("../config.json")] //delete cache
+                                            let newconfig = require("../config.json")
 
-                                            logger(`Transfering your changes to new config.json...`, false, true)
+                                            logger(`Transfering your changes to new config.json...`, true)
                                             
                                             Object.keys(newconfig).forEach(e => {
                                                 if (!Object.keys(oldconfig).includes(e)) return; //config value seems to be new
@@ -328,7 +328,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                                                 newconfig[e] = oldconfig[e] //transfer setting
                                             })
 
-                                            logger(`Writing new data to config.json...`, false, true)
+                                            logger(`Writing new data to config.json...`, true)
                                             fs.writeFile("./config.json", JSON.stringify(newconfig, null, 4), err => {
                                                 if (err) {
                                                     logger(`error writing changes to config.json: ${err}`, true)
@@ -336,10 +336,10 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                                             })
 
                                             //data.json
-                                            delete require.cache[require.resolve("./src/data.json")] //delete cache
-                                            let newextdata = require("./src/data.json")
+                                            delete require.cache[require.resolve("./data.json")] //delete cache
+                                            let newextdata = require("./data.json")
 
-                                            logger("Transfering changes to new data.json...", false, true)
+                                            logger("Transfering changes to new data.json...", true)
 
                                             if (Object.keys(extdata).length > 2) { //Only do this if the data.json update call originates from the updater and not from the integrity check
                                                 if (compatibilityfeaturedone) newextdata.compatibilityfeaturedone = true
@@ -349,7 +349,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                                                 newextdata = oldextdata.totallogintime
                                             }
 
-                                            logger(`Writing new data to data.json...`, false, true)
+                                            logger(`Writing new data to data.json...`, true)
                                             fs.writeFile("./src/data.json", JSON.stringify(newextdata, null, 4), err => {
                                                 if (err) {
                                                     logger(`error writing changes to data.json: ${err}`, true)
@@ -366,7 +366,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                                 } 
                             }) 
                         }).catch((err) => {
-                            if (err) return logger("info", "updater.js", "Error while trying to download: " + err.stack) 
+                            if (err) return logger("Error while trying to download: " + err.stack, true) 
                         })
                     }
 
@@ -374,16 +374,16 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
 
                     function npmupdate() {
                         try {
-                            const { exec } = require('child_process');
+                            const { exec } = require('child_process'); //wanted to do it with the npm package but that didn't work out (BETA 2.8 b2)
    
                             logger("Updating packages with npm...", true)
-                            exec('npm install', (err, stdout) => { //wanted to do it with the npm package but that didn't work out (BETA 2.8 b2)
+                            exec('npm install', (err, stdout) => { //eslint-disable-line
                                 if (err) {
-                                    logger("Error running the npm install command: " + err)
+                                    logger("Error running the npm install command: " + err, true)
                                     return; 
                                 }
 
-                                logger(`NPM Log:\n${stdout}`, true) //entire log
+                                //logger(`NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
 
                                 logger("\x1b[32mUpdate finished. Restarting myself in 5 seconds...\x1b[0m", true);
                                 setTimeout(() => {
