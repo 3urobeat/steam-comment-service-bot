@@ -246,6 +246,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
 
                         if (botisloggedin) { //if bot is already logged in we need to check for ongoing comment processes and log all bots out when finished
 
+                            logger("", true)
                             logger(`Bot is logged in. Checking for active comment process...`, false, true)
 
                             var controller = require('./controller.js')
@@ -290,24 +291,42 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                         const oldconfig = Object.assign(config)
                         const oldextdata = Object.assign(extdata)
 
-                        logger("Downloading new files...", true)
+                        logger("", true)
+                        logger("\x1b[33mDownloading new files...\x1b[0m", true)
                         download(url, "./", { extract: true }).then(() => {
-                            //Delete old files except dontdelete
-                            let files = fs.readdirSync("./")
+                            //Scan directory recursively
+                            var scandir = function(dir) { //Credit for this function before I modified it: https://stackoverflow.com/a/16684530/12934162
+                                var results = [];
+                                var list = fs.readdirSync(dir);
+
+                                list.forEach(function(file) {
+                                    if (dontdelete.includes(file)) return;
+
+                                    file = dir + '/' + file;
+                                    var stat = fs.statSync(file);
+
+                                    if (stat && stat.isDirectory()) results = results.concat(scandir(file)); //call this function recursively again if it is a directory
+
+                                    results.push(file); //push the file and folder in order to avoid an ENOTEMPTY error
+                                });
+                                return results;
+                            }
+
+                            let files = scandir("./")
                             
-                            logger("Deleting old files...", true)
+                            //Delete old files except files in dontdelete
+                            logger("\x1b[33mDeleting old files...\x1b[0m", true)
                             files.forEach((e, i) => {
-                                if (!dontdelete.includes(e) && e != `steam-comment-service-bot-${releasemode}`) {
-                                    fs.rmSync("./" + e, { recursive: true })
+                                if (!dontdelete.includes(e) && !e.includes(`.//steam-comment-service-bot-${releasemode}`)) {
+                                    fs.rmSync(e, { recursive: true })
                                 }
                         
                                 //Continue if finished
-                                if (files.length == i + 1) {
-                        
+                                if (files.length == i + 1) {                        
                                     //Move new files out of directory
                                     let newfiles = fs.readdirSync(`./steam-comment-service-bot-${releasemode}`)
                         
-                                    logger("Moving new files...", true)
+                                    logger("\x1b[33mMoving new files...\x1b[0m", true)
                                     newfiles.forEach((e, i) => {
                                         if (!dontdelete.includes(e)) fs.renameSync(`./steam-comment-service-bot-${releasemode}/${e}`, `./${e}`)
                         
@@ -317,10 +336,12 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                                             
                                             //Custom update rules for a few files
                                             //config.json
+                                            logger(`\x1b[33mClearing cache of config.json...\x1b[0m`, true)
+
                                             delete require.cache[require.resolve("../config.json")] //delete cache
                                             let newconfig = require("../config.json")
 
-                                            logger(`Transfering your changes to new config.json...`, true)
+                                            logger(`\x1b[33mTransfering your changes to new config.json...\x1b[0m`, true)
                                             
                                             Object.keys(newconfig).forEach(e => {
                                                 if (!Object.keys(oldconfig).includes(e)) return; //config value seems to be new
@@ -328,31 +349,33 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                                                 newconfig[e] = oldconfig[e] //transfer setting
                                             })
 
-                                            logger(`Writing new data to config.json...`, true)
+                                            logger(`\x1b[33mWriting new data to config.json...\x1b[0m`, true)
                                             fs.writeFile("./config.json", JSON.stringify(newconfig, null, 4), err => {
                                                 if (err) {
-                                                    logger(`error writing changes to config.json: ${err}`, true)
+                                                    logger(`Error writing changes to config.json: ${err}`, true)
                                                 }
                                             })
 
                                             //data.json
+                                            logger(`\x1b[33mClearing cache of data.json...\x1b[0m`, true)
+
                                             delete require.cache[require.resolve("./data.json")] //delete cache
                                             let newextdata = require("./data.json")
 
-                                            logger("Transfering changes to new data.json...", true)
+                                            logger("\x1b[33mTransfering changes to new data.json...\x1b[0m", true)
 
                                             if (Object.keys(extdata).length > 2) { //Only do this if the data.json update call originates from the updater and not from the integrity check
                                                 if (compatibilityfeaturedone) newextdata.compatibilityfeaturedone = true
 
-                                                newextdata = oldextdata.urlrequestsecretkey
-                                                newextdata = oldextdata.timesloggedin
-                                                newextdata = oldextdata.totallogintime
+                                                newextdata.urlrequestsecretkey = oldextdata.urlrequestsecretkey
+                                                newextdata.timesloggedin = oldextdata.timesloggedin
+                                                newextdata.totallogintime = oldextdata.totallogintime
                                             }
 
-                                            logger(`Writing new data to data.json...`, true)
+                                            logger(`\x1b[33mWriting new data to data.json...\x1b[0m`, true)
                                             fs.writeFile("./src/data.json", JSON.stringify(newextdata, null, 4), err => {
                                                 if (err) {
-                                                    logger(`error writing changes to data.json: ${err}`, true)
+                                                    logger(`Error writing changes to data.json: ${err}`, true)
                                                     logger("\n\nThe updater failed to update data.json. Please restart the bot and try again. \nIf this error still happens please contact the developer by opening an issue: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose \nor by writing me a message on Discord or Steam. Contact details are on my GitHub Profile: https://github.com/HerrEurobeat", true); 
                                                     return;
                                                 }
@@ -366,7 +389,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                                 } 
                             }) 
                         }).catch((err) => {
-                            if (err) return logger("Error while trying to download: " + err.stack, true) 
+                            if (err) logger("Error while trying to download and update: " + err.stack, true) 
                         })
                     }
 
@@ -376,7 +399,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                         try {
                             const { exec } = require('child_process'); //wanted to do it with the npm package but that didn't work out (BETA 2.8 b2)
    
-                            logger("Updating packages with npm...", true)
+                            logger("\x1b[33mUpdating packages with npm...\x1b[0m", true)
                             exec('npm install', (err, stdout) => { //eslint-disable-line
                                 if (err) {
                                     logger("Error running the npm install command: " + err, true)
@@ -385,6 +408,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
 
                                 //logger(`NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
 
+                                logger("", true)
                                 logger("\x1b[32mUpdate finished. Restarting myself in 5 seconds...\x1b[0m", true);
                                 setTimeout(() => {
                                     module.exports.activeupdate = false
