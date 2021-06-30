@@ -286,23 +286,37 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                     /* ------------------ Start updating files ------------------ */
                     function downloadupdate() {
                         const url = `https://github.com/HerrEurobeat/steam-comment-service-bot/archive/${releasemode}.zip`
-                        const dontdelete = ["./.git", "./src", "./src/cache.json", "./src/lastcomment.db", "./accounts.txt", "./customlang.json", "./logininfo.json", "./output.txt", "./proxies.txt", "./quotes.txt"]
+                        const dontdelete = ["./.git", "./src/cache.json", "./src/lastcomment.db", "./accounts.txt", "./customlang.json", "./logininfo.json", "./output.txt", "./proxies.txt", "./quotes.txt"]
 
+                        //Process dontdelete array in order to include parent folders of a dontdelete file in the array aswell
+                        dontdelete.forEach((e) => {
+                            var str = e.split("/")
+                            str.splice(0, 1) //remove '.'
+                        
+                            str.forEach((k, j) => {
+                                if (j == 0) return; //the path './' won't deleted either way so we can ignore it
+                                
+                                var pathtopush = "./" + str.slice(0, j).join("/")
+                                if (!dontdelete.includes(pathtopush)) dontdelete.push(pathtopush) //construct path from first part of the path until this iteration
+                            })
+                        })
+
+                        //Save config settings and extdata values by cloning them into a new object
                         const oldconfig = Object.assign(config)
                         const oldextdata = Object.assign(extdata)
 
+                        //Start downloading new files
                         logger("", true)
                         logger("\x1b[33mDownloading new files...\x1b[0m", true)
-                        download(url, "./", { extract: true }).then(() => {
-                            //Scan directory recursively
+                        download(url, "./", { extract: true }).then(() => { //the download library makes downloading and extracting easier
+                            //Scan directory recursively to get an array of all paths in this directory
                             var scandir = function(dir) { //Credit for this function before I modified it: https://stackoverflow.com/a/16684530/12934162
                                 var results = [];
                                 var list = fs.readdirSync(dir);
 
                                 list.forEach(function(file) {
-                                    if (dontdelete.includes(file)) return;
-
                                     file = dir + '/' + file;
+
                                     var stat = fs.statSync(file);
 
                                     results.push(file); //push the file and folder in order to avoid an ENOTEMPTY error and push it before the recursive part in order to have the folder above its files in the array to avoid ENOENT error
@@ -312,9 +326,9 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                                 return results;
                             }
 
-                            let files = scandir(".")
+                            let files = scandir(".") //scan the directory of this installation
                             
-                            //Delete old files except files in dontdelete
+                            //Delete old files except files and folders in dontdelete
                             logger("\x1b[33mDeleting old files...\x1b[0m", true)
                             files.forEach((e, i) => {
                                 if (fs.existsSync(e) && !dontdelete.includes(e) && !e.includes(`./steam-comment-service-bot-${releasemode}`) && !e.includes("./node_modules")) { //respect dontdelete, the fresh downloaded files and the node_modules folder
@@ -324,7 +338,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                                 //Continue if finished
                                 if (files.length == i + 1) {
                                     //Move new files out of directory
-                                    let newfiles = scandir(`./steam-comment-service-bot-${releasemode}`)
+                                    let newfiles = scandir(`./steam-comment-service-bot-${releasemode}`) //scan the directory of the new installation
                         
                                     logger("\x1b[33mMoving new files...\x1b[0m", true)
                                     newfiles.forEach((e, i) => {
@@ -335,7 +349,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                         
                                         //Continue if finished
                                         if (newfiles.length == i + 1) {
-                                            fs.rmSync(`./steam-comment-service-bot-${releasemode}`, { recursive: true })
+                                            fs.rmSync(`./steam-comment-service-bot-${releasemode}`, { recursive: true }) //remove the remains of the download folder
 
                                             //Custom update rules for a few files
                                             //config.json
@@ -347,13 +361,13 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                                             logger(`\x1b[33mTransfering your changes to new config.json...\x1b[0m`, true)
                                             
                                             Object.keys(newconfig).forEach(e => {
-                                                if (!Object.keys(oldconfig).includes(e)) return; //config value seems to be new
+                                                if (!Object.keys(oldconfig).includes(e)) return; //config value seems to be new so don't bother trying to set it to something (which would probably be undefined anyway)
 
                                                 newconfig[e] = oldconfig[e] //transfer setting
                                             })
 
                                             logger(`\x1b[33mWriting new data to config.json...\x1b[0m`, true)
-                                            fs.writeFile("./config.json", JSON.stringify(newconfig, null, 4), err => {
+                                            fs.writeFile("./config.json", JSON.stringify(newconfig, null, 4), err => { //write the changed file
                                                 if (err) {
                                                     logger(`Error writing changes to config.json: ${err}`, true)
                                                 }
@@ -376,7 +390,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                                             }
 
                                             logger(`\x1b[33mWriting new data to data.json...\x1b[0m`, true)
-                                            fs.writeFile("./src/data.json", JSON.stringify(newextdata, null, 4), err => {
+                                            fs.writeFile("./src/data.json", JSON.stringify(newextdata, null, 4), err => { //write the changed file
                                                 if (err) {
                                                     logger(`Error writing changes to data.json: ${err}`, true)
                                                     logger("\n\nThe updater failed to update data.json. Please restart the bot and try again. \nIf this error still happens please contact the developer by opening an issue: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose \nor by writing me a message on Discord or Steam. Contact details are on my GitHub Profile: https://github.com/HerrEurobeat", true); 
