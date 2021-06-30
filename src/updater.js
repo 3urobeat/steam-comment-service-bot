@@ -284,10 +284,10 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                     }
 
                     /* ------------------ Start updating files ------------------ */
-                    const url = `https://github.com/HerrEurobeat/steam-comment-service-bot/archive/${releasemode}.zip`
-                    const dontdelete = [".git", "node_modules", "cache.json", "lastcomment.db", "accounts.txt", "customlang.json", "logininfo.json", "output.txt", "proxies.txt", "quotes.txt"]
-
                     function downloadupdate() {
+                        const url = `https://github.com/HerrEurobeat/steam-comment-service-bot/archive/${releasemode}.zip`
+                        const dontdelete = ["./.git", "./src", "./src/cache.json", "./src/lastcomment.db", "./accounts.txt", "./customlang.json", "./logininfo.json", "./output.txt", "./proxies.txt", "./quotes.txt"]
+
                         const oldconfig = Object.assign(config)
                         const oldextdata = Object.assign(extdata)
 
@@ -305,35 +305,38 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
                                     file = dir + '/' + file;
                                     var stat = fs.statSync(file);
 
-                                    if (stat && stat.isDirectory()) results = results.concat(scandir(file)); //call this function recursively again if it is a directory
+                                    results.push(file); //push the file and folder in order to avoid an ENOTEMPTY error and push it before the recursive part in order to have the folder above its files in the array to avoid ENOENT error
 
-                                    results.push(file); //push the file and folder in order to avoid an ENOTEMPTY error
+                                    if (stat && stat.isDirectory()) results = results.concat(scandir(file)); //call this function recursively again if it is a directory
                                 });
                                 return results;
                             }
 
-                            let files = scandir("./")
+                            let files = scandir(".")
                             
                             //Delete old files except files in dontdelete
                             logger("\x1b[33mDeleting old files...\x1b[0m", true)
                             files.forEach((e, i) => {
-                                if (!dontdelete.includes(e) && !e.includes(`.//steam-comment-service-bot-${releasemode}`)) {
+                                if (fs.existsSync(e) && !dontdelete.includes(e) && !e.includes(`./steam-comment-service-bot-${releasemode}`) && !e.includes("./node_modules")) { //respect dontdelete, the fresh downloaded files and the node_modules folder
                                     fs.rmSync(e, { recursive: true })
                                 }
                         
                                 //Continue if finished
-                                if (files.length == i + 1) {                        
+                                if (files.length == i + 1) {
                                     //Move new files out of directory
-                                    let newfiles = fs.readdirSync(`./steam-comment-service-bot-${releasemode}`)
+                                    let newfiles = scandir(`./steam-comment-service-bot-${releasemode}`)
                         
                                     logger("\x1b[33mMoving new files...\x1b[0m", true)
                                     newfiles.forEach((e, i) => {
-                                        if (!dontdelete.includes(e)) fs.renameSync(`./steam-comment-service-bot-${releasemode}/${e}`, `./${e}`)
+                                        let eCut = e.replace(`steam-comment-service-bot-${releasemode}/`, "") //eCut should resemble the same path but how it would look like in the base directory
+
+                                        if (fs.statSync(e).isDirectory() && !fs.existsSync(eCut)) fs.mkdirSync(eCut) //create directory if it doesn't exist         
+                                        if (!fs.existsSync(eCut) || !fs.statSync(eCut).isDirectory() && !dontdelete.includes(eCut)) fs.renameSync(e, eCut) //only rename if not directory and not in dontdelete. We need to check first if it exists to avoid a file not found error with isDirectory()
                         
                                         //Continue if finished
                                         if (newfiles.length == i + 1) {
                                             fs.rmSync(`./steam-comment-service-bot-${releasemode}`, { recursive: true })
-                                            
+
                                             //Custom update rules for a few files
                                             //config.json
                                             logger(`\x1b[33mClearing cache of config.json...\x1b[0m`, true)
