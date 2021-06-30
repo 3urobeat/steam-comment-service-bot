@@ -180,7 +180,7 @@ var checkforupdate = (forceupdate, responseSteamID, compatibilityfeaturedone) =>
             res.setEncoding('utf8');
 
             res.on('data', function(chunk) {
-                var onlineversion = Number(JSON.parse(chunk).version) //parse version number from get request
+                var onlineversion = JSON.parse(chunk).version
                 var onlineversionstr = JSON.parse(chunk).versionstr
 
                 module.exports.onlinemestr = JSON.parse(chunk).mestr //get mestr and aboutstr from GitHub to check for modification
