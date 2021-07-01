@@ -11,7 +11,8 @@
         "https": "^1.0.0",
         "output-logger": "^1.2.1",
         "steam-user": "^4.19.10",
-        "steamcommunity": "^3.42.0"
+        "steamcommunity": "^3.42.0",
+        "steamid-resolver": "^1.2.1"
     },
     "scripts": {
         "start": "node start.js"

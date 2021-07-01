@@ -7,8 +7,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
     const SteamUser = require('steam-user');
     const SteamCommunity = require('steamcommunity');
     const SteamID = require('steamid');
+    const steamidresolver = require("steamid-resolver")
     const fs = require("fs");
-    const xml2js = require('xml2js');
     const https = require('https')
 
     var updater = require('./updater.js');
@@ -78,7 +78,6 @@ module.exports.run = async (logOnOptions, loginindex) => {
     //Group stuff
     if (loginindex == 0) { //group64id only needed by main bot -> remove unnecessary load from other bots
         var configgroup64id = ""
-        var yourgroupoutput = ""
 
         if (cachefile.configgroup == config.yourgroup) { //id is stored in cache file, no need to get it again
             logger("info", `group64id of yourgroup is stored in cache.json...`, false, true)
@@ -90,33 +89,25 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 logger("info", 'Skipping group64id request of yourgroup because config.yourgroup is empty.', false, true); //log to output for debugging
 
             } else {
-
                 logger("info", `Getting group64id of yourgroup...`, false, true)
-                https.get(`${config.yourgroup}/memberslistxml/?xml=1`, function(yourgroupres) { //get group64id from code to simplify config
-                    yourgroupres.on('data', function (chunk) {
-                        yourgroupoutput += chunk });
 
-                    yourgroupres.on('end', () => {
-                        if (!String(yourgroupoutput).includes("<?xml") || !String(yourgroupoutput).includes("<groupID64>")) { //Check if botsgroupoutput is steam group xml data before parsing it
-                            logger("warn", "Your group (yourgroup in config) doesn't seem to be valid!", true); 
-                        } else {
-                            new xml2js.Parser().parseString(yourgroupoutput, function(err, yourgroupResult) {
-                                if (err) return logger("error", "error parsing yourgroup xml: " + err, true)
+                steamidresolver.groupUrlToGroupID64(config.yourgroup, (err, yourgroupResult) => {
+                    if (err == "The specified group could not be found.") { //if the group couldn't be found display specific message
+                        return logger("error", "Your group (yourgroup in config) doesn't seem to be valid!\n        Error: " + config.yourgroup + " contains no xml or groupID64 data", true); 
+                    } else {
+                        if (err) return logger("error", "Error getting yourgroup information from Steam: " + err) //if a different error then display a generic message with the error
+                    }
 
-                                configgroup64id = yourgroupResult.memberList.groupID64
+                    logger("info", `Successfully retrieved yourgroup information. groupID64: ${yourgroupResult}`, false, true)
 
-                                cachefile.configgroup = config.yourgroup
-                                cachefile.configgroup64id = String(yourgroupResult.memberList.groupID64)
-                                fs.writeFile("./src/cache.json", JSON.stringify(cachefile, null, 4), err => { 
-                                    if (err) logger("error", `[${thisbot}] error writing configgroup64id to cache.json: ${err}`) 
-                            })
-                        }) 
-                    } 
+                    configgroup64id = yourgroupResult
+
+                    cachefile.configgroup = config.yourgroup
+                    cachefile.configgroup64id = yourgroupResult
+                    fs.writeFile("./src/cache.json", JSON.stringify(cachefile, null, 4), err => { 
+                        if (err) logger("error", `[${thisbot}] error writing configgroup64id to cache.json: ${err}`) 
+                    })
                 })
-                
-                }).on("error", function(err) { 
-                    logger("error", "Couldn't get yourgroup 64id. Either Steam is down or your internet isn't working.\n        Error: " + err, true)
-                }) 
             } 
         } 
     }
@@ -850,28 +841,17 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     if (isNaN(args[0]) && !String(args[0]).startsWith('https://steamcommunity.com/groups/')) return chatmsg(steamID, lang.leavegroupcmdinvalidgroup)
 
                     if (String(args[0]).startsWith('https://steamcommunity.com/groups/')) {
-                        var leavegroupoutput = ""
-
-                        https.get(`${args[0]}/memberslistxml/?xml=1`, function (leavegroupres) { //get group64id from code to simplify config
-                            leavegroupres.on('data', function (chunk) {
-                                leavegroupoutput += chunk });
-
-                            leavegroupres.on('end', () => {
-                                if (!String(leavegroupoutput).includes("<?xml") || !String(leavegroupoutput).includes("<groupID64>")) { //Check if botsgroupoutput is steam group xml data before parsing it
-                                    chatmsg(steamID, lang.leavegroupcmdnotfound)
-                                } else {
-                                    new xml2js.Parser().parseString(leavegroupoutput, function(err, leavegroupResult) {
-                                        if (err) return logger("error", "error parsing leavegroup xml: " + err, true)
-
-                                        args[0] = leavegroupResult.memberList.groupID64
-                                        startleavegroup()
-                                    }) 
-                                } 
-                            })
-                        }).on("error", function(err) {
-                            logger("error", "Couldn't get leavegroup information. Either Steam is down or your internet isn't working.\n        Error: " + err)
-                            chatmsg(steamID, lang.leavegroupcmderror + err)
-                            return;
+                        steamidresolver.groupUrlToGroupID64(args[0], (err, leavegroupResult) => {
+                            if (err == "The specified group could not be found.") { //if the group couldn't be found display specific message
+                                return chatmsg(steamID, lang.leavegroupcmdnotfound)
+                            } else {
+                                if (err) chatmsg(steamID, lang.leavegroupcmderror + err) //if a different error then display a generic message with the error
+                            }
+        
+                            logger("info", `Successfully retrieved leavegroup information. groupID64: ${leavegroupResult}`, false, true)
+        
+                            args[0] = leavegroupResult
+                            startleavegroup()
                         })
 
                     } else { 

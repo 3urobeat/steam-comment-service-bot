@@ -8,9 +8,9 @@ const https = require('https')
 
 const SteamID = require('steamid');
 const SteamTotp = require('steam-totp');
-const xml2js = require('xml2js')
 const nedb = require("@yetzt/nedb")
-const outputlogger = require("output-logger")
+const outputlogger = require("output-logger") //look Mom, it's my own library!
+const steamidresolver = require("steamid-resolver") //this one too btw
 
 var updater = require('./updater.js')
 var b = require('./bot.js');
@@ -342,7 +342,7 @@ module.exports={
 function startlogin() { //function will be called when steamcommunity status check is done
     logger("", "", true)
     if (Math.floor(Math.random() * 100) <= 2) logger("", hellothereascii + "\n", true)
-        else if (Math.floor(Math.random() * 100) <= 10) logger(binaryascii + "\n", true)
+        else if (Math.floor(Math.random() * 100) <= 10) logger("", binaryascii + "\n", true)
         else logger("", ascii[Math.floor(Math.random() * ascii.length)] + "\n", true)
     logger("", "", true) //put one line above everything that will come to make the output cleaner
 
@@ -480,18 +480,14 @@ var readyinterval = setInterval(() => { //log startup to console
             logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.", true) 
         } else {
             try {
-                var owneroutput = ""
+                steamidresolver.customUrlTosteamID64(config.owner, (err, ownerResult) => {
+                    if (err == "The specified profile could not be found.") { //if the profile couldn't be found display specific message
+                        return logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.\n         Error: " + err, true)
+                    } else {
+                        if (err) return logger("error", "Error checking if owner is valid: " + err) //if a different error then display a generic message with the error
+                    }
 
-                https.get(`${config.owner}?xml=1`, function(ownerres) { //get requesterSteamID of user to check if it is valid
-                    ownerres.on('data', function (chunk) {
-                        owneroutput += chunk });
-    
-                    ownerres.on('end', () => {
-                        new xml2js.Parser().parseString(owneroutput, function(ownererr, ownerResult) {
-                            if (ownererr) return logger("error", "error parsing owner xml: " + ownererr, true)
-                            if (ownerResult.response && ownerResult.response.error) return logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.\n         Error: " + ownerResult.response.error, true)
-                        })
-                    }) 
+                    logger("info", `Successfully checked owner link. steamID64: ${ownerResult}`, false, true)
                 })
             } catch (err) {
                 if (err) { 
@@ -529,7 +525,6 @@ var readyinterval = setInterval(() => { //log startup to console
             logger("info", 'Skipping botsgroup because config.botsgroup is empty.', false, true);
         } else {
             logger("info", `Checking if all bot accounts are in botsgroup...`, false, true)
-            var botsgroupoutput = ""
 
             if (config.botsgroup == config.yourgroup) {
                 var botsgroupid = botobject[0]["configgroup64id"]
@@ -537,32 +532,23 @@ var readyinterval = setInterval(() => { //log startup to console
                 joinbotsgroup(botsgroupid)
             } else {
                 if (cache.botsgroup != config.botsgroup) { //check if botsgroupid has never been acquired or the url has been changed in the config
-                    https.get(`${config.botsgroup}/memberslistxml/?xml=1`, function(botsgroupres) { //get group64id from code to simplify config
-                        botsgroupres.on('data', function (chunk) {
-                            botsgroupoutput += chunk });
-                
-                        botsgroupres.on('end', () => {
-                            if (!String(botsgroupoutput).includes("<?xml") || !String(botsgroupoutput).includes("<groupID64>")) { //Check if botsgroupoutput is steam group xml data before parsing it
-                                logger("error", "Your bots group (botsgroup in config) doesn't seem to be valid!\n        Error: " + config.botsgroup + " contains no xml or groupID64 data", true); 
-                            } else {
-                                new xml2js.Parser().parseString(botsgroupoutput, function(botsgrouperr, botsgroupResult) {
-                                    if (botsgrouperr) return logger("error", "error parsing botsgroup xml: " + botsgrouperr, true)
+                    steamidresolver.groupUrlToGroupID64(config.botsgroup, (err, botsgroupid) => {
+                        if (err == "The specified group could not be found.") { //if the group couldn't be found display specific message
+                            return logger("error", "Your bots group (botsgroup in config) doesn't seem to be valid!\n        Error: " + config.botsgroup + " contains no xml or groupID64 data", true); 
+                        } else {
+                            if (err) return logger("error", "Error getting botsgroup information from Steam: " + err) //if a different error then display a generic message with the error
+                        }
 
-                                    var botsgroupid = botsgroupResult.memberList.groupID64
+                        logger("info", `Successfully retrieved botsgroup information. groupID64: ${botsgroupid}`, false, true)
 
-                                    //Write botsgroupid to cache so that we won't have to check this every time unless the user changes the botsgroup url
-                                    cache.botsgroup = config.botsgroup
-                                    cache.botsgroupid = String(botsgroupid)
-                                    fs.writeFile("./src/cache.json", JSON.stringify(cache, null, 4), err => { 
-                                        if (err) logger("error", `error writing botsgroupid to cache.json: ${err}`) 
-                                    })
-                        
-                                    joinbotsgroup(botsgroupid)
-                                })
-                            }
+                        //Write botsgroupid to cache so that we won't have to check this every time unless the user changes the botsgroup url
+                        cache.botsgroup = config.botsgroup
+                        cache.botsgroupid = String(botsgroupid)
+                        fs.writeFile("./src/cache.json", JSON.stringify(cache, null, 4), err => { 
+                            if (err) logger("error", `error writing botsgroupid to cache.json: ${err}`) 
                         })
-                    }).on("error", function(err) {
-                        logger("error", "Couldn't get botsgroup 64id. Either Steam is down or your internet isn't working.\n       Error: " + err, true)
+
+                        joinbotsgroup(botsgroupid)
                     })
                 } else { //url hasn't been changed and id was already acquired so just check if all accounts are in that group
                     if (!cache.botsgroupid) logger("warn", "cache's botsgroupid is undefined even though the last check didn't trigger. Huh, how can that happen?", true) //check just to be sure
@@ -620,8 +606,11 @@ var readyinterval = setInterval(() => { //log startup to console
         extdata.firststart = false
 
         fs.writeFile("./src/data.json", JSON.stringify(extdata, null, 4), err => { //write changes
-            if (err) logger("error", "change extdata to false error: " + err) 
-            logger("info", 'Startup complete!', false, true) 
+            if (err) logger("error", "change extdata to false error: " + err)
+
+            setTimeout(() => {
+                logger("info", 'Startup complete!', false, true) 
+            }, 2000);
         })
 
 
@@ -692,7 +681,7 @@ var readyinterval = setInterval(() => { //log startup to console
 
         setTimeout(() => {
             logger("", "", true, true) //clear out last remove message
-        }, 5000);
+        }, 7000);
     }
 }, 500);
 
