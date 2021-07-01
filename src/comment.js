@@ -13,10 +13,10 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
     var requesterSteamID = new SteamID(String(steamID)).getSteamID64() //save steamID of comment requesting user so that messages are being send to the requesting user and not to the reciever if a profileid has been provided
 
     function respondmethod(rescode, msg) { //we need a function to get each response back to the user (web request & steam chat)
-        if (typeof (rescode) != "number") return logger("comment respondmethod call has invalid response code: rescode must be a Number!")
+        if (typeof (rescode) != "number") return logger("error", "comment respondmethod call has invalid response code: rescode must be a Number!")
 
         if (res) {
-            logger("Web Comment Request response: " + msg.replace("/me ", "")) //replace steam chat format prefix with nothing if this message should use one
+            logger("info", "Web Comment Request response: " + msg.replace("/me ", "")) //replace steam chat format prefix with nothing if this message should use one
             res.status(rescode).send(msg + "</br></br>The log will contain further information and errors (if one should occur). You can display the log in your browser by visiting: /output")
         } else {
             chatmsg(requesterSteamID, msg)
@@ -146,7 +146,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                     accstoadd[requesterSteamID].push(`\n ' https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[accountorder[i]].steamID)).getSteamID64()} '`) //...then push profile URL into array
                 }
             } catch (err) {
-                logger("Error checking if comment requester is friend with limited bot accounts: " + err) //This error check was implemented as a temporary solution to fix this error (and should be fine since it seems that this error is rare and at least prevents from crashing the bot): https://github.com/HerrEurobeat/steam-comment-service-bot/issues/54
+                logger("error", "Error checking if comment requester is friend with limited bot accounts: " + err) //This error check was implemented as a temporary solution to fix this error (and should be fine since it seems that this error is rare and at least prevents from crashing the bot): https://github.com/HerrEurobeat/steam-comment-service-bot/issues/54
             }
         } 
 
@@ -158,7 +158,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
 
     community.getSteamUser(steamID, (err, user) => { //check if profile is private
         if (err) {
-            logger(`[${thisbot}] comment check for private account error: ${err}\nTrying to comment anyway and hoping no error occurs...`) //this can happen sometimes and most of the times commenting will still work
+            logger("warn", `[${thisbot}] comment check for private account error: ${err}\n       Trying to comment anyway and hoping no error occurs...`) //this can happen sometimes and most of the times commenting will still work
         } else {
             if (user.privacyState != "public") { 
                 return respondmethod(403, lang.commentuserprofileprivate) //only check if getting the Steam user's data didn't result in an error
@@ -270,7 +270,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                                     let localoffset = new Date().getTimezoneOffset() * 60000
 
                                     respondmethod(500, `${lang.commenterroroccurred}\n${errordesc}\n\nDetails: \n[${thisbot}] postUserComment error: ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
-                                    logger(`[${thisbot}] postUserComment error: ${error}\n${errordesc}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`) }) //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
+                                    logger("error", `[${thisbot}] postUserComment error: ${error}\n${errordesc}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`) }) //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
 
                                 if (error == "Error: HTTP error 429" || error == "Error: You've been posting too frequently, and can't make another post right now") {
                                     commentedrecently = Date.now() + 300000 } //add 5 minutes to commentedrecently if cooldown error
@@ -281,7 +281,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
 
                             } else { //if the error occurred on another account then log the error and push the error to failedcomments
 
-                                logger(`[${thisbot}] postUserComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - reciever: ${new SteamID(String(steamID)).getSteamID64()}`); 
+                                logger("error", `[${thisbot}] postUserComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - reciever: ${new SteamID(String(steamID)).getSteamID64()}`); 
                                 failedcomments[requesterSteamID][`Comment ${i + 1} (bot${k})`] = `postUserComment error: ${error} [${errordesc}]`
                             }
                         }
@@ -290,7 +290,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                         /* --------- No error, run this on every successful iteration --------- */
                         if (i == 0) { //Stuff below should only run in first iteration (main bot)
                             //converting steamID again to SteamID64 because it could have changed by a profileid argument
-                            logger(`\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${String(comment).split("\n")[0]}\x1b[0m`) //splitting \n to only get first line of multi line comments
+                            logger("info", `\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment on ${new SteamID(String(steamID)).getSteamID64()}: ${String(comment).split("\n")[0]}\x1b[0m`) //splitting \n to only get first line of multi line comments
 
                             if (numberofcomments == 1) {
                                 respondmethod(200, lang.commentsuccess1)
@@ -307,11 +307,11 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                             /* --------- Give user cooldown --------- */ 
                             //add estimated wait time in ms to start the cooldown after the last recieved comment
                             controller.lastcomment.update({ id: requesterSteamID }, { $set: { time: Date.now() + ((numberofcomments - 1) * config.commentdelay) } }, {}, (err) => { 
-                                if (err) logger("Error adding cooldown to user in database! You should probably *not* ignore this error!\nError: " + err) 
+                                if (err) logger("error", "Error adding cooldown to user in database! You should probably *not* ignore this error!\nError: " + err) 
                             })
 
                         } else { //Stuff below should only run for child accounts
-                            if (!error) logger(`[${thisbot}] Comment ${i + 1}/${numberofcomments} on ${new SteamID(String(steamID)).getSteamID64()}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
+                            if (!error) logger("info", `[${thisbot}] Comment ${i + 1}/${numberofcomments} on ${new SteamID(String(steamID)).getSteamID64()}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
                         }
 
 
@@ -377,7 +377,7 @@ module.exports.grouprun = (logger, chatmsg, lang, community, thisbot, steamID, a
     var requesterSteamID = new SteamID(String(steamID)).getSteamID64() //save steamID of comment requesting user so that messages are being send to the requesting user and not to the reciever if a profileid has been provided
 
     function respondmethod(rescode, msg) { //we need a function to get each response back to the user (web request & steam chat)
-        if (typeof (rescode) != "number") return logger("comment respondmethod call has invalid response code: rescode must be a Number!")
+        if (typeof (rescode) != "number") return logger("error", "comment respondmethod call has invalid response code: rescode must be a Number!")
 
         chatmsg(requesterSteamID, msg)
     }
@@ -559,7 +559,7 @@ module.exports.grouprun = (logger, chatmsg, lang, community, thisbot, steamID, a
                                 let localoffset = new Date().getTimezoneOffset() * 60000
 
                                 respondmethod(500, `${lang.commenterroroccurred}\n\nDetails: \n[${thisbot}] postUserComment error: ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
-                                logger(`[${thisbot}] postUserComment error: ${error}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`) }) //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
+                                logger("error", `[${thisbot}] postUserComment error: ${error}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`) }) //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
 
                             if (error == "Error: HTTP error 429" || error == "Error: You've been posting too frequently, and can't make another post right now") {
                                 commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
@@ -571,7 +571,7 @@ module.exports.grouprun = (logger, chatmsg, lang, community, thisbot, steamID, a
 
                         } else { //if the error occurred on another account then log the error and push the error to failedcomments
 
-                            logger(`[${thisbot}] postGroupComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - group: ${args[1]}`); 
+                            logger("error", `[${thisbot}] postGroupComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - group: ${args[1]}`); 
                             failedcomments[requesterSteamID][`Comment ${i + 1} (bot${k})`] = `postUserComment error: ${error}`
                         }
                     }
@@ -580,7 +580,7 @@ module.exports.grouprun = (logger, chatmsg, lang, community, thisbot, steamID, a
                     /* --------- No error, run this on every successful iteration --------- */
                     if (i == 0) { //Stuff below should only run in first iteration (main bot)
                         //converting steamID again to SteamID64 because it could have changed by a profileid argument
-                        logger(`\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment in group ${args[1]}: ${String(comment).split("\n")[0]}\x1b[0m`) //splitting \n to only get first line of multi line comments
+                        logger("info", `\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment in group ${args[1]}: ${String(comment).split("\n")[0]}\x1b[0m`) //splitting \n to only get first line of multi line comments
 
                         if (numberofcomments == 1) {
                             respondmethod(200, lang.commentsuccess1)
@@ -597,11 +597,11 @@ module.exports.grouprun = (logger, chatmsg, lang, community, thisbot, steamID, a
                         /* --------- Give user cooldown --------- */ 
                         //add estimated wait time in ms to start the cooldown after the last recieved comment
                         controller.lastcomment.update({ id: requesterSteamID }, { $set: { time: Date.now() + ((numberofcomments - 1) * config.commentdelay) } }, {}, (err) => { 
-                            if (err) logger("Error adding cooldown to user in database! You should probably *not* ignore this error!\nError: " + err) 
+                            if (err) logger("error", "Error adding cooldown to user in database! You should probably *not* ignore this error!\nError: " + err) 
                         })
 
                     } else { //Stuff below should only run for child accounts
-                        if (!error) logger(`[${thisbot}] Comment ${i + 1}/${numberofcomments} in group ${args[1]}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
+                        if (!error) logger("info", `[${thisbot}] Comment ${i + 1}/${numberofcomments} in group ${args[1]}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
                     }
 
 

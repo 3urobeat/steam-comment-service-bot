@@ -48,11 +48,11 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
     if (enabledebugmode) {
         bot.on("debug", (msg) => {
-            logger(`[${thisbot}] debug: ${msg}`, false, true)
+            logger("debug", `[${thisbot}] debug: ${msg}`, false, true)
         })
 
         bot.on("debug-verbose", (msg) => {
-            logger(`[${thisbot}] debug-verbose: ${msg}`, false, true)
+            logger("debug", `[${thisbot}] debug-verbose: ${msg}`, false, true)
         })
     }
 
@@ -81,41 +81,41 @@ module.exports.run = async (logOnOptions, loginindex) => {
         var yourgroupoutput = ""
 
         if (cachefile.configgroup == config.yourgroup) { //id is stored in cache file, no need to get it again
-            logger(`group64id of yourgroup is stored in cache.json...`, false, true)
+            logger("info", `group64id of yourgroup is stored in cache.json...`, false, true)
             configgroup64id = cachefile.configgroup64id
         } else {
-            logger(`group64id of yourgroup not in cache.json...`, false, true)
+            logger("info", `group64id of yourgroup not in cache.json...`, false, true)
         
             if (config.yourgroup.length < 1) {
-                logger('Skipping group64id request of yourgroup because config.yourgroup is empty.', false, true); //log to output for debugging
+                logger("info", 'Skipping group64id request of yourgroup because config.yourgroup is empty.', false, true); //log to output for debugging
 
             } else {
 
-                logger(`Getting group64id of yourgroup...`, false, true)
+                logger("info", `Getting group64id of yourgroup...`, false, true)
                 https.get(`${config.yourgroup}/memberslistxml/?xml=1`, function(yourgroupres) { //get group64id from code to simplify config
                     yourgroupres.on('data', function (chunk) {
                         yourgroupoutput += chunk });
 
                     yourgroupres.on('end', () => {
                         if (!String(yourgroupoutput).includes("<?xml") || !String(yourgroupoutput).includes("<groupID64>")) { //Check if botsgroupoutput is steam group xml data before parsing it
-                            logger("\x1b[0m[\x1b[31mNotice\x1b[0m] Your group (yourgroup in config) doesn't seem to be valid!", true); 
+                            logger("warn", "Your group (yourgroup in config) doesn't seem to be valid!", true); 
                         } else {
                             new xml2js.Parser().parseString(yourgroupoutput, function(err, yourgroupResult) {
-                                if (err) return logger("error parsing yourgroup xml: " + err, true)
+                                if (err) return logger("error", "error parsing yourgroup xml: " + err, true)
 
                                 configgroup64id = yourgroupResult.memberList.groupID64
 
                                 cachefile.configgroup = config.yourgroup
                                 cachefile.configgroup64id = String(yourgroupResult.memberList.groupID64)
                                 fs.writeFile("./src/cache.json", JSON.stringify(cachefile, null, 4), err => { 
-                                    if (err) logger(`[${thisbot}] error writing configgroup64id to cache.json: ${err}`) 
+                                    if (err) logger("error", `[${thisbot}] error writing configgroup64id to cache.json: ${err}`) 
                             })
                         }) 
                     } 
                 })
                 
                 }).on("error", function(err) { 
-                    logger("\x1b[0m[\x1b[31mNotice\x1b[0m]: Couldn't get yourgroup 64id. Either Steam is down or your internet isn't working.\n          Error: " + err, true)
+                    logger("error", "Couldn't get yourgroup 64id. Either Steam is down or your internet isn't working.\n        Error: " + err, true)
                 }) 
             } 
         } 
@@ -136,7 +136,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
             var steam64id = new SteamID(String(steamID)).getSteamID64()
 
             controller.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {
-                if (!lastcommentdoc) logger("User is missing from database?? How is this possible?! Error maybe: " + err)
+                if (!lastcommentdoc) logger("error", "User is missing from database?? How is this possible?! Error maybe: " + err)
 
                 try { //catch any unhandled error to be able to remove user from activecommentprocess array
                     require("./comment.js").run(logger, chatmsg, lang, community, thisbot, steamID, args, res, lastcommentdoc, failedcomments, activecommentprocess, lastcommentrequestmsg, commentedrecently, commentcounter, lastsuccessfulcomment, (fc, acp, cr, cc) => { //callback transports stuff back to be able to store the stuff here
@@ -148,7 +148,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     })
                 } catch (err) {
                     activecommentprocess = activecommentprocess.filter(item => item != steam64id) //Remove user from array to make sure you can't get stuck in there (not perfect as this won't trigger when the error occurrs in a nested function)
-                    logger("Error while processing comment request: " + err)
+                    logger("error", "Error while processing comment request: " + err)
                 }
             })
         }
@@ -163,7 +163,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
             var steam64id = new SteamID(String(steamID)).getSteamID64()
 
             controller.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {
-                if (!lastcommentdoc) logger("User is missing from database?? How is this possible?! Error maybe: " + err)
+                if (!lastcommentdoc) logger("error", "User is missing from database?? How is this possible?! Error maybe: " + err)
 
                 try { //catch any unhandled error to be able to remove user from activecommentprocess array
                     require("./comment.js").grouprun(logger, chatmsg, lang, community, thisbot, steamID, args, res, lastcommentdoc, failedcomments, activecommentprocess, lastcommentrequestmsg, commentedrecently, commentcounter, lastsuccessfulcomment, (fc, acp, cr, cc) => { //callback transports stuff back to be able to store the stuff here
@@ -175,7 +175,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     })
                 } catch (err) {
                     activecommentprocess = activecommentprocess.filter(item => item != steam64id) //Remove user from array to make sure you can't get stuck in there (not perfect as this won't trigger when the error occurrs in a nested function)
-                    logger("Error while processing group comment request: " + err)
+                    logger("error", "Error while processing group comment request: " + err)
                 }
             })
         }
@@ -191,8 +191,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 clearInterval(loggedininterval) //stop interval
                 controller.accisloggedin = false; //set to false again
 
-                if (thisproxy == null) logger(`[${thisbot}] Trying to log in without proxy... (Attempt ${logOnTries}/${maxLogOnRetries + 1})`, false, true)
-                    else logger(`[${thisbot}] Trying to log in with proxy ${controller.proxyShift - 1}... (Attempt ${logOnTries}/${maxLogOnRetries + 1})`, false, true)
+                if (thisproxy == null) logger("info", `[${thisbot}] Trying to log in without proxy... (Attempt ${logOnTries}/${maxLogOnRetries + 1})`, false, true)
+                    else logger("info", `[${thisbot}] Trying to log in with proxy ${controller.proxyShift - 1}... (Attempt ${logOnTries}/${maxLogOnRetries + 1})`, false, true)
                 
                 bot.logOn(logOnOptions)
             }
@@ -203,7 +203,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
         if (!controller.relogQueue.includes(loginindex)) {
             controller.relogQueue.push(loginindex)
             logOnTries = 0;
-            logger(`[${thisbot}] Queueing for a relog. ${controller.relogQueue.length - 1} other accounts are waiting...`, false, true)
+            logger("info", `[${thisbot}] Queueing for a relog. ${controller.relogQueue.length - 1} other accounts are waiting...`, false, true)
         }
 
         var relogInterval = setInterval(() => {
@@ -212,10 +212,10 @@ module.exports.run = async (logOnOptions, loginindex) => {
             clearInterval(relogInterval) //prevent any retries
             bot.logOff()
 
-            logger(`[${thisbot}] It is now my turn. Waiting ${controller.relogdelay / 1000} seconds before attempting to relog...`, false, true)
+            logger("info", `[${thisbot}] It is now my turn. Waiting ${controller.relogdelay / 1000} seconds before attempting to relog...`, false, true)
             setTimeout(() => {
-                if (thisproxy == null) logger(`[${thisbot}] Trying to relog without proxy...`, false, true)
-                    else logger(`[${thisbot}] Trying to relog with proxy ${controller.proxyShift - 1}...`, false, true)
+                if (thisproxy == null) logger("info", `[${thisbot}] Trying to relog without proxy...`, false, true)
+                    else logger("info", `[${thisbot}] Trying to relog with proxy ${controller.proxyShift - 1}...`, false, true)
                 
                 bot.logOn(logOnOptions)
             }, controller.relogdelay);
@@ -225,40 +225,42 @@ module.exports.run = async (logOnOptions, loginindex) => {
     logOnAccount();
 
     bot.on('error', (err) => { //Handle errors that were caused during logOn
-        if (err.eresult == 34) {
-            logger(`\x1b[31m[${thisbot}] Lost connection to Steam. Reason: LogonSessionReplaced\x1b[0m`)
-            if (loginindex == 0) { logger(`\x1b[31mAccount is bot0. Aborting...\x1b[0m`, true); process.exit(0) }
+        if (err.eresult == 34) { //LogonSessionReplaced
+            logger("info", `\x1b[31m[${thisbot}] Lost connection to Steam. Reason: LogonSessionReplaced\x1b[0m`)
+            if (loginindex == 0) { logger("error", `\x1b[31mAccount is bot0. Aborting...\x1b[0m`, true); process.exit(0) }
             return; 
         }
 
         //Check if this is a connection loss and not a login error (because disconnects will be thrown here when autoRelogin is false)
         if (Object.keys(controller.botobject).includes(String(loginindex)) && !controller.relogQueue.includes(loginindex)) { //it must be a disconnect when the bot was once logged in and is not yet in the queue
-            logger(`\x1b[31m[${thisbot}] Lost connection to Steam. Reason: ${err}\x1b[0m`)
+            logger("info", `\x1b[31m[${thisbot}] Lost connection to Steam. Reason: ${err}\x1b[0m`)
 
             if (controller.relogAfterDisconnect && !controller.skippednow.includes(loginindex)) { 
-                logger(`\x1b[32m[${thisbot}] Initiating a relog in 30 seconds.\x1b[0m`) //Announce relog
+                logger("info", `\x1b[32m[${thisbot}] Initiating a relog in 30 seconds.\x1b[0m`) //Announce relog
                 setTimeout(() => {
                     relogAccount()
                 }, 30000);
             } else {
-                logger(`[${thisbot}] I won't queue myself for a relog because this account was skipped or this is an intended logOff.`)
+                logger("info", `[${thisbot}] I won't queue myself for a relog because this account was skipped or this is an intended logOff.`)
             }
         } else {
             //Actual error durin login or relog:
             let blockedEnumsForRetries = [5, 12, 13, 17, 18] //Enums: https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EResult.js
 
             if ((logOnTries > maxLogOnRetries && !controller.relogQueue.includes(loginindex)) || blockedEnumsForRetries.includes(err.eresult)) { //check if this is an initial login error and it is either a fatal error or all retries are used
-                logger(`\nCouldn't log in bot${loginindex} after ${logOnTries} attempt(s). ${err} (${err.eresult})`, true)
+                logger("", "", true)
+                logger("error", `Couldn't log in bot${loginindex} after ${logOnTries} attempt(s). ${err} (${err.eresult})`, true)
 
                 //Add additional messages for specific errors to hopefully help the user diagnose the cause
-                if (err.eresult == 5) logger(`Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try leaving the shared_secret field empty and check the username & password of bot${loginindex}.`, true)
-                if (thisproxy != null) logger(`Is your proxy ${controller.proxyShift} offline or blocked by Steam?`, true)
+                if (err.eresult == 5) logger("", `Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try leaving the shared_secret field empty and check the username & password of bot${loginindex}.`, true)
+                if (thisproxy != null) logger("", `Is your proxy ${controller.proxyShift} offline or maybe blocked by Steam?`, true)
 
                 if (loginindex == 0) {
-                    logger("\nAborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true)
+                    logger("", "", true)
+                    logger("error", "Aborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true)
                     process.exit(0)
                 } else {
-                    logger(`Failed account is not bot0. Skipping account...`, true)
+                    logger("info", `Failed account is not bot0. Skipping account...`, true)
                     controller.accisloggedin = true; //set to true to log next account in
 
                     updater.skippedaccounts.push(loginindex)
@@ -266,7 +268,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 }
             } else {
                 //Got retries left or it is a relog...
-                logger(`${err} (${err.eresult}) while trying to log in bot${loginindex}. Retrying in 5 seconds...`)
+                logger("warn", `${err} (${err.eresult}) while trying to log in bot${loginindex}. Retrying in 5 seconds...`)
 
                 setTimeout(() => {
                     //Call either relogAccount or logOnAccount function to continue where we started at
@@ -279,8 +281,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
     bot.on('steamGuard', function(domain, callback, lastCodeWrong) { //fired when steamGuard code is requested when trying to log in
         function askforcode() { //function to handle code input, manual skipping with empty input and automatic skipping with skipSteamGuard 
-            logger(`[${thisbot}] Steam Guard code requested...`, false, true)
-            logger('Code Input', true, true) //extra line with info for output.txt because otherwise the text from above get's halfway stuck in the steamGuard input field
+            logger("info", `[${thisbot}] Steam Guard code requested...`, false, true)
+            logger("", 'Code Input', true, true) //extra line with info for output.txt because otherwise the text from above get's halfway stuck in the steamGuard input field
 
             var steamGuardInputStart = Date.now(); //measure time to subtract it later from readyafter time
 
@@ -297,13 +299,13 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
                 if (code == "") { //manual skip initated
                     if (loginindex == 0) { //first account can't be skipped
-                        logger("The first account always has to be logged in!", true)
+                        logger("warn", "The first account always has to be logged in!", true)
 
                         setTimeout(() => {
                             askforcode(); //run function again
                         }, 500);
                     } else {
-                        logger(`[${thisbot}] steamGuard input empty, skipping account...`, false, true)
+                        logger("info", `[${thisbot}] steamGuard input empty, skipping account...`, false, true)
                         controller.accisloggedin = true; //set to true to log next account in
                         updater.skippedaccounts.push(loginindex)
                         controller.skippednow.push(loginindex) 
@@ -312,7 +314,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     }
 
                 } else { //code provided
-                    logger(`[${thisbot}] Accepting steamGuard code...`, false, true)
+                    logger("info", `[${thisbot}] Accepting steamGuard code...`, false, true)
                     callback(code) //give code back to node-steam-user
                 }
 
@@ -323,7 +325,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
         //check if skipSteamGuard is on so we don't need to prompt the user for a code
         if (config.skipSteamGuard) {
             if (loginindex > 0) {
-                logger(`[${thisbot}] Skipping account because skipSteamGuard is enabled...`, false, true)
+                logger("info", `[${thisbot}] Skipping account because skipSteamGuard is enabled...`, false, true)
                 controller.accisloggedin = true; //set to true to log next account in
                 updater.skippedaccounts.push(loginindex)
                 controller.skippednow.push(loginindex)
@@ -331,14 +333,14 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 bot.logOff() //Seems to prevent the steamGuard lastCodeWrong check from requesting again every few seconds
                 return;
             } else {
-                logger("Even with skipSteamGuard enabled, the first account always has to be logged in.", true)
+                logger("warn", "Even with skipSteamGuard enabled, the first account always has to be logged in.", true)
             } 
         }
 
         //calling the function:
         if (lastCodeWrong && !controller.skippednow.includes(loginindex)) { //last submitted code seems to be wrong and the loginindex wasn't already skipped (just to make sure)
-            logger('', true, true)
-            logger('Your code seems to be wrong, please try again!', true)
+            logger("", "", true, true)
+            logger("warn", 'Your code seems to be wrong, please try again!', true)
 
             setTimeout(() => {
                 askforcode(); //code seems to be wrong! ask again...
@@ -349,7 +351,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
     });
 
     bot.on('loggedOn', () => { //this account is now logged on
-        logger(`[${thisbot}] Account logged in! Waiting for websession...`, false, true)
+        logger("info", `[${thisbot}] Account logged in! Waiting for websession...`, false, true)
         bot.setPersona(1); //set online status
 
         if (loginindex == 0) bot.gamesPlayed(config.playinggames); //set game only for the main bot
@@ -366,7 +368,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                             time: Date.now() - (config.commentcooldown * 60000) //subtract commentcooldown so that the user is able to use the command instantly
                         }
 
-                        controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("Error inserting existing user into lastcomment.db database! Error: " + err) })
+                        controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting existing user into lastcomment.db database! Error: " + err) })
                     }
                 })
             })
@@ -390,21 +392,21 @@ module.exports.run = async (logOnOptions, loginindex) => {
         controller.accisloggedin = true; //set to true to log next account in
 
         //Accept offline group & friend invites
-        logger(`[${thisbot}] Got websession and set cookies.`, false, true)
+        logger("info", `[${thisbot}] Got websession and set cookies.`, false, true)
 
         //If this is a relog then remove this account from the queue and let the next account be able to relog
         if (controller.relogQueue.includes(loginindex)) {
-            logger(`[${thisbot}] Relog successful.`)
+            logger("info", `[${thisbot}] Relog successful.`)
             controller.relogQueue.splice(controller.relogQueue.indexOf(loginindex), 1) //remove this loginindex from the queue
         }
 
-        logger(`[${thisbot}] Accepting offline friend & group invites...`, false, true)
+        logger("info", `[${thisbot}] Accepting offline friend & group invites...`, false, true)
 
         //Friends:
         for (let i = 0; i < Object.keys(bot.myFriends).length; i++) { //Credit: https://dev.doctormckay.com/topic/1694-accept-friend-request-sent-in-offline/  
             if (bot.myFriends[Object.keys(bot.myFriends)[i]] == 2) {
                 bot.addFriend(Object.keys(bot.myFriends)[i]); //accept friend request
-                logger(`[${thisbot}] Added user while I was offline! User: ` + Object.keys(bot.myFriends)[i])
+                logger("info", `[${thisbot}] Added user while I was offline! User: ` + Object.keys(bot.myFriends)[i])
                 chatmsg(String(Object.keys(bot.myFriends)[i]), lang.useradded) //send welcome message
 
                 //Add user to lastcomment database
@@ -413,8 +415,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     time: Date.now() - (config.commentcooldown * 60000) //subtract commentcooldown so that the user is able to use the command instantly
                 }
 
-                controller.lastcomment.remove({ id: Object.keys(bot.myFriends)[i] }, {}, (err) => { if (err) logger("Error removing duplicate steamid from lastcomment.db on offline friend accept! Error: " + err) }) //remove any old entries
-                controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("Error inserting new user into lastcomment.db database! Error: " + err) })
+                controller.lastcomment.remove({ id: Object.keys(bot.myFriends)[i] }, {}, (err) => { if (err) logger("error", "Error removing duplicate steamid from lastcomment.db on offline friend accept! Error: " + err) }) //remove any old entries
+                controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err) })
 
                 if (configgroup64id && configgroup64id.length > 1 && Object.keys(bot.myGroups).includes(configgroup64id)) { 
                     bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(configgroup64id));
@@ -435,7 +437,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 }
 
                 bot.respondToGroupInvite(Object.keys(bot.myGroups)[i], true)
-                logger(`[${thisbot}] Accepted group invite while I was offline: ` + Object.keys(bot.myGroups)[i])
+                logger("info", `[${thisbot}] Accepted group invite while I was offline: ` + Object.keys(bot.myGroups)[i])
             }
         }
 
@@ -446,7 +448,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
     bot.on('friendRelationship', (steamID, relationship) => {
         if (relationship === 2) {
             bot.addFriend(steamID); //accept friend request
-            logger(`[${thisbot}] Added User: ` + new SteamID(String(steamID)).getSteamID64())
+            logger("info", `[${thisbot}] Added User: ` + new SteamID(String(steamID)).getSteamID64())
 
             if (loginindex === 0) {
                 chatmsg(steamID, lang.useradded) 
@@ -466,8 +468,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
                 time: Date.now() - (config.commentcooldown * 60000) //subtract commentcooldown so that the user is able to use the command instantly
             }
 
-            controller.lastcomment.remove({ id: new SteamID(String(steamID)).getSteamID64() }, {}, (err) => { if (err) logger("Error removing duplicate steamid from lastcomment.db on friendRelationship! Error: " + err) }) //remove any old entries
-            controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("Error inserting new user into lastcomment.db database! Error: " + err) })
+            controller.lastcomment.remove({ id: new SteamID(String(steamID)).getSteamID64() }, {}, (err) => { if (err) logger("error", "Error removing duplicate steamid from lastcomment.db on friendRelationship! Error: " + err) }) //remove any old entries
+            controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err) })
 
             controller.friendlistcapacitycheck(loginindex); //check remaining friendlist space
         }
@@ -476,7 +478,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
     bot.on('groupRelationship', (steamID, relationship) => {
         if (relationship === 2 && config.acceptgroupinvites) { //accept invite if acceptgroupinvites is true
             bot.respondToGroupInvite(steamID, true)
-            logger(`[${thisbot}] Accepted group invite: ` + new SteamID(String(steamID)).getSteamID64())
+            logger("info", `[${thisbot}] Accepted group invite: ` + new SteamID(String(steamID)).getSteamID64())
         }
     });
 
@@ -493,8 +495,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
         if (lastmessage[steam64id] && lastmessage[steam64id][0] + commandcooldown > Date.now() && lastmessage[steam64id][1] > 4) { //Inform the user about the cooldown
             chatmsg(steamID, lang.userspamblock)
-            logger(`${steam64id} has been blocked for 60 seconds for spamming.`)
-            lastmessage[steam64id][0] += 60000
+            logger("info", `${steam64id} has been blocked for 90 seconds for spamming.`)
+            lastmessage[steam64id][0] += 90000
             lastmessage[steam64id][1]++
             return; 
         }
@@ -502,8 +504,8 @@ module.exports.run = async (logOnOptions, loginindex) => {
         if (!ownercheck) lastmessage[steam64id][1]++ //push new message to array if user isn't an owner
 
         //log friend message but cut it if it is >= 75 chars
-        if (message.length >= 75) logger(`[${thisbot}] Friend message from ${steam64id}: ${message.slice(0, 75) + "..."}`);
-            else logger(`[${thisbot}] Friend message from ${steam64id}: ${message}`);
+        if (message.length >= 75) logger("info", `[${thisbot}] Friend message from ${steam64id}: ${message.slice(0, 75) + "..."}`);
+            else logger("info", `[${thisbot}] Friend message from ${steam64id}: ${message}`);
             
         //Deny non-friends the use of any command
         if (bot.myFriends[steam64id] != 3) return chatmsg(steamID, lang.usernotfriend)
@@ -518,7 +520,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
             //Check if user is in lastcomment database
             controller.lastcomment.findOne({ id: steam64id }, (err, doc) => {
-                if (err) logger("Database error on friendMessage. This is weird. Error: " + err)
+                if (err) logger("error", "Database error on friendMessage. This is weird. Error: " + err)
 
                 if (!doc) { //add user to database if he/she is missing for some reason
                     let lastcommentobj = {
@@ -526,7 +528,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                         time: Date.now() - (config.commentcooldown * 60000) //subtract commentcooldown so that the user is able to use the command instantly
                     }
                     
-                    controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("Error inserting new user into lastcomment.db database! Error: " + err) }) 
+                    controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err) }) 
                 }
             })
 
@@ -634,7 +636,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     var index = activecommentprocess.indexOf(steam64id) //get index of this steam64id
                     activecommentprocess.splice(index, 1)
 
-                    logger(`Aborting ${steam64id}'s comment process...`)
+                    logger("info", `Aborting ${steam64id}'s comment process...`)
                     chatmsg(steamID, lang.abortcmdsuccess)
                     break;
                 
@@ -722,10 +724,10 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     }
 
                     chatmsg(steamID, lang.settingscmdvaluechanged.replace("targetkey", args[0]).replace("oldvalue", keyvalue).replace("newvalue", args[1]))
-                    logger(`${args[0]} has been changed from ${keyvalue} to ${args[1]}.`)
+                    logger("info", `${args[0]} has been changed from ${keyvalue} to ${args[1]}.`)
 
                     if (args[0] == "playinggames") {
-                        logger("Refreshing game status of all bot accounts...")
+                        logger("info", "Refreshing game status of all bot accounts...")
                         Object.keys(controller.botobject).forEach((e, i) => {
                             if (loginindex == 0) controller.botobject[i].gamesPlayed(config.playinggames); //set game only for the main bot
                             if (loginindex != 0 && config.childaccsplaygames) controller.botobject[i].gamesPlayed(config.playinggames.slice(1, config.playinggames.length)) //play game with child bots but remove the custom game
@@ -744,7 +746,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                         .replace(/""/g, '""');
 
                     fs.writeFile("./config.json", stringifiedconfig, err => {
-                        if (err) return logger(`write settings cmd changes to config error: ${err}`)
+                        if (err) return logger("error", `write settings cmd changes to config error: ${err}`)
                     
                         delete require.cache[require.resolve("../config")]
                         config = require("../config.json")
@@ -774,26 +776,26 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     }
 
                     chatmsg(steamID, lang.addfriendcmdsuccess.replace("profileid", args[0]).replace("estimatedtime", 5 * Object.keys(controller.botobject).length))
-                    logger(`Adding friend ${args[0]} with all bot accounts... This will take ~${5 * Object.keys(controller.botobject).length} seconds.`)
+                    logger("info", `Adding friend ${args[0]} with all bot accounts... This will take ~${5 * Object.keys(controller.botobject).length} seconds.`)
 
                     Object.keys(controller.botobject).forEach((i) => {
                         //Check if this bot account is limited
                         if (controller.botobject[i].limitations && controller.botobject[i].limitations.limited == true) {
-                            logger(`Can't add friend ${args[0]} with bot${i} because the bot account is limited.`) 
+                            logger("error", `Can't add friend ${args[0]} with bot${i} because the bot account is limited.`) 
                             return;
                         }
 
                         if (controller.botobject[i].myFriends[new SteamID(args[0])] != 3 && controller.botobject[i].myFriends[new SteamID(args[0])] != 1) { //check if provided user is not friend and not blocked
                             setTimeout(() => {
                                 controller.communityobject[i].addFriend(new SteamID(args[0]).getSteam3RenderedID(), (err) => {
-                                    if (err) logger(`error adding ${args[0]} with bot${i}: ${err}`) 
-                                        else logger(`Added ${args[0]} with bot${i} as friend.`)
+                                    if (err) logger("error", `error adding ${args[0]} with bot${i}: ${err}`) 
+                                        else logger("info", `Added ${args[0]} with bot${i} as friend.`)
                                 })
 
                                 controller.friendlistcapacitycheck(i); //check remaining friendlist space
                             }, 5000 * i);
                         } else {
-                            logger(`bot${i} is already friend with ${args[0]} or the account was blocked/blocked you.`) //somehow logs steamIDs in seperate row?!
+                            logger("warn", `bot${i} is already friend with ${args[0]} or the account was blocked/blocked you.`) //somehow logs steamIDs in seperate row?!
                         } 
                     })
                     break;
@@ -810,7 +812,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     })
 
                     chatmsg(steamID, lang.unfriendcmdsuccess.replace("profileid", args[0]))
-                    logger(`Removed friend ${args[0]} from all bot accounts.`)
+                    logger("info", `Removed friend ${args[0]} from all bot accounts.`)
                     break;
                 
                 case '!unfriendall':
@@ -825,9 +827,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     chatmsg(steamID, lang.unfriendallcmdpending)
 
                     setTimeout(() => {
-                        if (abortunfriendall) return logger("unfriendall process was aborted.");
+                        if (abortunfriendall) return logger("info", "unfriendall process was aborted.");
                         chatmsg(steamID, lang.unfriendallcmdstart)
-                        logger("Starting to unfriend everyone...")
+                        logger("info", "Starting to unfriend everyone...")
 
                         for (let i in controller.botobject) {
                             for (let friend in controller.botobject[i].myFriends) {
@@ -836,7 +838,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                                         if (!config.ownerid.includes(friend)) controller.botobject[i].removeFriend(new SteamID(friend))
                                     }, 1000 * i); //delay every iteration so that we don't make a ton of requests at once
                                 } catch (err) {
-                                    logger(`[Bot ${i}] unfriendall error unfriending ${friend}: ${err}`)
+                                    logger("error", `[Bot ${i}] unfriendall error unfriending ${friend}: ${err}`)
                                 }
                             }
                         }
@@ -859,7 +861,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                                     chatmsg(steamID, lang.leavegroupcmdnotfound)
                                 } else {
                                     new xml2js.Parser().parseString(leavegroupoutput, function(err, leavegroupResult) {
-                                        if (err) return logger("error parsing leavegroup xml: " + err, true)
+                                        if (err) return logger("error", "error parsing leavegroup xml: " + err, true)
 
                                         args[0] = leavegroupResult.memberList.groupID64
                                         startleavegroup()
@@ -867,7 +869,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                                 } 
                             })
                         }).on("error", function(err) {
-                            logger("\x1b[0m[\x1b[31mNotice\x1b[0m]: Couldn't get leavegroup information. Either Steam is down or your internet isn't working.\n          Error: " + err)
+                            logger("error", "Couldn't get leavegroup information. Either Steam is down or your internet isn't working.\n        Error: " + err)
                             chatmsg(steamID, lang.leavegroupcmderror + err)
                             return;
                         })
@@ -887,7 +889,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                         })
 
                         chatmsg(steamID, lang.leavegroupcmdsuccess.replace("profileid", args[0]))
-                        logger(`Left group ${args[0]} with all bot accounts.`)
+                        logger("info", `Left group ${args[0]} with all bot accounts.`)
                     }
                     break;
                 
@@ -903,9 +905,9 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     chatmsg(steamID, lang.leaveallgroupscmdpending)
 
                     setTimeout(() => {
-                        if (abortleaveallgroups) return logger("leaveallgroups process was aborted.");
+                        if (abortleaveallgroups) return logger("info", "leaveallgroups process was aborted.");
                         chatmsg(steamID, lang.leaveallgroupscmdstart)
-                        logger("Starting to leave all groups...")
+                        logger("info", "Starting to leave all groups...")
 
                         for (let i in controller.botobject) {
                             for (let group in controller.botobject[i].myGroups) {
@@ -916,7 +918,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                                         }
                                     }, 1000 * i); //delay every iteration so that we don't make a ton of requests at once
                                 } catch (err) {
-                                    logger(`[Bot ${i}] leaveallgroups error leaving ${group}: ${err}`)
+                                    logger("error", `[Bot ${i}] leaveallgroups error leaving ${group}: ${err}`)
                                 }
                             }
                         }
@@ -929,11 +931,11 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     if (new SteamID(args[0]).isValid() === false) return chatmsg(steamID, lang.invalidprofileid)
 
                     Object.keys(controller.botobject).forEach((i) => {
-                        controller.botobject[i].blockUser(new SteamID(args[0]), err => { if (err) logger(`[Bot ${i}] error blocking user ${args[0]}: ${err}`) }) 
+                        controller.botobject[i].blockUser(new SteamID(args[0]), err => { if (err) logger("error", `[Bot ${i}] error blocking user ${args[0]}: ${err}`) }) 
                     })
 
                     chatmsg(steamID, lang.blockcmdsuccess.replace("profileid", args[0]))
-                    logger(`Blocked ${args[0]} with all bot accounts.`)
+                    logger("info", `Blocked ${args[0]} with all bot accounts.`)
                     break;
                 
                 case '!unblock':
@@ -943,12 +945,12 @@ module.exports.run = async (logOnOptions, loginindex) => {
 
                     Object.keys(controller.botobject).forEach((i) => {
                         if (controller.botobject[i].myFriends[new SteamID(args[0])] === 1) {
-                            controller.botobject[i].unblockUser(new SteamID(args[0]), err => { if (err) logger(`[Bot ${i}] error blocking user ${args[0]}: ${err}`) }) 
+                            controller.botobject[i].unblockUser(new SteamID(args[0]), err => { if (err) logger("error", `[Bot ${i}] error blocking user ${args[0]}: ${err}`) }) 
                         }
                     })
 
                     chatmsg(steamID, lang.unblockcmdsuccess.replace("profileid", args[0]))
-                    logger(`Unblocked ${args[0]} with all bot accounts.`)
+                    logger("info", `Unblocked ${args[0]} with all bot accounts.`)
                     break;
                 
                 case '!rs':
@@ -982,7 +984,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
                     if (!ownercheck) return notownerresponse();
 
                     fs.readFile("./output.txt", function (err, data) {
-                        if (err) logger("error getting last 25 lines from output for log cmd: " + err)
+                        if (err) logger("error", "error getting last 25 lines from output for log cmd: " + err)
 
                         chatmsg(steamID, "These are the last 25 lines:\n\n" + data.toString().split('\n').slice(data.toString().split('\n').length - 25).join('\n')) 
                     })
@@ -1011,10 +1013,10 @@ module.exports.run = async (logOnOptions, loginindex) => {
                         if (chatResult.length >= 4950) chatmsg(steamID, `Code executed. Result:\n\n${chatResult.slice(0, 4950)}.......\n\n\nResult too long for chat.`)
                             else chatmsg(steamID, `Code executed. Result:\n\n${clean(evaled)}`)
                         
-                        logger('\n\x1b[33mEval result:\x1b[0m \n' + clean(evaled) + "\n", true)
+                        logger("info", '\x1b[33mEval result:\x1b[0m \n' + clean(evaled) + "\n", true)
                     } catch (err) {
                         chatmsg(steamID, `Error:\n${clean(err)}`)
-                        logger('\n\x1b[33mEval error:\x1b[0m \n' + clean(err) + "\n", true)                                                                                                                                                                                                                                                                                                                 //Hi I'm a comment that serves no purpose
+                        logger("error", '\x1b[33mEval error:\x1b[0m \n' + clean(err) + "\n", true)                                                                                                                                                                                                                                                                                                                 //Hi I'm a comment that serves no purpose
                         return; 
                     }
                     break;
@@ -1037,15 +1039,15 @@ module.exports.run = async (logOnOptions, loginindex) => {
     bot.on("disconnected", (eresult, msg) => {
         if (controller.relogQueue.includes(loginindex)) return; //disconnect is already handled
 
-        logger(`\x1b[31m[${thisbot}] Lost connection to Steam. Message: ${msg} | Check: https://steamstat.us\x1b[0m`)
+        logger("info", `\x1b[31m[${thisbot}] Lost connection to Steam. Message: ${msg} | Check: https://steamstat.us\x1b[0m`)
 
         if (!controller.skippednow.includes(loginindex) && controller.relogAfterDisconnect) { //bot.logOff() also calls this event with NoConnection. To ensure the relog function doesn't call itself again here we better check if the account is already being relogged
-            logger(`\x1b[32m[${thisbot}] Initiating a relog in 30 seconds.\x1b[0m`) //Announce relog
+            logger("info", `\x1b[32m[${thisbot}] Initiating a relog in 30 seconds.\x1b[0m`) //Announce relog
             setTimeout(() => {
                 relogAccount()
             }, 30000);
         } else {
-            logger(`[${thisbot}] I won't queue myself for a relog because this account is either already being relogged, was skipped or this is an intended logOff.`)
+            logger("info", `[${thisbot}] I won't queue myself for a relog because this account is either already being relogged, was skipped or this is an intended logOff.`)
         }
     })
 
@@ -1053,7 +1055,7 @@ module.exports.run = async (logOnOptions, loginindex) => {
     community.on("sessionExpired", () => {
         if (Date.now() - lastWebSessionRefresh < 15000) return; //last refresh was 15 seconds ago so ignore this call
 
-        logger(`[${thisbot}] Session seems to be expired. Trying to get new websession...`)
+        logger("info", `[${thisbot}] Session seems to be expired. Trying to get new websession...`)
         lastWebSessionRefresh = Date.now() //update time
         bot.webLogOn()
     })

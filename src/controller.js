@@ -5,12 +5,12 @@
 
 const fs = require('fs');
 const https = require('https')
-const readline = require("readline")
 
 const SteamID = require('steamid');
 const SteamTotp = require('steam-totp');
 const xml2js = require('xml2js')
 const nedb = require("@yetzt/nedb")
+const outputlogger = require("output-logger")
 
 var updater = require('./updater.js')
 var b = require('./bot.js');
@@ -45,36 +45,19 @@ if (process.platform == "win32") { //set node process name to find it in task ma
 /* ------------ Functions: ------------ */
 /**
   * Logs text to the terminal and appends it to the output.txt file.
+  * @param {String} type String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
   * @param {String} str The text to log into the terminal
   * @param {Boolean} nodate Setting to true will hide date and time in the message
   * @param {Boolean} remove Setting to true will remove this message with the next one
   */
-var logger = (str, nodate, remove) => { //Custom logger
-    var str = String(str)
-    if (str.toLowerCase().includes("error")) var str = `\x1b[31m${str}\x1b[0m`
+var logger = (type, str, nodate, remove) => { //Function that passes args to my logger library and just exists to handle readyafterlogs atm
+    var string = outputlogger(type, str, nodate, remove)
 
-    if (nodate) {
-        var string = str; 
-    } else { //startup messages should have nodate enabled -> filter messages with date when bot is not started
-        var string = `\x1b[96m[${(new Date(Date.now() - (new Date().getTimezoneOffset() * 60000))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}]\x1b[0m ${str}`  
-
+    if (!nodate) { //startup messages should have nodate enabled -> filter messages with date when bot is not started
         if (readyafter == 0 && !str.toLowerCase().includes("error") && !str.includes('Logging in... Estimated wait time') && !str.includes("What's new:") && remove !== true) { 
             readyafterlogs.push(string); return; 
         }
     }
-        
-    if (remove) {
-        readline.clearLine(process.stdout, 0) //0 clears entire line
-        process.stdout.write(`${string}\r`)
-    } else { 
-        readline.clearLine(process.stdout, 0)
-        console.log(`${string}`) 
-    }
-
-    //eslint-disable-next-line
-    fs.appendFileSync('./output.txt', string.replace(/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]/g, '') + '\n', err => { //Regex Credit: https://github.com/Filirom1/stripcolorcodes
-        if (err) logger('logger function appendFileSync error: ' + err) 
-    }) 
 }
 
 var steamGuardInputTimeFunc = (arg) => { steamGuardInputTime += arg } //small function to return new value from bot.js
@@ -83,7 +66,7 @@ var steamGuardInputTimeFunc = (arg) => { steamGuardInputTime += arg } //small fu
 try {
     logininfo = require("../logininfo.json")
 } catch (err) {
-    logger("Error: It seems like you made a mistake in your logininfo.json. Please check if your Syntax looks exactly like in the example/template and try again.\nError: " + err, true)
+    logger("error", "Error: It seems like you made a mistake in your logininfo.json. Please check if your Syntax looks exactly like in the example/template and try again.\nError: " + err, true)
     process.exit(1)
 }
 
@@ -94,7 +77,7 @@ if (fs.existsSync("./accounts.txt")) {
     if (data[0].startsWith("//Comment")) data = data.slice(1); //Remove comment from array
 
     if (data != "") {
-        logger("Accounts.txt does exist and is not empty - using it instead of logininfo.json.", false, true)
+        logger("info", "Accounts.txt does exist and is not empty - using it instead of logininfo.json.", false, true)
 
         logininfo = {} //Empty other object
         data.forEach((e, i) => {
@@ -113,7 +96,7 @@ var quotes = quotes.filter(str => str != "") //remove empty quotes as empty comm
 
 quotes.forEach((e, i) => { //multi line strings that contain \n will get splitted to \\n -> remove second \ so that node-steamcommunity understands the quote when commenting
     if (e.length > 999) {
-        logger(`The quote.txt line ${i} is longer than the limit of 999 characters. This quote will be ignored for now.`, true)
+        logger("warn", `The quote.txt line ${i} is longer than the limit of 999 characters. This quote will be ignored for now.`, true)
         quotes.splice(i, 1) //remove this item from the array
         return;
     }
@@ -121,10 +104,10 @@ quotes.forEach((e, i) => { //multi line strings that contain \n will get splitte
     quotes[i] = e.replace(/\\n/g, "\n").replace("\\n", "\n")
 })
 
-logger(`${quotes.length} quotes found.`, false, true)
+logger("info", `${quotes.length} quotes found.`, false, true)
 
 if (quotes.length == 0) { //check if quotes.txt is empty to avoid errors further down when trying to comment
-    logger("\x1b[31mYou haven't put any comment quote into the quotes.txt file! Aborting...\x1b[0m", true)
+    logger("error", "\x1b[31mYou haven't put any comment quote into the quotes.txt file! Aborting...\x1b[0m", true)
     process.exit(0);
 }
 
@@ -154,11 +137,11 @@ var friendlistcapacitycheck = (botindex) => {
             let remaining = friendlistlimit - friendsamount
             if (remaining < 0) return; //stop if number is negative somehow - maybe when bot profile is private?
             if (remaining < 25) {
-                logger(`The friendlist space of bot${botindex} is running low! (${remaining} remaining)`)
+                logger("warn", `The friendlist space of bot${botindex} is running low! (${remaining} remaining)`)
             }
         })
     } catch (err) {
-        logger(`Failed to check friendlist space for bot${botindex}. Error: ${err}`) 
+        logger("error", `Failed to check friendlist space for bot${botindex}. Error: ${err}`) 
     }
 }
 
@@ -173,32 +156,32 @@ var accisloggedin = true; //var to check if previous acc is logged on (in case s
   */
 var isSteamOnline = function isSteamOnline(continuewithlogin, stoponerr, throwtimeout) {
     if (stoplogin == true) return;
-    logger("Checking if Steam is reachable...", false, true)
+    logger("info", "Checking if Steam is reachable...", false, true)
     
     //Start a 20 sec timeout to display an error when Steam can't be reached but also doesn't throw an error
     if (throwtimeout) {
         var timeoutTimeout = setTimeout(() => { //phenomenal name I know
-            logger(`\x1b[0m[\x1b[31mWarning\x1b[0m]: I can't reach SteamCommunity! Is your internet source maybe blocking it?\n           Error: Timeout after 20 seconds`, true)
+            logger("warn", `I can't reach SteamCommunity! Is your internet source maybe blocking it?\n       Error: Timeout after 20 seconds`, true)
             if (stoponerr) process.exit(0)
         }, 20000)
     }
 
     https.get('https://steamcommunity.com', function (res) {
-        logger(`SteamCommunity is up! Status code: ${res.statusCode}`, false, true)
+        logger("info", `SteamCommunity is up! Status code: ${res.statusCode}`, false, true)
 
         if (continuewithlogin) {
             if (throwtimeout) clearTimeout(timeoutTimeout)
             startlogin() 
         }
     }).on('error', function(err) {
-        logger(`\x1b[0m[\x1b[31mWarning\x1b[0m]: SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n           Error: ` + err, true)
+        logger("error", `\x1b[0m[\x1b[31mWarning\x1b[0m]: SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n           Error: ` + err, true)
         if (throwtimeout) clearTimeout(throwtimeout)
         if (stoponerr) process.exit(0)
     }) 
 }
 
 /* ------------ Checks & co: ------------ */
-logger("Checking config for 3urobeat's leftovers...", false, true)
+logger("info", "Checking config for 3urobeat's leftovers...", false, true)
 if ((process.env.LOGNAME !== 'tomg' && process.env.LOGNAME !== 'pi') || (require('os').hostname() !== 'Toms-Hoellenmaschine' && require('os').hostname() !== 'raspberrypi' && require('os').hostname() !== 'TomsThinkpad')) { //remove myself from config on different computer
     let write = false;
     if (config.owner.includes(extdata.mestr)) { config.owner = ""; write = true } 
@@ -222,16 +205,16 @@ if ((process.env.LOGNAME !== 'tomg' && process.env.LOGNAME !== 'pi') || (require
             .replace(/""/g, '""');
 
         fs.writeFile("./config.json", stringifiedconfig, err => {
-            if (err) logger("delete 3urobeat from config.json error: " + err, true) 
+            if (err) logger("error", "delete 3urobeat from config.json error: " + err, true) 
         }) 
     }
 }
 
-if(updater.onlinemestr!==extdata.mestr||updater.onlineaboutstr!==extdata.aboutstr){extdata.mestr=updater.onlinemestr;extdata.aboutstr=updater.onlineaboutstr;fs.writeFile("./src/data.json",JSON.stringify(extdata,null,4),()=>{});var checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<";logger("Modification detected. Restarting...",true,true);logger("",true);require('../start.js').restart({},true);stoplogin=true}else{var checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"}
+if(updater.onlinemestr!==extdata.mestr||updater.onlineaboutstr!==extdata.aboutstr){extdata.mestr=updater.onlinemestr;extdata.aboutstr=updater.onlineaboutstr;fs.writeFile("./src/data.json",JSON.stringify(extdata,null,4),()=>{});var checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<";logger("error","Modification detected. Restarting...",true,true);logger("","",true);require('../start.js').restart({},true);stoplogin=true}else{var checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"}
 
 //Check config values:
 if (stoplogin == true) return;
-logger("Checking for invalid config values...", false, true)
+logger("info", "Checking for invalid config values...", false, true)
 
 config.maxComments = Math.round(config.maxComments) //round maxComments number everytime to avoid user being able to set weird numbers (who can comment 4.8 times? right - no one)
 config.maxOwnerComments = Math.round(config.maxOwnerComments)
@@ -240,30 +223,30 @@ var maxCommentsOverall = config.maxOwnerComments //define what the absolute maxi
 if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
 
 if (config.allowcommentcmdusage === false && new SteamID(String(config.ownerid[0])).isValid() === false) {
-    logger("\x1b[31mYou set allowcommentcmdusage to false but didn't specify an ownerid! Aborting...\x1b[0m", true)
+    logger("error", "\x1b[31mYou set allowcommentcmdusage to false but didn't specify an ownerid! Aborting...\x1b[0m", true)
     process.exit(0); 
 }
 if (config.maxComments < 1) {
-    logger("\x1b[31mYour maxComments value in config.json can't be smaller than 1! Automatically setting it to 1...\x1b[0m", true)
+    logger("info", "\x1b[31mYour maxComments value in config.json can't be smaller than 1! Automatically setting it to 1...\x1b[0m", true)
     config.maxComments = 1
 }
 if (config.maxOwnerComments < 1) {
-    logger("\x1b[31mYour maxOwnerComments value in config.json can't be smaller than 1! Automatically setting it to 1...\x1b[0m", true)
+    logger("info", "\x1b[31mYour maxOwnerComments value in config.json can't be smaller than 1! Automatically setting it to 1...\x1b[0m", true)
     config.maxOwnerComments = 1
 }
 if (config.commentdelay / (maxCommentsOverall / 2) < 1250) {
-    logger("\x1b[0m[\x1b[31mWarning\x1b[0m]: \x1b[31mYou have raised maxComments or maxOwnerComments but I would recommend to raise the commentdelay further. Not increasing the commentdelay further raises the probability to get cooldown errors from Steam.\x1b[0m", true) 
+    logger("warn", "\x1b[31mYou have raised maxComments or maxOwnerComments but I would recommend to raise the commentdelay further. Not increasing the commentdelay further raises the probability to get cooldown errors from Steam.\x1b[0m", true) 
 }
 if (logininfo.bot0 == undefined) { //check real quick if logininfo is empty
-    logger("\x1b[31mYour logininfo doesn't contain a bot0 or is empty! Aborting...\x1b[0m", true); 
+    logger("error", "\x1b[31mYour logininfo doesn't contain a bot0 or is empty! Aborting...\x1b[0m", true); 
     process.exit(0) 
 }
 if (config.commentdelay * maxCommentsOverall > 2147483647) { //check for 32-bit integer limit for commentcmd timeout
-    logger("\x1b[31mYour maxComments and/or maxOwnerComments and/or commentdelay value in the config are too high.\nPlease lower these values so that 'commentdelay * maxComments' is not bigger than 2147483647.\n\nThis will otherwise cause an error when trying to comment (32-bit integer limit). Aborting...\x1b[0m\n", true)
+    logger("error", "\x1b[31mYour maxComments and/or maxOwnerComments and/or commentdelay value in the config are too high.\nPlease lower these values so that 'commentdelay * maxComments' is not bigger than 2147483647.\n\nThis will otherwise cause an error when trying to comment (32-bit integer limit). Aborting...\x1b[0m\n", true)
     process.exit(0) 
 }
-if (config.randomizeAccounts && Object.keys(logininfo).length <= 5 && maxCommentsOverall > 10) {
-    logger("\x1b[0m[\x1b[31mWarning\x1b[0m]: \x1b[31mI wouldn't recommend using randomizeAccounts with 5 or less accounts when each account can/has to comment multiple times. The chance of an account getting a cooldown is higher. Please make sure your commentdelay is set adequately to reduce the chance of this happening.\x1b[0m", true) 
+if (config.randomizeAccounts && Object.keys(logininfo).length <= 5 && maxCommentsOverall > Object.keys(logininfo).length * 2) {
+    logger("warn", "\x1b[31mI wouldn't recommend using randomizeAccounts with 5 or less accounts when each account can/has to comment multiple times. The chance of an account getting a cooldown is higher.\n       Please make sure your commentdelay is set adequately to reduce the chance of this happening.\x1b[0m", true) 
 }
 
 if (stoplogin == true) return;
@@ -272,8 +255,8 @@ if (stoplogin == true) return;
 //Load lastcomment database
 const lastcomment = new nedb("./src/lastcomment.db")
 lastcomment.loadDatabase((err) => {
-    if (err) return logger("Error loading lastcomment.db database! Error: " + err, true)
-    logger("Successfully loaded lastcomment database.", false, true) 
+    if (err) return logger("error", "Error loading lastcomment.db database! Error: " + err, true)
+    logger("info", "Successfully loaded lastcomment database.", false, true) 
     isSteamOnline(true, true, true); //Continue startup
 })
 
@@ -282,7 +265,7 @@ var proxies = [] //when the file is just created there can't be proxies in it (t
 
 if (!fs.existsSync('./proxies.txt')) {
     fs.writeFile("./proxies.txt", "", err => { 
-        if (err) logger("error creating proxies.txt file: ") + err 
+        if (err) logger("error", "error creating proxies.txt file: ") + err 
     }) 
 } else { //file does seem to exist so now we can try and read it
     var proxies = fs.readFileSync('./proxies.txt', 'utf8').split("\n");
@@ -291,27 +274,27 @@ if (!fs.existsSync('./proxies.txt')) {
 }
 
 
-if(typeof checkm8 == "undefined"){process.stdout.write("\x07");logger("\n\n\x1b[31mYou removed needed parts from the code! Please redownload the application and not modify anything.\x1b[0m",true);process.exit(0)}
-if(checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"){process.stdout.write("\x07");logger("\n\n\x1b[31mYou removed needed parts from the code! Please redownload the application and not modify anything.\x1b[0m",true);process.exit(0)}
+if(typeof checkm8 == "undefined"){process.stdout.write("\x07");logger("error","\n\n\x1b[31mYou removed needed parts from the code! Please redownload the application and not modify anything.\x1b[0m",true);process.exit(0)}
+if(checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"){process.stdout.write("\x07");logger("error","\n\n\x1b[31mYou removed needed parts from the code! Please redownload the application and not modify anything.\x1b[0m",true);process.exit(0)}
 
 //Generate urlrequestsecretkey if it is not created already
 if (extdata.urlrequestsecretkey == "") {
     extdata.urlrequestsecretkey = Math.random().toString(36).slice(-10); //Credit: https://stackoverflow.com/a/9719815/12934162
-    logger("Generated a secret key for comment requests via url. You can find the key in the 'data.json' file, located in the 'src' folder.", true)
+    logger("info", "Generated a secret key for comment requests via url. You can find the key in the 'data.json' file, located in the 'src' folder.", true)
 
     fs.writeFile('./src/data.json', JSON.stringify(extdata, null, 4), (err) => {
-        if (err) logger("error writing created urlrequestsecretkey to data.json: " + err) 
+        if (err) logger("error", "error writing created urlrequestsecretkey to data.json: " + err) 
     })
 }
 
 //Get default language and overwrite keys if some are set in the customlang.json
-logger("Loading defaultlang.json and customlang.json...", false, true)
+logger("info", "Loading defaultlang.json and customlang.json...", false, true)
 var lang = require("./defaultlang.json")
 if (fs.existsSync("./customlang.json")) {
     try {
         var customlang = require("../customlang.json")
     } catch (err) {
-        return logger("It seems like you made a mistake (probably Syntax) in your customlang.json! I will not use any custom message.\nError: " + err)
+        return logger("error", "It seems like you made a mistake (probably Syntax) in your customlang.json! I will not use any custom message.\nError: " + err)
     }
     
     Object.keys(customlang).forEach((e) => {
@@ -357,16 +340,16 @@ module.exports={
   * Prints an ASCII Art and starts to login all bot accounts
   */
 function startlogin() { //function will be called when steamcommunity status check is done
-    logger("", true)
-    if (Math.floor(Math.random() * 100) <= 2) logger(hellothereascii + "\n", true)
+    logger("", "", true)
+    if (Math.floor(Math.random() * 100) <= 2) logger("", hellothereascii + "\n", true)
         else if (Math.floor(Math.random() * 100) <= 10) logger(binaryascii + "\n", true)
-        else logger(ascii[Math.floor(Math.random() * ascii.length)] + "\n", true)
-    logger("", true) //put one line above everything that will come to make the output cleaner
+        else logger("", ascii[Math.floor(Math.random() * ascii.length)] + "\n", true)
+    logger("", "", true) //put one line above everything that will come to make the output cleaner
 
-    if (extdata.firststart) logger("\x1b[0mWhat's new: " + extdata.whatsnew + "\n")
+    if (extdata.firststart) logger("", "\x1b[0mWhat's new: " + extdata.whatsnew + "\n")
 
     //Evaluate estimated wait time for login:
-    logger("Evaluating estimated login time...", false, true)
+    logger("info", "Evaluating estimated login time...", false, true)
     if (extdata.timesloggedin < 5) { //only use new evaluation method when the bot was started more than 5 times
         var estimatedlogintime = ((logindelay * (Object.keys(logininfo).length - 1 - updater.skippedaccounts.length)) / 1000) + 10 //10 seconds tolerance
     } else {
@@ -376,10 +359,10 @@ function startlogin() { //function will be called when steamcommunity status che
     var estimatedlogintimeunit = "seconds"
     if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "minutes" }
     if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "hours" }                                                                                                                                                                                                                                                                          //🥚!
-    logger(`Logging in... Estimated wait time: ${round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`)
+    logger("info", `Logging in... Estimated wait time: ${round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`)
 
     if(checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"){process.stdout.write("\x07");process.exit(0)}
-    logger("Loading logininfo for each account...", false, true)
+    logger("info", "Loading logininfo for each account...", false, true)
 
     Object.keys(logininfo).forEach((k, i) => { //log all accounts in with the logindelay             
         setTimeout(() => { //wait before interval to reduce ram usage on startup
@@ -388,15 +371,15 @@ function startlogin() { //function will be called when steamcommunity status che
                     clearInterval(startnextinterval)
 
                     if (updater.skippedaccounts.includes(i)) { //if this iteration exists in the skippedaccounts array, automatically skip acc again
-                        logger(`[skippedaccounts] Automatically skipped ${k}!`, false, true);
+                        logger("info", `[skippedaccounts] Automatically skipped ${k}!`, false, true);
                         skippednow.push(i);
                         return;
                     } 
 
-                    if (i > 0) logger(`Waiting ${logindelay / 1000} seconds... (config logindelay)`, false, true) //first iteration doesn't need to wait duh
+                    if (i > 0) logger("info", `Waiting ${logindelay / 1000} seconds... (config logindelay)`, false, true) //first iteration doesn't need to wait duh
 
                     setTimeout(() => { //wait logindelay
-                        logger(`Starting bot.js for ${k}...`, false, true)
+                        logger("info", `Starting bot.js for ${k}...`, false, true)
                         var logOnOptions = {
                             accountName: logininfo[k][0],
                             password: logininfo[k][1],
@@ -425,13 +408,13 @@ var readyinterval = setInterval(() => { //log startup to console
     if (Object.keys(communityobject).length + skippednow.length == Object.keys(logininfo).length && module.exports.accisloggedin == true) {
         clearInterval(readyinterval)
 
-        logger(' ', true)
-        logger('*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*', true)
-        logger(`\x1b[95m>\x1b[0m \x1b[96m${logininfo.bot0[0]}\x1b[0m version \x1b[96m${extdata.versionstr}\x1b[0m by ${extdata.mestr} logged in.`, true)
+        logger("", ' ', true)
+        logger("", '*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*', true)
+        logger("", `\x1b[95m>\x1b[0m \x1b[96m${logininfo.bot0[0]}\x1b[0m version \x1b[96m${extdata.versionstr}\x1b[0m by ${extdata.mestr} logged in.`, true)
 
         if (maxCommentsOverall > 3) var repeatedCommentsStr = `\x1b[4m\x1b[31m${maxCommentsOverall / Object.keys(botobject).length}\x1b[0m` 
             else var repeatedCommentsStr = maxCommentsOverall / Object.keys(botobject).length
-        logger(`\x1b[94m>\x1b[0m ${Object.keys(communityobject).length} total account(s) | ${repeatedCommentsStr} comments per account allowed`, true)
+        logger("", `\x1b[94m>\x1b[0m ${Object.keys(communityobject).length} total account(s) | ${repeatedCommentsStr} comments per account allowed`, true)
 
         //display amount of limited accounts and if automatic updates are turned off
         var limitedaccs = 0
@@ -441,7 +424,7 @@ var readyinterval = setInterval(() => { //log startup to console
                 if (botobject[Object.keys(botobject)[i]].limitations != undefined && botobject[Object.keys(botobject)[i]].limitations.limited != undefined) { //if it should be undefined for what ever reason then rather don't check instead of crash the bot
                     if (botobject[Object.keys(botobject)[i]] != undefined && botobject[Object.keys(botobject)[i]].limitations.limited == true) limitedaccs++ //yes, this way to get the botobject key by iteration looks stupid and is probably stupid but it works and is "compact" (not really but idk)
                 } else { 
-                    //logger(`failed to check if bot${i} is limited. Showing account in startup message as unlimited...`, false, true); //removed as of now to remove confusion and the message below already shows how many couldn't be checked
+                    //logger("error", `failed to check if bot${i} is limited. Showing account in startup message as unlimited...`, false, true); //removed as of now to remove confusion and the message below already shows how many couldn't be checked
                     failedtocheck++ 
                 }
 
@@ -449,18 +432,18 @@ var readyinterval = setInterval(() => { //log startup to console
                     if (failedtocheck > 0) var failedtocheckmsg = `(Couldn't check ${failedtocheck} account(s))`;
                         else var failedtocheckmsg = "";
                     
-                    logger(`\x1b[92m>\x1b[0m ${limitedaccs}/${Object.keys(botobject).length} account(s) are \x1b[31mlimited\x1b[0m ${failedtocheckmsg}`, true) 
+                    logger("", `\x1b[92m>\x1b[0m ${limitedaccs}/${Object.keys(botobject).length} account(s) are \x1b[31mlimited\x1b[0m ${failedtocheckmsg}`, true) 
                 }
             }
         } catch (err) {
-            logger(`Error in limited checker: ${err}`) 
+            logger("error", `Error in limited checker: ${err}`) 
         }
 
-        if (config.disableautoupdate) logger("\x1b[41m\x1b[30m>\x1b[0m Automatic updating is \x1b[4m\x1b[31mturned off\x1b[0m!", true)
+        if (config.disableautoupdate) logger("", "\x1b[41m\x1b[30m>\x1b[0m Automatic updating is \x1b[4m\x1b[31mturned off\x1b[0m!", true)
 
         var playinggames = ""
         if (config.playinggames[1]) var playinggames = `(${config.playinggames.slice(1, config.playinggames.length)})`
-        logger(`\x1b[93m>\x1b[0m Playing status: \x1b[32m${config.playinggames[0]}\x1b[0m ${playinggames}`, true)
+        logger("", `\x1b[93m>\x1b[0m Playing status: \x1b[32m${config.playinggames[0]}\x1b[0m ${playinggames}`, true)
 
         const bootend = Date.now()
         readyafter = ((bootend - bootstart) - steamGuardInputTime) / 1000
@@ -470,31 +453,31 @@ var readyinterval = setInterval(() => { //log startup to console
         if (readyafter > 60) { readyafter = readyafter / 60; var readyafterunit = "minutes" }
         if (readyafter > 60) { readyafter = readyafter / 60; var readyafterunit = "hours" }
         
-        logger(`\x1b[91m>\x1b[0m Ready after ${round(readyafter, 2)} ${readyafterunit}!`, true)
+        logger("", `\x1b[91m>\x1b[0m Ready after ${round(readyafter, 2)} ${readyafterunit}!`, true)
         extdata.timesloggedin++
         extdata.totallogintime += readyafter / Object.keys(communityobject).length //get rough logintime of only one account
 
-        logger('*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*', true)
-        logger(' ', true)
+        logger("", '*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*', true)
+        logger("", ' ', true)
 
         //Show disclaimer message to not misuse this bot
-        if (extdata.firststart) logger(`\x1b[0m[\x1b[31mDisclaimer\x1b[0m]: Please don't misuse this bot by spamming or posting malicious comments. Your accounts can get banned from Steam if you do that.\n              You are responsible for the actions of your bot instance.\n`, true)
+        if (extdata.firststart) logger("", `\x1b[0m[\x1b[31mDisclaimer\x1b[0m]: Please don't misuse this bot by spamming or posting malicious comments. Your accounts can get banned from Steam if you do that.\n              You are responsible for the actions of your bot instance.\n`, true)
         
-        if (updater.skippedaccounts.length > 0) logger(`Skipped Accounts: ${updater.skippedaccounts.length}/${Object.keys(logininfo).length}\n`, true)
-        if (extdata.firststart) logger(`If you like my work please consider giving my repository a star! I would really appreciate it!\nhttps://github.com/HerrEurobeat/steam-comment-service-bot\n`, true)
+        if (updater.skippedaccounts.length > 0) logger("info", `Skipped Accounts: ${updater.skippedaccounts.length}/${Object.keys(logininfo).length}\n`, true)
+        if (extdata.firststart) logger("", `If you like my work please consider giving my repository a star! I would really appreciate it!\nhttps://github.com/HerrEurobeat/steam-comment-service-bot\n`, true)
 
         //Check if ownerids are correct:
-        logger(`Checking for invalid ownerids...`, false, true)
+        logger("info", `Checking for invalid ownerids...`, false, true)
         config.ownerid.forEach((e) => {
             if (isNaN(e) || new SteamID(String(e)).isValid() == false) { 
-                logger(`[\x1b[31mWarning\x1b[0m] ${e} is not a valid ownerid!`, true) 
+                logger("warn", `${e} is not a valid ownerid!`, true) 
             }
         })
         
         //Check if owner link is correct
-        logger(`Checking if owner link is valid...`, false, true)
+        logger("info", `Checking if owner link is valid...`, false, true)
         if (!config.owner.includes("steamcommunity.com")) { 
-            logger("\x1b[0m[\x1b[31mNotice\x1b[0m] You haven't set a correct owner link to your profile in the config!\n         Please add this to refer to yourself as the owner and operator of this bot.", true) 
+            logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.", true) 
         } else {
             try {
                 var owneroutput = ""
@@ -505,47 +488,47 @@ var readyinterval = setInterval(() => { //log startup to console
     
                     ownerres.on('end', () => {
                         new xml2js.Parser().parseString(owneroutput, function(ownererr, ownerResult) {
-                            if (ownererr) return logger("error parsing owner xml: " + ownererr, true)
-                            if (ownerResult.response && ownerResult.response.error) return logger("\x1b[0m[\x1b[31mNotice\x1b[0m] You haven't set a correct owner link to your profile in the config!\n         Please add this to refer to yourself as the owner and operator of this bot.\n         Error: " + ownerResult.response.error, true)
+                            if (ownererr) return logger("error", "error parsing owner xml: " + ownererr, true)
+                            if (ownerResult.response && ownerResult.response.error) return logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.\n         Error: " + ownerResult.response.error, true)
                         })
                     }) 
                 })
             } catch (err) {
                 if (err) { 
-                    logger("error getting owner profile xml info: " + err, true); 
+                    logger("error", "error getting owner profile xml info: " + err, true); 
                     return; 
                 } 
             }
         }
 
-        logger(`Logging supressed logs...`, false, true)
+        logger("info", `Logging supressed logs...`, false, true)
         readyafterlogs.forEach(e => { logger(e, true) }) //log suppressed logs
 
         //Add backups to cache.json
-        logger("Writing backups to cache.json...", false, true)
+        logger("info", "Writing backups to cache.json...", false, true)
         cache["configjson"] = config
         cache["datajson"] = extdata
 
         fs.writeFile('./src/cache.json', JSON.stringify(cache, null, 2), err => {
-            if (err) logger("error writing file backups to cache.json: " + err) 
+            if (err) logger("error", "error writing file backups to cache.json: " + err) 
         }) 
         
         //Join botsgroup if not already joined
         function joinbotsgroup(botsgroupid) { //eslint-disable-line no-inner-declarations
-            if (!botsgroupid) return logger("joinbotsgroup() got called without a botsgroupid parameter. This shouldn't happen. 3urobeat, pls fix.")
+            if (!botsgroupid) return logger("error", "joinbotsgroup() got called without a botsgroupid parameter. This shouldn't happen. 3urobeat, pls fix.")
 
             Object.keys(botobject).forEach((e) => {
                 if (!Object.keys(botobject[e].myGroups).includes(String(botsgroupid))) {
                     communityobject[e].joinGroup(`${botsgroupid}`)
-                    logger(`[Bot ${e}] Joined/Requested to join steam group that has been set in the config (botsgroup).`) 
+                    logger("info", `[Bot ${e}] Joined/Requested to join steam group that has been set in the config (botsgroup).`) 
                 } 
             })
         }
 
         if (config.botsgroup.length < 1) {
-            logger('Skipping botsgroup because config.botsgroup is empty.', false, true);
+            logger("info", 'Skipping botsgroup because config.botsgroup is empty.', false, true);
         } else {
-            logger(`Checking if all bot accounts are in botsgroup...`, false, true)
+            logger("info", `Checking if all bot accounts are in botsgroup...`, false, true)
             var botsgroupoutput = ""
 
             if (config.botsgroup == config.yourgroup) {
@@ -560,10 +543,10 @@ var readyinterval = setInterval(() => { //log startup to console
                 
                         botsgroupres.on('end', () => {
                             if (!String(botsgroupoutput).includes("<?xml") || !String(botsgroupoutput).includes("<groupID64>")) { //Check if botsgroupoutput is steam group xml data before parsing it
-                                logger("\x1b[0m[\x1b[31mNotice\x1b[0m] Your bots group (botsgroup in config) doesn't seem to be valid!\n         Error: " + config.botsgroup + " contains no xml or groupID64 data", true); 
+                                logger("error", "Your bots group (botsgroup in config) doesn't seem to be valid!\n        Error: " + config.botsgroup + " contains no xml or groupID64 data", true); 
                             } else {
                                 new xml2js.Parser().parseString(botsgroupoutput, function(botsgrouperr, botsgroupResult) {
-                                    if (botsgrouperr) return logger("error parsing botsgroup xml: " + botsgrouperr, true)
+                                    if (botsgrouperr) return logger("error", "error parsing botsgroup xml: " + botsgrouperr, true)
 
                                     var botsgroupid = botsgroupResult.memberList.groupID64
 
@@ -571,7 +554,7 @@ var readyinterval = setInterval(() => { //log startup to console
                                     cache.botsgroup = config.botsgroup
                                     cache.botsgroupid = String(botsgroupid)
                                     fs.writeFile("./src/cache.json", JSON.stringify(cache, null, 4), err => { 
-                                        if (err) logger(`error writing botsgroupid to cache.json: ${err}`) 
+                                        if (err) logger("error", `error writing botsgroupid to cache.json: ${err}`) 
                                     })
                         
                                     joinbotsgroup(botsgroupid)
@@ -579,10 +562,10 @@ var readyinterval = setInterval(() => { //log startup to console
                             }
                         })
                     }).on("error", function(err) {
-                        logger("\x1b[0m[\x1b[31mNotice\x1b[0m]: Couldn't get botsgroup 64id. Either Steam is down or your internet isn't working.\n          Error: " + err, true)
+                        logger("error", "Couldn't get botsgroup 64id. Either Steam is down or your internet isn't working.\n       Error: " + err, true)
                     })
                 } else { //url hasn't been changed and id was already acquired so just check if all accounts are in that group
-                    if (!cache.botsgroupid) logger("cache's botsgroupid is undefined even though the last check didn't trigger. Huh, how can that happen?", true) //check just to be sure
+                    if (!cache.botsgroupid) logger("warn", "cache's botsgroupid is undefined even though the last check didn't trigger. Huh, how can that happen?", true) //check just to be sure
                     joinbotsgroup(cache.botsgroupid)
                 }
             }
@@ -618,7 +601,7 @@ var readyinterval = setInterval(() => { //log startup to console
 
                                 setTimeout(() => {
                                     botobject[f].removeFriend(new SteamID(e.id)) //unfriend user with each bot
-                                    logger(`[Bot ${j}] Unfriended ${e.id} after ${config.unfriendtime} days of inactivity.`)
+                                    logger("info", `[Bot ${j}] Unfriended ${e.id} after ${config.unfriendtime} days of inactivity.`)
                                 }, 1000 * j); //delay every iteration so that we don't make a ton of requests at once (IP)
                             }
                             
@@ -632,13 +615,13 @@ var readyinterval = setInterval(() => { //log startup to console
 
         
         //Write logintime stuff to data.json
-        logger(`Writing logintime...`, false, true)
+        logger("info", `Writing logintime...`, false, true)
         extdata.totallogintime = round(extdata.totallogintime, 2)
         extdata.firststart = false
 
         fs.writeFile("./src/data.json", JSON.stringify(extdata, null, 4), err => { //write changes
-            if (err) logger("change extdata to false error: " + err) 
-            logger('Startup complete!', false, true) 
+            if (err) logger("error", "change extdata to false error: " + err) 
+            logger("info", 'Startup complete!', false, true) 
         })
 
 
@@ -655,32 +638,36 @@ var readyinterval = setInterval(() => { //log startup to console
                 let ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress).replace("::ffff:", "") //get IP of visitor
 
                 if (req.query.n == undefined) {
-                    logger(`Web Request by ${ip} denied. Reason: numberofcomments (n) is not specified.`)
+                    logger("info", `Web Request by ${ip} denied. Reason: numberofcomments (n) is not specified.`)
                     return res.status(400).send("You have to provide an amount of comments.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.") 
                 }
             
                 if (req.query.id == undefined) {
-                    logger(`Web Request by ${ip} denied. Reason: Steam profileid (id) is not specified.`)
+                    logger("info", `Web Request by ${ip} denied. Reason: Steam profileid (id) is not specified.`)
                     return res.status(400).send("You have to provide a profile id where I should comment.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.") 
                 }
             
                 if (req.query.key == undefined || req.query.key != extdata.urlrequestsecretkey) {
-                    logger(`Web Request by ${ip} denied. Reason: Invalid secret key.`)
+                    logger("warn", `Web Request by ${ip} denied. Reason: Invalid secret key.`) //I think it is fair to output this message with a warn type
                     return res.status(403).send("Your secret key is not defined or invalid. Request denied.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.") 
                 }
             
                 if (isNaN(config.ownerid[0]) || new SteamID(String(config.ownerid[0])).isValid() == false) {
-                    logger(`Web Request by ${ip} denied. Reason: Config's first ownerid is invalid.`)
+                    logger("warn", `Web Request by ${ip} denied. Reason: Config's first ownerid is invalid.`)
                     return res.status(403).send("You can't use the web request feature unless you provided a valid ownerid in your config!") 
                 }
                 
-                logger(`Web Comment Request from ${ip} accepted. Amount: ${req.query.n} | Profile: ${req.query.id}`)
+                logger("info", `Web Comment Request from ${ip} accepted. Amount: ${req.query.n} | Profile: ${req.query.id}`)
                 botobject[0].commentcmd(new SteamID(String(config.ownerid[0])), [req.query.n, req.query.id], res) //steamID: Make the bot owner responsible for request
             });
             
             app.get('/output', (req, res) => { //Show output
+                let ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress).replace("::ffff:", "") //get IP of visitor
+
+                logger("info", `[Web Request] ${ip} requested to see the output!`)
+
                 fs.readFile("./output.txt", (err, data) => {
-                    if(err) logger("urltocomment: error reading output.txt: " + err)
+                    if(err) logger("error", "urltocomment: error reading output.txt: " + err)
                 
                     res.write(String(data))
                     res.status(200)
@@ -693,19 +680,19 @@ var readyinterval = setInterval(() => { //log startup to console
             });
             
             module.exports.server = app.listen(3034, () => {
-                logger('EnableURLToComment is on: Server is listening on port 3034.\nVisit it on: localhost:3034\n', true) 
+                logger("info", 'EnableURLToComment is on: Server is listening on port 3034.\n       Visit it on: localhost:3034\n', true) 
             });
 
             module.exports.server.on("error", (err) => {
                 //Don't show date if error occurs on startup (like port in use error)
-                if (Date.now() - bootend < 5000) logger('An error occured trying to start the EnableURLToComment server. ' + err, true)
-                    else logger('An error occured trying to start the EnableURLToComment server. ' + err) 
+                if (Date.now() - bootend < 5000) logger("error", 'An error occured trying to start the EnableURLToComment server. ' + err, true)
+                    else logger("error", 'An error occured trying to start the EnableURLToComment server. ' + err) 
             })
         }
 
         setTimeout(() => {
-            logger(` `, true, true) //clear out last remove message
-        }, 5000); 
+            logger("", "", true, true) //clear out last remove message
+        }, 5000);
     }
 }, 500);
 
