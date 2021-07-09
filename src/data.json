@@ -1,16 +1,6 @@
 {
-    "version": "2110b3",
-    "versionstr": "BETA 2.11 b3",
-    "branch": "beta-testing",
-    "filetostart": "./src/updater.js",
-    "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/updater.js",
-    "botobjectfile": "./src/controller.js",
-    "mestr": "3urobeat",
-    "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://paypal.me/3urobeat",
-    "firststart": true,
-    "compatibilityfeaturedone": false,
-    "whatsnew": "Read commit description to see changes.",
-    "urlrequestsecretkey": "",
-    "timesloggedin": 0,
-    "totallogintime": 0
+    "Comment": "This file is sadly needed right here to ensure that an automatic restart to 2.11 will work. Seems like start.js could need a rework.",
+    "filetostart": "./src/controller/controller.js",
+    "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/controller/controller.js",
+    "botobjectfile": "./src/controller/controller.js"
 }

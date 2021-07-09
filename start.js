@@ -10,7 +10,7 @@
 try { //Just try to require, if it should fail then the actual restoring process will be handled later
     var extdata = require("./src/data.json")
 } catch (err) {
-    var extdata = { filetostart: "./src/updater.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/updater.js" }
+    var extdata = { filetostart: "./src/controller/controller.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/controller/controller.js" }
 }
 var fs = require("fs")
 
