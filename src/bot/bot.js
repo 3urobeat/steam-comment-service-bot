@@ -54,7 +54,7 @@ module.exports.run = (logOnOptions, loginindex) => {
 
     //Create bot & community instance
     const bot       = new SteamUser({ autoRelogin: false, httpProxy: thisproxy });
-    const community = new SteamCommunity()
+    const community = new SteamCommunity({ request: request.defaults({ "proxy": thisproxy }) }) //pass proxy to community library aswell 
 
 
     /* ------------ Group stuff: ------------ */
