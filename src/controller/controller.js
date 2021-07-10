@@ -112,13 +112,21 @@ module.exports.run = () => {
 
 
     /* ------------ Run updater or start logging in when steam is online: ------------ */
-    require("./helpers/internetconnection.js").run(true, true, true, () => { //we can ignore callback because stoponerr is true
-        require("../updater/updater.js").run(false, null, false, (foundanddone) => {
-            if (!foundanddone) {
-                require("./login.js").startlogin() //start logging in
-            } else {
-                require(srcdir + "/../start.js").restart({ skippedaccounts: [] }, true); //restart
-            }
+    starter.checkAndGetFile("./src/updater/updater.js", (updater) => { //welcome to callback hell! Yes, I should improve this later.
+
+        updater.compatibility(() => { //continue startup on any callback
+
+            require("./helpers/internetconnection.js").run(true, true, true, () => { //we can ignore callback because stoponerr is true
+
+                require("../updater/updater.js").run(false, null, false, (foundanddone2) => {
+
+                    if (!foundanddone2) {
+                        require("./login.js").startlogin() //start logging in
+                    } else {
+                        require(srcdir + "/../start.js").restart({ skippedaccounts: [] }, true); //restart
+                    }
+                })
+            })
         })
     })
 }
