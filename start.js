@@ -8,83 +8,47 @@
 //To be able to change the file it is supposed to start on the fly it pulls the necessary file path from the data.json file
 
 try { //Just try to require, if it should fail then the actual restoring process will be handled later
-    var extdata = require("./src/data.json")
+    var extdata = require("./src/data/data.json")
 } catch (err) {
-    var extdata = { filetostart: "./src/controller/controller.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/controller/controller.js" }
+    var extdata = { filetostart: "./src/starter.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/starter.js" }
 }
-var fs = require("fs")
 
 /* ------------------ Restart function ------------------ */
-var restart = (args, nologOff) => { //Restart the application
-    console.log("Restarting application...")
-    var extdata = require('./src/data.json')
+module.exports.restart = require(extdata.filetostart).restart
 
-    if (!nologOff) {
-        var controller = require(extdata.botobjectfile) //get the file we want from data.json
+/* ------------------- Stop function ------------------- */
+module.exports.stop = require(extdata.filetostart).stop
 
-        if (typeof controller.server != "undefined") { //check if the server was exported instead of checking config.json to require less files
-            console.log("Stopping URLToComment webserver...")
-            controller.server.close() 
-        }
 
-        controller.relogAfterDisconnect = false; //Prevents disconnect event (which will be called by logOff) to relog accounts
-
-        Object.keys(controller.botobject).forEach((e) => { //log out all bots
-            controller.botobject[e].logOff() 
-        }) 
-    }
-
-    //Clear all intervals & timeouts that have been set to avoid issues like this: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/94
-    for(var i in global.intervalList) {
-        clearInterval(global.intervalList[i]);
-    }
-
-    for(var i in global.timeoutList) {
-        clearTimeout(global.timeoutList[i]);
-    }
-    
-
-    Object.keys(require.cache).forEach(function(key) { 
-        delete require.cache[key] //clear cache to include file changes
-    })
-
-    setTimeout(() => {
-        require(extdata.filetostart).restartdata(args) //start again after 2.5 sec
-    }, 2500) 
-}
-
-/* ------------------ Stop function ------------------ */
-var stop = () => {
-    console.log("Stopping application...")
-    process.exit(1) 
-}
-
-//Exporting functions to be able to call them
-module.exports={
-    restart,
-    stop 
-}
+/* ---------- Get filetostart if it doesn't exist ---------- */
+var fs = require("fs")
 
 if (!fs.existsSync(extdata.filetostart)) { //Function that downloads filetostart if it doesn't exist (file location change etc.)
     var output = ""
+
     try {
         var https = require("https")
-        https.get(extdata.filetostarturl, function (res){
+
+        https.get(extdata.filetostarturl, function (res) {
             res.setEncoding('utf8');
+
             res.on('data', function (chunk) {
-                output += chunk });
+                output += chunk 
+            });
 
             res.on('end', () => {
-                fs.writeFile(extdata.filetostart, output, err => {
+                fs.writeFile(extdata.filetostart, output, (err) => {
                     if (err) return console.log(err)
-                    require(extdata.filetostart) //start
+
+                    require(extdata.filetostart).run() //start
                 })
             }) 
-        }); 
+        });
     } catch (err) { 
-        console.log('start.js get updater.js function Error: ' + err) }
+        console.log('start.js get starter.js function Error: ' + err)
+    }
 } else {
-    require(extdata.filetostart) //Just passing startup to updater
+    require(extdata.filetostart).run() //Start application
 }
 
 //Code by: https://github.com/HerrEurobeat/ 

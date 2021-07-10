@@ -3,6 +3,13 @@
  * Runs the controller which runs & controls the bot.
  */
 module.exports.run = () => {
+    var starter = require("../starter.js")
+
+    /* ------------ Handle restart (if this is one): ------------ */
+    starter.checkAndGetFile("./src/controller/helpers/handlerestart.js", (file) => {
+        file();
+    })
+
 
     module.exports.communityobject = {}
     module.exports.botobject       = {}
@@ -52,8 +59,11 @@ module.exports.run = () => {
 
 
     /* ------------ Introduce logger function: ------------ */
-    var logger = require("./helpers/logger.js").logger
-    global.logger = logger;
+    starter.checkAndGetFile("./src/controller/helpers/logger.js", (file) => {
+        logger = file.logger
+        global.logger = logger
+    })
+
 
     //Log held back messages from before this start
     if (logafterrestart.length > 0) logafterrestart.forEach((e) => { logger("", e, true, true) }) //log messages to output.txt carried through restart
@@ -65,11 +75,17 @@ module.exports.run = () => {
 
 
     /* ------------ Import data: ------------ */
-    var extdata = require("./helpers/dataimport.js").extdata()
-    var config = require("./helpers/dataimport.js").config()
+    var extdata;
+    var config;
 
-    global.config = config
-    global.extdata = extdata
+    starter.checkAndGetFile("./src/controller/helpers/dataimport.js", (file) => {
+        extdata = file.extdata()
+        config  = file.config()
+
+        global.config  = config
+        global.extdata = extdata
+    })
+    
 
 
     /* ------------ Change terminal title: ------------ */
@@ -86,6 +102,9 @@ module.exports.run = () => {
     logger("info", `steam-comment-service-bot made by ${extdata.mestr} version ${extdata.versionstr}`, false, true)
     logger("info", `Using node.js version ${process.version}...`, false, true)
     logger("info", `Running on ${process.platform}...`, false, true)
+    logger("info", `Using ${extdata.branch} branch | firststart is ${extdata.firststart} | This is start number ${extdata.timesloggedin + 1}`, false, true)
+
+    if (extdata.branch == "beta-testing") logger("", "\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
 
     var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
     if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
@@ -105,9 +124,6 @@ module.exports.run = () => {
 }
 
 
-/* ------------ Handle restart (if this is one): ------------ */
-require("./helpers/handlerestart.js")();
-
 var oldconfig = {} //obj that can get populated by restart data to keep config through restarts
 var logafterrestart = [] //create array to log these error messages after restart
 
@@ -126,13 +142,3 @@ module.exports.restartdata = (data) => {
 
     this.run() //start bot
 }
-
-
-//Yes, I know, global variables are bad. But I need a few multiple times in different files and it would be a pain in the ass to import them every time and ensure that I don't create a circular dependency and what not.
-global.srcdir = __dirname + "/../"
-if (typeof botisloggedin == "undefined") global.botisloggedin = false //Only set if undefined so that the check below works
-
-if (botisloggedin == true) return; //Don't start if bot is already logged in (perhaps an accidental start)
-
-
-this.run() //Run this function directly to ensure compatibility with start.js
