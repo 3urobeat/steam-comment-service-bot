@@ -4,12 +4,14 @@
 
 /**
  * Import, check and repair data.json
- * @returns extdata object
+ * @param {function} [callback] Called with `extdata` (Object) on completion.
  */
-module.exports.extdata = () => {
+module.exports.extdata = (callback) => {
     logger("info", "Importing data.json...", false, true)
 
-    return require(srcdir + "/data/data.json")
+    require("../../starter.js").checkAndGetFile("./src/data/data.json", (file) => {
+        callback(file)
+    })
 }
 
 

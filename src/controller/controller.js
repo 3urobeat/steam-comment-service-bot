@@ -79,54 +79,57 @@ module.exports.run = () => {
     var config;
 
     starter.checkAndGetFile("./src/controller/helpers/dataimport.js", (file) => {
-        extdata = file.extdata()
-        config  = file.config()
+        file.extdata((extdatafile) => {
 
-        global.config  = config
-        global.extdata = extdata
+            extdata = extdatafile
+            config  = file.config()
 
-
-        /* ------------ Change terminal title: ------------ */
-        if (process.platform == "win32") { //set node process name to find it in task manager etc.
-            process.title = `${extdata.mestr}'s Steam Comment Service Bot v${extdata.versionstr} | ${process.platform}` //Windows allows long terminal/process names
-        } else {
-            process.stdout.write(`${String.fromCharCode(27)}]0;${extdata.mestr}'s Steam Comment Service Bot v${extdata.versionstr} | ${process.platform}${String.fromCharCode(7)}`) //sets terminal title (thanks: https://stackoverflow.com/a/30360821/12934162)
-            process.title = `CommentBot` //sets process title in task manager etc.
-        }
+            global.config  = config
+            global.extdata = extdata
 
 
-        /* ------------ Print some diagnostic messages to log: ------------ */
-
-        logger("info", `steam-comment-service-bot made by ${extdata.mestr} version ${extdata.versionstr}`, false, true)
-        logger("info", `Using node.js version ${process.version}...`, false, true)
-        logger("info", `Running on ${process.platform}...`, false, true)
-        logger("info", `Using ${extdata.branch} branch | firststart is ${extdata.firststart} | This is start number ${extdata.timesloggedin + 1}`, false, true)
-
-        if (extdata.branch == "beta-testing") logger("", "\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
-
-        var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
-        if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
-        logger("info", `Comment config values: commentdelay = ${config.commentdelay} | maxCommentsOverall = ${maxCommentsOverall} | randomizeAcc = ${config.randomizeAccounts}`, false, true)
+            /* ------------ Change terminal title: ------------ */
+            if (process.platform == "win32") { //set node process name to find it in task manager etc.
+                process.title = `${extdata.mestr}'s Steam Comment Service Bot v${extdata.versionstr} | ${process.platform}` //Windows allows long terminal/process names
+            } else {
+                process.stdout.write(`${String.fromCharCode(27)}]0;${extdata.mestr}'s Steam Comment Service Bot v${extdata.versionstr} | ${process.platform}${String.fromCharCode(7)}`) //sets terminal title (thanks: https://stackoverflow.com/a/30360821/12934162)
+                process.title = `CommentBot` //sets process title in task manager etc.
+            }
 
 
-        /* ------------ Run updater or start logging in when steam is online: ------------ */
-        starter.checkAndGetFile("./src/updater/updater.js", (updater) => { //welcome to callback hell! Yes, I should improve this later.
+            /* ------------ Print some diagnostic messages to log: ------------ */
+            logger("info", `steam-comment-service-bot made by ${extdata.mestr} version ${extdata.versionstr}`, false, true)
+            logger("info", `Using node.js version ${process.version}...`, false, true)
+            logger("info", `Running on ${process.platform}...`, false, true)
+            logger("info", `Using ${extdata.branch} branch | firststart is ${extdata.firststart} | This is start number ${extdata.timesloggedin + 1}`, false, true)
 
-            updater.compatibility(() => { //continue startup on any callback
+            if (extdata.branch == "beta-testing") logger("", "\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
 
-                require("./helpers/internetconnection.js").run(true, true, true, () => { //we can ignore callback because stoponerr is true
+            var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
+            if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
+            logger("info", `Comment config values: commentdelay = ${config.commentdelay} | maxCommentsOverall = ${maxCommentsOverall} | randomizeAcc = ${config.randomizeAccounts}`, false, true)
 
-                    require("../updater/updater.js").run(false, null, false, (foundanddone2) => {
 
-                        if (!foundanddone2) {
-                            require("./login.js").startlogin() //start logging in
-                        } else {
-                            require(srcdir + "/../start.js").restart({ skippedaccounts: [] }, true); //restart
-                        }
+            /* ------------ Run updater or start logging in when steam is online: ------------ */
+            starter.checkAndGetFile("./src/updater/updater.js", (updater) => { //welcome to callback hell! Yes, I should improve this later.
+
+                updater.compatibility(() => { //continue startup on any callback
+
+                    require("./helpers/internetconnection.js").run(true, true, true, () => { //we can ignore callback because stoponerr is true
+
+                        require("../updater/updater.js").run(false, null, false, (foundanddone2) => {
+
+                            if (!foundanddone2) {
+                                require("./login.js").startlogin() //start logging in
+                            } else {
+                                require(srcdir + "/../start.js").restart({ skippedaccounts: [] }, true); //restart
+                            }
+                        })
                     })
                 })
             })
         })
+        
     })    
 }
 

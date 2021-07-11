@@ -31,7 +31,7 @@ module.exports.checkAndGetFile = (file, callback) => {
 
         var fileurl = `https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${branch}/${file.slice(2, file.length)}` //remove the dot at the beginning of the file string
 
-        console.log("Pulling: " + fileurl)
+        console.log("Pulling: " + fileurl + "\n")
 
         try {
             var https = require("https")
