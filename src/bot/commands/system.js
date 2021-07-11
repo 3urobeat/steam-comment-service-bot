@@ -25,7 +25,7 @@ module.exports.stop = (chatmsg, steamID, lang) => {
     
     chatmsg(steamID, lang.stopcmdstopping)
 
-    require('../start.js').stop()
+    require('../../../start.js').stop()
 }
 
 
@@ -71,8 +71,10 @@ module.exports.output = (chatmsg, steamID) => {
  * @param {Object} steamID The steamID object from steam-use
  * @param {Object} lang The language object
  * @param {Array} args The args array
+ * @param {SteamUser} bot The bot instance
+ * @param {SteamCommunity} community The community instance
  */
-module.exports.eval = (chatmsg, steamID, lang, args) => {
+module.exports.eval = (chatmsg, steamID, lang, args, bot, community) => { //eslint-disable-line no-unused-vars
 
     const clean = text => { //eslint-disable-line no-case-declarations
         if (typeof(text) === "string") return text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
@@ -82,6 +84,11 @@ module.exports.eval = (chatmsg, steamID, lang, args) => {
     try {
         const code = args.join(" ");
         if (code.includes('logininfo')) return chatmsg(steamID, lang.evalcmdlogininfoblock) //not 100% save but should be at least some protection (only owners can use this cmd)
+
+        //make using the command a little bit easier
+        var starter = require("../../starter.js") //eslint-disable-line no-unused-vars
+        var controller = require("../../controller/controller.js") //eslint-disable-line no-unused-vars
+        var botfile = require("../../bot/bot.js") //eslint-disable-line no-unused-vars
         
         let evaled = eval(code);
         if (typeof evaled !== "string")
