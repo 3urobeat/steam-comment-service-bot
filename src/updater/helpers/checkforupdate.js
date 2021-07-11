@@ -9,7 +9,8 @@ module.exports.checkforupdate = (releasemode, forceupdate, callback) => {
     var https = require("https")
 
     /* ------------------ Check for new version ------------------ */
-    logger("info", `Checking for update in ${releasemode} branch...`, false, true)
+    if (forceupdate) logger("info", `Forcing update from ${releasemode} branch...`, false, true)
+        else logger("info", `Checking for update in ${releasemode} branch...`, false, true)
     
     var output = ""
 
