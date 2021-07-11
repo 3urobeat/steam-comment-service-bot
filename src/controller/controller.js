@@ -88,7 +88,7 @@
                 dataimportfile.extdata((extdatafile) => {
 
                     extdata = extdatafile
-                    config  = file.config()
+                    config  = dataimportfile.config()
 
                     global.config  = config
                     global.extdata = extdata
