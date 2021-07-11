@@ -197,7 +197,7 @@ var updatecheckinterval = setInterval(() => {
             if (!data.toString().split('\n').slice(data.toString().split('\n').length - 21).join('\n').includes("Update available!")) { //check last 20 lines of output.txt for update notice
 
                 module.exports.run(false, null, false, (done) => { //check if there is an update available
-                    if (done) require("../../../start.js").restart({ skippedaccounts: require('../controller/controller.js').skippedaccounts }) //restart if the bot found and ran the update
+                    if (done) require("../../start.js").restart({ skippedaccounts: require('../controller/controller.js').skippedaccounts }) //restart if the bot found and ran the update
                 })
             } 
         })
