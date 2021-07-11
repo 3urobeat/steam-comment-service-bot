@@ -1,9 +1,6 @@
 
 //TODO: run integritychecks from here
 
-var nedb = require("@seald-io/nedb")
-var fs   = require("fs")
-
 
 /**
  * Import, check and repair data.json
@@ -32,6 +29,8 @@ module.exports.config = () => {
  * @returns logininfo object
  */
 module.exports.logininfo = () => {
+    var fs = require("fs")
+
     logger("info", "Loading logininfo from logininfo.json or accounts.txt...", false, true)
 
     //Check logininfo for Syntax errors and display custom error message
@@ -70,6 +69,8 @@ module.exports.logininfo = () => {
  * @returns proxies array
  */
 module.exports.proxies = () => {
+    var fs = require("fs")
+
     logger("info", "Loading proxies in proxies.txt or creating file if it doesn't exist...", false, true)
 
     var proxies = [] //when the file is just created there can't be proxies in it (this bot doesn't support magic)
@@ -98,6 +99,8 @@ module.exports.proxies = () => {
  * @returns database object
  */
 module.exports.lastcomment = () => {
+    var nedb = require("@seald-io/nedb")
+
     logger("info", "Loading lastcomment.db database...", false, true)
 
     return new nedb({ filename: "../../data/lastcomment.db", autoload: true }); //autoload and return instantly
@@ -109,10 +112,12 @@ module.exports.lastcomment = () => {
  * @returns The quotes array
  */
 module.exports.quotes = () => {
+    var fs = require("fs")
+
     logger("info", "Loading quotes from quotes.txt...", false, true)
 
     var quotes = []
-    var quotes = fs.readFileSync(srcdir + '../quotes.txt', 'utf8').split("\n") //get all quotes from the quotes.txt file into an array
+    var quotes = fs.readFileSync(srcdir + '/../quotes.txt', 'utf8').split("\n") //get all quotes from the quotes.txt file into an array
     var quotes = quotes.filter(str => str != "") //remove empty quotes as empty comments will not work/make no sense
 
     quotes.forEach((e, i) => { //multi line strings that contain \n will get splitted to \\n -> remove second \ so that node-steamcommunity understands the quote when commenting
@@ -141,6 +146,8 @@ module.exports.quotes = () => {
  * @returns language object
  */
 module.exports.lang = () => {
+    var fs = require("fs")
+
     logger("info", "Loading defaultlang.json and customlang.json...", false, true)
 
     var lang = require(srcdir + "/data/lang/defaultlang.json")

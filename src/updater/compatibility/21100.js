@@ -7,8 +7,8 @@ module.exports.run = (callback) => { //eslint-disable-line
     i++
 
     //Move both data files to their new home
-    fs.renameSync(srcdir + "./cache.json", srcdir + "./data/cache.json")
-    fs.renameSync(srcdir + "./lastcomment.db", srcdir + "./data/lastcomment.db")
+    fs.renameSync(srcdir + "/cache.json", srcdir + "/data/cache.json")
+    fs.renameSync(srcdir + "/lastcomment.db", srcdir + "/data/lastcomment.db")
 
     logger("info", "I will now update again. Please wait a moment...")
     require("../updater").run(true, null, true, (done) => {
