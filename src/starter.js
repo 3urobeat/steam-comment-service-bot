@@ -80,6 +80,10 @@ module.exports.run = () => {
     //Yes, I know, global variables are bad. But I need a few multiple times in different files and it would be a pain in the ass to import them every time and ensure that I don't create a circular dependency and what not.
     global.srcdir        = __dirname
     global.botisloggedin = false
+
+    if (typeof started == "undefined") global.started = false //Only set if undefined so that the check below works
+    if (started) return; //Don't start if bot is already started
+    started = true;
     
     this.checkAndGetFile("./src/controller/controller.js", (file) => {
         file.run()

@@ -1,8 +1,4 @@
 //This file only exists to ensure compatibility with older start.js when updating automatically
-if (typeof started == "undefined") global.started = false //Only set if undefined so that the check below works
-if (started) return; //Don't start if bot is already started
-    else started = true;
-
 module.exports.restartdata = () => { } //empty restartdata function to suppress error on 2.10.x -> 2.11 automatic update
 
 var fs = require("fs")
