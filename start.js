@@ -14,10 +14,10 @@ try { //Just try to require, if it should fail then the actual restoring process
 }
 
 /* ------------------ Restart function ------------------ */
-module.exports.restart = require(extdata.filetostart).restart
+module.exports.restart = () => { require(extdata.filetostart).restart }
 
 /* ------------------- Stop function ------------------- */
-module.exports.stop = require(extdata.filetostart).stop
+module.exports.stop = () => { require(extdata.filetostart).stop }
 
 
 /* ---------- Get filetostart if it doesn't exist ---------- */
