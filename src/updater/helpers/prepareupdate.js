@@ -5,8 +5,6 @@
  * @param {function} [callback] No parameters. Called on completion.
  */
 module.exports.run = (responseSteamID, callback) => {
-    var controller = require("../../controller/controller.js")
-    var bot        = require('../../bot/bot.js')
 
     /* ------------------ Check stuff & Initiate updater & log out ------------------ */
 
@@ -15,6 +13,9 @@ module.exports.run = (responseSteamID, callback) => {
         logger("", "", true)
         logger("info", `Bot is logged in. Checking for active comment process...`, false, true)
 
+        
+        var controller = require("../../controller/controller.js")
+        var bot        = require('../../bot/bot.js')
         
         /* eslint-disable no-inner-declarations */
         function initiateUpdate() { //make initating the update a function to simplify the activecomment check below
