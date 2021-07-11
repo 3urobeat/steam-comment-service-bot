@@ -66,7 +66,13 @@ module.exports.run = () => {
 
 
     //Log held back messages from before this start
-    if (logafterrestart.length > 0) logafterrestart.forEach((e) => { logger("", e, true, true) }) //log messages to output.txt carried through restart
+    if (logafterrestart.length > 0) logafterrestart.forEach((e) => { //log messages to output.txt carried through restart
+        e.split("\n").forEach((f) => { //split string on line breaks to make output cleaner when using remove
+            logger("", "[logafterrestart] " + f, true, true)
+        })
+    })
+    
+    logafterrestart = [] //clear array
 
 
     /* ------------ Mark new execution in output: ------------ */

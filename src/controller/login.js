@@ -50,11 +50,14 @@ module.exports.startlogin = () => {
 
     //Evaluate estimated wait time for login:
     logger("info", "Evaluating estimated login time...", false, true)
-    if (extdata.timesloggedin < 5) { //only use new evaluation method when the bot was started more than 5 times
-        var estimatedlogintime = ((logindelay * (Object.keys(logininfo).length - 1 - controller.skippedaccounts.length)) / 1000) + 10 //10 seconds tolerance
-    } else {
-        var estimatedlogintime = (extdata.totallogintime / extdata.timesloggedin) * (Object.keys(logininfo).length - controller.skippedaccounts.length) 
+    if (typeof controller.skippedaccounts != "undefined") { //this was somehow able to throw an error after updating from 2.10.x -> 2.11
+        if (extdata.timesloggedin < 5) { //only use new evaluation method when the bot was started more than 5 times
+            var estimatedlogintime = ((logindelay * (Object.keys(logininfo).length - 1 - controller.skippedaccounts.length)) / 1000) + 10 //10 seconds tolerance
+        } else {
+            var estimatedlogintime = (extdata.totallogintime / extdata.timesloggedin) * (Object.keys(logininfo).length - controller.skippedaccounts.length) 
+        }
     }
+    
 
     var estimatedlogintimeunit = "seconds"
     if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "minutes" }
