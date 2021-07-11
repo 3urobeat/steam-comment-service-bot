@@ -84,51 +84,50 @@ module.exports.run = () => {
 
         global.config  = config
         global.extdata = extdata
-    })
-    
 
 
-    /* ------------ Change terminal title: ------------ */
-    if (process.platform == "win32") { //set node process name to find it in task manager etc.
-        process.title = `${extdata.mestr}'s Steam Comment Service Bot v${extdata.versionstr} | ${process.platform}` //Windows allows long terminal/process names
-    } else {
-        process.stdout.write(`${String.fromCharCode(27)}]0;${extdata.mestr}'s Steam Comment Service Bot v${extdata.versionstr} | ${process.platform}${String.fromCharCode(7)}`) //sets terminal title (thanks: https://stackoverflow.com/a/30360821/12934162)
-        process.title = `CommentBot` //sets process title in task manager etc.
-    }
+        /* ------------ Change terminal title: ------------ */
+        if (process.platform == "win32") { //set node process name to find it in task manager etc.
+            process.title = `${extdata.mestr}'s Steam Comment Service Bot v${extdata.versionstr} | ${process.platform}` //Windows allows long terminal/process names
+        } else {
+            process.stdout.write(`${String.fromCharCode(27)}]0;${extdata.mestr}'s Steam Comment Service Bot v${extdata.versionstr} | ${process.platform}${String.fromCharCode(7)}`) //sets terminal title (thanks: https://stackoverflow.com/a/30360821/12934162)
+            process.title = `CommentBot` //sets process title in task manager etc.
+        }
 
 
-    /* ------------ Print some diagnostic messages to log: ------------ */
+        /* ------------ Print some diagnostic messages to log: ------------ */
 
-    logger("info", `steam-comment-service-bot made by ${extdata.mestr} version ${extdata.versionstr}`, false, true)
-    logger("info", `Using node.js version ${process.version}...`, false, true)
-    logger("info", `Running on ${process.platform}...`, false, true)
-    logger("info", `Using ${extdata.branch} branch | firststart is ${extdata.firststart} | This is start number ${extdata.timesloggedin + 1}`, false, true)
+        logger("info", `steam-comment-service-bot made by ${extdata.mestr} version ${extdata.versionstr}`, false, true)
+        logger("info", `Using node.js version ${process.version}...`, false, true)
+        logger("info", `Running on ${process.platform}...`, false, true)
+        logger("info", `Using ${extdata.branch} branch | firststart is ${extdata.firststart} | This is start number ${extdata.timesloggedin + 1}`, false, true)
 
-    if (extdata.branch == "beta-testing") logger("", "\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
+        if (extdata.branch == "beta-testing") logger("", "\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
 
-    var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
-    if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
-    logger("info", `Comment config values: commentdelay = ${config.commentdelay} | maxCommentsOverall = ${maxCommentsOverall} | randomizeAcc = ${config.randomizeAccounts}`, false, true)
+        var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
+        if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
+        logger("info", `Comment config values: commentdelay = ${config.commentdelay} | maxCommentsOverall = ${maxCommentsOverall} | randomizeAcc = ${config.randomizeAccounts}`, false, true)
 
 
-    /* ------------ Run updater or start logging in when steam is online: ------------ */
-    starter.checkAndGetFile("./src/updater/updater.js", (updater) => { //welcome to callback hell! Yes, I should improve this later.
+        /* ------------ Run updater or start logging in when steam is online: ------------ */
+        starter.checkAndGetFile("./src/updater/updater.js", (updater) => { //welcome to callback hell! Yes, I should improve this later.
 
-        updater.compatibility(() => { //continue startup on any callback
+            updater.compatibility(() => { //continue startup on any callback
 
-            require("./helpers/internetconnection.js").run(true, true, true, () => { //we can ignore callback because stoponerr is true
+                require("./helpers/internetconnection.js").run(true, true, true, () => { //we can ignore callback because stoponerr is true
 
-                require("../updater/updater.js").run(false, null, false, (foundanddone2) => {
+                    require("../updater/updater.js").run(false, null, false, (foundanddone2) => {
 
-                    if (!foundanddone2) {
-                        require("./login.js").startlogin() //start logging in
-                    } else {
-                        require(srcdir + "/../start.js").restart({ skippedaccounts: [] }, true); //restart
-                    }
+                        if (!foundanddone2) {
+                            require("./login.js").startlogin() //start logging in
+                        } else {
+                            require(srcdir + "/../start.js").restart({ skippedaccounts: [] }, true); //restart
+                        }
+                    })
                 })
             })
         })
-    })
+    })    
 }
 
 
