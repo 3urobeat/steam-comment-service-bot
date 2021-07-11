@@ -93,7 +93,7 @@ module.exports.run = () => {
 
 /**
  * Restart the application
- * @param {*} args The argument object that will be passed to `controller.restartargs()`
+ * @param {Object} args The argument object that will be passed to `controller.restartargs()`
  * @param {Boolean} nologOff If true the function won't attempt to log off all bot accounts
  */
 module.exports.restart = (args, nologOff) => {

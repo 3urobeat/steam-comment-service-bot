@@ -1,6 +1,8 @@
 module.exports.run = (callback) => { //eslint-disable-line
     var fs = require("fs")
 
+    var controller = require("../../controller/controller.js")
+
     if (fs.existsSync('./updater.js')) {
         logger("info", "Applying 2.8 compatibility changes...")
 
@@ -9,13 +11,13 @@ module.exports.run = (callback) => { //eslint-disable-line
             
             logger("info", "I will now update again. Please wait a moment...")
             require("../updater").run(true, null, true, (done) => {
-                if (done) require("../../../start.js").restart({ skippedaccounts: [] })
+                if (done) require("../../../start.js").restart({ skippedaccounts: controller.skippedaccounts })
             })
         }) 
     } else {
         logger("info", "I will now update again. Please wait a moment...")
         require("../updater").run(true, null, true, (done) => {
-            if (done) require("../../../start.js").restart({ skippedaccounts: [] })
+            if (done) require("../../../start.js").restart({ skippedaccounts: controller.skippedaccounts })
         })
     }
 }

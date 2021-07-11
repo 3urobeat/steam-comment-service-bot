@@ -14,7 +14,15 @@ try { //Just try to require, if it should fail then the actual restoring process
 }
 
 /* ------------------ Restart function ------------------ */
-module.exports.restart = (args) => { require(extdata.filetostart).restart(args) }
+module.exports.restart = (args, nologOff) => {
+    try {
+        delete require.cache[__dirname + extdata.filetostart.slice(1, extdata.filetostart.length)] //clear cache of starter file to include file changes
+    } catch (err) {
+        console.log("start.js: Failed to delete cache of filetostart. If the file contains changes then they are not loaded.\nI will try to start anyway but please restart the bot manually if you see this message.\nError: " + err)
+    }
+
+    require(extdata.filetostart).restart(args, nologOff) 
+}
 
 /* ------------------- Stop function ------------------- */
 module.exports.stop = () => { require(extdata.filetostart).stop() }

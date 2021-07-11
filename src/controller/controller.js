@@ -49,7 +49,7 @@ module.exports.run = () => {
                 } else {
                     //logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
                     logger("info", "Successfully reinstalled all modules. Restarting...")
-                    require(srcdir + "/../start.js").restart({ skippedaccounts: [], logafterrestart: logafterrestart }, true); //restart
+                    require(srcdir + "/../start.js").restart({ skippedaccounts: this.skippedaccounts, logafterrestart: logafterrestart }, true); //restart
                 }
             })
         } else { //logging this message but still trying to fix it would probably confuse the user
@@ -122,7 +122,7 @@ module.exports.run = () => {
                             if (!foundanddone2) {
                                 require("./login.js").startlogin() //start logging in
                             } else {
-                                require(srcdir + "/../start.js").restart({ skippedaccounts: [] }, true); //restart
+                                require(srcdir + "/../start.js").restart({ skippedaccounts: this.skippedaccounts }); //restart
                             }
                         })
                     })

@@ -8,19 +8,21 @@ module.exports.run = (callback) => { //eslint-disable-line
 
     //data.json
     try {
-        var oldextdata = require("../../data.json")
+        if (fs.existsSync(srcdir + "/data.json")) {
+            var oldextdata = require("../../data.json")
 
-        extdata.urlrequestsecretkey = oldextdata.urlrequestsecretkey
-        extdata.timesloggedin = oldextdata.timesloggedin
-        extdata.totallogintime = oldextdata.totallogintime
-
-        fs.writeFile(srcdir + "/data/data.json", JSON.stringify(extdata, null, 4), err => { //write the changed file
-            if (err) {
-                logger("error", `error writing to data.json: ${err}`, true)            
-            }
-
-            fs.unlinkSync(srcdir + "/data.json")
-        })
+            extdata.urlrequestsecretkey = oldextdata.urlrequestsecretkey
+            extdata.timesloggedin = oldextdata.timesloggedin
+            extdata.totallogintime = oldextdata.totallogintime
+    
+            fs.writeFile(srcdir + "/data/data.json", JSON.stringify(extdata, null, 4), err => { //write the changed file
+                if (err) {
+                    logger("error", `error writing to data.json: ${err}`, true)            
+                }
+    
+                fs.unlinkSync(srcdir + "/data.json")
+            })
+        }
     } catch (err) {
         logger("error", "Failed to transfer urlrequestsecretkey, timesloggedin and totallogintime to new data.json: " + err)
     }
@@ -33,8 +35,11 @@ module.exports.run = (callback) => { //eslint-disable-line
 
     //Run updater again
     logger("info", "I will now update again. Please wait a moment...")
+
+    var controller = require("../../controller/controller.js")
+
     require("../updater").run(true, null, true, (done) => {
-        if (done) require("../../../start.js").restart({ skippedaccounts: [] })
+        if (done) require("../../../start.js").restart({ skippedaccounts: controller.skippedaccounts })
     })
 }
 
