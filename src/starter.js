@@ -78,7 +78,8 @@ module.exports.checkAndGetFile = (file, callback) => {
  */
 module.exports.run = () => {
     //Yes, I know, global variables are bad. But I need a few multiple times in different files and it would be a pain in the ass to import them every time and ensure that I don't create a circular dependency and what not.
-    global.srcdir = __dirname
+    global.srcdir        = __dirname
+    global.botisloggedin = false
     if (typeof started == "undefined") global.started = false //Only set if undefined so that the check below works
     
     if (started == true) return; //Don't start if bot is already logged in (perhaps an accidental start)
@@ -108,7 +109,7 @@ module.exports.restart = (args, nologOff) => {
 
             controller.relogAfterDisconnect = false; //Prevents disconnect event (which will be called by logOff) to relog accounts
 
-            console.log("Logging off accounts...")
+            if (botisloggedin) console.log("Logging off accounts...")
 
             Object.keys(controller.botobject).forEach((e) => { //log out all bots
                 controller.botobject[e].logOff() 

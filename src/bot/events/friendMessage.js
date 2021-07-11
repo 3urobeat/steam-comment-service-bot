@@ -284,7 +284,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 if (config.enableevalcmd !== true) return chatmsg(steamID, lang.evalcmdturnedoff)
                 if (!ownercheck) return notownerresponse();
 
-                require("../commands/system.js").eval(chatmsg, steamID, lang, args)
+                require("../commands/system.js").eval(chatmsg, steamID, lang, args, bot, community)
                 break;
             
             default: //cmd not recognized

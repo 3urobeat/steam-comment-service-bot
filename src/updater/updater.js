@@ -41,7 +41,7 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
 
                     starter.checkAndGetFile("./src/updater/helpers/prepareupdate.js", (file2) => {
                         file2.run(responseSteamID, () => {
-                            logger("info", "Starting to download update...", false, true)
+                            logger("", "Starting to download update...", true)
 
                             starter.checkAndGetFile("./src/updater/helpers/downloadupdate.js", (file3) => {
                                 file3.downloadupdate(releasemode, compatibilityfeaturedone, (err) => {
@@ -50,7 +50,7 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
                                         return;
                                     }
 
-                                    logger("info", "\x1b[33mUpdating packages with npm...\x1b[0m", true)
+                                    logger("", "\x1b[33mUpdating packages with npm...\x1b[0m\n", true)
 
                                     starter.checkAndGetFile("./src/controller/helpers/npminteraction.js", (file4) => {
                                         file4.update((err) => {
@@ -108,8 +108,6 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
                         })
                     }
                 }
-
-                foundanddone(true) //make callback to let caller know the update is finished
 
             } else { //no update found
 
