@@ -6,23 +6,43 @@
  * @param {function} [callback] Called with `ready` (Boolean) on completion.
  */
 module.exports.checkAndGetFile = (file, callback) => {
+    if (!file) {
+        console.log("checkAndGetFile() error: file parameter is undefined!")
+        callback(undefined)
+        return;
+    }
+
     var fs = require("fs")
+    
 
     if (!fs.existsSync(file)) { //Function that downloads filetostart if it doesn't exist (file location change etc.)
-        var output = ""
-
         //Determine branch
         var branch = "master" //Default to master
-        try { branch = require("./data/data.json").branch } catch (err) { } //eslint-disable-line
+        try { 
+            branch = require("./data/data.json").branch //Try to read from data.json (which will when user is coming from <2.11)
+        } catch (err) {
+            try {
+                var otherdata = require("./data.json") //then try to get the other, "compatibility" data file to check if versionstr includes the word BETA
+                
+                if (otherdata.versionstr.includes("BETA")) branch = "beta-testing"
+            } catch (err) { } //eslint-disable-line
+        }
 
 
-        var fileurl = `https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${branch}/${file.slice(2, this.length)}` //remove the dot at the beginning of the file string
+        var fileurl = `https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${branch}/${file.slice(2, file.length)}` //remove the dot at the beginning of the file string
 
         console.log("Pulling: " + fileurl)
 
         try {
             var https = require("https")
+            var path  = require("path")
 
+            var output = ""
+
+            //Create the underlying folder structure to avoid error when trying to write the downloaded file
+            fs.mkdirSync(path.dirname(file), { recursive: true })
+
+            //Get the file
             https.get(fileurl, function (res) {
                 res.setEncoding('utf8');
 
@@ -58,7 +78,7 @@ module.exports.checkAndGetFile = (file, callback) => {
  */
 module.exports.run = () => {
     //Yes, I know, global variables are bad. But I need a few multiple times in different files and it would be a pain in the ass to import them every time and ensure that I don't create a circular dependency and what not.
-    global.srcdir = __dirname + "/"
+    global.srcdir = __dirname
     if (typeof started == "undefined") global.started = false //Only set if undefined so that the check below works
     
     if (started == true) return; //Don't start if bot is already logged in (perhaps an accidental start)
