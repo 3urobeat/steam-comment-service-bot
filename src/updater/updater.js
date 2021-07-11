@@ -147,7 +147,7 @@ module.exports.compatibility = (callback) => {
      */
     function runCompFeature(filename) {
         starter.checkAndGetFile(`./src/updater/compatibility/${filename}.js`, (file) => {
-            logger(`Running compatibility feature ${filename}.js...`)
+            logger("info", `Running compatibility feature ${filename}.js...`)
 
             file.run(callback)
         })
