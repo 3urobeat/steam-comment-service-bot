@@ -10,21 +10,25 @@ module.exports.logger = (type, str, nodate, remove) => { //Function that passes 
     var outputlogger = require("output-logger") //look Mom, it's my own library!
 
     var controller   = require("../controller.js")
-    var readyfile    = require("../ready.js")
 
-    //Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)
-    outputlogger.options({
-        msgstructure: "[date | type] message",
-        paramstructure: ["type", "str", "nodate", "remove"],
-        outputfile: srcdir + "/../output.txt"
-    })
-    
 
-    var string = outputlogger(type, str, nodate, remove)
+    require("../../starter.js").checkAndGetFile("./src/controller/ready.js", (readyfile) => {
 
-    if (!nodate) { //startup messages should have nodate enabled -> filter messages with date when bot is not started
-        if (readyfile.readyafter == 0 && !str.toLowerCase().includes("error") && !str.includes('Logging in... Estimated wait time') && !str.includes("What's new:") && remove !== true) { 
-            controller.readyafterlogs.push(string); return; 
+        //Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)
+        outputlogger.options({
+            msgstructure: "[date | type] message",
+            paramstructure: ["type", "str", "nodate", "remove"],
+            outputfile: srcdir + "/../output.txt"
+        })
+        
+
+        var string = outputlogger(type, str, nodate, remove)
+
+        if (!nodate) { //startup messages should have nodate enabled -> filter messages with date when bot is not started
+            if (readyfile.readyafter == 0 && !str.toLowerCase().includes("error") && !str.includes('Logging in... Estimated wait time') && !str.includes("What's new:") && remove !== true) { 
+                controller.readyafterlogs.push(string); return; 
+            }
         }
-    }
+
+    })
 }
