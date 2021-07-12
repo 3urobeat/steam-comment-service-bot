@@ -9,7 +9,7 @@ module.exports.downloadupdate = (releasemode, compatibilityfeaturedone, callback
     var download = require("download")
 
     const url = `https://github.com/HerrEurobeat/steam-comment-service-bot/archive/${releasemode}.zip`
-    const dontdelete = ["./.git", "./src/cache.json", "./src/lastcomment.db", "./accounts.txt", "./customlang.json", "./logininfo.json", "./output.txt", "./proxies.txt", "./quotes.txt"]
+    const dontdelete = ["./.git", "./src/data/cache.json", "./src/data/lastcomment.db", "./accounts.txt", "./customlang.json", "./logininfo.json", "./output.txt", "./proxies.txt", "./quotes.txt"]
 
     //Process dontdelete array in order to include parent folders of a dontdelete file in the array aswell
     dontdelete.forEach((e) => {
