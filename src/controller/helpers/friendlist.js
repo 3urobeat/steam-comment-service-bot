@@ -5,11 +5,15 @@
  */
 module.exports.checklastcommentdb = (bot) => {
     var controller = require("../../controller/controller.js")
+
+    logger("info", "Checking if all friends are in lastcomment.db...", false, true)
     
     controller.lastcomment.find({}, (err, docs) => {
         Object.keys(bot.myFriends).forEach(e => {
 
             if (bot.myFriends[e] == 3 && !docs.find(el => el.id == e)) {
+                logger("info", `Inserting ${e} into lastcomment.db...`, false, true)
+
                 var lastcommentobj = {
                     id: e,
                     time: Date.now() - (config.commentcooldown * 60000) //subtract commentcooldown so that the user is able to use the command instantly

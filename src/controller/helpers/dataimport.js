@@ -105,7 +105,7 @@ module.exports.lastcomment = () => {
 
     logger("info", "Loading lastcomment.db database...", false, true)
 
-    return new nedb({ filename: "../../data/lastcomment.db", autoload: true }); //autoload and return instantly
+    return new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); //autoload and return instantly
 }
 
 
