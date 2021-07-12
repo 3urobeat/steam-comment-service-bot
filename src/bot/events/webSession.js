@@ -45,7 +45,7 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
 
             //Log message and send welcome message
             logger("info", `[${thisbot}] Added user while I was offline! User: ` + Object.keys(bot.myFriends)[i])
-            botfile.chatmsg(String(Object.keys(bot.myFriends)[i]), botfile.useradded)
+            controller.botobject[0].chat.sendFriendMessage(String(Object.keys(bot.myFriends)[i]), login.lang.useradded)
 
 
             //Add user to lastcomment database

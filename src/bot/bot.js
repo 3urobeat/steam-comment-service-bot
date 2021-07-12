@@ -96,16 +96,6 @@ module.exports.run = (logOnOptions, loginindex) => {
     this.logOnAccount(); //login now
     
 
-    /**
-     * Make chat message method shorter
-     * @param steamID The steamID object of the recipient
-     * @param txt The text to send
-     */
-    module.exports.chatmsg = (steamID, txt) => { //sadly needed to be included here in order to access bot instance before friendMessage got called at least once or needing to provide it as parameter
-        bot.chat.sendFriendMessage(steamID, txt)
-    }
-
-
     /* ------------ Events: ------------ */ 
     bot.on('error', (err) => { //Handle errors that were caused during logOn
         require("./events/error.js").run(err, loginindex, thisbot, thisproxy)

@@ -25,7 +25,7 @@ module.exports.friendRelationship = (loginindex, thisbot, bot, steamID, relation
         logger("info", `[${thisbot}] Added User: ` + new SteamID(String(steamID)).getSteamID64())
 
         if (loginindex == 0) {
-            botfile.chatmsg(steamID, botfile.lang.useradded) 
+            controller.botobject[0].chat.sendFriendMessage(steamID, login.lang.useradded) 
         }
 
 

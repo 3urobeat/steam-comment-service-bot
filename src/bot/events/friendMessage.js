@@ -12,16 +12,26 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
     var controller = require("../../controller/controller.js")
     var botfile    = require("../bot.js")
     var ready      = require("../../controller/ready.js")
+    var login      = require("../../controller/login.js")
 
     var SteamID    = require('steamid');
 
-    var chatmsg    = botfile.chatmsg //Make the call a bit shorter for convenience
     var lang       = login.lang
 
     var disablecommentcmd     = false //disables the comment and resetcooldown command and responds with maintenance message
     var commandcooldown       = 12000 //The bot won't respond if a user sends more than 5 messages in this time frame
     var lastcommentrequestmsg = []    //array saving the last comment cmd request to apply higher cooldown to the comment cmd usage compared to normal cmd usage cooldown
     var lastmessage           = {}    //tracks the last cmd usage of a normal command to apply cooldown if the user spams
+
+
+    /**
+     * Make chat message method shorter
+     * @param steamID The steamID object of the recipient
+     * @param txt The text to send
+     */
+    function chatmsg(steamID, txt) { //sadly needed to be included here in order to access bot instance before friendMessage got called at least once or needing to provide it as parameter
+        bot.chat.sendFriendMessage(steamID, txt)
+    }
 
 
     /**
