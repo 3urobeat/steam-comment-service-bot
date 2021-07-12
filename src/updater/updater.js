@@ -45,30 +45,19 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
 
                             starter.checkAndGetFile("./src/updater/helpers/downloadupdate.js", (file3) => {
                                 file3.downloadupdate(releasemode, compatibilityfeaturedone, (err) => {
-                                    if (err) {
-                                        //dunno, print err message and restart or what?
-                                        return;
-                                    }
+                                    if (err) logger("error", "I failed trying to download & install the update. Please check the log after other errors for more information.\nTrying to continue anyway...")
 
                                     logger("", "\x1b[33mUpdating packages with npm...\x1b[0m\n", true)
 
                                     starter.checkAndGetFile("./src/controller/helpers/npminteraction.js", (file4) => {
                                         file4.update((err) => {
-                                            if (err) {
-                                                //dunno, print err message and restart or what?
-                                                return;
-                                            }
+                                            if (err) logger("error", "I failed trying to update the dependencies. Please check the log after other errors for more information.\nTrying to continue anyway...")
 
                                             foundanddone(true); //finished updating!
                                         })
                                     })
                                 })
                             })
-
-                            //Maybe useful when downloadupdate should fail
-                            /* logger("error", "Aborted trying to update. Please check the log for other errors.")
-                            foundanddone(false)
-                            return; */
                         })
                     })
                 }

@@ -27,6 +27,7 @@
             console.log(`${type} | ${str}`)
         }
 
+        var oldlogger = logger;
         global.logger = logger;
 
 
@@ -35,25 +36,24 @@
         });
 
         process.on('uncaughtException', (reason) => {
-            logger("error", `Uncaught Exception Error! Reason: ${reason.stack}`, true) 
-
             //Try to fix error automatically by reinstalling all modules
-            /* if (String(reason).includes("Error: Cannot find module")) {
-                logger("\n\ninfo", "Cannot find module error detected. Trying to fix error by reinstalling modules...")
+            if (String(reason).includes("Error: Cannot find module")) {
+                oldlogger("", "", true)
+                oldlogger("info", "Cannot find module error detected. Trying to fix error by reinstalling modules...\n")
 
-                require("./helpers/npminteraction.js").reinstallAll((err, stdout) => { //eslint-disable-line
+                require("./helpers/npminteraction.js").reinstallAll(oldlogger, (err, stdout) => { //eslint-disable-line
                     if (err) {
-                        logger("error", "I was unable to reinstall all modules. Please try running 'npm install' manually. Error: " + err)
+                        oldlogger("error", "I was unable to reinstall all modules. Please try running 'npm install' manually. Error: " + err)
                         process.exit(1);
                     } else {
                         //logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
-                        logger("info", "Successfully reinstalled all modules. Restarting...")
+                        oldlogger("info", "Successfully reinstalled all modules. Restarting...")
                         require(srcdir + "/../start.js").restart({ skippedaccounts: this.skippedaccounts, logafterrestart: logafterrestart }, true); //restart
                     }
                 })
             } else { //logging this message but still trying to fix it would probably confuse the user
                 logger("error", `Uncaught Exception Error! Reason: ${reason.stack}`, true) 
-            } */
+            }
         });
 
 
