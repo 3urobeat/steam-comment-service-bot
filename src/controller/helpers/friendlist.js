@@ -4,9 +4,9 @@
  * @param {SteamUser} botacc The bot instance of the calling account
  */
 module.exports.checklastcommentdb = (bot) => {
-    var botfile    = require("../../bot/bot.js")
+    var controller = require("../../controller/controller.js")
     
-    botfile.lastcomment.find({}, (err, docs) => {
+    controller.lastcomment.find({}, (err, docs) => {
         Object.keys(bot.myFriends).forEach(e => {
 
             if (bot.myFriends[e] == 3 && !docs.find(el => el.id == e)) {
@@ -15,7 +15,7 @@ module.exports.checklastcommentdb = (bot) => {
                     time: Date.now() - (config.commentcooldown * 60000) //subtract commentcooldown so that the user is able to use the command instantly
                 }
 
-                botfile.lastcomment.insert(lastcommentobj, (err) => { 
+                controller.lastcomment.insert(lastcommentobj, (err) => { 
                     if (err) logger("error", "Error inserting existing user into lastcomment.db database! Error: " + err) 
                 })
             }

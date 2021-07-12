@@ -28,8 +28,10 @@ module.exports.abort = (chatmsg, steamID, lang, steam64id) => {
  * @param {Number} steam64id The steam64id of the requesting user
  */
 module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
-    var SteamID = require("steamid")
-    var botfile = require("../../bot.js")
+    var SteamID    = require("steamid")
+
+    var botfile    = require("../../bot.js")
+    var controller = require("../../../controller/controller.js")
 
     if (config.commentcooldown == 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the cooldown enabled?
 
@@ -45,7 +47,7 @@ module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
         var steam64id = args[0] //change steam64id to the provided id
     }
 
-    botfile.lastcomment.update({ id: steam64id }, { $set: { time: Date.now() - (config.commentcooldown * 60000) } }, (err) => { 
+    controller.lastcomment.update({ id: steam64id }, { $set: { time: Date.now() - (config.commentcooldown * 60000) } }, (err) => { 
         if (err) return chatmsg(steamID, "Error updating database entry: " + err)
             else chatmsg(steamID, lang.resetcooldowncmdsuccess.replace("profileid", steam64id.toString())) 
     })
@@ -60,9 +62,10 @@ module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
  * @param {Number} steam64id The steam64id of the requesting user
  */
 module.exports.failed = (chatmsg, steamID, lang, steam64id) => {
-    var botfile = require("../../bot.js")
+    var botfile    = require("../../bot.js")
+    var controller = require("../../../controller/controller.js")
     
-    botfile.lastcomment.findOne({ id: steam64id }, (err, doc) => {
+    controller.lastcomment.findOne({ id: steam64id }, (err, doc) => {
         if (!botfile.failedcomments[steam64id] || Object.keys(botfile.failedcomments[steam64id]).length < 1) return chatmsg(steamID, lang.failedcmdnothingfound);
 
         chatmsg(steamID, lang.failedcmdmsg.replace("steam64id", steam64id).replace("requesttime", new Date(doc.time).toISOString().replace(/T/, ' ').replace(/\..+/, '')) + "\n\n" + JSON.stringify(botfile.failedcomments[steam64id], null, 4))

@@ -10,7 +10,9 @@
 module.exports.friendRelationship = (loginindex, thisbot, bot, steamID, relationship) => {
     var SteamID = require("steamid")
 
-    var botfile = require("../bot.js")
+    var botfile    = require("../bot.js")
+    var login      = require("../../controller/login.js")
+    var controller = require("../../controller/controller.js")
 
 
     if (relationship == 2) {
@@ -33,8 +35,8 @@ module.exports.friendRelationship = (loginindex, thisbot, bot, steamID, relation
             time: Date.now() - (config.commentcooldown * 60000) //subtract commentcooldown so that the user is able to use the command instantly
         }
 
-        botfile.lastcomment.remove({ id: new SteamID(String(steamID)).getSteamID64() }, {}, (err) => { if (err) logger("error", "Error removing duplicate steamid from lastcomment.db on friendRelationship! Error: " + err) }) //remove any old entries
-        botfile.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err) })
+        controller.lastcomment.remove({ id: new SteamID(String(steamID)).getSteamID64() }, {}, (err) => { if (err) logger("error", "Error removing duplicate steamid from lastcomment.db on friendRelationship! Error: " + err) }) //remove any old entries
+        controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err) })
 
 
         //Invite user to yourgroup (and to my to make some stonks)

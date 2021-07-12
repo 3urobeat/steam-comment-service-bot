@@ -16,7 +16,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
     var SteamID    = require('steamid');
 
     var chatmsg    = botfile.chatmsg //Make the call a bit shorter for convenience
-    var lang       = botfile.lang
+    var lang       = login.lang
 
     var disablecommentcmd     = false //disables the comment and resetcooldown command and responds with maintenance message
     var commandcooldown       = 12000 //The bot won't respond if a user sends more than 5 messages in this time frame
@@ -31,7 +31,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
     function lastsuccessfulcomment(callback) {
         var greatesttimevalue = 0
 
-        botfile.lastcomment.find({}, (err, docs) => { //get all documents
+        controller.lastcomment.find({}, (err, docs) => { //get all documents
             docs.forEach((e, i) => {
                 if (e.time > greatesttimevalue) greatesttimevalue = Number(e.time)
 
@@ -58,7 +58,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
         commentcmd = (steamID, args, res) => {
             var steam64id = new SteamID(String(steamID)).getSteamID64()
 
-            botfile.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {
+            controller.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {
                 if (!lastcommentdoc) logger("error", "User is missing from database?? How is this possible?! Error maybe: " + err)
 
                 try { //catch any unhandled error to be able to remove user from activecommentprocess array
@@ -79,7 +79,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
         groupcommentcmd = (steamID, args, res) => {
             var steam64id = new SteamID(String(steamID)).getSteamID64()
 
-            botfile.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {
+            controller.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {
                 if (!lastcommentdoc) logger("error", "User is missing from database?? How is this possible?! Error maybe: " + err)
 
                 try { //catch any unhandled error to be able to remove user from activecommentprocess array
@@ -131,7 +131,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
         })
 
         //Check if user is in lastcomment database
-        botfile.lastcomment.findOne({ id: steam64id }, (err, doc) => {
+        controller.lastcomment.findOne({ id: steam64id }, (err, doc) => {
             if (err) logger("error", "Database error on friendMessage. This is weird. Error: " + err)
 
             if (!doc) { //add user to database if he/she is missing for some reason
@@ -140,7 +140,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                     time: Date.now() - (config.commentcooldown * 60000) //subtract commentcooldown so that the user is able to use the command instantly
                 }
                 
-                botfile.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err) }) 
+                controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err) }) 
             }
         })
 

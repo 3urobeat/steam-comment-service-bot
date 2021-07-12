@@ -42,11 +42,11 @@ module.exports.help = (ownercheck, chatmsg, steamID, lang) => {
  * @param {Object} steamID The steamID object from steam-user
  */
 module.exports.info = (steam64id, lastsuccessfulcomment, chatmsg, steamID) => {
-    var controller = require("../../controller/controller.js")
     var botfile    = require("../bot.js")
+    var controller = require("../../controller/controller.js")
 
 
-    botfile.lastcomment.findOne({ id: steam64id }, (err, doc) => {
+    controller.lastcomment.findOne({ id: steam64id }, (err, doc) => {
         lastsuccessfulcomment(cb => {
             /* eslint-disable no-irregular-whitespace */
             chatmsg(steamID, `

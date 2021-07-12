@@ -9,17 +9,10 @@ module.exports.run = (logOnOptions, loginindex) => {
     var SteamCommunity  = require('steamcommunity');
     var request         = require("request"); //yes I know, the library is deprecated but steamcommunity uses it aswell so it is used anyway
 
-    var controller      = require("../controller/controller.js");
     var login           = require("../controller/login.js")
 
     var enabledebugmode = false //if enabled debug and debug-verbose events from the steam-user library will be logged (will absolutely spam your output.txt file!)
     var maxLogOnRetries = 1     //How often a failed logOn will be retried
-
-    var proxies         = require("../controller/helpers/dataimport.js").proxies()
-
-    module.exports.lastcomment          = require("../controller/helpers/dataimport.js").lastcomment()
-    module.exports.quotes               = require("../controller/helpers/dataimport.js").quotes()
-    module.exports.lang                 = require("../controller/helpers/dataimport.js").lang()
 
     module.exports.failedcomments       = [] //array saving failedcomments so the user can access them via the !failecomments command
     module.exports.activecommentprocess = [] //array storing active comment processes so that a user can only request one process at a time and the updater is blocked while a comment process is executed
@@ -47,8 +40,8 @@ module.exports.run = (logOnOptions, loginindex) => {
 
 
     //Get proxy of this bot account
-    if (login.proxyShift >= proxies.length) controller.proxyShift = 0; //reset proxy counter if we used all proxies to start over again
-    var thisproxy = proxies[controller.proxyShift] //define the proxy that will be used for this account
+    if (login.proxyShift >= login.proxies.length) login.proxyShift = 0; //reset proxy counter if we used all proxies to start over again
+    var thisproxy = login.proxies[login.proxyShift] //define the proxy that will be used for this account
     login.proxyShift++ //switch to next proxy
 
 

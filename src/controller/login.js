@@ -21,6 +21,10 @@ module.exports.startlogin = () => {
 
     var logindelay = 2500 //time to wait between logins
 
+    module.exports.proxies             = require("./helpers/dataimport.js").proxies() //import them here so that they only get loaded once and not for every account
+    module.exports.quotes              = require("./helpers/dataimport.js").quotes()
+    module.exports.lang                = require("./helpers/dataimport.js").lang()
+
     module.exports.steamGuardInputTime = 0
     module.exports.accisloggedin       = true //var to check if previous acc is logged on (in case steamGuard event gets fired) -> set to true for first account
     module.exports.skippednow          = []   //array to track which accounts have been skipped

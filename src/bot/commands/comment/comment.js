@@ -8,6 +8,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
 
     var botfile    = require("../../bot.js")
     var updater    = require('../../../updater/updater.js'); //paths get a 10/10 from me
+    var login      = require("../../../controller/login.js")
     var controller = require("../../../controller/controller.js");
     var round      = require("../../../controller/helpers/round.js")
 
@@ -32,7 +33,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
     }
 
     var ownercheck = config.ownerid.includes(requesterSteamID)
-    var quoteselection = botfile.quotes
+    var quoteselection = login.quotes
 
     /* --------- Check for cmd spamming --------- */
     if (Date.now() - lastcommentrequestmsg[requesterSteamID] < 2500 && !ownercheck) {
@@ -323,7 +324,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
 
                             /* --------- Give user cooldown --------- */ 
                             //add estimated wait time in ms to start the cooldown after the last recieved comment
-                            botfile.lastcomment.update({ id: requesterSteamID }, { $set: { time: Date.now() + ((numberofcomments - 1) * config.commentdelay) } }, {}, (err) => { 
+                            controller.lastcomment.update({ id: requesterSteamID }, { $set: { time: Date.now() + ((numberofcomments - 1) * config.commentdelay) } }, {}, (err) => { 
                                 if (err) logger("error", "Error adding cooldown to user in database! You should probably *not* ignore this error!\nError: " + err) 
                             })
 

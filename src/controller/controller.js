@@ -93,6 +93,8 @@
                     global.config  = config
                     global.extdata = extdata
 
+                    module.exports.lastcomment = dataimportfile.lastcomment()
+
 
                     /* ------------ Change terminal title: ------------ */
                     if (process.platform == "win32") { //set node process name to find it in task manager etc.
