@@ -15,7 +15,7 @@ module.exports.checkforupdate = (releasemode, forceupdate, callback) => {
     var output = ""
 
     try {
-        var httpsrequest = https.get(`https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${releasemode}/src/data.json`, function(res) {
+        var httpsrequest = https.get(`https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${releasemode}/src/data/data.json`, function(res) {
             res.setEncoding('utf8');
 
             res.on('data', (chunk) => {
