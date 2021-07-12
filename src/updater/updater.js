@@ -174,7 +174,7 @@ module.exports.compatibility = (callback) => {
     } else if (!extdata.compatibilityfeaturedone && extdata.version == "2104") {
         runCompFeature("2104")
 
-    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "21100" || extdata.version == "2110b4")) {
+    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "21100" || extdata.version.match(/2110b[0-9]/g))) { //run on every beta build with quick regex
         runCompFeature("21100")
     
     } else {

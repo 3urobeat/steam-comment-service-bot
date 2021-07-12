@@ -11,8 +11,10 @@ module.exports.run = (logOnOptions, loginindex) => {
 
     var login           = require("../controller/login.js")
 
-    var enabledebugmode = false //if enabled debug and debug-verbose events from the steam-user library will be logged (will absolutely spam your output.txt file!)
-    var maxLogOnRetries = 1     //How often a failed logOn will be retried
+    //var botdebugmsgs          = false //not implemented yet
+    var steamuserdebug        = false
+    var steamuserdebugverbose = false
+    var maxLogOnRetries       = 1 //How often a failed logOn will be retried
 
     module.exports.failedcomments       = [] //array saving failedcomments so the user can access them via the !failecomments command
     module.exports.activecommentprocess = [] //array storing active comment processes so that a user can only request one process at a time and the updater is blocked while a comment process is executed
@@ -25,18 +27,6 @@ module.exports.run = (logOnOptions, loginindex) => {
     //Define the log message prefix of this account in order to 
     if (loginindex == 0) var thisbot = "Main"
         else var thisbot = `Bot ${loginindex}`
-    
-    
-    //Attach debug log events if debugmode is true
-    if (enabledebugmode) {
-        bot.on("debug", (msg) => {
-            logger("debug", `[${thisbot}] debug: ${msg}`, false, true)
-        })
-
-        bot.on("debug-verbose", (msg) => {
-            logger("debug", `[${thisbot}] debug-verbose: ${msg}`, false, true)
-        })
-    }
 
 
     //Get proxy of this bot account
@@ -48,6 +38,20 @@ module.exports.run = (logOnOptions, loginindex) => {
     //Create bot & community instance
     const bot       = new SteamUser({ autoRelogin: false, httpProxy: thisproxy });
     const community = new SteamCommunity({ request: request.defaults({ "proxy": thisproxy }) }) //pass proxy to community library aswell 
+
+
+    //Attach debug log events
+    if (steamuserdebug) {
+        bot.on("debug", (msg) => {
+            logger("debug", `[${thisbot}] debug: ${msg}`, false, true)
+        })
+    }
+
+    if (steamuserdebugverbose) {
+        bot.on("debug-verbose", (msg) => {
+            logger("debug", `[${thisbot}] debug-verbose: ${msg}`, false, true)
+        })
+    }
 
 
     /* ------------ Group stuff: ------------ */
