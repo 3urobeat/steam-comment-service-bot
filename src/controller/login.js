@@ -48,6 +48,12 @@ module.exports.startlogin = () => {
     if (extdata.firststart) logger("", "\x1b[0mWhat's new: " + extdata.whatsnew + "\n")
 
 
+    //Define configgroup64id for the accounts to be able to access
+    require("./helpers/steamgroup.js").configgroup64id((configgroup64id) => {
+        module.exports.configgroup64id = configgroup64id //just get it and export it
+    })
+
+
     //Import logininfo data
     var logininfo = require("./helpers/dataimport.js").logininfo()
 

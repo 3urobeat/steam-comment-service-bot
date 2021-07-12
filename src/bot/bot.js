@@ -55,14 +55,7 @@ module.exports.run = (logOnOptions, loginindex) => {
 
 
     /* ------------ Group stuff: ------------ */
-    if (loginindex == 0) { //group64id only needed by main bot -> remove unnecessary load from other bots
-        require("./helpers/steamgroup.js").configgroup64id((configgroup64id) => {
-            module.exports.configgroup64id = configgroup64id //just get it and export it for the events and commands to use
-        })
-    }
-
-    //Check if this account is not in botsgroup yet
-    require("./helpers/steamgroup.js").botsgroupID64((botsgroupid) => {
+    require("../controller/helpers/steamgroup.js").botsgroupID64((botsgroupid) => { //Check if this account is not in botsgroup yet
         if (!Object.keys(bot.myGroups).includes(String(botsgroupid))) {
             community.joinGroup(`${botsgroupid}`)
 

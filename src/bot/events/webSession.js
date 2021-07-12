@@ -12,7 +12,6 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
 
     var controller = require("../../controller/controller.js")
     var login      = require("../../controller/login.js")
-    var botfile    = require("../bot.js")
 
 
     //Set cookies (otherwise the bot is unable to comment)
@@ -59,10 +58,10 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
 
 
             //Invite user to yourgroup (and to my to make some stonks)
-            if (botfile.configgroup64id && botfile.configgroup64id.length > 1 && Object.keys(bot.myGroups).includes(botfile.configgroup64id)) { 
-                bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(botfile.configgroup64id));
+            if (login.configgroup64id && Object.keys(bot.myGroups).includes(login.configgroup64id)) { 
+                bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(login.configgroup64id));
 
-                if (botfile.configgroup64id !== "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
+                if (login.configgroup64id !== "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
                     bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID("103582791464712227"));
                 }
             }
