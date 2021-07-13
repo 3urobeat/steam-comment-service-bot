@@ -9,7 +9,6 @@
  */
 module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy) => {
     var controller = require("../../controller/controller.js")
-    var botfile    = require("../bot.js")
     var login      = require("../../controller/login.js")
 
     var relogdelay = 5000 //time to wait between relog attempts (for example after loosing connection to Steam)
@@ -18,7 +17,7 @@ module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy) => {
     if (!controller.relogQueue.includes(loginindex)) {
         controller.relogQueue.push(loginindex)
 
-        botfile.logOnTries = 0;
+        login.logOnTries[loginindex] = 0; //reset logOnTries
 
         logger("info", `[${thisbot}] Queueing for a relog. ${controller.relogQueue.length - 1} other accounts are waiting...`, false, true)
     }

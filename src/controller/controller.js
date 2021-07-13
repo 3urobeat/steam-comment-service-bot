@@ -10,8 +10,8 @@
         file();
 
 
-        module.exports.communityobject = {}
-        module.exports.botobject       = {}
+        module.exports.botobject            = {}         //tracks the bot instances of all accounts to be able to access them from anywhere
+        module.exports.communityobject      = {}         //tracks the community instances of all accounts to be able to access them from anywhere
 
         module.exports.bootstart            = Date.now()
         module.exports.relogQueue           = []

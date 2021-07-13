@@ -7,7 +7,7 @@ module.exports.configgroup64id = () => {
     var steamidresolver = require("steamid-resolver") //also my own library, cool right?
     var fs              = require("fs")
 
-    var cachefile       = require(srcdir + "/data/cache.json")
+    var cachefile       = require("../../data/cache.json")
 
     
     logger("info", "Getting groupID64 of yourgroup set in the config.json...", false, true)

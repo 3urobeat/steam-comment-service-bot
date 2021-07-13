@@ -11,6 +11,7 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
     var SteamID    = require("steamid")
 
     var controller = require("../../controller/controller.js")
+    var mainfile   = require("../main.js")
     var login      = require("../../controller/login.js")
 
 
@@ -44,7 +45,7 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
 
             //Log message and send welcome message
             logger("info", `[${thisbot}] Added user while I was offline! User: ` + Object.keys(bot.myFriends)[i])
-            controller.botobject[0].chat.sendFriendMessage(String(Object.keys(bot.myFriends)[i]), login.lang.useradded)
+            controller.botobject[0].chat.sendFriendMessage(String(Object.keys(bot.myFriends)[i]), mainfile.lang.useradded)
 
 
             //Add user to lastcomment database
@@ -58,10 +59,10 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
 
 
             //Invite user to yourgroup (and to my to make some stonks)
-            if (login.configgroup64id && Object.keys(bot.myGroups).includes(login.configgroup64id)) { 
-                bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(login.configgroup64id));
+            if (mainfile.configgroup64id && Object.keys(bot.myGroups).includes(mainfile.configgroup64id)) { 
+                bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(mainfile.configgroup64id));
 
-                if (login.configgroup64id !== "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
+                if (mainfile.configgroup64id !== "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
                     bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID("103582791464712227"));
                 }
             }

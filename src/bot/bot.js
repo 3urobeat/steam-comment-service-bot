@@ -10,19 +10,15 @@ module.exports.run = (logOnOptions, loginindex) => {
     var request         = require("request"); //yes I know, the library is deprecated but steamcommunity uses it aswell so it is used anyway
 
     var login           = require("../controller/login.js")
+    var mainfile        = require("./main.js")
 
-    //var botdebugmsgs          = false //not implemented yet
-    var steamuserdebug        = false
-    var steamuserdebugverbose = false
-    var maxLogOnRetries       = 1 //How often a failed logOn will be retried
+    //var botdebugmsgs               = false //not implemented yet (maybe put these 3 into advancedconfig.json)
+    var steamuserdebug             = false
+    var steamuserdebugverbose      = false
+    var maxLogOnRetries            = 1 //How often a failed logOn will be retried
 
-    module.exports.failedcomments       = [] //array saving failedcomments so the user can access them via the !failecomments command
-    module.exports.activecommentprocess = [] //array storing active comment processes so that a user can only request one process at a time and the updater is blocked while a comment process is executed
-    module.exports.commentcounter       = 0  //this will count the total of comments requested since the last reboot
-    module.exports.commentedrecently    = 0  //global cooldown for the comment command
-    module.exports.maxLogOnRetries      = maxLogOnRetries
+    module.exports.maxLogOnRetries = maxLogOnRetries
     
-
 
     //Define the log message prefix of this account in order to 
     if (loginindex == 0) var thisbot = "Main"
@@ -54,8 +50,12 @@ module.exports.run = (logOnOptions, loginindex) => {
     }
 
 
+    //Run main.js if this is bot0
+    if (loginindex == 0) mainfile.run()
+
+
     /* ------------ Group stuff: ------------ */
-    require("../controller/helpers/steamgroup.js").botsgroupID64((botsgroupid) => { //Check if this account is not in botsgroup yet
+    require("./helpers/steamgroup.js").botsgroupID64((botsgroupid) => { //Check if this account is not in botsgroup yet
         if (!Object.keys(bot.myGroups).includes(String(botsgroupid))) {
             community.joinGroup(`${botsgroupid}`)
 
@@ -65,8 +65,7 @@ module.exports.run = (logOnOptions, loginindex) => {
 
 
     /* ------------ Login: ------------ */
-    var logOnTries = 0;
-    module.exports.logOnTries = logOnTries
+    login.logOnTries[loginindex] = 0;
 
     /**
      * Logs in all accounts
@@ -75,14 +74,15 @@ module.exports.run = (logOnOptions, loginindex) => {
 
         var loggedininterval = setInterval(() => { //set an interval to check if previous acc is logged on
 
-            if (login.accisloggedin || logOnTries > 0) { //start attempt if previous account is logged on or if this call is a retry
+            if (login.accisloggedin || login.logOnTries[loginindex] > 0) { //start attempt if previous account is logged on or if this call is a retry
                 clearInterval(loggedininterval) //stop interval
-                logOnTries++
-                
+
                 login.accisloggedin = false; //set to false again
 
-                if (thisproxy == null) logger("info", `[${thisbot}] Trying to log in without proxy... (Attempt ${logOnTries}/${maxLogOnRetries + 1})`, false, true)
-                    else logger("info", `[${thisbot}] Trying to log in with proxy ${login.proxyShift - 1}... (Attempt ${logOnTries}/${maxLogOnRetries + 1})`, false, true)
+                login.logOnTries[loginindex]++
+
+                if (thisproxy == null) logger("info", `[${thisbot}] Trying to log in without proxy... (Attempt ${login.logOnTries[loginindex]}/${maxLogOnRetries + 1})`, false, true)
+                    else logger("info", `[${thisbot}] Trying to log in with proxy ${login.proxyShift - 1}... (Attempt ${login.logOnTries[loginindex]}/${maxLogOnRetries + 1})`, false, true)
                 
                 bot.logOn(logOnOptions)
             }
@@ -95,7 +95,7 @@ module.exports.run = (logOnOptions, loginindex) => {
 
     /* ------------ Events: ------------ */ 
     bot.on('error', (err) => { //Handle errors that were caused during logOn
-        require("./events/error.js").run(err, loginindex, thisbot, thisproxy)
+        require("./events/error.js").run(err, loginindex, thisbot, thisproxy, logOnOptions, bot)
     })
 
     bot.on('steamGuard', function(domain, callback, lastCodeWrong) { //fired when steamGuard code is requested when trying to log in

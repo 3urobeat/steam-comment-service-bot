@@ -5,11 +5,13 @@
  * @param {Number} loginindex The loginindex of the calling account
  * @param {String} thisbot The thisbot string of the calling account
  * @param {String} thisproxy The proxy of the calling account
+ * @param {Object} logOnOptions The steam-user logOnOptions object
+ * @param {SteamUser} bot The bot instance of the calling account
  */
-module.exports.run = (err, loginindex, thisbot, thisproxy) => {    
+module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) => {    
     var controller = require("../../controller/controller.js")
     var login      = require("../../controller/login.js")
-    var bot        = require("../bot.js")
+    var botfile    = require("../bot.js")
 
     
     //Custom behaviour for LogonSessionReplaced error:
@@ -30,7 +32,7 @@ module.exports.run = (err, loginindex, thisbot, thisproxy) => {
 
             //Relog after waiting 30 sec
             setTimeout(() => {
-                require("../helpers/relogAccount.js").relog()
+                require("../helpers/relogAccount.js").run(loginindex, thisbot, logOnOptions, bot, thisproxy);
             }, 30000);
 
         } else {
@@ -39,14 +41,14 @@ module.exports.run = (err, loginindex, thisbot, thisproxy) => {
         }
 
     } else {
-
+        
         //Actual error durin login or relog:
         let blockedEnumsForRetries = [5, 12, 13, 17, 18] //Enums: https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EResult.js
 
         //check if this is an initial login error and it is either a fatal error or all retries are used
-        if ((bot.logOnTries > bot.maxLogOnRetries && !controller.relogQueue.includes(loginindex)) || blockedEnumsForRetries.includes(err.eresult)) { 
+        if ((login.logOnTries[loginindex] > botfile.maxLogOnRetries && !controller.relogQueue.includes(loginindex)) || blockedEnumsForRetries.includes(err.eresult)) { 
             logger("", "", true)
-            logger("error", `Couldn't log in bot${loginindex} after ${bot.logOnTries} attempt(s). ${err} (${err.eresult})`, true)
+            logger("error", `Couldn't log in bot${loginindex} after ${login.logOnTries[loginindex]} attempt(s). ${err} (${err.eresult})`, true)
 
 
             //Add additional messages for specific errors to hopefully help the user diagnose the cause
@@ -75,8 +77,8 @@ module.exports.run = (err, loginindex, thisbot, thisproxy) => {
 
             //Call either relogAccount or logOnAccount function to continue where we started at after 5 sec
             setTimeout(() => {
-                if (controller.relogQueue.includes(loginindex)) require("../helpers/relogAccount.js").relog();
-                    else bot.logOnAccount();
+                if (controller.relogQueue.includes(loginindex)) require("../helpers/relogAccount.js").run(loginindex, thisbot, logOnOptions, bot, thisproxy);
+                    else botfile.logOnAccount();
             }, 5000)
         }
     }

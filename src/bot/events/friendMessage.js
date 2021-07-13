@@ -12,11 +12,11 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
     var controller = require("../../controller/controller.js")
     var botfile    = require("../bot.js")
     var ready      = require("../../controller/ready.js")
-    var login      = require("../../controller/login.js")
+    var mainfile   = require("../main.js")
 
     var SteamID    = require('steamid');
 
-    var lang       = login.lang
+    var lang       = mainfile.lang
 
     var disablecommentcmd     = false //disables the comment and resetcooldown command and responds with maintenance message
     var commandcooldown       = 12000 //The bot won't respond if a user sends more than 5 messages in this time frame
@@ -100,6 +100,9 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 }
             })
         }
+
+        module.exports.commentcmd = commentcmd
+        module.exports.groupcommentcmd = groupcommentcmd
     }
 
 

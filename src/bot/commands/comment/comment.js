@@ -6,17 +6,16 @@
 module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, res, lastcommentdoc, lastcommentrequestmsg, lastsuccessfulcomment) => {
     const SteamID  = require('steamid');
 
-    var botfile    = require("../../bot.js")
     var updater    = require('../../../updater/updater.js'); //paths get a 10/10 from me
-    var login      = require("../../../controller/login.js")
+    var mainfile   = require("../../main.js")
     var controller = require("../../../controller/controller.js");
     var round      = require("../../../controller/helpers/round.js")
 
     var accstoadd  = []
     var lastquotes = [] //array to track last comments
 
-    var failedcomments       = botfile.failedcomments
-    var activecommentprocess = botfile.activecommentprocess
+    var failedcomments       = mainfile.failedcomments
+    var activecommentprocess = mainfile.activecommentprocess
     
     var requesterSteamID = new SteamID(String(steamID)).getSteamID64() //save steamID of comment requesting user so that messages are being send to the requesting user and not to the reciever if a profileid has been provided
 
@@ -33,7 +32,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
     }
 
     var ownercheck = config.ownerid.includes(requesterSteamID)
-    var quoteselection = login.quotes
+    var quoteselection = mainfile.quotes
 
     /* --------- Check for cmd spamming --------- */
     if (Date.now() - lastcommentrequestmsg[requesterSteamID] < 2500 && !ownercheck) {
@@ -78,8 +77,8 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
     }
 
     if (config.globalcommentcooldown != 0) { //check for global cooldown
-        if ((Date.now() - botfile.commentedrecently) < (config.globalcommentcooldown * 60000)) {
-            var remainingglobalcooldown = Math.abs(((Date.now() - botfile.commentedrecently) - (config.globalcommentcooldown * 60000)) / 1000)
+        if ((Date.now() - mainfile.commentedrecently) < (config.globalcommentcooldown * 60000)) {
+            var remainingglobalcooldown = Math.abs(((Date.now() - mainfile.commentedrecently) - (config.globalcommentcooldown * 60000)) / 1000)
             var remainingglobalcooldownunit = "seconds"
             if (remainingglobalcooldown > 120) { var remainingglobalcooldown = remainingglobalcooldown / 60; var remainingglobalcooldownunit = "minutes" }
             if (remainingglobalcooldown > 120) { var remainingglobalcooldown = remainingglobalcooldown / 60; var remainingglobalcooldownunit = "hours" }
@@ -180,8 +179,8 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
         activecommentprocess.push(requesterSteamID)
 
         if (config.globalcommentcooldown !== 0) { //activate globalcommentcooldown
-            botfile.commentedrecently = Date.now() + (numberofcomments * config.commentdelay) //globalcommentcooldown should start after the last comment was processed
-            if (numberofcomments == 1) botfile.commentedrecently -= config.commentdelay //subtract commentdelay again if only one comment was requested because there is nothing to wait for
+            mainfile.commentedrecently = Date.now() + (numberofcomments * config.commentdelay) //globalcommentcooldown should start after the last comment was processed
+            if (numberofcomments == 1) mainfile.commentedrecently -= config.commentdelay //subtract commentdelay again if only one comment was requested because there is nothing to wait for
         }
 
 
@@ -213,7 +212,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                         }
 
                         activecommentprocess = activecommentprocess.filter(item => item != requesterSteamID)
-                        botfile.commentcounter += numberofcomments - (numberofcomments - i + 1) //add numberofcomments minus failedamount to commentcounter
+                        mainfile.commentcounter += numberofcomments - (numberofcomments - i + 1) //add numberofcomments minus failedamount to commentcounter
 
                     }
                     return; } //stop further execution
@@ -247,7 +246,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                                 case "Error: HTTP error 429":
                                     errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes.\nPlease wait a moment and then try again."
 
-                                    botfile.commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
+                                    mainfile.commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
                                     break;
                                 case "Error: HTTP Error 502":
                                     errordesc = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us"
@@ -258,7 +257,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                                 case "Error: You've been posting too frequently, and can't make another post right now":
                                     errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes.\nPlease wait a moment and then try again."
 
-                                    botfile.commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
+                                    mainfile.commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
                                     break;
                                 case "Error: There was a problem posting your comment. Please try again":
                                     errordesc = "Unknown reason - please wait a minute and try again."
@@ -285,7 +284,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                                     logger("error", `[${thisbot}] postUserComment error: ${error}\n${errordesc}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`) }) //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
 
                                 if (error == "Error: HTTP error 429" || error == "Error: You've been posting too frequently, and can't make another post right now") {
-                                    botfile.commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
+                                    mainfile.commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
                                 }
 
                                 breakloop = true; //stop whole loop when an error occurred
@@ -311,7 +310,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                                 respondmethod(200, lang.commentsuccess1)
 
                                 activecommentprocess = activecommentprocess.filter(item => item != requesterSteamID)
-                                botfile.commentcounter += 1
+                                mainfile.commentcounter += 1
 
                             } else {
                                 var waittime = ((numberofcomments - 1) * config.commentdelay) / 1000 //calculate estimated wait time (first comment is instant -> remove 1 from numberofcomments)
@@ -344,7 +343,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                             if (!res) respondmethod(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(failedcomments[requesterSteamID]).length).replace("numberofcomments", numberofcomments)}\n${failedcmdreference}`); //only send if not a webrequest
 
                             activecommentprocess = activecommentprocess.filter(item => item != requesterSteamID)
-                            botfile.commentcounter += numberofcomments - Object.keys(failedcomments[requesterSteamID]).length //remove user from activecommentprocess array and add numberofcomments minus failedamount to commentcounter
+                            mainfile.commentcounter += numberofcomments - Object.keys(failedcomments[requesterSteamID]).length //remove user from activecommentprocess array and add numberofcomments minus failedamount to commentcounter
 
                             if (Object.values(failedcomments[requesterSteamID]).includes("Error: The settings on this account do not allow you to add comments.") && !res) {
                                 accstoadd[requesterSteamID] = []

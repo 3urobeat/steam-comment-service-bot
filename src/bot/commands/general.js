@@ -42,7 +42,7 @@ module.exports.help = (ownercheck, chatmsg, steamID, lang) => {
  * @param {Object} steamID The steamID object from steam-user
  */
 module.exports.info = (steam64id, lastsuccessfulcomment, chatmsg, steamID) => {
-    var botfile    = require("../bot.js")
+    var mainfile   = require("../main.js")
     var controller = require("../../controller/controller.js")
 
 
@@ -59,7 +59,7 @@ module.exports.info = (steam64id, lastsuccessfulcomment, chatmsg, steamID) => {
                 >   Your steam64ID: ${steam64id}
                 >   Your last comment request: ${(new Date(doc.time)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)
                 >   Last processed comment request: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)
-                >   I have commented ${botfile.commentcounter} times since my last restart and completed request!
+                >   I have commented ${mainfile.commentcounter} times since my last restart and completed request!
                 -----------------------------------~~~~~------------------------------------
             `) 
             /* eslint-enable no-irregular-whitespace */

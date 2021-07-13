@@ -10,7 +10,7 @@
 module.exports.friendRelationship = (loginindex, thisbot, bot, steamID, relationship) => {
     var SteamID = require("steamid")
 
-    var login      = require("../../controller/login.js")
+    var mainfile   = require("../main.js")
     var controller = require("../../controller/controller.js")
 
 
@@ -24,7 +24,7 @@ module.exports.friendRelationship = (loginindex, thisbot, bot, steamID, relation
         logger("info", `[${thisbot}] Added User: ` + new SteamID(String(steamID)).getSteamID64())
 
         if (loginindex == 0) {
-            controller.botobject[0].chat.sendFriendMessage(steamID, login.lang.useradded) 
+            controller.botobject[0].chat.sendFriendMessage(steamID, mainfile.lang.useradded) 
         }
 
 
@@ -39,10 +39,10 @@ module.exports.friendRelationship = (loginindex, thisbot, bot, steamID, relation
 
 
         //Invite user to yourgroup (and to my to make some stonks)
-        if (loginindex == 0 && login.configgroup64id && Object.keys(bot.myGroups).includes(login.configgroup64id)) { 
-            bot.inviteToGroup(steamID, new SteamID(login.configgroup64id)); //invite the user to your group
+        if (loginindex == 0 && mainfile.configgroup64id && Object.keys(bot.myGroups).includes(mainfile.configgroup64id)) { 
+            bot.inviteToGroup(steamID, new SteamID(mainfile.configgroup64id)); //invite the user to your group
             
-            if (login.configgroup64id != "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
+            if (mainfile.configgroup64id != "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
                 bot.inviteToGroup(steamID, new SteamID("103582791464712227")); 
             } 
         }

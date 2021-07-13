@@ -9,15 +9,15 @@
 module.exports.group = (bot, chatmsg, steamID, lang) => {
     var SteamID         = require("steamid")
 
-    var login           = require("../../controller/login.js")
+    var mainfile        = require("../main.js")
 
 
-    if (config.yourgroup.length < 1 || !login.configgroup64id) return chatmsg(steamID, lang.groupcmdnolink) //no group info at all? stop.
+    if (config.yourgroup.length < 1 || !mainfile.configgroup64id) return chatmsg(steamID, lang.groupcmdnolink) //no group info at all? stop.
 
-    if (login.configgroup64id && Object.keys(bot.myGroups).includes(login.configgroup64id)) { 
-        bot.inviteToGroup(steamID, login.configgroup64id); chatmsg(steamID, lang.groupcmdinvitesent); 
+    if (mainfile.configgroup64id && Object.keys(bot.myGroups).includes(mainfile.configgroup64id)) { 
+        bot.inviteToGroup(steamID, mainfile.configgroup64id); chatmsg(steamID, lang.groupcmdinvitesent); 
         
-        if (login.configgroup64id != "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
+        if (mainfile.configgroup64id != "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
         bot.inviteToGroup(steamID, new SteamID("103582791464712227")); } 
         return; } //id? send invite and stop
 
@@ -85,7 +85,7 @@ module.exports.leaveGroup = (chatmsg, steamID, lang, args) => {
 module.exports.leaveAllGroups = (chatmsg, steamID, lang, args) => {
     var controller      = require("../../controller/controller.js")
     var cachefile       = require("../../data/cache.json")
-    var login           = require("../../controller/login.js")
+    var mainfile        = require("../main.js")
 
     var abortleaveallgroups;
 
@@ -108,7 +108,7 @@ module.exports.leaveAllGroups = (chatmsg, steamID, lang, args) => {
                 try {
                     setTimeout(() => {
                         if (controller.botobject[i].myGroups[group] == 3) {
-                            if (group != cachefile.botsgroupid && group != login.configgroup64id) controller.communityobject[i].leaveGroup(String(group)) 
+                            if (group != cachefile.botsgroupid && group != mainfile.configgroup64id) controller.communityobject[i].leaveGroup(String(group)) 
                         }
                     }, 1000 * i); //delay every iteration so that we don't make a ton of requests at once
                 } catch (err) {

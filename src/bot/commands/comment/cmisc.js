@@ -30,14 +30,14 @@ module.exports.abort = (chatmsg, steamID, lang, steam64id) => {
 module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
     var SteamID    = require("steamid")
 
-    var botfile    = require("../../bot.js")
+    var mainfile   = require("../../main.js")
     var controller = require("../../../controller/controller.js")
 
     if (config.commentcooldown == 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the cooldown enabled?
 
     if (args[0]) {
         if (args[0] == "global") { //Check if user wants to reset the global cooldown
-            botfile.commentedrecently = 0
+            mainfile.commentedrecently = 0
             return chatmsg(steamID, lang.resetcooldowncmdglobalreset) 
         }
 
@@ -62,12 +62,12 @@ module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
  * @param {Number} steam64id The steam64id of the requesting user
  */
 module.exports.failed = (chatmsg, steamID, lang, steam64id) => {
-    var botfile    = require("../../bot.js")
+    var mainfile   = require("../../main.js")
     var controller = require("../../../controller/controller.js")
     
     controller.lastcomment.findOne({ id: steam64id }, (err, doc) => {
-        if (!botfile.failedcomments[steam64id] || Object.keys(botfile.failedcomments[steam64id]).length < 1) return chatmsg(steamID, lang.failedcmdnothingfound);
+        if (!mainfile.failedcomments[steam64id] || Object.keys(mainfile.failedcomments[steam64id]).length < 1) return chatmsg(steamID, lang.failedcmdnothingfound);
 
-        chatmsg(steamID, lang.failedcmdmsg.replace("steam64id", steam64id).replace("requesttime", new Date(doc.time).toISOString().replace(/T/, ' ').replace(/\..+/, '')) + "\n\n" + JSON.stringify(botfile.failedcomments[steam64id], null, 4))
+        chatmsg(steamID, lang.failedcmdmsg.replace("steam64id", steam64id).replace("requesttime", new Date(doc.time).toISOString().replace(/T/, ' ').replace(/\..+/, '')) + "\n\n" + JSON.stringify(mainfile.failedcomments[steam64id], null, 4))
     })
 }
