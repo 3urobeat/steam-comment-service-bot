@@ -36,7 +36,11 @@ module.exports.addFriend = (chatmsg, steamID, lang, args) => {
                         else logger("info", `Added ${args[0]} with bot${i} as friend.`)
                 })
 
-                controller.friendlistcapacitycheck(i); //check remaining friendlist space
+                require("../../controller/helpers/friendlist.js").friendlistcapacitycheck(i, (remaining) => { //check remaining friendlist space
+                    if (remaining < 25) {
+                        logger("warn", `The friendlist space of bot${i} is running low! (${remaining} remaining)`)
+                    }
+                });
             }, 5000 * i);
         } else {
             logger("warn", `bot${i} is already friend with ${args[0]} or the account was blocked/blocked you.`) //somehow logs steamIDs in seperate row?!

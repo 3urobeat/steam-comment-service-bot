@@ -66,7 +66,7 @@ module.exports.run = (loginindex, thisbot, bot, logOnOptions, lastCodeWrong, cal
                 callback(code) //give code back to node-steam-user
             }
     
-            controller.steamGuardInputTimeFunc(Date.now() - steamGuardInputStart) //measure time and subtract it from readyafter time
+            login.steamGuardInputTimeFunc(Date.now() - steamGuardInputStart) //measure time and subtract it from readyafter time
         })
     }
     
