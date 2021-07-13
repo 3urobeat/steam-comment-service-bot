@@ -93,9 +93,10 @@ module.exports.eval = (chatmsg, steamID, lang, args, bot, community) => { //esli
         if (code.includes('logininfo')) return chatmsg(steamID, lang.evalcmdlogininfoblock) //not 100% save but should be at least some protection (only owners can use this cmd)
 
         //make using the command a little bit easier
-        var starter = require("../../starter.js") //eslint-disable-line no-unused-vars
+        var starter    = require("../../starter.js") //eslint-disable-line no-unused-vars
         var controller = require("../../controller/controller.js") //eslint-disable-line no-unused-vars
-        var botfile = require("../../bot/bot.js") //eslint-disable-line no-unused-vars
+        var botfile    = require("../../bot/bot.js") //eslint-disable-line no-unused-vars
+        var mainfile   = require("../../bot/main.js") //eslint-disable-line no-unused-vars
         
         let evaled = eval(code);
         if (typeof evaled !== "string")

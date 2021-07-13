@@ -10,7 +10,6 @@
  */
 module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => {
     var controller = require("../../controller/controller.js")
-    var botfile    = require("../bot.js")
     var ready      = require("../../controller/ready.js")
     var mainfile   = require("../main.js")
 
@@ -20,7 +19,6 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
 
     var disablecommentcmd     = false //disables the comment and resetcooldown command and responds with maintenance message
     var commandcooldown       = 12000 //The bot won't respond if a user sends more than 5 messages in this time frame
-    var lastcommentrequestmsg = []    //array saving the last comment cmd request to apply higher cooldown to the comment cmd usage compared to normal cmd usage cooldown
     var lastmessage           = {}    //tracks the last cmd usage of a normal command to apply cooldown if the user spams
 
 
@@ -49,60 +47,6 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                     return callback(greatesttimevalue) }
             })
         }) 
-    }
-
-
-    //TODO: COMMENT FUNCTIONS SHOULD BE REMOVED (used by webserver)
-
-    //Comment command (outside of friendMessage Event to be able to call it from controller.js)
-    var commentcmd = undefined //this is just here to make eslint happy so that the export in loggedOn is not undefined
-    var groupcommentcmd = undefined
-
-    if (loginindex == 0) {
-        /**
-         * The comment command
-         * @param {Object} steamID steamID of message author
-         * @param {Array<String>} args An array containing all arguments provided in the message by the user
-         * @param {Object} res An express response object that will be available if the function is called from the express webserver
-         */
-        commentcmd = (steamID, args, res) => {
-            var steam64id = new SteamID(String(steamID)).getSteamID64()
-
-            controller.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {
-                if (!lastcommentdoc) logger("error", "User is missing from database?? How is this possible?! Error maybe: " + err)
-
-                try { //catch any unhandled error to be able to remove user from activecommentprocess array
-                    require("../commands/comment/comment.js").run(logger, chatmsg, lang, community, thisbot, steamID, args, res, lastcommentdoc, lastcommentrequestmsg, lastsuccessfulcomment)
-                } catch (err) {
-                    botfile.activecommentprocess = botfile.activecommentprocess.filter(item => item != steam64id) //Remove user from array to make sure you can't get stuck in there (not perfect as this won't trigger when the error occurrs in a nested function)
-                    logger("error", "Error while processing comment request: " + err.stack)
-                }
-            })
-        }
-
-        /**
-         * The group comment command
-         * @param {Object} steamID steamID of message author
-         * @param {Array<String>} args An array containing all arguments provided in the message by the user
-         * @param {Object} res An express response object that will be available if the function is called from the express webserver
-         */
-        groupcommentcmd = (steamID, args, res) => {
-            var steam64id = new SteamID(String(steamID)).getSteamID64()
-
-            controller.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {
-                if (!lastcommentdoc) logger("error", "User is missing from database?? How is this possible?! Error maybe: " + err)
-
-                try { //catch any unhandled error to be able to remove user from activecommentprocess array
-                    require("../commands/comment/groupcomment.js").run(logger, chatmsg, lang, community, thisbot, steamID, args, res, lastcommentdoc, lastcommentrequestmsg, lastsuccessfulcomment)
-                } catch (err) {
-                    botfile.activecommentprocess = botfile.activecommentprocess.filter(item => item != steam64id) //Remove user from array to make sure you can't get stuck in there (not perfect as this won't trigger when the error occurrs in a nested function)
-                    logger("error", "Error while processing group comment request: " + err)
-                }
-            })
-        }
-
-        module.exports.commentcmd = commentcmd
-        module.exports.groupcommentcmd = groupcommentcmd
     }
 
 
@@ -169,7 +113,16 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
                 if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
-                commentcmd(steamID, args) //Just call the function like normal when the command was used
+                controller.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {
+                    if (!lastcommentdoc) logger("error", "User is missing from database?? How is this possible?! Error maybe: " + err)
+    
+                    try { //catch any unhandled error to be able to remove user from activecommentprocess array
+                        require("../commands/comment/comment.js").run(chatmsg, community, thisbot, steamID, args, null, lastcommentdoc, lastsuccessfulcomment)
+                    } catch (err) {
+                        mainfile.activecommentprocess = mainfile.activecommentprocess.filter(item => item != steam64id) //Remove user from array to make sure you can't get stuck in there (not perfect as this won't trigger when the error occurrs in a nested function)
+                        logger("error", "Error while processing comment request: " + err.stack)
+                    }
+                })
                 break;
 
             
@@ -178,7 +131,16 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
                 if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
-                groupcommentcmd(steamID, args)
+                controller.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {
+                    if (!lastcommentdoc) logger("error", "User is missing from database?? How is this possible?! Error maybe: " + err)
+    
+                    try { //catch any unhandled error to be able to remove user from activecommentprocess array
+                        require("../commands/comment/groupcomment.js").run(chatmsg, community, thisbot, steamID, args, null, lastcommentdoc, lastsuccessfulcomment)
+                    } catch (err) {
+                        mainfile.activecommentprocess = mainfile.activecommentprocess.filter(item => item != steam64id) //Remove user from array to make sure you can't get stuck in there (not perfect as this won't trigger when the error occurrs in a nested function)
+                        logger("error", "Error while processing group comment request: " + err)
+                    }
+                })
                 break;
             
             case '!ping':

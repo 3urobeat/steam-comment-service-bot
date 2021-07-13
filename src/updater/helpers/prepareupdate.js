@@ -15,7 +15,7 @@ module.exports.run = (responseSteamID, callback) => {
 
         
         var controller = require("../../controller/controller.js")
-        var bot        = require('../../bot/bot.js')
+        var mainfile   = require('../../bot/main.js')
         
         /* eslint-disable no-inner-declarations */
         function initiateUpdate() { //make initating the update a function to simplify the activecomment check below
@@ -34,13 +34,13 @@ module.exports.run = (responseSteamID, callback) => {
         }
 
 
-        if (bot.activecommentprocess.length != 0) {
+        if (mainfile.activecommentprocess.length != 0) {
             logger("info", "Waiting for an active comment process to finish...", false, true)
             if (responseSteamID) controller.botobject[0].chat.sendFriendMessage(responseSteamID, `/me Waiting for an active comment process to finish...`)
 
             //check if a comment request is being processed every 2.5 secs
             var activecommentinterval = setInterval(() => { 
-                if (bot.activecommentprocess.length == 0) { //start logging off accounts when no comment request is being processed anymore
+                if (mainfile.activecommentprocess.length == 0) { //start logging off accounts when no comment request is being processed anymore
                     clearInterval(activecommentinterval);
 
                     logger("info", "Active comment process finished. Starting to log off all accounts...", false, true)

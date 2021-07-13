@@ -3,7 +3,7 @@
 /**
  * Runs the comment command
  */
-module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, res, lastcommentdoc, lastcommentrequestmsg, lastsuccessfulcomment) => {
+module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcommentdoc, lastsuccessfulcomment) => {
     const SteamID  = require('steamid');
 
     var updater    = require('../../../updater/updater.js'); //paths get a 10/10 from me
@@ -14,8 +14,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
     var accstoadd  = []
     var lastquotes = [] //array to track last comments
 
-    var failedcomments       = mainfile.failedcomments
-    var activecommentprocess = mainfile.activecommentprocess
+    var lang                 = mainfile.lang
     
     var requesterSteamID = new SteamID(String(steamID)).getSteamID64() //save steamID of comment requesting user so that messages are being send to the requesting user and not to the reciever if a profileid has been provided
 
@@ -35,10 +34,10 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
     var quoteselection = mainfile.quotes
 
     /* --------- Check for cmd spamming --------- */
-    if (Date.now() - lastcommentrequestmsg[requesterSteamID] < 2500 && !ownercheck) {
+    if (Date.now() - mainfile.lastcommentrequestmsg[requesterSteamID] < 2500 && !ownercheck) {
         return respondmethod(403, lang.pleasedontspam) }
 
-    lastcommentrequestmsg[requesterSteamID] = Date.now()
+    mainfile.lastcommentrequestmsg[requesterSteamID] = Date.now()
 
     /* --------- Check for disabled comment cmd or if update is queued --------- */
     if (updater.activeupdate) return respondmethod(403, lang.commentactiveupdate);
@@ -70,7 +69,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
             respondmethod(403, lang.commentuseroncooldown.replace("commentcooldown", config.commentcooldown).replace("remainingcooldown", round(remainingcooldown, 2)).replace("timeunit", remainingcooldownunit)) //send error message
             return;
         } else {
-            if (activecommentprocess.indexOf(String(requesterSteamID)) !== -1) { //is the user already getting comments? (-1 means not included)
+            if (mainfile.activecommentprocess.indexOf(String(requesterSteamID)) !== -1) { //is the user already getting comments? (-1 means not included)
                 return respondmethod(403, lang.commentuseralreadyrecieving)
             }
         }
@@ -175,8 +174,8 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
 
         /* --------- Actually start the commenting process --------- */
         var breakloop = false
-        failedcomments[requesterSteamID] = {}
-        activecommentprocess.push(requesterSteamID)
+        mainfile.failedcomments[requesterSteamID] = {}
+        mainfile.activecommentprocess.push(requesterSteamID)
 
         if (config.globalcommentcooldown !== 0) { //activate globalcommentcooldown
             mainfile.commentedrecently = Date.now() + (numberofcomments * config.commentdelay) //globalcommentcooldown should start after the last comment was processed
@@ -188,8 +187,8 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
             setTimeout(() => {
                 /* --------- Check if this iteration should still run --------- */
                 //(both checks are designed to run through every failed iteration)
-                if (!activecommentprocess.includes(requesterSteamID)) { //Check if user is not anymore in activecommentprocess array (for example by using !abort)
-                    failedcomments[requesterSteamID][`Comment ${i} (bot${k})`] = "Skipped because user aborted comment process." //push reason to failedcomments obj
+                if (!mainfile.activecommentprocess.includes(requesterSteamID)) { //Check if user is not anymore in mainfile.activecommentprocess array (for example by using !abort)
+                    mainfile.failedcomments[requesterSteamID][`Comment ${i} (bot${k})`] = "Skipped because user aborted comment process." //push reason to mainfile.failedcomments obj
                     return; } //Stop further execution and skip to next iteration
 
                 //regex is confusing so I hope this pattern isn't too terrible
@@ -197,21 +196,21 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                 let regexPattern2 = /postUserComment error: Skipped because of previous HTTP 429 error.*/gm
 
                 //Array.includes() needs an exact match and since we already want to match with only a part of the string we can do it using Array.some() and regex
-                if (Object.values(failedcomments[requesterSteamID]).some(e => regexPattern1.test(e))) { //Check if we got IP blocked (cooldown) by checking for a HTTP 429 error pushed into the failedcomments array by a previous iteration and send message
-                    if (!Object.values(failedcomments[requesterSteamID]).some(e => regexPattern2.test(e))) { //send chat.sendFriendMessage only the first time
+                if (Object.values(mainfile.failedcomments[requesterSteamID]).some(e => regexPattern1.test(e))) { //Check if we got IP blocked (cooldown) by checking for a HTTP 429 error pushed into the mainfile.failedcomments array by a previous iteration and send message
+                    if (!Object.values(mainfile.failedcomments[requesterSteamID]).some(e => regexPattern2.test(e))) { //send chat.sendFriendMessage only the first time
                         respondmethod(500, `${lang.comment429stop.replace("failedamount", numberofcomments - i + 1).replace("numberofcomments", numberofcomments)}\n\n${lang.commentfailedcmdreference}`) //add !failed cmd reference to message
 
-                        //push all other comments to instanly complete the failedcomments obj
+                        //push all other comments to instanly complete the mainfile.failedcomments obj
                         var m = 0;
                         for (var l = i + 1; l <= numberofcomments; l++) { //start with next comment process iteration by setting the starting variable l to i + 1
                             if (m + 1 > Object.keys(controller.communityobject).length) { //reset variable tracking communityobject index if it is greater than the amount of accounts
                                 m = 0; }
     
-                            failedcomments[requesterSteamID][`Comment ${l} (bot${m})`] = `postUserComment error: Skipped because of previous HTTP 429 error.` //push reason to failedcomments obj
+                            mainfile.failedcomments[requesterSteamID][`Comment ${l} (bot${m})`] = `postUserComment error: Skipped because of previous HTTP 429 error.` //push reason to mainfile.failedcomments obj
                             m++
                         }
 
-                        activecommentprocess = activecommentprocess.filter(item => item != requesterSteamID)
+                        mainfile.activecommentprocess = mainfile.activecommentprocess.filter(item => item != requesterSteamID)
                         mainfile.commentcounter += numberofcomments - (numberofcomments - i + 1) //add numberofcomments minus failedamount to commentcounter
 
                     }
@@ -235,8 +234,10 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                 }
                 
                 getQuote(comment => { //get a random quote to comment with and wait for callback to ensure a quote has been found before trying to comment
-                    controller.communityobject[k].postUserComment(steamID, comment, (error) => { //post comment
+                    //controller.communityobject[k].postUserComment(steamID, comment, (error) => { //post comment
                         if (k == 0) var thisbot = `Main`; else var thisbot = `Bot ${k}`; //call bot 0 the main bot in logging messages
+
+                        var error = ""
 
                         /* --------- Handle errors thrown by this comment attempt --------- */
                         if (error) {
@@ -289,14 +290,14 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
 
                                 breakloop = true; //stop whole loop when an error occurred
 
-                                activecommentprocess = activecommentprocess.filter(item => item != requesterSteamID)
+                                mainfile.activecommentprocess = mainfile.activecommentprocess.filter(item => item != requesterSteamID)
                                 
                                 return; //stop further execution in this iteration
 
-                            } else { //if the error occurred on another account then log the error and push the error to failedcomments
+                            } else { //if the error occurred on another account then log the error and push the error to mainfile.failedcomments
 
                                 logger("error", `[${thisbot}] postUserComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - reciever: ${new SteamID(String(steamID)).getSteamID64()}`); 
-                                failedcomments[requesterSteamID][`Comment ${i + 1} (bot${k})`] = `postUserComment error: ${error} [${errordesc}]`
+                                mainfile.failedcomments[requesterSteamID][`Comment ${i + 1} (bot${k})`] = `postUserComment error: ${error} [${errordesc}]`
                             }
                         }
 
@@ -309,7 +310,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                             if (numberofcomments == 1) {
                                 respondmethod(200, lang.commentsuccess1)
 
-                                activecommentprocess = activecommentprocess.filter(item => item != requesterSteamID)
+                                mainfile.activecommentprocess = mainfile.activecommentprocess.filter(item => item != requesterSteamID)
                                 mainfile.commentcounter += 1
 
                             } else {
@@ -336,16 +337,16 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                         if (i == numberofcomments - 1 && numberofcomments > 1) { //last iteration (run only when more than one comment is requested)
                             var failedcmdreference = ""
 
-                            if (Object.keys(failedcomments[requesterSteamID]).length > 0) {
+                            if (Object.keys(mainfile.failedcomments[requesterSteamID]).length > 0) {
                                 failedcmdreference = "\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
                             }
 
-                            if (!res) respondmethod(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(failedcomments[requesterSteamID]).length).replace("numberofcomments", numberofcomments)}\n${failedcmdreference}`); //only send if not a webrequest
+                            if (!res) respondmethod(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(mainfile.failedcomments[requesterSteamID]).length).replace("numberofcomments", numberofcomments)}\n${failedcmdreference}`); //only send if not a webrequest
 
-                            activecommentprocess = activecommentprocess.filter(item => item != requesterSteamID)
-                            mainfile.commentcounter += numberofcomments - Object.keys(failedcomments[requesterSteamID]).length //remove user from activecommentprocess array and add numberofcomments minus failedamount to commentcounter
+                            mainfile.activecommentprocess = mainfile.activecommentprocess.filter(item => item != requesterSteamID)
+                            mainfile.commentcounter += numberofcomments - Object.keys(mainfile.failedcomments[requesterSteamID]).length //remove user from mainfile.activecommentprocess array and add numberofcomments minus failedamount to commentcounter
 
-                            if (Object.values(failedcomments[requesterSteamID]).includes("Error: The settings on this account do not allow you to add comments.") && !res) {
+                            if (Object.values(mainfile.failedcomments[requesterSteamID]).includes("Error: The settings on this account do not allow you to add comments.") && !res) {
                                 accstoadd[requesterSteamID] = []
 
                                 for (i in controller.botobject) {
@@ -357,7 +358,7 @@ module.exports.run = (logger, chatmsg, lang, community, thisbot, steamID, args, 
                                 }
                             }
                         }
-                    })
+                    //})
                 })
             }, config.commentdelay * i); //delay every comment
         }

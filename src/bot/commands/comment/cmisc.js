@@ -7,12 +7,12 @@
  * @param {Number} steam64id The steam64id of the requesting user
  */
 module.exports.abort = (chatmsg, steamID, lang, steam64id) => {
-    var botfile = require("../../bot.js")
+    var mainfile = require("../../main.js")
 
-    if (!botfile.activecommentprocess.includes(steam64id)) return chatmsg(steamID, lang.abortcmdnoprocess)
+    if (!mainfile.activecommentprocess.includes(steam64id)) return chatmsg(steamID, lang.abortcmdnoprocess)
 
-    var index = botfile.activecommentprocess.indexOf(steam64id) //get index of this steam64id
-    botfile.activecommentprocess.splice(index, 1)
+    var index = mainfile.activecommentprocess.indexOf(steam64id) //get index of this steam64id
+    mainfile.activecommentprocess.splice(index, 1)
 
     logger("info", `Aborting ${steam64id}'s comment process...`)
     chatmsg(steamID, lang.abortcmdsuccess)
