@@ -129,9 +129,6 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
     if (bot.myFriends[steam64id] != 3) return chatmsg(steamID, lang.usernotfriend)
 
     if (loginindex === 0) { //check if this is the main bot
-        //Check if bot is not fully started yet and block cmd usage if that is the case to prevent errors
-        if (ready.readyafter == 0) return chatmsg(steamID, lang.botnotready)
-        if (controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready)
 
         /**
          * Function to quickly respond with owneronly message and stop command execution
@@ -167,6 +164,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
             
             case '!comment':
                 if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
+                if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
                 commentcmd(steamID, args) //Just call the function like normal when the command was used
                 break;
@@ -175,6 +173,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
             case '!gcomment':
             case '!groupcomment':
                 if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
+                if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
                 groupcommentcmd(steamID, args)
                 break;
@@ -196,6 +195,8 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 break;
             
             case '!abort':
+                if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
+
                 require("../commands/comment/cmisc.js").abort(chatmsg, steamID, lang, steam64id)
                 break;
             
@@ -224,42 +225,49 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
             
             case '!addfriend':
                 if (!ownercheck) return notownerresponse();
+                if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
                 require("../commands/friend.js").addFriend(chatmsg, steamID, lang, args)
                 break;
 
             case '!unfriend':
                 if (!ownercheck) return notownerresponse();
+                if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
                 require("../commands/friend.js").unfriend(chatmsg, steamID, lang, args)
                 break;
             
             case '!unfriendall':
                 if (!ownercheck) return notownerresponse();
+                if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
                 require("../commands/friend.js").unfriendall(chatmsg, steamID, lang, args)
                 break;
             
             case '!leavegroup':
                 if (!ownercheck) return notownerresponse();
+                if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
                 require("../commands/group.js").leaveGroup(chatmsg, steamID, lang, args)
                 break;
             
             case '!leaveallgroups':
                 if (!ownercheck) return notownerresponse();
+                if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
                 require("../commands/group.js").leaveAllGroups(chatmsg, steamID, lang, args)
                 break;
             
             case '!block': //Well it kinda works but unblocking doesn't. The friend relationship enum stays at 6
                 if (!ownercheck) return notownerresponse();
+                if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
                 require("../commands/block.js").block(chatmsg, steamID, lang, args)
                 break;
             
             case '!unblock':
                 if (!ownercheck) return notownerresponse();
+                if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
                 require("../commands/block.js").unblock(chatmsg, steamID, lang, args)
                 break;
@@ -279,6 +287,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
             
             case '!update':
                 if (!ownercheck) return notownerresponse();
+                if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
                 require("../commands/system.js").update(chatmsg, steamID, lang, args)
                 break;

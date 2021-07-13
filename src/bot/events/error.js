@@ -7,8 +7,8 @@
  * @param {String} thisproxy The proxy of the calling account
  */
 module.exports.run = (err, loginindex, thisbot, thisproxy) => {    
-    var controller = require(srcdir + "/controller/controller.js")
-    var login      = require(srcdir + "/controller/login.js")
+    var controller = require("../../controller/controller.js")
+    var login      = require("../../controller/login.js")
     var bot        = require("../bot.js")
 
     
@@ -25,7 +25,7 @@ module.exports.run = (err, loginindex, thisbot, thisproxy) => {
         logger("info", `\x1b[31m[${thisbot}] Lost connection to Steam. Reason: ${err}\x1b[0m`)
 
         //Check if this is an intended logoff
-        if (controller.relogAfterDisconnect && !controller.skippednow.includes(loginindex)) { 
+        if (controller.relogAfterDisconnect && !login.skippednow.includes(loginindex)) { 
             logger("info", `\x1b[32m[${thisbot}] Initiating a relog in 30 seconds.\x1b[0m`) //Announce relog
 
             //Relog after waiting 30 sec
