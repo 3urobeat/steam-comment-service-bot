@@ -40,14 +40,14 @@ module.exports.update = (chatmsg, steamID, lang, args) => {
 
 
     if (args[0] == "true") { 
-        require("../../updater/updater.js").run(true, steamID, false, () => { //we can ignore callback as the updater already responds to the user if a steamID is provided
-            require("../../../start.js").restart({ skippedaccounts: controller.skippedaccounts })
+        require("../../updater/updater.js").run(true, steamID, false, (foundanddone) => { //we can ignore callback as the updater already responds to the user if a steamID is provided
+            if (foundanddone) require("../../../start.js").restart({ skippedaccounts: controller.skippedaccounts })
         })
 
         chatmsg(steamID, lang.updatecmdforce.replace("branchname", extdata.branch)) 
     } else { 
-        require("../../updater/updater.js").run(false, steamID, false, () => { //we can ignore callback as the updater already responds to the user if a steamID is provided
-            require("../../../start.js").restart({ skippedaccounts: controller.skippedaccounts })
+        require("../../updater/updater.js").run(false, steamID, false, (foundanddone) => { //we can ignore callback as the updater already responds to the user if a steamID is provided
+            if (foundanddone) require("../../../start.js").restart({ skippedaccounts: controller.skippedaccounts })
         })
 
         chatmsg(steamID, lang.updatecmdcheck.replace("branchname", extdata.branch))

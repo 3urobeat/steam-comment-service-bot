@@ -102,7 +102,7 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
 
                 //log result and send message back to user if update was requested via chat
                 logger("info", `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`, false, true)
-                if (responseSteamID) require('../controller/controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `No available update in the ${releasemode} branch found.`)
+                if (responseSteamID) require('../controller/controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`)
 
                 foundanddone(false) //make callback to let caller carry on
             }
