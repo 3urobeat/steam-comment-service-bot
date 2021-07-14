@@ -26,7 +26,7 @@ module.exports.startlogin = () => {
     module.exports.steamGuardInputTime = 0
     module.exports.accisloggedin       = true //var to check if previous acc is logged on (in case steamGuard event gets fired) -> set to true for first account
     module.exports.skippednow          = []   //array to track which accounts have been skipped
-    module.exports.logOnTries          = {}   //tracks the logOnTries of all accounts.
+    module.exports.additionalaccinfo   = {}   //tracks additional account information that are bound to their loginindex
     module.exports.proxyShift          = 0
 
 

@@ -65,7 +65,8 @@ module.exports.run = (logOnOptions, loginindex) => {
 
 
     /* ------------ Login: ------------ */
-    login.logOnTries[loginindex] = 0;
+    if (!login.additionalaccinfo[loginindex]) login.additionalaccinfo[loginindex] = {};
+    login.additionalaccinfo[loginindex].logOnTries = 0;
 
     /**
      * Logs in all accounts
@@ -74,15 +75,15 @@ module.exports.run = (logOnOptions, loginindex) => {
 
         var loggedininterval = setInterval(() => { //set an interval to check if previous acc is logged on
 
-            if (login.accisloggedin || login.logOnTries[loginindex] > 0) { //start attempt if previous account is logged on or if this call is a retry
+            if (login.accisloggedin || login.additionalaccinfo[loginindex].logOnTries > 0) { //start attempt if previous account is logged on or if this call is a retry
                 clearInterval(loggedininterval) //stop interval
 
                 login.accisloggedin = false; //set to false again
 
-                login.logOnTries[loginindex]++
+                login.additionalaccinfo[loginindex].logOnTries++
 
-                if (thisproxy == null) logger("info", `[${thisbot}] Trying to log in without proxy... (Attempt ${login.logOnTries[loginindex]}/${maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
-                    else logger("info", `[${thisbot}] Trying to log in with proxy ${login.proxyShift - 1}... (Attempt ${login.logOnTries[loginindex]}/${maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
+                if (thisproxy == null) logger("info", `[${thisbot}] Trying to log in without proxy... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
+                    else logger("info", `[${thisbot}] Trying to log in with proxy ${login.proxyShift - 1}... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
                 
                 bot.logOn(logOnOptions)
             }

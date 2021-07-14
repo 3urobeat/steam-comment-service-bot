@@ -17,7 +17,7 @@ module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy) => {
     if (!controller.relogQueue.includes(loginindex)) {
         controller.relogQueue.push(loginindex)
 
-        login.logOnTries[loginindex] = 0; //reset logOnTries
+        login.additionalaccinfo[loginindex].logOnTries = 0; //reset logOnTries
 
         logger("info", `[${thisbot}] Queueing for a relog. ${controller.relogQueue.length - 1} other accounts are waiting...`, false, true)
     }

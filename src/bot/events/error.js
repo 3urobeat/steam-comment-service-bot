@@ -46,9 +46,9 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
         let blockedEnumsForRetries = [5, 12, 13, 17, 18] //Enums: https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EResult.js
 
         //check if this is an initial login error and it is either a fatal error or all retries are used
-        if ((login.logOnTries[loginindex] > botfile.maxLogOnRetries && !controller.relogQueue.includes(loginindex)) || blockedEnumsForRetries.includes(err.eresult)) { 
+        if ((login.additionalaccinfo[loginindex].logOnTries > botfile.maxLogOnRetries && !controller.relogQueue.includes(loginindex)) || blockedEnumsForRetries.includes(err.eresult)) { 
             logger("", "", true)
-            logger("error", `Couldn't log in bot${loginindex} after ${login.logOnTries[loginindex]} attempt(s). ${err} (${err.eresult})`, true)
+            logger("error", `Couldn't log in bot${loginindex} after ${login.additionalaccinfo[loginindex].logOnTries} attempt(s). ${err} (${err.eresult})`, true)
 
 
             //Add additional messages for specific errors to hopefully help the user diagnose the cause
