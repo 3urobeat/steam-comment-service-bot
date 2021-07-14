@@ -11,17 +11,18 @@ module.exports.run = (callback) => { //eslint-disable-line
         if (fs.existsSync(srcdir + "/data.json")) {
             var oldextdata = require("../../data.json")
 
-            extdata.urlrequestsecretkey = oldextdata.urlrequestsecretkey
-            extdata.timesloggedin = oldextdata.timesloggedin
-            extdata.totallogintime = oldextdata.totallogintime
-    
-            fs.writeFile(srcdir + "/data/data.json", JSON.stringify(extdata, null, 4), err => { //write the changed file
-                if (err) {
-                    logger("error", `error writing to data.json: ${err}`, true)            
-                }
-    
-                fs.unlinkSync(srcdir + "/data.json")
-            })
+            //Check if this file still contains the 3 values to transfer in order to ensure ./src/data/data.json doesn't loose this data
+            if (Object.keys(oldextdata).includes("urlrequestsecretkey") && Object.keys(oldextdata).includes("timesloggedin") && Object.keys(oldextdata).includes("totallogintime")) {
+                extdata.urlrequestsecretkey = oldextdata.urlrequestsecretkey
+                extdata.timesloggedin = oldextdata.timesloggedin
+                extdata.totallogintime = oldextdata.totallogintime
+        
+                fs.writeFile(srcdir + "/data/data.json", JSON.stringify(extdata, null, 4), err => { //write the changed file
+                    if (err) {
+                        logger("error", `error writing to data.json: ${err}`, true)            
+                    }
+                })
+            }
         }
     } catch (err) {
         logger("error", "Failed to transfer urlrequestsecretkey, timesloggedin and totallogintime to new data.json: " + err)
