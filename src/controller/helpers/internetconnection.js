@@ -9,7 +9,7 @@
 module.exports.run = (continuewithlogin, stoponerr, throwtimeout, callback) => {
     var https = require("https")
 
-    logger("info", "Checking if Steam is reachable...", false, true)
+    logger("info", "Checking if Steam is reachable...", false, true, logger.animation("loading"))
     
     //Start a 20 sec timeout to display an error when Steam can't be reached but also doesn't throw an error
     if (throwtimeout) {
@@ -21,7 +21,7 @@ module.exports.run = (continuewithlogin, stoponerr, throwtimeout, callback) => {
     }
 
     https.get('https://steamcommunity.com', function (res) {
-        logger("info", `SteamCommunity is up! Status code: ${res.statusCode}`, false, true)
+        logger("info", `SteamCommunity is up! Status code: ${res.statusCode}`, false, true, logger.animation("loading"))
 
         if (continuewithlogin) {
             if (throwtimeout) clearTimeout(timeoutTimeout)

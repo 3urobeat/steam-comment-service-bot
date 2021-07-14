@@ -88,12 +88,12 @@ module.exports.readyCheck = (logininfo) => {
 
             
             //Log extra messages that were suppressed during login
-            logger("info", `Logging supressed logs...`, false, true)
+            logger("info", `Logging supressed logs...`, false, true, logger.animation("loading"))
             controller.readyafterlogs.forEach(e => { logger("", e, true) }) //log suppressed logs
 
 
             //Add backups to cache.json
-            logger("info", "Writing backups to cache.json...", false, true)
+            logger("info", "Writing backups to cache.json...", false, true, logger.animation("loading"))
             cache["configjson"] = config
             cache["datajson"] = extdata
 
@@ -121,7 +121,7 @@ module.exports.readyCheck = (logininfo) => {
 
             
             //Write logintime stuff to data.json
-            logger("info", `Writing logintime...`, false, true)
+            logger("info", `Writing logintime...`, false, true, logger.animation("loading"))
             extdata.totallogintime = round(extdata.totallogintime, 2)
             extdata.firststart = false
 
@@ -132,7 +132,7 @@ module.exports.readyCheck = (logininfo) => {
 
             //Print startuo complete message and erase it after 5 sec
             setTimeout(() => {
-                logger("info", 'Startup complete!', false, true) 
+                logger("info", 'Startup complete!', false, true, ["✅"]) 
 
                 setTimeout(() => {
                     logger("", "", true, true) //clear out last remove message

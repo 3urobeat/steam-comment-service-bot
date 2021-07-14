@@ -11,7 +11,7 @@ module.exports.run = (loginindex, thisbot, bot, community) => {
     
 
     //Print message and set status to online
-    logger("info", `[${thisbot}] Account logged in! Waiting for websession...`, false, true)
+    logger("info", `[${thisbot}] Account logged in! Waiting for websession...`, false, true, logger.animation("loading"))
     bot.setPersona(1); //set online status
     
     

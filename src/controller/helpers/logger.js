@@ -6,7 +6,7 @@
  * @param {Boolean} nodate Setting to true will hide date and time in the message
  * @param {Boolean} remove Setting to true will remove this message with the next one
  */
-module.exports.logger = (type, str, nodate, remove) => { //Function that passes args to my logger library and just exists to handle readyafterlogs atm
+module.exports.logger = (type, str, nodate, remove, animation) => { //Function that passes args to my logger library and just exists to handle readyafterlogs atm
     var outputlogger = require("output-logger") //look Mom, it's my own library!
 
     var controller   = require("../controller.js")
@@ -14,13 +14,14 @@ module.exports.logger = (type, str, nodate, remove) => { //Function that passes 
 
     //Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)
     outputlogger.options({
-        msgstructure: "[date | type] message",
-        paramstructure: ["type", "str", "nodate", "remove"],
-        outputfile: srcdir + "/../output.txt"
+        msgstructure: "[animation] [date | type] message",
+        paramstructure: ["type", "str", "nodate", "remove", "animation"],
+        outputfile: srcdir + "/../output.txt",
+        animationdelay: 350
     })
     
 
-    var string = outputlogger(type, str, nodate, remove)
+    var string = outputlogger(type, str, nodate, remove, animation)
 
 
     //Push string to readyafterlogs if desired
@@ -36,4 +37,26 @@ module.exports.logger = (type, str, nodate, remove) => { //Function that passes 
         })
     }
 
+}
+
+
+/**
+ * Returns one of the default animations
+ * @param {String} animation Valid animations: `loading`, `waiting`, `bounce`, `progress`, `arrows` or `bouncearrows`
+ * @returns Array of the chosen animation
+ */
+module.exports.logger.animation = (args) => {
+    var outputlogger = require("output-logger")
+
+    return outputlogger.animation(args)
+}
+
+
+/**
+ * Stops any animation currently active
+ */
+module.exports.logger.stopAnimation = () => {
+    var outputlogger = require("output-logger")
+
+    return outputlogger.stopAnimation
 }

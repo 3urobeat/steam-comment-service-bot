@@ -6,7 +6,7 @@
 module.exports.checklastcommentdb = (bot) => {
     var controller = require("../../controller/controller.js")
 
-    logger("info", "Checking if all friends are in lastcomment.db...", false, true)
+    logger("info", "Checking if all friends are in lastcomment.db...", false, true, logger.animation("loading"))
     
     controller.lastcomment.find({}, (err, docs) => {
         Object.keys(bot.myFriends).forEach(e => {

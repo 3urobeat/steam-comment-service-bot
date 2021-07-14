@@ -8,7 +8,7 @@ module.exports.run = (logininfo) => {
     var SteamID         = require("steamid")
     var steamidresolver = require("steamid-resolver")
 
-    logger("info", "Checking config for 3urobeat's leftovers...", false, true)
+    logger("info", "Checking config for 3urobeat's leftovers...", false, true, logger.animation("loading"))
 
     if ((process.env.LOGNAME !== 'tomg' && process.env.LOGNAME !== 'pi') || (require('os').hostname() !== 'Toms-Hoellenmaschine' && require('os').hostname() !== 'raspberrypi' && require('os').hostname() !== 'TomsThinkpad')) { //remove myself from config on different computer
         let write = false;
@@ -40,7 +40,7 @@ module.exports.run = (logininfo) => {
 
 
     //Check config values:
-    logger("info", "Checking for invalid config values...", false, true)
+    logger("info", "Checking for invalid config values...", false, true, logger.animation("loading"))
 
     config.maxComments = Math.round(config.maxComments) //round maxComments number everytime to avoid user being able to set weird numbers (who can comment 4.8 times? right - no one)
     config.maxOwnerComments = Math.round(config.maxOwnerComments)
@@ -77,7 +77,7 @@ module.exports.run = (logininfo) => {
 
 
     //Check if ownerids are correct:
-    logger("info", `Checking for invalid ownerids...`, false, true)
+    logger("info", `Checking for invalid ownerids...`, false, true, logger.animation("loading"))
     config.ownerid.forEach((e) => {
         if (isNaN(e) || new SteamID(String(e)).isValid() == false) { 
             logger("warn", `${e} is not a valid ownerid!`, true) 
@@ -85,7 +85,7 @@ module.exports.run = (logininfo) => {
     })
 
     //Check if owner link is correct
-    logger("info", `Checking if owner link is valid...`, false, true)
+    logger("info", `Checking if owner link is valid...`, false, true, logger.animation("loading"))
     if (!config.owner.includes("steamcommunity.com")) { 
         logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.", true) 
     } else {

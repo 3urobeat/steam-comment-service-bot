@@ -48,7 +48,7 @@ module.exports.run = (loginindex, thisbot, bot, logOnOptions, lastCodeWrong, cal
 
                 } else { //skip account if not bot0
 
-                    logger("info", `[${thisbot}] steamGuard input empty, skipping account...`, false, true)
+                    logger("info", `[${thisbot}] steamGuard input empty, skipping account...`, false, true, logger.animation("loading"))
                     
                     login.accisloggedin = true; //set to true to log next account in
                     controller.skippedaccounts.push(loginindex)
@@ -61,7 +61,7 @@ module.exports.run = (loginindex, thisbot, bot, logOnOptions, lastCodeWrong, cal
                 }
     
             } else { //code provided
-                logger("info", `[${thisbot}] Accepting steamGuard code...`, false, true)
+                logger("info", `[${thisbot}] Accepting steamGuard code...`, false, true, logger.animation("loading"))
 
                 callback(code) //give code back to node-steam-user
             }
@@ -74,7 +74,7 @@ module.exports.run = (loginindex, thisbot, bot, logOnOptions, lastCodeWrong, cal
     //check if skipSteamGuard is on so we don't need to prompt the user for a code
     if (config.skipSteamGuard) {
         if (loginindex > 0) {
-            logger("info", `[${thisbot}] Skipping account because skipSteamGuard is enabled...`, false, true)
+            logger("info", `[${thisbot}] Skipping account because skipSteamGuard is enabled...`, false, true, logger.animation("loading"))
 
             login.accisloggedin = true; //set to true to log next account in
             controller.skippedaccounts.push(loginindex)

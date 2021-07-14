@@ -22,7 +22,7 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
 
 
     //Accept offline group & friend invites
-    logger("info", `[${thisbot}] Got websession and set cookies.`, false, true)
+    logger("info", `[${thisbot}] Got websession and set cookies.`, false, true, logger.animation("loading"))
 
     //If this is a relog then remove this account from the queue and let the next account be able to relog
     if (controller.relogQueue.includes(loginindex)) {
@@ -33,7 +33,7 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
 
 
     /* ------------ Accept offline friend and group invites/requests: ------------ */
-    logger("info", `[${thisbot}] Accepting offline friend & group invites...`, false, true)
+    logger("info", `[${thisbot}] Accepting offline friend & group invites...`, false, true, logger.animation("loading"))
 
     //Friends:
     for (let i = 0; i < Object.keys(bot.myFriends).length; i++) { //Credit: https://dev.doctormckay.com/topic/1694-accept-friend-request-sent-in-offline/  

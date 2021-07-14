@@ -81,8 +81,8 @@ module.exports.run = (logOnOptions, loginindex) => {
 
                 login.logOnTries[loginindex]++
 
-                if (thisproxy == null) logger("info", `[${thisbot}] Trying to log in without proxy... (Attempt ${login.logOnTries[loginindex]}/${maxLogOnRetries + 1})`, false, true)
-                    else logger("info", `[${thisbot}] Trying to log in with proxy ${login.proxyShift - 1}... (Attempt ${login.logOnTries[loginindex]}/${maxLogOnRetries + 1})`, false, true)
+                if (thisproxy == null) logger("info", `[${thisbot}] Trying to log in without proxy... (Attempt ${login.logOnTries[loginindex]}/${maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
+                    else logger("info", `[${thisbot}] Trying to log in with proxy ${login.proxyShift - 1}... (Attempt ${login.logOnTries[loginindex]}/${maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
                 
                 bot.logOn(logOnOptions)
             }

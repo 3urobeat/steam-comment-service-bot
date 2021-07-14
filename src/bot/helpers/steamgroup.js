@@ -10,21 +10,21 @@ module.exports.configgroup64id = () => {
     var cachefile       = require("../../data/cache.json")
 
     
-    logger("info", "Getting groupID64 of yourgroup set in the config.json...", false, true)
+    logger("info", "Getting groupID64 of yourgroup set in the config.json...", false, true, logger.animation("loading"))
 
     if (config.yourgroup.length < 1) { //id is stored in cache file, no need to get it again
-        logger("info", "Skipping groupID64 request of yourgroup because config.yourgroup is empty.", false, true); //log to output for debugging
+        logger("info", "Skipping groupID64 request of yourgroup because config.yourgroup is empty.", false, true, logger.animation("loading")); //log to output for debugging
         return null;
         
     } else {
     
         if (cachefile.configgroup == config.yourgroup) {
-            logger("info", "configgroupID64 of yourgroup is stored in cache.json...", false, true)
+            logger("info", "configgroupID64 of yourgroup is stored in cache.json...", false, true, logger.animation("loading"))
 
             return cachefile.configgroupID64; //return configgroup64id
     
         } else {
-            logger("info", "groupID64 of yourgroup not in cache.json. Requesting information from Steam...", false, true)
+            logger("info", "groupID64 of yourgroup not in cache.json. Requesting information from Steam...", false, true, logger.animation("loading"))
     
             steamidresolver.groupUrlToGroupID64(config.yourgroup, (err, yourgroupResult) => {
                 if (err == "The specified group could not be found.") { //if the group couldn't be found display specific message
@@ -38,7 +38,7 @@ module.exports.configgroup64id = () => {
                     }
                 }
     
-                logger("info", `Successfully retrieved yourgroup information. groupID64: ${yourgroupResult}`, false, true)
+                logger("info", `Successfully retrieved yourgroup information. groupID64: ${yourgroupResult}`, false, true, logger.animation("loading"))
     
 
                 cachefile.configgroup = config.yourgroup
@@ -66,7 +66,7 @@ module.exports.botsgroupID64 = () => {
     var cachefile       = require(srcdir + "/data/cache.json")
 
 
-    logger("info", "Getting groupID64 of botsgroup set in the config.json...", false, true)
+    logger("info", "Getting groupID64 of botsgroup set in the config.json...", false, true, logger.animation("loading"))
 
     if (config.botsgroup.length < 1) { //id is stored in cache file, no need to get it again
         logger("info", "Skipping groupID64 request of botsgroup because config.botsgroup is empty.", false, true); //log to output for debugging
@@ -75,12 +75,12 @@ module.exports.botsgroupID64 = () => {
     } else {
     
         if (cachefile.botsgroup == config.botsgroup) {
-            logger("info", "groupID64 of botsgroup is stored in cache.json...", false, true)
+            logger("info", "groupID64 of botsgroup is stored in cache.json...", false, true, logger.animation("loading"))
 
             return cachefile.botsgroupid; //return botsgroupid
     
         } else {
-            logger("info", "groupID64 of botsgroup not in cache.json. Requesting information from Steam...", false, true)
+            logger("info", "groupID64 of botsgroup not in cache.json. Requesting information from Steam...", false, true, logger.animation("loading"))
     
             steamidresolver.groupUrlToGroupID64(config.botsgroup, (err, botsgroupid) => {
                 if (err == "The specified group could not be found.") { //if the group couldn't be found display specific message
@@ -94,7 +94,7 @@ module.exports.botsgroupID64 = () => {
                     }
                 }
     
-                logger("info", `Successfully retrieved botsgroup information. groupID64: ${botsgroupid}`, false, true)
+                logger("info", `Successfully retrieved botsgroup information. groupID64: ${botsgroupid}`, false, true, logger.animation("loading"))
     
 
                 cachefile.botsgroup = config.botsgroup

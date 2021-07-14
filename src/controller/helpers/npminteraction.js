@@ -39,7 +39,7 @@ module.exports.reinstallAll = (oldlogger, callback) => {
 module.exports.update = (callback) => {
     var { exec } = require("child_process") //wanted to do it with the npm package but that didn't work out (BETA 2.8 b2)
 
-    logger("info", "Running 'npm install'...")
+    logger("info", "Running 'npm install'...", logger.animation("loading"))
 
     exec("npm install", { cwd: srcdir + "/.." }, (err, stdout) => {
         if (err) return callback(err, null)

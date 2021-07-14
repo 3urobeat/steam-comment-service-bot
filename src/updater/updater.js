@@ -41,13 +41,13 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
 
                     starter.checkAndGetFile("./src/updater/helpers/prepareupdate.js", (file2) => {
                         file2.run(responseSteamID, () => {
-                            logger("", "Starting to download update...", true)
+                            logger("", "Starting to download update...", true, false, logger.animation("loading"))
 
                             starter.checkAndGetFile("./src/updater/helpers/downloadupdate.js", (file3) => {
                                 file3.downloadupdate(releasemode, compatibilityfeaturedone, (err) => {
                                     if (err) logger("error", "I failed trying to download & install the update. Please check the log after other errors for more information.\nTrying to continue anyway...")
 
-                                    logger("", "\x1b[33mUpdating packages with npm...\x1b[0m\n", true)
+                                    logger("", "\x1b[33mUpdating packages with npm...\x1b[0m\n", true, false, logger.animation("loading"))
 
                                     starter.checkAndGetFile("./src/controller/helpers/npminteraction.js", (file4) => {
                                         file4.update((err) => {
@@ -81,7 +81,7 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
                         let noresponsetimeout = setTimeout(() => { //skip update after 7.5 sec if the user doesn't respond
                             updatestdin.pause()
                             process.stdout.write("\x1b[31mX\n") //write a X behind the y/n question
-                            logger("info", "\x1b[93mStopping updater since you didn't reply in 7.5 seconds...\x1b[0m\n\n", true)
+                            logger("info", "\x1b[93mStopping updater since you didn't reply in 7.5 seconds...\x1b[0m\n\n", true, false, logger.animation("loading"))
 
                             foundanddone(false)
                         }, 7500);
@@ -101,7 +101,7 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
             } else { //no update found
 
                 //log result and send message back to user if update was requested via chat
-                logger("info", `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`, false, true)
+                logger("info", `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`, false, true, logger.animation("loading"))
                 if (responseSteamID) require('../controller/controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`)
 
                 foundanddone(false) //make callback to let caller carry on
@@ -134,7 +134,7 @@ module.exports.compatibility = (callback) => {
      */
     function runCompFeature(filename) {
         starter.checkAndGetFile(`./src/updater/compatibility/${filename}.js`, (file) => {
-            logger("info", `Running compatibility feature ${filename}.js...`)
+            logger("info", `Running compatibility feature ${filename}.js...`, false, false, logger.animation("loading"))
 
             file.run(callback)
         })

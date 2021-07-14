@@ -106,16 +106,16 @@
 
 
                     /* ------------ Print some diagnostic messages to log: ------------ */
-                    logger("info", `steam-comment-service-bot made by ${extdata.mestr} version ${extdata.versionstr}`, false, true)
-                    logger("info", `Using node.js version ${process.version}...`, false, true)
-                    logger("info", `Running on ${process.platform}...`, false, true)
-                    logger("info", `Using ${extdata.branch} branch | firststart is ${extdata.firststart} | This is start number ${extdata.timesloggedin + 1}`, false, true)
+                    logger("info", `steam-comment-service-bot made by ${extdata.mestr} version ${extdata.versionstr}`, false, true, logger.animation("loading"))
+                    logger("info", `Using node.js version ${process.version}...`, false, true, logger.animation("loading"))
+                    logger("info", `Running on ${process.platform}...`, false, true, logger.animation("loading"))
+                    logger("info", `Using ${extdata.branch} branch | firststart is ${extdata.firststart} | This is start number ${extdata.timesloggedin + 1}`, false, true, logger.animation("loading"))
 
                     if (extdata.branch == "beta-testing") logger("", "\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
 
                     var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
                     if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
-                    logger("info", `Comment config values: commentdelay = ${config.commentdelay} | maxCommentsOverall = ${maxCommentsOverall} | randomizeAcc = ${config.randomizeAccounts}`, false, true)
+                    logger("info", `Comment config values: commentdelay = ${config.commentdelay} | maxCommentsOverall = ${maxCommentsOverall} | randomizeAcc = ${config.randomizeAccounts}`, false, true, logger.animation("loading"))
 
 
                     /* ------------ Run updater or start logging in when steam is online: ------------ */

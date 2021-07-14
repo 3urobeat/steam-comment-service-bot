@@ -52,7 +52,7 @@ module.exports.startlogin = () => {
 
 
     //Evaluate estimated wait time for login:
-    logger("info", "Evaluating estimated login time...", false, true)
+    logger("info", "Evaluating estimated login time...", false, true, logger.animation("loading"))
     if (extdata.timesloggedin < 5) { //only use new evaluation method when the bot was started more than 5 times
         var estimatedlogintime = ((logindelay * (Object.keys(logininfo).length - 1 - controller.skippedaccounts.length)) / 1000) + 10 //10 seconds tolerance
     } else {
@@ -64,11 +64,11 @@ module.exports.startlogin = () => {
     if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "minutes" }
     if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "hours" }                                                                                                                                                                                                                                                                          //🥚!
 
-    logger("info", `Logging in... Estimated wait time: ${round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`)
+    logger("info", `Logging in... Estimated wait time: ${round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`, false, false, logger.animation("loading"))
 
 
     //Start starting bot.js for each account
-    logger("info", "Loading logininfo for each account...", false, true)
+    logger("info", "Loading logininfo for each account...", false, true, logger.animation("loading"))
 
     Object.keys(logininfo).forEach((k, i) => { //log all accounts in with the logindelay             
         setTimeout(() => { //wait before interval to reduce ram usage on startup
@@ -86,12 +86,12 @@ module.exports.startlogin = () => {
                         return;
                     } 
 
-                    if (i > 0) logger("info", `Waiting ${logindelay / 1000} seconds... (config logindelay)`, false, true) //first iteration doesn't need to wait duh
+                    if (i > 0) logger("info", `Waiting ${logindelay / 1000} seconds... (config logindelay)`, false, true, logger.animation("waiting")) //first iteration doesn't need to wait duh
 
 
                     //Wait logindelay and then start bot.js with the account of this iteration
                     setTimeout(() => {
-                        logger("info", `Starting bot.js for ${k}...`, false, true)
+                        logger("info", `Starting bot.js for ${k}...`, false, true, logger.animation("loading"))
 
                         //Define steam-user logOnOptions
                         var logOnOptions = {

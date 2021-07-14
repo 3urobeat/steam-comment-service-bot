@@ -28,11 +28,11 @@ module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy) => {
         clearInterval(relogInterval) //prevent any retries
         bot.logOff()
 
-        logger("info", `[${thisbot}] It is now my turn. Waiting ${relogdelay / 1000} seconds before attempting to relog...`, false, true)
+        logger("info", `[${thisbot}] It is now my turn. Waiting ${relogdelay / 1000} seconds before attempting to relog...`, false, true, logger.animation("waiting"))
 
         setTimeout(() => {
-            if (thisproxy == null) logger("info", `[${thisbot}] Trying to relog without proxy...`, false, true)
-                else logger("info", `[${thisbot}] Trying to relog with proxy ${login.proxyShift - 1}...`, false, true)
+            if (thisproxy == null) logger("info", `[${thisbot}] Trying to relog without proxy...`, false, true, logger.animation("loading"))
+                else logger("info", `[${thisbot}] Trying to relog with proxy ${login.proxyShift - 1}...`, false, true, logger.animation("loading"))
             
             bot.logOn(logOnOptions)
         }, relogdelay);

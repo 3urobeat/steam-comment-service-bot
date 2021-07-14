@@ -7,7 +7,7 @@
  * @param {function} [callback] Called with `extdata` (Object) on completion.
  */
 module.exports.extdata = (callback) => {
-    logger("info", "Importing data.json...", false, true)
+    logger("info", "Importing data.json...", false, true, logger.animation("loading"))
 
     require("../../starter.js").checkAndGetFile("./src/data/data.json", (file) => {
         callback(file)
@@ -20,7 +20,7 @@ module.exports.extdata = (callback) => {
  * @returns config object
  */
 module.exports.config = () => {
-    logger("info", "Importing config.json...", false, true)
+    logger("info", "Importing config.json...", false, true, logger.animation("loading"))
 
     return require(srcdir + "/../config.json")
 }
@@ -33,7 +33,7 @@ module.exports.config = () => {
 module.exports.logininfo = () => {
     var fs = require("fs")
 
-    logger("info", "Loading logininfo from logininfo.json or accounts.txt...", false, true)
+    logger("info", "Loading logininfo from logininfo.json or accounts.txt...", false, true, logger.animation("loading"))
 
     //Check logininfo for Syntax errors and display custom error message
     try {
@@ -73,16 +73,16 @@ module.exports.logininfo = () => {
 module.exports.proxies = () => {
     var fs = require("fs")
 
-    logger("info", "Loading proxies in proxies.txt or creating file if it doesn't exist...", false, true)
+    logger("info", "Loading proxies in proxies.txt or creating file if it doesn't exist...", false, true, logger.animation("loading"))
 
     var proxies = [] //when the file is just created there can't be proxies in it (this bot doesn't support magic)
 
     if (!fs.existsSync('./proxies.txt')) {
-        logger("info", "Creating proxies.txt file...", false, true)
+        logger("info", "Creating proxies.txt file...", false, true, logger.animation("loading"))
 
         fs.writeFile(srcdir + "/../proxies.txt", "", err => { 
             if (err) logger("error", "error creating proxies.txt file: " + err)
-                else logger("info", "Successfully created proxies.txt file.", false, true)
+                else logger("info", "Successfully created proxies.txt file.", false, true, logger.animation("loading"))
         })
 
     } else { //file does seem to exist so now we can try and read it
@@ -103,7 +103,7 @@ module.exports.proxies = () => {
 module.exports.lastcomment = () => {
     var nedb = require("@seald-io/nedb")
 
-    logger("info", "Loading lastcomment.db database...", false, true)
+    logger("info", "Loading lastcomment.db database...", false, true, logger.animation("loading"))
 
     return new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); //autoload and return instantly
 }
@@ -116,7 +116,7 @@ module.exports.lastcomment = () => {
 module.exports.quotes = () => {
     var fs = require("fs")
 
-    logger("info", "Loading quotes from quotes.txt...", false, true)
+    logger("info", "Loading quotes from quotes.txt...", false, true, logger.animation("loading"))
 
     var quotes = []
     var quotes = fs.readFileSync(srcdir + '/../quotes.txt', 'utf8').split("\n") //get all quotes from the quotes.txt file into an array
@@ -124,7 +124,7 @@ module.exports.quotes = () => {
 
     quotes.forEach((e, i) => { //multi line strings that contain \n will get splitted to \\n -> remove second \ so that node-steamcommunity understands the quote when commenting
         if (e.length > 999) {
-            logger("warn", `The quote.txt line ${i} is longer than the limit of 999 characters. This quote will be ignored for now.`, true)
+            logger("warn", `The quote.txt line ${i} is longer than the limit of 999 characters. This quote will be ignored for now.`, true, false, logger.animation("loading"))
             quotes.splice(i, 1) //remove this item from the array
             return;
         }
@@ -132,7 +132,7 @@ module.exports.quotes = () => {
         quotes[i] = e.replace(/\\n/g, "\n").replace("\\n", "\n")
     })
 
-    logger("info", `${quotes.length} quotes found.`, false, true)
+    logger("info", `${quotes.length} quotes found.`, false, true, logger.animation("loading"))
 
     if (quotes.length == 0) { //check if quotes.txt is empty to avoid errors further down when trying to comment
         logger("error", "\x1b[31mYou haven't put any comment quote into the quotes.txt file! Aborting...\x1b[0m", true)
@@ -150,7 +150,7 @@ module.exports.quotes = () => {
 module.exports.lang = () => {
     var fs = require("fs")
 
-    logger("info", "Loading defaultlang.json and customlang.json...", false, true)
+    logger("info", "Loading defaultlang.json and customlang.json...", false, true, logger.animation("loading"))
 
     var lang = require(srcdir + "/data/lang/defaultlang.json")
 
