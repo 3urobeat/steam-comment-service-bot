@@ -27,6 +27,8 @@
             console.log(`${type} | ${str}`)
         }
 
+        logger.animation = () => {} //just to be sure that no error occurs when trying to call this function without the real logger being present
+
         var oldlogger = logger;
         global.logger = logger;
 

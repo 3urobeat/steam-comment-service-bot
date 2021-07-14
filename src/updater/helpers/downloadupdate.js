@@ -30,7 +30,7 @@ module.exports.downloadupdate = (releasemode, compatibilityfeaturedone, callback
 
     //Start downloading new files
     logger("", "", true)
-    logger("", "\x1b[33mDownloading new files...\x1b[0m", true, logger.animation("loading"))
+    logger("", "\x1b[33mDownloading new files...\x1b[0m", true, false, logger.animation("loading"))
 
     download(url, "./", { extract: true }).then(() => { //the download library makes downloading and extracting easier
         //Scan directory recursively to get an array of all paths in this directory
@@ -53,7 +53,7 @@ module.exports.downloadupdate = (releasemode, compatibilityfeaturedone, callback
         let files = scandir(".") //scan the directory of this installation
         
         //Delete old files except files and folders in dontdelete
-        logger("", "\x1b[33mDeleting old files...\x1b[0m", true, logger.animation("loading"))
+        logger("", "\x1b[33mDeleting old files...\x1b[0m", true, false, logger.animation("loading"))
         files.forEach((e, i) => {
             if (fs.existsSync(e) && !dontdelete.includes(e) && !e.includes(`./steam-comment-service-bot-${releasemode}`) && !e.includes("./node_modules")) { //respect dontdelete, the fresh downloaded files and the node_modules folder
                 fs.rmSync(e, { recursive: true })
@@ -64,7 +64,7 @@ module.exports.downloadupdate = (releasemode, compatibilityfeaturedone, callback
                 //Move new files out of directory
                 let newfiles = scandir(`./steam-comment-service-bot-${releasemode}`) //scan the directory of the new installation
     
-                logger("", "\x1b[33mMoving new files...\x1b[0m", true, logger.animation("loading"))
+                logger("", "\x1b[33mMoving new files...\x1b[0m", true, false, logger.animation("loading"))
                 newfiles.forEach((e, i) => {
                     let eCut = e.replace(`steam-comment-service-bot-${releasemode}/`, "") //eCut should resemble the same path but how it would look like in the base directory
 
@@ -77,12 +77,12 @@ module.exports.downloadupdate = (releasemode, compatibilityfeaturedone, callback
 
                         //Custom update rules for a few files
                         //config.json
-                        logger("", `\x1b[33mClearing cache of config.json...\x1b[0m`, true, logger.animation("loading"))
+                        logger("", `\x1b[33mClearing cache of config.json...\x1b[0m`, true, false, logger.animation("loading"))
 
                         delete require.cache[require.resolve(srcdir + "/../config.json")] //delete cache
                         let newconfig = require(srcdir + "/../config.json")
 
-                        logger("", `\x1b[33mTransfering your changes to new config.json...\x1b[0m`, true, logger.animation("loading"))
+                        logger("", `\x1b[33mTransfering your changes to new config.json...\x1b[0m`, true, false, logger.animation("loading"))
                         
                         Object.keys(newconfig).forEach(e => {
                             if (!Object.keys(oldconfig).includes(e)) return; //config value seems to be new so don't bother trying to set it to something (which would probably be undefined anyway)
@@ -90,7 +90,7 @@ module.exports.downloadupdate = (releasemode, compatibilityfeaturedone, callback
                             newconfig[e] = oldconfig[e] //transfer setting
                         })
 
-                        logger("", `\x1b[33mWriting new data to config.json...\x1b[0m`, true, logger.animation("loading"))
+                        logger("", `\x1b[33mWriting new data to config.json...\x1b[0m`, true, false, logger.animation("loading"))
                         fs.writeFile(srcdir + "/../config.json", JSON.stringify(newconfig, null, 4), err => { //write the changed file
                             if (err) {
                                 logger("error", `Error writing changes to config.json: ${err}`, true)
@@ -98,12 +98,12 @@ module.exports.downloadupdate = (releasemode, compatibilityfeaturedone, callback
                         })
 
                         //data.json
-                        logger("", `\x1b[33mClearing cache of data.json...\x1b[0m`, true, logger.animation("loading"))
+                        logger("", `\x1b[33mClearing cache of data.json...\x1b[0m`, true, false, logger.animation("loading"))
 
                         delete require.cache[require.resolve(srcdir + "/data/data.json")] //delete cache
                         let newextdata = require(srcdir + "/data/data.json")
 
-                        logger("", "\x1b[33mTransfering changes to new data.json...\x1b[0m", true, logger.animation("loading"))
+                        logger("", "\x1b[33mTransfering changes to new data.json...\x1b[0m", true, false, logger.animation("loading"))
 
                         if (Object.keys(extdata).length > 2) { //Only do this if the data.json update call originates from the updater and not from the integrity check
                             if (compatibilityfeaturedone) newextdata.compatibilityfeaturedone = true
@@ -113,7 +113,7 @@ module.exports.downloadupdate = (releasemode, compatibilityfeaturedone, callback
                             newextdata.totallogintime = oldextdata.totallogintime
                         }
 
-                        logger("", `\x1b[33mWriting new data to data.json...\x1b[0m`, true, logger.animation("loading"))
+                        logger("", `\x1b[33mWriting new data to data.json...\x1b[0m`, true, false, logger.animation("loading"))
                         fs.writeFile(srcdir + "/data/data.json", JSON.stringify(newextdata, null, 4), err => { //write the changed file
                             if (err) {
                                 logger("error", `Error writing changes to data.json: ${err}`, true)
