@@ -32,22 +32,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
     }
 
 
-    /**
-     * Function to return last successful comment from lastcomment.db
-     * @param {function} [callback] Called with `timestamp` (Number) on completion
-     */
-    function lastsuccessfulcomment(callback) {
-        var greatesttimevalue = 0
-
-        controller.lastcomment.find({}, (err, docs) => { //get all documents
-            docs.forEach((e, i) => {
-                if (e.time > greatesttimevalue) greatesttimevalue = Number(e.time)
-
-                if (i == docs.length - 1) {
-                    return callback(greatesttimevalue) }
-            })
-        }) 
-    }
+    
 
 
     var steam64id = new SteamID(String(steamID)).getSteamID64()
@@ -117,7 +102,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                     if (!lastcommentdoc) logger("error", "User is missing from database?? How is this possible?! Error maybe: " + err)
     
                     try { //catch any unhandled error to be able to remove user from activecommentprocess array
-                        require("../commands/comment/comment.js").run(chatmsg, community, thisbot, steamID, args, null, lastcommentdoc, lastsuccessfulcomment)
+                        require("../commands/comment/comment.js").run(chatmsg, steamID, args, null, lastcommentdoc)
                     } catch (err) {
                         mainfile.activecommentprocess = mainfile.activecommentprocess.filter(item => item != steam64id) //Remove user from array to make sure you can't get stuck in there (not perfect as this won't trigger when the error occurrs in a nested function)
                         logger("error", "Error while processing comment request: " + err.stack)
@@ -135,7 +120,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                     if (!lastcommentdoc) logger("error", "User is missing from database?? How is this possible?! Error maybe: " + err)
     
                     try { //catch any unhandled error to be able to remove user from activecommentprocess array
-                        require("../commands/comment/groupcomment.js").run(chatmsg, community, thisbot, steamID, args, null, lastcommentdoc, lastsuccessfulcomment)
+                        require("../commands/comment/groupcomment.js").run(chatmsg, steamID, args, null, lastcommentdoc)
                     } catch (err) {
                         mainfile.activecommentprocess = mainfile.activecommentprocess.filter(item => item != steam64id) //Remove user from array to make sure you can't get stuck in there (not perfect as this won't trigger when the error occurrs in a nested function)
                         logger("error", "Error while processing group comment request: " + err)
@@ -148,7 +133,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 break;
             
             case '!info':
-                require("../commands/general.js").info(steam64id, lastsuccessfulcomment, chatmsg, steamID)
+                require("../commands/general.js").info(steam64id, chatmsg, steamID)
                 break;
             
             case '!owner':

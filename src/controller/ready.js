@@ -82,6 +82,10 @@ module.exports.readyCheck = (logininfo) => {
             logger("", ' ', true)
 
 
+            //Start webserver
+            if (config.enableurltocomment) require("./webserver.js").run()
+
+
             //Show disclaimer message to not misuse this bot if firststart
             if (extdata.firststart) logger("", `\x1b[0m[\x1b[31mDisclaimer\x1b[0m]: Please don't misuse this bot by spamming or posting malicious comments. Your accounts can get banned from Steam if you do that.\n              You are responsible for the actions of your bot instance.\n`, true)
             

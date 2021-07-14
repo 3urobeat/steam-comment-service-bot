@@ -37,17 +37,16 @@ module.exports.help = (ownercheck, chatmsg, steamID, lang) => {
 /**
  * Runs the info command
  * @param {String} steam64id The steamID64 as String
- * @param {Function} lastsuccessfulcomment The lastsuccessfulcomment function
  * @param {Function} chatmsg The chatmsg function
  * @param {Object} steamID The steamID object from steam-user
  */
-module.exports.info = (steam64id, lastsuccessfulcomment, chatmsg, steamID) => {
+module.exports.info = (steam64id, chatmsg, steamID) => {
     var mainfile   = require("../main.js")
     var controller = require("../../controller/controller.js")
 
 
     controller.lastcomment.findOne({ id: steam64id }, (err, doc) => {
-        lastsuccessfulcomment(cb => {
+        mainfile.lastsuccessfulcomment(cb => {
             /* eslint-disable no-irregular-whitespace */
             chatmsg(steamID, `
                 -----------------------------------~~~~~------------------------------------ 

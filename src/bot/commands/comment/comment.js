@@ -2,8 +2,13 @@
 
 /**
  * Runs the comment command
+ * @param {function} chatmsg The chatmsg function from bot.js or null if called from webserver
+ * @param {SteamID} steamID The steamID object of the requesting user
+ * @param {Array} args The args array made from the arguments the user provided
+ * @param res The webserver response or null if called from friendMessage.js
+ * @param lastcommentdoc The nedb document of lastcomment.db of the last request of this user
  */
-module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcommentdoc, lastsuccessfulcomment) => {
+module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
     const SteamID  = require('steamid');
 
     var updater    = require('../../../updater/updater.js'); //paths get a 10/10 from me
@@ -15,7 +20,8 @@ module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcomme
     var accstoadd  = []
     var lastquotes = [] //array to track last comments
 
-    var lang                 = mainfile.lang
+    var lang       = mainfile.lang
+    
     
     var requesterSteamID = new SteamID(String(steamID)).getSteamID64() //save steamID of comment requesting user so that messages are being send to the requesting user and not to the reciever if a profileid has been provided
 
@@ -164,9 +170,9 @@ module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcomme
         }
     }
 
-    community.getSteamUser(steamID, (err, user) => { //check if profile is private
+    controller.communityobject[0].getSteamUser(steamID, (err, user) => { //check if profile is private
         if (err) {
-            logger("warn", `[${thisbot}] comment check for private account error: ${err}\n       Trying to comment anyway and hoping no error occurs...`) //this can happen sometimes and most of the times commenting will still work
+            logger("warn", `[Main] comment check for private account error: ${err}\n       Trying to comment anyway and hoping no error occurs...`) //this can happen sometimes and most of the times commenting will still work
         } else {
             if (user.privacyState != "public") { 
                 return respondmethod(403, lang.commentuserprofileprivate) //only check if getting the Steam user's data didn't result in an error
@@ -239,8 +245,10 @@ module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcomme
                 }
                 
                 getQuote(comment => { //get a random quote to comment with and wait for callback to ensure a quote has been found before trying to comment
-                    controller.communityobject[k].postUserComment(steamID, comment, (error) => { //post comment
+                    //controller.communityobject[k].postUserComment(steamID, comment, (error) => { //post comment
                         if (k == 0) var thisbot = `Main`; else var thisbot = `Bot ${k}`; //call bot 0 the main bot in logging messages
+
+                        var error = ""
 
                         /* --------- Handle errors thrown by this comment attempt --------- */
                         if (error) {
@@ -281,7 +289,7 @@ module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcomme
 
                             if (i == 0) { //If the error occurred on the first comment then stop and return an error message
                                 //Get last successful comment time to display it in error message
-                                lastsuccessfulcomment(cb => {
+                                mainfile.lastsuccessfulcomment(cb => {
                                     let localoffset = new Date().getTimezoneOffset() * 60000
 
                                     if (loginfile.proxies.length > 1) {
@@ -386,7 +394,7 @@ module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcomme
                                 }
                             }
                         }
-                    })
+                    //})
                 })
             }, config.commentdelay * i); //delay every comment
         }

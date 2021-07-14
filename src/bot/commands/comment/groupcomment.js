@@ -2,8 +2,13 @@
 
 /**
  * Quick and dirty groupcomment function to handle group comments for the first beta version of 2.11
+ * @param {function} chatmsg The chatmsg function from bot.js or null if called from webserver
+ * @param {SteamID} steamID The steamID object of the requesting user
+ * @param {Array} args The args array made from the arguments the user provided
+ * @param res The webserver response or null if called from friendMessage.js
+ * @param lastcommentdoc The nedb document of lastcomment.db of the last request of this user
  */
-module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcommentdoc, lastsuccessfulcomment) => { //eslint-disable-line
+module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
     const SteamID  = require('steamid');
 
     var updater    = require('../../../updater/updater.js'); //paths get a 10/10 from me
@@ -201,7 +206,7 @@ module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcomme
                     if (error) {
                         if (i == 0) { //If the error occurred on the first comment then stop and return an error message
                             //Get last successful comment time to display it in error message
-                            lastsuccessfulcomment(cb => {
+                            mainfile.lastsuccessfulcomment(cb => {
                                 let localoffset = new Date().getTimezoneOffset() * 60000
 
                                 if (loginfile.proxies.length > 1) {

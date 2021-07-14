@@ -4,6 +4,8 @@
  */
 module.exports.run = () => {
 
+    var controller                       = require("../controller/controller.js")
+
     module.exports.quotes                = require("../controller/helpers/dataimport.js").quotes()
 
     module.exports.failedcomments        = [] //array saving failedcomments so the user can access them via the !failecomments command
@@ -23,4 +25,23 @@ module.exports.run = () => {
     require("./helpers/steamgroup.js").configgroup64id((configgroup64id) => {
         module.exports.configgroup64id = configgroup64id //just get it and export it
     })
+
+
+    /**
+     * Function to return last successful comment from lastcomment.db
+     * @param {function} [callback] Called with `timestamp` (Number) on completion
+     */
+    module.exports.lastsuccessfulcomment = (callback) => {
+        var greatesttimevalue = 0
+
+        controller.lastcomment.find({}, (err, docs) => { //get all documents
+            docs.forEach((e, i) => {
+                if (e.time > greatesttimevalue) greatesttimevalue = Number(e.time)
+
+                if (i == docs.length - 1) {
+                    return callback(greatesttimevalue)
+                }
+            })
+        }) 
+    }
 }
