@@ -37,6 +37,12 @@ module.exports.readyCheck = (logininfo) => {
             logger("", `\x1b[94m>\x1b[0m ${Object.keys(communityobject).length} total account(s) | ${repeatedCommentsStr} comments per account allowed`, true)
 
 
+            //display amount of proxies if any were used
+            if (login.proxies.length > 1) { //'null' will always be in the array (your own ip)
+                logger("", `\x1b[36m>\x1b[0m Using ${login.proxies.length} proxies | ${Object.keys(communityobject).length / login.proxies.length} accounts per proxy`, true)
+            }
+
+
             //display amount of limited accounts
             require("./helpers/limitedcheck.js").check(botobject, (limited, failed) => {
                 if (failed > 0) var failedtocheckmsg = `(Couldn't check ${failed} account(s))`;

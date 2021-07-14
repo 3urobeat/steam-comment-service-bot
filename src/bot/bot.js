@@ -27,7 +27,12 @@ module.exports.run = (logOnOptions, loginindex) => {
 
     //Get proxy of this bot account
     if (login.proxyShift >= login.proxies.length) login.proxyShift = 0; //reset proxy counter if we used all proxies to start over again
+
     var thisproxy = login.proxies[login.proxyShift] //define the proxy that will be used for this account
+
+    if (!login.additionalaccinfo[loginindex]) login.additionalaccinfo[loginindex] = {};
+    login.additionalaccinfo[loginindex].thisproxyindex = login.proxyShift //add the proxyindex that is used for this account to the additionalaccinfo obj
+
     login.proxyShift++ //switch to next proxy
 
 
@@ -65,7 +70,6 @@ module.exports.run = (logOnOptions, loginindex) => {
 
 
     /* ------------ Login: ------------ */
-    if (!login.additionalaccinfo[loginindex]) login.additionalaccinfo[loginindex] = {};
     login.additionalaccinfo[loginindex].logOnTries = 0;
 
     /**

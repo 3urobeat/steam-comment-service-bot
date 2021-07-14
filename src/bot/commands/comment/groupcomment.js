@@ -8,6 +8,7 @@ module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcomme
 
     var updater    = require('../../../updater/updater.js'); //paths get a 10/10 from me
     var mainfile   = require("../../main.js")
+    var loginfile  = require("../../../controller/login.js")
     var controller = require("../../../controller/controller.js");
     var round      = require("../../../controller/helpers/round.js")
 
@@ -147,8 +148,8 @@ module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcomme
             }
 
             //regex is confusing so I hope this pattern isn't too terrible
-            let regexPattern1 = /postUserComment error: Error: HTTP error 429.*\n.*/gm //Thanks: https://stackoverflow.com/a/49277142
-            let regexPattern2 = /postUserComment error: Skipped because of previous HTTP 429 error.*/gm
+            let regexPattern1 = /postGroupComment error: Error: HTTP error 429.*\n.*/gm //Thanks: https://stackoverflow.com/a/49277142
+            let regexPattern2 = /postGroupComment error: Skipped because of previous HTTP 429 error.*/gm
 
             //Array.includes() needs an exact match and since we already want to match with only a part of the string we can do it using Array.some() and regex
             if (Object.values(mainfile.failedcomments[requesterSteamID]).some(e => regexPattern1.test(e))) { //Check if we got IP blocked (cooldown) by checking for a HTTP 429 error pushed into the mainfile.failedcomments array by a previous iteration and send message
@@ -159,14 +160,17 @@ module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcomme
                     var m = 0;
                     for (var l = i + 1; l <= numberofcomments; l++) { //start with next comment process iteration by setting the starting variable l to i + 1
                         if (m + 1 > Object.keys(controller.communityobject).length) { //reset variable tracking communityobject index if it is greater than the amount of accounts
-                            m = 0; }
+                            m = 0;
+                        }
 
-                        mainfile.failedcomments[requesterSteamID][`Comment ${l} (bot${m})`] = `postUserComment error: Skipped because of previous HTTP 429 error.` //push reason to mainfile.failedcomments obj
+                        mainfile.failedcomments[requesterSteamID][`Comment ${l} (bot${m})`] = `postGroupComment error: Skipped because of previous HTTP 429 error.` //push reason to mainfile.failedcomments obj
                         m++
                     }
 
                     mainfile.activecommentprocess = mainfile.activecommentprocess.filter(item => item != requesterSteamID)
                     mainfile.commentcounter += numberofcomments - (numberofcomments - i + 1) //add numberofcomments minus failedamount to commentcounter
+
+                    logger("warn", "HTTP 429 error detected. Skipping all other comments on this proxy because they will fail too!")
                 }
                 return; //stop further execution
             }
@@ -190,10 +194,8 @@ module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcomme
             }
             
             getQuote(comment => { //get a random quote to comment with and wait for callback to ensure a quote has been found before trying to comment
-                //controller.communityobject[k].postGroupComment(args[1], comment, (error) => { //post comment
+                controller.communityobject[k].postGroupComment(args[1], comment, (error) => { //post comment
                     if (k == 0) var thisbot = `Main`; else var thisbot = `Bot ${k}`; //call bot 0 the main bot in logging messages
-
-                    var error = ""
 
                     /* --------- Handle errors thrown by this comment attempt --------- */
                     if (error) {
@@ -202,8 +204,19 @@ module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcomme
                             lastsuccessfulcomment(cb => {
                                 let localoffset = new Date().getTimezoneOffset() * 60000
 
-                                respondmethod(500, `${lang.commenterroroccurred}\n\nDetails: \n[${thisbot}] postUserComment error: ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
-                                logger("error", `[${thisbot}] postUserComment error: ${error}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`) }) //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
+                                if (loginfile.proxies.length > 1) {
+                                    respondmethod(500, `${lang.commenterroroccurred}\n\nDetails: \n[${thisbot}] postGroupComment error (using proxy ${loginfile.additionalaccinfo[k].thisproxyindex}): ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
+
+                                    //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
+                                    logger("error", `[${thisbot}] postGroupComment error (using proxy ${loginfile.additionalaccinfo[k].thisproxyindex}): ${error}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`) 
+                                } else {
+                                    respondmethod(500, `${lang.commenterroroccurred}\n\n\nDetails: \n[${thisbot}] postGroupComment error: ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
+
+                                    //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
+                                    logger("error", `[${thisbot}] postGroupComment error: ${error}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`)
+                                }
+                            })
+
 
                             if (error == "Error: HTTP error 429" || error == "Error: You've been posting too frequently, and can't make another post right now") {
                                 mainfile.commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
@@ -216,16 +229,25 @@ module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcomme
 
                         } else { //if the error occurred on another account then log the error and push the error to mainfile.failedcomments
 
-                            logger("error", `[${thisbot}] postGroupComment error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - group: ${args[1]}`); 
-                            mainfile.failedcomments[requesterSteamID][`Comment ${i + 1} (bot${k})`] = `postUserComment error: ${error}`
+                            if (loginfile.proxies.length > 1) {
+                                logger("error", `[${thisbot}] postGroupComment ${i + 1}/${numberofcomments} error (using proxy ${loginfile.additionalaccinfo[k].thisproxyindex}): ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - group: ${args[1]}`); 
+
+                                mainfile.failedcomments[requesterSteamID][`Comment ${i + 1} (bot${k})`] = `postGroupComment error: ${error}`
+                            } else {
+                                logger("error", `[${thisbot}] postGroupComment ${i + 1}/${numberofcomments} error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - group: ${args[1]}`); 
+
+                                mainfile.failedcomments[requesterSteamID][`Comment ${i + 1} (bot${k})`] = `postGroupComment error: ${error}`
+                            }
+
                         }
                     }
 
 
                     /* --------- No error, run this on every successful iteration --------- */
                     if (i == 0) { //Stuff below should only run in first iteration (main bot)
-                        //converting steamID again to SteamID64 because it could have changed by a profileid argument
-                        logger("info", `\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment in group ${args[1]}: ${String(comment).split("\n")[0]}\x1b[0m`) //splitting \n to only get first line of multi line comments
+                        if (loginfile.proxies.length > 1) logger("info", `\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment in group ${args[1]} with proxy ${loginfile.additionalaccinfo[k].thisproxyindex}: ${String(comment).split("\n")[0]}\x1b[0m`)
+                                else logger("info", `\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment in group ${args[1]}: ${String(comment).split("\n")[0]}\x1b[0m`) //splitting \n to only get first line of multi line comments
+
 
                         if (numberofcomments == 1) {
                             respondmethod(200, lang.commentsuccess1)
@@ -238,6 +260,7 @@ module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcomme
                             var waittimeunit = "seconds"
                             if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "minutes" }
                             if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "hours" }
+
                             respondmethod(200, lang.commentprocessstarted.replace("numberofcomments", numberofcomments).replace("waittime", Number(Math.round(waittime+'e'+3)+'e-'+3)).replace("timeunit", waittimeunit))
                         }
 
@@ -249,7 +272,10 @@ module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcomme
                         })
 
                     } else { //Stuff below should only run for child accounts
-                        if (!error) logger("info", `[${thisbot}] Comment ${i + 1}/${numberofcomments} in group ${args[1]}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
+                        if (!error) {
+                            if (loginfile.proxies.length > 1) logger("info", `[${thisbot}] Comment ${i + 1}/${numberofcomments} in group ${args[1]} with proxy ${loginfile.additionalaccinfo[k].thisproxyindex}: ${String(comment).split("\n")[0]}`)
+                                else logger("info", `[${thisbot}] Comment ${i + 1}/${numberofcomments} in group ${args[1]}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
+                        }
                     }
 
 
@@ -262,7 +288,7 @@ module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcomme
                         mainfile.commentcounter += numberofcomments - Object.keys(mainfile.failedcomments[requesterSteamID]).length //add numberofcomments minus failedamount to commentcounter
 
                     }
-                //})
+                })
             })
         }, config.commentdelay * i); //delay every comment
     }
