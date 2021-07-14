@@ -234,10 +234,8 @@ module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcomme
                 }
                 
                 getQuote(comment => { //get a random quote to comment with and wait for callback to ensure a quote has been found before trying to comment
-                    //controller.communityobject[k].postUserComment(steamID, comment, (error) => { //post comment
+                    controller.communityobject[k].postUserComment(steamID, comment, (error) => { //post comment
                         if (k == 0) var thisbot = `Main`; else var thisbot = `Bot ${k}`; //call bot 0 the main bot in logging messages
-
-                        var error = ""
 
                         /* --------- Handle errors thrown by this comment attempt --------- */
                         if (error) {
@@ -358,7 +356,7 @@ module.exports.run = (chatmsg, community, thisbot, steamID, args, res, lastcomme
                                 }
                             }
                         }
-                    //})
+                    })
                 })
             }, config.commentdelay * i); //delay every comment
         }
