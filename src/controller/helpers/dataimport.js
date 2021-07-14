@@ -145,9 +145,9 @@ module.exports.quotes = () => {
 
 /**
  * Imports the default language and overwrites values if some are set in the customlang.json file
- * @returns language object
+ * @param {function} [callback] Called with `lang` (Object) on completion.
  */
-module.exports.lang = () => {
+module.exports.lang = (callback) => {
     var fs = require("fs")
 
     logger("info", "Loading defaultlang.json and customlang.json...", false, true, logger.animation("loading"))
@@ -156,19 +156,35 @@ module.exports.lang = () => {
 
     //Check before trying to import if the user even created the file
     if (fs.existsSync(srcdir + "/../customlang.json")) { 
+        var customlangkeys = 0;
+
         //Try importing customlang.json
         try {
             var customlang = require(srcdir + "/../customlang.json")
         } catch (err) {
             logger("error", "It seems like you made a mistake (probably Syntax) in your customlang.json! I will not use any custom message.\nError: " + err)
-            return lang;
+
+            callback(lang)
         }
         
         //Overwrite values in lang object with values from customlang
-        Object.keys(customlang).forEach((e) => {
-            if (e != "") lang[e] = customlang[e] //overwrite each defaultlang key with a corresponding customlang key if one is set
-        })
-    }
+        Object.keys(customlang).forEach((e, i) => {
+            if (e != "" && e != "note") {
+                lang[e] = customlang[e] //overwrite each defaultlang key with a corresponding customlang key if one is set
 
-    return lang;
+                customlangkeys++
+            }
+
+            if (i == Object.keys(customlang).length - 1) { //check for last iteration
+                if (customlangkeys > 0) logger("info", `${customlangkeys} customlang key imported!`, false, true, logger.animation("loading"))
+                    else logger("info", "No customlang keys found...", false, true, logger.animation("loading"))
+
+                callback(lang)
+            }
+        })
+    } else {
+        logger("info", "No customlang.json file found...", false, true, logger.animation("loading"))
+
+        callback(lang)
+    }
 }

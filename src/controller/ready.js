@@ -34,12 +34,13 @@ module.exports.readyCheck = (logininfo) => {
 
             if (maxCommentsOverall > 3) var repeatedCommentsStr = `\x1b[4m\x1b[31m${maxCommentsOverall / Object.keys(botobject).length}\x1b[0m` 
                 else var repeatedCommentsStr = maxCommentsOverall / Object.keys(botobject).length
+            
             logger("", `\x1b[94m>\x1b[0m ${Object.keys(communityobject).length} total account(s) | ${repeatedCommentsStr} comments per account allowed`, true)
 
 
             //display amount of proxies if any were used
             if (login.proxies.length > 1) { //'null' will always be in the array (your own ip)
-                logger("", `\x1b[36m>\x1b[0m Using ${login.proxies.length} proxies | ${Object.keys(communityobject).length / login.proxies.length} accounts per proxy`, true)
+                logger("", `\x1b[36m>\x1b[0m Using ${login.proxies.length} proxies | ${Math.round(Object.keys(communityobject).length / login.proxies.length)} account(s) per proxy`, true)
             }
 
 
