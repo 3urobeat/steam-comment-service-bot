@@ -29,7 +29,7 @@ module.exports.run = (continuewithlogin, stoponerr, throwtimeout, callback) => {
             callback(true)
         }
     }).on('error', function(err) {
-        logger("error", `\x1b[0m[\x1b[31mWarning\x1b[0m]: SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n           Error: ` + err, true)
+        logger("error", `SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n        ${err}\n\n        Aborting...\n`, true)
         if (throwtimeout) clearTimeout(throwtimeout)
         if (stoponerr) process.exit(0)
             else callback(false)
