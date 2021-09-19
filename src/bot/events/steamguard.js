@@ -91,7 +91,7 @@ module.exports.run = (loginindex, thisbot, bot, logOnOptions, lastCodeWrong, cal
     
 
     //calling the function:
-    if (lastCodeWrong && !controller.skippednow.includes(loginindex)) { //last submitted code seems to be wrong and the loginindex wasn't already skipped (just to make sure)
+    if (lastCodeWrong && !login.skippednow.includes(loginindex)) { //last submitted code seems to be wrong and the loginindex wasn't already skipped (just to make sure)
         logger("", "", true, true)
         logger("warn", 'Your code seems to be wrong, please try again!', true)
     
