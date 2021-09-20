@@ -3,7 +3,7 @@
  * Checks the config for my leftovers, checks owner link & ids and prints some recommendations for a few settings.
  * @param {Object} logininfo The logininfo object
  */
-module.exports.run = (logininfo) => {
+module.exports.run = (logininfo, callback) => {
     var fs              = require("fs")
     var SteamID         = require("steamid")
     var steamidresolver = require("steamid-resolver")
@@ -92,7 +92,7 @@ module.exports.run = (logininfo) => {
         try {
             steamidresolver.customUrlTosteamID64(config.owner, (err, ownerResult) => {
                 if (err == "The specified profile could not be found.") { //if the profile couldn't be found display specific message
-                    return logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.\n         Error: " + err, true)
+                    return logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.\n       Error: " + err, true)
                 } else {
                     if (err) return logger("error", "Error checking if owner is valid: " + err) //if a different error then display a generic message with the error
                 }
@@ -106,4 +106,6 @@ module.exports.run = (logininfo) => {
             } 
         }
     }
+
+    callback();
 }

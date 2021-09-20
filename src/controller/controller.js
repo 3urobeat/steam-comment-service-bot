@@ -85,12 +85,14 @@
             /* ------------ Import data: ------------ */
             var extdata;
             var config;
+            var logininfo;
 
             starter.checkAndGetFile("./src/controller/helpers/dataimport.js", (dataimportfile) => { //yes, the nested callbacks aren't getting better
                 dataimportfile.extdata((extdatafile) => {
 
-                    extdata = extdatafile
-                    config  = dataimportfile.config()
+                    extdata   = extdatafile
+                    config    = dataimportfile.config()
+                    logininfo = dataimportfile.logininfo();
 
                     global.config  = config
                     global.extdata = extdata
@@ -115,25 +117,28 @@
 
                     if (extdata.branch == "beta-testing") logger("", "\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
 
-                    var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
-                    if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
-                    logger("info", `Comment config values: commentdelay = ${config.commentdelay} | maxCommentsOverall = ${maxCommentsOverall} | randomizeAcc = ${config.randomizeAccounts}`, false, true, logger.animation("loading"))
+                    require("./helpers/datacheck.js").run(logininfo, () => {
+
+                        var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
+                        if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
+                        logger("info", `Comment config values: commentdelay = ${config.commentdelay} | maxCommentsOverall = ${maxCommentsOverall} | randomizeAcc = ${config.randomizeAccounts}`, false, true, logger.animation("loading"))
 
 
-                    /* ------------ Run updater or start logging in when steam is online: ------------ */
-                    starter.checkAndGetFile("./src/updater/updater.js", (updater) => { //callback hell: maximum power
+                        /* ------------ Run updater or start logging in when steam is online: ------------ */
+                        starter.checkAndGetFile("./src/updater/updater.js", (updater) => { //callback hell: maximum power
 
-                        updater.compatibility(() => { //continue startup on any callback
+                            updater.compatibility(() => { //continue startup on any callback
 
-                            require("./helpers/internetconnection.js").run(true, true, true, () => { //we can ignore callback because stoponerr is true
+                                require("./helpers/internetconnection.js").run(true, true, true, () => { //we can ignore callback because stoponerr is true
 
-                                require("../updater/updater.js").run(false, null, false, (foundanddone2) => {
+                                    require("../updater/updater.js").run(false, null, false, (foundanddone2) => {
 
-                                    if (!foundanddone2) {
-                                        require("./login.js").startlogin() //start logging in
-                                    } else {
-                                        require(srcdir + "/../start.js").restart({ skippedaccounts: this.skippedaccounts }); //restart
-                                    }
+                                        if (!foundanddone2) {
+                                            require("./login.js").startlogin(logininfo) //start logging in
+                                        } else {
+                                            require(srcdir + "/../start.js").restart({ skippedaccounts: this.skippedaccounts }); //restart
+                                        }
+                                    })
                                 })
                             })
                         })

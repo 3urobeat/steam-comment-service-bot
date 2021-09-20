@@ -10,8 +10,9 @@ module.exports.steamGuardInputTimeFunc = (arg) => { //small function to return n
 
 /**
   * Prints an ASCII Art and starts to login all bot accounts
+  * @param {Object} logininfo The logininfo object
   */
-module.exports.startlogin = () => {
+module.exports.startlogin = (logininfo) => {
     var SteamTotp  = require('steam-totp');
 
     var controller = require("./controller.js")
@@ -45,10 +46,6 @@ module.exports.startlogin = () => {
 
     //Print whatsnew message if this is the first start with this version
     if (extdata.firststart) logger("", "\x1b[0mWhat's new: " + extdata.whatsnew + "\n")
-
-
-    //Import logininfo data
-    var logininfo = require("./helpers/dataimport.js").logininfo()
 
 
     //Evaluate estimated wait time for login:

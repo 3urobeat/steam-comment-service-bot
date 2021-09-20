@@ -35,7 +35,7 @@ module.exports.run = (responseSteamID, callback) => {
 
 
         if (mainfile.activecommentprocess.length != 0) {
-            logger("info", "Waiting for an active comment process to finish...", false, true, logger.animation("loading"))
+            logger("info", "Waiting for an active comment process to finish...", false, true, logger.animation("waiting"))
             if (responseSteamID) controller.botobject[0].chat.sendFriendMessage(responseSteamID, `/me Waiting for an active comment process to finish...`)
 
             //check if a comment request is being processed every 2.5 secs
