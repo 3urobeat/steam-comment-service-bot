@@ -115,7 +115,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
 
         /* --------- Check profileid argument if it was provided --------- */
         if (args[1] !== undefined) {
-            if (config.ownerid.includes(new SteamID(String(steamID)).getSteamID64()) || args[1] == new SteamID(String(steamID)).getSteamID64()) { //check if user is a bot owner or if he provided his own profile id
+            if (config.ownerid.includes(requesterSteamID) || args[1] == requesterSteamID) { //check if user is a bot owner or if he provided his own profile id
                 if (isNaN(args[1])) return respondmethod(400, lang.commentinvalidprofileid.replace("commentcmdusage", commentcmdusage))
                 if (new SteamID(args[1]).isValid() == false) return respondmethod(400, lang.commentinvalidprofileid.replace("commentcmdusage", commentcmdusage))
 
@@ -132,6 +132,9 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
         }
         
     } //arg[0] if statement ends here
+
+    var recieverSteamID = new SteamID(String(steamID)).getSteamID64();
+
 
     /* --------- Check if user did not provide numberofcomments --------- */
     if (numberofcomments === undefined) { //no numberofcomments given? ask again
@@ -156,7 +159,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
         if (Number(i) + 1 <= numberofcomments && Number(i) + 1 <= Object.keys(controller.botobject).length) { //only check if this acc is needed for a comment
             try {
                 //if bot account limitations can be read from obj and bot account is limited and hasn't target account in friend list
-                if (controller.botobject[accountorder[i]].limitations && controller.botobject[accountorder[i]].limitations.limited == true && !Object.keys(controller.botobject[accountorder[i]].myFriends).includes(new SteamID(String(steamID)).getSteamID64())) {
+                if (controller.botobject[accountorder[i]].limitations && controller.botobject[accountorder[i]].limitations.limited == true && !Object.keys(controller.botobject[accountorder[i]].myFriends).includes(recieverSteamID)) {
                     accstoadd[requesterSteamID].push(`\n ' https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[accountorder[i]].steamID)).getSteamID64()} '`) //...then push profile URL into array
                 }
             } catch (err) {
@@ -317,7 +320,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                             } else { //if the error occurred on another account then log the error and push the error to mainfile.failedcomments
 
                                 if (loginfile.proxies.length > 1) {
-                                    logger("error", `[${thisbot}] postUserComment ${i + 1}/${numberofcomments} error (using proxy ${loginfile.additionalaccinfo[k].thisproxyindex}): ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - reciever: ${new SteamID(String(steamID)).getSteamID64()}`); 
+                                    logger("error", `[${thisbot}] postUserComment ${i + 1}/${numberofcomments} error (using proxy ${loginfile.additionalaccinfo[k].thisproxyindex}): ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - reciever: ${recieverSteamID}`); 
 
                                     mainfile.failedcomments[requesterSteamID][`Comment ${i + 1} (bot${k})`] = `postUserComment error: ${error} [${errordesc}]`
                                 } else {
@@ -361,8 +364,8 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
 
                         } else { //Stuff below should only run for child accounts
                             if (!error) {
-                                if (loginfile.proxies.length > 1) logger("info", `[${thisbot}] Comment ${i + 1}/${numberofcomments} on ${new SteamID(String(steamID)).getSteamID64()} with proxy ${loginfile.additionalaccinfo[k].thisproxyindex}: ${String(comment).split("\n")[0]}`)
-                                    else logger("info", `[${thisbot}] Comment ${i + 1}/${numberofcomments} on ${new SteamID(String(steamID)).getSteamID64()}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
+                                if (loginfile.proxies.length > 1) logger("info", `[${thisbot}] Comment ${i + 1}/${numberofcomments} on ${recieverSteamID} with proxy ${loginfile.additionalaccinfo[k].thisproxyindex}: ${String(comment).split("\n")[0]}`)
+                                    else logger("info", `[${thisbot}] Comment ${i + 1}/${numberofcomments} on ${recieverSteamID}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
                             }
                         }
 
@@ -384,7 +387,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                                 accstoadd[requesterSteamID] = []
 
                                 for (i in controller.botobject) {
-                                    if (!Object.keys(controller.botobject[i].myFriends).includes(new SteamID(String(steamID)).getSteamID64())) {
+                                    if (!Object.keys(controller.botobject[i].myFriends).includes(recieverSteamID)) {
                                         accstoadd[requesterSteamID].push(`\n ' https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[i].steamID)).getSteamID64()} '`)
                                     }
 
