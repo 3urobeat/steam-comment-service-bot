@@ -104,7 +104,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                     try { //catch any unhandled error to be able to remove user from activecommentprocess array
                         require("../commands/comment/comment.js").run(chatmsg, steamID, args, null, lastcommentdoc)
                     } catch (err) {
-                        mainfile.activecommentprocess = mainfile.activecommentprocess.filter(item => item != steam64id) //Remove user from array to make sure you can't get stuck in there (not perfect as this won't trigger when the error occurrs in a nested function)
+                        chatmsg(steamID, "Error while processing comment request: " + err.stack)
                         logger("error", "Error while processing comment request: " + err.stack)
                     }
                 })
@@ -122,7 +122,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                     try { //catch any unhandled error to be able to remove user from activecommentprocess array
                         require("../commands/comment/groupcomment.js").run(chatmsg, steamID, args, null, lastcommentdoc)
                     } catch (err) {
-                        mainfile.activecommentprocess = mainfile.activecommentprocess.filter(item => item != steam64id) //Remove user from array to make sure you can't get stuck in there (not perfect as this won't trigger when the error occurrs in a nested function)
+                        chatmsg(steamID, "Error while processing group comment request: " + err.stack)
                         logger("error", "Error while processing group comment request: " + err)
                     }
                 })

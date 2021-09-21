@@ -9,12 +9,11 @@
 module.exports.abort = (chatmsg, steamID, lang, steam64id) => {
     var mainfile = require("../../main.js")
 
-    if (!mainfile.activecommentprocess.includes(steam64id)) return chatmsg(steamID, lang.abortcmdnoprocess)
+    if (!mainfile.activecommentprocess[steam64id] || mainfile.activecommentprocess[steam64id].status != "active") return chatmsg(steamID, lang.abortcmdnoprocess)
 
-    var index = mainfile.activecommentprocess.indexOf(steam64id) //get index of this steam64id
-    mainfile.activecommentprocess.splice(index, 1)
+    mainfile.activecommentprocess[steam64id].status = "aborted"
 
-    logger("info", `Aborting ${steam64id}'s comment process...`)
+    logger("info", `Aborting comment process for profile ${steam64id}...`)
     chatmsg(steamID, lang.abortcmdsuccess)
 }
 
@@ -36,8 +35,11 @@ module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
     if (config.commentcooldown == 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the cooldown enabled?
 
     if (args[0]) {
-        if (args[0] == "global") { //Check if user wants to reset the global cooldown
-            mainfile.commentedrecently = 0
+        if (args[0] == "global") { //Check if user wants to reset the global cooldown (will reset all until entries in activecommentprocess)
+            Object.keys(mainfile.activecommentprocess).forEach((e) => {
+                mainfile.activecommentprocess[e].until = Date.now() - (config.globalcommentcooldown * 60000); //since the cooldown checks will add the cooldown we need to subtract it (can't delete the entry because we might abort running processes with it)
+            })
+
             return chatmsg(steamID, lang.resetcooldowncmdglobalreset) 
         }
 

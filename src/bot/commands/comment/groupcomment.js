@@ -59,35 +59,6 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
     }
 
 
-    /* ------------------ Check for cooldowns ------------------ */
-    if (config.commentcooldown !== 0 && !res) { //check for user specific cooldown (ignore if it is a webrequest)
-        if ((Date.now() - lastcommentdoc.time) < (config.commentcooldown * 60000)) { //check if user has cooldown applied
-            var remainingcooldown = Math.abs(((Date.now() - lastcommentdoc.time) / 1000) - (config.commentcooldown * 60))
-            var remainingcooldownunit = "seconds"
-            if (remainingcooldown > 120) { var remainingcooldown = remainingcooldown / 60; var remainingcooldownunit = "minutes" }
-            if (remainingcooldown > 120) { var remainingcooldown = remainingcooldown / 60; var remainingcooldownunit = "hours" }
-
-            respondmethod(403, lang.commentuseroncooldown.replace("commentcooldown", config.commentcooldown).replace("remainingcooldown", round(remainingcooldown, 2)).replace("timeunit", remainingcooldownunit)) //send error message
-            return;
-        } else {
-            if (mainfile.activecommentprocess.indexOf(String(requesterSteamID)) !== -1) { //is the user already getting comments? (-1 means not included)
-                return respondmethod(403, lang.commentuseralreadyrecieving)
-            }
-        }
-    }
-
-    if (config.globalcommentcooldown != 0) { //check for global cooldown
-        if ((Date.now() - mainfile.commentedrecently) < (config.globalcommentcooldown * 60000)) {
-            var remainingglobalcooldown = Math.abs(((Date.now() - mainfile.commentedrecently) - (config.globalcommentcooldown * 60000)) / 1000)
-            var remainingglobalcooldownunit = "seconds"
-            if (remainingglobalcooldown > 120) { var remainingglobalcooldown = remainingglobalcooldown / 60; var remainingglobalcooldownunit = "minutes" }
-            if (remainingglobalcooldown > 120) { var remainingglobalcooldown = remainingglobalcooldown / 60; var remainingglobalcooldownunit = "hours" }
-
-            respondmethod(403, lang.commentglobaloncooldown.replace("globalcommentcooldown", config.globalcommentcooldown).replace("remainingglobalcooldown", round(remainingglobalcooldown, 2)).replace("timeunit", remainingglobalcooldownunit)) //send error message
-            return;
-        } 
-    }
-
     /* --------- Check numberofcomments argument if it was provided --------- */
     if (args[0] == undefined) return respondmethod(403, "You need to provide number_of_comments because you also need to provide the groupid!")
 
@@ -107,14 +78,17 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
 
     //Code by: https://github.com/HerrEurobeat/ 
 
+    
+    var groupid = args[1]; //define recieverSteamID just like requesterSteamID to reduce future SteamID().getSteamID64() calls
 
     /* --------- Check if groupid argument was provided --------- */
-    if (args[1] == undefined) return respondmethod(403, "You need to provide a groupid!")
+    if (groupid == undefined) return respondmethod(403, "You need to provide a groupid!")
 
     /* --------- Check if custom quotes were provided --------- */
     if (args[2] !== undefined) {
         quoteselection = args.slice(2).join(" ").replace(/^\[|\]$/g, "").split(", "); //change default quotes to custom quotes
     }
+
 
     /* --------- Check if user did not provide numberofcomments --------- */
     if (numberofcomments === undefined) { //no numberofcomments given? ask again
@@ -127,19 +101,93 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
     }
 
 
+    /* ------------------ Check for cooldowns ------------------ */
+    if (config.commentcooldown !== 0 && !res) { //check for user specific cooldown (ignore if it is a webrequest)
+        if ((Date.now() - lastcommentdoc.time) < (config.commentcooldown * 60000)) { //check if user has cooldown applied
+            var remainingcooldown = Math.abs(((Date.now() - lastcommentdoc.time) / 1000) - (config.commentcooldown * 60))
+            var remainingcooldownunit = "seconds"
+            if (remainingcooldown > 120) { var remainingcooldown = remainingcooldown / 60; var remainingcooldownunit = "minutes" }
+            if (remainingcooldown > 120) { var remainingcooldown = remainingcooldown / 60; var remainingcooldownunit = "hours" }
+
+            respondmethod(403, lang.commentuseroncooldown.replace("commentcooldown", config.commentcooldown).replace("remainingcooldown", round(remainingcooldown, 2)).replace("timeunit", remainingcooldownunit)) //send error message
+            return;
+        } else {
+            if (mainfile.activecommentprocess[groupid] && mainfile.activecommentprocess[groupid].status == "active") { //is the group already recieving comments?
+                return respondmethod(403, lang.commentuseralreadyrecieving)
+            }
+        }
+    }
+
+    if (config.globalcommentcooldown != 0) { //check for global cooldown
+        if ((Date.now() - mainfile.commentedrecently) < (config.globalcommentcooldown * 60000)) {
+            var remainingglobalcooldown = Math.abs(((Date.now() - mainfile.commentedrecently) - (config.globalcommentcooldown * 60000)) / 1000)
+            var remainingglobalcooldownunit = "seconds"
+            if (remainingglobalcooldown > 120) { var remainingglobalcooldown = remainingglobalcooldown / 60; var remainingglobalcooldownunit = "minutes" }
+            if (remainingglobalcooldown > 120) { var remainingglobalcooldown = remainingglobalcooldown / 60; var remainingglobalcooldownunit = "hours" }
+
+            respondmethod(403, lang.commentglobaloncooldown.replace("globalcommentcooldown", config.globalcommentcooldown).replace("remainingglobalcooldown", round(remainingglobalcooldown, 2)).replace("timeunit", remainingglobalcooldownunit)) //send error message
+            return;
+        } 
+    }
+
+
+    /* --------- Calculate the amount of accounts needed for this request ---------  */
+    //Method 1: Use as many accounts as possible to maximise the spread (Default)
+    if (numberofcomments <= Object.keys(controller.communityobject).length) var accountsneeded = numberofcomments
+        else var accountsneeded = Object.keys(controller.communityobject).length //cap accountsneeded at amount of accounts because if numberofcomments is greater we will start at account 1 again
+
+    //Method 2: Use as few accounts as possible to maximise the amount of parallel requests (Not implemented yet, probably coming in 2.12)
+
+
+    /* --------- Check if enough bot accounts are available for this rerquest --------- */
+    logger("info", `Checking for available bot accounts for this request...`, false, false, logger.animation("loading"))
+
+    var allaccounts = [ ... Object.keys(controller.communityobject) ] //clone keys array of communityobject
+    //var nextavailable = Date.now() //needs to be implemented to tell the user how long it will probably take before he can request (a queue feature would change the situation)
+
+    if (Object.keys(mainfile.activecommentprocess).length > 0) { //we only need to run the loop below if the obj is not empty
+        Object.keys(mainfile.activecommentprocess).forEach((e) => { //loop over activecommentprocess obj and remove all valid entries from allaccounts array
+
+            if (Date.now() < mainfile.activecommentprocess[e].until + (config.globalcommentcooldown * 60000)) { //check if entry is not finished yet
+
+                mainfile.activecommentprocess[e].accounts.forEach((f) => { //loop over every account used in this request
+                    allaccounts.splice(allaccounts.indexOf(f), 1) //remove that accountindex from the allaccounts array
+                })
+            } else {
+                delete mainfile.activecommentprocess[e] //remove entry from object if it is finished to keep the object clean
+            }
+        })
+    }
+
+    if (allaccounts.length < accountsneeded) { //if not enough accounts are available respond with error message
+        respondmethod(500, lang.commentnotenoughavailableaccs.replace("waittime", "x").replace("timeunit", "min"))
+        logger("info", `Found only ${allaccounts.length} available account(s) but ${accountsneeded} account(s) are needed to send ${numberofcomments} comments.`)
+        return;
+    } else {
+        logger("info", `Found ${allaccounts.length} available account(s)!`)
+    }
+
+
     /* --------- Check for steamcommunity related errors/limitations --------- */
     //Randomize order of accounts already here so that the new order will be used for the next limited & not friend check
-    var accountorder = [ ... Object.keys(controller.communityobject)]
+    var accountorder = [ ... allaccounts]
     if (config.randomizeAccounts) accountorder.sort(() => Math.random() - 0.5); //randomize order if enabled in config
+
+    //Remove accounts that are not needed in this request
+    accountorder = accountorder.slice(0, accountsneeded);
+    
 
     /* --------- Actually start the commenting process --------- */
     var breakloop = false
     mainfile.failedcomments[requesterSteamID] = {}
-    mainfile.activecommentprocess.push(requesterSteamID)
-
-    if (config.globalcommentcooldown !== 0) { //activate globalcommentcooldown
-        mainfile.commentedrecently = Date.now() + (numberofcomments * config.commentdelay) //globalcommentcooldown should start after the last comment was processed
-        if (numberofcomments == 1) mainfile.commentedrecently -= config.commentdelay //subtract commentdelay again if only one comment was requested because there is nothing to wait for
+    
+    mainfile.activecommentprocess[groupid] = { 
+        status: "active",
+        type: "group",
+        amount: numberofcomments,
+        requestedby: requesterSteamID,
+        accounts: accountorder,
+        until: Date.now() + (numberofcomments * config.commentdelay) //globalcommentcooldown should start after the last comment was processed
     }
 
 
@@ -147,7 +195,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
         setTimeout(() => {
             /* --------- Check if this iteration should still run --------- */
             //(both checks are designed to run through every failed iteration)
-            if (!mainfile.activecommentprocess.includes(requesterSteamID)) { //Check if user is not anymore in mainfile.activecommentprocess array (for example by using !abort)
+            if (mainfile.activecommentprocess[groupid].status != "active") { //Check if group is not anymore in mainfile.activecommentprocess obj (for example by using !abort)
                 mainfile.failedcomments[requesterSteamID][`Comment ${i} (bot${k})`] = "Skipped because user aborted comment process." //push reason to mainfile.failedcomments obj
                 return; //Stop further execution and skip to next iteration
             }
@@ -172,7 +220,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                         m++
                     }
 
-                    mainfile.activecommentprocess = mainfile.activecommentprocess.filter(item => item != requesterSteamID)
+                    mainfile.activecommentprocess[groupid].status = "error" //update status in activecommentprocess obj
                     mainfile.commentcounter += numberofcomments - (numberofcomments - i + 1) //add numberofcomments minus failedamount to commentcounter
 
                     logger("warn", "HTTP 429 error detected. Skipping all other comments on this proxy because they will fail too!")
@@ -199,47 +247,80 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
             }
             
             getQuote(comment => { //get a random quote to comment with and wait for callback to ensure a quote has been found before trying to comment
-                controller.communityobject[k].postGroupComment(args[1], comment, (error) => { //post comment
+                controller.communityobject[k].postGroupComment(groupid, comment, (error) => { //post comment
                     if (k == 0) var thisbot = `Main`; else var thisbot = `Bot ${k}`; //call bot 0 the main bot in logging messages
 
                     /* --------- Handle errors thrown by this comment attempt --------- */
                     if (error) {
+                        var errordesc = ""
+
+                        switch (error) {
+                            case "Error: HTTP error 429":
+                                errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes.\nPlease wait a moment and then try again."
+
+                                //add 5 minutes of cooldown to all bot accounts
+                                mainfile.activecommentprocess[groupid].accounts = mainfile.activecommentprocess[groupid].accounts.concat(Object.keys(controller.communityobject)) //add all bot accounts to this request and add cooldown since all will be blocked (IP)
+                                mainfile.activecommentprocess[groupid].until = Date.now() + 300000 //now + 5 min
+
+                                break;
+                            case "Error: HTTP Error 502":
+                                errordesc = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us"
+                                break;
+                            case "Error: HTTP Error 504":
+                                errordesc = "The steam servers are slow atm/are down. Check Steam's status here: https://steamstat.us"
+                                break;
+                            case "Error: You've been posting too frequently, and can't make another post right now":
+                                errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes.\nPlease wait a moment and then try again."
+
+                                mainfile.activecommentprocess[groupid].until = Date.now() + 300000 //add 5 minutes to cooldown of accounts used in this request
+                                break;
+                            case "Error: There was a problem posting your comment. Please try again":
+                                errordesc = "Unknown reason - please wait a minute and try again."
+                                break;
+                            case "Error: The settings on this account do not allow you to add comments":
+                                errordesc = "The profile's comment section the account is trying to comment on is private or the account doesn't meet steams regulations."
+                                break;
+                            case "Error: To post this comment, your account must have Steam Guard enabled":
+                                errordesc = "The account trying to comment doesn't seem to have steam guard enabled."
+                                break;
+                            case "Error: socket hang up":
+                                errordesc = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us"
+                                break;
+                            default:
+                                errordesc = "Please wait a moment and try again!"
+                        }
+
                         if (i == 0) { //If the error occurred on the first comment then stop and return an error message
                             //Get last successful comment time to display it in error message
                             mainfile.lastsuccessfulcomment(cb => {
                                 let localoffset = new Date().getTimezoneOffset() * 60000
 
                                 if (loginfile.proxies.length > 1) {
-                                    respondmethod(500, `${lang.commenterroroccurred}\n\nDetails: \n[${thisbot}] postGroupComment error (using proxy ${loginfile.additionalaccinfo[k].thisproxyindex}): ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
+                                    respondmethod(500, `${lang.commenterroroccurred}\n${errordesc}\n\nDetails: \n[${thisbot}] postGroupComment error (using proxy ${loginfile.additionalaccinfo[k].thisproxyindex}): ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
 
                                     //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
-                                    logger("error", `[${thisbot}] postGroupComment error (using proxy ${loginfile.additionalaccinfo[k].thisproxyindex}): ${error}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`) 
+                                    logger("error", `[${thisbot}] postGroupComment error (using proxy ${loginfile.additionalaccinfo[k].thisproxyindex}): ${error}\n${errordesc}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`) 
                                 } else {
-                                    respondmethod(500, `${lang.commenterroroccurred}\n\n\nDetails: \n[${thisbot}] postGroupComment error: ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
+                                    respondmethod(500, `${lang.commenterroroccurred}\n${errordesc}\n\n\nDetails: \n[${thisbot}] postGroupComment error: ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
 
                                     //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
-                                    logger("error", `[${thisbot}] postGroupComment error: ${error}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`)
+                                    logger("error", `[${thisbot}] postGroupComment error: ${error}\n${errordesc}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`)
                                 }
                             })
 
-
-                            if (error == "Error: HTTP error 429" || error == "Error: You've been posting too frequently, and can't make another post right now") {
-                                mainfile.commentedrecently = Date.now() + 300000 //add 5 minutes to commentedrecently if cooldown error
-                            }
-
-                            mainfile.activecommentprocess = mainfile.activecommentprocess.filter(item => item != requesterSteamID)
-
+                            mainfile.activecommentprocess[groupid].status = "error" //update status in activecommentprocess obj
                             breakloop = true; //stop whole loop when an error occurred
+
                             return; //stop further execution in this iteration
 
                         } else { //if the error occurred on another account then log the error and push the error to mainfile.failedcomments
 
                             if (loginfile.proxies.length > 1) {
-                                logger("error", `[${thisbot}] postGroupComment ${i + 1}/${numberofcomments} error (using proxy ${loginfile.additionalaccinfo[k].thisproxyindex}): ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - group: ${args[1]}`); 
+                                logger("error", `[${thisbot}] postGroupComment ${i + 1}/${numberofcomments} error (using proxy ${loginfile.additionalaccinfo[k].thisproxyindex}): ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - group: ${groupid}`); 
 
                                 mainfile.failedcomments[requesterSteamID][`Comment ${i + 1} (bot${k})`] = `postGroupComment error: ${error}`
                             } else {
-                                logger("error", `[${thisbot}] postGroupComment ${i + 1}/${numberofcomments} error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - group: ${args[1]}`); 
+                                logger("error", `[${thisbot}] postGroupComment ${i + 1}/${numberofcomments} error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - group: ${groupid}`); 
 
                                 mainfile.failedcomments[requesterSteamID][`Comment ${i + 1} (bot${k})`] = `postGroupComment error: ${error}`
                             }
@@ -250,14 +331,14 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
 
                     /* --------- No error, run this on every successful iteration --------- */
                     if (i == 0) { //Stuff below should only run in first iteration (main bot)
-                        if (loginfile.proxies.length > 1) logger("info", `\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment in group ${args[1]} with proxy ${loginfile.additionalaccinfo[k].thisproxyindex}: ${String(comment).split("\n")[0]}\x1b[0m`)
-                                else logger("info", `\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment in group ${args[1]}: ${String(comment).split("\n")[0]}\x1b[0m`) //splitting \n to only get first line of multi line comments
+                        if (loginfile.proxies.length > 1) logger("info", `\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment in group ${groupid} with proxy ${loginfile.additionalaccinfo[k].thisproxyindex}: ${String(comment).split("\n")[0]}\x1b[0m`)
+                                else logger("info", `\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment in group ${groupid}: ${String(comment).split("\n")[0]}\x1b[0m`) //splitting \n to only get first line of multi line comments
 
 
                         if (numberofcomments == 1) {
                             respondmethod(200, lang.commentsuccess1)
 
-                            mainfile.activecommentprocess = mainfile.activecommentprocess.filter(item => item != requesterSteamID)
+                            mainfile.activecommentprocess[groupid].status = "cooldown"
                             mainfile.commentcounter += 1
 
                         } else {
@@ -278,8 +359,8 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
 
                     } else { //Stuff below should only run for child accounts
                         if (!error) {
-                            if (loginfile.proxies.length > 1) logger("info", `[${thisbot}] Comment ${i + 1}/${numberofcomments} in group ${args[1]} with proxy ${loginfile.additionalaccinfo[k].thisproxyindex}: ${String(comment).split("\n")[0]}`)
-                                else logger("info", `[${thisbot}] Comment ${i + 1}/${numberofcomments} in group ${args[1]}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
+                            if (loginfile.proxies.length > 1) logger("info", `[${thisbot}] Comment ${i + 1}/${numberofcomments} in group ${groupid} with proxy ${loginfile.additionalaccinfo[k].thisproxyindex}: ${String(comment).split("\n")[0]}`)
+                                else logger("info", `[${thisbot}] Comment ${i + 1}/${numberofcomments} in group ${groupid}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
                         }
                     }
 
@@ -289,7 +370,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
 
                         if (!res) respondmethod(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(mainfile.failedcomments[requesterSteamID]).length).replace("numberofcomments", numberofcomments)}`); //only send if not a webrequest
 
-                        mainfile.activecommentprocess = mainfile.activecommentprocess.filter(item => item != requesterSteamID) //remove user from mainfile.activecommentprocess array
+                        mainfile.activecommentprocess[groupid].status = "cooldown"
                         mainfile.commentcounter += numberofcomments - Object.keys(mainfile.failedcomments[requesterSteamID]).length //add numberofcomments minus failedamount to commentcounter
 
                     }

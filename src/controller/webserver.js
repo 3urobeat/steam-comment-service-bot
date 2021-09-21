@@ -69,8 +69,9 @@ module.exports.run = () => {
             try { //catch any unhandled error to be able to remove user from activecommentprocess array
                 require("../bot/commands/comment/comment.js").run(null, steamID, [req.query.n, req.query.id], res, lastcommentdoc)
             } catch (err) {
-                mainfile.activecommentprocess = mainfile.activecommentprocess.filter(item => item != steam64id) //Remove user from array to make sure you can't get stuck in there (not perfect as this won't trigger when the error occurrs in a nested function)
+                res.status(500).send(steamID, "Error while processing comment request: " + err.stack)
                 logger("error", "Error while processing comment request: " + err.stack)
+                return;
             }
         })
     });
