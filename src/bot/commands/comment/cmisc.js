@@ -98,7 +98,11 @@ module.exports.sessions = (chatmsg, steamID, lang) => {
             }
 
             if (i == objlength - 1) {
-                chatmsg(steamID, lang.sessionscmdmsg.replace("amount", Object.keys(mainfile.activecommentprocess).length) + "\n" + str)
+                if (Object.keys(mainfile.activecommentprocess).length > 0) { //check if obj is still not empty
+                    chatmsg(steamID, lang.sessionscmdmsg.replace("amount", Object.keys(mainfile.activecommentprocess).length) + "\n" + str);
+                } else {
+                    chatmsg(steamID, lang.sessionscmdnosessions);
+                }
             }
         })
     } else {
@@ -131,7 +135,13 @@ module.exports.mysessions = (chatmsg, steamID, lang, steam64id) => {
             }
 
             if (i == objlength - 1) {
-                chatmsg(steamID, lang.sessionscmdmsg.replace("amount", Object.keys(mainfile.activecommentprocess).length) + "\n" + str)
+                if (i == objlength - 1) {
+                    if (Object.keys(mainfile.activecommentprocess).length > 0) { //check if obj is still not empty
+                        chatmsg(steamID, lang.sessionscmdmsg.replace("amount", Object.keys(mainfile.activecommentprocess).length) + "\n" + str);
+                    } else {
+                        chatmsg(steamID, lang.mysessionscmdnosessions);
+                    }
+                }
             }
         })
     } else {
