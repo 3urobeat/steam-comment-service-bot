@@ -65,9 +65,9 @@ module.exports.output = (chatmsg, steamID) => {
 
 
     fs.readFile("./output.txt", function (err, data) {
-        if (err) logger("error", "error getting last 25 lines from output for log cmd: " + err)
+        if (err) logger("error", "error getting last 20 lines from output for log cmd: " + err)
 
-        chatmsg(steamID, "These are the last 25 lines:\n\n" + data.toString().split('\n').slice(data.toString().split('\n').length - 25).join('\n')) 
+        chatmsg(steamID, "These are the last 20 lines:\n\n" + data.toString().split('\n').slice(data.toString().split('\n').length - 20).join('\n')) 
     })
 }
 
