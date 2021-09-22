@@ -16,7 +16,7 @@ module.exports.run = (chatmsg, steamID, lang, loginindex, args) => {
     if (!args[0]) { 
         fs.readFile('./config.json', function(err, data) { //Use readFile to get an unprocessed object
             if (err) return chatmsg(steamID, lang.settingscmdfailedread + err)
-            chatmsg(steamID, lang.settingscmdcurrentsettings + "\n" + data.toString().slice(1, -1)) //remove first and last character which are brackets
+            chatmsg(steamID, lang.settingscmdcurrentsettings + "" + data.toString().slice(1, -1).split("\n").map(s => s.trim()).join("\n")) //remove first and last character which are brackets and remove leading and trailing whitespaces from all lines
         })
         return; 
     }
