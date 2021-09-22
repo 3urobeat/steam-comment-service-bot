@@ -230,7 +230,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
             setTimeout(() => {
                 /* --------- Check if this iteration should still run --------- */
                 //(both checks are designed to run through every failed iteration)
-                if (mainfile.activecommentprocess[recieverSteamID].status != "active") { //Check if profile is not anymore in mainfile.activecommentprocess obj (for example by using !abort)
+                if (!mainfile.activecommentprocess[recieverSteamID] || mainfile.activecommentprocess[recieverSteamID].status != "active") { //Check if profile is not anymore in mainfile.activecommentprocess obj or status is not active anymore (for example by using !abort)
                     mainfile.failedcomments[requesterSteamID][`Comment ${i} (bot${k})`] = "Skipped because user aborted comment process." //push reason to mainfile.failedcomments obj
                     return; //Stop further execution and skip to next iteration
                 }

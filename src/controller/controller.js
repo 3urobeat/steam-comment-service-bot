@@ -150,7 +150,8 @@
 }
 
 
-var oldconfig = {} //obj that can get populated by restart data to keep config through restarts
+//obj that can get populated by restart data to keep config through restarts
+var oldconfig = {} //eslint-disable-line
 var logafterrestart = [] //create array to log these error messages after restart
 
 
