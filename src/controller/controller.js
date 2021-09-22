@@ -58,6 +58,18 @@
             }
         });
 
+        //Attach exit event listeners to display message in output & terminal when user stops the bot. Signals: https://nodejs.org/api/process.html#process_signal_events
+        function handleEvent(signal) {
+            logger("", "", true)
+            logger("info", `Recieved ${signal} signal to exit...`, false, true);
+            logger("", "Goodbye!", true);
+            process.exit(0);
+        }
+          
+        process.on("SIGINT", handleEvent); // CTRL+C
+        process.on("SIGTERM", handleEvent); // terminated, for example by task manager
+        process.on("SIGHUP", handleEvent); // close terminal
+
 
         /* ------------ Introduce logger function: ------------ */
         starter.checkAndGetFile("./src/controller/helpers/logger.js", (loggerfile) => { //*callback hell intensifies*
