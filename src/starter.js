@@ -97,7 +97,7 @@ module.exports.run = () => {
  * @param {Boolean} nologOff If true the function won't attempt to log off all bot accounts
  */
 module.exports.restart = (args, nologOff) => {
-    console.log("Restarting application...")
+    console.log("Initiating restart...")
 
     if (!nologOff) {
         this.checkAndGetFile("./src/controller/controller.js", (controller) => {
@@ -126,17 +126,24 @@ module.exports.restart = (args, nologOff) => {
     for(var i in global.timeoutList) {
         clearTimeout(global.timeoutList[i]);
     }
-    
 
-    Object.keys(require.cache).forEach(function(key) { 
-        delete require.cache[key] //clear cache to include file changes
-    })
+    console.log("Waiting 2.5 seconds...")
 
     setTimeout(() => {
+        console.log("Clearing cache...")
+
+        Object.keys(require.cache).forEach(function(key) { 
+            delete require.cache[key] //clear cache to include file changes
+        })
+    }, 2500);
+
+    setTimeout(() => {
+        console.log("Restarting...")
+
         this.checkAndGetFile("./src/controller/controller.js", (file) => {
             file.restartdata(args) //start again after 2.5 sec
         })
-    }, 2500)
+    }, 5000)
 }
 
 
