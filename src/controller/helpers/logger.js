@@ -17,7 +17,7 @@ module.exports.logger = (type, str, nodate, remove, animation) => { //Function t
         msgstructure: "[animation] [date | type] message",
         paramstructure: ["type", "str", "nodate", "remove", "animation"],
         outputfile: srcdir + "/../output.txt",
-        animationdelay: 350
+        animationdelay: 250
     })
     
 
