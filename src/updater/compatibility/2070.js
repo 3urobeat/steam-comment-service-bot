@@ -26,7 +26,7 @@ module.exports.run = (callback) => { //eslint-disable-line
 
                         logger("info", "I will now update again. Please wait a moment...") //force update so that config gets cleaned up
                         require("../updater").run(true, null, true, (done) => {
-                            if (done) require("../../../start.js").restart({ skippedaccounts: controller.skippedaccounts })
+                            if (done) process.send(`restart(${JSON.stringify({ skippedaccounts: controller.skippedaccounts })})`) //send request to parent process
                         }) 
                     }) 
                 }) 
@@ -40,7 +40,7 @@ module.exports.run = (callback) => { //eslint-disable-line
         var controller = require("../../controller/controller.js")
 
         require("../updater").run(true, null, true, (done) => {
-            if (done) require("../../../start.js").restart({ skippedaccounts: controller.skippedaccounts })
+            if (done) process.send(`restart(${JSON.stringify({ skippedaccounts: controller.skippedaccounts })})`) //send request to parent process
         })
     }
 }

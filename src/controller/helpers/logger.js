@@ -27,7 +27,7 @@ module.exports.logger = (type, str, nodate, remove, animation) => { //Function t
     //Push string to readyafterlogs if desired
     if (typeof botisloggedin != "undefined" && botisloggedin) { //botislogged in will be undefined when the bot was just started
 
-        require("../../starter.js").checkAndGetFile("./src/controller/ready.js", (readyfile) => {
+        require("../../starter.js").checkAndGetFile("./src/controller/ready.js", false, (readyfile) => {
 
             if (!nodate) { //startup messages should have nodate enabled -> filter messages with date when bot is not started
                 if (readyfile.readyafter == 0 && !str.toLowerCase().includes("error") && !str.includes('Logging in... Estimated wait time') && !str.includes("What's new:") && remove !== true) { 

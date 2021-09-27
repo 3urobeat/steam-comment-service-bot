@@ -1,13 +1,89 @@
 //File to help starting application and making start.js more dynamic.
 
+const cp     = require('child_process');
+var   logger = require("output-logger") //look Mom, it's my own library!
+
+var   forkedprocess;
+var   childpid;
+
+var   requestedKill = false;
+
+
+//Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)
+logger.options({
+    msgstructure: "[animation] [date | type] message",
+    paramstructure: ["type", "str", "nodate", "remove", "animation"],
+    outputfile: __dirname + "/../output.txt",
+    animationdelay: 250
+})
+
+
+//Attach exit event listener to display message in output & terminal when user stops the bot
+process.on("exit", () => {
+    logger("", "", true)
+    logger("info", `Recieved signal to exit...`, false, true);
+    logger("", "Goodbye!", true);
+});
+
+
+//Attach listeners to make communicating with child possible
+function attachListeners() {
+    forkedprocess.on("message", (msg) => {
+        //logger("debug", "Recieved message from child: " + msg)
+
+        //Might need to switch to a switch case structure later on but for now this works fine for only two cases and is easier when trying to check for startsWith()
+        if (msg.startsWith("restart(")) {
+            logger("info", "Initiating restart...", false, true)
+
+            msg = msg.replace("restart", "").slice(1, -1) //remove function name and round brackets to only leave stringified object behind
+
+            if (msg == "") msg = "{}" //set msg to empty object if no object was provided to hopefully prevent the parsing from failing
+
+            let argsobject = JSON.parse(msg) //convert stringified args object back to JS object
+            argsobject["pid"] = childpid     //add pid to object
+
+
+            logger("info", "Killing old process...", false, true)
+
+            requestedKill = true;
+            process.kill(childpid, "SIGKILL")
+
+            setTimeout(() => {
+                logger("info", "Restarting...", false, true)
+                require("../start.js").restart(argsobject) //call restart function with argsobject
+            }, 2000);
+
+        } else if (msg == "stop()") {
+
+            requestedKill = true;
+            process.kill(childpid, "SIGKILL")
+            
+            logger("", "", true)
+            logger("info", "Stopping application...")
+            
+            process.exit(0)
+
+        }
+    })
+
+    forkedprocess.on("close", (code) => {
+        if (requestedKill) return;
+
+        logger("warn", `Child Process exited with code ${code}! Attempting to restart...`)
+        require("../start.js").restart({ pid: childpid })
+    })
+}
+
+
 /**
  * Checks if the needed file exists and gets it if it doesn't
  * @param {String} file The file path (from project root) to check and get
+ * @param {Boolean} norequire If set to true the function will return the path instead of importing it
  * @param {function} [callback] Called with `ready` (Boolean) on completion.
  */
-module.exports.checkAndGetFile = (file, callback) => {
+module.exports.checkAndGetFile = (file, norequire, callback) => {
     if (!file) {
-        console.log("checkAndGetFile() error: file parameter is undefined!")
+        logger("error", "checkAndGetFile() error: file parameter is undefined!")
         callback(undefined)
         return;
     }
@@ -31,7 +107,7 @@ module.exports.checkAndGetFile = (file, callback) => {
 
         var fileurl = `https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${branch}/${file.slice(2, file.length)}` //remove the dot at the beginning of the file string
 
-        console.log("Pulling: " + fileurl)
+        logger("info", "Pulling: " + fileurl, false, true)
 
         try {
             var https = require("https")
@@ -53,22 +129,24 @@ module.exports.checkAndGetFile = (file, callback) => {
                 res.on('end', () => {
                     fs.writeFile(file, output, (err) => {
                         if (err) {
-                            console.log(err)
+                            logger("error", "checkAndGetFile() writeFile error: " + err)
                             callback(null)
                             return;
                         }
 
-                        callback(require("." + file))
+                        if (norequire) callback(file)
+                            else callback(require("." + file))
                     })
                 }) 
             });
         } catch (err) { 
-            console.log('start.js get starter.js function Error: ' + err)
+            logger("error", "start.js get starter.js function error: " + err)
 
             callback(null)
         }
     } else {
-        callback(require("." + file))
+        if (norequire) callback(file)
+            else callback(require("." + file))
     }
 }
 
@@ -77,16 +155,15 @@ module.exports.checkAndGetFile = (file, callback) => {
  * Run the application
  */
 module.exports.run = () => {
-    //Yes, I know, global variables are bad. But I need a few multiple times in different files and it would be a pain in the ass to import them every time and ensure that I don't create a circular dependency and what not.
-    global.srcdir        = __dirname
-    global.botisloggedin = false
+    logger("info", "Starting process...")
 
-    if (typeof started == "undefined") global.started = false //Only set if undefined so that the check below works
-    if (started) return; //Don't start if bot is already started
-    started = true;
-    
-    this.checkAndGetFile("./src/controller/controller.js", (file) => {
-        file.run()
+    process.title = `CommentBot` //sets process title in task manager etc.
+
+    this.checkAndGetFile("./src/controller/controller.js", true, (file) => {
+        forkedprocess = cp.fork(file, [ __dirname, Date.now() ])
+        childpid      = forkedprocess.pid
+
+        attachListeners();
     })
 }
 
@@ -94,63 +171,21 @@ module.exports.run = () => {
 /**
  * Restart the application
  * @param {Object} args The argument object that will be passed to `controller.restartargs()`
- * @param {Boolean} nologOff If true the function won't attempt to log off all bot accounts
  */
-module.exports.restart = (args, nologOff) => {
-    console.log("Initiating restart...")
+module.exports.restart = (args) => {
+    logger("", "", true)
+    logger("info", "Starting new process...", false, true)
 
-    if (!nologOff) {
-        this.checkAndGetFile("./src/controller/controller.js", (controller) => {
-
-            if (typeof controller.server != "undefined") { //check if the server was exported instead of checking config.json to require less files
-                console.log("Stopping URLToComment webserver...")
-                controller.server.close() 
-            }
-
-            controller.relogAfterDisconnect = false; //Prevents disconnect event (which will be called by logOff) to relog accounts
-
-            if (botisloggedin) console.log("Logging off accounts...")
-
-            Object.keys(controller.botobject).forEach((e) => { //log out all bots
-                controller.botobject[e].logOff() 
-            })
-
-        })
-    }
-
-    //Clear all intervals & timeouts that have been set to avoid issues like this: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/94
-    for(var i in global.intervalList) {
-        clearInterval(global.intervalList[i]);
-    }
-
-    for(var i in global.timeoutList) {
-        clearTimeout(global.timeoutList[i]);
-    }
-
-    console.log("Waiting 2.5 seconds...")
+    try {
+        process.kill(args["pid"], "SIGKILL") //make sure the old child is dead
+    } catch (err) {} //eslint-disable-line
 
     setTimeout(() => {
-        console.log("Clearing cache...")
-
-        Object.keys(require.cache).forEach(function(key) { 
-            delete require.cache[key] //clear cache to include file changes
+        this.checkAndGetFile("./src/controller/controller.js", true, (file) => {
+            forkedprocess = cp.fork(file, [ __dirname, Date.now(), JSON.stringify(args) ])
+            childpid      = forkedprocess.pid
+    
+            attachListeners();
         })
-    }, 2500);
-
-    setTimeout(() => {
-        console.log("Restarting...")
-
-        this.checkAndGetFile("./src/controller/controller.js", (file) => {
-            file.restartdata(args) //start again after 2.5 sec
-        })
-    }, 5000)
-}
-
-
-/**
- * Stops the application.
- */
-module.exports.stop = () => {
-    console.log("Stopping application...")
-    process.exit(1) 
+    }, 2000);
 }

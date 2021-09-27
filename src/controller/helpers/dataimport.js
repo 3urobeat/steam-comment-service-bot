@@ -9,7 +9,7 @@
 module.exports.extdata = (callback) => {
     logger("info", "Importing data.json...", false, true, logger.animation("loading"))
 
-    require("../../starter.js").checkAndGetFile("./src/data/data.json", (file) => {
+    require("../../starter.js").checkAndGetFile("./src/data/data.json", false, (file) => {
         callback(file)
     })
 }

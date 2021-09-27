@@ -2,155 +2,138 @@
 /**
  * Runs the controller which runs & controls the bot.
  */
- module.exports.run = () => {
+function run() {
     var starter = require("../starter.js")
 
     /* ------------ Handle restart (if this is one): ------------ */
-    starter.checkAndGetFile("./src/controller/helpers/handlerestart.js", (file) => { //welcome to callback hell! Yes, I need to improve this later, but want to get it done for now.
-        file();
+    module.exports.botobject            = {}         //tracks the bot instances of all accounts to be able to access them from anywhere
+    module.exports.communityobject      = {}         //tracks the community instances of all accounts to be able to access them from anywhere
 
-
-        module.exports.botobject            = {}         //tracks the bot instances of all accounts to be able to access them from anywhere
-        module.exports.communityobject      = {}         //tracks the community instances of all accounts to be able to access them from anywhere
-
-        module.exports.bootstart            = Date.now()
-        module.exports.relogQueue           = []
-        module.exports.readyafterlogs       = []         //array to save suppressed logs during startup that get logged by ready.js
-        module.exports.skippedaccounts      = []         //array to save which accounts have been skipped to skip them automatically when restarting
-        module.exports.relogAfterDisconnect = true       //allows to prevent accounts from relogging when calling bot.logOff()
+    module.exports.bootstart            = Date.now()
+    module.exports.relogQueue           = []
+    module.exports.readyafterlogs       = []         //array to save suppressed logs during startup that get logged by ready.js
+    module.exports.skippedaccounts      = []         //array to save which accounts have been skipped to skip them automatically when restarting
+    module.exports.relogAfterDisconnect = true       //allows to prevent accounts from relogging when calling bot.logOff()
 
 
 
-        /* ------------ Add unhandled rejection catches: ------------ */
-        var logger = (type, str) => { //make a "fake" logger function in order to be able to log the error message when the user forgot to run 'npm install'
-            logafterrestart.push(`${type} | ${str}`) //push message to array that will be carried through restart
-            console.log(`${type} | ${str}`)
+    /* ------------ Add unhandled rejection catches: ------------ */
+    var logger = (type, str) => { //make a "fake" logger function in order to be able to log the error message when the user forgot to run 'npm install'
+        logafterrestart.push(`${type} | ${str}`) //push message to array that will be carried through restart
+        console.log(`${type} | ${str}`)
+    }
+
+    logger.animation = () => {} //just to be sure that no error occurs when trying to call this function without the real logger being present
+
+    var oldlogger = logger;
+    global.logger = logger;
+
+
+    process.on('unhandledRejection', (reason) => { //Should keep the bot at least from crashing
+        logger("error", `Unhandled Rejection Error! Reason: ${reason.stack}`, true) 
+    });
+
+    process.on('uncaughtException', (reason) => {
+        //Try to fix error automatically by reinstalling all modules
+        if (String(reason).includes("Error: Cannot find module")) {
+            oldlogger("", "", true)
+            oldlogger("info", "Cannot find module error detected. Trying to fix error by reinstalling modules...\n")
+
+            require("./helpers/npminteraction.js").reinstallAll(oldlogger, (err, stdout) => { //eslint-disable-line
+                if (err) {
+                    oldlogger("error", "I was unable to reinstall all modules. Please try running 'npm install' manually. Error: " + err)
+                    process.exit(1);
+                } else {
+                    //logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
+                    oldlogger("info", "Successfully reinstalled all modules. Restarting...")
+                    process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, logafterrestart: logafterrestart })})`) //send request to parent process
+                }
+            })
+        } else { //logging this message but still trying to fix it would probably confuse the user
+            logger("error", `Uncaught Exception Error! Reason: ${reason.stack}`, true) 
         }
+    });
+    
 
-        logger.animation = () => {} //just to be sure that no error occurs when trying to call this function without the real logger being present
+    /* ------------ Introduce logger function: ------------ */
+    starter.checkAndGetFile("./src/controller/helpers/logger.js", false, (loggerfile) => { //welcome to callback hell! Yes, I need to improve this later, but want to get it done for now.
+        logger = loggerfile.logger
+        global.logger = logger
 
-        var oldlogger = logger;
-        global.logger = logger;
 
-
-        process.on('unhandledRejection', (reason) => { //Should keep the bot at least from crashing
-            logger("error", `Unhandled Rejection Error! Reason: ${reason.stack}`, true) 
-        });
-
-        process.on('uncaughtException', (reason) => {
-            //Try to fix error automatically by reinstalling all modules
-            if (String(reason).includes("Error: Cannot find module")) {
-                oldlogger("", "", true)
-                oldlogger("info", "Cannot find module error detected. Trying to fix error by reinstalling modules...\n")
-
-                require("./helpers/npminteraction.js").reinstallAll(oldlogger, (err, stdout) => { //eslint-disable-line
-                    if (err) {
-                        oldlogger("error", "I was unable to reinstall all modules. Please try running 'npm install' manually. Error: " + err)
-                        process.exit(1);
-                    } else {
-                        //logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
-                        oldlogger("info", "Successfully reinstalled all modules. Restarting...")
-                        require(srcdir + "/../start.js").restart({ skippedaccounts: this.skippedaccounts, logafterrestart: logafterrestart }, true); //restart
-                    }
+        //Log held back messages from before this start
+        if (logafterrestart.length > 0) {
+            logafterrestart.forEach((e) => { //log messages to output.txt carried through restart
+                e.split("\n").forEach((f) => { //split string on line breaks to make output cleaner when using remove
+                    logger("", "[logafterrestart] " + f, true, true)
                 })
-            } else { //logging this message but still trying to fix it would probably confuse the user
-                logger("error", `Uncaught Exception Error! Reason: ${reason.stack}`, true) 
-            }
-        });
-
-        //Attach exit event listeners to display message in output & terminal when user stops the bot. Signals: https://nodejs.org/api/process.html#process_signal_events
-        function handleEvent(signal) {
-            logger("", "", true)
-            logger("info", `Recieved ${signal} signal to exit...`, false, true);
-            logger("", "Goodbye!", true);
-            process.exit(0);
+            })
         }
-          
-        process.on("SIGINT", handleEvent); // CTRL+C
-        process.on("SIGTERM", handleEvent); // terminated, for example by task manager
-        process.on("SIGHUP", handleEvent); // close terminal
+        
+        logafterrestart = [] //clear array
 
 
-        /* ------------ Introduce logger function: ------------ */
-        starter.checkAndGetFile("./src/controller/helpers/logger.js", (loggerfile) => { //*callback hell intensifies*
-            logger = loggerfile.logger
-            global.logger = logger
+        /* ------------ Mark new execution in output: ------------ */
+        logger("", "\n\nBootup sequence started...", true, true)
+        logger("", "---------------------------------------------------------", true, true)
 
 
-            //Log held back messages from before this start
-            if (logafterrestart.length > 0) {
-                logafterrestart.forEach((e) => { //log messages to output.txt carried through restart
-                    e.split("\n").forEach((f) => { //split string on line breaks to make output cleaner when using remove
-                        logger("", "[logafterrestart] " + f, true, true)
-                    })
-                })
-            }
-            
-            logafterrestart = [] //clear array
+        /* ------------ Import data: ------------ */
+        var extdata;
+        var config;
+        var logininfo;
+
+        starter.checkAndGetFile("./src/controller/helpers/dataimport.js", false, (dataimportfile) => { //yes, the nested callbacks aren't getting better
+            dataimportfile.extdata((extdatafile) => {
+
+                extdata   = extdatafile
+                config    = dataimportfile.config()
+                logininfo = dataimportfile.logininfo();
+
+                global.config  = config
+                global.extdata = extdata
+
+                module.exports.lastcomment = dataimportfile.lastcomment()
 
 
-            /* ------------ Mark new execution in output: ------------ */
-            logger("", "\n\nBootup sequence started...", true, true)
-            logger("", "---------------------------------------------------------", true, true)
+                /* ------------ Change terminal title: ------------ */
+                if (process.platform == "win32") { //set node process name to find it in task manager etc.
+                    process.title = `${extdata.mestr}'s Steam Comment Service Bot v${extdata.versionstr} | ${process.platform}` //Windows allows long terminal/process names
+                } else {
+                    process.stdout.write(`${String.fromCharCode(27)}]0;${extdata.mestr}'s Steam Comment Service Bot v${extdata.versionstr} | ${process.platform}${String.fromCharCode(7)}`) //sets terminal title (thanks: https://stackoverflow.com/a/30360821/12934162)
+                    process.title = `CommentBot` //sets process title in task manager etc.
+                }
 
 
-            /* ------------ Import data: ------------ */
-            var extdata;
-            var config;
-            var logininfo;
+                /* ------------ Print some diagnostic messages to log: ------------ */
+                logger("info", `steam-comment-service-bot made by ${extdata.mestr} version ${extdata.versionstr}`, false, true, logger.animation("loading"))
+                logger("info", `Using node.js version ${process.version}...`, false, true, logger.animation("loading"))
+                logger("info", `Running on ${process.platform}...`, false, true, logger.animation("loading"))
+                logger("info", `Using ${extdata.branch} branch | firststart is ${extdata.firststart} | This is start number ${extdata.timesloggedin + 1}`, false, true, logger.animation("loading"))
 
-            starter.checkAndGetFile("./src/controller/helpers/dataimport.js", (dataimportfile) => { //yes, the nested callbacks aren't getting better
-                dataimportfile.extdata((extdatafile) => {
+                if (extdata.branch == "beta-testing") logger("", "\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
 
-                    extdata   = extdatafile
-                    config    = dataimportfile.config()
-                    logininfo = dataimportfile.logininfo();
+                require("./helpers/datacheck.js").run(logininfo, () => { //*callback hell intensifies*
 
-                    global.config  = config
-                    global.extdata = extdata
-
-                    module.exports.lastcomment = dataimportfile.lastcomment()
+                    var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
+                    if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
+                    logger("info", `Comment config values: commentdelay = ${config.commentdelay} | maxCommentsOverall = ${maxCommentsOverall} | randomizeAcc = ${config.randomizeAccounts}`, false, true, logger.animation("loading"))
 
 
-                    /* ------------ Change terminal title: ------------ */
-                    if (process.platform == "win32") { //set node process name to find it in task manager etc.
-                        process.title = `${extdata.mestr}'s Steam Comment Service Bot v${extdata.versionstr} | ${process.platform}` //Windows allows long terminal/process names
-                    } else {
-                        process.stdout.write(`${String.fromCharCode(27)}]0;${extdata.mestr}'s Steam Comment Service Bot v${extdata.versionstr} | ${process.platform}${String.fromCharCode(7)}`) //sets terminal title (thanks: https://stackoverflow.com/a/30360821/12934162)
-                        process.title = `CommentBot` //sets process title in task manager etc.
-                    }
+                    /* ------------ Run updater or start logging in when steam is online: ------------ */
+                    starter.checkAndGetFile("./src/updater/updater.js", false, (updater) => { //callback hell: maximum power
 
+                        updater.compatibility(() => { //continue startup on any callback
 
-                    /* ------------ Print some diagnostic messages to log: ------------ */
-                    logger("info", `steam-comment-service-bot made by ${extdata.mestr} version ${extdata.versionstr}`, false, true, logger.animation("loading"))
-                    logger("info", `Using node.js version ${process.version}...`, false, true, logger.animation("loading"))
-                    logger("info", `Running on ${process.platform}...`, false, true, logger.animation("loading"))
-                    logger("info", `Using ${extdata.branch} branch | firststart is ${extdata.firststart} | This is start number ${extdata.timesloggedin + 1}`, false, true, logger.animation("loading"))
+                            require("./helpers/internetconnection.js").run(true, true, true, () => { //we can ignore callback because stoponerr is true
 
-                    if (extdata.branch == "beta-testing") logger("", "\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
+                                require("../updater/updater.js").run(false, null, false, (foundanddone2) => {
 
-                    require("./helpers/datacheck.js").run(logininfo, () => {
-
-                        var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
-                        if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
-                        logger("info", `Comment config values: commentdelay = ${config.commentdelay} | maxCommentsOverall = ${maxCommentsOverall} | randomizeAcc = ${config.randomizeAccounts}`, false, true, logger.animation("loading"))
-
-
-                        /* ------------ Run updater or start logging in when steam is online: ------------ */
-                        starter.checkAndGetFile("./src/updater/updater.js", (updater) => { //callback hell: maximum power
-
-                            updater.compatibility(() => { //continue startup on any callback
-
-                                require("./helpers/internetconnection.js").run(true, true, true, () => { //we can ignore callback because stoponerr is true
-
-                                    require("../updater/updater.js").run(false, null, false, (foundanddone2) => {
-
-                                        if (!foundanddone2) {
-                                            require("./login.js").startlogin(logininfo) //start logging in
-                                        } else {
-                                            require(srcdir + "/../start.js").restart({ skippedaccounts: this.skippedaccounts }); //restart
-                                        }
-                                    })
+                                    if (!foundanddone2) {
+                                        require("./login.js").startlogin(logininfo) //start logging in
+                                    } else {
+                                        process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts })})`) //send request to parent process
+                                    }
                                 })
                             })
                         })
@@ -158,19 +141,22 @@
                 })
             })
         })
-    })    
+    })
 }
 
+
+/* ------------ Handle restart data: ------------ */
 
 //obj that can get populated by restart data to keep config through restarts
 var oldconfig = {} //eslint-disable-line
 var logafterrestart = [] //create array to log these error messages after restart
 
 
-//start.js restart function calls this function and provides any data that should be kept over restarts
-module.exports.restartdata = (data) => {
-    global.botisloggedin = false //if this function got called then it must be an intended start and also not the first one, so set botisloggedin to false again.
-    botisloggedin = false
+/**
+ * Process data that should be kept over restarts
+ */
+function restartdata(data) {
+    data = JSON.parse(data); //convert the stringified object back to an object
 
     if (Object.keys(data).includes("skippedaccounts")) { //stop any further execution if data structure is <2.10.4 (only an array containing skippedaccounts)
 
@@ -179,5 +165,19 @@ module.exports.restartdata = (data) => {
         module.exports.skippedaccounts = data.skippedaccounts
     }
 
-    this.run() //start bot
+    run(); //start the bot
+}
+
+
+/* ------------ Start the bot: ------------ */
+
+if (Date.now() + 2500 > process.argv[3]) { //check if this process just got started in the last 5 seconds or just required by itself by checking the timestamp attached by starter.js
+    //Yes, I know, global variables are bad. But I need a few multiple times in different files and it would be a pain in the ass to import them every time and ensure that I don't create a circular dependency and what not.
+    global.botisloggedin = false
+    global.srcdir        = process.argv[2]
+
+
+    //Start the bot through the restartdata function if this is a restart to keep some data or start the bot directly
+    if (process.argv[4]) restartdata(process.argv[4]);
+        else run();
 }

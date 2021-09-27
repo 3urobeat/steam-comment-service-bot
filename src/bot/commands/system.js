@@ -8,10 +8,9 @@
 module.exports.restart = (chatmsg, steamID, lang) => {
     var controller = require("../../controller/controller.js")
 
-
     chatmsg(steamID, lang.restartcmdrestarting)
 
-    require('../../../start.js').restart({ skippedaccounts: controller.skippedaccounts })
+    process.send(`restart(${JSON.stringify({ skippedaccounts: controller.skippedaccounts })})`) //send request to parent process
 }
 
 
@@ -25,7 +24,7 @@ module.exports.stop = (chatmsg, steamID, lang) => {
     
     chatmsg(steamID, lang.stopcmdstopping)
 
-    require('../../../start.js').stop()
+    process.send("stop()") //send request to parent process
 }
 
 
@@ -41,13 +40,13 @@ module.exports.update = (chatmsg, steamID, lang, args) => {
 
     if (args[0] == "true") { 
         require("../../updater/updater.js").run(true, steamID, false, (foundanddone) => { //we can ignore callback as the updater already responds to the user if a steamID is provided
-            if (foundanddone) require("../../../start.js").restart({ skippedaccounts: controller.skippedaccounts })
+            if (foundanddone) process.send(`restart(${JSON.stringify({ skippedaccounts: controller.skippedaccounts })})`) //send request to parent process
         })
 
         chatmsg(steamID, lang.updatecmdforce.replace("branchname", extdata.branch)) 
     } else { 
         require("../../updater/updater.js").run(false, steamID, false, (foundanddone) => { //we can ignore callback as the updater already responds to the user if a steamID is provided
-            if (foundanddone) require("../../../start.js").restart({ skippedaccounts: controller.skippedaccounts })
+            if (foundanddone) process.send(`restart(${JSON.stringify({ skippedaccounts: controller.skippedaccounts })})`) //send request to parent process
         })
 
         chatmsg(steamID, lang.updatecmdcheck.replace("branchname", extdata.branch))

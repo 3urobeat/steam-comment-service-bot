@@ -43,7 +43,7 @@ module.exports.run = (callback) => { //eslint-disable-line
             var controller = require("../../controller/controller.js")
 
             require("../updater").run(true, null, true, (done) => {
-                if (done) require("../../../start.js").restart({ skippedaccounts: controller.skippedaccounts })
+                if (done) process.send(`restart(${JSON.stringify({ skippedaccounts: controller.skippedaccounts })})`) //send request to parent process
             }) //force to update again to get files from new structure
         }, 1000);
     } catch(err) {

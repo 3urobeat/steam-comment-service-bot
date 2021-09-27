@@ -15,7 +15,7 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
     module.exports.activeupdate = false
 
 
-    starter.checkAndGetFile("./src/updater/helpers/checkforupdate.js", (file) => { //also too many nested callbacks
+    starter.checkAndGetFile("./src/updater/helpers/checkforupdate.js", false, (file) => { //also too many nested callbacks
         file.checkforupdate(releasemode, forceupdate, (ready, chunk) => {
             if (ready) { //update found or forceupdate is true
 
@@ -39,17 +39,17 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
                 function initiateUpdate() { //make initating the update a function to simplify the permission check below
                     this.activeupdate = true; //block new comment requests by setting active update to true and exporting it
 
-                    starter.checkAndGetFile("./src/updater/helpers/prepareupdate.js", (file2) => {
+                    starter.checkAndGetFile("./src/updater/helpers/prepareupdate.js", false, (file2) => {
                         file2.run(responseSteamID, () => {
                             logger("", "Starting to download update...", true, false, logger.animation("loading"))
 
-                            starter.checkAndGetFile("./src/updater/helpers/downloadupdate.js", (file3) => {
+                            starter.checkAndGetFile("./src/updater/helpers/downloadupdate.js", false, (file3) => {
                                 file3.downloadupdate(releasemode, compatibilityfeaturedone, (err) => {
                                     if (err) logger("error", "I failed trying to download & install the update. Please check the log after other errors for more information.\nTrying to continue anyway...")
 
                                     logger("", "\x1b[33mUpdating packages with npm...\x1b[0m\n", true, false, logger.animation("loading"))
 
-                                    starter.checkAndGetFile("./src/controller/helpers/npminteraction.js", (file4) => {
+                                    starter.checkAndGetFile("./src/controller/helpers/npminteraction.js", false, (file4) => {
                                         file4.update((err) => {
                                             if (err) logger("error", "I failed trying to update the dependencies. Please check the log after other errors for more information.\nTrying to continue anyway...")
 
@@ -133,7 +133,7 @@ module.exports.compatibility = (callback) => {
      * @param {String} filename filename of the compatibility feature
      */
     function runCompFeature(filename) {
-        starter.checkAndGetFile(`./src/updater/compatibility/${filename}.js`, (file) => {
+        starter.checkAndGetFile(`./src/updater/compatibility/${filename}.js`, false, (file) => {
             logger("info", `Running compatibility feature ${filename}.js...`, false, false, logger.animation("loading"))
 
             file.run(callback)
@@ -186,7 +186,7 @@ var updatecheckinterval = setInterval(() => {
             if (!data.toString().split('\n').slice(data.toString().split('\n').length - 21).join('\n').includes("Update available!")) { //check last 20 lines of output.txt for update notice
 
                 module.exports.run(false, null, false, (done) => { //check if there is an update available
-                    if (done) require("../../start.js").restart({ skippedaccounts: require('../controller/controller.js').skippedaccounts }) //restart if the bot found and ran the update
+                    if (done) process.send(`restart(${JSON.stringify({ skippedaccounts: require('../controller/controller.js').skippedaccounts })})`) //send request to parent process if the bot found and ran the update
                 })
             } 
         })
