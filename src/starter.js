@@ -1,33 +1,115 @@
 //File to help starting application and making start.js more dynamic.
 
-const cp     = require('child_process');
-var   logger = require("output-logger") //look Mom, it's my own library!
+var cp;
+var logger;
+var forkedprocess;
+var childpid;
+var requestedKill;
 
-var   forkedprocess;
-var   childpid;
-
-var   requestedKill = false;
-
-
-//Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)
-logger.options({
-    msgstructure: "[animation] [date | type] message",
-    paramstructure: ["type", "str", "nodate", "remove", "animation"],
-    outputfile: __dirname + "/../output.txt",
-    animationdelay: 250
-})
+var handleUnhandledRejection;
+var handleUncaughtException;
+var parentExitEvent;
 
 
-//Attach exit event listener to display message in output & terminal when user stops the bot
-process.on("exit", () => {
-    logger("", "", true)
-    logger("info", `Recieved signal to exit...`, false, true);
-    logger("", "Goodbye!", true);
-});
+//Provide function to only once attach listeners to parent process
+function attachParentListeners() {
+    var logafterrestart = [];
+
+    /* ------------ Add unhandled rejection catches: ------------ */
+    logger = (type, str) => { //make a "fake" logger function in order to be able to log the error message when the user forgot to run 'npm install'
+        logafterrestart.push(`${type} | ${str}`) //push message to array that will be carried through restart
+        console.log(`${type} | ${str}`)
+    }
+
+    logger.animation = () => {} //just to be sure that no error occurs when trying to call this function without the real logger being present
+
+    handleUnhandledRejection = (reason) => { //Should keep the bot at least from crashing
+        logger("error", `Unhandled Rejection Error! Reason: ${reason.stack}`, true) 
+    }
+
+    handleUncaughtException = (reason) => {
+        //Try to fix error automatically by reinstalling all modules
+        if (String(reason).includes("Error: Cannot find module")) {
+            logger("", "", true)
+            logger("info", "Cannot find module error detected. Trying to fix error by reinstalling modules...\n")
+
+            require("./controller/helpers/npminteraction.js").reinstallAll(logger, (err, stdout) => { //eslint-disable-line
+                if (err) {
+                    logger("error", "I was unable to reinstall all modules. Please try running 'npm install' manually. Error: " + err)
+                    process.exit(1);
+
+                } else {
+
+                    //logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
+                    logger("info", "Successfully reinstalled all modules. Restarting...")
+
+                    detachParentListeners();
+
+                    logger("info", "Killing old process...", false, true)
+
+                    requestedKill = true;
+
+                    try {
+                        process.kill(childpid, "SIGKILL")
+                    } catch (err) {} //eslint-disable-line
+
+                    setTimeout(() => {
+                        logger("info", "Restarting...", false, true)
+                        require("../start.js").restart({ logafterrestart: logafterrestart }) //call restart function with argsobject
+                    }, 2000);
+                }
+            })
+        } else { //logging this message but still trying to fix it would probably confuse the user
+            logger("error", `Uncaught Exception Error! Reason: ${reason.stack}`, true) 
+        }
+    }
+
+    process.on('unhandledRejection', handleUnhandledRejection);
+    process.on('uncaughtException', handleUncaughtException);
 
 
-//Attach listeners to make communicating with child possible
-function attachListeners() {
+    /* ------------ Import logger and add exit event listener: ------------ */
+    cp     = require('child_process');
+    logger = require("output-logger") //look Mom, it's my own library!
+
+    requestedKill = false;
+
+    //Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)
+    logger.options({
+        msgstructure: "[animation] [date | type] message",
+        paramstructure: ["type", "str", "nodate", "remove", "animation"],
+        outputfile: __dirname + "/../output.txt",
+        animationdelay: 250
+    })
+
+
+    //Attach exit event listener to display message in output & terminal when user stops the bot
+    parentExitEvent = () => {
+        //logger("debug", "Caller: " + process.pid + " | Child: " + childpid)
+
+        try {
+            process.kill(childpid, "SIGKILL") //make sure the old child is dead
+        } catch (err) {} //eslint-disable-line
+
+        logger("", "", true)
+        logger("info", `Recieved signal to exit...`, false, true);
+        logger("", "Goodbye!", true);
+    }
+
+    process.on("exit", parentExitEvent);
+}
+
+function detachParentListeners() {
+    logger("info", "Detaching parent's event listeners...", false, true)
+
+    process.removeListener("unhandledRejection", handleUnhandledRejection)
+    process.removeListener("uncaughtException", handleUncaughtException)
+    process.removeListener("exit", parentExitEvent)
+}
+
+
+//Provide function to attach listeners to make communicating with child possible
+function attachChildListeners() {
     forkedprocess.on("message", (msg) => {
         //logger("debug", "Recieved message from child: " + msg)
 
@@ -42,11 +124,15 @@ function attachListeners() {
             let argsobject = JSON.parse(msg) //convert stringified args object back to JS object
             argsobject["pid"] = childpid     //add pid to object
 
+            detachParentListeners();
 
             logger("info", "Killing old process...", false, true)
 
             requestedKill = true;
-            process.kill(childpid, "SIGKILL")
+
+            try {
+                process.kill(childpid, "SIGKILL")
+            } catch (err) {} //eslint-disable-line
 
             setTimeout(() => {
                 logger("info", "Restarting...", false, true)
@@ -56,7 +142,10 @@ function attachListeners() {
         } else if (msg == "stop()") {
 
             requestedKill = true;
-            process.kill(childpid, "SIGKILL")
+            
+            try {
+                process.kill(childpid, "SIGKILL")
+            } catch (err) {} //eslint-disable-line
             
             logger("", "", true)
             logger("info", "Stopping application...")
@@ -70,10 +159,15 @@ function attachListeners() {
         if (requestedKill) return;
 
         logger("warn", `Child Process exited with code ${code}! Attempting to restart...`)
+
+        detachParentListeners();
+        
         require("../start.js").restart({ pid: childpid })
     })
 }
 
+
+/* ------------ Provide function to get file if it doesn't exist: ------------ */
 
 /**
  * Checks if the needed file exists and gets it if it doesn't
@@ -151,10 +245,14 @@ module.exports.checkAndGetFile = (file, norequire, callback) => {
 }
 
 
+/* ------------ Provide functions to start.js to start the bot: ------------ */
+
 /**
  * Run the application
  */
 module.exports.run = () => {
+    attachParentListeners();
+
     logger("info", "Starting process...")
 
     process.title = `CommentBot` //sets process title in task manager etc.
@@ -163,7 +261,7 @@ module.exports.run = () => {
         forkedprocess = cp.fork(file, [ __dirname, Date.now() ])
         childpid      = forkedprocess.pid
 
-        attachListeners();
+        attachChildListeners();
     })
 }
 
@@ -173,8 +271,10 @@ module.exports.run = () => {
  * @param {Object} args The argument object that will be passed to `controller.restartargs()`
  */
 module.exports.restart = (args) => {
+    attachParentListeners();
+
     logger("", "", true)
-    logger("info", "Starting new process...", false, true)
+    logger("info", "Starting new process...")
 
     try {
         process.kill(args["pid"], "SIGKILL") //make sure the old child is dead
@@ -185,7 +285,7 @@ module.exports.restart = (args) => {
             forkedprocess = cp.fork(file, [ __dirname, Date.now(), JSON.stringify(args) ])
             childpid      = forkedprocess.pid
     
-            attachListeners();
+            attachChildListeners();
         })
     }, 2000);
 }

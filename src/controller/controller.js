@@ -14,45 +14,6 @@ function run() {
     module.exports.readyafterlogs       = []         //array to save suppressed logs during startup that get logged by ready.js
     module.exports.skippedaccounts      = []         //array to save which accounts have been skipped to skip them automatically when restarting
     module.exports.relogAfterDisconnect = true       //allows to prevent accounts from relogging when calling bot.logOff()
-
-
-
-    /* ------------ Add unhandled rejection catches: ------------ */
-    var logger = (type, str) => { //make a "fake" logger function in order to be able to log the error message when the user forgot to run 'npm install'
-        logafterrestart.push(`${type} | ${str}`) //push message to array that will be carried through restart
-        console.log(`${type} | ${str}`)
-    }
-
-    logger.animation = () => {} //just to be sure that no error occurs when trying to call this function without the real logger being present
-
-    var oldlogger = logger;
-    global.logger = logger;
-
-
-    process.on('unhandledRejection', (reason) => { //Should keep the bot at least from crashing
-        logger("error", `Unhandled Rejection Error! Reason: ${reason.stack}`, true) 
-    });
-
-    process.on('uncaughtException', (reason) => {
-        //Try to fix error automatically by reinstalling all modules
-        if (String(reason).includes("Error: Cannot find module")) {
-            oldlogger("", "", true)
-            oldlogger("info", "Cannot find module error detected. Trying to fix error by reinstalling modules...\n")
-
-            require("./helpers/npminteraction.js").reinstallAll(oldlogger, (err, stdout) => { //eslint-disable-line
-                if (err) {
-                    oldlogger("error", "I was unable to reinstall all modules. Please try running 'npm install' manually. Error: " + err)
-                    process.exit(1);
-                } else {
-                    //logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
-                    oldlogger("info", "Successfully reinstalled all modules. Restarting...")
-                    process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, logafterrestart: logafterrestart })})`) //send request to parent process
-                }
-            })
-        } else { //logging this message but still trying to fix it would probably confuse the user
-            logger("error", `Uncaught Exception Error! Reason: ${reason.stack}`, true) 
-        }
-    });
     
 
     /* ------------ Introduce logger function: ------------ */
