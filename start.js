@@ -1,7 +1,21 @@
-//Code by: https://github.com/HerrEurobeat/ 
-//If you are here, you are wrong. Open config.json and configure everything there!
+/*
+ * File: start.js
+ * Project: steam-comment-service-bot
+ * Created Date: 15.01.2020 10:38:00
+ * Author: 3urobeat
+ * 
+ * Last Modified: 29.09.2021 17:41:18
+ * Modified By: 3urobeat
+ * 
+ * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
+ */
 
-//This file contains: Starting the updater.js and restarting the whole application without restarting the node process. Very cool!
+
+//If you are here, you are wrong. Open config.json and configure everything there!
 
 //This file can't get refreshed automatically after an update. 
 //It is designed to be modular and to start and restart the whole application. 
