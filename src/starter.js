@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 17:42:28
+ * Last Modified: 30.09.2021 11:41:50
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -27,6 +27,8 @@ var handleUnhandledRejection;
 var handleUncaughtException;
 var parentExitEvent;
 
+global.srcdir = __dirname;
+
 
 //Provide function to only once attach listeners to parent process
 function attachParentListeners() {
@@ -34,8 +36,11 @@ function attachParentListeners() {
 
     /* ------------ Add unhandled rejection catches: ------------ */
     logger = (type, str) => { //make a "fake" logger function in order to be able to log the error message when the user forgot to run 'npm install'
-        logafterrestart.push(`${type} | ${str}`) //push message to array that will be carried through restart
-        console.log(`${type} | ${str}`)
+        if (type.length > 1 && str.length > 1) var separator = "|" //make sure separator gets only shown if both arguments contain characters
+            else var separator = ""
+
+        logafterrestart.push(`${type} ${separator} ${str}`) //push message to array that will be carried through restart
+        console.log(`${type} ${separator} ${str}`)
     }
 
     logger.animation = () => {} //just to be sure that no error occurs when trying to call this function without the real logger being present
@@ -119,9 +124,9 @@ function attachParentListeners() {
 function detachParentListeners() {
     logger("info", "Detaching parent's event listeners...", false, true)
 
-    process.removeListener("unhandledRejection", handleUnhandledRejection)
-    process.removeListener("uncaughtException", handleUncaughtException)
-    process.removeListener("exit", parentExitEvent)
+    if (handleUnhandledRejection) process.removeListener("unhandledRejection", handleUnhandledRejection)
+    if (handleUncaughtException)  process.removeListener("uncaughtException", handleUncaughtException)
+    if (parentExitEvent)          process.removeListener("exit", parentExitEvent)
 }
 
 
