@@ -4,7 +4,7 @@
  * Created Date: 15.01.2020 10:38:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 17:41:18
+ * Last Modified: 02.10.2021 17:11:04
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -30,12 +30,14 @@ try { //Just try to require, if it should fail then the actual restoring process
 /* ------------------ Restart function ------------------ */
 module.exports.restart = (args) => {
     try {
-        delete require.cache[__dirname + extdata.filetostart.slice(1, extdata.filetostart.length)] //clear cache of starter file to include file changes
+        Object.keys(require.cache).forEach(function(key) { 
+            delete require.cache[key] //clear cache to include file changes
+        })
     } catch (err) {
-        console.log("start.js: Failed to delete cache of filetostart. If the file contains changes then they are not loaded.\nI will try to start anyway but please restart the bot manually if you see this message.\nError: " + err)
+        console.log("start.js: Failed to delete cache of all imported files. If the files contain changes then they are not loaded.\nI will try to start anyway but please restart the bot manually if you see this message.\nError: " + err)
     }
 
-    require(extdata.filetostart).restart(args) 
+    require(require("./src/data/data.json").filetostart).restart(args) 
 }
 
 
