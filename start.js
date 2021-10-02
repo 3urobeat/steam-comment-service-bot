@@ -4,7 +4,7 @@
  * Created Date: 15.01.2020 10:38:00
  * Author: 3urobeat
  * 
- * Last Modified: 02.10.2021 17:11:04
+ * Last Modified: 02.10.2021 19:43:47
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -21,11 +21,14 @@
 //It is designed to be modular and to start and restart the whole application. 
 //To be able to change the file it is supposed to start on the fly it pulls the necessary file path from the data.json file
 
-try { //Just try to require, if it should fail then the actual restoring process will be handled later
-    var extdata = require("./src/data/data.json")
-} catch (err) {
-    var extdata = { filetostart: "./src/starter.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/starter.js" }
+function getExtdata() {
+    try { //Just try to require, if it should fail then the actual restoring process will be handled later
+        return extdata = require("./src/data/data.json")
+    } catch (err) {
+        return extdata = { filetostart: "./src/starter.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/starter.js" }
+    }
 }
+
 
 /* ------------------ Restart function ------------------ */
 module.exports.restart = (args) => {
@@ -37,18 +40,21 @@ module.exports.restart = (args) => {
         console.log("start.js: Failed to delete cache of all imported files. If the files contain changes then they are not loaded.\nI will try to start anyway but please restart the bot manually if you see this message.\nError: " + err)
     }
 
-    require(require("./src/data/data.json").filetostart).restart(args) 
+    require(getExtdata().filetostart).restart(args) 
 }
 
 
 /* ---------- Get filetostart if it doesn't exist ---------- */
 var fs = require("fs")
+var extdata = getExtdata();
 
 if (!fs.existsSync(extdata.filetostart)) { //Function that downloads filetostart if it doesn't exist (file location change etc.)
     var output = ""
 
     try {
         var https = require("https")
+
+        if (!fs.existsSync("./src")) fs.mkdirSync("./src") //create src dir if it doesn't exist
 
         https.get(extdata.filetostarturl, function (res) {
             res.setEncoding('utf8');
