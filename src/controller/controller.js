@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 02.10.2021 19:21:55
+ * Last Modified: 02.10.2021 20:15:10
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -131,27 +131,29 @@ function run() {
 
                 if (extdata.branch == "beta-testing") logger("", "\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
 
-                require("./helpers/datacheck.js").run(logininfo, () => { //*callback hell intensifies*
+                starter.checkAndGetFile("./src/controller/helpers/datacheck.js", false, (datacheck) => { //*callback hell intensifies*
+                    datacheck.run(logininfo, () => {
 
-                    var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
-                    if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
-                    logger("info", `Comment config values: commentdelay = ${config.commentdelay} | maxCommentsOverall = ${maxCommentsOverall} | randomizeAcc = ${config.randomizeAccounts}`, false, true, logger.animation("loading"))
+                        var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
+                        if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
+                        logger("info", `Comment config values: commentdelay = ${config.commentdelay} | maxCommentsOverall = ${maxCommentsOverall} | randomizeAcc = ${config.randomizeAccounts}`, false, true, logger.animation("loading"))
 
 
-                    /* ------------ Run updater or start logging in when steam is online: ------------ */
-                    starter.checkAndGetFile("./src/updater/updater.js", false, (updater) => { //callback hell: maximum power
+                        /* ------------ Run updater or start logging in when steam is online: ------------ */
+                        starter.checkAndGetFile("./src/updater/updater.js", false, (updater) => { //callback hell: maximum power
 
-                        updater.compatibility(() => { //continue startup on any callback
+                            updater.compatibility(() => { //continue startup on any callback
 
-                            require("./helpers/internetconnection.js").run(true, true, true, () => { //we can ignore callback because stoponerr is true
+                                require("./helpers/internetconnection.js").run(true, true, true, () => { //we can ignore callback because stoponerr is true
 
-                                require("../updater/updater.js").run(false, null, false, (foundanddone2) => {
+                                    require("../updater/updater.js").run(false, null, false, (foundanddone2) => {
 
-                                    if (!foundanddone2) {
-                                        require("./login.js").startlogin(logininfo) //start logging in
-                                    } else {
-                                        process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts })})`) //send request to parent process
-                                    }
+                                        if (!foundanddone2) {
+                                            require("./login.js").startlogin(logininfo) //start logging in
+                                        } else {
+                                            process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts })})`) //send request to parent process
+                                        }
+                                    })
                                 })
                             })
                         })
