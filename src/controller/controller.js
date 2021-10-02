@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 18:00:02
+ * Last Modified: 02.10.2021 17:03:24
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -32,6 +32,46 @@ function run() {
     module.exports.skippedaccounts      = []         //array to save which accounts have been skipped to skip them automatically when restarting
     module.exports.relogAfterDisconnect = true       //allows to prevent accounts from relogging when calling bot.logOff()
     
+
+    /* ------------ Add unhandled rejection catches: ------------ */
+    var logger = (type, str) => { //make a "fake" logger function in order to be able to log the error message when the user forgot to run 'npm install'
+        logafterrestart.push(`${type} | ${str}`) //push message to array that will be carried through restart
+        console.log(`${type} | ${str}`)
+    }
+
+    logger.animation = () => {} //just to be sure that no error occurs when trying to call this function without the real logger being present
+
+    process.on('unhandledRejection', (reason) => { //Should keep the bot at least from crashing
+        logger("error", `Unhandled Rejection Error! Reason: ${reason.stack}`, true) 
+    });
+
+    process.on('uncaughtException', (reason) => { //Known issue: This event listener doesn't seem to capture uncaught exceptions in the checkAndGetFile callback function below. However if it is inside for example a setTimeout it suddently works.
+        //Try to fix error automatically by reinstalling all modules
+        if (String(reason).includes("Error: Cannot find module")) {
+            logger("", "", true)
+            logger("info", "Cannot find module error detected. Trying to fix error by reinstalling modules...\n")
+
+            require("./helpers/npminteraction.js").reinstallAll(oldlogger, (err, stdout) => { //eslint-disable-line
+                if (err) {
+                    logger("error", "I was unable to reinstall all modules. Please try running 'npm install' manually. Error: " + err)
+                    process.exit(1);
+                } else {
+                    //logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
+                    logger("info", "Successfully reinstalled all modules. Restarting...")
+                    process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, logafterrestart: logafterrestart })})`) //send request to parent process
+                }
+            })
+        } else { //logging this message but still trying to fix it would probably confuse the user
+            logger("error", `Uncaught Exception Error! Reason: ${reason.stack}`, true) 
+            logger("", "", true)
+            logger("warn", "Restarting bot in 5 seconds since the application can be in an unrecoverable state...") //https://nodejs.org/dist/latest-v16.x/docs/api/process.html#process_warning_using_uncaughtexception_correctly
+            logger("", "", true)
+
+            setTimeout(() => {
+                process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, logafterrestart: logafterrestart })})`) //send request to parent process
+            }, 5000);
+        }
+    });
 
     /* ------------ Introduce logger function: ------------ */
     starter.checkAndGetFile("./src/controller/helpers/logger.js", false, (loggerfile) => { //welcome to callback hell! Yes, I need to improve this later, but want to get it done for now.
