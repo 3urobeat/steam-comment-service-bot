@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 02.10.2021 18:31:33
+ * Last Modified: 02.10.2021 18:36:36
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -76,7 +76,7 @@ function attachParentListeners() {
                     } catch (err) {} //eslint-disable-line
 
                     setTimeout(() => {
-                        logger("info", "Restarting...", false, true)
+                        logger("info", "Restarting...", false, true) //Note (Known issue!): Restarting here causes the application to start the bot in this process rather than creating a child_process. I have no idea why but it doesn't seem to cause issues (I HOPE) and is fixed when the user restarts the bot.
                         require("../start.js").restart({ logafterrestart: logafterrestart }) //call restart function with argsobject
                     }, 2000);
                 }

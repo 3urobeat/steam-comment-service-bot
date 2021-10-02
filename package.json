@@ -4,7 +4,7 @@
     "description": "Request multiple steam profile comments by texting a bot network!",
     "main": "start.js",
     "dependencies": {
-        "@seald-io/nedb": "^2.0.3",
+        "@seald-io/nedb": "^2.0.4",
         "download": "^8.0.0",
         "express": "^4.17.1",
         "htmlparser2": "^4.1.0",
