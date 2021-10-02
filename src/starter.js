@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 02.10.2021 17:05:24
+ * Last Modified: 02.10.2021 18:31:33
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -63,7 +63,7 @@ function attachParentListeners() {
                 } else {
 
                     //logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
-                    logger("info", "Successfully reinstalled all modules. Restarting...")
+                    logger("info", "Successfully reinstalled all modules.")
 
                     detachParentListeners();
 
@@ -280,6 +280,9 @@ module.exports.checkAndGetFile = (file, norequire, callback) => {
  * Run the application
  */
 module.exports.run = () => {
+    if (process.env.started) return; //make sure this function can only run once to avoid possible bug and cause startup loop
+    process.env.started = "true"; //env vars are always strings
+
     attachParentListeners();
 
     logger("info", "Starting process...")
@@ -287,7 +290,7 @@ module.exports.run = () => {
     process.title = `CommentBot` //sets process title in task manager etc.
 
     this.checkAndGetFile("./src/controller/controller.js", true, (file) => {
-        forkedprocess = cp.fork(file, [ __dirname, Date.now() ])
+        forkedprocess = cp.fork(file, [ __dirname, Date.now() ]) //create new process and provide srcdir and timestamp as argv parameters
         childpid      = forkedprocess.pid
 
         attachChildListeners();
@@ -311,7 +314,7 @@ module.exports.restart = (args) => {
 
     setTimeout(() => {
         this.checkAndGetFile("./src/controller/controller.js", true, (file) => {
-            forkedprocess = cp.fork(file, [ __dirname, Date.now(), JSON.stringify(args) ])
+            forkedprocess = cp.fork(file, [ __dirname, Date.now(), JSON.stringify(args) ]) //create new process and provide srcdir, timestamp and restartargs as argv parameters
             childpid      = forkedprocess.pid
     
             attachChildListeners();
