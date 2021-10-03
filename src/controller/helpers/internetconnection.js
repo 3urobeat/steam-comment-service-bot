@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 18:01:05
+ * Last Modified: 03.10.2021 19:40:22
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -32,7 +32,7 @@ module.exports.run = (continuewithlogin, stoponerr, throwtimeout, callback) => {
     if (throwtimeout) {
         var timeoutTimeout = setTimeout(() => { //phenomenal name I know
             logger("warn", `I can't reach SteamCommunity! Is your internet source maybe blocking it?\n       Error: Timeout after 20 seconds`, true)
-            if (stoponerr) process.exit(0)
+            if (stoponerr) return process.send("stop()")
                 else callback(false)
         }, 20000)
     }
@@ -48,7 +48,7 @@ module.exports.run = (continuewithlogin, stoponerr, throwtimeout, callback) => {
     }).on('error', function(err) {
         logger("error", `SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n        ${err}\n\n        Aborting...\n`, true)
         if (throwtimeout) clearTimeout(throwtimeout)
-        if (stoponerr) process.exit(0)
+        if (stoponerr) return process.send("stop()")
             else callback(false)
     }) 
 }

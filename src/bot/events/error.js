@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 17:51:17
+ * Last Modified: 03.10.2021 19:42:22
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -34,7 +34,11 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
     //Custom behaviour for LogonSessionReplaced error:
     if (err.eresult == 34) {
         logger("info", `\x1b[31m[${thisbot}] Lost connection to Steam. Reason: LogonSessionReplaced\x1b[0m`)
-        if (loginindex == 0) { logger("error", `\x1b[31mAccount is bot0. Aborting...\x1b[0m`, true); process.exit(0) }
+
+        if (loginindex == 0) {
+            logger("error", `\x1b[31mAccount is bot0. Aborting...\x1b[0m`, true); 
+            return process.send("stop()");
+        }
         return; 
     }
 
@@ -77,7 +81,7 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
             if (loginindex == 0) {
                 logger("", "", true)
                 logger("error", "Aborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true)
-                process.exit(0)
+                return process.send("stop()")
 
             } else { //Skip account if not bot0
 

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 18:02:28
+ * Last Modified: 03.10.2021 19:38:48
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -67,7 +67,7 @@ module.exports.run = (logininfo, callback) => {
 
     if (config.allowcommentcmdusage === false && new SteamID(String(config.ownerid[0])).isValid() === false) {
         logger("error", "\x1b[31mYou set allowcommentcmdusage to false but didn't specify an ownerid! Aborting...\x1b[0m", true)
-        process.exit(0); 
+        return process.send("stop()")
     }
     if (config.maxComments < 1) {
         logger("info", "\x1b[31mYour maxComments value in config.json can't be smaller than 1! Automatically setting it to 1...\x1b[0m", true)
@@ -82,11 +82,11 @@ module.exports.run = (logininfo, callback) => {
     }
     if (logininfo.bot0 == undefined) { //check real quick if logininfo is empty
         logger("error", "\x1b[31mYour logininfo doesn't contain a bot0 or is empty! Aborting...\x1b[0m", true); 
-        process.exit(0) 
+        return process.send("stop()")
     }
     if (config.commentdelay * maxCommentsOverall > 2147483647) { //check for 32-bit integer limit for commentcmd timeout
         logger("error", "\x1b[31mYour maxComments and/or maxOwnerComments and/or commentdelay value in the config are too high.\nPlease lower these values so that 'commentdelay * maxComments' is not bigger than 2147483647.\n\nThis will otherwise cause an error when trying to comment (32-bit integer limit). Aborting...\x1b[0m\n", true)
-        process.exit(0) 
+        return process.send("stop()")
     }
     if (config.randomizeAccounts && Object.keys(logininfo).length <= 5 && maxCommentsOverall > Object.keys(logininfo).length * 2) {
         logger("warn", "\x1b[31mI wouldn't recommend using randomizeAccounts with 5 or less accounts when each account can/has to comment multiple times. The chance of an account getting a cooldown is higher.\n       Please make sure your commentdelay is set adequately to reduce the chance of this happening.\x1b[0m", true) 

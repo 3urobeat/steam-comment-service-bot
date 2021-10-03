@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.10.2021 17:50:44
+ * Last Modified: 03.10.2021 19:39:49
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -57,7 +57,7 @@ module.exports.logininfo = () => {
         var logininfo = require(srcdir + "/../logininfo.json")
     } catch (err) {
         logger("error", "Error: It seems like you made a mistake in your logininfo.json. Please check if your Syntax looks exactly like in the example/template and try again.\nError: " + err, true)
-        process.exit(1)
+        return process.send("stop()")
     }
 
     //Either use logininfo.json or accounts.txt:
@@ -152,8 +152,8 @@ module.exports.quotes = () => {
     logger("info", `${quotes.length} quotes found.`, false, true, logger.animation("loading"))
 
     if (quotes.length == 0) { //check if quotes.txt is empty to avoid errors further down when trying to comment
-        logger("error", "\x1b[31mYou haven't put any comment quote into the quotes.txt file! Aborting...\x1b[0m", true)
-        process.exit(0);
+        logger("error", "\x1b[31mYou haven't put any comment quotes into the quotes.txt file! Aborting...\x1b[0m", true)
+        return process.send("stop()")
     }
 
     return quotes;

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.10.2021 19:30:31
+ * Last Modified: 03.10.2021 19:42:27
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -54,7 +54,7 @@ function run() {
             require("./helpers/npminteraction.js").reinstallAll(logger, (err, stdout) => { //eslint-disable-line
                 if (err) {
                     logger("error", "I was unable to reinstall all modules. Please try running 'npm install' manually. Error: " + err)
-                    process.exit(1);
+                    return process.send("stop()")
                 } else {
                     //logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
                     logger("info", "Successfully reinstalled all modules. Restarting...")
@@ -137,7 +137,7 @@ function run() {
                     logger("", "\n************************************************************************************\n", true)
                     logger("error", `This applicaion requires at least node.js \x1b[0mv14.15.0\x1b[31m but you have \x1b[0m${process.version}\x1b[31m installed!\n        Please update your node.js installation: \x1b[0m https://nodejs.org/`, true)
                     logger("", "\n************************************************************************************\n", true)
-                    process.exit(1);
+                    return process.send("stop()")
                 }
 
 
