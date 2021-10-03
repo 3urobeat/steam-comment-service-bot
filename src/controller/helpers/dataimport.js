@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 18:02:15
+ * Last Modified: 03.10.2021 17:50:44
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -26,7 +26,7 @@
 module.exports.extdata = (callback) => {
     logger("info", "Importing data.json...", false, true, logger.animation("loading"))
 
-    require("../../starter.js").checkAndGetFile("./src/data/data.json", false, (file) => {
+    require("../../starter.js").checkAndGetFile("./src/data/data.json", logger, false, (file) => {
         callback(file)
     })
 }

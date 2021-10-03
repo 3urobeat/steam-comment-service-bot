@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 02.10.2021 20:15:10
+ * Last Modified: 03.10.2021 17:52:16
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -74,7 +74,7 @@ function run() {
     });
 
     /* ------------ Introduce logger function: ------------ */
-    starter.checkAndGetFile("./src/controller/helpers/logger.js", false, (loggerfile) => { //welcome to callback hell! Yes, I need to improve this later, but want to get it done for now.
+    starter.checkAndGetFile("./src/controller/helpers/logger.js", logger, false, (loggerfile) => { //welcome to callback hell! Yes, I need to improve this later, but want to get it done for now.
         logger = loggerfile.logger
         global.logger = logger
 
@@ -101,7 +101,7 @@ function run() {
         var config;
         var logininfo;
 
-        starter.checkAndGetFile("./src/controller/helpers/dataimport.js", false, (dataimportfile) => { //yes, the nested callbacks aren't getting better
+        starter.checkAndGetFile("./src/controller/helpers/dataimport.js", logger, false, (dataimportfile) => { //yes, the nested callbacks aren't getting better
             dataimportfile.extdata((extdatafile) => {
 
                 extdata   = extdatafile
@@ -131,7 +131,7 @@ function run() {
 
                 if (extdata.branch == "beta-testing") logger("", "\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
 
-                starter.checkAndGetFile("./src/controller/helpers/datacheck.js", false, (datacheck) => { //*callback hell intensifies*
+                starter.checkAndGetFile("./src/controller/helpers/datacheck.js", logger, false, (datacheck) => { //*callback hell intensifies*
                     datacheck.run(logininfo, () => {
 
                         var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
@@ -140,7 +140,7 @@ function run() {
 
 
                         /* ------------ Run updater or start logging in when steam is online: ------------ */
-                        starter.checkAndGetFile("./src/updater/updater.js", false, (updater) => { //callback hell: maximum power
+                        starter.checkAndGetFile("./src/updater/updater.js", logger, false, (updater) => { //callback hell: maximum power
 
                             updater.compatibility(() => { //continue startup on any callback
 

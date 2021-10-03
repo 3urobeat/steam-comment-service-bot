@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 18:00:44
+ * Last Modified: 03.10.2021 17:50:47
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -44,7 +44,7 @@ module.exports.logger = (type, str, nodate, remove, animation) => { //Function t
     //Push string to readyafterlogs if desired
     if (typeof botisloggedin != "undefined" && botisloggedin) { //botislogged in will be undefined when the bot was just started
 
-        require("../../starter.js").checkAndGetFile("./src/controller/ready.js", false, (readyfile) => {
+        require("../../starter.js").checkAndGetFile("./src/controller/ready.js", logger, false, (readyfile) => {
 
             if (!nodate) { //startup messages should have nodate enabled -> filter messages with date when bot is not started
                 if (readyfile.readyafter == 0 && !str.toLowerCase().includes("error") && !str.includes('Logging in... Estimated wait time') && !str.includes("What's new:") && remove !== true) { 

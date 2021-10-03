@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 02.10.2021 18:36:36
+ * Last Modified: 03.10.2021 17:52:54
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -201,10 +201,11 @@ function attachChildListeners() {
 /**
  * Checks if the needed file exists and gets it if it doesn't
  * @param {String} file The file path (from project root) to check and get
+ * @param {function} logger Your current logger function
  * @param {Boolean} norequire If set to true the function will return the path instead of importing it
  * @param {function} [callback] Called with `ready` (Boolean) on completion.
  */
-module.exports.checkAndGetFile = (file, norequire, callback) => {
+module.exports.checkAndGetFile = (file, logger, norequire, callback) => {
     if (!file) {
         logger("error", "checkAndGetFile() error: file parameter is undefined!")
         callback(undefined)
@@ -289,7 +290,7 @@ module.exports.run = () => {
 
     process.title = `CommentBot` //sets process title in task manager etc.
 
-    this.checkAndGetFile("./src/controller/controller.js", true, (file) => {
+    this.checkAndGetFile("./src/controller/controller.js", logger, true, (file) => {
         forkedprocess = cp.fork(file, [ __dirname, Date.now() ]) //create new process and provide srcdir and timestamp as argv parameters
         childpid      = forkedprocess.pid
 
@@ -313,7 +314,7 @@ module.exports.restart = (args) => {
     } catch (err) {} //eslint-disable-line
 
     setTimeout(() => {
-        this.checkAndGetFile("./src/controller/controller.js", true, (file) => {
+        this.checkAndGetFile("./src/controller/controller.js", logger, true, (file) => {
             forkedprocess = cp.fork(file, [ __dirname, Date.now(), JSON.stringify(args) ]) //create new process and provide srcdir, timestamp and restartargs as argv parameters
             childpid      = forkedprocess.pid
     
