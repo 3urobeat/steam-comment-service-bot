@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 17:59:23
+ * Last Modified: 03.10.2021 18:34:59
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -146,6 +146,19 @@ module.exports.readyCheck = (logininfo) => {
                     botobject[0].chat.sendFriendMessage(e, `I have updated myself to version ${extdata.versionstr}!\nWhat's new: ${extdata.whatsnew}`) 
                 }) 
             }
+
+
+            //Check for friends who haven't requested comments in config.unfriendtime days every 60 seconds and unfriend them
+            let lastcommentUnfriendCheck = Date.now() //this is useful because intervals can get unprecise over time
+
+            setInterval(() => {
+                if (lastcommentUnfriendCheck + 60000 > Date.now()) return; //last check is more recent than 60 seconds
+                lastcommentUnfriendCheck = Date.now()
+
+                //logger("debug", "60 seconds passed, calling lastcommentUnfriendCheck()...")
+            
+                require("./helpers/friendlist.js").lastcommentUnfriendCheck()
+            }, 60000); //60 seconds
 
             
             //Write logintime stuff to data.json

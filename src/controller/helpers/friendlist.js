@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 18:01:59
+ * Last Modified: 03.10.2021 18:31:37
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -73,33 +73,34 @@ module.exports.friendlistcapacitycheck = (loginindex, callback) => {
 }
 
 
-/* 
-//Unfriend check loop
-let lastcommentUnfriendCheck = Date.now() //this is useful because intervals can get unprecise over time
+/**
+ * Check for friends who haven't requested comments in config.unfriendtime days and unfriend them
+ */
+module.exports.lastcommentUnfriendCheck = () => {
+    var SteamID    = require("steamid")
+    var controller = require("../../controller/controller.js")
 
-setInterval(() => {
-    if (lastcommentUnfriendCheck + 60000 > Date.now()) return; //last check is more recent than 60 seconds
-    lastcommentUnfriendCheck = Date.now()
-
-    lastcomment.find({ time: { $lte: Date.now() - (config.unfriendtime * 86400000) } }, (err, docs) => { //until is a date in ms, so we check if it is less than right now
+    controller.lastcomment.find({ time: { $lte: Date.now() - (config.unfriendtime * 86400000) } }, (err, docs) => { //until is a date in ms, so we check if it is less than right now
         if (docs.length < 1) return; //nothing found
 
         docs.forEach((e, i) => { //take action for all results
             setTimeout(() => {
-                Object.keys(botobject).forEach((f, j) => {
-                    if (botobject[f].myFriends[e.id] == 3 && !config.ownerid.includes(e.id)) { //check if the targeted user is still friend
-                        if (j == 0) botobject[0].chat.sendFriendMessage(new SteamID(e.id), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
+
+                Object.keys(controller.botobject).forEach((f, j) => {
+                    if (controller.botobject[f].myFriends[e.id] == 3 && !config.ownerid.includes(e.id)) { //check if the targeted user is still friend
+                        if (j == 0) controller.botobject[0].chat.sendFriendMessage(new SteamID(e.id), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
 
                         setTimeout(() => {
-                            botobject[f].removeFriend(new SteamID(e.id)) //unfriend user with each bot
+                            controller.botobject[f].removeFriend(new SteamID(e.id)) //unfriend user with each bot
                             logger("info", `[Bot ${j}] Unfriended ${e.id} after ${config.unfriendtime} days of inactivity.`)
                         }, 1000 * j); //delay every iteration so that we don't make a ton of requests at once (IP)
                     }
                     
-                    if (!config.ownerid.includes(e.id)) lastcomment.remove({ id: e.id }) //entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
+                    if (!config.ownerid.includes(e.id)) controller.lastcomment.remove({ id: e.id }) //entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
                 })
+                
             }, 1000 * i); //delay every iteration so that we don't make a ton of requests at once (account)
             
         })                
     })
-}, 60000); //60 seconds */
+}
