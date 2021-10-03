@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.10.2021 17:52:16
+ * Last Modified: 03.10.2021 19:30:31
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -128,6 +128,18 @@ function run() {
                 logger("info", `Using node.js version ${process.version}...`, false, true, logger.animation("loading"))
                 logger("info", `Running on ${process.platform}...`, false, true, logger.animation("loading"))
                 logger("info", `Using ${extdata.branch} branch | firststart is ${extdata.firststart} | This is start number ${extdata.timesloggedin + 1}`, false, true, logger.animation("loading"))
+
+
+                //Check for unsupported node.js version (<14.15.0)
+                let parsednodeversion = parseInt(process.version.replace("v", "").replace(/\./g, "")) //replace all dots
+
+                if (parsednodeversion < 14150) {
+                    logger("", "\n************************************************************************************\n", true)
+                    logger("error", `This applicaion requires at least node.js \x1b[0mv14.15.0\x1b[31m but you have \x1b[0m${process.version}\x1b[31m installed!\n        Please update your node.js installation: \x1b[0m https://nodejs.org/`, true)
+                    logger("", "\n************************************************************************************\n", true)
+                    process.exit(1);
+                }
+
 
                 if (extdata.branch == "beta-testing") logger("", "\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
 

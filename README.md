@@ -47,7 +47,7 @@ This is a basic setup guide. Visit the [Wiki](https://github.com/HerrEurobeat/st
 Click here: [Download](https://github.com/HerrEurobeat/steam-comment-service-bot/archive/master.zip)  
 Extract the zip and open the `steam-comment-service-bot` folder.  
   
-Have at least node.js version 12 installed: [Download](https://nodejs.org)  
+You need to have at least node.js version 14.15.0 installed: [Download](https://nodejs.org)  
 To get your version number type `node --version` in your console or terminal.  
 If you need a tutorial for this specific node part, [click here.](https://youtu.be/gmA-ccD05g4?t=35)  
   
