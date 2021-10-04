@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.10.2021 19:42:27
+ * Last Modified: 04.10.2021 12:51:46
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -203,7 +203,7 @@ function restartdata(data) {
 
 /* ------------ Start the bot: ------------ */
 
-if (Date.now() + 2500 > process.argv[3]) { //check if this process just got started in the last 5 seconds or just required by itself by checking the timestamp attached by starter.js
+if (parseInt(process.argv[3]) + 2500 > Date.now()) { //check if this process just got started in the last 2.5 seconds or just required by itself by checking the timestamp attached by starter.js
     //Yes, I know, global variables are bad. But I need a few multiple times in different files and it would be a pain in the ass to import them every time and ensure that I don't create a circular dependency and what not.
     global.botisloggedin = false
     global.srcdir        = process.argv[2]

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.10.2021 19:38:48
+ * Last Modified: 04.10.2021 12:50:36
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -114,7 +114,7 @@ module.exports.run = (logininfo, callback) => {
                     if (err) return logger("error", "Error checking if owner is valid: " + err) //if a different error then display a generic message with the error
                 }
 
-                logger("info", `Successfully checked owner link. steamID64: ${ownerResult}`, false, true)
+                logger("info", `Successfully checked owner link. steamID64: ${ownerResult}`, false, true, logger.animation("loading"))
             })
         } catch (err) {
             if (err) { 

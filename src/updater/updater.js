@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.10.2021 17:51:08
+ * Last Modified: 04.10.2021 12:51:57
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -118,7 +118,9 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
             } else { //no update found
 
                 //log result and send message back to user if update was requested via chat
-                logger("info", `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`, false, true, logger.animation("loading"))
+                if (parseInt(process.argv[3]) + 10000 > Date.now()) logger("info", `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`, false, true, logger.animation("loading")) //only print message with animation if the start is more recent than 10 seconds
+                    else logger("info", `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`, false, true)
+
                 if (responseSteamID) require('../controller/controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`)
 
                 foundanddone(false) //make callback to let caller carry on
