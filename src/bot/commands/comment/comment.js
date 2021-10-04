@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 17:54:14
+ * Last Modified: 04.10.2021 21:57:16
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -164,8 +164,17 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
     /* --------- Check if enough bot accounts are available for this rerquest --------- */
     logger("info", `Checking for available bot accounts for this request...`, false, false, logger.animation("loading"))
 
+    //Sort activecommentprocess obj by highest until value, decreasing, so that we can tell the user how long he/she has to wait if not enough accounts were found
+    let sortedvals = Object.keys(mainfile.activecommentprocess).sort((a, b) => {
+        return mainfile.activecommentprocess[b].until - mainfile.activecommentprocess[a].until;
+    })
+    
+    if (sortedvals.length > 0) mainfile.activecommentprocess = Object.assign(...sortedvals.map(k => ( {[k]: mainfile.activecommentprocess[k] } ) )) //map sortedvals back to object if array is not empty - credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
+
+
+    var whenavailable; //we will save the until value of the activecommentprocess entry that the user has to wait for here
     var allaccounts = [ ... Object.keys(controller.communityobject) ] //clone keys array of communityobject
-    //var nextavailable = Date.now() //needs to be implemented to tell the user how long it will probably take before he can request (a queue feature would change the situation)
+    
 
     if (Object.keys(mainfile.activecommentprocess).length > 0) { //we only need to run the loop below if the obj is not empty
         Object.keys(mainfile.activecommentprocess).forEach((e) => { //loop over activecommentprocess obj and remove all valid entries from allaccounts array
@@ -175,6 +184,10 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                 mainfile.activecommentprocess[e].accounts.forEach((f) => { //loop over every account used in this request
                     allaccounts.splice(allaccounts.indexOf(f), 1) //remove that accountindex from the allaccounts array
                 })
+
+                if (allaccounts - mainfile.activecommentprocess[e].accounts.length < numberofcomments) {
+                    whenavailable = mainfile.activecommentprocess[e].until + (config.globalcommentcooldown * 60000)
+                }
             } else {
                 delete mainfile.activecommentprocess[e] //remove entry from object if it is finished to keep the object clean
             }
@@ -182,7 +195,16 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
     }
 
     if (allaccounts.length < accountsneeded) { //if not enough accounts are available respond with error message
-        respondmethod(500, lang.commentnotenoughavailableaccs.replace("waittime", "x").replace("timeunit", "min"))
+        //Calculate how far away whenavailable is from Date.now()
+        var remaining     = Math.abs((whenavailable - Date.now()) / 1000)
+        var remainingunit = "seconds"
+        if (remaining > 120) { var remaining = remaining / 60; var remainingunit = "minutes" }
+        if (remaining > 120) { var remaining = remaining / 60; var remainingunit = "hours" }
+
+        //Respond with note about how many comments can be requested right now if more than 0 accounts are available
+        if (allaccounts.length > 0) respondmethod(500, lang.commentnotenoughavailableaccs.replace("waittime", round(remaining, 2)).replace("timeunit", remainingunit).replace("availablenow", allaccounts.length)) //using allaccounts.length works for the "spread requests on as many accounts as possible" method
+            else respondmethod(500, lang.commentzeroavailableaccs.replace("waittime", round(remaining, 2)).replace("timeunit", remainingunit))
+            
         logger("info", `Found only ${allaccounts.length} available account(s) but ${accountsneeded} account(s) are needed to send ${numberofcomments} comments.`)
         return;
     } else {

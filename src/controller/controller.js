@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.10.2021 12:51:46
+ * Last Modified: 04.10.2021 17:56:36
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -81,6 +81,8 @@ function run() {
 
         //Log held back messages from before this start
         if (logafterrestart.length > 0) {
+            logger("", "\n\n", true)
+
             logafterrestart.forEach((e) => { //log messages to output.txt carried through restart
                 e.split("\n").forEach((f) => { //split string on line breaks to make output cleaner when using remove
                     logger("", "[logafterrestart] " + f, true, true)
@@ -190,12 +192,9 @@ var logafterrestart = [] //create array to log these error messages after restar
 function restartdata(data) {
     data = JSON.parse(data); //convert the stringified object back to an object
 
-    if (Object.keys(data).includes("skippedaccounts")) { //stop any further execution if data structure is <2.10.4 (only an array containing skippedaccounts)
-
-        if (data.oldconfig) oldconfig = data.oldconfig //eslint-disable-line
-        if (data.logafterrestart) logafterrestart = data.logafterrestart //we can't print now since the logger function isn't imported yet. 
-        module.exports.skippedaccounts = data.skippedaccounts
-    }
+    if (data.oldconfig) oldconfig = data.oldconfig //eslint-disable-line
+    if (data.logafterrestart) logafterrestart = data.logafterrestart //we can't print now since the logger function isn't imported yet. 
+    if (data.skippedaccounts) module.exports.skippedaccounts = data.skippedaccounts
 
     run(); //start the bot
 }
@@ -207,7 +206,6 @@ if (parseInt(process.argv[3]) + 2500 > Date.now()) { //check if this process jus
     //Yes, I know, global variables are bad. But I need a few multiple times in different files and it would be a pain in the ass to import them every time and ensure that I don't create a circular dependency and what not.
     global.botisloggedin = false
     global.srcdir        = process.argv[2]
-
 
     //Start the bot through the restartdata function if this is a restart to keep some data or start the bot directly
     if (process.argv[4]) restartdata(process.argv[4]);
