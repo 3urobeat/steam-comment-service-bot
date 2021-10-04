@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 17:49:33
+ * Last Modified: 04.10.2021 13:14:00
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -50,7 +50,8 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
 
 
     /* ------------ Accept offline friend and group invites/requests: ------------ */
-    logger("info", `[${thisbot}] Accepting offline friend & group invites...`, false, true, logger.animation("loading"))
+    if (!require("../../controller/ready.js").readyafter) logger("info", `[${thisbot}] Accepting offline friend & group invites...`, false, true, logger.animation("loading")) //only print message with animation if the bot was not fully started yet
+        else logger("info", `[${thisbot}] Accepting offline friend & group invites...`, false, true)
 
     //Friends:
     for (let i = 0; i < Object.keys(bot.myFriends).length; i++) { //Credit: https://dev.doctormckay.com/topic/1694-accept-friend-request-sent-in-offline/  

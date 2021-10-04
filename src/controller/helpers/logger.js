@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.10.2021 17:50:47
+ * Last Modified: 04.10.2021 13:41:50
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -29,6 +29,9 @@ module.exports.logger = (type, str, nodate, remove, animation) => { //Function t
     var controller   = require("../controller.js")
 
 
+    //NOTE: If the amount of parameters of this function changes then the logger call for readyafterlogs in ready.js and the readyafterlogs.push() call below need to be updated!!
+
+
     //Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)
     outputlogger.options({
         msgstructure: "[animation] [date | type] message",
@@ -38,22 +41,16 @@ module.exports.logger = (type, str, nodate, remove, animation) => { //Function t
     })
     
 
-    var string = outputlogger(type, str, nodate, remove, animation)
+    //Push string to readyafterlogs if desired or print instantly
+    require("../../starter.js").checkAndGetFile("./src/controller/ready.js", logger, false, (readyfile) => {
 
-
-    //Push string to readyafterlogs if desired
-    if (typeof botisloggedin != "undefined" && botisloggedin) { //botislogged in will be undefined when the bot was just started
-
-        require("../../starter.js").checkAndGetFile("./src/controller/ready.js", logger, false, (readyfile) => {
-
-            if (!nodate) { //startup messages should have nodate enabled -> filter messages with date when bot is not started
-                if (readyfile.readyafter == 0 && !str.toLowerCase().includes("error") && !str.includes('Logging in... Estimated wait time') && !str.includes("What's new:") && remove !== true) { 
-                    controller.readyafterlogs.push(string); return; 
-                }
-            }
-        })
-    }
-
+        if (!nodate && !remove && !readyfile.readyafter && !str.toLowerCase().includes("error") && !str.includes('Logging in... Estimated wait time') && !str.includes("What's new:")) { //startup messages should have nodate enabled -> filter messages with date when bot is not started
+            return controller.readyafterlogs.push([ type, str, nodate, remove, animation ]);
+            
+        } else {
+            outputlogger(type, str, nodate, remove, animation)
+        }
+    })
 }
 
 

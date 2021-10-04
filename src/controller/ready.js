@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.10.2021 18:34:59
+ * Last Modified: 04.10.2021 13:42:23
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -117,7 +117,7 @@ module.exports.readyCheck = (logininfo) => {
             
             //Log extra messages that were suppressed during login
             logger("info", `Logging supressed logs...`, false, true, logger.animation("loading"))
-            controller.readyafterlogs.forEach(e => { logger("", e, true) }) //log suppressed logs
+            controller.readyafterlogs.forEach(e => { logger(e[0], e[1], e[2], e[3], e[4]) }) //log suppressed logs
 
 
             //Add backups to cache.json

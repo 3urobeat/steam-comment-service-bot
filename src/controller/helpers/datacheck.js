@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.10.2021 12:50:36
+ * Last Modified: 04.10.2021 13:25:03
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -77,6 +77,10 @@ module.exports.run = (logininfo, callback) => {
         logger("info", "\x1b[31mYour maxOwnerComments value in config.json can't be smaller than 1! Automatically setting it to 1...\x1b[0m", true)
         config.maxOwnerComments = 1
     }
+    if (config.commentdelay <= 500) {
+        logger("warn", "\x1b[31mYour commentdelay is set to a way too low value!\n       Using a commentdelay of 500ms or less will result in an instant cooldown from Steam and therefore a failed comment request.\n       Automatically setting it to the default value of 15 seconds...\x1b[0m", true)
+        config.commentdelay = 15000
+    }
     if (config.commentdelay / (maxCommentsOverall / 2) < 1250) {
         logger("warn", "\x1b[31mYou have raised maxComments or maxOwnerComments but I would recommend to raise the commentdelay further. Not increasing the commentdelay further raises the probability to get cooldown errors from Steam.\x1b[0m", true) 
     }
@@ -97,19 +101,19 @@ module.exports.run = (logininfo, callback) => {
     logger("info", `Checking for invalid ownerids...`, false, true, logger.animation("loading"))
     config.ownerid.forEach((e) => {
         if (isNaN(e) || new SteamID(String(e)).isValid() == false) { 
-            logger("warn", `${e} is not a valid ownerid!`, true) 
+            logger("warn", `${e} is not a valid ownerid!`)
         }
     })
 
     //Check if owner link is correct
     logger("info", `Checking if owner link is valid...`, false, true, logger.animation("loading"))
     if (!config.owner.includes("steamcommunity.com")) { 
-        logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.", true) 
+        logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.") 
     } else {
         try {
             steamidresolver.customUrlTosteamID64(config.owner, (err, ownerResult) => {
                 if (err == "The specified profile could not be found.") { //if the profile couldn't be found display specific message
-                    return logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.\n       Error: " + err, true)
+                    return logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.\n       Error: " + err)
                 } else {
                     if (err) return logger("error", "Error checking if owner is valid: " + err) //if a different error then display a generic message with the error
                 }
