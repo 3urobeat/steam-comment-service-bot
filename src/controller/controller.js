@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.10.2021 17:56:36
+ * Last Modified: 05.10.2021 23:07:37
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -29,7 +29,6 @@ function run() {
     module.exports.bootstart            = Date.now()
     module.exports.relogQueue           = []
     module.exports.readyafterlogs       = []         //array to save suppressed logs during startup that get logged by ready.js
-    module.exports.skippedaccounts      = []         //array to save which accounts have been skipped to skip them automatically when restarting
     module.exports.relogAfterDisconnect = true       //allows to prevent accounts from relogging when calling bot.logOff()
     
 
@@ -206,6 +205,8 @@ if (parseInt(process.argv[3]) + 2500 > Date.now()) { //check if this process jus
     //Yes, I know, global variables are bad. But I need a few multiple times in different files and it would be a pain in the ass to import them every time and ensure that I don't create a circular dependency and what not.
     global.botisloggedin = false
     global.srcdir        = process.argv[2]
+
+    module.exports.skippedaccounts = []; //array to save which accounts have been skipped to skip them automatically when restarting
 
     //Start the bot through the restartdata function if this is a restart to keep some data or start the bot directly
     if (process.argv[4]) restartdata(process.argv[4]);

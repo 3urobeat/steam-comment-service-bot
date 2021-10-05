@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.10.2021 13:42:23
+ * Last Modified: 05.10.2021 23:31:41
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -49,15 +49,15 @@ module.exports.readyCheck = (logininfo) => {
             var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
             if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
 
-            if (maxCommentsOverall > 3) var repeatedCommentsStr = `\x1b[4m\x1b[31m${maxCommentsOverall / Object.keys(botobject).length}\x1b[0m` 
-                else var repeatedCommentsStr = maxCommentsOverall / Object.keys(botobject).length
+            if (maxCommentsOverall > 3) var repeatedCommentsStr = `\x1b[4m\x1b[31m${round(maxCommentsOverall / Object.keys(botobject).length, 2)}\x1b[0m` 
+                else var repeatedCommentsStr = round(maxCommentsOverall / Object.keys(botobject).length, 2)
             
             logger("", `\x1b[94m>\x1b[0m ${Object.keys(communityobject).length} total account(s) | ${repeatedCommentsStr} comments per account allowed`, true)
 
 
             //display amount of proxies if any were used
             if (login.proxies.length > 1) { //'null' will always be in the array (your own ip)
-                logger("", `\x1b[36m>\x1b[0m Using ${login.proxies.length} proxies | ${Math.round(Object.keys(communityobject).length / login.proxies.length)} account(s) per proxy`, true)
+                logger("", `\x1b[36m>\x1b[0m Using ${login.proxies.length} proxies | ${round(Object.keys(communityobject).length / login.proxies.length, 2)} account(s) per proxy`, true)
             }
 
 
@@ -131,10 +131,10 @@ module.exports.readyCheck = (logininfo) => {
             
 
             //Friendlist capacity check
-            Object.keys(botobject).forEach((e, i) => {
-                require("./helpers/friendlist.js").friendlistcapacitycheck(i, (remaining) => {
+            Object.keys(botobject).forEach((e) => {
+                require("./helpers/friendlist.js").friendlistcapacitycheck(parseInt(e), (remaining) => {
                     if (remaining < 25) {
-                        logger("warn", `The friendlist space of bot${i} is running low! (${remaining} remaining)`)
+                        logger("warn", `The friendlist space of bot${e} is running low! (${remaining} remaining)`)
                     }
                 })
             })

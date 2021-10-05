@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.10.2021 19:42:22
+ * Last Modified: 05.10.2021 19:38:42
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -86,7 +86,7 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
             } else { //Skip account if not bot0
 
                 logger("info", `Failed account is not bot0. Skipping account...`, true)
-                controller.accisloggedin = true; //set to true to log next account in
+                login.accisloggedin = true; //set to true to log next account in
 
                 controller.skippedaccounts.push(loginindex)
                 login.skippednow.push(loginindex)
