@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 17:52:04
+ * Last Modified: 05.10.2021 16:55:56
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -30,14 +30,43 @@ module.exports.run = (chatmsg, steamID, lang, loginindex, args) => {
     var controller = require("../../controller/controller.js")
 
 
+    //Only send current settings if no arguments were provided
     if (!args[0]) { 
         fs.readFile('./config.json', function(err, data) { //Use readFile to get an unprocessed object
             if (err) return chatmsg(steamID, lang.settingscmdfailedread + err)
-            chatmsg(steamID, lang.settingscmdcurrentsettings + "" + data.toString().slice(1, -1).split("\n").map(s => s.trim()).join("\n")) //remove first and last character which are brackets and remove leading and trailing whitespaces from all lines
+
+            //Since Steam keeps blocking this message because of its length but somehow not anymore when its formatted as code: Fuck you Steam, then I'm going to prepare 3 variants.
+            let currentsettingsarr = data.toString().slice(1, -1).split("\n").map(s => s.trim())
+
+            
+            //Send as one message with code prefix
+            chatmsg(steamID, "/code " + lang.settingscmdcurrentsettings + "\n" + currentsettingsarr.join("\n")) //remove first and last character which are brackets and remove leading and trailing whitespaces from all lines
+
+
+            //Send in two parts with code prefix
+            /* chatmsg(steamID, "/code " + lang.settingscmdcurrentsettings + "" + currentsettingsarr.slice(0, currentsettingsarr.length / 2).join("\n")) //remove first and last character which are brackets and remove leading and trailing whitespaces from all lines
+
+            setTimeout(() => {
+                chatmsg(steamID, "/code " + currentsettingsarr.slice(currentsettingsarr.length / 2, currentsettingsarr.length).join("\n"))
+            }, 2000); */
+
+
+            //Send in three parts with code prefix
+            /* chatmsg(steamID, "/code " + lang.settingscmdcurrentsettings + "" + currentsettingsarr.slice(0, currentsettingsarr.length / 3).join("\n")) //remove first and last character which are brackets and remove leading and trailing whitespaces from all lines
+            
+            setTimeout(() => {
+                chatmsg(steamID, "/code " + currentsettingsarr.slice(currentsettingsarr.length / 3, currentsettingsarr.length - currentsettingsarr.length / 3).join("\n"))
+
+                setTimeout(() => {
+                    chatmsg(steamID, "/code " + currentsettingsarr.slice(currentsettingsarr.length - currentsettingsarr.length / 3, currentsettingsarr.length).join("\n"))
+                }, 2000);
+            }, 2000); */
         })
         return; 
     }
 
+
+    //Seems like at least one argument was provided so the user probably wants to change a setting
     if (!args[1]) return chatmsg(steamID, "Please provide a new value for the key you want to change!")
 
     //Block those 3 values to don't allow another owner to take over ownership

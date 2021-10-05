@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 17:48:47
+ * Last Modified: 05.10.2021 16:18:20
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -74,34 +74,36 @@ module.exports.configgroup64id = () => {
 
 /**
  * Gets the groupID64 of botsgroup set in the config from cache.json or Steam
+ * @param {Number} loginindex The loginindex of the calling account
+ * @param {String} thisbot The thisbot string of the calling account
  * @returns groupID64 String
  */
-module.exports.botsgroupID64 = () => {
+module.exports.botsgroupID64 = (loginindex, thisbot) => {
     var steamidresolver = require("steamid-resolver") //also my own library, cool right?
     var fs              = require("fs")
 
     var cachefile       = require(srcdir + "/data/cache.json")
 
 
-    logger("info", "Getting groupID64 of botsgroup set in the config.json...", false, true, logger.animation("loading"))
+    logger("info", `[${thisbot}] Getting groupID64 of botsgroup set in the config.json...`, false, true, logger.animation("loading"))
 
     if (config.botsgroup.length < 1) { //id is stored in cache file, no need to get it again
-        logger("info", "Skipping groupID64 request of botsgroup because config.botsgroup is empty.", false, true); //log to output for debugging
+        logger("info", `[${thisbot}] Skipping groupID64 request of botsgroup because config.botsgroup is empty.`, false, true); //log to output for debugging
         return null;
         
     } else {
     
         if (cachefile.botsgroup == config.botsgroup) {
-            logger("info", "groupID64 of botsgroup is stored in cache.json...", false, true, logger.animation("loading"))
+            logger("info", `[${thisbot}] groupID64 of botsgroup is stored in cache.json...`, false, true, logger.animation("loading"))
 
             return cachefile.botsgroupid; //return botsgroupid
     
         } else {
-            logger("info", "groupID64 of botsgroup not in cache.json. Requesting information from Steam...", false, true, logger.animation("loading"))
+            logger("info", `[${thisbot}] groupID64 of botsgroup not in cache.json. Requesting information from Steam...`, false, true, logger.animation("loading"))
     
             steamidresolver.groupUrlToGroupID64(config.botsgroup, (err, botsgroupid) => {
                 if (err == "The specified group could not be found.") { //if the group couldn't be found display specific message
-                    logger("error", "Your group (botsgroup in config) doesn't seem to be valid!\n        Error: " + config.botsgroup + " contains no xml or groupID64 data", true); 
+                    if (loginindex == 0) logger("warn", "Your group (botsgroup in config) doesn't seem to be valid!\n                             " + config.botsgroup + " contains no xml or groupID64 data"); 
                     return null;
 
                 } else {
@@ -111,7 +113,7 @@ module.exports.botsgroupID64 = () => {
                     }
                 }
     
-                logger("info", `Successfully retrieved botsgroup information. groupID64: ${botsgroupid}`, false, true, logger.animation("loading"))
+                logger("info", `[${thisbot}] Successfully retrieved botsgroup information. groupID64: ${botsgroupid} - Writing to cache.json...`, false, true, logger.animation("loading"))
     
 
                 cachefile.botsgroup = config.botsgroup
