@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.10.2021 13:41:50
+ * Last Modified: 05.10.2021 14:39:08
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -40,17 +40,19 @@ module.exports.logger = (type, str, nodate, remove, animation) => { //Function t
         animationdelay: 250
     })
     
+    //Try to get readyafter or just ignore it if we can't. Previously I used checkAndGetFile() but that creates a circular dependency which I'd like to avoid
+    try {
+        var readyafter = require("../ready.js").readyafter;
+    } catch (err) {
+        var readyafter = null
+    }
 
     //Push string to readyafterlogs if desired or print instantly
-    require("../../starter.js").checkAndGetFile("./src/controller/ready.js", logger, false, (readyfile) => {
-
-        if (!nodate && !remove && !readyfile.readyafter && !str.toLowerCase().includes("error") && !str.includes('Logging in... Estimated wait time') && !str.includes("What's new:")) { //startup messages should have nodate enabled -> filter messages with date when bot is not started
-            return controller.readyafterlogs.push([ type, str, nodate, remove, animation ]);
-            
-        } else {
-            outputlogger(type, str, nodate, remove, animation)
-        }
-    })
+    if (!nodate && !remove && !readyafter && !str.toLowerCase().includes("error") && !str.includes('Logging in... Estimated wait time') && !str.includes("What's new:")) { //startup messages should have nodate enabled -> filter messages with date when bot is not started
+        controller.readyafterlogs.push([ type, str, nodate, remove, animation ]);
+    } else {
+        outputlogger(type, str, nodate, remove, animation)
+    }
 }
 
 
