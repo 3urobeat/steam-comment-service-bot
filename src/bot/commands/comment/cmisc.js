@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 17:54:29
+ * Last Modified: 07.10.2021 11:57:08
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -87,7 +87,12 @@ module.exports.failed = (chatmsg, steamID, lang, steam64id) => {
     controller.lastcomment.findOne({ id: steam64id }, (err, doc) => {
         if (!mainfile.failedcomments[steam64id] || Object.keys(mainfile.failedcomments[steam64id]).length < 1) return chatmsg(steamID, lang.failedcmdnothingfound);
 
-        chatmsg(steamID, lang.failedcmdmsg.replace("steam64id", steam64id).replace("requesttime", new Date(doc.time).toISOString().replace(/T/, ' ').replace(/\..+/, '')) + "\n\n" + JSON.stringify(mainfile.failedcomments[steam64id], null, 4))
+        let requesttime = new Date(doc.time).toISOString().replace(/T/, ' ').replace(/\..+/, '')
+        
+        let failedcommentsobj = JSON.stringify(mainfile.failedcomments[steam64id], null, 4)
+        let failedcommentsstr = failedcommentsobj.slice(1, -1).split("\n").map(s => s.trim()).join("\n") //remove brackets and whitespaces
+
+        chatmsg(steamID, "/pre " + lang.failedcmdmsg.replace("steam64id", steam64id).replace("requesttime", requesttime) + "\n" + failedcommentsstr)
     })
 }
 
