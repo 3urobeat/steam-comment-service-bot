@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 05.10.2021 23:07:37
+ * Last Modified: 14.10.2021 17:24:04
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -132,9 +132,13 @@ function run() {
 
 
                 //Check for unsupported node.js version (<14.15.0)
-                let parsednodeversion = parseInt(process.version.replace("v", "").replace(/\./g, "")) //replace all dots
+                let versionarr        = process.version.replace("v", "").split(".")
+                
+                versionarr.forEach((e, i) => { if (e.length == 1 && parseInt(e) < 10) versionarr[i] = `0${e}` }) //put 0 infront of single digits
+                
+                let parsednodeversion = parseInt(versionarr.join(""))
 
-                if (parsednodeversion < 14150) {
+                if (parsednodeversion < 141500) {
                     logger("", "\n************************************************************************************\n", true)
                     logger("error", `This applicaion requires at least node.js \x1b[0mv14.15.0\x1b[31m but you have \x1b[0m${process.version}\x1b[31m installed!\n        Please update your node.js installation: \x1b[0m https://nodejs.org/`, true)
                     logger("", "\n************************************************************************************\n", true)
