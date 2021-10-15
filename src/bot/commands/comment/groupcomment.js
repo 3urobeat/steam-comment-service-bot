@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.10.2021 21:56:42
+ * Last Modified: 15.10.2021 20:53:29
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -218,6 +218,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
 
     /* --------- Actually start the commenting process --------- */
     var breakloop = false
+    var alreadyskippedproxies = []
     mainfile.failedcomments[requesterSteamID] = {}
     
     mainfile.activecommentprocess[groupid] = { 
@@ -234,36 +235,67 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
         setTimeout(() => {
             /* --------- Check if this iteration should still run --------- */
             //(both checks are designed to run through every failed iteration)
-            if (!mainfile.activecommentprocess[groupid] || mainfile.activecommentprocess[groupid].status != "active") { //Check if groupid is not anymore in mainfile.activecommentprocess obj or status is not active anymore (for example by using !abort)
-                mainfile.failedcomments[requesterSteamID][`Comment ${i} (bot${k})`] = "Skipped because user aborted comment process." //push reason to mainfile.failedcomments obj
+            if (!mainfile.activecommentprocess[groupid] || mainfile.activecommentprocess[groupid].status == "aborted") { //Check if profile is not anymore in mainfile.activecommentprocess obj or status is not active anymore (for example by using !abort)
+                mainfile.failedcomments[requesterSteamID][`c${i} bot${k} p${loginfile.additionalaccinfo[k].thisproxyindex}`] = "Skipped because user aborted comment process." //push reason to mainfile.failedcomments obj
                 return; //Stop further execution and skip to next iteration
             }
 
             //regex is confusing so I hope this pattern isn't too terrible
             let regexPattern1 = /postGroupComment error: Error: HTTP error 429.*\n.*/gm //Thanks: https://stackoverflow.com/a/49277142
-            let regexPattern2 = /postGroupComment error: Skipped because of previous HTTP 429 error.*/gm
 
-            //Array.includes() needs an exact match and since we already want to match with only a part of the string we can do it using Array.some() and regex
-            if (Object.values(mainfile.failedcomments[requesterSteamID]).some(e => regexPattern1.test(e))) { //Check if we got IP blocked (cooldown) by checking for a HTTP 429 error pushed into the mainfile.failedcomments array by a previous iteration and send message
-                if (!Object.values(mainfile.failedcomments[requesterSteamID]).some(e => regexPattern2.test(e))) { //send chat.sendFriendMessage only the first time
-                    respondmethod(500, `${lang.comment429stop.replace("failedamount", numberofcomments - i + 1).replace("numberofcomments", numberofcomments)}\n\n${lang.commentfailedcmdreference}`) //add !failed cmd reference to message
+            //skip comments on failed proxies
+            var thisproxy = loginfile.additionalaccinfo[k].thisproxyindex
+            var failedproxies = []
+            
+            Object.keys(mainfile.failedcomments[requesterSteamID]).forEach((e) => {
+                let affectedproxy = Number(e.split(" ")[2].replace("p", "")) //get the index of the affected proxy from the String
 
-                    //push all other comments to instanly complete the mainfile.failedcomments obj
+                //Check if this entry matches a HTTP 429 error
+                if (regexPattern1.test(mainfile.failedcomments[requesterSteamID][e])) {
+                    if (!failedproxies.includes(affectedproxy)) failedproxies.push(affectedproxy) //push proxy index to array if it isn't included yet
+                }
+            })
+            
+            //push all comments that would be made by an account with an affected proxy to failedcomments
+            if (failedproxies.includes(thisproxy)) {
+                if (!alreadyskippedproxies.includes(thisproxy)) { //only push if this proxy doesn't have a "skipped because of previous http 429 error" entry already 
+                    logger("warn", `HTTP 429 error on proxy ${thisproxy} detected. Skipping all other comments on this proxy because they will fail too!`)
+                    
+                    if (!alreadyskippedproxies.includes(thisproxy)) alreadyskippedproxies.push(thisproxy)
+
+                    //push all other comments by accounts with an affected proxy to failedcomments
                     var m = 0;
-                    for (var l = i + 1; l <= numberofcomments; l++) { //start with next comment process iteration by setting the starting variable l to i + 1
+
+                    for (var l = 1; l <= numberofcomments; l++) { //start with l = 1 because of reasons
                         if (m + 1 > Object.keys(controller.communityobject).length) { //reset variable tracking communityobject index if it is greater than the amount of accounts
                             m = 0;
                         }
 
-                        mainfile.failedcomments[requesterSteamID][`Comment ${l} (bot${m})`] = `postGroupComment error: Skipped because of previous HTTP 429 error.` //push reason to mainfile.failedcomments obj
+                        if (l >= i && loginfile.additionalaccinfo[m].thisproxyindex == thisproxy) { //only push if we arrived at an iteration that uses a failed proxy and has not been sent already
+                            mainfile.failedcomments[requesterSteamID][`c${l} bot${m} p${thisproxy}`] = `postGroupComment error: Skipped because of previous HTTP 429 error.` //push reason to mainfile.failedcomments obj
+                        }
+
                         m++
                     }
 
-                    mainfile.activecommentprocess[groupid].status = "error" //update status in activecommentprocess obj
-                    mainfile.commentcounter += numberofcomments - (numberofcomments - i + 1) //add numberofcomments minus failedamount to commentcounter
+                    //sort failedcomments by comment number so that it is easier to read
+                    let sortedvals = Object.keys(mainfile.failedcomments[requesterSteamID]).sort((a, b) => {
+                        return Number(a.split(" ")[0].replace("c", "")) - Number(b.split(" ")[0].replace("c", ""));
+                    })
+                    
+                    if (sortedvals.length > 0) mainfile.failedcomments[requesterSteamID] = Object.assign(...sortedvals.map(k => ( {[k]: mainfile.failedcomments[requesterSteamID][k] } ) )) //map sortedvals back to object if array is not empty - credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
+                
 
-                    logger("warn", "HTTP 429 error detected. Skipping all other comments on this proxy because they will fail too!")
+                    //Send message to user if all proxies failed
+                    if (failedproxies.length == loginfile.proxies.length) {
+                        respondmethod(500, `${lang.comment429stop.replace("failedamount", numberofcomments - i + 1).replace("numberofcomments", numberofcomments)}\n\n${lang.commentfailedcmdreference}`) //add !failed cmd reference to message
+                        logger("warn", "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error!")
+
+                        mainfile.activecommentprocess[groupid].status = "error" //update status in activecommentprocess obj
+                        mainfile.commentcounter += numberofcomments - (numberofcomments - i + 1) //add numberofcomments minus failedamount to commentcounter
+                    }
                 }
+
                 return; //stop further execution
             }
 
@@ -286,8 +318,11 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
             }
             
             getQuote(comment => { //get a random quote to comment with and wait for callback to ensure a quote has been found before trying to comment
-                controller.communityobject[k].postGroupComment(groupid, comment, (error) => { //post comment
+                //controller.communityobject[k].postGroupComment(groupid, comment, (error) => { //post comment
                     if (k == 0) var thisbot = `Main`; else var thisbot = `Bot ${k}`; //call bot 0 the main bot in logging messages
+
+                    var error = ""
+                    if (i == 1 || i == 6) var error = "Error: HTTP error 429"
 
                     /* --------- Handle errors thrown by this comment attempt --------- */
                     if (error) {
@@ -357,11 +392,11 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                             if (loginfile.proxies.length > 1) {
                                 logger("error", `[${thisbot}] postGroupComment ${i + 1}/${numberofcomments} error (using proxy ${loginfile.additionalaccinfo[k].thisproxyindex}): ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - group: ${groupid}`); 
 
-                                mainfile.failedcomments[requesterSteamID][`Comment ${i + 1} (bot${k})`] = `postGroupComment error: ${error}`
+                                mainfile.failedcomments[requesterSteamID][`c${i + 1} bot${k} p${loginfile.additionalaccinfo[k].thisproxyindex}`] = `postGroupComment error: ${error} [${errordesc}]`
                             } else {
                                 logger("error", `[${thisbot}] postGroupComment ${i + 1}/${numberofcomments} error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - group: ${groupid}`); 
 
-                                mainfile.failedcomments[requesterSteamID][`Comment ${i + 1} (bot${k})`] = `postGroupComment error: ${error}`
+                                mainfile.failedcomments[requesterSteamID][`c${i + 1} bot${k} p${loginfile.additionalaccinfo[k].thisproxyindex}`] = `postGroupComment error: ${error} [${errordesc}]`
                             }
 
                         }
@@ -413,7 +448,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                         mainfile.commentcounter += numberofcomments - Object.keys(mainfile.failedcomments[requesterSteamID]).length //add numberofcomments minus failedamount to commentcounter
 
                     }
-                })
+                //})
             })
         }, config.commentdelay * i); //delay every comment
     }

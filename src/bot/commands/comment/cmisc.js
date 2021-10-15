@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 15.10.2021 15:59:27
+ * Last Modified: 15.10.2021 20:49:40
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -49,10 +49,11 @@ module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
     var mainfile   = require("../../main.js")
     var controller = require("../../../controller/controller.js")
 
-    if (config.commentcooldown == 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the cooldown enabled?
 
     if (args[0]) {
         if (args[0] == "global") { //Check if user wants to reset the global cooldown (will reset all until entries in activecommentprocess)
+            if (config.globalcommentcooldown == 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the global cooldown enabled?
+
             Object.keys(mainfile.activecommentprocess).forEach((e) => {
                 mainfile.activecommentprocess[e].until = Date.now() - (config.globalcommentcooldown * 60000); //since the cooldown checks will add the cooldown we need to subtract it (can't delete the entry because we might abort running processes with it)
             })
@@ -65,6 +66,8 @@ module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
 
         var steam64id = args[0] //change steam64id to the provided id
     }
+
+    if (config.commentcooldown == 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the cooldown enabled?
 
     controller.lastcomment.update({ id: steam64id }, { $set: { time: Date.now() - (config.commentcooldown * 60000) } }, (err) => { 
         if (err) return chatmsg(steamID, "Error updating database entry: " + err)
