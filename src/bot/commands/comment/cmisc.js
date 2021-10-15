@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 07.10.2021 11:57:08
+ * Last Modified: 15.10.2021 15:59:27
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -92,7 +92,11 @@ module.exports.failed = (chatmsg, steamID, lang, steam64id) => {
         let failedcommentsobj = JSON.stringify(mainfile.failedcomments[steam64id], null, 4)
         let failedcommentsstr = failedcommentsobj.slice(1, -1).split("\n").map(s => s.trim()).join("\n") //remove brackets and whitespaces
 
-        chatmsg(steamID, "/pre " + lang.failedcmdmsg.replace("steam64id", steam64id).replace("requesttime", requesttime) + "\n" + failedcommentsstr)
+        let messagestart = lang.failedcmdmsg.replace("steam64id", steam64id).replace("requesttime", requesttime)
+
+        //Limit length to 750 characters to ensure the message can be sent
+        if (failedcommentsstr.length >= 800) chatmsg(steamID, "/pre " + messagestart + "\nc = Comment, p = Proxy\n" + failedcommentsstr.slice(0, 800) + "... \n\n ..." + failedcommentsstr.slice(800, failedcommentsstr.length).split("\n").length + " entries hidden because message would be too long.");
+            else chatmsg(steamID, "/pre " + messagestart + "\nc = Comment, p = Proxy\n" + failedcommentsstr);
     })
 }
 
