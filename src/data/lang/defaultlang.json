@@ -70,7 +70,7 @@
     "settingscmdvaluetoobig": "Your new value is too big. (32-bit integer limit)\nPlease choose a smaller value.",
     "settingscmdvaluechanged": "targetkey has been changed from oldvalue to newvalue.\nPlease remember that certain values might need a restart to take effect. You can do that by typing !restart.",
 
-    "failedcmdnothingfound": "I can't remember any failed comments you have requested.",
+    "failedcmdnothingfound": "I can't remember any failed comments on your/that profile.\nIf you requested comments for another profile or for a group then please provide the id as argument!",
     "failedcmdmsg": "Your last request for 'steam64id' from 'requesttime' (GMT time) had these errors:",
 
     "sessionscmdnosessions": "There are currently no active sessions and no bot accounts on cooldown.",

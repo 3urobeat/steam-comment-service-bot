@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 15.10.2021 20:35:44
+ * Last Modified: 15.10.2021 21:28:22
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -254,7 +254,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
         /* --------- Actually start the commenting process --------- */
         var breakloop = false
         var alreadyskippedproxies = []
-        mainfile.failedcomments[requesterSteamID] = {}
+        mainfile.failedcomments[recieverSteamID] = {}
 
         mainfile.activecommentprocess[recieverSteamID] = { 
             status: "active",
@@ -271,7 +271,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                 /* --------- Check if this iteration should still run --------- */
                 //(both checks are designed to run through every failed iteration)
                 if (!mainfile.activecommentprocess[recieverSteamID] || mainfile.activecommentprocess[recieverSteamID].status == "aborted") { //Check if profile is not anymore in mainfile.activecommentprocess obj or status is not active anymore (for example by using !abort)
-                    mainfile.failedcomments[requesterSteamID][`c${i} bot${k} p${loginfile.additionalaccinfo[k].thisproxyindex}`] = "Skipped because user aborted comment process." //push reason to mainfile.failedcomments obj
+                    mainfile.failedcomments[recieverSteamID][`c${i} bot${k} p${loginfile.additionalaccinfo[k].thisproxyindex}`] = "Skipped because user aborted comment process." //push reason to mainfile.failedcomments obj
                     return; //Stop further execution and skip to next iteration
                 }
 
@@ -282,11 +282,11 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                 var thisproxy = loginfile.additionalaccinfo[k].thisproxyindex
                 var failedproxies = []
                 
-                Object.keys(mainfile.failedcomments[requesterSteamID]).forEach((e) => {
+                Object.keys(mainfile.failedcomments[recieverSteamID]).forEach((e) => {
                     let affectedproxy = Number(e.split(" ")[2].replace("p", "")) //get the index of the affected proxy from the String
 
                     //Check if this entry matches a HTTP 429 error
-                    if (regexPattern1.test(mainfile.failedcomments[requesterSteamID][e])) {
+                    if (regexPattern1.test(mainfile.failedcomments[recieverSteamID][e])) {
                         if (!failedproxies.includes(affectedproxy)) failedproxies.push(affectedproxy) //push proxy index to array if it isn't included yet
                     }
                 })
@@ -307,18 +307,18 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                             }
 
                             if (l >= i && loginfile.additionalaccinfo[m].thisproxyindex == thisproxy) { //only push if we arrived at an iteration that uses a failed proxy and has not been sent already
-                                mainfile.failedcomments[requesterSteamID][`c${l} bot${m} p${thisproxy}`] = `postUserComment error: Skipped because of previous HTTP 429 error.` //push reason to mainfile.failedcomments obj
+                                mainfile.failedcomments[recieverSteamID][`c${l} bot${m} p${thisproxy}`] = `postUserComment error: Skipped because of previous HTTP 429 error.` //push reason to mainfile.failedcomments obj
                             }
 
                             m++
                         }
 
                         //sort failedcomments by comment number so that it is easier to read
-                        let sortedvals = Object.keys(mainfile.failedcomments[requesterSteamID]).sort((a, b) => {
+                        let sortedvals = Object.keys(mainfile.failedcomments[recieverSteamID]).sort((a, b) => {
                             return Number(a.split(" ")[0].replace("c", "")) - Number(b.split(" ")[0].replace("c", ""));
                         })
                         
-                        if (sortedvals.length > 0) mainfile.failedcomments[requesterSteamID] = Object.assign(...sortedvals.map(k => ( {[k]: mainfile.failedcomments[requesterSteamID][k] } ) )) //map sortedvals back to object if array is not empty - credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
+                        if (sortedvals.length > 0) mainfile.failedcomments[recieverSteamID] = Object.assign(...sortedvals.map(k => ( {[k]: mainfile.failedcomments[recieverSteamID][k] } ) )) //map sortedvals back to object if array is not empty - credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
                     
 
                         //Send message to user if all proxies failed
@@ -424,11 +424,11 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                                 if (loginfile.proxies.length > 1) {
                                     logger("error", `[${thisbot}] postUserComment ${i + 1}/${numberofcomments} error (using proxy ${loginfile.additionalaccinfo[k].thisproxyindex}): ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - reciever: ${recieverSteamID}`); 
 
-                                    mainfile.failedcomments[requesterSteamID][`c${i + 1} bot${k} p${loginfile.additionalaccinfo[k].thisproxyindex}`] = `postUserComment error: ${error} [${errordesc}]`
+                                    mainfile.failedcomments[recieverSteamID][`c${i + 1} bot${k} p${loginfile.additionalaccinfo[k].thisproxyindex}`] = `postUserComment error: ${error} [${errordesc}]`
                                 } else {
                                     logger("error", `[${thisbot}] postUserComment ${i + 1}/${numberofcomments} error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - reciever: ${recieverSteamID}`); 
 
-                                    mainfile.failedcomments[requesterSteamID][`c${i + 1} bot${k} p${loginfile.additionalaccinfo[k].thisproxyindex}`] = `postUserComment error: ${error} [${errordesc}]`
+                                    mainfile.failedcomments[recieverSteamID][`c${i + 1} bot${k} p${loginfile.additionalaccinfo[k].thisproxyindex}`] = `postUserComment error: ${error} [${errordesc}]`
                                 }
                                 
                             }
@@ -476,16 +476,16 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                         if (i == numberofcomments - 1 && numberofcomments > 1) { //last iteration (run only when more than one comment is requested)
                             var failedcmdreference = ""
 
-                            if (Object.keys(mainfile.failedcomments[requesterSteamID]).length > 0) {
+                            if (Object.keys(mainfile.failedcomments[recieverSteamID]).length > 0) {
                                 failedcmdreference = "\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
                             }
 
-                            if (!res) respondmethod(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(mainfile.failedcomments[requesterSteamID]).length).replace("numberofcomments", numberofcomments)}\n${failedcmdreference}`); //only send if not a webrequest
+                            if (!res) respondmethod(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(mainfile.failedcomments[recieverSteamID]).length).replace("numberofcomments", numberofcomments)}\n${failedcmdreference}`); //only send if not a webrequest
 
                             mainfile.activecommentprocess[recieverSteamID].status = "cooldown"
-                            mainfile.commentcounter += numberofcomments - Object.keys(mainfile.failedcomments[requesterSteamID]).length //add numberofcomments minus failedamount to commentcounter
+                            mainfile.commentcounter += numberofcomments - Object.keys(mainfile.failedcomments[recieverSteamID]).length //add numberofcomments minus failedamount to commentcounter
 
-                            if (Object.values(mainfile.failedcomments[requesterSteamID]).includes("Error: The settings on this account do not allow you to add comments.") && !res) {
+                            if (Object.values(mainfile.failedcomments[recieverSteamID]).includes("Error: The settings on this account do not allow you to add comments.") && !res) {
                                 accstoadd[requesterSteamID] = []
 
                                 for (i in controller.botobject) {

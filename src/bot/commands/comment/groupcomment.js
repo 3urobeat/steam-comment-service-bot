@@ -219,7 +219,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
     /* --------- Actually start the commenting process --------- */
     var breakloop = false
     var alreadyskippedproxies = []
-    mainfile.failedcomments[requesterSteamID] = {}
+    mainfile.failedcomments[groupid] = {}
     
     mainfile.activecommentprocess[groupid] = { 
         status: "active",
@@ -236,7 +236,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
             /* --------- Check if this iteration should still run --------- */
             //(both checks are designed to run through every failed iteration)
             if (!mainfile.activecommentprocess[groupid] || mainfile.activecommentprocess[groupid].status == "aborted") { //Check if profile is not anymore in mainfile.activecommentprocess obj or status is not active anymore (for example by using !abort)
-                mainfile.failedcomments[requesterSteamID][`c${i} bot${k} p${loginfile.additionalaccinfo[k].thisproxyindex}`] = "Skipped because user aborted comment process." //push reason to mainfile.failedcomments obj
+                mainfile.failedcomments[groupid][`c${i} bot${k} p${loginfile.additionalaccinfo[k].thisproxyindex}`] = "Skipped because user aborted comment process." //push reason to mainfile.failedcomments obj
                 return; //Stop further execution and skip to next iteration
             }
 
@@ -247,11 +247,11 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
             var thisproxy = loginfile.additionalaccinfo[k].thisproxyindex
             var failedproxies = []
             
-            Object.keys(mainfile.failedcomments[requesterSteamID]).forEach((e) => {
+            Object.keys(mainfile.failedcomments[groupid]).forEach((e) => {
                 let affectedproxy = Number(e.split(" ")[2].replace("p", "")) //get the index of the affected proxy from the String
 
                 //Check if this entry matches a HTTP 429 error
-                if (regexPattern1.test(mainfile.failedcomments[requesterSteamID][e])) {
+                if (regexPattern1.test(mainfile.failedcomments[groupid][e])) {
                     if (!failedproxies.includes(affectedproxy)) failedproxies.push(affectedproxy) //push proxy index to array if it isn't included yet
                 }
             })
@@ -272,18 +272,18 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                         }
 
                         if (l >= i && loginfile.additionalaccinfo[m].thisproxyindex == thisproxy) { //only push if we arrived at an iteration that uses a failed proxy and has not been sent already
-                            mainfile.failedcomments[requesterSteamID][`c${l} bot${m} p${thisproxy}`] = `postGroupComment error: Skipped because of previous HTTP 429 error.` //push reason to mainfile.failedcomments obj
+                            mainfile.failedcomments[groupid][`c${l} bot${m} p${thisproxy}`] = `postGroupComment error: Skipped because of previous HTTP 429 error.` //push reason to mainfile.failedcomments obj
                         }
 
                         m++
                     }
 
                     //sort failedcomments by comment number so that it is easier to read
-                    let sortedvals = Object.keys(mainfile.failedcomments[requesterSteamID]).sort((a, b) => {
+                    let sortedvals = Object.keys(mainfile.failedcomments[groupid]).sort((a, b) => {
                         return Number(a.split(" ")[0].replace("c", "")) - Number(b.split(" ")[0].replace("c", ""));
                     })
                     
-                    if (sortedvals.length > 0) mainfile.failedcomments[requesterSteamID] = Object.assign(...sortedvals.map(k => ( {[k]: mainfile.failedcomments[requesterSteamID][k] } ) )) //map sortedvals back to object if array is not empty - credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
+                    if (sortedvals.length > 0) mainfile.failedcomments[groupid] = Object.assign(...sortedvals.map(k => ( {[k]: mainfile.failedcomments[groupid][k] } ) )) //map sortedvals back to object if array is not empty - credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
                 
 
                     //Send message to user if all proxies failed
@@ -389,11 +389,11 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                             if (loginfile.proxies.length > 1) {
                                 logger("error", `[${thisbot}] postGroupComment ${i + 1}/${numberofcomments} error (using proxy ${loginfile.additionalaccinfo[k].thisproxyindex}): ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - group: ${groupid}`); 
 
-                                mainfile.failedcomments[requesterSteamID][`c${i + 1} bot${k} p${loginfile.additionalaccinfo[k].thisproxyindex}`] = `postGroupComment error: ${error} [${errordesc}]`
+                                mainfile.failedcomments[groupid][`c${i + 1} bot${k} p${loginfile.additionalaccinfo[k].thisproxyindex}`] = `postGroupComment error: ${error} [${errordesc}]`
                             } else {
                                 logger("error", `[${thisbot}] postGroupComment ${i + 1}/${numberofcomments} error: ${error}\nRequest info - noc: ${numberofcomments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - group: ${groupid}`); 
 
-                                mainfile.failedcomments[requesterSteamID][`c${i + 1} bot${k} p${loginfile.additionalaccinfo[k].thisproxyindex}`] = `postGroupComment error: ${error} [${errordesc}]`
+                                mainfile.failedcomments[groupid][`c${i + 1} bot${k} p${loginfile.additionalaccinfo[k].thisproxyindex}`] = `postGroupComment error: ${error} [${errordesc}]`
                             }
 
                         }
@@ -439,10 +439,10 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                     /* --------- Run this code on last iteration --------- */
                     if (i == numberofcomments - 1 && numberofcomments > 1) { //last iteration (run only when more than one comment is requested)
 
-                        if (!res) respondmethod(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(mainfile.failedcomments[requesterSteamID]).length).replace("numberofcomments", numberofcomments)}`); //only send if not a webrequest
+                        if (!res) respondmethod(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(mainfile.failedcomments[groupid]).length).replace("numberofcomments", numberofcomments)}`); //only send if not a webrequest
 
                         mainfile.activecommentprocess[groupid].status = "cooldown"
-                        mainfile.commentcounter += numberofcomments - Object.keys(mainfile.failedcomments[requesterSteamID]).length //add numberofcomments minus failedamount to commentcounter
+                        mainfile.commentcounter += numberofcomments - Object.keys(mainfile.failedcomments[groupid]).length //add numberofcomments minus failedamount to commentcounter
 
                     }
                 })

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 17:50:57
+ * Last Modified: 15.10.2021 21:27:08
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -183,7 +183,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 break;
             
             case '!failed':
-                require("../commands/comment/cmisc.js").failed(chatmsg, steamID, lang, steam64id)
+                require("../commands/comment/cmisc.js").failed(chatmsg, steamID, lang, args, steam64id)
                 break;
 
             case '!sessions':

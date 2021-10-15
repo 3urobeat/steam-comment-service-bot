@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 15.10.2021 21:23:04
+ * Last Modified: 15.10.2021 21:30:59
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -81,12 +81,15 @@ module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
  * @param {Function} chatmsg The chatmsg function
  * @param {Object} steamID The steamID object from steam-user
  * @param {Object} lang The language object
+ * @param {Array} args The args array
  * @param {String} steam64id The steam64id of the requesting user
  */
-module.exports.failed = (chatmsg, steamID, lang, steam64id) => {
+module.exports.failed = (chatmsg, steamID, lang, args, steam64id) => {
     var mainfile   = require("../../main.js")
     var controller = require("../../../controller/controller.js")
-    
+
+    if (args[0]) steam64id = args[0] //if user provided an id as argument then use that instead of his/her id
+
     controller.lastcomment.findOne({ id: steam64id }, (err, doc) => {
         if (!mainfile.failedcomments[steam64id] || Object.keys(mainfile.failedcomments[steam64id]).length < 1) return chatmsg(steamID, lang.failedcmdnothingfound);
 
