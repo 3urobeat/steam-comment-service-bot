@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 15.10.2021 20:53:29
+ * Last Modified: 15.10.2021 21:11:35
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -318,11 +318,8 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
             }
             
             getQuote(comment => { //get a random quote to comment with and wait for callback to ensure a quote has been found before trying to comment
-                //controller.communityobject[k].postGroupComment(groupid, comment, (error) => { //post comment
+                controller.communityobject[k].postGroupComment(groupid, comment, (error) => { //post comment
                     if (k == 0) var thisbot = `Main`; else var thisbot = `Bot ${k}`; //call bot 0 the main bot in logging messages
-
-                    var error = ""
-                    if (i == 1 || i == 6) var error = "Error: HTTP error 429"
 
                     /* --------- Handle errors thrown by this comment attempt --------- */
                     if (error) {
@@ -448,7 +445,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                         mainfile.commentcounter += numberofcomments - Object.keys(mainfile.failedcomments[requesterSteamID]).length //add numberofcomments minus failedamount to commentcounter
 
                     }
-                //})
+                })
             })
         }, config.commentdelay * i); //delay every comment
     }

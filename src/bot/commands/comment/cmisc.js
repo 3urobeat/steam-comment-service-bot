@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 15.10.2021 20:49:40
+ * Last Modified: 15.10.2021 21:23:04
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -21,7 +21,7 @@
  * @param {Function} chatmsg The chatmsg function
  * @param {Object} steamID The steamID object from steam-user
  * @param {Object} lang The language object
- * @param {Number} steam64id The steam64id of the requesting user
+ * @param {String} steam64id The steam64id of the requesting user
  */
 module.exports.abort = (chatmsg, steamID, lang, steam64id) => {
     var mainfile = require("../../main.js")
@@ -41,7 +41,7 @@ module.exports.abort = (chatmsg, steamID, lang, steam64id) => {
  * @param {Object} steamID The steamID object from steam-user
  * @param {Object} lang The language object
  * @param {Array} args The args array
- * @param {Number} steam64id The steam64id of the requesting user
+ * @param {String} steam64id The steam64id of the requesting user
  */
 module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
     var SteamID    = require("steamid")
@@ -81,7 +81,7 @@ module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
  * @param {Function} chatmsg The chatmsg function
  * @param {Object} steamID The steamID object from steam-user
  * @param {Object} lang The language object
- * @param {Number} steam64id The steam64id of the requesting user
+ * @param {String} steam64id The steam64id of the requesting user
  */
 module.exports.failed = (chatmsg, steamID, lang, steam64id) => {
     var mainfile   = require("../../main.js")
@@ -145,7 +145,7 @@ module.exports.sessions = (chatmsg, steamID, lang) => {
  * @param {Function} chatmsg The chatmsg function
  * @param {Object} steamID The steamID object from steam-user
  * @param {Object} lang The language object
- * @param {Number} steam64id The steam64id of the requesting user
+ * @param {String} steam64id The steam64id of the requesting user
  */
 module.exports.mysessions = (chatmsg, steamID, lang, steam64id) => {
     var mainfile = require("../../main.js")
