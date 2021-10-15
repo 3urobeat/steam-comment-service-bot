@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 15.10.2021 21:44:43
+ * Last Modified: 15.10.2021 22:08:22
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -98,8 +98,11 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
     
     var groupid = args[1]; //define recieverSteamID just like requesterSteamID to reduce future SteamID().getSteamID64() calls
 
-    /* --------- Check if groupid argument was provided --------- */
+    /* --------- Check if groupid argument was provided and is valid --------- */
     if (groupid == undefined) return respondmethod(403, "You need to provide a groupid!")
+    
+    if (isNaN(groupid)) return respondmethod(400, lang.commentinvalidgroupid.replace("commentcmdusage", commentcmdusage))
+    if (new SteamID(groupid).isValid() == false) return respondmethod(400, lang.commentinvalidgroupid.replace("commentcmdusage", commentcmdusage))
 
     /* --------- Check if custom quotes were provided --------- */
     if (args[2] !== undefined) {

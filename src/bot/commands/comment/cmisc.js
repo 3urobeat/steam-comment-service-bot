@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 15.10.2021 21:30:59
+ * Last Modified: 15.10.2021 22:23:55
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -21,16 +21,19 @@
  * @param {Function} chatmsg The chatmsg function
  * @param {Object} steamID The steamID object from steam-user
  * @param {Object} lang The language object
+ * @param {Array} args The args array
  * @param {String} steam64id The steam64id of the requesting user
  */
-module.exports.abort = (chatmsg, steamID, lang, steam64id) => {
+module.exports.abort = (chatmsg, steamID, lang, args, steam64id) => {
     var mainfile = require("../../main.js")
+
+    if (args[0]) steam64id = args[0] //if user provided an id as argument then use that instead of his/her id
 
     if (!mainfile.activecommentprocess[steam64id] || mainfile.activecommentprocess[steam64id].status != "active") return chatmsg(steamID, lang.abortcmdnoprocess)
 
     mainfile.activecommentprocess[steam64id].status = "aborted"
 
-    logger("info", `Aborting comment process for profile ${steam64id}...`)
+    logger("info", `Aborting comment process for profile/group ${steam64id}...`)
     chatmsg(steamID, lang.abortcmdsuccess)
 }
 

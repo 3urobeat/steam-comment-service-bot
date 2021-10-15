@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 15.10.2021 21:27:08
+ * Last Modified: 15.10.2021 22:18:55
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -164,7 +164,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
             case '!abort':
                 if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
-                require("../commands/comment/cmisc.js").abort(chatmsg, steamID, lang, steam64id)
+                require("../commands/comment/cmisc.js").abort(chatmsg, steamID, lang, args, steam64id)
                 break;
             
             case '!rc':
