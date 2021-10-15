@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 14.10.2021 17:24:04
+ * Last Modified: 15.10.2021 14:33:07
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -63,12 +63,16 @@ function run() {
         } else { //logging this message but still trying to fix it would probably confuse the user
             logger("error", `Uncaught Exception Error! Reason: ${reason.stack}`, true) 
             logger("", "", true)
-            logger("warn", "Restarting bot in 5 seconds since the application can be in an unrecoverable state...") //https://nodejs.org/dist/latest-v16.x/docs/api/process.html#process_warning_using_uncaughtexception_correctly
+            logger("warn", "If the bot doesn't work correctly anymore after this error then please restart it!")
+            
+            //always restarting causes unnecessary restarts so I need to investigate this further
+            
+            /* logger("warn", "Restarting bot in 5 seconds since the application can be in an unrecoverable state...") //https://nodejs.org/dist/latest-v16.x/docs/api/process.html#process_warning_using_uncaughtexception_correctly
             logger("", "", true)
 
             setTimeout(() => {
                 process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, logafterrestart: logafterrestart })})`) //send request to parent process
-            }, 5000);
+            }, 5000); */
         }
     });
 
