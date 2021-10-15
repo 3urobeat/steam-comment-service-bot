@@ -21,7 +21,7 @@
     "commentaddbotaccounts": "In order to request numberofcomments comments you/the recieving user will need to add these accounts and then request comments again: (limited bot accounts)",
     "commentuserprofileprivate": "Your/the recieving profile seems to be private. Please edit your/the privacy settings on your/the recieving profile and try again!",
     "commenterroroccurred": "Oops, an error occurred!",
-    "commentsuccess1": "Okay I commented on your/the recieving profile! If you are a nice person then please comment on my profile too!",
+    "commentsuccess1": "Okay I commented on/in your/the recieving profile/group! If you are a nice person then please comment on my profile too!",
     "commentprocessstarted": "Estimated wait time for numberofcomments comments: waittime timeunit.",
     "commentfailedcmdreference": "To get detailed information why which comment failed please type '!failed'. You can read what probably caused your error here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems",
     "comment429stop": "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error. Please try again later. Failed: failedamount/numberofcomments",

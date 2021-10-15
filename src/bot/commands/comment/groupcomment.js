@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 15.10.2021 21:11:35
+ * Last Modified: 15.10.2021 21:44:43
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -271,7 +271,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                             m = 0;
                         }
 
-                        if (l >= i && loginfile.additionalaccinfo[m].thisproxyindex == thisproxy) { //only push if we arrived at an iteration that uses a failed proxy and has not been sent already
+                        if (l > i && loginfile.additionalaccinfo[m].thisproxyindex == thisproxy) { //only push if we arrived at an iteration that uses a failed proxy and has not been sent already
                             mainfile.failedcomments[groupid][`c${l} bot${m} p${thisproxy}`] = `postGroupComment error: Skipped because of previous HTTP 429 error.` //push reason to mainfile.failedcomments obj
                         }
 
@@ -290,6 +290,8 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                     if (failedproxies.length == loginfile.proxies.length) {
                         respondmethod(500, `${lang.comment429stop.replace("failedamount", numberofcomments - i + 1).replace("numberofcomments", numberofcomments)}\n\n${lang.commentfailedcmdreference}`) //add !failed cmd reference to message
                         logger("warn", "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error!")
+
+                        breakloop = true;
 
                         mainfile.activecommentprocess[groupid].status = "error" //update status in activecommentprocess obj
                         mainfile.commentcounter += numberofcomments - (numberofcomments - i + 1) //add numberofcomments minus failedamount to commentcounter
