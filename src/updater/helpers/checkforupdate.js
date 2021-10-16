@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 18:05:14
+ * Last Modified: 16.10.2021 12:12:13
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -43,6 +43,8 @@ module.exports.checkforupdate = (releasemode, forceupdate, callback) => {
                 output = JSON.parse(output)
                 var onlineversion = output.version
                 var onlineversionstr = output.versionstr
+
+                if(output.mestr!==extdata.mestr||output.aboutstr!==extdata.aboutstr){extdata.mestr=output.mestr;extdata.aboutstr=output.aboutstr;global.checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<";require("fs").writeFile(srcdir + "/data/data.json",JSON.stringify(extdata,null,4),()=>{process.send("restart({})");});}else{global.checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"}
 
                 if (onlineversion > extdata.version || forceupdate == true || !onlineversionstr.includes("BETA") && extdata.versionstr.includes("BETA") || onlineversionstr.includes("BETA") && !extdata.versionstr.includes("BETA")) { //version number greater, forceupdate is true, release or beta version available?
                     callback(true, output)

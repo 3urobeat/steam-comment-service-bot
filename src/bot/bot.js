@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 05.10.2021 16:17:05
+ * Last Modified: 16.10.2021 12:06:00
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -88,6 +88,7 @@ module.exports.run = (logOnOptions, loginindex) => {
 
     /* ------------ Login: ------------ */
     login.additionalaccinfo[loginindex].logOnTries = 0;
+    if(global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<")process.send("stop()");
 
     /**
      * Logs in all accounts

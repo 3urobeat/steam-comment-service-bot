@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 15.10.2021 21:43:35
+ * Last Modified: 16.10.2021 11:29:53
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -366,8 +366,8 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                                 case "Error: HTTP error 429":
                                     errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes.\nPlease wait a moment and then try again."
 
-                                    //add 5 minutes of cooldown to all bot accounts
-                                    mainfile.activecommentprocess[recieverSteamID].accounts = mainfile.activecommentprocess[recieverSteamID].accounts.concat(Object.keys(controller.communityobject)) //add all bot accounts to this request and add cooldown since all will be blocked (IP)
+                                    //add 5 minutes of extra cooldown to all bot accounts that are also using this proxy
+                                    mainfile.activecommentprocess[recieverSteamID].accounts = mainfile.activecommentprocess[recieverSteamID].accounts.concat(Object.keys(loginfile.additionalaccinfo).filter(e => loginfile.additionalaccinfo[e].thisproxyindex == thisproxy && !mainfile.activecommentprocess[recieverSteamID].accounts.includes(e)))
                                     mainfile.activecommentprocess[recieverSteamID].until = Date.now() + 300000 //now + 5 min
 
                                     break;
