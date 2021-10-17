@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 05.10.2021 23:31:41
+ * Last Modified: 17.10.2021 14:28:01
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -125,7 +125,7 @@ module.exports.readyCheck = (logininfo) => {
             cache["configjson"] = config
             cache["datajson"] = extdata
 
-            fs.writeFile(srcdir + '/data/cache.json', JSON.stringify(cache, null, 2), err => {
+            fs.writeFile(srcdir + '/data/cache.json', JSON.stringify(cache, null, 4), err => {
                 if (err) logger("error", "error writing file backups to cache.json: " + err) 
             })
             

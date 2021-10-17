@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.10.2021 12:51:57
+ * Last Modified: 17.10.2021 11:49:39
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -32,7 +32,7 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
     module.exports.activeupdate = false
 
 
-    starter.checkAndGetFile("./src/updater/helpers/checkforupdate.js", logger, false, (file) => { //also too many nested callbacks
+    starter.checkAndGetFile("./src/updater/helpers/checkforupdate.js", logger, false, false, (file) => { //also too many nested callbacks
         file.checkforupdate(releasemode, forceupdate, (ready, chunk) => {
             if (ready) { //update found or forceupdate is true
 
@@ -56,17 +56,17 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
                 function initiateUpdate() { //make initating the update a function to simplify the permission check below
                     this.activeupdate = true; //block new comment requests by setting active update to true and exporting it
 
-                    starter.checkAndGetFile("./src/updater/helpers/prepareupdate.js", logger, false, (file2) => {
+                    starter.checkAndGetFile("./src/updater/helpers/prepareupdate.js", logger, false, false, (file2) => {
                         file2.run(responseSteamID, () => {
                             logger("", "Starting to download update...", true, false, logger.animation("loading"))
 
-                            starter.checkAndGetFile("./src/updater/helpers/downloadupdate.js", logger, false, (file3) => {
+                            starter.checkAndGetFile("./src/updater/helpers/downloadupdate.js", logger, false, false, (file3) => {
                                 file3.downloadupdate(releasemode, compatibilityfeaturedone, (err) => {
                                     if (err) logger("error", "I failed trying to download & install the update. Please check the log after other errors for more information.\nTrying to continue anyway...")
 
                                     logger("", "\x1b[33mUpdating packages with npm...\x1b[0m\n", true, false, logger.animation("loading"))
 
-                                    starter.checkAndGetFile("./src/controller/helpers/npminteraction.js", logger, false, (file4) => {
+                                    starter.checkAndGetFile("./src/controller/helpers/npminteraction.js", logger, false, false, (file4) => {
                                         file4.update((err) => {
                                             if (err) logger("error", "I failed trying to update the dependencies. Please check the log after other errors for more information.\nTrying to continue anyway...")
 
@@ -127,7 +127,7 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
             }
 
             //update the last time we checked for an update
-            lastupdatecheckinterval = Date.now() + 43200000 //12 hours in ms
+            lastupdatecheckinterval = Date.now() + 21600000 //6 hours in ms
         })
     })
 }
@@ -152,7 +152,7 @@ module.exports.compatibility = (callback) => {
      * @param {String} filename filename of the compatibility feature
      */
     function runCompFeature(filename) {
-        starter.checkAndGetFile(`./src/updater/compatibility/${filename}.js`, logger, false, (file) => {
+        starter.checkAndGetFile(`./src/updater/compatibility/${filename}.js`, logger, false, false, (file) => {
             logger("info", `Running compatibility feature ${filename}.js...`, false, false, logger.animation("loading"))
 
             file.run(callback)

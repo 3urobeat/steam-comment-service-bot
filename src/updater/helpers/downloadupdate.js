@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 18:04:53
+ * Last Modified: 17.10.2021 14:26:43
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -107,8 +107,19 @@ module.exports.downloadupdate = (releasemode, compatibilityfeaturedone, callback
                             newconfig[e] = oldconfig[e] //transfer setting
                         })
 
+                        //Get arrays on one line
+                        var stringifiedconfig = JSON.stringify(newconfig,function(k,v) { //Credit: https://stackoverflow.com/a/46217335/12934162
+                            if(v instanceof Array)
+                            return JSON.stringify(v);
+                            return v; 
+                        }, 4)
+                            .replace(/"\[/g, '[')
+                            .replace(/\]"/g, ']')
+                            .replace(/\\"/g, '"')
+                            .replace(/""/g, '""');
+
                         logger("", `\x1b[33mWriting new data to config.json...\x1b[0m`, true, false, logger.animation("loading"))
-                        fs.writeFile(srcdir + "/../config.json", JSON.stringify(newconfig, null, 4), err => { //write the changed file
+                        fs.writeFile(srcdir + "/../config.json", stringifiedconfig, err => { //write the changed file
                             if (err) {
                                 logger("error", `Error writing changes to config.json: ${err}`, true)
                             }
