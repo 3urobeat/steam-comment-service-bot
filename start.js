@@ -1,90 +1,81 @@
-//Code by: https://github.com/HerrEurobeat/ 
-//If you are here, you are wrong. Open config.json and configure everything there!
+/*
+ * File: start.js
+ * Project: steam-comment-service-bot
+ * Created Date: 15.01.2020 10:38:00
+ * Author: 3urobeat
+ * 
+ * Last Modified: 02.10.2021 19:43:47
+ * Modified By: 3urobeat
+ * 
+ * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
+ */
 
-//This file contains: Starting the updater.js and restarting the whole application without restarting the node process. Very cool!
+
+//If you are here, you are wrong. Open config.json and configure everything there!
 
 //This file can't get refreshed automatically after an update. 
 //It is designed to be modular and to start and restart the whole application. 
 //To be able to change the file it is supposed to start on the fly it pulls the necessary file path from the data.json file
 
-try { //Just try to require, if it should fail then the actual restoring process will be handled later
-    var extdata = require("./src/data.json")
-} catch (err) {
-    var extdata = { filetostart: "./src/updater.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/updater.js" }
+function getExtdata() {
+    try { //Just try to require, if it should fail then the actual restoring process will be handled later
+        return extdata = require("./src/data/data.json")
+    } catch (err) {
+        return extdata = { filetostart: "./src/starter.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/starter.js" }
+    }
 }
-var fs = require("fs")
+
 
 /* ------------------ Restart function ------------------ */
-var restart = (args, nologOff) => { //Restart the application
-    console.log("Restarting application...")
-    var extdata = require('./src/data.json')
-
-    if (!nologOff) {
-        var controller = require(extdata.botobjectfile) //get the file we want from data.json
-
-        if (typeof controller.server != "undefined") { //check if the server was exported instead of checking config.json to require less files
-            console.log("Stopping URLToComment webserver...")
-            controller.server.close() 
-        }
-
-        controller.relogAfterDisconnect = false; //Prevents disconnect event (which will be called by logOff) to relog accounts
-
-        Object.keys(controller.botobject).forEach((e) => { //log out all bots
-            controller.botobject[e].logOff() 
-        }) 
+module.exports.restart = (args) => {
+    try {
+        Object.keys(require.cache).forEach(function(key) { 
+            delete require.cache[key] //clear cache to include file changes
+        })
+    } catch (err) {
+        console.log("start.js: Failed to delete cache of all imported files. If the files contain changes then they are not loaded.\nI will try to start anyway but please restart the bot manually if you see this message.\nError: " + err)
     }
 
-    //Clear all intervals & timeouts that have been set to avoid issues like this: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/94
-    for(var i in global.intervalList) {
-        clearInterval(global.intervalList[i]);
-    }
-
-    for(var i in global.timeoutList) {
-        clearTimeout(global.timeoutList[i]);
-    }
-    
-
-    Object.keys(require.cache).forEach(function(key) { 
-        delete require.cache[key] //clear cache to include file changes
-    })
-
-    setTimeout(() => {
-        require(extdata.filetostart).restartdata(args) //start again after 2.5 sec
-    }, 2500) 
+    require(getExtdata().filetostart).restart(args) 
 }
 
-/* ------------------ Stop function ------------------ */
-var stop = () => {
-    console.log("Stopping application...")
-    process.exit(1) 
-}
 
-//Exporting functions to be able to call them
-module.exports={
-    restart,
-    stop 
-}
+/* ---------- Get filetostart if it doesn't exist ---------- */
+var fs = require("fs")
+var extdata = getExtdata();
 
 if (!fs.existsSync(extdata.filetostart)) { //Function that downloads filetostart if it doesn't exist (file location change etc.)
     var output = ""
+
     try {
         var https = require("https")
-        https.get(extdata.filetostarturl, function (res){
+
+        if (!fs.existsSync("./src")) fs.mkdirSync("./src") //create src dir if it doesn't exist
+
+        https.get(extdata.filetostarturl, function (res) {
             res.setEncoding('utf8');
+
             res.on('data', function (chunk) {
-                output += chunk });
+                output += chunk 
+            });
 
             res.on('end', () => {
-                fs.writeFile(extdata.filetostart, output, err => {
+                fs.writeFile(extdata.filetostart, output, (err) => {
                     if (err) return console.log(err)
-                    require(extdata.filetostart) //start
+
+                    require(extdata.filetostart).run() //start
                 })
             }) 
-        }); 
+        });
     } catch (err) { 
-        console.log('start.js get updater.js function Error: ' + err) }
+        console.log('start.js get starter.js function Error: ' + err)
+    }
 } else {
-    require(extdata.filetostart) //Just passing startup to updater
+    require(extdata.filetostart).run() //Start application
 }
 
 //Code by: https://github.com/HerrEurobeat/ 
