@@ -3,6 +3,6 @@
     "version": "21100",
     "versionstr": "2.11",
     "filetostart": "./src/starter.js",
-    "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/starter.js",
+    "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/starter.js",
     "botobjectfile": "./src/controller/controller.js"
 }
