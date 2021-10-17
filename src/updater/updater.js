@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 17.10.2021 11:49:39
+ * Last Modified: 17.10.2021 19:38:16
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -64,7 +64,7 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
                                 file3.downloadupdate(releasemode, compatibilityfeaturedone, (err) => {
                                     if (err) logger("error", "I failed trying to download & install the update. Please check the log after other errors for more information.\nTrying to continue anyway...")
 
-                                    logger("", "\x1b[33mUpdating packages with npm...\x1b[0m\n", true, false, logger.animation("loading"))
+                                    logger("", "\x1b[33mUpdating packages with npm...\x1b[0m", true, false, logger.animation("loading"))
 
                                     starter.checkAndGetFile("./src/controller/helpers/npminteraction.js", logger, false, false, (file4) => {
                                         file4.update((err) => {
