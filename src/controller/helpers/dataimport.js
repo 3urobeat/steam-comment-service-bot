@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 17.10.2021 16:15:29
+ * Last Modified: 17.10.2021 16:22:33
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -50,10 +50,12 @@ function restoreBackup(name, filepath, requirepath, cacheentry, onlinelink, call
         var stringified = JSON.stringify(cacheentry, null, 4)
     }
 
+    var fs = require("fs");
+
     //Create the underlying folder structure to avoid error when trying to write the downloaded file
     fs.mkdirSync(path.dirname(filepath), { recursive: true })
 
-    require("fs").writeFile(filepath, stringified, (err) => { //write last backup to it from cache.json
+    fs.writeFile(filepath, stringified, (err) => { //write last backup to it from cache.json
         if (err) {
             logger("error", `Error writing data to ${name}.\nPlease do this manually: Visit ${onlinelink}, copy everything, put everything into the local file and save.\nOtherwise the bot will always crash.\nError: ${err}\n\nAborting...`, true); 
             return process.send("stop()") //abort since writeFile was unable to write and any further execution would crash
@@ -88,10 +90,12 @@ module.exports.cache = (callback) => {
             logger("", "", true, true)
             logger("warn", "cache.json seems to have lost it's data/is corrupted. Trying to write/create...", true, true)
 
+            var fs = require("fs")
+
             //Create the underlying folder structure to avoid error when trying to write the downloaded file
             fs.mkdirSync(path.dirname("./src/data/cache.json"), { recursive: true })
 
-            require("fs").writeFile('./src/data/cache.json', "{}", (err) => { //write empty valid json
+            fs.writeFile('./src/data/cache.json', "{}", (err) => { //write empty valid json
                 if (err) {
                     logger("error", "Error writing {} to cache.json.\nPlease do this manually: Go into 'src' folder, open 'cache.json', write '{}' and save.\nOtherwise the bot will always crash.\nError: " + err + "\n\nAborting...", true); 
                     return process.send("stop()") //abort since writeFile was unable to write and any further execution would crash
