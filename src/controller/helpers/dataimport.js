@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.10.2021 19:39:49
+ * Last Modified: 17.10.2021 15:37:37
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,31 +15,133 @@
  */
 
 
+/**
+ * Helper function to pull new file from GitHub
+ */
+function pullNewFile(name, filepath, requirepath, callback) {
+    logger("warn", "Backup seems to be broken/not available! Pulling file from GitHub...", true)
 
-//TODO: run integritychecks from here
+    require("../../starter.js").checkAndGetFile(filepath, logger, true, true, () => {
+        //Only tell user to reconfigure config.json 
+        if (name == "config.json") logger("info", `Successfully pulled new ${name} from GitHub. Please configure it again!\n`, true)
+            else logger("info", `Successfully pulled new ${name} from GitHub.\n`, true)
 
+        callback(require(requirepath));
+    })
+}
 
 /**
- * Import, check and repair data.json
- * @param {function} [callback] Called with `extdata` (Object) on completion.
+ * Helper function to try and restore backup of corrupted file from cache.json
  */
-module.exports.extdata = (callback) => {
-    logger("info", "Importing data.json...", false, true, logger.animation("loading"))
+function restoreBackup(name, filepath, requirepath, cacheentry, onlinelink, callback) {
 
-    require("../../starter.js").checkAndGetFile("./src/data/data.json", logger, false, (file) => {
-        callback(file)
+    //Try to get arrays on one line
+    try {
+        var stringified = JSON.stringify(cacheentry,function(k,v) { //Credit: https://stackoverflow.com/a/46217335/12934162
+            if(v instanceof Array)
+            return JSON.stringify(v);
+            return v; 
+        }, 4)
+            .replace(/"\[/g, '[')
+            .replace(/\]"/g, ']')
+            .replace(/\\"/g, '"')
+            .replace(/""/g, '""');
+    } catch (err) {
+        var stringified = JSON.stringify(cacheentry, null, 4)
+    }
+
+    require("fs").writeFile(filepath, stringified, (err) => { //write last backup to it from cache.json
+        if (err) {
+            logger("error", `Error writing data to ${name}.\nPlease do this manually: Visit ${onlinelink}, copy everything, put everything into the local file and save.\nOtherwise the bot will always crash.\nError: ${err}\n\nAborting...`, true); 
+            return process.send("stop()") //abort since writeFile was unable to write and any further execution would crash
+
+        } else {
+            //Test backup:
+            logger("info", `Testing ${name} backup...`, true, true)
+
+            try { //Yes, this is a try catch inside a try catch please forgive me
+                logger("info", `Successfully restored backup of ${name}!\n`, true)
+                callback(require(requirepath));
+
+            } catch (err) { //Worst case, even the backup seems to be broken (seems like this can't happen anymore since 2.11 because cache.json will get cleared before we get here if it contains an error)
+                pullNewFile(name, filepath, requirepath, callback)
+            }
+        } 
     })
 }
 
 
 /**
- * Import, check and repair config.json
- * @returns config object
+ * Import, check and repair cache.json
+ * @param {function} [callback] Called with `cache` (Object) on completion.
  */
-module.exports.config = () => {
+module.exports.cache = (callback) => {
+    logger("info", "Importing cache.json...", false, true, logger.animation("loading"))
+
+    try {
+        callback(require(srcdir + "/data/cache.json"));
+    } catch (err) {
+        if (err) {
+            logger("", "", true, true)
+            logger("warn", "cache.json seems to have lost it's data/is corrupted. Trying to write/create...", true, true)
+
+            require("fs").writeFile('./src/data/cache.json', "{}", (err) => { //write empty valid json
+                if (err) {
+                    logger("error", "Error writing {} to cache.json.\nPlease do this manually: Go into 'src' folder, open 'cache.json', write '{}' and save.\nOtherwise the bot will always crash.\nError: " + err + "\n\nAborting...", true); 
+                    return process.send("stop()") //abort since writeFile was unable to write and any further execution would crash
+                } else {
+                    logger("info", "Successfully cleared/created cache.json.\n", true, true)
+                    callback(require(srcdir + "/data/cache.json"));
+                }
+            })
+        }
+    }
+}
+
+
+/**
+ * Import, check and repair data.json
+ * @param {Object} cache The cache.json file
+ * @param {function} [callback] Called with `extdata` (Object) on completion.
+ */
+module.exports.extdata = (cache, callback) => {
+    logger("info", "Importing data.json...", false, true, logger.animation("loading"))
+
+    try {
+        callback(require(srcdir + "/data/data.json"));
+    } catch (err) {
+        if (err) { //Corrupted!
+            logger("", "", true, true)
+            logger("warn", "data.json seems to have lost it's data/is corrupted. Trying to restore from backup...", true)
+
+            //Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
+            if (cache.datajson) restoreBackup("data.json", "./src/data/data.json", srcdir + "/data/data.json", cache.datajson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/data/data.json", callback)
+                else pullNewFile("data.json", "./src/data/data.json", srcdir + "/data/data.json", callback)
+        }
+    }
+}
+
+
+/**
+ * Import, check and repair config.json
+ * @param {Object} cache The cache.json file
+ * @param {function} [callback] Called with `config` (Object) on completion.
+ */
+module.exports.config = (cache, callback) => {
     logger("info", "Importing config.json...", false, true, logger.animation("loading"))
 
-    return require(srcdir + "/../config.json")
+    try {
+        callback(require(srcdir + "/../config.json"));
+    } catch (err) {
+        if (err) { //Corrupted!
+            logger("", "", true, true)
+            logger("warn", "config.json seems to have lost it's data/is corrupted. Trying to restore from backup...", true)
+
+            //Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
+            if (cache.configjson) restoreBackup("config.json", "./config.json", srcdir + "/../config.json", cache.configjson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/config.json", callback)
+                else pullNewFile("config.json", "./config.json", srcdir + "/../config.json", callback)
+        }
+    }
 }
 
 
