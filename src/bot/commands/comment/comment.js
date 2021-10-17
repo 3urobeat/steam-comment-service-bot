@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 16.10.2021 11:29:53
+ * Last Modified: 17.10.2021 18:15:40
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -330,6 +330,26 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
 
                             mainfile.activecommentprocess[recieverSteamID].status = "error" //update status in activecommentprocess obj
                             mainfile.commentcounter += numberofcomments - (numberofcomments - i + 1) //add numberofcomments minus failedamount to commentcounter
+                        }
+                    }
+
+                    //Send finished message from here if this is the last iteration and it is on a failed proxy
+                    if (i == numberofcomments - 1)  {
+                        if (!res) respondmethod(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(mainfile.failedcomments[recieverSteamID]).length).replace("numberofcomments", numberofcomments)}\n\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems`); //only send if not a webrequest
+
+                        mainfile.activecommentprocess[recieverSteamID].status = "cooldown"
+                        mainfile.commentcounter += numberofcomments - Object.keys(mainfile.failedcomments[recieverSteamID]).length //add numberofcomments minus failedamount to commentcounter
+
+                        if (Object.values(mainfile.failedcomments[recieverSteamID]).includes("Error: The settings on this account do not allow you to add comments.") && !res) {
+                            accstoadd[requesterSteamID] = []
+
+                            for (i in controller.botobject) {
+                                if (!Object.keys(controller.botobject[i].myFriends).includes(recieverSteamID)) {
+                                    accstoadd[requesterSteamID].push(`\n ' https://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[i].steamID)).getSteamID64()} '`)
+                                }
+
+                                if (i == Object.keys(controller.botobject).length - 1) respondmethod(403, lang.commentlimitederror.replace("accstoadd", accstoadd[requesterSteamID])) //this error message should never show as the bot will always check for limited bot accounts before starting to comment
+                            }
                         }
                     }
 

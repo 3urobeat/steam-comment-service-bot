@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 16.10.2021 11:35:05
+ * Last Modified: 17.10.2021 18:14:10
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -299,6 +299,14 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
                         mainfile.activecommentprocess[groupid].status = "error" //update status in activecommentprocess obj
                         mainfile.commentcounter += numberofcomments - (numberofcomments - i + 1) //add numberofcomments minus failedamount to commentcounter
                     }
+                }
+
+                //Send finished message from here if this is the last iteration and it is on a failed proxy
+                if (i == numberofcomments - 1)  {
+                    if (!res) respondmethod(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(mainfile.failedcomments[recieverSteamID]).length).replace("numberofcomments", numberofcomments)}\n\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems`); //only send if not a webrequest
+
+                    mainfile.activecommentprocess[recieverSteamID].status = "cooldown"
+                    mainfile.commentcounter += numberofcomments - Object.keys(mainfile.failedcomments[recieverSteamID]).length //add numberofcomments minus failedamount to commentcounter
                 }
 
                 return; //stop further execution
