@@ -1,8 +1,8 @@
 {
     "Comment": "This file is sadly needed right here to ensure that an automatic update & restart to 2.11 will work. Seems like start.js could need a rework.",
     "version": "21100",
-    "versionstr": "BETA 2.11",
+    "versionstr": "2.11",
     "filetostart": "./src/starter.js",
-    "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/starter.js",
+    "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/starter.js",
     "botobjectfile": "./src/controller/controller.js"
 }
