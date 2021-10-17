@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 17.10.2021 16:22:33
+ * Last Modified: 17.10.2021 16:28:30
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -51,6 +51,7 @@ function restoreBackup(name, filepath, requirepath, cacheentry, onlinelink, call
     }
 
     var fs = require("fs");
+    var path  = require("path");
 
     //Create the underlying folder structure to avoid error when trying to write the downloaded file
     fs.mkdirSync(path.dirname(filepath), { recursive: true })
@@ -90,7 +91,8 @@ module.exports.cache = (callback) => {
             logger("", "", true, true)
             logger("warn", "cache.json seems to have lost it's data/is corrupted. Trying to write/create...", true, true)
 
-            var fs = require("fs")
+            var fs = require("fs");
+            var path  = require("path");
 
             //Create the underlying folder structure to avoid error when trying to write the downloaded file
             fs.mkdirSync(path.dirname("./src/data/cache.json"), { recursive: true })
