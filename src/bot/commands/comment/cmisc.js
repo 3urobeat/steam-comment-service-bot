@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 15.10.2021 22:23:55
+ * Last Modified: 22.10.2021 19:21:00
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -27,7 +27,11 @@
 module.exports.abort = (chatmsg, steamID, lang, args, steam64id) => {
     var mainfile = require("../../main.js")
 
-    if (args[0]) steam64id = args[0] //if user provided an id as argument then use that instead of his/her id
+    if (args[0]) {
+        if (!config.ownerid.includes(steam64id)) return chatmsg(steamID, lang.commandowneronly)
+
+        steam64id = args[0] //if user provided an id as argument then use that instead of his/her id
+    }
 
     if (!mainfile.activecommentprocess[steam64id] || mainfile.activecommentprocess[steam64id].status != "active") return chatmsg(steamID, lang.abortcmdnoprocess)
 
@@ -91,7 +95,11 @@ module.exports.failed = (chatmsg, steamID, lang, args, steam64id) => {
     var mainfile   = require("../../main.js")
     var controller = require("../../../controller/controller.js")
 
-    if (args[0]) steam64id = args[0] //if user provided an id as argument then use that instead of his/her id
+    if (args[0]) {
+        if (!config.ownerid.includes(steam64id)) return chatmsg(steamID, lang.commandowneronly)
+
+        steam64id = args[0] //if user provided an id as argument then use that instead of his/her id
+    }
 
     controller.lastcomment.findOne({ id: steam64id }, (err, doc) => {
         if (!mainfile.failedcomments[steam64id] || Object.keys(mainfile.failedcomments[steam64id]).length < 1) return chatmsg(steamID, lang.failedcmdnothingfound);
