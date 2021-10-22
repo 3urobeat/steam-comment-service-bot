@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 15.10.2021 22:18:55
+ * Last Modified: 22.10.2021 19:04:03
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -130,6 +130,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
             
             case '!gcomment':
             case '!groupcomment':
+                if (!ownercheck) return notownerresponse();
                 if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
                 if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
