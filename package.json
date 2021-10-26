@@ -14,7 +14,7 @@
         "steam-user": "^4.20.1",
         "steamcommunity": "^3.43.1",
         "steamid": "^2.0.0",
-        "steamid-resolver": "^1.2.1"
+        "steamid-resolver": "^1.2.2"
     },
     "scripts": {
         "start": "node start.js"
