@@ -1,5 +1,5 @@
 <div align="center" markdown=1>
-	<p align="center"><img width=45% src="https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/.github/img/steamLogo.png"></p>
+	<p align="center"><img width=45% src="https://3urobeat.com/comment-bot/steamLogo.png"></p>
 	<strong>Request multiple profile comments by texting a bot network!</strong>
 	<br>See how to set up the bot and customize it below.<br>
 	<p></p>
@@ -21,10 +21,10 @@
   <a href="#additional-informations-">Additional information</a>
 </p>
   
-![Showcase](https://drive.google.com/uc?export=view&id=1FAzvJBbYys9tGePCD8Gc2VEjg3gHIT7y)
+![Showcase](https://3urobeat.com/comment-bot/showcase.gif)
   
 ## **Introduction**  
-<img align="right" width="200" height="200" src="https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/.github/img/mesh.png">  
+<img align="right" width="200" height="200" src="https://3urobeat.com/comment-bot/mesh.png">  
   
 * Request many profile comments directly from the steam chat  
 * Easily host multiple steam accounts and control them from **one** console and chat with this bot cluster  
