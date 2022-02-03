@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 17.10.2021 11:48:54
+ * Last Modified: 22.01.2022 14:13:38
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -105,8 +105,8 @@ function attachParentListeners() {
 
     //Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)
     logger.options({
-        msgstructure: "[animation] [date | type] message",
-        paramstructure: ["type", "str", "nodate", "remove", "animation"],
+        msgstructure: `[${logger.Const.ANIMATION}] [${logger.Const.DATE} | ${logger.Const.TYPE}] ${logger.Const.MESSAGE}`,
+        paramstructure: [logger.Const.TYPE, logger.Const.MESSAGE, "nodate", "remove", logger.Const.ANIMATION],    
         outputfile: __dirname + "/../output.txt",
         animationdelay: 250
     })
