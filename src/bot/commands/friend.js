@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 17:53:28
+ * Last Modified: 03.02.2022 15:17:18
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -19,7 +19,7 @@
 /**
  * Runs the addfriend command
  * @param {Function} chatmsg The chatmsg function
- * @param {Object} steamID The steamID object from steam-use
+ * @param {Object} steamID The steamID object from steam-user
  * @param {Object} lang The language object
  * @param {Array} args The args array
  */
@@ -69,7 +69,7 @@ module.exports.addFriend = (chatmsg, steamID, lang, args) => {
 /**
  * Runs the unfriend command
  * @param {Function} chatmsg The chatmsg function
- * @param {Object} steamID The steamID object from steam-use
+ * @param {Object} steamID The steamID object from steam-user
  * @param {Object} lang The language object
  * @param {Array} args The args array
  */
@@ -77,24 +77,38 @@ module.exports.unfriend = (chatmsg, steamID, lang, args) => {
     var SteamID    = require('steamid');
     var controller = require("../../controller/controller.js")
     
-    if (isNaN(args[0])) return chatmsg(steamID, lang.invalidprofileid)
-    if (new SteamID(args[0]).isValid() === false) return chatmsg(steamID, lang.invalidprofileid)
+    //Unfriend message sender with all bot accounts if no id was provided
+    if (!args[0]) {
+        chatmsg(steamID, lang.unfriendcmdsuccess)
+        logger("info", `Removing friend ${new SteamID(String(steamID)).getSteamID64()} from all bot accounts...`)
+        
+        Object.keys(controller.botobject).forEach((e, i) => {
+            setTimeout(() => {
+                controller.botobject[i].removeFriend(steamID)
+            }, 1000 * i);
+        })
+        
+    } else {
 
-    Object.keys(controller.botobject).forEach((i) => {
-        setTimeout(() => {
-            controller.botobject[i].removeFriend(new SteamID(args[0])) 
-        }, 1000 * i); //delay every iteration so that we don't make a ton of requests at once
-    })
-
-    chatmsg(steamID, lang.unfriendcmdsuccess.replace("profileid", args[0]))
-    logger("info", `Removed friend ${args[0]} from all bot accounts.`)
+        if (isNaN(args[0])) return chatmsg(steamID, lang.invalidprofileid)
+        if (new SteamID(args[0]).isValid() === false) return chatmsg(steamID, lang.invalidprofileid)
+    
+        Object.keys(controller.botobject).forEach((i) => {
+            setTimeout(() => {
+                controller.botobject[i].removeFriend(new SteamID(args[0])) 
+            }, 1000 * i); //delay every iteration so that we don't make a ton of requests at once
+        })
+    
+        chatmsg(steamID, lang.unfriendidcmdsuccess.replace("profileid", args[0]))
+        logger("info", `Removed friend ${args[0]} from all bot accounts.`)
+    }
 }
 
 
 /**
  * Runs the unfriendall command
  * @param {Function} chatmsg The chatmsg function
- * @param {Object} steamID The steamID object from steam-use
+ * @param {Object} steamID The steamID object from steam-user
  * @param {Object} lang The language object
  * @param {Array} args The args array
  */
