@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 17.10.2021 16:28:30
+ * Last Modified: 22.02.2022 15:12:56
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -152,6 +152,29 @@ module.exports.config = (cache, callback) => {
             //Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
             if (cache.configjson) restoreBackup("config.json", "./config.json", srcdir + "/../config.json", cache.configjson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/config.json", callback)
                 else pullNewFile("config.json", "./config.json", srcdir + "/../config.json", callback)
+        }
+    }
+}
+
+
+/**
+ * Import, check and repair advancedconfig.json
+ * @param {Object} cache The cache.json file
+ * @param {function} [callback] Called with `advancedconfig` (Object) on completion.
+ */
+ module.exports.advancedconfig = (cache, callback) => {
+    logger("info", "Importing advancedconfig.json...", false, true, logger.animation("loading"))
+
+    try {
+        callback(require(srcdir + "/../advancedconfig.json"));
+    } catch (err) {
+        if (err) { //Corrupted!
+            logger("", "", true, true)
+            logger("warn", "advancedconfig.json seems to have lost it's data/is corrupted. Trying to restore from backup...", true)
+
+            //Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
+            if (cache.advancedconfigjson) restoreBackup("advancedconfig.json", "./advancedconfig.json", srcdir + "/../advancedconfig.json", cache.advancedconfigjson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/advancedconfig.json", callback)
+                else pullNewFile("advancedconfig.json", "./advancedconfig.json", srcdir + "/../advancedconfig.json", callback)
         }
     }
 }

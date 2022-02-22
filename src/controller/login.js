@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 16.10.2021 12:06:18
+ * Last Modified: 22.02.2022 15:46:32
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -37,8 +37,6 @@ module.exports.startlogin = (logininfo) => {
     var round      = require("./helpers/round.js")
     var b          = require("../bot/bot.js")
 
-    var logindelay = 2500 //time to wait between logins
-
     module.exports.proxies             = require("./helpers/dataimport.js").proxies() 
 
     module.exports.steamGuardInputTime = 0
@@ -68,9 +66,9 @@ module.exports.startlogin = (logininfo) => {
     //Evaluate estimated wait time for login:
     logger("info", "Evaluating estimated login time...", false, true, logger.animation("loading"))
     if (extdata.timesloggedin < 5) { //only use new evaluation method when the bot was started more than 5 times
-        var estimatedlogintime = ((logindelay * (Object.keys(logininfo).length - 1 - controller.skippedaccounts.length)) / 1000) + 10 //10 seconds tolerance
+        var estimatedlogintime = ((advancedconfig.loginDelay * (Object.keys(logininfo).length - 1 - controller.skippedaccounts.length)) / 1000) + 10 //10 seconds tolerance
     } else {
-        var estimatedlogintime = (extdata.totallogintime / extdata.timesloggedin) * (Object.keys(logininfo).length - controller.skippedaccounts.length) 
+        var estimatedlogintime = ((extdata.totallogintime / extdata.timesloggedin) + (advancedconfig.loginDelay / 1000)) * (Object.keys(logininfo).length - controller.skippedaccounts.length)
     }
     
 
@@ -101,7 +99,7 @@ module.exports.startlogin = (logininfo) => {
                         return;
                     } 
 
-                    if (i > 0) logger("info", `Waiting ${logindelay / 1000} seconds... (config logindelay)`, false, true, logger.animation("waiting")) //first iteration doesn't need to wait duh
+                    if (i > 0) logger("info", `Waiting ${advancedconfig.loginDelay / 1000} seconds... (advancedconfig loginDelay)`, false, true, logger.animation("waiting")) //first iteration doesn't need to wait duh
 
 
                     //Wait logindelay and then start bot.js with the account of this iteration
@@ -122,7 +120,7 @@ module.exports.startlogin = (logininfo) => {
                         }
 
                         b.run(logOnOptions, i); //run bot.js with this account
-                    }, logindelay) 
+                    }, advancedconfig.loginDelay) 
                 }
 
             }, 250);

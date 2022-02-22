@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 16.10.2021 12:06:00
+ * Last Modified: 22.02.2022 17:18:19
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -28,13 +28,6 @@ module.exports.run = (logOnOptions, loginindex) => {
 
     var login           = require("../controller/login.js")
     var mainfile        = require("./main.js")
-
-    //var botdebugmsgs               = false //not implemented yet (maybe put these 3 into advancedconfig.json)
-    var steamuserdebug             = false
-    var steamuserdebugverbose      = false
-    var maxLogOnRetries            = 1 //How often a failed logOn will be retried
-
-    module.exports.maxLogOnRetries = maxLogOnRetries
     
 
     //Define the log message prefix of this account in order to 
@@ -59,13 +52,13 @@ module.exports.run = (logOnOptions, loginindex) => {
 
 
     //Attach debug log events
-    if (steamuserdebug) {
+    if (advancedconfig.steamUserDebug) {
         bot.on("debug", (msg) => {
             logger("debug", `[${thisbot}] debug: ${msg}`, false, true)
         })
     }
 
-    if (steamuserdebugverbose) {
+    if (advancedconfig.steamUserDebugVerbose) {
         bot.on("debug-verbose", (msg) => {
             logger("debug", `[${thisbot}] debug-verbose: ${msg}`, false, true)
         })
@@ -104,8 +97,8 @@ module.exports.run = (logOnOptions, loginindex) => {
 
                 login.additionalaccinfo[loginindex].logOnTries++
 
-                if (thisproxy == null) logger("info", `[${thisbot}] Trying to log in without proxy... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
-                    else logger("info", `[${thisbot}] Trying to log in with proxy ${login.proxyShift - 1}... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
+                if (thisproxy == null) logger("info", `[${thisbot}] Trying to log in without proxy... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
+                    else logger("info", `[${thisbot}] Trying to log in with proxy ${login.proxyShift - 1}... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
                 
                 bot.logOn(logOnOptions)
             }

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 17.10.2021 19:38:16
+ * Last Modified: 22.02.2022 15:47:26
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -46,7 +46,7 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
                 if (responseSteamID) { 
                     require('../controller/controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `Update available! Your version: ${extdata.versionstr} | New version: ${chunk.versionstr}`)
 
-                    if (config.disableautoupdate == true && !forceupdate) { 
+                    if (advancedconfig.disableAutoUpdate && !forceupdate) { 
                         require('../controller/controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, "You have turned automatic updating off. You need to confirm the update in the console!") 
                     }
                 }
@@ -81,7 +81,7 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
 
 
                 /* ------------------ Check for permission to update ------------------ */
-                if (config.disableautoupdate == false || forceupdate) { //check if the user has disabled the automatic updater or an update was forced
+                if (!advancedconfig.disableAutoUpdate || forceupdate) { //check if the user has disabled the automatic updater or an update was forced
                     initiateUpdate();
 
                 } else { //user has it disabled, ask for confirmation

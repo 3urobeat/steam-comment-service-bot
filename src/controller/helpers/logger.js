@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 14:50:41
+ * Last Modified: 22.02.2022 17:04:03
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,6 +15,8 @@
  */
 
 
+const outputlogger = require("output-logger") //look Mom, it's my own library!
+
 
 /**
  * Logs text to the terminal and appends it to the output.txt file.
@@ -24,21 +26,17 @@
  * @param {Boolean} remove Setting to true will remove this message with the next one
  */
 module.exports.logger = (type, str, nodate, remove, animation) => { //Function that passes args to my logger library and just exists to handle readyafterlogs atm
-    var outputlogger = require("output-logger") //look Mom, it's my own library!
-
     var controller   = require("../controller.js")
 
 
     //NOTE: If the amount of parameters of this function changes then the logger call for readyafterlogs in ready.js and the readyafterlogs.push() call below need to be updated!!
 
 
-    //Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)
+    //Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)  (animation speed and printDebug will be changed later in controller.js after advancedconfig import)
     outputlogger.options({
         msgstructure: `[${outputlogger.Const.ANIMATION}] [${outputlogger.Const.DATE} | ${outputlogger.Const.TYPE}] ${outputlogger.Const.MESSAGE}`,
         paramstructure: [outputlogger.Const.TYPE, outputlogger.Const.MESSAGE, "nodate", "remove", outputlogger.Const.ANIMATION],
-        outputfile: srcdir + "/../output.txt",
-        animationdelay: 250,
-        printdebug: false
+        outputfile: srcdir + "/../output.txt"
     })
     
     //Try to get readyafter or just ignore it if we can't. Previously I used checkAndGetFile() but that creates a circular dependency which I'd like to avoid
@@ -54,6 +52,17 @@ module.exports.logger = (type, str, nodate, remove, animation) => { //Function t
     } else {
         outputlogger(type, str, nodate, remove, animation)
     }
+}
+
+
+/**
+ * Call this function after loading advancedconfig.json to set previously inaccessible options
+ */
+module.exports.optionsUpdateAfterConfigLoad = () => {
+    outputlogger.options({
+        animationinterval: advancedconfig.logAnimationSpeed,
+        printdebug: advancedconfig.printDebug
+    })
 }
 
 

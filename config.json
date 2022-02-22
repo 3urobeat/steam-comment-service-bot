@@ -1,6 +1,5 @@
 {
     "_help_": "Read the docs: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Config-documentation",
-    "disableautoupdate": false,
     "commentdelay": 15000,
     "allowcommentcmdusage": true,
     "skipSteamGuard": false,
@@ -16,7 +15,5 @@
     "botsgroup": "https://steamcommunity.com/groups/3urobeatGroup",
     "acceptgroupinvites": true,
     "owner": "https://steamcommunity.com/id/3urobeat",
-    "ownerid": ["76561198260031749"],
-    "enableevalcmd": false,
-    "enableurltocomment": false
+    "ownerid": ["76561198260031749"]
 }

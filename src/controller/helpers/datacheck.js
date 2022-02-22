@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.10.2021 13:25:03
+ * Last Modified: 22.02.2022 15:46:44
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -78,7 +78,7 @@ module.exports.run = (logininfo, callback) => {
         config.maxOwnerComments = 1
     }
     if (config.commentdelay <= 500) {
-        logger("warn", "\x1b[31mYour commentdelay is set to a way too low value!\n       Using a commentdelay of 500ms or less will result in an instant cooldown from Steam and therefore a failed comment request.\n       Automatically setting it to the default value of 15 seconds...\x1b[0m", true)
+        logger("warn", "\x1b[31mYour commentdelay is set to a way too low value!\n        Using a commentdelay of 500ms or less will result in an instant cooldown from Steam and therefore a failed comment request.\n       Automatically setting it to the default value of 15 seconds...\x1b[0m", true)
         config.commentdelay = 15000
     }
     if (config.commentdelay / (maxCommentsOverall / 2) < 1250) {
@@ -89,11 +89,15 @@ module.exports.run = (logininfo, callback) => {
         return process.send("stop()")
     }
     if (config.commentdelay * maxCommentsOverall > 2147483647) { //check for 32-bit integer limit for commentcmd timeout
-        logger("error", "\x1b[31mYour maxComments and/or maxOwnerComments and/or commentdelay value in the config are too high.\nPlease lower these values so that 'commentdelay * maxComments' is not bigger than 2147483647.\n\nThis will otherwise cause an error when trying to comment (32-bit integer limit). Aborting...\x1b[0m\n", true)
+        logger("error", "\x1b[31mYour maxComments and/or maxOwnerComments and/or commentdelay value in the config are too high.\n        Please lower these values so that 'commentdelay * maxComments' is not bigger than 2147483647.\n\nThis will otherwise cause an error when trying to comment (32-bit integer limit). Aborting...\x1b[0m\n", true)
         return process.send("stop()")
     }
     if (config.randomizeAccounts && Object.keys(logininfo).length <= 5 && maxCommentsOverall > Object.keys(logininfo).length * 2) {
-        logger("warn", "\x1b[31mI wouldn't recommend using randomizeAccounts with 5 or less accounts when each account can/has to comment multiple times. The chance of an account getting a cooldown is higher.\n       Please make sure your commentdelay is set adequately to reduce the chance of this happening.\x1b[0m", true) 
+        logger("warn", "\x1b[31mI wouldn't recommend using randomizeAccounts with 5 or less accounts when each account can/has to comment multiple times. The chance of an account getting a cooldown is higher.\n        Please make sure your commentdelay is set adequately to reduce the chance of this happening.\x1b[0m", true) 
+    }
+    if (advancedconfig.loginDelay < 500) { //don't allow a logindelay below 500ms
+        logger("error", "\x1b[31mI won't allow a logindelay below 500ms as this will probably get you blocked by Steam nearly instantly. I recommend setting it to 2500.\n        If you are using one proxy per account you might try setting it to 500 (on your own risk!). Aborting...\x1b[0m", true)
+        return process.send("stop()")
     }
 
 

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 14:51:50
+ * Last Modified: 22.02.2022 17:13:05
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -71,7 +71,7 @@ module.exports.readyCheck = (logininfo) => {
 
 
             //Log warning message if automatic updater is turned off
-            if (config.disableautoupdate) logger("", "\x1b[41m\x1b[30m>\x1b[0m Automatic updating is \x1b[4m\x1b[31mturned off\x1b[0m!", true)
+            if (advancedconfig.disableAutoUpdate) logger("", "\x1b[41m\x1b[30m>\x1b[0m Automatic updating is \x1b[4m\x1b[31mturned off\x1b[0m!", true)
 
 
             //Log which games the main and child bots are playing
@@ -100,7 +100,7 @@ module.exports.readyCheck = (logininfo) => {
 
 
             //Start webserver
-            if (config.enableurltocomment) require("./webserver.js").run()
+            if (advancedconfig.enableurltocomment) require("./webserver.js").run()
 
 
             //Show disclaimer message to not misuse this bot if firststart
@@ -123,6 +123,7 @@ module.exports.readyCheck = (logininfo) => {
             //Add backups to cache.json
             logger("info", "Writing backups to cache.json...", false, true, logger.animation("loading"))
             cache["configjson"] = config
+            cache["advancedconfigjson"] = advancedconfig
             cache["datajson"] = extdata
 
             fs.writeFile(srcdir + '/data/cache.json', JSON.stringify(cache, null, 4), err => {

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.10.2021 13:14:00
+ * Last Modified: 22.02.2022 17:08:46
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -54,37 +54,48 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
         else logger("info", `[${thisbot}] Accepting offline friend & group invites...`, false, true)
 
     //Friends:
+    let ignoredFriendRequests = 0;
+
     for (let i = 0; i < Object.keys(bot.myFriends).length; i++) { //Credit: https://dev.doctormckay.com/topic/1694-accept-friend-request-sent-in-offline/  
         if (bot.myFriends[Object.keys(bot.myFriends)[i]] == 2) {
 
-            //Accept friend request
-            bot.addFriend(Object.keys(bot.myFriends)[i]);
+            if (advancedconfig.acceptFriendRequests) {
+                //Accept friend request
+                bot.addFriend(Object.keys(bot.myFriends)[i]);
 
 
-            //Log message and send welcome message
-            logger("info", `[${thisbot}] Added user while I was offline! User: ` + Object.keys(bot.myFriends)[i])
-            controller.botobject[0].chat.sendFriendMessage(String(Object.keys(bot.myFriends)[i]), mainfile.lang.useradded)
+                //Log message and send welcome message
+                logger("info", `[${thisbot}] Added user while I was offline! User: ` + Object.keys(bot.myFriends)[i])
+                controller.botobject[0].chat.sendFriendMessage(String(Object.keys(bot.myFriends)[i]), mainfile.lang.useradded)
 
 
-            //Add user to lastcomment database
-            let lastcommentobj = {
-                id: Object.keys(bot.myFriends)[i],
-                time: Date.now() - (config.commentcooldown * 60000) //subtract commentcooldown so that the user is able to use the command instantly
-            }
-
-            controller.lastcomment.remove({ id: Object.keys(bot.myFriends)[i] }, {}, (err) => { if (err) logger("error", "Error removing duplicate steamid from lastcomment.db on offline friend accept! Error: " + err) }) //remove any old entries
-            controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err) })
-
-
-            //Invite user to yourgroup (and to my to make some stonks)
-            if (mainfile.configgroup64id && Object.keys(bot.myGroups).includes(mainfile.configgroup64id)) { 
-                bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(mainfile.configgroup64id));
-
-                if (mainfile.configgroup64id !== "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
-                    bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID("103582791464712227"));
+                //Add user to lastcomment database
+                let lastcommentobj = {
+                    id: Object.keys(bot.myFriends)[i],
+                    time: Date.now() - (config.commentcooldown * 60000) //subtract commentcooldown so that the user is able to use the command instantly
                 }
+
+                controller.lastcomment.remove({ id: Object.keys(bot.myFriends)[i] }, {}, (err) => { if (err) logger("error", "Error removing duplicate steamid from lastcomment.db on offline friend accept! Error: " + err) }) //remove any old entries
+                controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err) })
+
+
+                //Invite user to yourgroup (and to my to make some stonks)
+                if (mainfile.configgroup64id && Object.keys(bot.myGroups).includes(mainfile.configgroup64id)) { 
+                    bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(mainfile.configgroup64id));
+
+                    if (mainfile.configgroup64id !== "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
+                        bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID("103582791464712227"));
+                    }
+                }
+            } else {
+                ignoredFriendRequests++
             }
-        } 
+        }
+
+        //Log info msg about ignored friend requests 
+        if (i + 1 == Object.keys(bot.myFriends).length && ignoredFriendRequests > 0) {
+            logger("info", `Ignored ${ignoredFriendRequests} pending friend request(s) because acceptFriendRequests is turned off in advancedconfig.json.`)
+        }
     }
 
     //Groups:

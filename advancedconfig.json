@@ -1,0 +1,14 @@
+{
+    "_disclaimer_": "This file includes only advanced settings! Please only use the 'config.json' for setup and ignore this file!",
+    "_help_": "Read the docs: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Advanced-Config-Documentation",
+    "disableAutoUpdate": true,
+    "loginDelay": 2500,
+    "maxLogOnRetries": 1,
+    "acceptFriendRequests": true,
+    "enableevalcmd": true,
+    "enableurltocomment": true,
+    "printDebug": false,
+    "steamUserDebug": false,
+    "steamUserDebugVerbose": false,
+    "logAnimationSpeed": 250
+}

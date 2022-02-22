@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.10.2021 19:04:03
+ * Last Modified: 22.02.2022 17:12:27
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -278,7 +278,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 break;
             
             case '!eval':
-                if (config.enableevalcmd !== true) return chatmsg(steamID, lang.evalcmdturnedoff)
+                if (advancedconfig.enableevalcmd !== true) return chatmsg(steamID, lang.evalcmdturnedoff)
                 if (!ownercheck) return notownerresponse();
 
                 require("../commands/system.js").eval(chatmsg, steamID, lang, args, bot, community)
