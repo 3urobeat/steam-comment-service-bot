@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 16:08:48
+ * Last Modified: 22.02.2022 18:36:24
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -34,7 +34,7 @@ module.exports.friendRelationship = (loginindex, thisbot, bot, steamID, relation
     if (relationship == 2) {
         let steamID64 = new SteamID(String(steamID)).getSteamID64();
 
-        if (!advancedconfig.acceptFriendRequests) return logger("info", `Recieved friend request from ${steamID64} but acceptFriendRequests is turned off in advancedconfig.json`)
+        if (!advancedconfig.acceptFriendRequests) return logger("info", `[${thisbot}] Recieved friend request from ${steamID64} but acceptFriendRequests is turned off in advancedconfig.json`)
 
         //Accept friend request
         bot.addFriend(steamID);

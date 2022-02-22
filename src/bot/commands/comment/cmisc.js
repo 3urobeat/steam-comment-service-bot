@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.10.2021 19:21:00
+ * Last Modified: 22.02.2022 18:32:05
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -135,7 +135,7 @@ module.exports.sessions = (chatmsg, steamID, lang) => {
 
             if (Date.now() < mainfile.activecommentprocess[e].until + (config.globalcommentcooldown * 60000)) { //check if entry is not finished yet
 
-                str += `- Status: ${mainfile.activecommentprocess[e].status} | ${mainfile.activecommentprocess[e].amount} comments with ${mainfile.activecommentprocess[e].accounts.length} accounts by ${mainfile.activecommentprocess[e].requestedby} for ${mainfile.activecommentprocess[e].type} ${Object.keys(mainfile.activecommentprocess)[i]}`
+                str += `- Status: ${mainfile.activecommentprocess[e].status} | ${mainfile.activecommentprocess[e].amount} comments with ${mainfile.activecommentprocess[e].accounts.length} accounts by ${mainfile.activecommentprocess[e].requestedby} for ${mainfile.activecommentprocess[e].type} ${Object.keys(mainfile.activecommentprocess)[i]}\n`
             } else {
                 delete mainfile.activecommentprocess[e] //remove entry from object if it is finished to keep the object clean
             }

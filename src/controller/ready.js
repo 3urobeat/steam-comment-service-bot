@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 17:13:05
+ * Last Modified: 22.02.2022 18:39:56
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -42,7 +42,7 @@ module.exports.readyCheck = (logininfo) => {
             //Start logging the ready message block
             logger("", ' ', true)
             logger("", '*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*', true)
-            logger("", `\x1b[95m>\x1b[0m \x1b[96m${logininfo.bot0[0]}\x1b[0m version \x1b[96m${extdata.versionstr}\x1b[0m by ${extdata.mestr} logged in.`, true)
+            logger("", `\x1b[95m>\x1b[0m \x1b[96msteam-comment-service-bot\x1b[0m version \x1b[96m${extdata.versionstr}\x1b[0m by ${extdata.mestr}`, true)
 
 
             //Calculate what the max amount of comments per account is and log it

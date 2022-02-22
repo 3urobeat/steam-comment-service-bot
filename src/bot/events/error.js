@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 15:51:47
+ * Last Modified: 22.02.2022 18:51:20
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -74,7 +74,7 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
 
             //Add additional messages for specific errors to hopefully help the user diagnose the cause
             if (err.eresult == 5) logger("", `Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try leaving the shared_secret field empty and check the username & password of bot${loginindex}.`, true)
-            if (thisproxy != null) logger("", `Is your proxy ${controller.proxyShift} offline or maybe blocked by Steam?`, true)
+            if (thisproxy != null) logger("", `      Is your proxy ${login.proxyShift - 1} offline or maybe blocked by Steam?\n`, true)
 
 
             //Abort execution if account is bot0
