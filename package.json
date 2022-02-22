@@ -6,13 +6,13 @@
     "dependencies": {
         "@seald-io/nedb": "^2.2.1",
         "download": "^8.0.0",
-        "express": "^4.17.2",
+        "express": "^4.17.3",
         "htmlparser2": "^7.2.0",
         "https": "^1.0.0",
-        "output-logger": "^2.0.0",
+        "output-logger": "^2.0.1",
         "request": "^2.88.2",
-        "steam-user": "^4.20.2",
-        "steamcommunity": "^3.43.1",
+        "steam-user": "^4.21.0",
+        "steamcommunity": "^3.44.0",
         "steamid": "^2.0.0",
         "steamid-resolver": "^1.2.2"
     },

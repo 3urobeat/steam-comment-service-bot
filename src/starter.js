@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.01.2022 14:13:38
+ * Last Modified: 22.02.2022 14:51:26
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -114,7 +114,7 @@ function attachParentListeners() {
 
     //Attach exit event listener to display message in output & terminal when user stops the bot
     parentExitEvent = () => {
-        //logger("debug", "Caller: " + process.pid + " | Child: " + childpid)
+        logger("debug", "Caller: " + process.pid + " | Child: " + childpid)
 
         try {
             process.kill(childpid, "SIGKILL") //make sure the old child is dead
@@ -140,7 +140,7 @@ function detachParentListeners() {
 //Provide function to attach listeners to make communicating with child possible
 function attachChildListeners() {
     forkedprocess.on("message", (msg) => {
-        //logger("debug", "Recieved message from child: " + msg)
+        logger("debug", "Recieved message from child: " + msg)
 
         //Might need to switch to a switch case structure later on but for now this works fine for only two cases and is easier when trying to check for startsWith()
         if (msg.startsWith("restart(")) {
