@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 17:42:15
+ * Last Modified: 22.02.2022 17:43:51
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -42,8 +42,9 @@ module.exports.downloadupdate = (releasemode, compatibilityfeaturedone, callback
     })
 
     //Save config settings and extdata values by cloning them into a new object
-    const oldconfig = Object.assign(config)
-    const oldextdata = Object.assign(extdata)
+    const oldconfig         = Object.assign(config)
+    const oldadvancedconfig = Object.assign(advancedconfig)
+    const oldextdata        = Object.assign(extdata)
 
     //Start downloading new files
     logger("", "", true)
@@ -93,7 +94,7 @@ module.exports.downloadupdate = (releasemode, compatibilityfeaturedone, callback
                         fs.rmSync(`./steam-comment-service-bot-${releasemode}`, { recursive: true }) //remove the remains of the download folder
 
                         //Custom update rules for a few files
-                        require("./customUpdateRules.js").customUpdateRules(compatibilityfeaturedone, oldconfig, oldextdata, callback);
+                        require("./customUpdateRules.js").customUpdateRules(compatibilityfeaturedone, oldconfig, oldadvancedconfig, oldextdata, callback);
 
                         //Make callback to let caller carry ono
                         callback(null);

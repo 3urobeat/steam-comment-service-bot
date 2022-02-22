@@ -4,7 +4,7 @@
  * Created Date: 22.02.2022 17:39:21
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 17:40:59
+ * Last Modified: 22.02.2022 17:45:19
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -21,7 +21,7 @@ const fs = require("fs")
 /**
  * Custom update rules for a few files (gets called by downloadupdate.js)
  */
-module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldextdata, callback) => {
+module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadvancedconfig, oldextdata, callback) => {
     //config.json
     logger("", `\x1b[33mClearing cache of config.json...\x1b[0m`, true, false, logger.animation("loading"))
 
@@ -51,6 +51,39 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldextd
     fs.writeFile(srcdir + "/../config.json", stringifiedconfig, err => { //write the changed file
         if (err) {
             logger("error", `Error writing changes to config.json: ${err}`, true)
+        }
+    })
+
+
+    //advancedconfig.json
+    logger("", `\x1b[33mClearing cache of advancedconfig.json...\x1b[0m`, true, false, logger.animation("loading"))
+
+    delete require.cache[require.resolve(srcdir + "/../advancedconfig.json")] //delete cache
+    let newadvancedconfig = require(srcdir + "/../advancedconfig.json")
+
+    logger("", `\x1b[33mTransfering your changes to new advancedconfig.json...\x1b[0m`, true, false, logger.animation("loading"))
+    
+    Object.keys(newadvancedconfig).forEach(e => {
+        if (!Object.keys(oldadvancedconfig).includes(e)) return; //config value seems to be new so don't bother trying to set it to something (which would probably be undefined anyway)
+
+        newadvancedconfig[e] = oldadvancedconfig[e] //transfer setting
+    })
+
+    //Get arrays on one line
+    var stringifiedadvancedconfig = JSON.stringify(newadvancedconfig,function(k,v) { //Credit: https://stackoverflow.com/a/46217335/12934162
+        if(v instanceof Array)
+        return JSON.stringify(v);
+        return v; 
+    }, 4)
+        .replace(/"\[/g, '[')
+        .replace(/\]"/g, ']')
+        .replace(/\\"/g, '"')
+        .replace(/""/g, '""');
+
+    logger("", `\x1b[33mWriting new data to advancedconfig.json...\x1b[0m`, true, false, logger.animation("loading"))
+    fs.writeFile(srcdir + "/../advancedconfig.json", stringifiedadvancedconfig, err => { //write the changed file
+        if (err) {
+            logger("error", `Error writing changes to advancedconfig.json: ${err}`, true)
         }
     })
 
