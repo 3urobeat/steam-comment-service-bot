@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.10.2021 19:04:53
+ * Last Modified: 23.02.2022 11:10:55
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -59,7 +59,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
 
     /* --------- Check for disabled comment cmd or if update is queued --------- */
     if (updater.activeupdate) return respondmethod(403, lang.commentactiveupdate);
-    if (config.allowcommentcmdusage === false && !ownercheck) return respondmethod(403, lang.commentcmdowneronly) 
+    if (config.maxComments == 0 && !ownercheck) return respondmethod(403, lang.commentcmdowneronly) 
 
 
     /* --------- Define command usage messages & maxrequestamount for each user's privileges --------- */ //Note: Web Comment Requests always use config.ownerid[0]
@@ -138,14 +138,14 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
         }
     }
 
-    if (config.globalcommentcooldown != 0) { //check for global cooldown
-        if ((Date.now() - mainfile.commentedrecently) < (config.globalcommentcooldown * 60000)) {
-            var remainingglobalcooldown = Math.abs(((Date.now() - mainfile.commentedrecently) - (config.globalcommentcooldown * 60000)) / 1000)
+    if (config.botaccountcooldown != 0) { //check for global cooldown
+        if ((Date.now() - mainfile.commentedrecently) < (config.botaccountcooldown * 60000)) {
+            var remainingglobalcooldown = Math.abs(((Date.now() - mainfile.commentedrecently) - (config.botaccountcooldown * 60000)) / 1000)
             var remainingglobalcooldownunit = "seconds"
             if (remainingglobalcooldown > 120) { var remainingglobalcooldown = remainingglobalcooldown / 60; var remainingglobalcooldownunit = "minutes" }
             if (remainingglobalcooldown > 120) { var remainingglobalcooldown = remainingglobalcooldown / 60; var remainingglobalcooldownunit = "hours" }
 
-            respondmethod(403, lang.commentglobaloncooldown.replace("globalcommentcooldown", config.globalcommentcooldown).replace("remainingglobalcooldown", round(remainingglobalcooldown, 2)).replace("timeunit", remainingglobalcooldownunit)) //send error message
+            respondmethod(403, lang.commentglobaloncooldown.replace("botaccountcooldown", config.botaccountcooldown).replace("remainingglobalcooldown", round(remainingglobalcooldown, 2)).replace("timeunit", remainingglobalcooldownunit)) //send error message
             return;
         } 
     }
@@ -177,14 +177,14 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
     if (Object.keys(mainfile.activecommentprocess).length > 0) { //we only need to run the loop below if the obj is not empty
         Object.keys(mainfile.activecommentprocess).forEach((e) => { //loop over activecommentprocess obj and remove all valid entries from allaccounts array
 
-            if (Date.now() < mainfile.activecommentprocess[e].until + (config.globalcommentcooldown * 60000)) { //check if entry is not finished yet
+            if (Date.now() < mainfile.activecommentprocess[e].until + (config.botaccountcooldown * 60000)) { //check if entry is not finished yet
 
                 mainfile.activecommentprocess[e].accounts.forEach((f) => { //loop over every account used in this request
                     allaccounts.splice(allaccounts.indexOf(f), 1) //remove that accountindex from the allaccounts array
                 })
 
                 if (allaccounts - mainfile.activecommentprocess[e].accounts.length < numberofcomments) {
-                    whenavailable = mainfile.activecommentprocess[e].until + (config.globalcommentcooldown * 60000)
+                    whenavailable = mainfile.activecommentprocess[e].until + (config.botaccountcooldown * 60000)
                 }
             } else {
                 delete mainfile.activecommentprocess[e] //remove entry from object if it is finished to keep the object clean
@@ -230,7 +230,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
         amount: numberofcomments,
         requestedby: requesterSteamID,
         accounts: accountorder,
-        until: Date.now() + (numberofcomments * config.commentdelay) //globalcommentcooldown should start after the last comment was processed
+        until: Date.now() + (numberofcomments * config.commentdelay) //botaccountcooldown should start after the last comment was processed
     }
 
 

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 18:04:37
+ * Last Modified: 23.02.2022 11:10:31
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -56,7 +56,7 @@ module.exports.run = (responseSteamID, callback) => {
 
             Object.keys(mainfile.activecommentprocess).forEach((e, i) => { //loop overr obj to filter invalid/expired entries
 
-                if (mainfile.activecommentprocess[e].status != "active" || Date.now() > mainfile.activecommentprocess[e].until + (config.globalcommentcooldown * 60000)) { //check if status is not active or if entry is finished (realistically the status can't be active and finished but it won't hurt to check both to avoid a possible bug)
+                if (mainfile.activecommentprocess[e].status != "active" || Date.now() > mainfile.activecommentprocess[e].until + (config.botaccountcooldown * 60000)) { //check if status is not active or if entry is finished (realistically the status can't be active and finished but it won't hurt to check both to avoid a possible bug)
                     delete mainfile.activecommentprocess[e] //remove entry from object
                 }
     

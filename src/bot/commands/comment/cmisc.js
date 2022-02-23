@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 18:32:05
+ * Last Modified: 23.02.2022 11:10:12
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -59,10 +59,10 @@ module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
 
     if (args[0]) {
         if (args[0] == "global") { //Check if user wants to reset the global cooldown (will reset all until entries in activecommentprocess)
-            if (config.globalcommentcooldown == 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the global cooldown enabled?
+            if (config.botaccountcooldown == 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the global cooldown enabled?
 
             Object.keys(mainfile.activecommentprocess).forEach((e) => {
-                mainfile.activecommentprocess[e].until = Date.now() - (config.globalcommentcooldown * 60000); //since the cooldown checks will add the cooldown we need to subtract it (can't delete the entry because we might abort running processes with it)
+                mainfile.activecommentprocess[e].until = Date.now() - (config.botaccountcooldown * 60000); //since the cooldown checks will add the cooldown we need to subtract it (can't delete the entry because we might abort running processes with it)
             })
 
             return chatmsg(steamID, lang.resetcooldowncmdglobalreset) 
@@ -133,7 +133,7 @@ module.exports.sessions = (chatmsg, steamID, lang) => {
 
         Object.keys(mainfile.activecommentprocess).forEach((e, i) => {
 
-            if (Date.now() < mainfile.activecommentprocess[e].until + (config.globalcommentcooldown * 60000)) { //check if entry is not finished yet
+            if (Date.now() < mainfile.activecommentprocess[e].until + (config.botaccountcooldown * 60000)) { //check if entry is not finished yet
 
                 str += `- Status: ${mainfile.activecommentprocess[e].status} | ${mainfile.activecommentprocess[e].amount} comments with ${mainfile.activecommentprocess[e].accounts.length} accounts by ${mainfile.activecommentprocess[e].requestedby} for ${mainfile.activecommentprocess[e].type} ${Object.keys(mainfile.activecommentprocess)[i]}\n`
             } else {
@@ -170,7 +170,7 @@ module.exports.mysessions = (chatmsg, steamID, lang, steam64id) => {
 
         Object.keys(mainfile.activecommentprocess).forEach((e, i) => {
 
-            if (Date.now() < mainfile.activecommentprocess[e].until + (config.globalcommentcooldown * 60000)) { //check if entry is not finished yet
+            if (Date.now() < mainfile.activecommentprocess[e].until + (config.botaccountcooldown * 60000)) { //check if entry is not finished yet
 
                 if (mainfile.activecommentprocess[e].requestedby == steam64id) str += `- Status: ${mainfile.activecommentprocess[e].status} | ${mainfile.activecommentprocess[e].amount} comments with ${mainfile.activecommentprocess[e].accounts.length} accounts by ${mainfile.activecommentprocess[e].requestedby} for ${mainfile.activecommentprocess[e].type} ${Object.keys(mainfile.activecommentprocess)[i]}`
             } else {

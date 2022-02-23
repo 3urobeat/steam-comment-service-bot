@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 15:46:44
+ * Last Modified: 23.02.2022 11:07:57
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -65,13 +65,9 @@ module.exports.run = (logininfo, callback) => {
     var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
     if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
 
-    if (config.allowcommentcmdusage === false && new SteamID(String(config.ownerid[0])).isValid() === false) {
-        logger("error", "\x1b[31mYou set allowcommentcmdusage to false but didn't specify an ownerid! Aborting...\x1b[0m", true)
+    if (config.maxComments == 0 && new SteamID(String(config.ownerid[0])).isValid() === false) {
+        logger("error", "\x1b[31mYou set maxComments to 0 (blocked comment command for non owners) but didn't specify an ownerid! Aborting...\x1b[0m", true)
         return process.send("stop()")
-    }
-    if (config.maxComments < 1) {
-        logger("info", "\x1b[31mYour maxComments value in config.json can't be smaller than 1! Automatically setting it to 1...\x1b[0m", true)
-        config.maxComments = 1
     }
     if (config.maxOwnerComments < 1) {
         logger("info", "\x1b[31mYour maxOwnerComments value in config.json can't be smaller than 1! Automatically setting it to 1...\x1b[0m", true)

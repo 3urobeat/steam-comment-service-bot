@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 15:47:26
+ * Last Modified: 23.02.2022 11:10:28
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -176,7 +176,7 @@ module.exports.compatibility = (callback) => {
     } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2100" || extdata.versionstr == "BETA 2.10 b5")) {
         runCompFeature("2100")
 
-    } else if (!extdata.compatibilityfeaturedone && extdata.version == "2103" && config.globalcommentcooldown != 10) {
+    } else if (!extdata.compatibilityfeaturedone && extdata.version == "2103" && config.botaccountcooldown != 10) {
         runCompFeature("2103")
 
     } else if (!extdata.compatibilityfeaturedone && extdata.version == "2104") {
