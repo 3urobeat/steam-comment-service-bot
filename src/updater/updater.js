@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 24.02.2022 10:31:56
+ * Last Modified: 24.02.2022 12:15:52
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -92,25 +92,20 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
                         logger("info", "You have disabled the automatic updater.", true, true) //Log once for output.txt (gets overwritten by the next line)
                         logger("", `${logger.colors.brfgyellow}Would you like to update now?${logger.colors.reset} [y/n] `, true, true) //Split into two logger calls so that remove works correctly
 
-                        process.stdout.write(`You have disabled the automatic updater.\n${logger.colors.brfgyellow}Would you like to update now?${logger.colors.reset} [y/n] `)
-                        var updatestdin = process.openStdin();
+                        //Get user choice from terminal input
+                        logger.readInput(`You have disabled the automatic updater.\n${logger.colors.brfgyellow}Would you like to update now?${logger.colors.reset} [y/n] `, 7500, (text) => {
+                            
+                            if (!text) { //user didn't respond in 7.5 seconds
+                                process.stdout.write(`${logger.colors.fgred}X${logger.colors.reset}\n`) //write a X behind the y/n question
+                                logger("info", `${logger.colors.brfgyellow}Stopping updater since you didn't reply in 7.5 seconds...\n\n`, true, false)
+                                foundanddone(false)
+                                
+                            } else {
+                                var response = text.toString().trim()
 
-                        let noresponsetimeout = setTimeout(() => { //skip update after 7.5 sec if the user doesn't respond
-                            updatestdin.pause()
-                            process.stdout.write(`${logger.colors.fgred}X\n`) //write a X behind the y/n question
-                            logger("info", `${logger.colors.brfgyellow}Stopping updater since you didn't reply in 7.5 seconds...${logger.colors.reset}\n\n`, true, false, logger.animation("loading"))
-
-                            foundanddone(false)
-                        }, 7500);
-
-                        updatestdin.addListener('data', text => {
-                            clearTimeout(noresponsetimeout) 
-                            updatestdin.pause() //stop reading
-
-                            var response = text.toString().trim()
-
-                            if (response == "y") initiateUpdate()
-                                else foundanddone(false)
+                                if (response == "y") initiateUpdate()
+                                    else foundanddone(false)
+                            }
                         })
                     }
                 }
@@ -192,7 +187,7 @@ module.exports.compatibility = (callback) => {
 
 
 /* ------------ Register update checker: ------------ */
-var fs                      = require("fs")
+var fs = require("fs")
 
 var lastupdatecheckinterval = Date.now()
 if (updatecheckinterval) clearInterval(updatecheckinterval) //this check should never run but I added it just to be sure

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 17:49:50
+ * Last Modified: 24.02.2022 12:45:21
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -42,20 +42,16 @@ module.exports.run = (loginindex, thisbot, bot, logOnOptions, lastCodeWrong, cal
         //Start timer to subtract it later from readyafter time
         var steamGuardInputStart = Date.now(); //measure time to subtract it later from readyafter time
     
-        //Open input
-        if (loginindex == 0) process.stdout.write(`[${logOnOptions.accountName}] Steam Guard Code: `)
-            else process.stdout.write(`[${logOnOptions.accountName}] Steam Guard Code (leave empty and press ENTER to skip account): `)
-    
-        var stdin = process.openStdin(); //start reading input in terminal
-    
-        stdin.resume()
-        stdin.addListener('data', text => { //fired when input was submitted
+        //Read guard code from terminal input
+        if (loginindex == 0) var question = `[${logOnOptions.accountName}] Steam Guard Code: `
+            else var question = `[${logOnOptions.accountName}] Steam Guard Code (leave empty and press ENTER to skip account): `
+
+        logger.readInput(question, 90000, (text) => {
             var code = text.toString().trim()
 
-            stdin.pause() //stop reading
-            stdin.removeAllListeners('data')
-    
-            if (code == "") { //manual skip initated
+            if (!text || text == "") { //no response or manual skip
+                if (!text) logger("info", "Skipping account because you didn't respond in 1.5 minutes...", true)
+
                 if (loginindex == 0) { //first account can't be skipped
                     logger("warn", "The first account always has to be logged in!", true)
     
@@ -64,7 +60,6 @@ module.exports.run = (loginindex, thisbot, bot, logOnOptions, lastCodeWrong, cal
                     }, 500);
 
                 } else { //skip account if not bot0
-
                     logger("info", `[${thisbot}] steamGuard input empty, skipping account...`, false, true, logger.animation("loading"))
                     
                     login.accisloggedin = true; //set to true to log next account in
@@ -76,13 +71,13 @@ module.exports.run = (loginindex, thisbot, bot, logOnOptions, lastCodeWrong, cal
                     callback(null)
                     return;
                 }
-    
-            } else { //code provided
+
+            } else { //code
                 logger("info", `[${thisbot}] Accepting steamGuard code...`, false, true, logger.animation("loading"))
 
                 callback(code) //give code back to node-steam-user
             }
-    
+
             login.steamGuardInputTimeFunc(Date.now() - steamGuardInputStart) //measure time and subtract it from readyafter time
         })
     }
