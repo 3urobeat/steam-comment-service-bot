@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 24.02.2022 12:15:52
+ * Last Modified: 24.02.2022 12:49:00
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -89,8 +89,6 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
                     if (botisloggedin == false || responseSteamID) { //only ask on start (or when user checked for an update from the Steam chat), otherwise this will annoy the user
 
                         logger("", `${logger.colors.underscore}What's new:${logger.colors.reset} ${chunk.whatsnew}\n`, true)
-                        logger("info", "You have disabled the automatic updater.", true, true) //Log once for output.txt (gets overwritten by the next line)
-                        logger("", `${logger.colors.brfgyellow}Would you like to update now?${logger.colors.reset} [y/n] `, true, true) //Split into two logger calls so that remove works correctly
 
                         //Get user choice from terminal input
                         logger.readInput(`You have disabled the automatic updater.\n${logger.colors.brfgyellow}Would you like to update now?${logger.colors.reset} [y/n] `, 7500, (text) => {

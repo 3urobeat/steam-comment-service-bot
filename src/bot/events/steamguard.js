@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 24.02.2022 12:45:21
+ * Last Modified: 24.02.2022 12:48:31
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -34,10 +34,6 @@ module.exports.run = (loginindex, thisbot, bot, logOnOptions, lastCodeWrong, cal
      * Get code from the user and give it back to steam-user
      */
     function askforcode() { //function to handle code input, manual skipping with empty input and automatic skipping with skipSteamGuard
-
-        //Print message
-        logger("info", `[${thisbot}] Steam Guard code requested...`, false, true)
-        logger("", 'Code Input', true, true) //extra line with info for output.txt because otherwise the text from above get's halfway stuck in the steamGuard input field
     
         //Start timer to subtract it later from readyafter time
         var steamGuardInputStart = Date.now(); //measure time to subtract it later from readyafter time
