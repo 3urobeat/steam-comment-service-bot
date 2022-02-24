@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 17:04:03
+ * Last Modified: 24.02.2022 10:38:19
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -71,18 +71,16 @@ module.exports.optionsUpdateAfterConfigLoad = () => {
  * @param {String} animation Valid animations: `loading`, `waiting`, `bounce`, `progress`, `arrows` or `bouncearrows`
  * @returns Array of the chosen animation
  */
-module.exports.logger.animation = (args) => {
-    var outputlogger = require("output-logger")
-
-    return outputlogger.animation(args)
-}
+module.exports.logger.animation = outputlogger.animation;
 
 
 /**
  * Stops any animation currently active
  */
-module.exports.logger.stopAnimation = () => {
-    var outputlogger = require("output-logger")
+module.exports.logger.stopAnimation = outputlogger.stopAnimation
 
-    return outputlogger.stopAnimation
-}
+
+/**
+ * Color shortcuts to use color codes more easily in your strings
+ */
+module.exports.logger.colors = outputlogger.colors;

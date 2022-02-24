@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 23.02.2022 11:10:55
+ * Last Modified: 23.02.2022 15:53:33
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -415,8 +415,8 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
 
                     /* --------- No error, run this on every successful iteration --------- */
                     if (i == 0) { //Stuff below should only run in first iteration (main bot)
-                        if (loginfile.proxies.length > 1) logger("info", `\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment in group ${groupid} with proxy ${loginfile.additionalaccinfo[k].thisproxyindex}: ${String(comment).split("\n")[0]}\x1b[0m`)
-                                else logger("info", `\x1b[32m[${thisbot}] ${numberofcomments} Comment(s) requested. Comment in group ${groupid}: ${String(comment).split("\n")[0]}\x1b[0m`) //splitting \n to only get first line of multi line comments
+                        if (loginfile.proxies.length > 1) logger("info", `${logger.colors.fggreen}[${thisbot}] ${numberofcomments} Comment(s) requested. Comment in group ${groupid} with proxy ${loginfile.additionalaccinfo[k].thisproxyindex}: ${String(comment).split("\n")[0]}`)
+                                else logger("info", `${logger.colors.fggreen}[${thisbot}] ${numberofcomments} Comment(s) requested. Comment in group ${groupid}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
 
 
                         if (numberofcomments == 1) {

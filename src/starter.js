@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 14:51:26
+ * Last Modified: 23.02.2022 15:21:21
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -122,7 +122,7 @@ function attachParentListeners() {
 
         logger("", "", true)
         logger("info", `Recieved signal to exit...`, false, true);
-        logger("", "Goodbye!", true);
+        logger("", "Goodbye!", true); //I'm intentionally not using exitmessage of output-logger here as it would print this message above the message above this line which sucks
     }
 
     process.on("exit", parentExitEvent);

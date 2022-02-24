@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 05.10.2021 16:56:47
+ * Last Modified: 23.02.2022 15:48:51
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -124,10 +124,10 @@ module.exports.eval = (chatmsg, steamID, lang, args, bot, community) => { //esli
         if (chatResult.length >= 4950) chatmsg(steamID, `Code executed. Result:\n\n${chatResult.slice(0, 4950)}.......\n\n\nResult too long for chat.`)
             else chatmsg(steamID, `Code executed. Result:\n\n${clean(evaled)}`)
         
-        logger("info", '\x1b[33mEval result:\x1b[0m \n' + clean(evaled) + "\n", true)
+        logger("info", `${logger.colors.fgyellow}Eval result:${logger.colors.reset} \n${clean(evaled)}\n`, true)
     } catch (err) {
         chatmsg(steamID, `Error:\n${clean(err)}`)
-        logger("error", '\x1b[33mEval error:\x1b[0m \n' + clean(err) + "\n", true)                                                                                                                                                                                                                                                                                                                 //Hi I'm a comment that serves no purpose
+        logger("error", `${logger.colors.fgyellow}Eval error:${logger.colors.reset} \n${clean(err)}\n`, true)                                                                                                                                                                                                                                                                                                                 //Hi I'm a comment that serves no purpose
         return; 
     }
 }

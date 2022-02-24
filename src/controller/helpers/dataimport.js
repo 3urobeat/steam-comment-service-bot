@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 15:12:56
+ * Last Modified: 23.02.2022 15:50:56
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -289,7 +289,7 @@ module.exports.quotes = () => {
     logger("info", `${quotes.length} quotes found.`, false, true, logger.animation("loading"))
 
     if (quotes.length == 0) { //check if quotes.txt is empty to avoid errors further down when trying to comment
-        logger("error", "\x1b[31mYou haven't put any comment quotes into the quotes.txt file! Aborting...\x1b[0m", true)
+        logger("error", `${logger.colors.fgred}You haven't put any comment quotes into the quotes.txt file! Aborting...`, true)
         return process.send("stop()")
     }
 

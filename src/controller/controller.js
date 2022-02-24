@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 16:58:01
+ * Last Modified: 24.02.2022 10:38:55
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -157,13 +157,13 @@ function run() {
 
                             if (parsednodeversion < 141500) {
                                 logger("", "\n************************************************************************************\n", true)
-                                logger("error", `This applicaion requires at least node.js \x1b[0mv14.15.0\x1b[31m but you have \x1b[0m${process.version}\x1b[31m installed!\n        Please update your node.js installation: \x1b[0m https://nodejs.org/`, true)
+                                logger("error", `This applicaion requires at least node.js ${logger.colors.reset}v14.15.0${logger.colors.fgred} but you have ${logger.colors.reset}${process.version}${logger.colors.fgred} installed!\n        Please update your node.js installation: ${logger.colors.reset} https://nodejs.org/`, true)
                                 logger("", "\n************************************************************************************\n", true)
                                 return process.send("stop()")
                             }
 
 
-                            if (extdata.branch == "beta-testing") logger("", "\x1b[0m[\x1b[31mNotice\x1b[0m] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n", true)
+                            if (extdata.branch == "beta-testing") logger("", `${logger.colors.reset}[${logger.colors.fgred}Notice${logger.colors.reset}] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n`, true)
 
                             starter.checkAndGetFile("./src/controller/helpers/datacheck.js", logger, false, false, (datacheck) => { //*callback hell intensifies*
                                 datacheck.run(logininfo, () => {

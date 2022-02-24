@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 16.10.2021 12:12:13
+ * Last Modified: 23.02.2022 15:50:56
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -55,7 +55,7 @@ module.exports.checkforupdate = (releasemode, forceupdate, callback) => {
         })
 
         httpsrequest.on("error", function(err) {
-            logger("warn", "\x1b[0m[\x1b[31mNotice\x1b[0m]: Couldn't check for an available update because either GitHub is down or your internet isn't working.\n          Error: " + err, true)
+            logger("warn", `${logger.colors.reset}[${logger.colors.fgred}Notice${logger.colors.reset}]: Couldn't check for an available update because either GitHub is down or your internet isn't working.\n          Error: ${err}`, true)
             callback(false, {})
         })
 

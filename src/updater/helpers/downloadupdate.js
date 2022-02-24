@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 17:43:51
+ * Last Modified: 23.02.2022 15:48:42
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -48,7 +48,7 @@ module.exports.downloadupdate = (releasemode, compatibilityfeaturedone, callback
 
     //Start downloading new files
     logger("", "", true)
-    logger("", "\x1b[33mDownloading new files...\x1b[0m", true, false, logger.animation("loading"))
+    logger("", `${logger.colors.fgyellow}Downloading new files...${logger.colors.reset}`, true, false, logger.animation("loading"))
 
     download(url, "./", { extract: true }).then(() => { //the download library makes downloading and extracting easier
         //Scan directory recursively to get an array of all paths in this directory
@@ -71,7 +71,7 @@ module.exports.downloadupdate = (releasemode, compatibilityfeaturedone, callback
         let files = scandir(".") //scan the directory of this installation
         
         //Delete old files except files and folders in dontdelete
-        logger("", "\x1b[33mDeleting old files...\x1b[0m", true, false, logger.animation("loading"))
+        logger("", `${logger.colors.fgyellow}Deleting old files...${logger.colors.reset}`, true, false, logger.animation("loading"))
         files.forEach((e, i) => {
             if (fs.existsSync(e) && !dontdelete.includes(e) && !e.includes(`./steam-comment-service-bot-${releasemode}`) && !e.includes("./node_modules")) { //respect dontdelete, the fresh downloaded files and the node_modules folder
                 fs.rmSync(e, { recursive: true })
@@ -82,7 +82,7 @@ module.exports.downloadupdate = (releasemode, compatibilityfeaturedone, callback
                 //Move new files out of directory
                 let newfiles = scandir(`./steam-comment-service-bot-${releasemode}`) //scan the directory of the new installation
     
-                logger("", "\x1b[33mMoving new files...\x1b[0m", true, false, logger.animation("loading"))
+                logger("", `${logger.colors.fgyellow}Moving new files...${logger.colors.reset}`, true, false, logger.animation("loading"))
                 newfiles.forEach((e, i) => {
                     let eCut = e.replace(`steam-comment-service-bot-${releasemode}/`, "") //eCut should resemble the same path but how it would look like in the base directory
 

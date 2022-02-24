@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 15:46:32
+ * Last Modified: 23.02.2022 15:38:26
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -60,7 +60,7 @@ module.exports.startlogin = (logininfo) => {
 
 
     //Print whatsnew message if this is the first start with this version
-    if (extdata.firststart) logger("", "\x1b[0mWhat's new: " + extdata.whatsnew + "\n")
+    if (extdata.firststart) logger("", `${logger.colors.reset}What's new: ${extdata.whatsnew}\n`)
 
 
     //Evaluate estimated wait time for login:

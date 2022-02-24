@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 18:51:20
+ * Last Modified: 23.02.2022 15:53:33
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -33,10 +33,10 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
     
     //Custom behaviour for LogonSessionReplaced error:
     if (err.eresult == 34) {
-        logger("info", `\x1b[31m[${thisbot}] Lost connection to Steam. Reason: LogonSessionReplaced\x1b[0m`)
+        logger("info", `${logger.colors.fgred}[${thisbot}] Lost connection to Steam. Reason: LogonSessionReplaced`)
 
         if (loginindex == 0) {
-            logger("error", `\x1b[31mAccount is bot0. Aborting...\x1b[0m`, true); 
+            logger("error", `${logger.colors.fgred}Account is bot0. Aborting...`, true); 
             return process.send("stop()");
         }
         return; 
@@ -45,11 +45,11 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
 
     //Check if this is a connection loss and not a login error (because disconnects will be thrown here when autoRelogin is false)
     if (Object.keys(controller.botobject).includes(String(loginindex)) && !controller.relogQueue.includes(loginindex)) { //it must be a disconnect when the bot was once logged in and is not yet in the queue
-        logger("info", `\x1b[31m[${thisbot}] Lost connection to Steam. Reason: ${err}\x1b[0m`)
+        logger("info", `${logger.colors.fgred}[${thisbot}] Lost connection to Steam. Reason: ${err}`)
 
         //Check if this is an intended logoff
         if (controller.relogAfterDisconnect && !login.skippednow.includes(loginindex)) { 
-            logger("info", `\x1b[32m[${thisbot}] Initiating a relog in 30 seconds.\x1b[0m`) //Announce relog
+            logger("info", `${logger.colors.fggreen}[${thisbot}] Initiating a relog in 30 seconds.`) //Announce relog
 
             //Relog after waiting 30 sec
             setTimeout(() => {

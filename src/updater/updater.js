@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 23.02.2022 11:10:28
+ * Last Modified: 24.02.2022 10:31:56
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -38,7 +38,7 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
 
                 //log result of the check
                 logger("", "", true)
-                logger("", `\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${extdata.versionstr}\x1b[0m | New version: \x1b[32m${chunk.versionstr}\x1b[0m`, true)
+                logger("", `${logger.colors.fggreen}Update available!${logger.colors.reset} Your version: ${logger.colors.fgred}${extdata.versionstr}${logger.colors.reset} | New version: ${logger.colors.fggreen}${chunk.versionstr}`, true)
                 logger("", "", true)
 
 
@@ -64,7 +64,7 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
                                 file3.downloadupdate(releasemode, compatibilityfeaturedone, (err) => {
                                     if (err) logger("error", "I failed trying to download & install the update. Please check the log after other errors for more information.\nTrying to continue anyway...")
 
-                                    logger("", "\x1b[33mUpdating packages with npm...\x1b[0m", true, false, logger.animation("loading"))
+                                    logger("", `${logger.colors.fgyellow}Updating packages with npm...`, true, false, logger.animation("loading"))
 
                                     starter.checkAndGetFile("./src/controller/helpers/npminteraction.js", logger, false, false, (file4) => {
                                         file4.update((err) => {
@@ -88,17 +88,17 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
 
                     if (botisloggedin == false || responseSteamID) { //only ask on start (or when user checked for an update from the Steam chat), otherwise this will annoy the user
 
-                        logger("", `\x1b[4mWhat's new:\x1b[0m ${chunk.whatsnew}\n`, true)
+                        logger("", `${logger.colors.underscore}What's new:${logger.colors.reset} ${chunk.whatsnew}\n`, true)
                         logger("info", "You have disabled the automatic updater.", true, true) //Log once for output.txt (gets overwritten by the next line)
-                        logger("", `\x1b[93mWould you like to update now?\x1b[0m [y/n] `, true, true) //Split into two logger calls so that remove works correctly
+                        logger("", `${logger.colors.brfgyellow}Would you like to update now?${logger.colors.reset} [y/n] `, true, true) //Split into two logger calls so that remove works correctly
 
-                        process.stdout.write(`You have disabled the automatic updater.\n\x1b[93mWould you like to update now?\x1b[0m [y/n] `)
+                        process.stdout.write(`You have disabled the automatic updater.\n${logger.colors.brfgyellow}Would you like to update now?${logger.colors.reset} [y/n] `)
                         var updatestdin = process.openStdin();
 
                         let noresponsetimeout = setTimeout(() => { //skip update after 7.5 sec if the user doesn't respond
                             updatestdin.pause()
-                            process.stdout.write("\x1b[31mX\n") //write a X behind the y/n question
-                            logger("info", "\x1b[93mStopping updater since you didn't reply in 7.5 seconds...\x1b[0m\n\n", true, false, logger.animation("loading"))
+                            process.stdout.write(`${logger.colors.fgred}X\n`) //write a X behind the y/n question
+                            logger("info", `${logger.colors.brfgyellow}Stopping updater since you didn't reply in 7.5 seconds...${logger.colors.reset}\n\n`, true, false, logger.animation("loading"))
 
                             foundanddone(false)
                         }, 7500);

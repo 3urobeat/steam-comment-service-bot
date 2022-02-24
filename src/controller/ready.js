@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 18:39:56
+ * Last Modified: 24.02.2022 10:30:57
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -42,22 +42,22 @@ module.exports.readyCheck = (logininfo) => {
             //Start logging the ready message block
             logger("", ' ', true)
             logger("", '*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*', true)
-            logger("", `\x1b[95m>\x1b[0m \x1b[96msteam-comment-service-bot\x1b[0m version \x1b[96m${extdata.versionstr}\x1b[0m by ${extdata.mestr}`, true)
+            logger("", `${logger.colors.brfgmagenta}>${logger.colors.reset} ${logger.colors.brfgcyan}steam-comment-service-bot${logger.colors.reset} version ${logger.colors.brfgcyan}${extdata.versionstr}${logger.colors.reset} by ${extdata.mestr}`, true)
 
 
             //Calculate what the max amount of comments per account is and log it
             var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
             if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
 
-            if (maxCommentsOverall > 3) var repeatedCommentsStr = `\x1b[4m\x1b[31m${round(maxCommentsOverall / Object.keys(botobject).length, 2)}\x1b[0m` 
+            if (maxCommentsOverall > 3) var repeatedCommentsStr = `${logger.colors.underscore}${logger.colors.fgred}${round(maxCommentsOverall / Object.keys(botobject).length, 2)}` 
                 else var repeatedCommentsStr = round(maxCommentsOverall / Object.keys(botobject).length, 2)
             
-            logger("", `\x1b[94m>\x1b[0m ${Object.keys(communityobject).length} total account(s) | ${repeatedCommentsStr} comments per account allowed`, true)
+            logger("", `${logger.colors.brfgblue}>${logger.colors.reset} ${Object.keys(communityobject).length} total account(s) | ${repeatedCommentsStr} comments per account allowed`, true)
 
 
             //display amount of proxies if any were used
             if (login.proxies.length > 1) { //'null' will always be in the array (your own ip)
-                logger("", `\x1b[36m>\x1b[0m Using ${login.proxies.length} proxies | ${round(Object.keys(communityobject).length / login.proxies.length, 2)} account(s) per proxy`, true)
+                logger("", `${logger.colors.fgcyan}>${logger.colors.reset} Using ${login.proxies.length} proxies | ${round(Object.keys(communityobject).length / login.proxies.length, 2)} account(s) per proxy`, true)
             }
 
 
@@ -66,18 +66,18 @@ module.exports.readyCheck = (logininfo) => {
                 if (failed > 0) var failedtocheckmsg = `(Couldn't check ${failed} account(s))`;
                     else var failedtocheckmsg = "";
                 
-                logger("", `\x1b[92m>\x1b[0m ${limited}/${Object.keys(botobject).length} account(s) are \x1b[31mlimited\x1b[0m ${failedtocheckmsg}`, true) 
+                logger("", `${logger.colors.brfggreen}>${logger.colors.reset} ${limited}/${Object.keys(botobject).length} account(s) are ${logger.colors.fgred}limited${logger.colors.reset} ${failedtocheckmsg}`, true) 
             })
 
 
             //Log warning message if automatic updater is turned off
-            if (advancedconfig.disableAutoUpdate) logger("", "\x1b[41m\x1b[30m>\x1b[0m Automatic updating is \x1b[4m\x1b[31mturned off\x1b[0m!", true)
+            if (advancedconfig.disableAutoUpdate) logger("", `${logger.colors.bgred}${logger.colors.fgblack}>${logger.colors.reset} Automatic updating is ${logger.colors.underscore}${logger.colors.fgred}turned off${logger.colors.reset}!`, true)
 
 
             //Log which games the main and child bots are playing
             var playinggames = ""
             if (config.playinggames[1]) var playinggames = `(${config.playinggames.slice(1, config.playinggames.length)})`
-            logger("", `\x1b[93m>\x1b[0m Playing status: \x1b[32m${config.playinggames[0]}\x1b[0m ${playinggames}`, true)
+            logger("", `${logger.colors.brfgyellow}>${logger.colors.reset} Playing status: ${logger.colors.fggreen}${config.playinggames[0]}${logger.colors.reset} ${playinggames}`, true)
 
 
             //Calculate time the bot took to start
@@ -89,7 +89,7 @@ module.exports.readyCheck = (logininfo) => {
             if (readyafter > 60) { readyafter = readyafter / 60; var readyafterunit = "minutes" }
             if (readyafter > 60) { readyafter = readyafter / 60; var readyafterunit = "hours" }
             
-            logger("", `\x1b[91m>\x1b[0m Ready after ${round(readyafter, 2)} ${readyafterunit}!`, true)
+            logger("", `${logger.colors.brfgred}>${logger.colors.reset} Ready after ${round(readyafter, 2)} ${readyafterunit}!`, true)
             extdata.timesloggedin++
             extdata.totallogintime += readyafter / Object.keys(communityobject).length //get rough logintime of only one account
 
@@ -104,7 +104,7 @@ module.exports.readyCheck = (logininfo) => {
 
 
             //Show disclaimer message to not misuse this bot if firststart
-            if (extdata.firststart) logger("", `\x1b[0m[\x1b[31mDisclaimer\x1b[0m]: Please don't misuse this bot by spamming or posting malicious comments. Your accounts can get banned from Steam if you do that.\n              You are responsible for the actions of your bot instance.\n`, true)
+            if (extdata.firststart) logger("", `${logger.colors.reset}[${logger.colors.fgred}Disclaimer${logger.colors.reset}]: Please don't misuse this bot by spamming or posting malicious comments. Your accounts can get banned from Steam if you do that.\n              You are responsible for the actions of your bot instance.\n`, true)
             
 
             //Log amount of skippedaccounts
