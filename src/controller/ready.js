@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 24.02.2022 13:08:32
+ * Last Modified: 25.02.2022 13:57:45
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,6 +15,8 @@
  */
 
 
+
+module.exports.plugins = {};
 
 /**
  * Checks if the startup is completed and shows some messages
@@ -33,10 +35,15 @@ module.exports.readyCheck = (logininfo) => {
     var readyafter = 0
 
     
-    var readyinterval = setInterval(() => { //run ready check every x ms
+    var readyinterval = setInterval(async () => { //run ready check every x ms
 
         if (Object.keys(communityobject).length + login.skippednow.length == Object.keys(logininfo).length && login.accisloggedin == true) {
             clearInterval(readyinterval) //stop checking if startup is done
+
+
+            //Load plugins
+            var plugins = await require("./helpers/loadPlugins.js").loadPlugins();
+            module.exports.plugins = plugins; //refresh exported obj
 
 
             //Start logging the ready message block
@@ -72,6 +79,10 @@ module.exports.readyCheck = (logininfo) => {
 
             //Log warning message if automatic updater is turned off
             if (advancedconfig.disableAutoUpdate) logger("", `${logger.colors.bgred}${logger.colors.fgblack}>${logger.colors.reset} Automatic updating is ${logger.colors.underscore}${logger.colors.fgred}turned off${logger.colors.reset}!`, true)
+
+
+            //Log amount of loaded plugins
+            if (Object.keys(plugins).length > 0) logger("", `${logger.colors.fgblack}>${logger.colors.reset} Successfully loaded ${Object.keys(plugins).length} plugins!`, true)
 
 
             //Log which games the main and child bots are playing
@@ -171,6 +182,17 @@ module.exports.readyCheck = (logininfo) => {
 
             fs.writeFile(srcdir + "/data/data.json", JSON.stringify(extdata, null, 4), err => { //write changes
                 if (err) logger("error", "change extdata to false error: " + err)
+            })
+
+
+            //Run all loaded plugins
+            Object.values(plugins).forEach((e) => {
+                try {
+                    logger("info", `Running plugin ${e.info.name}...`, false, true, logger.animation("loading"));
+                    e.run(botobject[0], botobject, communityobject);
+                } catch (err) {
+                    logger("error", `Error running plugin ${e.info.name}! Error:\n${err.stack}`)
+                }
             })
 
 
