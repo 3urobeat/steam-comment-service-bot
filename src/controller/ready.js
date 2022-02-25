@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 25.02.2022 13:57:45
+ * Last Modified: 25.02.2022 14:54:48
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -108,10 +108,6 @@ module.exports.readyCheck = (logininfo) => {
             //Finished logging ready message
             logger("", '*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*', true)
             logger("", ' ', true)
-
-
-            //Start webserver
-            if (advancedconfig.enableurltocomment) require("./webserver.js").run()
 
 
             //Show disclaimer message to not misuse this bot if firststart
