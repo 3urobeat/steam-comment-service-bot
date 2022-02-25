@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 23.02.2022 15:48:51
+ * Last Modified: 25.02.2022 13:29:23
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -111,6 +111,7 @@ module.exports.eval = (chatmsg, steamID, lang, args, bot, community) => { //esli
         //make using the command a little bit easier
         var starter    = require("../../starter.js") //eslint-disable-line no-unused-vars
         var controller = require("../../controller/controller.js") //eslint-disable-line no-unused-vars
+        var readyfile  = require("../../controller/ready.js") //eslint-disable-line no-unused-vars
         var botfile    = require("../../bot/bot.js") //eslint-disable-line no-unused-vars
         var mainfile   = require("../../bot/main.js") //eslint-disable-line no-unused-vars
         

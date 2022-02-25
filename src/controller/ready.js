@@ -184,7 +184,7 @@ module.exports.readyCheck = (logininfo) => {
             //Run all loaded plugins
             Object.values(plugins).forEach((e) => {
                 try {
-                    logger("info", `Running plugin ${e.info.name}...`, false, true, logger.animation("loading"));
+                    logger("info", `Running plugin ${e.info.name} v${e.info.version} by ${e.info.author}...`, false, true, logger.animation("loading"));
                     e.run(botobject[0], botobject, communityobject);
                 } catch (err) {
                     logger("error", `Error running plugin ${e.info.name}! Error:\n${err.stack}`)

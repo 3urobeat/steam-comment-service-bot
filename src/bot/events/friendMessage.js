@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 17:12:27
+ * Last Modified: 25.02.2022 12:11:49
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -45,6 +45,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
      * @param txt The text to send
      */
     function chatmsg(steamID, txt) { //sadly needed to be included here in order to access bot instance before friendMessage got called at least once or needing to provide it as parameter
+        logger("debug", `[${thisbot}] Sending message (${txt.length} chars) to ${new SteamID(String(steamID)).getSteamID64()}: "${txt.replace(/\n/g, "\\n")}"`)
         bot.chat.sendFriendMessage(steamID, txt)
     }
 

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 17:18:19
+ * Last Modified: 25.02.2022 12:12:07
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -54,13 +54,13 @@ module.exports.run = (logOnOptions, loginindex) => {
     //Attach debug log events
     if (advancedconfig.steamUserDebug) {
         bot.on("debug", (msg) => {
-            logger("debug", `[${thisbot}] debug: ${msg}`, false, true)
+            logger("debug", `[${thisbot}] steam-user debug: ${msg}`)
         })
     }
 
     if (advancedconfig.steamUserDebugVerbose) {
         bot.on("debug-verbose", (msg) => {
-            logger("debug", `[${thisbot}] debug-verbose: ${msg}`, false, true)
+            logger("debug", `[${thisbot}] steam-user debug-verbose: ${msg}`)
         })
     }
 
