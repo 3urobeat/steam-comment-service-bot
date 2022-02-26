@@ -4,7 +4,7 @@
  * Created Date: 26.02.2022 16:54:03
  * Author: 3urobeat
  * 
- * Last Modified: 26.02.2022 19:50:37
+ * Last Modified: 26.02.2022 19:59:14
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -61,5 +61,5 @@ module.exports.run = (callback) => {
         }
     }
 
-    copyFolderRecursiveSync(".", "./backup");
+    copyFolderRecursiveSync(".", "./backup", true);
 }
