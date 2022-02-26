@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 25.02.2022 15:38:20
+ * Last Modified: 26.02.2022 11:45:52
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -146,7 +146,7 @@ module.exports.compatibility = (callback) => {
      */
     function runCompFeature(filename) {
         starter.checkAndGetFile(`./src/updater/compatibility/${filename}.js`, logger, false, false, (file) => {
-            logger("info", `Running compatibility feature ${filename}.js...`, false, false, logger.animation("loading"))
+            logger("info", `Running compatibility feature ${filename}.js...`, true)
 
             file.run(callback)
         })
