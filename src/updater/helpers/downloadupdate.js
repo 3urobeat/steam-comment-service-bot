@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 26.02.2022 20:05:26
+ * Last Modified: 26.02.2022 20:09:42
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -105,10 +105,6 @@ module.exports.downloadupdate = (releasemode, compatibilityfeaturedone, callback
             } 
         }) 
     }).catch((err) => {
-        if (err) {
-            logger("error", "Error while trying to download and update: " + err.stack, true)
-
-            callback(err);
-        }
+        if (err) callback(err);
     })
 }

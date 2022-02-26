@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 26.02.2022 19:40:42
+ * Last Modified: 26.02.2022 21:32:27
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -60,18 +60,29 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
                         file2.run(responseSteamID, () => {
                             starter.checkAndGetFile("./src/updater/helpers/createBackup.js", logger, false, false, (file3) => { //create a backup of the current installation
                                 file3.run(() => {
-                                    starter.checkAndGetFile("./src/updater/helpers/downloadupdate.js", logger, false, false, (file4) => { //start downloading the update
-                                        file4.downloadupdate(releasemode, compatibilityfeaturedone, (err) => {
-                                            if (err) logger("error", "I failed trying to download & install the update. Please check the log after other errors for more information.\nTrying to continue anyway...")
+                                    starter.checkAndGetFile("./src/updater/helpers/downloadupdate.js", logger, false, false, (file4) => {
+                                        starter.checkAndGetFile("./src/updater/helpers/restoreBackup.js", logger, false, false, (file5) => { //already load restoreBackup into memory
+                                            file4.downloadupdate(releasemode, compatibilityfeaturedone, (err) => { //start downloading the update
+                                                if (err) {
+                                                    logger("error", "I failed trying to download & install the update! Please contact the bot developer with the following error here: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose", true)
+                                                    logger("error", err, true)
+                                                    
+                                                    logger("info", "Since I probably won't be able to continue from here, I'll try to restore from a backup if one exists.\n       I'll try to update again the next time you start the bot or in 6 hours should the auto updater be enabled.\n       If this issue keeps happening please think about setting disableAutoUpdate in advancedconfig.json to true.", true)
+                                                    file5.run(() => { //try to restore backup
+                                                        foundanddone(true, true)
+                                                    })
 
-                                            logger("", `${logger.colors.fgyellow}Updating packages with npm...`, true, false, logger.animation("loading"))
+                                                } else {
+                                                    logger("", `${logger.colors.fgyellow}Updating packages with npm...`, true, false, logger.animation("loading"))
 
-                                            starter.checkAndGetFile("./src/controller/helpers/npminteraction.js", logger, false, false, (file5) => {
-                                                file5.update((err) => {
-                                                    if (err) logger("error", "I failed trying to update the dependencies. Please check the log after other errors for more information.\nTrying to continue anyway...")
-
-                                                    foundanddone(true); //finished updating!
-                                                })
+                                                    starter.checkAndGetFile("./src/controller/helpers/npminteraction.js", logger, false, false, (file5) => {
+                                                        file5.update((err) => {
+                                                            if (err) logger("error", "I failed trying to update the dependencies. Please check the log after other errors for more information.\nTrying to continue anyway...")
+        
+                                                            foundanddone(true); //finished updating!
+                                                        })
+                                                    })
+                                                }
                                             })
                                         })
                                     })

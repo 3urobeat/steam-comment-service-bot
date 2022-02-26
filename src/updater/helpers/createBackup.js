@@ -4,7 +4,7 @@
  * Created Date: 26.02.2022 16:54:03
  * Author: 3urobeat
  * 
- * Last Modified: 26.02.2022 19:59:14
+ * Last Modified: 26.02.2022 21:31:57
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -44,11 +44,11 @@ module.exports.run = (callback) => {
                 if (dontCopy.includes(file)) return; //ignore this file/folder if name is in dontCopy
                 var curSource = path.join(src, file);
 
-                logger("debug", `Copying "${curSource}" to "${targetFolder}/${file}"...`, true)
-
                 if (fs.lstatSync(curSource).isDirectory()) {
                     copyFolderRecursiveSync(curSource, targetFolder, false);
                 } else {
+                    logger("debug", `Copying "${curSource}" to "${targetFolder}/${file}"...`, true)
+                    
                     fs.copyFileSync(curSource, targetFolder + "/" + file)
                 }
             });

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 24.02.2022 10:38:55
+ * Last Modified: 26.02.2022 20:26:08
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -180,14 +180,20 @@ function run() {
 
                                             require("./helpers/internetconnection.js").run(true, true, true, () => { //we can ignore callback because stoponerr is true
 
-                                                require("../updater/updater.js").run(false, null, false, (foundanddone2) => {
+                                                if (updateFailed) { //skip checking for update if last update failed
+                                                    logger("info", `It looks like the last update failed so let's skip the updater for now and hope ${extdata.mestr} fixes the issue.\n       If you haven't reported the error yet please do so as I'm only then able to fix it!`, true)
+                                                    require("./login.js").startlogin(logininfo) //start logging in
+                                                } else {
+                                                    require("../updater/updater.js").run(false, null, false, (foundanddone2, updateFailed) => {
 
-                                                    if (!foundanddone2) {
-                                                        require("./login.js").startlogin(logininfo) //start logging in
-                                                    } else {
-                                                        process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts })})`) //send request to parent process
-                                                    }
-                                                })
+                                                        if (!foundanddone2) {
+                                                            require("./login.js").startlogin(logininfo) //start logging in
+                                                        } else {
+                                                            process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, updatefailed: updateFailed == true })})`) //send request to parent process (checking updateFailed == true so that undefined will result in false instead of undefined)
+                                                        }
+                                                    })
+                                                }
+                                                
                                             })
                                         })
                                     })
@@ -207,6 +213,7 @@ function run() {
 //obj that can get populated by restart data to keep config through restarts
 var oldconfig = {} //eslint-disable-line
 var logafterrestart = [] //create array to log these error messages after restart
+var updateFailed = false;
 
 
 /**
@@ -218,6 +225,7 @@ function restartdata(data) {
     if (data.oldconfig) oldconfig = data.oldconfig //eslint-disable-line
     if (data.logafterrestart) logafterrestart = data.logafterrestart //we can't print now since the logger function isn't imported yet. 
     if (data.skippedaccounts) module.exports.skippedaccounts = data.skippedaccounts
+    if (data.updatefailed) updateFailed = data.updatefailed;
 
     run(); //start the bot
 }
