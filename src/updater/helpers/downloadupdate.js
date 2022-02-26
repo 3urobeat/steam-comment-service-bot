@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 23.02.2022 15:48:42
+ * Last Modified: 26.02.2022 19:40:47
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -24,6 +24,8 @@
 module.exports.downloadupdate = (releasemode, compatibilityfeaturedone, callback) => {
     var fs       = require("fs")
     var download = require("download")
+
+    logger("", "Starting to download update...", true, false, logger.animation("loading"))
 
     const url = `https://github.com/HerrEurobeat/steam-comment-service-bot/archive/${releasemode}.zip`
     const dontdelete = ["./.git", "./src/data/cache.json", "./src/data/lastcomment.db", "./accounts.txt", "./customlang.json", "./logininfo.json", "./output.txt", "./proxies.txt", "./quotes.txt"]

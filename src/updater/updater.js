@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 26.02.2022 11:45:52
+ * Last Modified: 26.02.2022 19:40:42
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -56,21 +56,23 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
                 function initiateUpdate() { //make initating the update a function to simplify the permission check below
                     this.activeupdate = true; //block new comment requests by setting active update to true and exporting it
 
-                    starter.checkAndGetFile("./src/updater/helpers/prepareupdate.js", logger, false, false, (file2) => {
+                    starter.checkAndGetFile("./src/updater/helpers/prepareupdate.js", logger, false, false, (file2) => { //prepare update (like waiting for active comment processes to finish, logging off accounts, etc.)
                         file2.run(responseSteamID, () => {
-                            logger("", "Starting to download update...", true, false, logger.animation("loading"))
+                            starter.checkAndGetFile("./src/updater/helpers/createBackup.js", logger, false, false, (file3) => { //create a backup of the current installation
+                                file3.run(() => {
+                                    starter.checkAndGetFile("./src/updater/helpers/downloadupdate.js", logger, false, false, (file4) => { //start downloading the update
+                                        file4.downloadupdate(releasemode, compatibilityfeaturedone, (err) => {
+                                            if (err) logger("error", "I failed trying to download & install the update. Please check the log after other errors for more information.\nTrying to continue anyway...")
 
-                            starter.checkAndGetFile("./src/updater/helpers/downloadupdate.js", logger, false, false, (file3) => {
-                                file3.downloadupdate(releasemode, compatibilityfeaturedone, (err) => {
-                                    if (err) logger("error", "I failed trying to download & install the update. Please check the log after other errors for more information.\nTrying to continue anyway...")
+                                            logger("", `${logger.colors.fgyellow}Updating packages with npm...`, true, false, logger.animation("loading"))
 
-                                    logger("", `${logger.colors.fgyellow}Updating packages with npm...`, true, false, logger.animation("loading"))
+                                            starter.checkAndGetFile("./src/controller/helpers/npminteraction.js", logger, false, false, (file5) => {
+                                                file5.update((err) => {
+                                                    if (err) logger("error", "I failed trying to update the dependencies. Please check the log after other errors for more information.\nTrying to continue anyway...")
 
-                                    starter.checkAndGetFile("./src/controller/helpers/npminteraction.js", logger, false, false, (file4) => {
-                                        file4.update((err) => {
-                                            if (err) logger("error", "I failed trying to update the dependencies. Please check the log after other errors for more information.\nTrying to continue anyway...")
-
-                                            foundanddone(true); //finished updating!
+                                                    foundanddone(true); //finished updating!
+                                                })
+                                            })
                                         })
                                     })
                                 })
