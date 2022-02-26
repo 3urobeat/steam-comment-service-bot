@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 23.02.2022 11:10:31
+ * Last Modified: 26.02.2022 19:53:19
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -38,16 +38,20 @@ module.exports.run = (responseSteamID, callback) => {
         function initiateUpdate() { //make initating the update a function to simplify the activecomment check below
             controller.relogAfterDisconnect = false; //Prevents disconnect event (which will be called by logOff) to relog accounts
     
-            Object.keys(controller.botobject).forEach((e) => {
-                logger("info", `Logging off bot${e}...`, false, true, logger.animation("loading"))
-                controller.botobject[e].logOff() //logging off each account
-            })
+            logger("info", "Logging off accounts in 2.5 seconds...", false, true, logger.animation("waiting"));
 
             setTimeout(() => {
-                botisloggedin = false
-
-                callback(); //start update
-            }, 2500)
+                Object.keys(controller.botobject).forEach((e) => {
+                    logger("info", `Logging off bot${e}...`, false, true, logger.animation("loading"))
+                    controller.botobject[e].logOff() //logging off each account
+                })
+    
+                setTimeout(() => {
+                    botisloggedin = false
+    
+                    callback(); //start update
+                }, 2500)
+            }, 2500);
         }
 
 

@@ -4,7 +4,7 @@
  * Created Date: 26.02.2022 16:54:03
  * Author: 3urobeat
  * 
- * Last Modified: 26.02.2022 19:40:01
+ * Last Modified: 26.02.2022 19:50:37
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -22,7 +22,7 @@ const path = require("path");
  * Makes a copy of the current bot installation before updating, to be able to restore in case the updater fails
  */
 module.exports.run = (callback) => {
-    logger("info", "Creating backup of your current installation...", false, true, logger.animation("loading"));
+    logger("info", "Creating a backup of your current installation...", false, false, logger.animation("loading"));
 
     //Specify which files and folders we can ignore
     const dontCopy = [".git", ".github", "node_modules", "backup"];
@@ -55,7 +55,10 @@ module.exports.run = (callback) => {
         }
 
         //Make callback when we are finished and in the top level
-        if (firstCall) callback();
+        if (firstCall) {
+            logger("info", "Successfully created a backup!")
+            callback();
+        }
     }
 
     copyFolderRecursiveSync(".", "./backup");
