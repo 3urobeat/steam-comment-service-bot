@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 25.02.2022 13:29:23
+ * Last Modified: 26.02.2022 12:30:05
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -81,9 +81,9 @@ module.exports.output = (chatmsg, steamID) => {
 
 
     fs.readFile("./output.txt", function (err, data) {
-        if (err) logger("error", "error getting last 20 lines from output for log cmd: " + err)
+        if (err) logger("error", "error getting last 15 lines from output for log cmd: " + err)
 
-        chatmsg(steamID, "/pre These are the last 20 lines:\n\n" + data.toString().split('\n').slice(data.toString().split('\n').length - 20).join('\n')) 
+        chatmsg(steamID, "/pre These are the last 15 lines:\n\n" + data.toString().split('\n').slice(data.toString().split('\n').length - 15).join('\n')) 
     })
 }
 
