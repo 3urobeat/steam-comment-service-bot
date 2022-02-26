@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 25.02.2022 12:11:49
+ * Last Modified: 26.02.2022 12:29:27
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -41,12 +41,26 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
 
     /**
      * Make chat message method shorter
-     * @param steamID The steamID object of the recipient
-     * @param txt The text to send
+     * @param {SteamID} steamID The steamID object of the recipient
+     * @param {String} txt The text to send
+     * @param {Boolean} retry true if chatmsg() called itself again to send error message
      */
-    function chatmsg(steamID, txt) { //sadly needed to be included here in order to access bot instance before friendMessage got called at least once or needing to provide it as parameter
-        logger("debug", `[${thisbot}] Sending message (${txt.length} chars) to ${new SteamID(String(steamID)).getSteamID64()}: "${txt.replace(/\n/g, "\\n")}"`)
-        bot.chat.sendFriendMessage(steamID, txt)
+    function chatmsg(steamID, txt, retry) { //sadly needed to be included here in order to access bot instance before friendMessage got called at least once or needing to provide it as parameter
+        //Cut message if over 1k chars to try and reduce the risk of a RateLimitExceeded error
+        if (txt.length > 1000) {
+            logger("warn", `[${thisbot}] The bot tried to send a chat message that's longer than 1000 chars. Cutting it to 996 chars to reduce the risk of a RateLimitExceeded error!`)
+            txt = txt.slice(0, 996);
+            txt += "..."
+        }
+
+        logger("debug", `[${thisbot}] Sending message (${txt.length} chars) to ${new SteamID(String(steamID)).getSteamID64()} (retry: ${retry == true}): "${txt.replace(/\n/g, "\\n")}"`) //intentionally checking for == true to prevent showing undefined
+        
+        bot.chat.sendFriendMessage(steamID, txt, {}, (err) => {
+            if (err) { //check for error as some chat messages seem to not get send lately
+                logger("err", `[${thisbot}] Error trying to send chat message of length ${txt.length} to ${new SteamID(String(steamID)).getSteamID64()}! ${err}`)
+                if (!retry) chatmsg(steamID, `Sorry, it looks like Steam blocked my last message. Please try again later.`, true) //send the user a fallback message just to indicate the bot is not down
+            }
+        })
     }
 
 
