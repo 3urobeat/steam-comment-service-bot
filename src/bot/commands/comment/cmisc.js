@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 23.02.2022 11:10:12
+ * Last Modified: 27.02.2022 14:38:02
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -28,7 +28,7 @@ module.exports.abort = (chatmsg, steamID, lang, args, steam64id) => {
     var mainfile = require("../../main.js")
 
     if (args[0]) {
-        if (!config.ownerid.includes(steam64id)) return chatmsg(steamID, lang.commandowneronly)
+        if (!cachefile.ownerid.includes(steam64id)) return chatmsg(steamID, lang.commandowneronly)
 
         steam64id = args[0] //if user provided an id as argument then use that instead of his/her id
     }
@@ -96,7 +96,7 @@ module.exports.failed = (chatmsg, steamID, lang, args, steam64id) => {
     var controller = require("../../../controller/controller.js")
 
     if (args[0]) {
-        if (!config.ownerid.includes(steam64id)) return chatmsg(steamID, lang.commandowneronly)
+        if (!cachefile.ownerid.includes(steam64id)) return chatmsg(steamID, lang.commandowneronly)
 
         steam64id = args[0] //if user provided an id as argument then use that instead of his/her id
     }

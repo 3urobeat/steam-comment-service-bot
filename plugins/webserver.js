@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 14:12:17
  * Author: 3urobeat
  * 
- * Last Modified: 25.02.2022 14:58:20
+ * Last Modified: 27.02.2022 14:40:01
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -21,7 +21,6 @@ const SteamID        = require("steamid"); //eslint-disable-line
 const fs             = require("fs")
 const express        = require("express")
 
-const config         = require("../config.json");
 const advancedconfig = require("../advancedconfig.json")
 
 
@@ -75,7 +74,7 @@ module.exports.run = (mainBot, botobject, communityobject) => { //eslint-disable
                 return res.status(403).send("Your secret key is not defined or invalid. Request denied.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.") 
             }
         
-            if (isNaN(config.ownerid[0]) || new SteamID(String(config.ownerid[0])).isValid() == false) {
+            if (isNaN(cachefile.ownerid[0]) || new SteamID(String(cachefile.ownerid[0])).isValid() == false) {
                 logger("warn", `Web Request by ${ip} denied. Reason: Config's first ownerid is invalid.`)
                 return res.status(403).send("You can't use the web request feature unless you provided a valid ownerid in your config!") 
             }
@@ -86,7 +85,7 @@ module.exports.run = (mainBot, botobject, communityobject) => { //eslint-disable
             //Run the comment command
             if (!ready.readyafter || controller.relogQueue.length > 0) return res.status(403).send(mainfile.lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
-            var steamID = new SteamID(String(config.ownerid[0])) //steamID: Make the bot owner responsible for request
+            var steamID = new SteamID(String(cachefile.ownerid[0])) //steamID: Make the bot owner responsible for request
             var steam64id = steamID.getSteamID64()
 
             controller.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {

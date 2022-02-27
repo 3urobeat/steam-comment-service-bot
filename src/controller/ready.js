@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 25.02.2022 14:54:48
+ * Last Modified: 27.02.2022 14:38:31
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -150,7 +150,7 @@ module.exports.readyCheck = (logininfo) => {
 
             //Message owners if firststart is true that the bot just updated itself
             if (extdata.firststart) {
-                config.ownerid.forEach(e => {
+                cachefile.ownerid.forEach(e => {
                     botobject[0].chat.sendFriendMessage(e, `I have updated myself to version ${extdata.versionstr}!\nWhat's new: ${extdata.whatsnew}`) 
                 }) 
             }

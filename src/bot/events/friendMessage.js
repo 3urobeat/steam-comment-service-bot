@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 27.02.2022 12:48:48
+ * Last Modified: 27.02.2022 14:38:24
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -68,7 +68,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
 
 
     var steam64id = new SteamID(String(steamID)).getSteamID64()
-    var ownercheck = config.ownerid.includes(steam64id)
+    var ownercheck = cachefile.ownerid.includes(steam64id)
     if (bot.myFriends[steam64id] == 1 || bot.myFriends[steam64id] == 6) return; //User is blocked.
 
     //Spam "protection" because spamming the bot is bad!

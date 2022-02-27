@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 27.02.2022 11:51:44
+ * Last Modified: 27.02.2022 14:39:19
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -91,7 +91,7 @@ module.exports.lastcommentUnfriendCheck = () => {
             setTimeout(() => {
 
                 Object.keys(controller.botobject).forEach((f, j) => {
-                    if (controller.botobject[f].myFriends[e.id] == 3 && !config.ownerid.includes(e.id)) { //check if the targeted user is still friend
+                    if (controller.botobject[f].myFriends[e.id] == 3 && !cachefile.ownerid.includes(e.id)) { //check if the targeted user is still friend
                         if (j == 0) controller.botobject[0].chat.sendFriendMessage(new SteamID(e.id), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
 
                         setTimeout(() => {
@@ -100,7 +100,7 @@ module.exports.lastcommentUnfriendCheck = () => {
                         }, 1000 * j); //delay every iteration so that we don't make a ton of requests at once (IP)
                     }
                     
-                    if (!config.ownerid.includes(e.id)) controller.lastcomment.remove({ id: e.id }) //entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
+                    if (!cachefile.ownerid.includes(e.id)) controller.lastcomment.remove({ id: e.id }) //entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
                 })
                 
             }, 1000 * i); //delay every iteration so that we don't make a ton of requests at once (account)

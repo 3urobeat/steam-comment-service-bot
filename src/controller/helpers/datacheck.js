@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 27.02.2022 12:34:01
+ * Last Modified: 27.02.2022 14:55:35
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -22,8 +22,28 @@
  */
 module.exports.run = (logininfo, callback) => {
     var fs              = require("fs")
-    var SteamID         = require("steamid")
     var steamidresolver = require("steamid-resolver")
+
+    
+    //Refresh cache of ownerids. getOwnerID() will also print an error message if user provided invalid ids
+    logger("info", "Refreshing ownerids in cache.json...", false, true, logger.animation("loading"));
+
+    if (config.ownerid.length == 0) {
+        logger("error", "You forgot to set at least one ownerid in config.json! Error: The ownerid array is empty. Aborting!")
+        process.send("stop()");
+        return;
+    } else {
+        require("./getOwnerID.js").getOwnerID(null, (ids) => {
+            cachefile["ownerid"] = ids;
+
+            //Check for invalid ownerid in this callback to make sure getOwnerID.js finished
+            if (config.maxComments == 0 && ids[0] == null) { //getOwnerID.js will set invalid ids to null
+                logger("error", `${logger.colors.fgred}You set maxComments to 0 (blocked comment command for non owners) but didn't specify an ownerid! Aborting...`, true)
+                return process.send("stop()")
+            }
+        })
+    }
+
 
     logger("info", "Checking config for 3urobeat's leftovers...", false, true, logger.animation("loading"))
 
@@ -31,7 +51,7 @@ module.exports.run = (logininfo, callback) => {
         let write = false;
         if (config.owner.includes(extdata.mestr)) { config.owner = ""; write = true } 
         if (config.ownerid.includes("76561198260031749")) { config.ownerid.splice(config.ownerid.indexOf("76561198260031749"), 1); write = true } 
-        if (config.ownerid.includes("76561198982470768")) { config.ownerid.splice(config.ownerid.indexOf("76561198982470768"), 1); write = true }
+        if (config.ownerid.includes("3urobeat")) { config.ownerid.splice(config.ownerid.indexOf("3urobeat"), 1); write = true } 
 
         //Moin Tom, solltest du in der Zukunft noch einmal auf dieses Projekt zurückschauen, dann hoffe ich dass du etwas sinnvolles mit deinem Leben gemacht hast. (08.06.2020)
         //Dieses Projekt war das erste Projekt welches wirklich ein wenig Aufmerksamkeit bekommen hat. (1,5k Aufrufe in den letzten 14 Tagen auf GitHub, 1,3k Aufrufe auf mein YouTube Tutorial, 15k Aufrufe auf ein Tutorial zu meinem Bot von jemand fremden)
@@ -65,10 +85,6 @@ module.exports.run = (logininfo, callback) => {
     var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
     if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
 
-    if (config.maxComments == 0 && new SteamID(String(config.ownerid[0])).isValid() === false) {
-        logger("error", `${logger.colors.fgred}You set maxComments to 0 (blocked comment command for non owners) but didn't specify an ownerid! Aborting...`, true)
-        return process.send("stop()")
-    }
     if (config.maxOwnerComments < 1) {
         logger("info", `${logger.colors.fgred}Your maxOwnerComments value in config.json can't be smaller than 1! Automatically setting it to 1...`, true)
         config.maxOwnerComments = 1
@@ -95,15 +111,7 @@ module.exports.run = (logininfo, callback) => {
         logger("error", `${logger.colors.fgred}I won't allow a logindelay below 500ms as this will probably get you blocked by Steam nearly instantly. I recommend setting it to 2500.\n        If you are using one proxy per account you might try setting it to 500 (on your own risk!). Aborting...`, true)
         return process.send("stop()")
     }
-
-
-    //Check if ownerids are correct:
-    logger("info", `Checking for invalid ownerids...`, false, true, logger.animation("loading"))
-    config.ownerid.forEach((e) => {
-        if (isNaN(e) || new SteamID(String(e)).isValid() == false) { 
-            logger("warn", `${e} is not a valid ownerid!`)
-        }
-    })
+    
 
     global.checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"
 

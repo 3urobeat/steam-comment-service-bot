@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 27.02.2022 12:59:06
+ * Last Modified: 27.02.2022 14:36:54
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -137,7 +137,7 @@ module.exports.unfriendAll = (chatmsg, steamID, lang, args) => {
                     setTimeout(() => {
                         let friendSteamID = new SteamID(String(friend))
 
-                        if (!config.ownerid.includes(friend)) {
+                        if (!cachefile.ownerid.includes(friend)) {
                             logger("info", `Removing friend ${friendSteamID.getSteamID64()} from all bot accounts...`, false, false, logger.animation("loading"))
                             controller.botobject[i].removeFriend(friendSteamID)
                         } else {

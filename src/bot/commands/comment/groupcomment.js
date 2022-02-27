@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 23.02.2022 15:53:33
+ * Last Modified: 27.02.2022 14:38:20
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -47,7 +47,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
         chatmsg(requesterSteamID, msg)
     }
 
-    var ownercheck = config.ownerid.includes(requesterSteamID)
+    var ownercheck = cachefile.ownerid.includes(requesterSteamID)
     var quoteselection = mainfile.quotes
 
     /* --------- Check for cmd spamming --------- */
@@ -62,7 +62,7 @@ module.exports.run = (chatmsg, steamID, args, res, lastcommentdoc) => {
     if (config.maxComments == 0 && !ownercheck) return respondmethod(403, lang.commentcmdowneronly) 
 
 
-    /* --------- Define command usage messages & maxrequestamount for each user's privileges --------- */ //Note: Web Comment Requests always use config.ownerid[0]
+    /* --------- Define command usage messages & maxrequestamount for each user's privileges --------- */ //Note: Web Comment Requests always use cachefile.ownerid[0]
     var maxrequestamount = config.maxComments //set to default value and if the requesting user is an owner it gets changed below
 
     if (ownercheck) {
