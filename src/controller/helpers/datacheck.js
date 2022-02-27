@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 27.02.2022 10:25:32
+ * Last Modified: 27.02.2022 12:34:01
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -110,18 +110,31 @@ module.exports.run = (logininfo, callback) => {
     //Check if owner link is correct
     logger("info", `Checking if owner link is valid...`, false, true, logger.animation("loading"))
     if (!config.owner.includes("steamcommunity.com")) { 
-        logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.") 
+        logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.", true) 
     } else {
         try {
-            steamidresolver.customUrlTosteamID64(config.owner, (err, ownerResult) => {
-                if (err == "The specified profile could not be found.") { //if the profile couldn't be found display specific message
-                    return logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.\n       Error: " + err)
-                } else {
-                    if (err) return logger("error", "Error checking if owner is valid: " + err) //if a different error then display a generic message with the error
-                }
-
-                logger("info", `Successfully checked owner link. steamID64: ${ownerResult}`, false, true, logger.animation("loading"))
-            })
+            //Check if user provided /profiles/steamID64 link or /id/customURL link
+            if (config.owner.includes("/profiles/")) {
+                steamidresolver.steamID64ToCustomUrl(config.owner, (err, ownerResult) => {
+                    if (err == "The specified profile could not be found.") { //if the profile couldn't be found display specific message
+                        return logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.\n       Error: " + err, true)
+                    } else {
+                        if (err) return logger("error", "Error checking if owner is valid: " + err) //if a different error then display a generic message with the error
+                    }
+    
+                    logger("info", `Successfully checked owner link. customURL: ${ownerResult}`, false, true, logger.animation("loading"))
+                })
+            } else {
+                steamidresolver.customUrlTosteamID64(config.owner, (err, ownerResult) => {
+                    if (err == "The specified profile could not be found.") { //if the profile couldn't be found display specific message
+                        return logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.\n       Error: " + err, true)
+                    } else {
+                        if (err) return logger("error", "Error checking if owner is valid: " + err) //if a different error then display a generic message with the error
+                    }
+    
+                    logger("info", `Successfully checked owner link. steamID64: ${ownerResult}`, false, true, logger.animation("loading"))
+                })
+            }
         } catch (err) {
             if (err) { 
                 logger("error", "error getting owner profile xml info: " + err, true); 
