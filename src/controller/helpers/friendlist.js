@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.10.2021 18:31:37
+ * Last Modified: 27.02.2022 11:51:44
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -54,6 +54,8 @@ module.exports.friendlistcapacitycheck = (loginindex, callback) => {
     var controller = require("../controller.js")
 
     try {
+        logger("debug", "friendlistcapacitycheck(): Calculating friendlist capacity of bot" + loginindex)
+
         controller.botobject[0].getSteamLevels([controller.botobject[loginindex].steamID], (err, users) => { //check steam level of botindex account with bot0
             if (!users) return; //users was undefined one time (I hope this will (hopefully) supress an error?)
 
@@ -62,6 +64,8 @@ module.exports.friendlistcapacitycheck = (loginindex, callback) => {
             let friendsamount = friends.length - friends.filter(val => val == 0).length - friends.filter(val => val == 5).length //Subtract friend enums 0 & 5
 
             let remaining = friendlistlimit - friendsamount
+
+            logger("debug", `friendlistcapacitycheck(): bot${loginindex} has ${friendsamount}/${friendlistlimit} friends`)
             
             if (remaining < 0) callback(null); //stop if number is negative somehow - maybe when bot profile is private?
                 else callback(remaining)

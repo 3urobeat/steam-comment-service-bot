@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 27.02.2022 10:12:11
+ * Last Modified: 27.02.2022 11:58:36
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -212,6 +212,7 @@ var updatecheckinterval = setInterval(() => {
             if (err) logger("error", "error checking output for update notice: " + err)
 
             if (!data.toString().split('\n').slice(data.toString().split('\n').length - 21).join('\n').includes("Update available!")) { //check last 20 lines of output.txt for update notice
+                logger("debug", "updatecheckinterval(): 6 hours passed, calling update checker...")
 
                 module.exports.run(false, null, false, (done) => { //check if there is an update available
                     if (done) process.send(`restart(${JSON.stringify({ skippedaccounts: require('../controller/controller.js').skippedaccounts })})`) //send request to parent process if the bot found and ran the update

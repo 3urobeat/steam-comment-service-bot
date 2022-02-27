@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 25.02.2022 13:45:33
+ * Last Modified: 27.02.2022 11:48:44
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -49,6 +49,7 @@ module.exports.logger = (type, str, nodate, remove, animation) => { //Function t
     //Push string to readyafterlogs if desired or print instantly
     if (!nodate && !remove && !readyafter && type.toLowerCase() != "debug" && !str.toLowerCase().includes("error") && !str.includes('Logging in... Estimated wait time') && !str.includes("What's new:")) { //startup messages should have nodate enabled -> filter messages with date when bot is not started
         controller.readyafterlogs.push([ type, str, nodate, remove, animation ]);
+        outputlogger("debug", `logger(): Pushing ${str} to readyafterlogs array`);
     } else {
         outputlogger(type, str, nodate, remove, animation)
     }

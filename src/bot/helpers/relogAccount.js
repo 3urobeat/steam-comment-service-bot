@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 17:48:57
+ * Last Modified: 27.02.2022 11:57:07
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -38,6 +38,8 @@ module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy) => {
 
         logger("info", `[${thisbot}] Queueing for a relog. ${controller.relogQueue.length - 1} other accounts are waiting...`, false, true)
     }
+
+    logger("debug", "relogAccount.run(): Attaching relogInterval for bot" + loginindex)
 
     var relogInterval = setInterval(() => {
         if (controller.relogQueue.indexOf(loginindex) != 0) return; //not our turn? stop and retry in the next iteration
