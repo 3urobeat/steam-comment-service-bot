@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 23.02.2022 15:50:56
+ * Last Modified: 27.02.2022 10:25:32
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -104,6 +104,8 @@ module.exports.run = (logininfo, callback) => {
             logger("warn", `${e} is not a valid ownerid!`)
         }
     })
+
+    global.checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"
 
     //Check if owner link is correct
     logger("info", `Checking if owner link is valid...`, false, true, logger.animation("loading"))

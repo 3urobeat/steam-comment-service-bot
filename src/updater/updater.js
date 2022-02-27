@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 26.02.2022 21:32:27
+ * Last Modified: 27.02.2022 10:12:11
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -65,11 +65,11 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
                                             file4.downloadupdate(releasemode, compatibilityfeaturedone, (err) => { //start downloading the update
                                                 if (err) {
                                                     logger("error", "I failed trying to download & install the update! Please contact the bot developer with the following error here: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose", true)
-                                                    logger("error", err, true)
+                                                    logger("error", err.stack, true)
                                                     
                                                     logger("info", "Since I probably won't be able to continue from here, I'll try to restore from a backup if one exists.\n       I'll try to update again the next time you start the bot or in 6 hours should the auto updater be enabled.\n       If this issue keeps happening please think about setting disableAutoUpdate in advancedconfig.json to true.", true)
                                                     file5.run(() => { //try to restore backup
-                                                        foundanddone(true, true)
+                                                        foundanddone(true, true, global.checkm8)
                                                     })
 
                                                 } else {
