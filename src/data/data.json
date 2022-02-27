@@ -1,6 +1,6 @@
 {
-    "version": "21200b02",
-    "versionstr": "BETA 2.12 b2",
+    "version": "21200b03",
+    "versionstr": "BETA 2.12 b3",
     "branch": "beta-testing",
     "filetostart": "./src/starter.js",
     "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/starter.js",
