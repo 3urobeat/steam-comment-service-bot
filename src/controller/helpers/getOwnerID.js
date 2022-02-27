@@ -4,7 +4,7 @@
  * Created Date: 27.02.2022 13:06:43
  * Author: 3urobeat
  * 
- * Last Modified: 27.02.2022 14:33:13
+ * Last Modified: 27.02.2022 14:59:40
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -46,6 +46,15 @@ module.exports.getOwnerID = (index, callback) => {
         let tempArr = [];
         logger("debug", "getOwnerID(): Recieved request for steamID64s of all ownerids")
 
+        //Check for last iteration and make callback
+        function finishedResponse(i) { //eslint-disable-line no-inner-declarations
+            if (i + 1 == config.ownerid.length) {
+                logger("debug", "getOwnerID(): Finished converting all ownerids. Array:")
+                logger("debug", tempArr)
+                callback(tempArr);
+            }
+        }
+
         //Either convert to steamID64 or directly push e
         config.ownerid.forEach((e, i) => {
             if (isNaN(e) || !new SteamID(String(e)).isValid()) {
@@ -57,13 +66,13 @@ module.exports.getOwnerID = (index, callback) => {
                         logger("debug", `getOwnerID(): Converted ${e} to ${id}`)
                         tempArr[i] = id;
                     }
+
+                    finishedResponse(i);
                 })
             } else {
                 tempArr[i] = e;
+                finishedResponse(i);
             }
-
-            //Check for last iteration and make callback
-            if (i + 1 == config.ownerid.length) callback(tempArr);
         })
     }
 }
