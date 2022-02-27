@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.02.2022 17:08:46
+ * Last Modified: 27.02.2022 12:44:01
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -66,7 +66,8 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
 
                 //Log message and send welcome message
                 logger("info", `[${thisbot}] Added user while I was offline! User: ` + Object.keys(bot.myFriends)[i])
-                controller.botobject[0].chat.sendFriendMessage(String(Object.keys(bot.myFriends)[i]), mainfile.lang.useradded)
+                if (loginindex == 0) controller.botobject[0].chat.sendFriendMessage(String(Object.keys(bot.myFriends)[i]), mainfile.lang.useradded)
+                    else logger("debug", "Not sending useradded message because this isn't the main bot...")
 
 
                 //Add user to lastcomment database
