@@ -4,7 +4,7 @@
  * Created Date: 27.02.2022 13:06:43
  * Author: 3urobeat
  * 
- * Last Modified: 27.02.2022 13:49:54
+ * Last Modified: 27.02.2022 14:33:13
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -32,7 +32,7 @@ module.exports.getOwnerID = (index, callback) => {
         if (isNaN(target) || !new SteamID(String(target)).isValid()) {
             steamidresolver.customUrlTosteamID64(String(target), (err, id) => {
                 if (err) {
-                    logger("error", `Error converting ownerid from config (${target}) to a steamID64! ${err}`);
+                    logger("error", `Error converting ownerid from config (${target}) to a steamID64! Error: ${err}`);
                     callback(null);
                 } else {
                     logger("debug", `getOwnerID(): Converted ${target} to ${id}`)
@@ -51,15 +51,15 @@ module.exports.getOwnerID = (index, callback) => {
             if (isNaN(e) || !new SteamID(String(e)).isValid()) {
                 steamidresolver.customUrlTosteamID64(String(e), (err, id) => {
                     if (err) {
-                        logger("error", `Error converting ownerid from config (${e}) to a steamID64! ${err}`);
-                        tempArr.push(null);
+                        logger("warn", `ownerid ${e} in your config does not seem to be valid! Error: ${err}`);
+                        tempArr[i] = null;
                     } else {
                         logger("debug", `getOwnerID(): Converted ${e} to ${id}`)
-                        tempArr.push(id)
+                        tempArr[i] = id;
                     }
                 })
             } else {
-                tempArr.push(e)
+                tempArr[i] = e;
             }
 
             //Check for last iteration and make callback
