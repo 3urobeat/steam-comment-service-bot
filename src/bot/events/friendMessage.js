@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 26.02.2022 12:29:27
+ * Last Modified: 27.02.2022 12:48:48
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -234,7 +234,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 if (!ownercheck) return notownerresponse();
                 if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
-                require("../commands/friend.js").unfriendall(chatmsg, steamID, lang, args)
+                require("../commands/friend.js").unfriendAll(chatmsg, steamID, lang, args)
                 break;
             
             case '!leavegroup':

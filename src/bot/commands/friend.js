@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.02.2022 15:17:18
+ * Last Modified: 27.02.2022 12:59:06
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -135,7 +135,14 @@ module.exports.unfriendAll = (chatmsg, steamID, lang, args) => {
             for (let friend in controller.botobject[i].myFriends) {
                 try {
                     setTimeout(() => {
-                        if (!config.ownerid.includes(friend)) controller.botobject[i].removeFriend(new SteamID(friend))
+                        let friendSteamID = new SteamID(String(friend))
+
+                        if (!config.ownerid.includes(friend)) {
+                            logger("info", `Removing friend ${friendSteamID.getSteamID64()} from all bot accounts...`, false, false, logger.animation("loading"))
+                            controller.botobject[i].removeFriend(friendSteamID)
+                        } else {
+                            logger("debug", `unfriendAll(): Friend ${friendSteamID.getSteamID64()} seems to be an owner, skipping...`, false, false, logger.animation("loading"))
+                        }
                     }, 1000 * i); //delay every iteration so that we don't make a ton of requests at once
                 } catch (err) {
                     logger("error", `[Bot ${i}] unfriendall error unfriending ${friend}: ${err}`)
