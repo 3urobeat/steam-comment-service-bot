@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 09:37:57
  * Author: 3urobeat
  * 
- * Last Modified: 25.02.2022 13:56:52
+ * Last Modified: 27.02.2022 15:06:46
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -19,8 +19,6 @@ const SteamUser      = require("steam-user"); //eslint-disable-line
 const SteamCommunity = require("steamcommunity"); //eslint-disable-line
 const SteamID        = require("steamid"); //eslint-disable-line
 
-const config = require("../config.json");
-
 
 /**
  * This function will be called by the plugin loader when the bot finished logging in. Initialize your plugin here.
@@ -34,7 +32,7 @@ module.exports.run = (mainBot, botobject, communityobject) => { //eslint-disable
 
     
     //Example of pretending the first owner used the '!ping' command
-    var firstOwnerSteamID = new SteamID(config.ownerid[0]); //makes a steamID object of the first owner so we can pass it to the friendMessage event
+    var firstOwnerSteamID = new SteamID(cachefile.ownerid[0]); //makes a steamID object of the first owner so we can pass it to the friendMessage event
 
     mainBot.emit("friendMessage", firstOwnerSteamID, "!ping"); //pretend like the first owner send the bot the message "!ping" - Result: The bot will send you a response
 
