@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 26.02.2022 20:26:08
+ * Last Modified: 27.02.2022 14:01:10
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -125,6 +125,7 @@ function run() {
                             global.config         = config
                             global.advancedconfig = advancedconfig;
                             global.extdata        = extdata
+                            global.cachefile      = cache;
 
                             //Call optionsUpdateAfterConfigLoad() to set previously inaccessible options
                             loggerfile.optionsUpdateAfterConfigLoad();
