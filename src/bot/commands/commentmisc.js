@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 27.02.2022 14:38:02
+ * Last Modified: 28.02.2022 11:02:23
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -14,6 +14,11 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
  */
 
+
+const SteamID    = require("steamid")
+
+const mainfile   = require("../main.js")
+const controller = require("../../controller/controller.js")
 
 
 /**
@@ -25,8 +30,6 @@
  * @param {String} steam64id The steam64id of the requesting user
  */
 module.exports.abort = (chatmsg, steamID, lang, args, steam64id) => {
-    var mainfile = require("../../main.js")
-
     if (args[0]) {
         if (!cachefile.ownerid.includes(steam64id)) return chatmsg(steamID, lang.commandowneronly)
 
@@ -51,12 +54,6 @@ module.exports.abort = (chatmsg, steamID, lang, args, steam64id) => {
  * @param {String} steam64id The steam64id of the requesting user
  */
 module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
-    var SteamID    = require("steamid")
-
-    var mainfile   = require("../../main.js")
-    var controller = require("../../../controller/controller.js")
-
-
     if (args[0]) {
         if (args[0] == "global") { //Check if user wants to reset the global cooldown (will reset all until entries in activecommentprocess)
             if (config.botaccountcooldown == 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the global cooldown enabled?
@@ -92,9 +89,6 @@ module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
  * @param {String} steam64id The steam64id of the requesting user
  */
 module.exports.failed = (chatmsg, steamID, lang, args, steam64id) => {
-    var mainfile   = require("../../main.js")
-    var controller = require("../../../controller/controller.js")
-
     if (args[0]) {
         if (!cachefile.ownerid.includes(steam64id)) return chatmsg(steamID, lang.commandowneronly)
 
@@ -125,8 +119,7 @@ module.exports.failed = (chatmsg, steamID, lang, args, steam64id) => {
  * @param {Object} lang The language object
  */
 module.exports.sessions = (chatmsg, steamID, lang) => {
-    var mainfile = require("../../main.js")
-    var str      = "";
+    var str = "";
 
     if (Object.keys(mainfile.activecommentprocess).length > 0) { //Only loop through object if it isn't empty
         let objlength = Object.keys(mainfile.activecommentprocess).length //save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering
@@ -162,8 +155,7 @@ module.exports.sessions = (chatmsg, steamID, lang) => {
  * @param {String} steam64id The steam64id of the requesting user
  */
 module.exports.mysessions = (chatmsg, steamID, lang, steam64id) => {
-    var mainfile = require("../../main.js")
-    var str      = ""
+    var str = ""
 
     if (Object.keys(mainfile.activecommentprocess).length > 0) { //Only loop through object if it isn't empty
         let objlength = Object.keys(mainfile.activecommentprocess).length //save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering

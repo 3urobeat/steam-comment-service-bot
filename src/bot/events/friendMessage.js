@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 27.02.2022 14:38:24
+ * Last Modified: 28.02.2022 11:02:47
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -180,7 +180,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
             case '!abort':
                 if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
-                require("../commands/comment/cmisc.js").abort(chatmsg, steamID, lang, args, steam64id)
+                require("../commands/commentmisc.js").abort(chatmsg, steamID, lang, args, steam64id)
                 break;
             
             case '!rc':
@@ -188,7 +188,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 if (!ownercheck) return notownerresponse();
                 if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
 
-                require("../commands/comment/cmisc.js").resetCooldown(chatmsg, steamID, lang, args, steam64id)
+                require("../commands/commentmisc.js").resetCooldown(chatmsg, steamID, lang, args, steam64id)
                 break;
             
             case '!config':
@@ -199,17 +199,17 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 break;
             
             case '!failed':
-                require("../commands/comment/cmisc.js").failed(chatmsg, steamID, lang, args, steam64id)
+                require("../commands/commentmisc.js").failed(chatmsg, steamID, lang, args, steam64id)
                 break;
 
             case '!sessions':
                 if (!ownercheck) return notownerresponse();
                 
-                require("../commands/comment/cmisc.js").sessions(chatmsg, steamID, lang)
+                require("../commands/commentmisc.js").sessions(chatmsg, steamID, lang)
                 break;
 
             case '!mysessions':
-                require("../commands/comment/cmisc.js").mysessions(chatmsg, steamID, lang, steam64id)
+                require("../commands/commentmisc.js").mysessions(chatmsg, steamID, lang, steam64id)
                 break;
             
             case '!about': //Please don't change this message as it gives credit to me; the person who put really much of his free time into this project. The bot will still refer to you - the operator of this instance.
