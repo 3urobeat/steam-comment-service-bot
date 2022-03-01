@@ -11,7 +11,7 @@
         "https": "^1.0.0",
         "output-logger": "^2.1.1",
         "request": "^2.88.2",
-        "steam-user": "^4.22.1",
+        "steam-user": "^4.23.0",
         "steamcommunity": "^3.44.0",
         "steamid": "^2.0.0",
         "steamid-resolver": "^1.2.2"
