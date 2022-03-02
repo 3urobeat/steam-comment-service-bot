@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 28.02.2022 11:02:47
+ * Last Modified: 02.03.2022 12:42:31
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -134,7 +134,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                     if (!lastcommentdoc) logger("error", "User is missing from database?? How is this possible?! Error maybe: " + err)
     
                     try { //catch any unhandled error to be able to remove user from activecommentprocess array
-                        require("../commands/comment/comment.js").run(chatmsg, steamID, args, null, lastcommentdoc)
+                        require("../commands/commentprofile.js").run(chatmsg, steamID, args, lang, null, lastcommentdoc)
                     } catch (err) {
                         chatmsg(steamID, "Error while processing comment request: " + err.stack)
                         logger("error", "Error while processing comment request: " + err.stack)
