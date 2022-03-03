@@ -14,7 +14,6 @@
     "commentinvalidnumber": "This is not a valid number!\nCommand usage: commentcmdusage",
     "commentrequesttoohigh": "You can request max. maxrequestamount comments.\nCommand usage: commentcmdusage",
     "commentinvalidid": "This is not a valid id! A profile id must look like this: 76561198260031749  ...or a group id like this: 103582791464712227\nCommand usage: commentcmdusage",
-    "commentinvalidgroupid": "This is not a valid groupid! A group id must look like this: 103582791464712227\nCommand usage: commentcmdusage",
     "commentprofileidowneronly": "Specifying a profileid is only allowed for bot owners.\nIf you are a bot owner, make sure you added your ownerid to the config.json.",
     "commentmissingnumberofcomments": "Please specify how many comments out of maxrequestamount you would like to request.\nCommand usage: commentcmdusage",
     "commentzeroavailableaccs": "Sorry but there are currently not enough accounts available to fulfill your request because somone else just requested comments too. Please wait waittime timeunit and try again.",
