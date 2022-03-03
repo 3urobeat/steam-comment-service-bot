@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 10:56:38
  * Author: 3urobeat
  * 
- * Last Modified: 02.03.2022 18:13:54
+ * Last Modified: 03.03.2022 09:16:36
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -187,7 +187,7 @@ module.exports.run = (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
                             mainfile.activecommentprocess[recieverSteamID].status = "cooldown"
                             mainfile.commentcounter += numberOfComments - Object.keys(mainfile.failedcomments[recieverSteamID]).length //add numberOfComments minus failedamount to commentcounter
                         }
-                    //})
+                    })
                 })
             }, config.commentdelay * i); //delay every comment
         }
