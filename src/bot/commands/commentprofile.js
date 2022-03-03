@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 10:56:38
  * Author: 3urobeat
  * 
- * Last Modified: 03.03.2022 17:01:44
+ * Last Modified: 03.03.2022 17:51:51
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -82,7 +82,7 @@ module.exports.run = (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
 
     
     /* --------- Get account order and check if user is friend with limited accounts ---------  */
-    var accountOrder = require("../helpers/getAccountOrder.js").getAccountOrder(allAccounts, accountsNeeded, numberOfComments, requesterSteamID, recieverSteamID, lang, respond);
+    var accountOrder = require("../helpers/getAccountOrder.js").getAccountOrder(true, allAccounts, accountsNeeded, numberOfComments, requesterSteamID, recieverSteamID, lang, respond);
 
     if (!accountOrder) return; //looks like the helper aborted the request
 
