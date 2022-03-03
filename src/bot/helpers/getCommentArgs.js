@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  * 
- * Last Modified: 03.03.2022 16:50:21
+ * Last Modified: 03.03.2022 18:52:03
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -76,8 +76,8 @@ module.exports.getCommentArgs = (args, steamID, requesterSteamID, lang, respond)
         /* --------- Check profileid argument if it was provided --------- */
         if (args[1] !== undefined) {
             if (cachefile.ownerid.includes(requesterSteamID) || args[1] == requesterSteamID) { //check if user is a bot owner or if he provided his own profile id
-                if (isNaN(args[1])) { respond(400, lang.commentinvalidprofileid.replace("commentcmdusage", commentcmdUsage)); return false; }
-                if (new SteamID(args[1]).isValid() == false) { respond(400, lang.commentinvalidprofileid.replace("commentcmdusage", commentcmdUsage)); return false; }
+                if (isNaN(args[1])) { respond(400, lang.commentinvalidid.replace("commentcmdusage", commentcmdUsage)); return false; }
+                if (new SteamID(args[1]).isValid() == false) { respond(400, lang.commentinvalidid.replace("commentcmdusage", commentcmdUsage)); return false; }
 
                 profileID = args[1];
             } else {
