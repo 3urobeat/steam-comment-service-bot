@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  * 
- * Last Modified: 02.03.2022 17:11:54
+ * Last Modified: 03.03.2022 16:50:21
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -28,12 +28,12 @@ const mainfile   = require("../main.js");
  * @param {String} requesterSteamID The steamID64 of the requesting user
  * @param {Object} lang The language object
  * @param {Function} respond The function to send messages to the requesting user
- * @returns {Object} maxRequestAmount, commentcmdUsage, numberOfComments, recieverSteamID, customQuotesArr
+ * @returns {Object} maxRequestAmount, commentcmdUsage, numberOfComments, profileID, customQuotesArr
  */
 module.exports.getCommentArgs = (args, steamID, requesterSteamID, lang, respond) => {
     var maxRequestAmount = config.maxComments; //set to default value and if the requesting user is an owner it gets changed below
     var numberOfComments = 0;
-    var recieverSteamID  = requesterSteamID;
+    var profileID        = "";
     var quotesArr        = mainfile.quotes;
 
     let ownercheck = cachefile.ownerid.includes(requesterSteamID)
@@ -76,12 +76,10 @@ module.exports.getCommentArgs = (args, steamID, requesterSteamID, lang, respond)
         /* --------- Check profileid argument if it was provided --------- */
         if (args[1] !== undefined) {
             if (cachefile.ownerid.includes(requesterSteamID) || args[1] == requesterSteamID) { //check if user is a bot owner or if he provided his own profile id
-                if (isNaN(args[1])) return respond(400, lang.commentinvalidprofileid.replace("commentcmdusage", commentcmdUsage))
-                if (new SteamID(args[1]).isValid() == false) return respond(400, lang.commentinvalidprofileid.replace("commentcmdusage", commentcmdUsage))
+                if (isNaN(args[1])) { respond(400, lang.commentinvalidprofileid.replace("commentcmdusage", commentcmdUsage)); return false; }
+                if (new SteamID(args[1]).isValid() == false) { respond(400, lang.commentinvalidprofileid.replace("commentcmdusage", commentcmdUsage)); return false; }
 
-                steamID.accountid = parseInt(new SteamID(args[1]).accountid) //edit accountid value of steamID parameter of friendMessage event and replace requester's accountid with the new one
-
-                recieverSteamID = new SteamID(String(steamID)).getSteamID64(); //update recieverSteamID
+                profileID = args[1];
             } else {
                 logger("debug", "getCommentArgs(): Non-Owner tried to provide profileid for another profile. Stopping...")
                 
@@ -112,8 +110,8 @@ module.exports.getCommentArgs = (args, steamID, requesterSteamID, lang, respond)
     
 
     /* --------- Log debug values --------- */
-    logger("debug", `getCommentArgs() success. maxRequestAmount: ${maxRequestAmount} | numberOfComments: ${numberOfComments} | recieverSteamID: ${recieverSteamID} | quotesArr.length: ${quotesArr.length} `)
+    logger("debug", `getCommentArgs() success. maxRequestAmount: ${maxRequestAmount} | numberOfComments: ${numberOfComments} | profileID: ${profileID} | quotesArr.length: ${quotesArr.length} `)
 
     /* --------- Return calculated values --------- */
-    return { maxRequestAmount, numberOfComments, recieverSteamID, quotesArr }
+    return { maxRequestAmount, numberOfComments, profileID, quotesArr }
 }

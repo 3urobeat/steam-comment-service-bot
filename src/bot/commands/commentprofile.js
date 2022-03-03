@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 10:56:38
  * Author: 3urobeat
  * 
- * Last Modified: 03.03.2022 09:16:36
+ * Last Modified: 03.03.2022 17:01:44
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -34,6 +34,7 @@ const controller = require("../../controller/controller.js");
  */
 module.exports.run = (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
     var requesterSteamID = new SteamID(String(steamID)).getSteamID64();
+    var recieverSteamID  = requesterSteamID;
     var ownercheck       = cachefile.ownerid.includes(requesterSteamID);
 
     
@@ -61,9 +62,17 @@ module.exports.run = (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
 
 
     /* --------- Calculate maxRequestAmount and get arguments from comment request --------- */
-    var { maxRequestAmount, numberOfComments, recieverSteamID, quotesArr } = require("../helpers/getCommentArgs.js").getCommentArgs(args, steamID, requesterSteamID, lang, respond);
+    var { maxRequestAmount, numberOfComments, profileID, quotesArr } = require("../helpers/getCommentArgs.js").getCommentArgs(args, steamID, requesterSteamID, lang, respond);
 
-    if (!maxRequestAmount && !numberOfComments && !recieverSteamID && !quotesArr) return; //looks like the helper aborted the request
+    if (!maxRequestAmount && !numberOfComments && !profileID && !quotesArr) return; //looks like the helper aborted the request
+
+    //Update recieverSteamID if profileID was returned
+    if (profileID && profileID != requesterSteamID) {
+        logger("debug", "Custom profileID provided that is != requesterSteamID, modifying steamID object...");
+
+        steamID.accountid = parseInt(new SteamID(args[1]).accountid) //edit accountid value of steamID parameter of friendMessage event and replace requester's accountid with the new one
+        var recieverSteamID = new SteamID(String(steamID)).getSteamID64(); //update recieverSteamID
+    }
 
 
     /* --------- Check for cooldowns and calculate the amount of accounts needed for this request ---------  */
