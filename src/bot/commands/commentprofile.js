@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 10:56:38
  * Author: 3urobeat
  * 
- * Last Modified: 03.03.2022 17:51:51
+ * Last Modified: 03.03.2022 19:41:31
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -122,7 +122,7 @@ module.exports.run = (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
             setTimeout(() => {
                                 
                 /* --------- Check for critical errors and decide if this iteration should still run --------- */
-                var { skipIteration, breakloop, alreadySkippedProxies } = require("../helpers/handleCommentErrors.js").handleCriticalCommentErrors(botindex, i, recieverSteamID, alreadySkippedProxies, numberOfComments, res, lang, breakloop, respond);
+                var { skipIteration, breakloop, alreadySkippedProxies } = require("../helpers/handleCommentErrors.js").handleCriticalCommentErrors(botindex, i, "postUserComment", recieverSteamID, alreadySkippedProxies, numberOfComments, res, lang, breakloop, respond);
 
                 logger("debug", `bot${botindex} does comment ${i}: ${config.commentdelay * i}ms timeout is over: breakloop: ${breakloop} | skipIteration: ${skipIteration}`);
 
@@ -138,7 +138,7 @@ module.exports.run = (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
 
                         /* --------- Handle errors thrown by this comment attempt --------- */
                         if (error) {
-                            if (require("../helpers/handleCommentErrors.js").handleCommentErrors(error, botindex, i, recieverSteamID, numberOfComments, lang, respond)) {
+                            if (require("../helpers/handleCommentErrors.js").handleCommentErrors(error, botindex, i, "postUserComment", recieverSteamID, numberOfComments, lang, respond)) {
                                 breakloop = true;
                                 return;
                             }

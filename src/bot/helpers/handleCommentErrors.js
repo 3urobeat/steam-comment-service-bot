@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  * 
- * Last Modified: 02.03.2022 18:13:10
+ * Last Modified: 03.03.2022 19:43:03
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -26,6 +26,7 @@ const mainfile   = require("../main.js");
  * Handles critical comment process errors and aborts process if necessary   (both checks are designed to run through every failed iteration)
  * @param {Number} botindex The used bot account
  * @param {Number} i The comment iteration
+ * @param {String} methodName postUserComment or postGroupComment
  * @param {SteamID} recieverSteamID The steamID object of the recieving user
  * @param {Array} alreadySkippedProxies Array of already skipped proxies
  * @param {Number} numberOfComments The number of requested comments
@@ -35,7 +36,7 @@ const mainfile   = require("../main.js");
  * @param {Function} respond The function to send messages to the requesting user
  * @returns {Object} skipIteration, breakloop, alreadySkippedProxies
  */
-module.exports.handleCriticalCommentErrors = (botindex, i, recieverSteamID, alreadySkippedProxies, numberOfComments, res, lang, breakloop, respond) => {
+module.exports.handleCriticalCommentErrors = (botindex, i, methodName, recieverSteamID, alreadySkippedProxies, numberOfComments, res, lang, breakloop, respond) => {
     
     //Check if profile is not anymore in mainfile.activecommentprocess obj or status is not active anymore (for example by using !abort)
     if (!mainfile.activecommentprocess[recieverSteamID] || mainfile.activecommentprocess[recieverSteamID].status == "aborted") {
@@ -48,8 +49,12 @@ module.exports.handleCriticalCommentErrors = (botindex, i, recieverSteamID, alre
     }
 
     
-    //regex is confusing so I hope this pattern isn't too terrible
-    let regexPattern1 = /postUserComment error: Error: HTTP error 429.*\n.*/gm //Thanks: https://stackoverflow.com/a/49277142
+    //Regex pattern doesn't easily allow variables in pattern so I'm doing this ugly thing for now
+    if (methodName == "postUserComment") {
+        var regexPattern1 = /postUserComment error: Error: HTTP error 429.*\n.*/gm //Thanks: https://stackoverflow.com/a/49277142
+    } else {
+        var regexPattern1 = /postGroupComment error: Error: HTTP error 429.*\n.*/gm
+    }
 
 
     //skip comments on failed proxies
@@ -83,7 +88,7 @@ module.exports.handleCriticalCommentErrors = (botindex, i, recieverSteamID, alre
                 }
 
                 if (l > i && loginfile.additionalaccinfo[m].thisproxyindex == thisproxy) { //only push if we arrived at an iteration that uses a failed proxy and has not been sent already
-                    mainfile.failedcomments[recieverSteamID][`c${l} bot${m} p${thisproxy}`] = `postUserComment error: Skipped because of previous HTTP 429 error.` //push reason to mainfile.failedcomments obj
+                    mainfile.failedcomments[recieverSteamID][`c${l} bot${m} p${thisproxy}`] = `${methodName} error: Skipped because of previous HTTP 429 error.` //push reason to mainfile.failedcomments obj
                 }
 
                 m++
@@ -136,13 +141,14 @@ module.exports.handleCriticalCommentErrors = (botindex, i, recieverSteamID, alre
  * @param {String} error The error message
  * @param {Number} botindex The used bot account
  * @param {Number} i The comment iteration
+ * @param {String} methodName postUserComment or postGroupComment
  * @param {SteamID} recieverSteamID The steamID object of the recieving user
  * @param {Number} numberOfComments The number of requested comments
  * @param {Object} lang The language object
  * @param {Function} respond The function to send messages to the requesting user
  * @returns {Object} skipIteration, breakloop
  */
-module.exports.handleCommentErrors = (error, botindex, i, recieverSteamID, numberOfComments, lang, respond) => {
+module.exports.handleCommentErrors = (error, botindex, i, methodName, recieverSteamID, numberOfComments, lang, respond) => {
     if (botindex == 0) var thisbot = `Main`; //call bot 0 the main bot in logging messages
         else var thisbot = `Bot ${botindex}`;
     
@@ -196,15 +202,15 @@ module.exports.handleCommentErrors = (error, botindex, i, recieverSteamID, numbe
             let localoffset = new Date().getTimezoneOffset() * 60000
 
             if (loginfile.proxies.length > 1) {
-                respond(500, `${lang.commenterroroccurred}\n${errordesc}\n\nDetails: \n[${thisbot}] postUserComment error (using proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}): ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
+                respond(500, `${lang.commenterroroccurred}\n${errordesc}\n\nDetails: \n[${thisbot}] ${methodName} error (using proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}): ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
 
                 //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
-                logger("error", `[${thisbot}] postUserComment error (using proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}): ${error}\n${errordesc}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`) 
+                logger("error", `[${thisbot}] ${methodName} error (using proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}): ${error}\n${errordesc}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`) 
             } else {
-                respond(500, `${lang.commenterroroccurred}\n${errordesc}\n\nDetails: \n[${thisbot}] postUserComment error: ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
+                respond(500, `${lang.commenterroroccurred}\n${errordesc}\n\nDetails: \n[${thisbot}] ${methodName} error: ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
 
                 //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
-                logger("error", `[${thisbot}] postUserComment error: ${error}\n${errordesc}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`)
+                logger("error", `[${thisbot}] ${methodName} error: ${error}\n${errordesc}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`)
             }
         })
 
@@ -215,13 +221,13 @@ module.exports.handleCommentErrors = (error, botindex, i, recieverSteamID, numbe
     } else { //if the error occurred on another account then log the error and push the error to mainfile.failedcomments
 
         if (loginfile.proxies.length > 1) {
-            logger("error", `[${thisbot}] postUserComment ${i + 1}/${numberOfComments} error (using proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}): ${error}\nRequest info - noc: ${numberOfComments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - reciever: ${recieverSteamID}`); 
+            logger("error", `[${thisbot}] ${methodName} ${i + 1}/${numberOfComments} error (using proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}): ${error}\nRequest info - noc: ${numberOfComments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - reciever: ${recieverSteamID}`); 
 
-            mainfile.failedcomments[recieverSteamID][`c${i + 1} bot${botindex} p${loginfile.additionalaccinfo[botindex].thisproxyindex}`] = `postUserComment error: ${error} [${errordesc}]`
+            mainfile.failedcomments[recieverSteamID][`c${i + 1} bot${botindex} p${loginfile.additionalaccinfo[botindex].thisproxyindex}`] = `${methodName} error: ${error} [${errordesc}]`
         } else {
-            logger("error", `[${thisbot}] postUserComment ${i + 1}/${numberOfComments} error: ${error}\nRequest info - noc: ${numberOfComments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - reciever: ${recieverSteamID}`); 
+            logger("error", `[${thisbot}] ${methodName} ${i + 1}/${numberOfComments} error: ${error}\nRequest info - noc: ${numberOfComments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - reciever: ${recieverSteamID}`); 
 
-            mainfile.failedcomments[recieverSteamID][`c${i + 1} bot${botindex} p${loginfile.additionalaccinfo[botindex].thisproxyindex}`] = `postUserComment error: ${error} [${errordesc}]`
+            mainfile.failedcomments[recieverSteamID][`c${i + 1} bot${botindex} p${loginfile.additionalaccinfo[botindex].thisproxyindex}`] = `${methodName} error: ${error} [${errordesc}]`
         }
         
         return false; //continue with next iteration
