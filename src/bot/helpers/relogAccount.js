@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 27.02.2022 11:57:07
+ * Last Modified: 03.03.2022 09:55:13
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -25,6 +25,8 @@
  * @param {String} thisproxy The proxy of the calling account
  */
 module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy) => {
+    var SteamTotp  = require('steam-totp');
+    
     var controller = require("../../controller/controller.js")
     var login      = require("../../controller/login.js")
 
@@ -49,6 +51,14 @@ module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy) => {
 
         logger("info", `[${thisbot}] It is now my turn. Waiting ${relogdelay / 1000} seconds before attempting to relog...`, false, true, logger.animation("waiting"))
 
+        //Generate steam guard code again if user provided a shared_secret
+        if (logOnOptions["sharedSecretForRelog"]) {
+            logger("debug", `[${thisbot}] Found shared_secret in logOnOptions! Regenerating AuthCode and adding it to logOnOptions...`)
+
+            logOnOptions["twoFactorCode"] = SteamTotp.generateAuthCode(logOnOptions["sharedSecretForRelog"]);
+        }
+
+        //Attach relogdelay timeout
         setTimeout(() => {
             if (thisproxy == null) logger("info", `[${thisbot}] Trying to relog without proxy...`, false, true, logger.animation("loading"))
                 else logger("info", `[${thisbot}] Trying to relog with proxy ${login.proxyShift - 1}...`, false, true, logger.animation("loading"))
