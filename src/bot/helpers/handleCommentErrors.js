@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  * 
- * Last Modified: 04.03.2022 15:27:07
+ * Last Modified: 04.03.2022 15:42:56
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -192,42 +192,17 @@ module.exports.handleCommentErrors = (error, botindex, i, methodName, recieverSt
     }
 
 
-    //If the error occurred on the first comment then stop and return an error message
-    if (i == 0) {
-        //Get last successful comment time to display it in error message
-        mainfile.lastsuccessfulcomment(cb => {
-            let localoffset = new Date().getTimezoneOffset() * 60000
+    //Log error and continue with next iteration (if this is a critical error then handleCriticalCommentErrors() above will take action)
+    if (loginfile.proxies.length > 1) {
+        logger("error", `[${thisbot}] ${methodName} ${i + 1}/${numberOfComments} error (using proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}): ${error}\nRequest info - noc: ${numberOfComments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - reciever: ${recieverSteamID}`); 
 
-            if (loginfile.proxies.length > 1) {
-                respond(500, `${lang.commenterroroccurred}\n${errordesc}\n\nDetails: \n[${thisbot}] ${methodName} error (using proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}): ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
+        mainfile.failedcomments[recieverSteamID][`c${i + 1} bot${botindex} p${loginfile.additionalaccinfo[botindex].thisproxyindex}`] = `${methodName} error: ${error} [${errordesc}]`
+    } else {
+        logger("error", `[${thisbot}] ${methodName} ${i + 1}/${numberOfComments} error: ${error}\nRequest info - noc: ${numberOfComments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - reciever: ${recieverSteamID}`); 
 
-                //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
-                logger("error", `[${thisbot}] ${methodName} error (using proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}): ${error}\n${errordesc}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`) 
-            } else {
-                respond(500, `${lang.commenterroroccurred}\n${errordesc}\n\nDetails: \n[${thisbot}] ${methodName} error: ${error}\n\nLast successful comment: ${(new Date(cb)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`)
-
-                //Add local time offset (and make negative number postive/positive number negative because the function returns the difference between local time to utc) to cb to convert it to local time
-                logger("error", `[${thisbot}] ${methodName} error: ${error}\n${errordesc}\nLast successful comment: ${(new Date(cb + (localoffset *= -1))).toISOString().replace(/T/, ' ').replace(/\..+/, '')}`)
-            }
-        })
-
-        mainfile.activecommentprocess[recieverSteamID].status = "error" //update status in activecommentprocess obj
-        
-        return true; //stop further execution
-
-    } else { //if the error occurred on another account then log the error and push the error to mainfile.failedcomments
-
-        if (loginfile.proxies.length > 1) {
-            logger("error", `[${thisbot}] ${methodName} ${i + 1}/${numberOfComments} error (using proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}): ${error}\nRequest info - noc: ${numberOfComments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - reciever: ${recieverSteamID}`); 
-
-            mainfile.failedcomments[recieverSteamID][`c${i + 1} bot${botindex} p${loginfile.additionalaccinfo[botindex].thisproxyindex}`] = `${methodName} error: ${error} [${errordesc}]`
-        } else {
-            logger("error", `[${thisbot}] ${methodName} ${i + 1}/${numberOfComments} error: ${error}\nRequest info - noc: ${numberOfComments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - reciever: ${recieverSteamID}`); 
-
-            mainfile.failedcomments[recieverSteamID][`c${i + 1} bot${botindex} p${loginfile.additionalaccinfo[botindex].thisproxyindex}`] = `${methodName} error: ${error} [${errordesc}]`
-        }
-        
-        return false; //continue with next iteration
+        mainfile.failedcomments[recieverSteamID][`c${i + 1} bot${botindex} p${loginfile.additionalaccinfo[botindex].thisproxyindex}`] = `${methodName} error: ${error} [${errordesc}]`
     }
+    
+    return false; //continue with next iteration
 
 }
