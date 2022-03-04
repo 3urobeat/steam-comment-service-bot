@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  * 
- * Last Modified: 03.03.2022 19:43:03
+ * Last Modified: 04.03.2022 15:27:07
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -32,11 +32,10 @@ const mainfile   = require("../main.js");
  * @param {Number} numberOfComments The number of requested comments
  * @param {*} res The res parameter if request is coming from the webserver, otherwise null
  * @param {Object} lang The language object
- * @param {Boolean} breakloop True if all following iterations should be skipped
  * @param {Function} respond The function to send messages to the requesting user
- * @returns {Object} skipIteration, breakloop, alreadySkippedProxies
+ * @returns {Object} skipIteration, alreadySkippedProxies
  */
-module.exports.handleCriticalCommentErrors = (botindex, i, methodName, recieverSteamID, alreadySkippedProxies, numberOfComments, res, lang, breakloop, respond) => {
+module.exports.handleCriticalCommentErrors = (botindex, i, methodName, recieverSteamID, alreadySkippedProxies, numberOfComments, res, lang, respond) => {
     
     //Check if profile is not anymore in mainfile.activecommentprocess obj or status is not active anymore (for example by using !abort)
     if (!mainfile.activecommentprocess[recieverSteamID] || mainfile.activecommentprocess[recieverSteamID].status == "aborted") {
@@ -45,7 +44,7 @@ module.exports.handleCriticalCommentErrors = (botindex, i, methodName, recieverS
         logger("debug", "handleCriticalCommentErrors(): Skipping iteration because user aborted comment process")
 
         //Stop further execution and skip to next iteration
-        return { skipIteration: true, breakloop, alreadySkippedProxies };
+        return { skipIteration: true, alreadySkippedProxies };
     }
 
     
@@ -108,8 +107,6 @@ module.exports.handleCriticalCommentErrors = (botindex, i, methodName, recieverS
                 respond(500, `${lang.comment429stop.replace("failedamount", numberOfComments - i + 1).replace("numberOfComments", numberOfComments)}\n\n${lang.commentfailedcmdreference}`) //add !failed cmd reference to message
                 logger("warn", "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error!")
 
-                breakloop = true;
-
                 mainfile.activecommentprocess[recieverSteamID].status = "error" //update status in activecommentprocess obj
                 mainfile.commentcounter += numberOfComments - (numberOfComments - i + 1) //add numberOfComments minus failedamount to commentcounter
             }
@@ -127,12 +124,12 @@ module.exports.handleCriticalCommentErrors = (botindex, i, methodName, recieverS
         //log debug msg
         logger("debug", "handleCriticalCommentErrors(): Skipping this iteration...")
 
-        return { skipIteration: true, breakloop, alreadySkippedProxies }; //skip this iteration
+        return { skipIteration: true, alreadySkippedProxies }; //skip this iteration
     }
 
 
     //Return values
-    return { skipIteration: false, breakloop, alreadySkippedProxies };
+    return { skipIteration: false, alreadySkippedProxies };
 }
 
 
@@ -146,7 +143,7 @@ module.exports.handleCriticalCommentErrors = (botindex, i, methodName, recieverS
  * @param {Number} numberOfComments The number of requested comments
  * @param {Object} lang The language object
  * @param {Function} respond The function to send messages to the requesting user
- * @returns {Object} skipIteration, breakloop
+ * @returns {Object} skipIteration
  */
 module.exports.handleCommentErrors = (error, botindex, i, methodName, recieverSteamID, numberOfComments, lang, respond) => {
     if (botindex == 0) var thisbot = `Main`; //call bot 0 the main bot in logging messages
@@ -216,7 +213,7 @@ module.exports.handleCommentErrors = (error, botindex, i, methodName, recieverSt
 
         mainfile.activecommentprocess[recieverSteamID].status = "error" //update status in activecommentprocess obj
         
-        return true; //stop further execution and set breakloop to true
+        return true; //stop further execution
 
     } else { //if the error occurred on another account then log the error and push the error to mainfile.failedcomments
 

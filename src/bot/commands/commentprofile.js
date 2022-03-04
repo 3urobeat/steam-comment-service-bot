@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 10:56:38
  * Author: 3urobeat
  * 
- * Last Modified: 03.03.2022 19:41:31
+ * Last Modified: 04.03.2022 14:30:47
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -100,8 +100,8 @@ module.exports.run = (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
         }
 
         /* --------- Start commenting --------- */
-        var breakloop  = false //when set to true further comment iterations will be aborted
-        var lastQuotes = []    //array to track last quotes used
+        var alreadySkippedProxies = []
+        var lastQuotes            = [] //array to track last quotes used
 
         //Prepare new empty entry in failedcomments obj
         mainfile.failedcomments[recieverSteamID] = {}
@@ -120,13 +120,14 @@ module.exports.run = (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
         //Comment function that will be called numberOfComments times by the loop below
         function comment(botindex, i) {
             setTimeout(() => {
-                                
+
                 /* --------- Check for critical errors and decide if this iteration should still run --------- */
-                var { skipIteration, breakloop, alreadySkippedProxies } = require("../helpers/handleCommentErrors.js").handleCriticalCommentErrors(botindex, i, "postUserComment", recieverSteamID, alreadySkippedProxies, numberOfComments, res, lang, breakloop, respond);
+                var { skipIteration, aSP } = require("../helpers/handleCommentErrors.js").handleCriticalCommentErrors(botindex, i, "postUserComment", recieverSteamID, alreadySkippedProxies, numberOfComments, res, lang, respond);
+                if (aSP) alreadySkippedProxies = aSP;
 
-                logger("debug", `bot${botindex} does comment ${i}: ${config.commentdelay * i}ms timeout is over: breakloop: ${breakloop} | skipIteration: ${skipIteration}`);
+                logger("debug", `bot${botindex} does comment ${i}: ${config.commentdelay * i}ms timeout is over: skipIteration: ${skipIteration}`);
 
-                if (breakloop || skipIteration) return; //skip iteration or stop here with every other iteration if we should not attempt to comment anymore
+                if (skipIteration) return; //skip iteration or stop here with every other iteration if we should not attempt to comment anymore
 
 
                 /* --------- Try to comment --------- */
@@ -138,10 +139,7 @@ module.exports.run = (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
 
                         /* --------- Handle errors thrown by this comment attempt --------- */
                         if (error) {
-                            if (require("../helpers/handleCommentErrors.js").handleCommentErrors(error, botindex, i, "postUserComment", recieverSteamID, numberOfComments, lang, respond)) {
-                                breakloop = true;
-                                return;
-                            }
+                            if (require("../helpers/handleCommentErrors.js").handleCommentErrors(error, botindex, i, "postUserComment", recieverSteamID, numberOfComments, lang, respond)) return;
                         }
 
                         
@@ -207,7 +205,7 @@ module.exports.run = (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
 
         logger("debug", "Added user to activecommentprocess obj, starting comment loop...");
 
-        for (var i = 0; i < numberOfComments && !breakloop; i++) {
+        for (var i = 0; i < numberOfComments; i++) {
             comment(accountOrder[botindex], i) //comment with botindex on user profile
 
             botindex++;
@@ -215,7 +213,7 @@ module.exports.run = (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
             if (botindex + 1 > Object.keys(controller.communityobject).length) {
                 const lastaccountint = String(accountOrder[botindex - 1]) //save last used account (which is -1 because k++ was already executed again)
 
-                logger("debug", "All accounts used, resetting botindex...");
+                if (Object.keys(controller.communityobject).length > 1) logger("debug", "All accounts used, resetting botindex...");
                 
                 botindex = 0; //reset botindex if it is greater than the amount of accounts
 
