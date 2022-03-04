@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  * 
- * Last Modified: 03.03.2022 18:52:03
+ * Last Modified: 04.03.2022 11:58:00
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -97,7 +97,7 @@ module.exports.getCommentArgs = (args, steamID, requesterSteamID, lang, respond)
 
 
     /* --------- Check if user did not provide numberOfComments --------- */
-    if (numberOfComments === undefined) { //no numberOfComments given? ask again
+    if (numberOfComments == 0) { //no numberOfComments given? ask again
         if (Object.keys(controller.botobject).length == 1 && maxRequestAmount == 1) { 
             var numberOfComments = 1 //if only one account is active, set 1 automatically
         } else {
