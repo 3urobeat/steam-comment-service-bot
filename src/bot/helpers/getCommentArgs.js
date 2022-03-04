@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  * 
- * Last Modified: 04.03.2022 11:58:00
+ * Last Modified: 04.03.2022 12:09:03
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -39,14 +39,14 @@ module.exports.getCommentArgs = (args, steamID, requesterSteamID, lang, respond)
     let ownercheck = cachefile.ownerid.includes(requesterSteamID)
     
     
-    /* --------- Define command usage messages & maxrequestamount for each user's privileges --------- */ //Note: Web Comment Requests always use cachefile.ownerid[0]
+    /* --------- Define command usage messages & maxRequestAmount for each user's privileges --------- */ //Note: Web Comment Requests always use cachefile.ownerid[0]
     if (ownercheck) {
         maxRequestAmount = config.maxOwnerComments
 
-        if (Object.keys(controller.communityobject).length > 1 || maxRequestAmount) var commentcmdUsage = lang.commentcmdusageowner.replace("maxrequestamount", maxRequestAmount) //typed confog here accidentaly and somehow found that really funny
+        if (Object.keys(controller.communityobject).length > 1 || maxRequestAmount) var commentcmdUsage = lang.commentcmdusageowner.replace("maxRequestAmount", maxRequestAmount) //typed confog here accidentaly and somehow found that really funny
             else var commentcmdUsage = lang.commentcmdusageowner2
     } else {
-        if (Object.keys(controller.communityobject).length > 1 || maxRequestAmount) var commentcmdUsage = lang.commentcmdusage.replace("maxrequestamount", maxRequestAmount)
+        if (Object.keys(controller.communityobject).length > 1 || maxRequestAmount) var commentcmdUsage = lang.commentcmdusage.replace("maxRequestAmount", maxRequestAmount)
             else var commentcmdUsage = lang.commentcmdusage2
     }
 
@@ -64,10 +64,10 @@ module.exports.getCommentArgs = (args, steamID, requesterSteamID, lang, respond)
             }
         }
 
-        if (args[0] > maxRequestAmount) { //number is greater than maxrequestamount?
+        if (args[0] > maxRequestAmount) { //number is greater than maxRequestAmount?
             logger("debug", `getCommentArgs(): User requested ${args[0]} but is only allowed ${maxRequestAmount} comments. Stopping...`)
 
-            respond(403, lang.commentrequesttoohigh.replace("maxrequestamount", maxRequestAmount).replace("commentcmdusage", commentcmdUsage)) 
+            respond(403, lang.commentrequesttoohigh.replace("maxRequestAmount", maxRequestAmount).replace("commentcmdusage", commentcmdUsage)) 
             return false;
         }
 
@@ -103,7 +103,7 @@ module.exports.getCommentArgs = (args, steamID, requesterSteamID, lang, respond)
         } else {
             logger("debug", "getCommentArgs(): User didn't provide numberOfComments and maxRequestAmount is > 1. Stopping...")
             
-            respond(400, lang.commentmissingnumberofcomments.replace("maxrequestamount", maxRequestAmount).replace("commentcmdusage", commentcmdUsage))
+            respond(400, lang.commentmissingnumberofcomments.replace("maxRequestAmount", maxRequestAmount).replace("commentcmdusage", commentcmdUsage))
             return false;
         } 
     }
