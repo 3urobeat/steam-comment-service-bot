@@ -153,7 +153,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                     if (!lastcommentdoc) logger("error", "User is missing from database?? How is this possible?! Error maybe: " + err)
     
                     try { //catch any unhandled error to be able to remove user from activecommentprocess array
-                        require("../commands/comment/groupcomment.js").run(chatmsg, steamID, args, null, lastcommentdoc)
+                        require("../commands/commentgroup.js").run(chatmsg, steamID, args, lang, null, lastcommentdoc)
                     } catch (err) {
                         chatmsg(steamID, "Error while processing group comment request: " + err.stack)
                         logger("error", "Error while processing group comment request: " + err)
