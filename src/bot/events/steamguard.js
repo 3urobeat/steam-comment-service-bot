@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 24.02.2022 12:48:31
+ * Last Modified: 04.03.2022 17:42:36
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -39,12 +39,11 @@ module.exports.run = (loginindex, thisbot, bot, logOnOptions, lastCodeWrong, cal
         var steamGuardInputStart = Date.now(); //measure time to subtract it later from readyafter time
     
         //Read guard code from terminal input
+        logger("info", "Steam Guard Code requested. The account will be skipped automatically in 1.5 minutes if you don't respond...", true)
         if (loginindex == 0) var question = `[${logOnOptions.accountName}] Steam Guard Code: `
             else var question = `[${logOnOptions.accountName}] Steam Guard Code (leave empty and press ENTER to skip account): `
 
         logger.readInput(question, 90000, (text) => {
-            var code = text.toString().trim()
-
             if (!text || text == "") { //no response or manual skip
                 if (!text) logger("info", "Skipping account because you didn't respond in 1.5 minutes...", true)
 
@@ -69,6 +68,8 @@ module.exports.run = (loginindex, thisbot, bot, logOnOptions, lastCodeWrong, cal
                 }
 
             } else { //code
+                let code = text.toString().trim()
+                
                 logger("info", `[${thisbot}] Accepting steamGuard code...`, false, true, logger.animation("loading"))
 
                 callback(code) //give code back to node-steam-user
