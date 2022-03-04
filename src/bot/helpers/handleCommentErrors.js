@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  * 
- * Last Modified: 04.03.2022 15:42:56
+ * Last Modified: 04.03.2022 15:59:50
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -115,7 +115,11 @@ module.exports.handleCriticalCommentErrors = (botindex, i, methodName, recieverS
 
         //Send finished message from here if this is the last iteration and it is on a failed proxy
         if (i == numberOfComments - 1)  {
-            if (!res) respond(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(mainfile.failedcomments[recieverSteamID]).length).replace("numberOfComments", numberOfComments)}\n\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems`); //only send if not a webrequest
+
+            //only send message if that hasn't been done above already by the all proxies failed check
+            if (!res && failedProxies.length != loginfile.proxies.length) {
+                respond(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(mainfile.failedcomments[recieverSteamID]).length).replace("numberOfComments", numberOfComments)}\n\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems`); //only send if not a webrequest
+            }
 
             mainfile.activecommentprocess[recieverSteamID].status = "cooldown"
             mainfile.commentcounter += numberOfComments - Object.keys(mainfile.failedcomments[recieverSteamID]).length //add numberOfComments minus failedamount to commentcounter
@@ -141,11 +145,9 @@ module.exports.handleCriticalCommentErrors = (botindex, i, methodName, recieverS
  * @param {String} methodName postUserComment or postGroupComment
  * @param {SteamID} recieverSteamID The steamID object of the recieving user
  * @param {Number} numberOfComments The number of requested comments
- * @param {Object} lang The language object
- * @param {Function} respond The function to send messages to the requesting user
  * @returns {Object} skipIteration
  */
-module.exports.handleCommentErrors = (error, botindex, i, methodName, recieverSteamID, numberOfComments, lang, respond) => {
+module.exports.handleCommentErrors = (error, botindex, i, methodName, recieverSteamID, numberOfComments) => {
     if (botindex == 0) var thisbot = `Main`; //call bot 0 the main bot in logging messages
         else var thisbot = `Bot ${botindex}`;
     

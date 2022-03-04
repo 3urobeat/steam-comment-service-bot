@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 10:56:38
  * Author: 3urobeat
  * 
- * Last Modified: 04.03.2022 14:30:47
+ * Last Modified: 04.03.2022 16:01:09
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -139,7 +139,7 @@ module.exports.run = (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
 
                         /* --------- Handle errors thrown by this comment attempt --------- */
                         if (error) {
-                            if (require("../helpers/handleCommentErrors.js").handleCommentErrors(error, botindex, i, "postUserComment", recieverSteamID, numberOfComments, lang, respond)) return;
+                            if (require("../helpers/handleCommentErrors.js").handleCommentErrors(error, botindex, i, "postUserComment", recieverSteamID, numberOfComments)) return;
                         }
 
                         
