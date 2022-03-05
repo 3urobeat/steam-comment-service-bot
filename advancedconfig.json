@@ -5,6 +5,7 @@
     "loginDelay": 2500,
     "maxLogOnRetries": 1,
     "acceptFriendRequests": true,
+    "lastQuotesSize": 5,
     "enableevalcmd": false,
     "enableurltocomment": false,
     "printDebug": false,
