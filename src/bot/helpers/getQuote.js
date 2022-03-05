@@ -4,7 +4,7 @@
  * Created Date: 02.03.2022 16:21:11
  * Author: 3urobeat
  * 
- * Last Modified: 05.03.2022 14:46:36
+ * Last Modified: 05.03.2022 14:57:47
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -37,16 +37,15 @@ module.exports.getQuote = (quotesArr, lastQuotes, quoteCallback) => {
         if (lastQuotes.includes(selection)) {
             logger("debug", "getQuote(): Selected quote is in lastQuotes array, retrying...")
             retry = true
-            return;
+        } else {
+            retry = false
+
+            //push this comment to lastquotes array to not get it the next lastQuotesSize times if the quotes.txt has more than lastQuotesSize quotes
+            if (quotesArr.length > advancedconfig.lastQuotesSize) lastQuotes.push(selection)
+    
+            //make callback
+            logger("debug", "getQuote(): Found quote: " + selection)
+            quoteCallback(selection);
         }
-        
-        retry = false
-
-        //push this comment to lastquotes array to not get it the next lastQuotesSize times if the quotes.txt has more than lastQuotesSize quotes
-        if (quotesArr.length > advancedconfig.lastQuotesSize) lastQuotes.push(selection)
-
-        //make callback
-        logger("debug", "getQuote(): Found quote: " + selection)
-        quoteCallback(selection);
     } while (retry);
 }
