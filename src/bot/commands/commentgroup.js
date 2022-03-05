@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 10:59:25
  * Author: 3urobeat
  * 
- * Last Modified: 05.03.2022 13:47:38
+ * Last Modified: 05.03.2022 14:13:41
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -60,10 +60,12 @@ module.exports.run = async (chatmsg, steamID, args, lang, res, lastcommentdoc) =
     if (config.maxComments == 0 && !ownercheck) return respond(403, lang.commentcmdowneronly)
 
     
-    /* --------- Calculate maxRequestAmount and get arguments from comment request --------- */    
-    var { maxRequestAmount, numberOfComments, recieverSteamID = requesterSteamID, quotesArr } = await require("../helpers/getCommentArgs.js").getCommentArgs(args, steamID, requesterSteamID, SteamID.Type.CLAN, lang, respond);
+    /* --------- Calculate maxRequestAmount and get arguments from comment request --------- */ 
+    var { maxRequestAmount, numberOfComments, profileID, quotesArr } = await require("../helpers/getCommentArgs.js").getCommentArgs(args, steamID, requesterSteamID, SteamID.Type.CLAN, lang, respond);
+    var recieverSteamID = profileID;
 
     if (!maxRequestAmount && !numberOfComments && !quotesArr) return; //looks like the helper aborted the request (don't check for recieverSteamID as it has a default value set above)
+    if (recieverSteamID == requesterSteamID) return respond(400, "You need to provide a group link or groupID!"); //send custom error message if user forgot to provide group id
 
 
     /* --------- Check for cooldowns and calculate the amount of accounts needed for this request ---------  */
