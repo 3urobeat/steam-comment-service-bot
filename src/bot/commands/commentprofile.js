@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 10:56:38
  * Author: 3urobeat
  * 
- * Last Modified: 04.03.2022 16:01:09
+ * Last Modified: 05.03.2022 13:50:20
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -32,7 +32,7 @@ const controller = require("../../controller/controller.js");
  * @param {*} res The res parameter if request is coming from the webserver, otherwise null
  * @param {Object} lastcommentdoc The lastcomment db document of the requesting user 
  */
-module.exports.run = (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
+module.exports.run = async (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
     var requesterSteamID = new SteamID(String(steamID)).getSteamID64();
     var recieverSteamID  = requesterSteamID;
     var ownercheck       = cachefile.ownerid.includes(requesterSteamID);
@@ -62,15 +62,16 @@ module.exports.run = (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
 
 
     /* --------- Calculate maxRequestAmount and get arguments from comment request --------- */
-    var { maxRequestAmount, numberOfComments, profileID, quotesArr } = require("../helpers/getCommentArgs.js").getCommentArgs(args, steamID, requesterSteamID, lang, respond);
+    var { maxRequestAmount, numberOfComments, profileID, quotesArr } = await require("../helpers/getCommentArgs.js").getCommentArgs(args, steamID, requesterSteamID, SteamID.Type.INDIVIDUAL, lang, respond);
 
-    if (!maxRequestAmount && !numberOfComments && !profileID && !quotesArr) return; //looks like the helper aborted the request
+    if (!maxRequestAmount && !numberOfComments && !quotesArr) return; //looks like the helper aborted the request
+
 
     //Update recieverSteamID if profileID was returned
     if (profileID && profileID != requesterSteamID) {
         logger("debug", "Custom profileID provided that is != requesterSteamID, modifying steamID object...");
 
-        steamID.accountid = parseInt(new SteamID(args[1]).accountid) //edit accountid value of steamID parameter of friendMessage event and replace requester's accountid with the new one
+        steamID.accountid = parseInt(new SteamID(profileID).accountid) //edit accountid value of steamID parameter of friendMessage event and replace requester's accountid with the new one
         var recieverSteamID = new SteamID(String(steamID)).getSteamID64(); //update recieverSteamID
     }
 

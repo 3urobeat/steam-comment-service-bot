@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 10:59:25
  * Author: 3urobeat
  * 
- * Last Modified: 04.03.2022 18:56:19
+ * Last Modified: 05.03.2022 13:47:38
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -32,7 +32,7 @@ const controller = require("../../controller/controller.js");
  * @param {*} res The res parameter if request is coming from the webserver, otherwise null
  * @param {Object} lastcommentdoc The lastcomment db document of the requesting user 
  */
-module.exports.run = (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
+module.exports.run = async (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
     var requesterSteamID = new SteamID(String(steamID)).getSteamID64();
     var ownercheck       = cachefile.ownerid.includes(requesterSteamID);
 
@@ -61,7 +61,7 @@ module.exports.run = (chatmsg, steamID, args, lang, res, lastcommentdoc) => {
 
     
     /* --------- Calculate maxRequestAmount and get arguments from comment request --------- */    
-    var { maxRequestAmount, numberOfComments, recieverSteamID = requesterSteamID, quotesArr } = require("../helpers/getCommentArgs.js").getCommentArgs(args, steamID, requesterSteamID, lang, respond);
+    var { maxRequestAmount, numberOfComments, recieverSteamID = requesterSteamID, quotesArr } = await require("../helpers/getCommentArgs.js").getCommentArgs(args, steamID, requesterSteamID, SteamID.Type.CLAN, lang, respond);
 
     if (!maxRequestAmount && !numberOfComments && !quotesArr) return; //looks like the helper aborted the request (don't check for recieverSteamID as it has a default value set above)
 
