@@ -13,7 +13,7 @@
     "commentglobaloncooldown": "Someone else requested a comment in the last botaccountcooldown minutes or Steam has applied a cooldown on this account.\nPlease wait the remaining remainingglobalcooldown timeunit before trying again.",
     "commentinvalidnumber": "This is not a valid number!\nCommand usage: commentcmdusage",
     "commentrequesttoohigh": "You can request max. maxRequestAmount comments.\nCommand usage: commentcmdusage",
-    "commentinvalidid": "This is not a valid id! A profile id must look like this: 76561198260031749  ...or a group id like this: 103582791464712227\nCommand usage: commentcmdusage",
+    "commentinvalidid": "This does not seem to be a valid steamID64, profile or group link or you provided the wrong steamID type for this command!\nA profile steamID64 must look like this: 76561198260031749\n...or a group steamID64 like this: 103582791464712227\n\nCommand usage: commentcmdusage",
     "commentprofileidowneronly": "Specifying a profileid is only allowed for bot owners.\nIf you are a bot owner, make sure you added your ownerid to the config.json.",
     "commentmissingnumberofcomments": "Please specify how many comments out of maxRequestAmount you would like to request.\nCommand usage: commentcmdusage",
     "commentzeroavailableaccs": "Sorry but there are currently not enough accounts available to fulfill your request because somone else just requested comments too. Please wait waittime timeunit and try again.",
