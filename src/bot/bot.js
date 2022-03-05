@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 25.02.2022 12:12:07
+ * Last Modified: 05.03.2022 17:29:38
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -45,6 +45,7 @@ module.exports.run = (logOnOptions, loginindex) => {
 
     login.proxyShift++ //switch to next proxy
 
+    logger("debug", `[${thisbot}] Using proxy ${login.proxyShift} "${thisproxy}" to log in to Steam and SteamCommunity...`)
 
     //Create bot & community instance
     const bot       = new SteamUser({ autoRelogin: false, httpProxy: thisproxy });

@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 10:56:38
  * Author: 3urobeat
  * 
- * Last Modified: 05.03.2022 13:50:20
+ * Last Modified: 05.03.2022 14:54:25
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -213,8 +213,6 @@ module.exports.run = async (chatmsg, steamID, args, lang, res, lastcommentdoc) =
 
             if (botindex + 1 > Object.keys(controller.communityobject).length) {
                 const lastaccountint = String(accountOrder[botindex - 1]) //save last used account (which is -1 because k++ was already executed again)
-
-                if (Object.keys(controller.communityobject).length > 1) logger("debug", "All accounts used, resetting botindex...");
                 
                 botindex = 0; //reset botindex if it is greater than the amount of accounts
 

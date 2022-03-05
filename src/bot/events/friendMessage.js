@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 02.03.2022 12:42:31
+ * Last Modified: 05.03.2022 17:06:38
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -57,7 +57,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
         
         bot.chat.sendFriendMessage(steamID, txt, {}, (err) => {
             if (err) { //check for error as some chat messages seem to not get send lately
-                logger("err", `[${thisbot}] Error trying to send chat message of length ${txt.length} to ${new SteamID(String(steamID)).getSteamID64()}! ${err}`)
+                logger("warn", `[${thisbot}] Error trying to send chat message of length ${txt.length} to ${new SteamID(String(steamID)).getSteamID64()}! ${err}`)
                 if (!retry) chatmsg(steamID, `Sorry, it looks like Steam blocked my last message. Please try again later.`, true) //send the user a fallback message just to indicate the bot is not down
             }
         })
