@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 05.03.2022 17:06:38
+ * Last Modified: 06.03.2022 14:14:23
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -46,6 +46,8 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
      * @param {Boolean} retry true if chatmsg() called itself again to send error message
      */
     function chatmsg(steamID, txt, retry) { //sadly needed to be included here in order to access bot instance before friendMessage got called at least once or needing to provide it as parameter
+        if (!txt) return logger("warn", "chatmsg() was called without txt parameter? Ignoring call...");
+
         //Cut message if over 1k chars to try and reduce the risk of a RateLimitExceeded error
         if (txt.length > 1000) {
             logger("warn", `[${thisbot}] The bot tried to send a chat message that's longer than 1000 chars. Cutting it to 996 chars to reduce the risk of a RateLimitExceeded error!`)

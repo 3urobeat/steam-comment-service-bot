@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 10:56:38
  * Author: 3urobeat
  * 
- * Last Modified: 05.03.2022 14:54:25
+ * Last Modified: 06.03.2022 14:13:26
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -52,7 +52,7 @@ module.exports.run = async (chatmsg, steamID, args, lang, res, lastcommentdoc) =
 
 
     //Check for command spamming
-    if (!ownercheck && Date.now() - mainfile.lastcommentrequestmsg[requesterSteamID] < 2500) return chatmsg(lang.pleasedontspam);
+    if (!ownercheck && Date.now() - mainfile.lastcommentrequestmsg[requesterSteamID] < 2500) return respond(403, lang.pleasedontspam);
     mainfile.lastcommentrequestmsg[requesterSteamID] = Date.now() //add this usage to the obj
 
 
