@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 05.03.2022 17:29:38
+ * Last Modified: 06.03.2022 13:15:06
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -135,7 +135,7 @@ module.exports.run = (logOnOptions, loginindex) => {
     });
 
     bot.on('groupRelationship', (steamID, relationship) => {
-        require("./events/relationship.js").groupRelationship(loginindex, bot, steamID, relationship)
+        require("./events/relationship.js").groupRelationship(thisbot, bot, steamID, relationship)
     });
 
 

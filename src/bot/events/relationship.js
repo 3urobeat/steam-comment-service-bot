@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 06.03.2022 12:55:12
+ * Last Modified: 06.03.2022 13:22:30
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -88,12 +88,20 @@ module.exports.friendRelationship = (loginindex, thisbot, bot, steamID, relation
  */
 module.exports.groupRelationship = (thisbot, bot, steamID, relationship) => {
     var SteamID = require("steamid")
-    
 
-    if (relationship == 2 && config.acceptgroupinvites) { //accept invite if acceptgroupinvites is true
+    if (relationship == 2) { //ignore if relationship type is not "Invited"
+        let steamID64 = new SteamID(String(steamID)).getSteamID64();
+        
+        //Check if acceptgroupinvites is set to false and only allow botsgroup invite to be accepted
+        if (!config.acceptgroupinvites) {
+            if (config.yourgroup.length < 1 && config.botsgroup.length < 1) return; 
+            if (steamID64 != cachefile.configgroup64id && steamID64 != cachefile.botsgroupid) return;
+            logger("info", "acceptgroupinvites is turned off but this is an invite to the group set as yourgroup or botsgroup. Accepting invite anyway...")
+        }
+
         bot.respondToGroupInvite(steamID, true)
 
-        logger("info", `[${thisbot}] Accepted group invite: ` + new SteamID(String(steamID)).getSteamID64())
+        logger("info", `[${thisbot}] Accepted group invite: ` + steamID64);
     }
 }
 

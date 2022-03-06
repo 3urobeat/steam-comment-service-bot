@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 06.03.2022 12:55:19
+ * Last Modified: 06.03.2022 13:22:38
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -103,10 +103,11 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
     for (let i = 0; i < Object.keys(bot.myGroups).length; i++) {
         if (bot.myGroups[Object.keys(bot.myGroups)[i]] == 2) {
 
-            if (config.acceptgroupinvites !== true) { //check if group accept is false
-                if (config.botsgroup.length < 1) return; 
-
-                if (Object.keys(bot.myGroups)[i] !== config.botsgroup) return; //check if group id is bot group
+            //Check if acceptgroupinvites is set to false and only allow botsgroup invite to be accepted
+            if (!config.acceptgroupinvites) {
+                if (config.yourgroup.length < 1 && config.botsgroup.length < 1) return; 
+                if (Object.keys(bot.myGroups)[i] != cachefile.configgroup64id && Object.keys(bot.myGroups)[i] != cachefile.botsgroupid) return;
+                logger("info", "acceptgroupinvites is turned off but this is an invite to the group set as yourgroup or botsgroup. Accepting invite anyway...")
             }
 
             //Accept invite and log message
