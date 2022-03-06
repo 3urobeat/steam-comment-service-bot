@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 05.10.2021 16:18:20
+ * Last Modified: 06.03.2022 13:01:28
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -31,6 +31,15 @@ module.exports.configgroup64id = () => {
 
     if (config.yourgroup.length < 1) { //id is stored in cache file, no need to get it again
         logger("info", "Skipping groupID64 request of yourgroup because config.yourgroup is empty.", false, true, logger.animation("loading")); //log to output for debugging
+
+         //Reset cachefile values
+         cachefile.configgroup = ""
+         cachefile.configgroup64id = ""
+ 
+         fs.writeFile(srcdir + "/data/cache.json", JSON.stringify(cachefile, null, 4), err => { 
+             if (err) logger("error", `Writing botsgroupid to cache.json error: ${err}`) 
+         })
+
         return null;
         
     } else {
@@ -38,7 +47,7 @@ module.exports.configgroup64id = () => {
         if (cachefile.configgroup == config.yourgroup) {
             logger("info", "configgroupID64 of yourgroup is stored in cache.json...", false, true, logger.animation("loading"))
 
-            return cachefile.configgroupID64; //return configgroup64id
+            return cachefile.configgroup64id; //return configgroup64id
     
         } else {
             logger("info", "groupID64 of yourgroup not in cache.json. Requesting information from Steam...", false, true, logger.animation("loading"))
@@ -89,6 +98,15 @@ module.exports.botsgroupID64 = (loginindex, thisbot) => {
 
     if (config.botsgroup.length < 1) { //id is stored in cache file, no need to get it again
         logger("info", `[${thisbot}] Skipping groupID64 request of botsgroup because config.botsgroup is empty.`, false, true); //log to output for debugging
+
+        //Reset cachefile values
+        cachefile.botsgroup = ""
+        cachefile.botsgroupid = ""
+
+        fs.writeFile(srcdir + "/data/cache.json", JSON.stringify(cachefile, null, 4), err => { 
+            if (err) logger("error", `Writing botsgroupid to cache.json error: ${err}`) 
+        })
+
         return null;
         
     } else {
