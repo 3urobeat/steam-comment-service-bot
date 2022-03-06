@@ -6,6 +6,8 @@
     "relogTimeout": 30000,
     "maxLogOnRetries": 1,
     "acceptFriendRequests": true,
+    "commandCooldown": 12000,
+    "disableCommentCmd": false,
     "lastQuotesSize": 5,
     "enableevalcmd": false,
     "enableurltocomment": false,

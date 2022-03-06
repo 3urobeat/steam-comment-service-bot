@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 06.03.2022 14:14:23
+ * Last Modified: 06.03.2022 14:29:09
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -26,17 +26,21 @@
  * @param {String} message The message string provided by steam-user friendMessage event
  */
 module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => {
-    var controller = require("../../controller/controller.js")
-    var ready      = require("../../controller/ready.js")
-    var mainfile   = require("../main.js")
+    var controller  = require("../../controller/controller.js")
+    var ready       = require("../../controller/ready.js")
+    var mainfile    = require("../main.js")
 
-    var SteamID    = require('steamid');
+    var SteamID     = require('steamid');
 
-    var lang       = mainfile.lang
+    var lang        = mainfile.lang
 
-    var disablecommentcmd     = false //disables the comment and resetcooldown command and responds with maintenance message
-    var commandcooldown       = 12000 //The bot won't respond if a user sends more than 5 messages in this time frame
-    var lastmessage           = {}    //tracks the last cmd usage of a normal command to apply cooldown if the user spams
+    var steam64id   = new SteamID(String(steamID)).getSteamID64()
+    var ownercheck  = cachefile.ownerid.includes(steam64id)
+
+    var lastmessage = {} //tracks the last cmd usage of a normal command to apply cooldown if the user spams
+
+    //Check if user is blocked and ignore mmessage
+    if (bot.myFriends[steam64id] == 1 || bot.myFriends[steam64id] == 6) return; //User is blocked.
 
 
     /**
@@ -66,34 +70,32 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
     }
 
 
-    
-
-
-    var steam64id = new SteamID(String(steamID)).getSteamID64()
-    var ownercheck = cachefile.ownerid.includes(steam64id)
-    if (bot.myFriends[steam64id] == 1 || bot.myFriends[steam64id] == 6) return; //User is blocked.
-
     //Spam "protection" because spamming the bot is bad!
-    if (!lastmessage[steam64id] || lastmessage[steam64id][0] + commandcooldown < Date.now()) lastmessage[steam64id] = [Date.now(), 0] //Add user to array or Reset time
-    if (lastmessage[steam64id] && lastmessage[steam64id][0] + commandcooldown > Date.now() && lastmessage[steam64id][1] > 5) return; //Just don't respond
+    if (!lastmessage[steam64id] || lastmessage[steam64id][0] + advancedconfig.commandCooldown < Date.now()) lastmessage[steam64id] = [Date.now(), 0] //Add user to array or Reset time
+    if (lastmessage[steam64id] && lastmessage[steam64id][0] + advancedconfig.commandCooldown > Date.now() && lastmessage[steam64id][1] > 5) return; //Just don't respond
 
-    if (lastmessage[steam64id] && lastmessage[steam64id][0] + commandcooldown > Date.now() && lastmessage[steam64id][1] > 4) { //Inform the user about the cooldown
+    if (lastmessage[steam64id] && lastmessage[steam64id][0] + advancedconfig.commandCooldown > Date.now() && lastmessage[steam64id][1] > 4) { //Inform the user about the cooldown
         chatmsg(steamID, lang.userspamblock)
         logger("info", `${steam64id} has been blocked for 90 seconds for spamming.`)
+
         lastmessage[steam64id][0] += 90000
         lastmessage[steam64id][1]++
+
         return; 
     }
 
     if (!ownercheck) lastmessage[steam64id][1]++ //push new message to array if user isn't an owner
 
+
     //log friend message but cut it if it is >= 75 chars
     if (message.length >= 75) logger("info", `[${thisbot}] Friend message from ${steam64id}: ${message.slice(0, 75) + "..."}`);
         else logger("info", `[${thisbot}] Friend message from ${steam64id}: ${message}`);
-        
+    
+    
     //Deny non-friends the use of any command
     if (bot.myFriends[steam64id] != 3) return chatmsg(steamID, lang.usernotfriend)
 
+    
     if (loginindex === 0) { //check if this is the main bot
 
         /**
@@ -118,7 +120,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
         })
 
         var cont = message.slice("!").split(" ");
-        var args = cont.slice(1); 
+        var args = cont.slice(1);
 
         switch(cont[0].toLowerCase()) {
             case '!h':
@@ -129,7 +131,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 break;
             
             case '!comment':
-                if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
+                if (advancedconfig.disableCommentCmd) return chatmsg(steamID, lang.botmaintenance)
                 if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
                 controller.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {
@@ -148,7 +150,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
             case '!gcomment':
             case '!groupcomment':
                 if (!ownercheck) return notownerresponse();
-                if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
+                if (advancedconfig.disableCommentCmd) return chatmsg(steamID, lang.botmaintenance)
                 if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
                 controller.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {
@@ -188,7 +190,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
             case '!rc':
             case '!resetcooldown':
                 if (!ownercheck) return notownerresponse();
-                if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
+                if (advancedconfig.disableCommentCmd) return chatmsg(steamID, lang.botmaintenance)
 
                 require("../commands/commentmisc.js").resetCooldown(chatmsg, steamID, lang, args, steam64id)
                 break;
