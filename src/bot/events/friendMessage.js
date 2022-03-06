@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 06.03.2022 14:29:09
+ * Last Modified: 06.03.2022 14:40:45
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
  */
 
+
+const lastmessage = {} //tracks the last cmd usage of a normal command to apply cooldown if the user spams
 
 
 /**
@@ -36,8 +38,6 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
 
     var steam64id   = new SteamID(String(steamID)).getSteamID64()
     var ownercheck  = cachefile.ownerid.includes(steam64id)
-
-    var lastmessage = {} //tracks the last cmd usage of a normal command to apply cooldown if the user spams
 
     //Check if user is blocked and ignore mmessage
     if (bot.myFriends[steam64id] == 1 || bot.myFriends[steam64id] == 6) return; //User is blocked.
