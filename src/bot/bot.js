@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 06.03.2022 13:15:06
+ * Last Modified: 06.03.2022 13:34:07
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -68,16 +68,6 @@ module.exports.run = (logOnOptions, loginindex) => {
 
     //Run main.js if this is bot0
     if (loginindex == 0) mainfile.run()
-
-
-    /* ------------ Group stuff: ------------ */
-    require("./helpers/steamgroup.js").botsgroupID64(loginindex, thisbot, (botsgroupid) => { //Check if this account is not in botsgroup yet
-        if (!Object.keys(bot.myGroups).includes(String(botsgroupid))) {
-            community.joinGroup(`${botsgroupid}`)
-
-            logger("info", `[${thisbot}] Joined/Requested to join steam group that has been set in the config (botsgroup).`) 
-        }
-    })
 
 
     /* ------------ Login: ------------ */

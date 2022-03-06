@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 06.03.2022 13:22:38
+ * Last Modified: 06.03.2022 13:59:59
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -115,4 +115,16 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
             logger("info", `[${thisbot}] Accepted group invite while I was offline: ` + Object.keys(bot.myGroups)[i])
         }
     }
+
+
+    /* ------------ Join botsgroup: ------------ */
+    logger("info", `[${thisbot}] Checking if bot account is in botsgroup...`, false, true, logger.animation("loading"));
+
+    require("../helpers/steamgroup.js").botsgroupID64(loginindex, thisbot, (botsgroupid) => { //Check if this account is not in botsgroup yet
+        if (!Object.keys(bot.myGroups).includes(String(botsgroupid))) {
+            community.joinGroup(`${botsgroupid}`)
+
+            logger("info", `[${thisbot}] Joined/Requested to join steam group that has been set in the config (botsgroup).`) 
+        }
+    })
 }
