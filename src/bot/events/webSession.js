@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 27.02.2022 12:44:01
+ * Last Modified: 06.03.2022 12:55:19
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -81,10 +81,10 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
 
 
                 //Invite user to yourgroup (and to my to make some stonks)
-                if (mainfile.configgroup64id && Object.keys(bot.myGroups).includes(mainfile.configgroup64id)) { 
-                    bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(mainfile.configgroup64id));
+                if (cachefile.configgroup64id && Object.keys(bot.myGroups).includes(cachefile.configgroup64id)) { 
+                    bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(cachefile.configgroup64id));
 
-                    if (mainfile.configgroup64id !== "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
+                    if (cachefile.configgroup64id !== "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
                         bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID("103582791464712227"));
                     }
                 }
