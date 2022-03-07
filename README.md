@@ -132,3 +132,4 @@ Thanks [dunderzutt](https://steamcommunity.com/id/Dunderzutt/) for donating 25�
 Thanks [Lujza](https://steamcommunity.com/id/7656119829563751) for donating ~4€ in TF2 keys!  
 Thanks [Orel](https://steamcommunity.com/id/ReloBOT/) for donating 4€!  
 Thanks [Ecstasyyy](https://steamcommunity.com/id/elrondnetwork/) for donating ~10€ in TF2 keys!  
+Thanks [Leezzy](https://steamcommunity.com/id/Leezzy) for donating ~6,50€ in CSGO items!  
