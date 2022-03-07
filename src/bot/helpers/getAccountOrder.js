@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:37:38
  * Author: 3urobeat
  * 
- * Last Modified: 03.03.2022 17:51:33
+ * Last Modified: 07.03.2022 14:18:27
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -31,13 +31,36 @@ const controller = require("../../controller/controller.js");
  * @param {Function} respond The function to send messages to the requesting user
  */
 module.exports.getAccountOrder = (checkLimitedFriend, allAccounts, accountsNeeded, numberOfComments, requesterSteamID, recieverSteamID, lang, respond) => {
-    var accsToAdd = [];
+    var accountOrder = [];
+    var accsToAdd    = [];
 
+    //Randomize account order if enabled in config
+    if (config.randomizeAccounts) allAccounts.sort(() => Math.random() - 0.5); //randomize order if enabled in config
+
+    //Make copy of allAccounts and put it into accountOrder
     var accountOrder = [ ... allAccounts ]
-    if (config.randomizeAccounts) accountOrder.sort(() => Math.random() - 0.5); //randomize order if enabled in config
+    
+    logger("debug", "getAccountOrder(): Filtering accountOrder to get as many accounts the user is friend with as possible...")
 
-    //Remove accounts that are not needed in this request
-    accountOrder = accountOrder.slice(0, accountsNeeded);
+    //Remove all accounts the user is not friend with
+    accountOrder = accountOrder.filter(e => controller.botobject[e].myFriends[recieverSteamID] && controller.botobject[e].myFriends[recieverSteamID] == 3);
+
+    //If user is friend with more accounts than needed for the request then remove the remaining ones
+    if (accountOrder.length > accountsNeeded) {
+        logger("debug", "getAccountOrder(): User is friend with more accounts than needed for this request! Cutting array...")
+        
+        accountOrder = accountOrder.slice(0, accountsNeeded);
+    }
+
+    //If user is not friend with enough accounts then fill accountOrder with random ones
+    if (accountOrder.length < accountsNeeded) {
+        logger("debug", "getAccountOrder(): User is not friend with enough accounts. Filling array with random accounts...")
+
+        allAccounts.forEach((e) => {
+            if (!accountOrder.includes(e) && accountOrder.length < accountsNeeded) accountOrder.push(e) //get accounts that aren't already in array but are still needed and push them all
+        })
+    }
+
 
     //Check all accounts if they are limited and send user profile links if not friend
     if (checkLimitedFriend) {
