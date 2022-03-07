@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 07.03.2022 09:58:14
+ * Last Modified: 07.03.2022 11:26:27
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -96,6 +96,7 @@ module.exports.run = async (chatmsg, steamID, args, lang, res, lastcommentdoc) =
         amount: numberOfComments,
         requestedby: requesterSteamID,
         accounts: accountOrder,
+        thisIteration: thisIteration,
         until: Date.now() + (numberOfComments * config.commentdelay) //botaccountcooldown should start after the last comment was processed
     }
 
@@ -193,6 +194,8 @@ module.exports.run = async (chatmsg, steamID, args, lang, res, lastcommentdoc) =
         /* --------- Increase iteration counter, use next account and reset botindex if needed --------- */
         thisIteration++;
         botindex++;
+
+        mainfile.activecommentprocess[recieverSteamID].thisIteration = thisIteration;
 
         if (botindex + 1 > Object.keys(controller.communityobject).length) {
             const lastaccountint = String(accountOrder[botindex - 1]) //save last used account (which is -1 because k++ was already executed again)
