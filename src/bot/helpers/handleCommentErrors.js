@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  * 
- * Last Modified: 07.03.2022 11:22:56
+ * Last Modified: 08.03.2022 18:22:45
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -37,15 +37,15 @@ const mainfile   = require("../main.js");
  */
 module.exports.handleCriticalCommentErrors = (botindex, i, methodName, recieverSteamID, alreadySkippedProxies, numberOfComments, res, lang, respond) => {
     
-    //Check if profile is not anymore in mainfile.activecommentprocess obj or status is not active anymore (for example by using !abort)      Disabled for now as using !abort now clears the comment interval. Leaving code here if I maybe decide to re-implement this check in the future
-    /* if (!mainfile.activecommentprocess[recieverSteamID] || mainfile.activecommentprocess[recieverSteamID].status == "aborted") {
+    //Check if profile is not anymore in mainfile.activecommentprocess obj or status is not active anymore (for example by using !abort)
+    if (!mainfile.activecommentprocess[recieverSteamID] || mainfile.activecommentprocess[recieverSteamID].status == "aborted") {
         mainfile.failedcomments[recieverSteamID][`c${i} bot${botindex} p${loginfile.additionalaccinfo[botindex].thisproxyindex}`] = "Skipped because user aborted comment process." //push reason to mainfile.failedcomments obj
 
         logger("debug", "handleCriticalCommentErrors(): Skipping iteration because user aborted comment process")
 
         //Stop further execution and skip to next iteration
         return { skipIteration: true, alreadySkippedProxies };
-    } */
+    }
 
     
     //Regex pattern doesn't easily allow variables in pattern so I'm doing this ugly thing for now
