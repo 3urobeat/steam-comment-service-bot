@@ -1,5 +1,5 @@
 {
-    "_disclaimer_": "This file includes only advanced settings! Please only use the 'config.json' for setup and ignore this file!",
+    "_disclaimer_": "This file includes only advanced settings! Please only use the 'config.json' for setup and ignore this file if you are new!",
     "_help_": "Read the docs: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Advanced-Config-Documentation",
     "disableAutoUpdate": false,
     "loginDelay": 2500,
@@ -8,6 +8,9 @@
     "acceptFriendRequests": true,
     "commandCooldown": 12000,
     "disableCommentCmd": false,
+    "retryFailedComments": false,
+    "retryFailedCommentsDelay": 300000,
+    "retryFailedCommentsAttempts": 1,
     "lastQuotesSize": 5,
     "enableevalcmd": false,
     "enableurltocomment": false,

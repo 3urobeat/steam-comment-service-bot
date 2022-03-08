@@ -25,6 +25,7 @@
     "commentprocessstarted": "Estimated wait time for numberOfComments comments: waittime timeunit.",
     "commentfailedcmdreference": "To get detailed information why which comment failed please type '!failed'. You can read what probably caused your error here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems",
     "comment429stop": "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error. Please try again later. Failed: failedamount/numberOfComments",
+    "commentretrying": "failedamount/numberOfComments comments have failed. I'm going to retry the failed comments in retrydelay minutes. (Attempt thisattempt/maxattempt)",
     "commentsuccess2": "All comments have been sent. Failed: failedamount/numberOfComments\nIf you are a nice person then please comment on my profile too!",
     "commentlimitederror": "-----------------------------------\nIt seems like at least one of the requested comments could have failed because you/the recieving account aren't/isn't friend with the commenting bot account.\n\nPlease make sure that you have added these accounts in order to eventually avoid this error in the future: \naccstoadd\n-----------------------------------",
 
