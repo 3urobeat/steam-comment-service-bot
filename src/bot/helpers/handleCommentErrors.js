@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  * 
- * Last Modified: 08.03.2022 18:22:45
+ * Last Modified: 09.03.2022 11:42:45
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -42,9 +42,10 @@ module.exports.handleCriticalCommentErrors = (botindex, i, methodName, recieverS
         mainfile.failedcomments[recieverSteamID][`c${i} bot${botindex} p${loginfile.additionalaccinfo[botindex].thisproxyindex}`] = "Skipped because user aborted comment process." //push reason to mainfile.failedcomments obj
 
         logger("debug", "handleCriticalCommentErrors(): Skipping iteration because user aborted comment process")
-
-        //Stop further execution and skip to next iteration
-        return { skipIteration: true, alreadySkippedProxies };
+        
+        //Stop the comment interval if defined (just check to avoid potential errors)
+        if (mainfile.activecommentprocess[recieverSteamID].interval) clearInterval(mainfile.activecommentprocess[recieverSteamID].interval);
+        return;
     }
 
     

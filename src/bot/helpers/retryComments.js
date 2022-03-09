@@ -4,7 +4,7 @@
  * Created Date: 08.03.2022 13:09:21
  * Author: 3urobeat
  * 
- * Last Modified: 08.03.2022 17:42:30
+ * Last Modified: 08.03.2022 19:06:46
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -34,14 +34,17 @@ module.exports.retryComments = (recieverSteamID, lang, respond, callback) => {
         logger("info", `${Object.keys(mainfile.failedcomments[recieverSteamID]).length} comments failed for ${recieverSteamID}. Retrying in ${round(advancedconfig.retryFailedCommentsDelay / 60000, 2)} minutes (Attempt ${mainfile.activecommentprocess[recieverSteamID].retryAttempt}/${advancedconfig.retryFailedCommentsAttempts})`)
         respond(202, lang.commentretrying.replace("failedamount", Object.keys(mainfile.failedcomments[recieverSteamID]).length).replace("numberOfComments", mainfile.activecommentprocess[recieverSteamID].amount).replace("retrydelay", round(advancedconfig.retryFailedCommentsDelay / 60000, 2)).replace("thisattempt", mainfile.activecommentprocess[recieverSteamID].retryAttempt).replace("maxattempt", advancedconfig.retryFailedCommentsAttempts))
 
-        //Increase numberOfComments by amount of failed comments
-        mainfile.activecommentprocess[recieverSteamID].amount = Number(mainfile.activecommentprocess[recieverSteamID].amount) + Object.keys(mainfile.failedcomments[recieverSteamID]).length;
+        //Timeout before increasing numberOfComments for repeated retry attempts so that these comments won't be posted instantly from the previous retry attempt
+        setTimeout(() => {
+            //Increase numberOfComments by amount of failed comments
+            mainfile.activecommentprocess[recieverSteamID].amount = Number(mainfile.activecommentprocess[recieverSteamID].amount) + Object.keys(mainfile.failedcomments[recieverSteamID]).length;
 
-        //Increase until value (amount of retried comments * commentdelay) + delay before starting retry attempts
-        mainfile.activecommentprocess[recieverSteamID].until = Number(mainfile.activecommentprocess[recieverSteamID].until) + (Object.keys(mainfile.failedcomments[recieverSteamID]).length * config.commentdelay) + advancedconfig.retryFailedCommentsDelay;
+            //Increase until value (amount of retried comments * commentdelay) + delay before starting retry attempts
+            mainfile.activecommentprocess[recieverSteamID].until = Number(mainfile.activecommentprocess[recieverSteamID].until) + (Object.keys(mainfile.failedcomments[recieverSteamID]).length * config.commentdelay) + advancedconfig.retryFailedCommentsDelay;
 
-        //Reset content in failedcomments obj
-        mainfile.failedcomments[recieverSteamID] = {};
+            //Reset content in failedcomments obj
+            mainfile.failedcomments[recieverSteamID] = {};
+        }, advancedconfig.retryFailedCommentsDelay * (mainfile.activecommentprocess[recieverSteamID].retryAttempt - 1));
 
         //Don't send finished message
         callback(false);

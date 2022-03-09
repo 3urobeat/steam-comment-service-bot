@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 08.03.2022 18:04:39
+ * Last Modified: 09.03.2022 12:00:10
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -110,12 +110,12 @@ module.exports.run = async (chatmsg, steamID, args, lang, res, lastcommentdoc) =
         
             //Refresh numberOfComments var (for example if retryComments helper increased it)
             numberOfComments = mainfile.activecommentprocess[recieverSteamID].amount;
-            
+
             //Get which botindex we should use for this iteration from accountOrder
             var thisindex = accountOrder[botindex];
 
-            //Check if interval ran numberOfComments times and stop comment process
-            if (thisIteration >= numberOfComments) return clearInterval(mainfile.activecommentprocess[recieverSteamID].interval);
+            //Check if this iteration should run now (for example if we are waiting for retry process to start)
+            if (thisIteration >= numberOfComments) return;
 
 
             /* --------- Check for critical errors and decide if this iteration should still run --------- */
@@ -195,6 +195,9 @@ module.exports.run = async (chatmsg, steamID, args, lang, res, lastcommentdoc) =
 
                                 mainfile.activecommentprocess[recieverSteamID].status = "cooldown"
                                 mainfile.commentcounter += numberOfComments - Object.keys(mainfile.failedcomments[recieverSteamID]).length //add numberOfComments minus failedamount to commentcounter
+
+                                //Stop the comment interval if defined (just check to avoid potential errors)
+                                if (mainfile.activecommentprocess[recieverSteamID].interval) clearInterval(mainfile.activecommentprocess[recieverSteamID].interval);
                             }
                         })
                     }
@@ -210,14 +213,16 @@ module.exports.run = async (chatmsg, steamID, args, lang, res, lastcommentdoc) =
 
             if (botindex + 1 > Object.keys(controller.communityobject).length) {
                 const lastaccountint = String(accountOrder[botindex - 1]) //save last used account (which is -1 because k++ was already executed again)
-                
+
+                logger("debug", "Resetting botindex...")
+
                 botindex = 0; //reset botindex if it is greater than the amount of accounts
 
                 //shuffle accountorder again if randomizeAccounts is true but check that the last used account isn't the first one
                 if (config.randomizeAccounts) accountOrder.sort(() => Math.random() - 0.5);
                 if (config.randomizeAccounts && accountOrder[0] == lastaccountint) accountOrder.push(accountOrder.shift()) //if lastaccountint is first account in new order then move it to the end
             }
-        }, advancedconfig.retryFailedCommentsDelay * mainfile.activecommentprocess[recieverSteamID].retryAttempt);
+        }, advancedconfig.retryFailedCommentsDelay * (mainfile.activecommentprocess[recieverSteamID].retryAttempt > 0)); //we only want to apply cooldown if this is a retry attempt. Since true and false are just a 0 or 1 when converted to a Number, we can just use some Math and either calculate delay * 0 or delay * 1
         
     }, config.commentdelay); //delay every comment
 }
