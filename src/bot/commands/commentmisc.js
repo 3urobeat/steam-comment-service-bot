@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 09.03.2022 15:01:52
+ * Last Modified: 09.03.2022 15:49:30
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -44,8 +44,8 @@ module.exports.abort = (chatmsg, steamID, lang, args, steam64id) => {
         //Set new status for comment process
         mainfile.activecommentprocess[steam64id].status = "aborted"
 
-        //Clear comment interval manually
-        clearInterval(mainfile.activecommentprocess[steam64id].interval);
+        //Clear comment interval manually if defined (just check to avoid potential errors)
+        if (mainfile.activecommentprocess[steam64id].interval) clearInterval(mainfile.activecommentprocess[steam64id].interval);
 
         //push a reason for all other comments to failedcomments
         var m = 0;

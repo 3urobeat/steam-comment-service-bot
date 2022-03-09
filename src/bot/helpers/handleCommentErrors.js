@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  * 
- * Last Modified: 09.03.2022 11:42:45
+ * Last Modified: 09.03.2022 15:50:08
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -108,7 +108,8 @@ module.exports.handleCriticalCommentErrors = (botindex, i, methodName, recieverS
                 respond(500, `${lang.comment429stop.replace("failedamount", numberOfComments - i + 1).replace("numberOfComments", numberOfComments)}\n\n${lang.commentfailedcmdreference}`) //add !failed cmd reference to message
                 logger("warn", "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error!")
 
-                clearInterval(mainfile.activecommentprocess[recieverSteamID].interval); //clear comment interval manually
+                //clear comment interval manually if defined (just check to avoid potential errors)
+                if (mainfile.activecommentprocess[recieverSteamID].interval) clearInterval(mainfile.activecommentprocess[recieverSteamID].interval);
 
                 mainfile.activecommentprocess[recieverSteamID].status = "error" //update status in activecommentprocess obj
                 mainfile.commentcounter += numberOfComments - (numberOfComments - i + 1) //add numberOfComments minus failedamount to commentcounter
