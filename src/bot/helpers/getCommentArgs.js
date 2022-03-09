@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  * 
- * Last Modified: 09.03.2022 13:26:23
+ * Last Modified: 09.03.2022 13:46:43
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -14,9 +14,6 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
  */
 
-
-const SteamID         = require("steamid");
-const steamIDResolver = require("steamid-resolver");
 
 const controller = require("../../controller/controller.js");
 const mainfile   = require("../main.js");
