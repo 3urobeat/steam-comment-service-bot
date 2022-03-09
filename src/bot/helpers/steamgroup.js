@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 06.03.2022 13:41:36
+ * Last Modified: 09.03.2022 12:43:21
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -26,7 +26,8 @@ module.exports.configgroup64id = (callback) => {
     
     logger("info", "Getting groupID64 of yourgroup set in the config.json...", false, true, logger.animation("loading"))
 
-    if (config.yourgroup.length < 1) { //id is stored in cache file, no need to get it again
+    //Check if no group is set in the config
+    if (config.yourgroup.length < 1) {
         logger("info", "Skipping groupID64 request of yourgroup because config.yourgroup is empty.", false, true, logger.animation("loading")); //log to output for debugging
 
         //Reset cachefile values
@@ -41,6 +42,7 @@ module.exports.configgroup64id = (callback) => {
         
     } else {
     
+        //Check if url was already converted to id previously and skip doing that again
         if (cachefile.configgroup == config.yourgroup) {
             logger("info", "configgroupID64 of yourgroup is stored in cache.json...", false, true, logger.animation("loading"))
 
@@ -90,7 +92,8 @@ module.exports.botsgroupID64 = (loginindex, thisbot, callback) => {
 
     logger("info", `[${thisbot}] Getting groupID64 of botsgroup set in the config.json...`, false, true, logger.animation("loading"))
 
-    if (config.botsgroup.length < 1) { //id is stored in cache file, no need to get it again
+    //Check if no botsgroup is set in the config
+    if (config.botsgroup.length < 1) {
         logger("info", `[${thisbot}] Skipping groupID64 request of botsgroup because config.botsgroup is empty.`, false, true); //log to output for debugging
 
         //Reset cachefile values
@@ -105,6 +108,7 @@ module.exports.botsgroupID64 = (loginindex, thisbot, callback) => {
         
     } else {
     
+        //Check if url was already converted to id previously and skip doing that again
         if (cachefile.botsgroup == config.botsgroup) {
             logger("info", `[${thisbot}] groupID64 of botsgroup is stored in cache.json...`, false, true, logger.animation("loading"))
 
