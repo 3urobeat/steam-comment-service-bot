@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 07.03.2022 11:25:54
+ * Last Modified: 09.03.2022 14:23:57
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -30,33 +30,37 @@ const controller = require("../../controller/controller.js")
  * @param {String} steam64id The steam64id of the requesting user
  */
 module.exports.abort = (chatmsg, steamID, lang, args, steam64id) => {
-    if (args[0]) {
-        if (!cachefile.ownerid.includes(steam64id)) return chatmsg(steamID, lang.commandowneronly)
 
-        steam64id = args[0] //if user provided an id as argument then use that instead of his/her id
-    }
+    require("../helpers/handleSteamIdResolving.js").run(args[0], null, (err, res) => {
+        if (res) {
+            if (!cachefile.ownerid.includes(steam64id)) return chatmsg(steamID, lang.commandowneronly)
 
-    if (!mainfile.activecommentprocess[steam64id] || mainfile.activecommentprocess[steam64id].status != "active") return chatmsg(steamID, lang.abortcmdnoprocess)
+            steam64id = res //if user provided an id as argument then use that instead of his/her id
+        }
 
-    //Set new status for comment process
-    mainfile.activecommentprocess[steam64id].status = "aborted"
+        if (!mainfile.activecommentprocess[steam64id] || mainfile.activecommentprocess[steam64id].status != "active") return chatmsg(steamID, lang.abortcmdnoprocess)
 
-    //Clear comment interval manually
-    clearInterval(mainfile.activecommentprocess[steam64id].interval);
+        //Set new status for comment process
+        mainfile.activecommentprocess[steam64id].status = "aborted"
 
-    //push a reason for all other comments to failedcomments
-    var m = 0;
+        //Clear comment interval manually
+        clearInterval(mainfile.activecommentprocess[steam64id].interval);
 
-    for (var l = mainfile.activecommentprocess[steam64id].thisIteration + 1; l <= mainfile.activecommentprocess[steam64id].amount; l++) { //start with l = thisIteration + 1 because humans start counting at 1 (this species confuses me)
-        if (m + 1 > Object.keys(controller.communityobject).length) m = 0; //reset variable tracking communityobject index if it is greater than the amount of accounts
+        //push a reason for all other comments to failedcomments
+        var m = 0;
 
-        mainfile.failedcomments[steam64id][`c${l}`] = "Skipped because user aborted comment process." //intentionally not including botindex and proxy because accountOrder gets shuffled every botindex reset s it wouldn't be accurate anyway and is also irrelevant if user aborted process
-        
-        m++
-    }
+        for (var l = mainfile.activecommentprocess[steam64id].thisIteration + 1; l <= mainfile.activecommentprocess[steam64id].amount; l++) { //start with l = thisIteration + 1 because humans start counting at 1 (this species confuses me)
+            if (m + 1 > Object.keys(controller.communityobject).length) m = 0; //reset variable tracking communityobject index if it is greater than the amount of accounts
 
-    logger("info", `Aborting comment process for profile/group ${steam64id}...`)
-    chatmsg(steamID, lang.abortcmdsuccess)
+            mainfile.failedcomments[steam64id][`c${l}`] = "Skipped because user aborted comment process." //intentionally not including botindex and proxy because accountOrder gets shuffled every botindex reset s it wouldn't be accurate anyway and is also irrelevant if user aborted process
+            
+            m++
+        }
+
+        logger("info", `Aborting comment process for profile/group ${steam64id}...`)
+        chatmsg(steamID, lang.abortcmdsuccess)
+    })
+
 }
 
 
