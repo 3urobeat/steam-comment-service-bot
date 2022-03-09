@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 09.03.2022 14:23:57
+ * Last Modified: 09.03.2022 14:29:18
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,10 +15,11 @@
  */
 
 
-const SteamID    = require("steamid")
+const SteamID = require("steamid");
 
-const mainfile   = require("../main.js")
-const controller = require("../../controller/controller.js")
+const mainfile               = require("../main.js");
+const controller             = require("../../controller/controller.js");
+const handleSteamIdResolving = require("../helpers/handleSteamIdResolving.js");
 
 
 /**
@@ -31,7 +32,7 @@ const controller = require("../../controller/controller.js")
  */
 module.exports.abort = (chatmsg, steamID, lang, args, steam64id) => {
 
-    require("../helpers/handleSteamIdResolving.js").run(args[0], null, (err, res) => {
+    handleSteamIdResolving.run(args[0], null, (err, res) => {
         if (res) {
             if (!cachefile.ownerid.includes(steam64id)) return chatmsg(steamID, lang.commandowneronly)
 
@@ -108,25 +109,28 @@ module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
  * @param {String} steam64id The steam64id of the requesting user
  */
 module.exports.failed = (chatmsg, steamID, lang, args, steam64id) => {
-    if (args[0]) {
-        if (!cachefile.ownerid.includes(steam64id)) return chatmsg(steamID, lang.commandowneronly)
 
-        steam64id = args[0] //if user provided an id as argument then use that instead of his/her id
-    }
+    handleSteamIdResolving.run(args[0], null, (err, res) => {
+        if (res) {
+            if (!cachefile.ownerid.includes(steam64id)) return chatmsg(steamID, lang.commandowneronly)
 
-    controller.lastcomment.findOne({ id: steam64id }, (err, doc) => {
-        if (!mainfile.failedcomments[steam64id] || Object.keys(mainfile.failedcomments[steam64id]).length < 1) return chatmsg(steamID, lang.failedcmdnothingfound);
+            steam64id = res //if user provided an id as argument then use that instead of his/her id
+        }
 
-        let requesttime = new Date(doc.time).toISOString().replace(/T/, ' ').replace(/\..+/, '')
-        
-        let failedcommentsobj = JSON.stringify(mainfile.failedcomments[steam64id], null, 4)
-        let failedcommentsstr = failedcommentsobj.slice(1, -1).split("\n").map(s => s.trim()).join("\n") //remove brackets and whitespaces
+        controller.lastcomment.findOne({ id: steam64id }, (err, doc) => {
+            if (!mainfile.failedcomments[steam64id] || Object.keys(mainfile.failedcomments[steam64id]).length < 1) return chatmsg(steamID, lang.failedcmdnothingfound);
 
-        let messagestart = lang.failedcmdmsg.replace("steam64id", steam64id).replace("requesttime", requesttime)
+            let requesttime = new Date(doc.time).toISOString().replace(/T/, ' ').replace(/\..+/, '')
+            
+            let failedcommentsobj = JSON.stringify(mainfile.failedcomments[steam64id], null, 4)
+            let failedcommentsstr = failedcommentsobj.slice(1, -1).split("\n").map(s => s.trim()).join("\n") //remove brackets and whitespaces
 
-        //Limit length to 750 characters to ensure the message can be sent
-        if (failedcommentsstr.length >= 800) chatmsg(steamID, "/pre " + messagestart + "\nc = Comment, p = Proxy\n" + failedcommentsstr.slice(0, 800) + "... \n\n ..." + failedcommentsstr.slice(800, failedcommentsstr.length).split("\n").length + " entries hidden because message would be too long.");
-            else chatmsg(steamID, "/pre " + messagestart + "\nc = Comment, p = Proxy\n" + failedcommentsstr);
+            let messagestart = lang.failedcmdmsg.replace("steam64id", steam64id).replace("requesttime", requesttime)
+
+            //Limit length to 750 characters to ensure the message can be sent
+            if (failedcommentsstr.length >= 800) chatmsg(steamID, "/pre " + messagestart + "\nc = Comment, p = Proxy\n" + failedcommentsstr.slice(0, 800) + "... \n\n ..." + failedcommentsstr.slice(800, failedcommentsstr.length).split("\n").length + " entries hidden because message would be too long.");
+                else chatmsg(steamID, "/pre " + messagestart + "\nc = Comment, p = Proxy\n" + failedcommentsstr);
+        })
     })
 }
 
