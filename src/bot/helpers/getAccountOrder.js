@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:37:38
  * Author: 3urobeat
  * 
- * Last Modified: 09.03.2022 22:00:41
+ * Last Modified: 09.03.2022 22:10:20
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -70,7 +70,7 @@ module.exports.getAccountOrder = (checkLimitedFriend, allAccounts, accountsNeede
             if (Number(i) + 1 <= numberOfComments && Number(i) + 1 <= Object.keys(controller.botobject).length) { //only check if this acc is needed for a comment
                 try {
                     //if bot account limitations can be read from obj and bot account is limited and hasn't target account in friend list
-                    if (controller.botobject[accountOrder[i]].limitations && controller.botobject[accountOrder[i]].limitations.limited == true && Object.keys(controller.botobject[accountOrder[i]].myFriends).includes(recieverSteamID)) {
+                    if (controller.botobject[accountOrder[i]].limitations && controller.botobject[accountOrder[i]].limitations.limited == true && !Object.keys(controller.botobject[accountOrder[i]].myFriends).includes(recieverSteamID)) {
                         accsToAdd[requesterSteamID].push(`' steamcommunity.com/profiles/${new SteamID(String(controller.botobject[accountOrder[i]].steamID)).getSteamID64()} '`) //...then push profile URL into array
                     }
                 } catch (err) {
@@ -89,7 +89,7 @@ module.exports.getAccountOrder = (checkLimitedFriend, allAccounts, accountsNeede
                 accsToAdd[requesterSteamID].forEach((e, i) => {
                     msg += e //push element
                     
-                    if (msg.length + accsToAdd[requesterSteamID][i].length >= 125 || i + 1 == accsToAdd[requesterSteamID].length) {
+                    if (msg.length + accsToAdd[requesterSteamID][i].length >= 995 || i + 1 == accsToAdd[requesterSteamID].length) {
                         setTimeout((msg) => {
                             respond(403, msg)
                         }, 7500 * msgsSent, msg); //pass current state of msg to timeout so it won't print out the resetted string | 7500ms delay is sadly needed as Steam otherwise blocks the messages
