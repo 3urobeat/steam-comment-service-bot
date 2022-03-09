@@ -35,7 +35,7 @@
     "botnotready": "/me The bot is not completely started yet. Please wait a moment before using a command.",
     "botmaintenance": "/me The comment command is currently unavailable for maintenance. Please wait a bit.",
     "commandowneronly": "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.",
-    "invalidprofileid": "This is not a valid profileid! A profile id must look like this: 76561198260031749",
+    "invalidprofileid": "This does not seem to be a valid steamID64, profile or group link or you provided the wrong steamID type for this command!\nA profile steamID64 must look like this: 76561198260031749\n...or a group steamID64 like this: 103582791464712227",
 
     "helpcommandlist": "Command list:",
     "helpcommentowner1": "Request x many or the max amount of comments (max maxOwnerComments). Provide a profileid to comment on a specific profile.",

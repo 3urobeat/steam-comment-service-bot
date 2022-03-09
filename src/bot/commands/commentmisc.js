@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 09.03.2022 14:29:18
+ * Last Modified: 09.03.2022 15:01:52
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -74,29 +74,28 @@ module.exports.abort = (chatmsg, steamID, lang, args, steam64id) => {
  * @param {String} steam64id The steam64id of the requesting user
  */
 module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
-    if (args[0]) {
-        if (args[0] == "global") { //Check if user wants to reset the global cooldown (will reset all until entries in activecommentprocess)
-            if (config.botaccountcooldown == 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the global cooldown enabled?
 
-            Object.keys(mainfile.activecommentprocess).forEach((e) => {
-                mainfile.activecommentprocess[e].until = Date.now() - (config.botaccountcooldown * 60000); //since the cooldown checks will add the cooldown we need to subtract it (can't delete the entry because we might abort running processes with it)
+    if (args[0] && args[0] == "global") { //Check if user wants to reset the global cooldown (will reset all until entries in activecommentprocess)
+        if (config.botaccountcooldown == 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the global cooldown enabled?
+
+        Object.keys(mainfile.activecommentprocess).forEach((e) => {
+            mainfile.activecommentprocess[e].until = Date.now() - (config.botaccountcooldown * 60000); //since the cooldown checks will add the cooldown we need to subtract it (can't delete the entry because we might abort running processes with it)
+        })
+
+        chatmsg(steamID, lang.resetcooldowncmdglobalreset) 
+    } else {
+        handleSteamIdResolving.run(args[0], SteamID.Type.INDIVIDUAL, (err, res) => {
+            if (err) return chatmsg(steamID, lang.invalidprofileid + "\n\nError: " + err);
+            if (res) steam64id = res //change steam64id to the provided id
+    
+            if (config.commentcooldown == 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the cooldown enabled?
+    
+            controller.lastcomment.update({ id: steam64id }, { $set: { time: Date.now() - (config.commentcooldown * 60000) } }, (err) => { 
+                if (err) return chatmsg(steamID, "Error updating database entry: " + err)
+                    else chatmsg(steamID, lang.resetcooldowncmdsuccess.replace("profileid", steam64id.toString())) 
             })
-
-            return chatmsg(steamID, lang.resetcooldowncmdglobalreset) 
-        }
-
-        if (isNaN(args[0])) return chatmsg(steamID, lang.invalidprofileid) 
-        if (new SteamID(args[0]).isValid() === false) return chatmsg(steamID, lang.invalidprofileid) 
-
-        var steam64id = args[0] //change steam64id to the provided id
+        })
     }
-
-    if (config.commentcooldown == 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the cooldown enabled?
-
-    controller.lastcomment.update({ id: steam64id }, { $set: { time: Date.now() - (config.commentcooldown * 60000) } }, (err) => { 
-        if (err) return chatmsg(steamID, "Error updating database entry: " + err)
-            else chatmsg(steamID, lang.resetcooldowncmdsuccess.replace("profileid", steam64id.toString())) 
-    })
 }
 
 
