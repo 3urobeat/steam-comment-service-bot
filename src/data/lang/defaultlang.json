@@ -106,6 +106,7 @@
     "evalcmdturnedoff": "/me The eval command has been turned off!",
     "evalcmdlogininfoblock": "Your code includes 'logininfo'. In order to protect passwords this is not allowed.",
 
+    "idisownererror": "/me You are not allowed to provide the ID of an owner!",
     "commandnotfound": "I don't know that command. Type !help for more info.",
     "childbotmessage": "This is one account running in a bot cluster.\nPlease add the main bot and send him a !help message.\nIf you want to check out what this is about, type: !about"
 }

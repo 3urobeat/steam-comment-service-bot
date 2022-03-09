@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 17:53:35
+ * Last Modified: 09.03.2022 15:30:42
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,6 +15,11 @@
  */
 
 
+const SteamID = require("steamid");
+
+const controller             = require("../../controller/controller.js")
+const handleSteamIdResolving = require("../helpers/handleSteamIdResolving.js");
+
 
 /**
  * Runs the block command
@@ -24,18 +29,19 @@
  * @param {Array} args The args array
  */
 module.exports.block = (chatmsg, steamID, lang, args) => {
-    var SteamID    = require("steamid")
-    var controller = require("../../controller/controller.js")
+    if (!args[0]) return chatmsg(steamID, lang.invalidprofileid);
 
-    if (isNaN(args[0])) return chatmsg(steamID, lang.invalidprofileid)
-    if (new SteamID(args[0]).isValid() === false) return chatmsg(steamID, lang.invalidprofileid)
+    handleSteamIdResolving.run(args[0], SteamID.Type.INDIVIDUAL, (err, res) => {
+        if (err) return chatmsg(steamID, lang.invalidprofileid + "\n\nError: " + err);
+        if (cachefile.ownerid.includes(res)) return chatmsg(steamID, lang.idisownererror)
 
-    Object.keys(controller.botobject).forEach((i) => {
-        controller.botobject[i].blockUser(new SteamID(args[0]), err => { if (err) logger("error", `[Bot ${i}] error blocking user ${args[0]}: ${err}`) }) 
+        Object.keys(controller.botobject).forEach((i) => {
+            controller.botobject[i].blockUser(new SteamID(res), err => { if (err) logger("error", `[Bot ${i}] error blocking user ${args[0]}: ${err}`) }) 
+        })
+
+        chatmsg(steamID, lang.blockcmdsuccess.replace("profileid", res))
+        logger("info", `Blocked ${res} with all bot accounts.`)
     })
-
-    chatmsg(steamID, lang.blockcmdsuccess.replace("profileid", args[0]))
-    logger("info", `Blocked ${args[0]} with all bot accounts.`)
 }
 
 
@@ -47,18 +53,16 @@ module.exports.block = (chatmsg, steamID, lang, args) => {
  * @param {Array} args The args array
  */
 module.exports.unblock = (chatmsg, steamID, lang, args) => {
-    var SteamID    = require("steamid")
-    var controller = require("../../controller/controller.js")
+    if (!args[0]) return chatmsg(steamID, lang.invalidprofileid);
 
-    if (isNaN(args[0])) return chatmsg(steamID, lang.invalidprofileid)
-    if (new SteamID(args[0]).isValid() === false) return chatmsg(steamID, lang.invalidprofileid)
+    handleSteamIdResolving.run(args[0], SteamID.Type.INDIVIDUAL, (err, res) => {
+        if (err) return chatmsg(steamID, lang.invalidprofileid + "\n\nError: " + err);
 
-    Object.keys(controller.botobject).forEach((i) => {
-        if (controller.botobject[i].myFriends[new SteamID(args[0])] === 1) {
-            controller.botobject[i].unblockUser(new SteamID(args[0]), err => { if (err) logger("error", `[Bot ${i}] error blocking user ${args[0]}: ${err}`) }) 
-        }
+        Object.keys(controller.botobject).forEach((i) => {
+            controller.botobject[i].unblockUser(new SteamID(res), err => { if (err) logger("error", `[Bot ${i}] error unblocking user ${res}: ${err}`) }) 
+        })
+
+        chatmsg(steamID, lang.unblockcmdsuccess.replace("profileid", res))
+        logger("info", `Unblocked ${res} with all bot accounts.`)
     })
-
-    chatmsg(steamID, lang.unblockcmdsuccess.replace("profileid", args[0]))
-    logger("info", `Unblocked ${args[0]} with all bot accounts.`)
 }
