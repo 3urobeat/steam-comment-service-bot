@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  * 
- * Last Modified: 05.03.2022 13:47:20
+ * Last Modified: 09.03.2022 13:26:23
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -85,64 +85,11 @@ module.exports.getCommentArgs = (args, steamID, requesterSteamID, profileIDType,
                 if (cachefile.ownerid.includes(requesterSteamID) || args[1] == requesterSteamID) { //check if user is a bot owner or if he provided his own profile id
                     let arg = args[1];
 
-                    //Function to handle all steamIDResolver callbacks as they are always roughly the same. profileID should be false if 
-                    function handleResponse(err, res) { //eslint-disable-line
-                        logger("debug", `getCommentArgs(): handleResponse(): Recieved callback from steamid-resolver. err: ${err} | res: ${res}`)
+                    require("../helpers/handleSteamIdResolving.js").run(arg, profileIDType, (err, res) => {
+                        if (err) respond(400, lang.commentinvalidid.replace("commentcmdusage", commentcmdUsage) + "\n\nError: " + err);
 
-                        if (err) {
-                            respond(400, lang.commentinvalidid.replace("commentcmdusage", commentcmdUsage) + "\n\nError: " + err);
-                            profileID = null;
-                        } else {
-                            //Quickly check if the response has the expected type
-                            if (new SteamID(res).type != profileIDType) handleResponse(`Recieved steamID of type ${new SteamID(res).type} but expected ${profileIDType}.`, null); 
-                                else profileID = res;
-                        }
-                    }
-
-                    //Try to figure out if user provided an steamID64 or a customURL or a whole profile link
-                    if (isNaN(arg) || !new SteamID(arg).isValid()) {
-                        if (arg.includes("steamcommunity.com/id/")) {
-                            logger("debug", "getCommentArgs(): User provided customURL profile link as profileID argument...")
-
-                            steamIDResolver.customUrlTosteamID64(arg, handleResponse);
-
-                        } else if (arg.includes("steamcommunity.com/profiles/")) {
-                            logger("debug", "getCommentArgs(): User provided steamID64 profile link as profileID argument...")
-
-                            //my library doesn't have a check if exists function nor returns the steamID64 if I pass it into steamID64ToCustomUrl(). But since I don't want to parse the URL myself here I'm just gonna request the full obj and cut the id out of it
-                            steamIDResolver.steamID64ToFullInfo(arg, (err, obj) => handleResponse(err, obj.steamID64[0]))
-
-                        } else if (arg.includes("steamcommunity.com/groups/")) {
-                            logger("debug", "getCommentArgs(): User provided group link as profileID argument...")
-
-                            steamIDResolver.groupUrlToGroupID64(arg, handleResponse)
-                            
-                        } else { //doesn't seem to be an URL
-
-                            //If user just provided the customURL part of the URL then try and figure out from the expected profileIDType if this could be a profile or group customURL
-                            if (profileIDType == SteamID.Type.INDIVIDUAL) {
-                                logger("debug", "getCommentArgs(): User didn't provide a full url as profileID arg. Expecting custom profile URL based on profileIDType...")
-
-                                steamIDResolver.customUrlTosteamID64(arg, handleResponse)
-
-                            } else if (profileIDType == SteamID.Type.CLAN) {
-                                logger("debug", "getCommentArgs(): User didn't provide a full url as profileID arg. Expecting custom group URL based on profileIDType...")
-
-                                steamIDResolver.groupUrlToGroupID64(arg, handleResponse)
-                                
-                            } else {
-                                logger("debug", "getCommentArgs(): Sending error message and aborting as user provided something as profileID argument which I don't understand: " + arg);
-                                
-                                handleResponse("profileID parameter seems to be invalid.", null);
-                            }
-                        }
-
-                    } else {
-                        logger("debug", "getCommentArgs(): I don't need to convert anything as user seems to have already provided an steamID64. Cool!")
-
-                        if (new SteamID(arg).type != profileIDType) handleResponse(`Recieved steamID of type ${new SteamID(arg).type} but expected ${profileIDType}.`, null); 
-                            else profileID = arg;
-                    }
+                        profileID = res; //will be null on err
+                    })
 
                 } else {
                     logger("debug", "getCommentArgs(): Non-Owner tried to provide profileid for another profile. Stopping...")
