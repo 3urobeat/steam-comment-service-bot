@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 27.02.2022 14:55:35
+ * Last Modified: 10.03.2022 15:46:31
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -97,7 +97,7 @@ module.exports.run = (logininfo, callback) => {
         logger("warn", `${logger.colors.fgred}You have raised maxComments or maxOwnerComments but I would recommend to raise the commentdelay further. Not increasing the commentdelay further raises the probability to get cooldown errors from Steam.`, true) 
     }
     if (logininfo.bot0 == undefined) { //check real quick if logininfo is empty
-        logger("error", `${logger.colors.fgred}Your logininfo doesn't contain a bot0 or is empty! Aborting...`, true); 
+        logger("error", `${logger.colors.fgred}Your logininfo.json or accounts.txt (whichever you are using) doesn't seem to contain valid login credentials! Aborting...`, true); 
         return process.send("stop()")
     }
     if (config.commentdelay * maxCommentsOverall > 2147483647) { //check for 32-bit integer limit for commentcmd timeout

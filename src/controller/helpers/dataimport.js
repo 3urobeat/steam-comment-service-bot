@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 10.03.2022 14:40:24
+ * Last Modified: 10.03.2022 15:45:21
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -186,18 +186,10 @@ module.exports.config = (cache, callback) => {
  */
 module.exports.logininfo = () => {
     var fs = require("fs")
+    
+    var logininfo;
 
-    logger("info", "Loading logininfo from logininfo.json or accounts.txt...", false, true, logger.animation("loading"))
-
-    //Check logininfo for Syntax errors and display custom error message
-    try {
-        var logininfo = require(srcdir + "/../logininfo.json")
-    } catch (err) {
-        logger("error", "Error: It seems like you made a mistake in your logininfo.json. Please check if your Syntax looks exactly like in the example/template and try again.\nError: " + err, true)
-        return process.send("stop()")
-    }
-
-    //Either use logininfo.json or accounts.txt:
+    //Check accounts.txt first so we can ignore potential syntax errors in logininfo
     if (fs.existsSync("./accounts.txt")) {
         var data = fs.readFileSync("./accounts.txt", "utf8").split("\n")
 
@@ -206,17 +198,29 @@ module.exports.logininfo = () => {
         if (data != "") {
             logger("info", "Accounts.txt does exist and is not empty - using it instead of logininfo.json.", false, true)
 
-            logininfo = {} //Empty other object
+            logininfo = {} //Set empty object
             data.forEach((e, i) => {
                 if (e.length < 2) return; //if the line is empty ignore it to avoid issues like this: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/80
                 e = e.split(":")
                 e[e.length - 1] = e[e.length - 1].replace("\r", "") //remove Windows next line character from last index (which has to be the end of the line)
                 logininfo["bot" + i] = [e[0], e[1], e[2]]
             }) 
+
+            return logininfo;
         }
     }
 
-    return logininfo;
+    //Check logininfo for Syntax errors and display custom error message
+    try {
+        logger("info", "accounts.txt seems empty/not created, loading logininfo from logininfo.json...", false, true, logger.animation("loading"))
+        
+        logininfo = require(srcdir + "/../logininfo.json")
+
+        return logininfo;
+    } catch (err) {
+        logger("error", "It seems like you made a mistake in your logininfo.json. Please check if your Syntax looks exactly like in the example/template and try again.\n        " + err, true)
+        return process.send("stop()")
+    }
 }
 
 
