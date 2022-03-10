@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:06:57
  * Author: 3urobeat
  * 
- * Last Modified: 02.03.2022 17:32:45
+ * Last Modified: 10.03.2022 14:25:22
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -26,13 +26,14 @@ const round      = require("../../controller/helpers/round.js");
  * Checks for user cooldown, bot cooldown, calculates amount of accounts needed for a request and responds to the user if request is invalid
  * @param {SteamID} recieverSteamID The steamID object of the recieving user
  * @param {Number} numberOfComments The amount of comments requested
+ * @param {Boolean} removeLimitedAccs Set to true to remove all limited bot accounts from available accounts list (for example for group comment cmd, as only unlimited accs can comment in groups)
  * @param {Object} lang The language object
  * @param {*} res The res parameter if request is coming from the webserver, otherwise null
  * @param {Object} lastcommentdoc The lastcomment db document of the requesting user
  * @param {Function} respond The function to send messages to the requesting user
  * @returns {Object} allAccounts, accountsNeeded
  */
-module.exports.checkAvailability = (recieverSteamID, numberOfComments, lang, res, lastcommentdoc, respond) => {
+module.exports.checkAvailability = (recieverSteamID, numberOfComments, removeLimitedAccs, lang, res, lastcommentdoc, respond) => {
     
     /* ------------------ Check for cooldowns ------------------ */
     if (config.commentcooldown !== 0 && !res) { //check for user specific cooldown (ignore if it is a webrequest)
@@ -92,13 +93,25 @@ module.exports.checkAvailability = (recieverSteamID, numberOfComments, lang, res
                     allAccounts.splice(allAccounts.indexOf(f), 1) //remove that accountindex from the allAccounts array
                 })
 
-                if (allAccounts - mainfile.activecommentprocess[e].accounts.length < numberOfComments) {
+                if (allAccounts.length - mainfile.activecommentprocess[e].accounts.length < numberOfComments) {
                     whenavailable = mainfile.activecommentprocess[e].until + (config.botaccountcooldown * 60000)
                 }
             } else {
                 delete mainfile.activecommentprocess[e] //remove entry from object if it is finished to keep the object clean
             }
         })
+    }
+
+
+    //Remove limited accounts from allAccounts array if desired
+    if (removeLimitedAccs) {
+        let previousLength = allAccounts.length;
+        allAccounts = allAccounts.filter(e => controller.botobject[e].limitations && !controller.botobject[e].limitations.limited);
+
+        if (previousLength - allAccounts.length > 0) logger("info", `${previousLength - allAccounts.length} of ${previousLength} were removed from available accounts as they are limited and can't be used for this request!`)
+
+        //Check if all accounts that were previously available are now removed and send custom error message
+        if (previousLength != 0 && allAccounts.length < accountsNeeded) { respond(403, lang.commentaccslimitedremoved.replace("maxComments", allAccounts.length)); return false; } //using allAccounts.length works for the "spread requests on as many accounts as possible" method
     }
 
 

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 09.03.2022 12:00:10
+ * Last Modified: 10.03.2022 12:58:06
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -69,7 +69,7 @@ module.exports.run = async (chatmsg, steamID, args, lang, res, lastcommentdoc) =
 
 
     /* --------- Check for cooldowns and calculate the amount of accounts needed for this request ---------  */
-    var { allAccounts, accountsNeeded } = require("../helpers/checkAvailability.js").checkAvailability(recieverSteamID, numberOfComments, lang, res, lastcommentdoc, respond);
+    var { allAccounts, accountsNeeded } = require("../helpers/checkAvailability.js").checkAvailability(recieverSteamID, numberOfComments, true, lang, res, lastcommentdoc, respond);
 
     if (!allAccounts && !accountsNeeded) return; //looks like the helper aborted the request
 
