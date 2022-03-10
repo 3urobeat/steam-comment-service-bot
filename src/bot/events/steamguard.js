@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.03.2022 17:42:36
+ * Last Modified: 07.03.2022 17:22:31
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -45,7 +45,7 @@ module.exports.run = (loginindex, thisbot, bot, logOnOptions, lastCodeWrong, cal
 
         logger.readInput(question, 90000, (text) => {
             if (!text || text == "") { //no response or manual skip
-                if (!text) logger("info", "Skipping account because you didn't respond in 1.5 minutes...", true)
+                if (text == null) logger("info", "Skipping account because you didn't respond in 1.5 minutes...", true)
 
                 if (loginindex == 0) { //first account can't be skipped
                     logger("warn", "The first account always has to be logged in!", true)

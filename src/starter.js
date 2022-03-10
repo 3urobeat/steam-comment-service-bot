@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 23.02.2022 15:21:21
+ * Last Modified: 10.03.2022 15:14:48
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -53,7 +53,7 @@ function attachParentListeners() {
         //Try to fix error automatically by reinstalling all modules
         if (String(reason).includes("Error: Cannot find module")) {
             logger("", "", true)
-            logger("info", "Cannot find module error detected. Trying to fix error by reinstalling modules...\n")
+            if (global.extdata) logger("info", "Cannot find module error detected. Trying to fix error by reinstalling modules...\n") //check if extdata has been imported as workaround for hiding this message for new users to avoid confusion (because extdata.firststart can't be checked yet)
 
             require("./controller/helpers/npminteraction.js").reinstallAll(logger, (err, stdout) => { //eslint-disable-line
                 if (err) {
