@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.03.2022 09:53:44
+ * Last Modified: 10.03.2022 14:41:52
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -37,7 +37,8 @@ module.exports.startlogin = (logininfo) => {
     var round      = require("./helpers/round.js")
     var b          = require("../bot/bot.js")
 
-    module.exports.proxies             = require("./helpers/dataimport.js").proxies() 
+    module.exports.proxies = require("./helpers/dataimport.js").proxies();
+    if (!this.proxies) return; //make sure ascii art isn't getting printed below error message
 
     module.exports.steamGuardInputTime = 0
     module.exports.accisloggedin       = true //var to check if previous acc is logged on (in case steamGuard event gets fired) -> set to true for first account

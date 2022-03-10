@@ -5,6 +5,7 @@
     "loginDelay": 2500,
     "relogTimeout": 30000,
     "maxLogOnRetries": 1,
+    "useLocalIP": true,
     "acceptFriendRequests": true,
     "setPrimaryGroup": false,
     "commandCooldown": 12000,

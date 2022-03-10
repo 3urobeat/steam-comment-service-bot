@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 23.02.2022 15:50:56
+ * Last Modified: 10.03.2022 14:40:24
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -243,7 +243,15 @@ module.exports.proxies = () => {
         var proxies = fs.readFileSync('./proxies.txt', 'utf8').split("\n");
         var proxies = proxies.filter(str => str != "") //remove empty lines
 
-        proxies.unshift(null) //add no proxy (default)
+        if (advancedconfig.useLocalIP) proxies.unshift(null) //add no proxy (local ip) if useLocalIP is true
+
+        //check if no proxies were found (can only be the case when useLocalIP is false)
+        if (proxies.length == 0) {
+            logger("", "", true)
+            logger("error", "useLocalIP is turned off in advancedconfig.json but I couldn't find any proxies in proxies.txt!\n        Aborting as I don't have at least one IP to log in with!", true);
+            process.send("stop()");
+            return null;
+        }
     }
 
     return proxies;
