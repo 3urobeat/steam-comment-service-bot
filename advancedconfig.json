@@ -6,6 +6,7 @@
     "relogTimeout": 30000,
     "maxLogOnRetries": 1,
     "acceptFriendRequests": true,
+    "setPrimaryGroup": false,
     "commandCooldown": 12000,
     "disableCommentCmd": false,
     "retryFailedComments": false,

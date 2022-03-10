@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 09.03.2022 12:40:46
+ * Last Modified: 10.03.2022 12:16:04
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -129,4 +129,16 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
             logger("info", `[${thisbot}] Joined/Requested to join steam group that has been set in the config (botsgroup).`) 
         }
     })
+
+
+    /* ------------ Set primary group: ------------ */  //Sadly doesn't work atm: https://github.com/DoctorMcKay/node-steamcommunity/wiki/SteamCommunity#editprofilesettings-callback
+    if (advancedconfig.setPrimaryGroup && cachefile.configgroup64id) {
+        logger("info", `[${thisbot}] setPrimaryGroup is enabled and configgroup64id is set, setting ${cachefile.configgroup64id} as primary group...`, false, true, logger.animation("loading"))
+
+        community.editProfile({
+            primaryGroup: new SteamID(cachefile.configgroup64id)
+        }, (err) => {
+            if (err) logger("err", `[${thisbot}] Error setting primary group: ${err}`, true);
+        })
+    }
 }
