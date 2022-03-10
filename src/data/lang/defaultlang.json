@@ -18,7 +18,7 @@
     "commentmissingnumberofcomments": "Please specify how many comments out of maxRequestAmount you would like to request.\nCommand usage: commentcmdusage",
     "commentzeroavailableaccs": "Sorry but there are currently not enough accounts available to fulfill your request because somone else just requested comments too. Please wait waittime timeunit and try again.",
     "commentnotenoughavailableaccs": "Sorry but there are currently not enough accounts available to fulfill your request because somone else just requested comments too. Please wait waittime timeunit and try again or only request availablenow comments now.",
-    "commentaddbotaccounts": "In order to request numberOfComments comments you/the recieving user will need to add these accounts and then request comments again: (limited bot accounts)",
+    "commentaddbotaccounts": "Please add these accounts and then request again: (limited accounts)",
     "commentuserprofileprivate": "Your/the recieving profile seems to be private. Please edit your/the privacy settings on your/the recieving profile and try again!",
     "commenterroroccurred": "Oops, an error occurred!",
     "commentsuccess1": "Okay I commented on/in your/the recieving profile/group! If you are a nice person then please comment on my profile too!",
