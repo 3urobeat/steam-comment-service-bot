@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 27.02.2022 10:26:03
+ * Last Modified: 11.03.2022 13:49:44
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -76,7 +76,7 @@
             //Delete old files except files and folders in dontdelete
             logger("", `${logger.colors.fgyellow}Deleting old files...${logger.colors.reset}`, true, false, logger.animation("loading"))
             files.forEach((e, i) => {
-                if (fs.existsSync(e) && !dontdelete.includes(e) && !e.includes(`./steam-comment-service-bot-${releasemode}`) && !e.includes("./node_modules") && !e.includes("./backup")) { //respect dontdelete, the fresh downloaded files and the node_modules folder
+                if (fs.existsSync(e) && !dontdelete.includes(e) && !e.includes(`./steam-comment-service-bot-${releasemode}`) && !e.includes("./node_modules") && !e.includes("./backup") && !e.includes("./plugins")) { //respect dontdelete, the fresh downloaded files and the node_modules folder
                     fs.rmSync(e, { recursive: true })
                 }
         
