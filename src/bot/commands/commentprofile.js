@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 10.03.2022 12:57:57
+ * Last Modified: 12.03.2022 11:29:39
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -148,6 +148,8 @@ module.exports.run = async (chatmsg, steamID, args, lang, res, lastcommentdoc) =
 
 
                 /* --------- Try to comment --------- */
+                let thisIterationLocal = thisIteration //make a local copy of thisIteration so that thisIteration is still 0 inside the postUserComment callback even when thisIteration++ below it already got called
+                
                 require("../helpers/getQuote.js").getQuote(quotesArr, lastQuotes, (comment) => { //get a random quote to comment with and wait for callback to ensure a quote has been found before trying to comment
                     
                     controller.communityobject[thisindex].postUserComment(steamID, comment, (error) => { //post comment
@@ -157,12 +159,12 @@ module.exports.run = async (chatmsg, steamID, args, lang, res, lastcommentdoc) =
 
                         /* --------- Handle errors thrown by this comment attempt --------- */
                         if (error) {
-                            if (require("../helpers/handleCommentErrors.js").handleCommentErrors(error, thisindex, thisIteration, "postUserComment", recieverSteamID, numberOfComments)) return;
+                            if (require("../helpers/handleCommentErrors.js").handleCommentErrors(error, thisindex, thisIterationLocal, "postUserComment", recieverSteamID, numberOfComments)) return;
                         }
 
                         
                         /* --------- No error, run this on every successful iteration --------- */
-                        if (thisIteration == 0) { //Stuff below should only run in first iteration (main bot)
+                        if (thisIterationLocal == 0) { //Stuff below should only run in first iteration (main bot)
                             //converting steamID again to SteamID64 because it could have changed by a profileid argument
                             if (loginfile.proxies.length > 1) logger("info", `${logger.colors.fggreen}[${thisbot}] ${numberOfComments} Comment(s) requested. Comment on ${recieverSteamID} with proxy ${loginfile.additionalaccinfo[thisindex].thisproxyindex}: ${String(comment).split("\n")[0]}`)
                                 else logger("info", `${logger.colors.fggreen}[${thisbot}] ${numberOfComments} Comment(s) requested. Comment on ${recieverSteamID}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
@@ -193,14 +195,14 @@ module.exports.run = async (chatmsg, steamID, args, lang, res, lastcommentdoc) =
 
                         } else { //Stuff below should only run for child accounts
                             if (!error) {
-                                if (loginfile.proxies.length > 1) logger("info", `[${thisbot}] Comment ${thisIteration + 1}/${numberOfComments} on ${recieverSteamID} with proxy ${loginfile.additionalaccinfo[thisindex].thisproxyindex}: ${String(comment).split("\n")[0]}`)
-                                    else logger("info", `[${thisbot}] Comment ${thisIteration + 1}/${numberOfComments} on ${recieverSteamID}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
+                                if (loginfile.proxies.length > 1) logger("info", `[${thisbot}] Comment ${thisIterationLocal + 1}/${numberOfComments} on ${recieverSteamID} with proxy ${loginfile.additionalaccinfo[thisindex].thisproxyindex}: ${String(comment).split("\n")[0]}`)
+                                    else logger("info", `[${thisbot}] Comment ${thisIterationLocal + 1}/${numberOfComments} on ${recieverSteamID}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
                             }
                         }
 
 
                         /* --------- Run this code on last iteration --------- */
-                        if (thisIteration == numberOfComments - 1 && numberOfComments > 1) { //last iteration (run only when more than one comment is requested)
+                        if (thisIterationLocal == numberOfComments - 1 && numberOfComments > 1) { //last iteration (run only when more than one comment is requested)
 
                             //Call retryComments helper that will retry failed comments if retryFailedComments is enabled in advancedconfig.json
                             require("../helpers/retryComments.js").retryComments(recieverSteamID, lang, respond, (finished) => {
