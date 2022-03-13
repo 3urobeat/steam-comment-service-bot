@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 06.03.2022 14:40:45
+ * Last Modified: 13.03.2022 17:26:41
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -301,6 +301,10 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 if (!ownercheck) return notownerresponse();
 
                 require("../commands/system.js").eval(chatmsg, steamID, lang, args, bot, community)
+                break;
+            
+            case ':)':
+                chatmsg(steamID, ":))")
                 break;
             
             default: //cmd not recognized
