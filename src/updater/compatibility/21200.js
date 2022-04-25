@@ -4,7 +4,7 @@
  * Created Date: 23.02.2022 10:39:41
  * Author: 3urobeat
  * 
- * Last Modified: 26.02.2022 11:42:46
+ * Last Modified: 25.04.2022 15:28:51
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -20,7 +20,7 @@ module.exports.run = (callback) => {
     var cache = require("../../data/cache.json"); //should be safe to import here as checkAndGetFile() already ran in controller.js
     
     //Only do something if at least one of the two values exists
-    if (cache.configjson.globalcommentcooldown || cache.configjson.allowcommentcmdusage != undefined) { //intentionally checking specifically for undefined
+    if (cache.configjson && (cache.configjson.globalcommentcooldown || cache.configjson.allowcommentcmdusage != undefined)) { //intentionally checking specifically for undefined
         
         if (cache.configjson.globalcommentcooldown) config.botaccountcooldown = cache.configjson.globalcommentcooldown //write value previously assigned to globalcommentcooldown to botaccountcooldown
         if (cache.configjson.allowcommentcmdusage != undefined && !cache.configjson.allowcommentcmdusage) config.maxComments = 0; //since maxComments now handles disabling the comment cmd we need to set it to 0 if user previously turned the comment cmd off
