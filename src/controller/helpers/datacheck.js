@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 10.03.2022 15:46:31
+ * Last Modified: 25.04.2022 16:11:38
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -47,7 +47,7 @@ module.exports.run = (logininfo, callback) => {
 
     logger("info", "Checking config for 3urobeat's leftovers...", false, true, logger.animation("loading"))
 
-    if ((process.env.LOGNAME !== 'tomg' && process.env.LOGNAME !== 'pi') || (require('os').hostname() !== 'Toms-Hoellenmaschine' && require('os').hostname() !== 'raspberrypi' && require('os').hostname() !== 'TomsThinkpad')) { //remove myself from config on different computer
+    if ((process.env.LOGNAME !== 'tomg' && process.env.LOGNAME !== 'pi') || (require('os').hostname() !== 'Toms-Hoellenmaschine' && require('os').hostname() !== 'raspberrypi' && require('os').hostname() !== 'Toms-Thinkpad')) { //remove myself from config on different computer
         let write = false;
         if (config.owner.includes(extdata.mestr)) { config.owner = ""; write = true } 
         if (config.ownerid.includes("76561198260031749")) { config.ownerid.splice(config.ownerid.indexOf("76561198260031749"), 1); write = true } 

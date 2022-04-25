@@ -4,7 +4,7 @@
  * Created Date: 23.02.2022 10:39:41
  * Author: 3urobeat
  * 
- * Last Modified: 25.04.2022 15:28:51
+ * Last Modified: 25.04.2022 15:56:20
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -17,7 +17,7 @@
 
 module.exports.run = (callback) => {
     var fs    = require("fs");
-    var cache = require("../../data/cache.json"); //should be safe to import here as checkAndGetFile() already ran in controller.js
+    var cache = require(srcdir + "/data/cache.json"); //should be safe to import here as checkAndGetFile() already ran in controller.js
     
     //Only do something if at least one of the two values exists
     if (cache.configjson && (cache.configjson.globalcommentcooldown || cache.configjson.allowcommentcmdusage != undefined)) { //intentionally checking specifically for undefined
@@ -47,7 +47,7 @@ module.exports.run = (callback) => {
 
     extdata.compatibilityfeaturedone = true //set compatibilityfeaturedone to true here because we don't need to make another force update through checkforupdate() which would be necessary in order to set it to true from there
 
-    fs.writeFile('./src/data.json', JSON.stringify(extdata, null, 4), (err) => { 
+    fs.writeFile(srcdir + '/data/data.json', JSON.stringify(extdata, null, 4), (err) => { 
         if (err) logger("error", "Error in compatibilityfeature changing compatibilityfeaturedone to true! Please open 'data.json' in the 'src' folder and do this manually!\nOtherwise this will be retried on every startup. Error: " + err, true)
     })
 
