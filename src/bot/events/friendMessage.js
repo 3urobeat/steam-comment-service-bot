@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 13.03.2022 17:26:41
+ * Last Modified: 11.05.2022 12:42:46
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -140,8 +140,10 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                     try { //catch any unhandled error to be able to remove user from activecommentprocess array
                         require("../commands/commentprofile.js").run(chatmsg, steamID, args, lang, null, lastcommentdoc)
                     } catch (err) {
-                        chatmsg(steamID, "Error while processing comment request: " + err.stack)
-                        logger("error", "Error while processing comment request: " + err.stack)
+                        chatmsg(steamID, "Sorry, a non comment related error occurred while trying to process your request! Please try again later.");
+                        logger("error", "A non comment related error occurred while trying to process a comment request. Aborting request to make sure nothing weird happens.\n        " + err.stack);
+
+                        //if (mainfile.activecommentprocess[steam64id].interval) clearInterval(mainfile.activecommentprocess[steam64id].interval);
                     }
                 })
                 break;
