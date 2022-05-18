@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 09.03.2022 15:49:30
+ * Last Modified: 18.05.2022 22:00:12
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -43,20 +43,6 @@ module.exports.abort = (chatmsg, steamID, lang, args, steam64id) => {
 
         //Set new status for comment process
         mainfile.activecommentprocess[steam64id].status = "aborted"
-
-        //Clear comment interval manually if defined (just check to avoid potential errors)
-        if (mainfile.activecommentprocess[steam64id].interval) clearInterval(mainfile.activecommentprocess[steam64id].interval);
-
-        //push a reason for all other comments to failedcomments
-        var m = 0;
-
-        for (var l = mainfile.activecommentprocess[steam64id].thisIteration + 1; l <= mainfile.activecommentprocess[steam64id].amount; l++) { //start with l = thisIteration + 1 because humans start counting at 1 (this species confuses me)
-            if (m + 1 > Object.keys(controller.communityobject).length) m = 0; //reset variable tracking communityobject index if it is greater than the amount of accounts
-
-            mainfile.failedcomments[steam64id][`c${l}`] = "Skipped because user aborted comment process." //intentionally not including botindex and proxy because accountOrder gets shuffled every botindex reset s it wouldn't be accurate anyway and is also irrelevant if user aborted process
-            
-            m++
-        }
 
         logger("info", `Aborting comment process for profile/group ${steam64id}...`)
         chatmsg(steamID, lang.abortcmdsuccess)
