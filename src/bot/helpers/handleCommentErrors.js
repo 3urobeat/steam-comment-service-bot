@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  * 
- * Last Modified: 21.05.2022 15:11:30
+ * Last Modified: 21.05.2022 23:33:02
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -37,6 +37,7 @@ const mainfile   = require("../main.js");
  */
 module.exports.handleCriticalCommentErrors = (botindex, i, methodName, recieverSteamID, alreadySkippedProxies, numberOfComments, res, lang, respond) => {
     
+    //TODO: Rewrite to push all remaining comments at once and break loop
     //Check if profile is not anymore in mainfile.activecommentprocess obj or status is not active anymore (for example by using !abort)
     if (!mainfile.activecommentprocess[recieverSteamID] || mainfile.activecommentprocess[recieverSteamID].status == "aborted") {
         mainfile.failedcomments[recieverSteamID][`c${i} bot${botindex} p${loginfile.additionalaccinfo[botindex].thisproxyindex}`] = "Skipped because user aborted comment process." //push reason to mainfile.failedcomments obj
@@ -144,7 +145,6 @@ module.exports.handleCriticalCommentErrors = (botindex, i, methodName, recieverS
  * @param {String} methodName postUserComment or postGroupComment
  * @param {SteamID} recieverSteamID The steamID object of the recieving user
  * @param {Number} numberOfComments The number of requested comments
- * @returns {Object} skipIteration
  */
 module.exports.handleCommentErrors = (error, botindex, i, methodName, recieverSteamID, numberOfComments) => {
     if (botindex == 0) var thisbot = `Main`; //call bot 0 the main bot in logging messages
@@ -203,7 +203,5 @@ module.exports.handleCommentErrors = (error, botindex, i, methodName, recieverSt
 
         mainfile.failedcomments[recieverSteamID][`c${i + 1} bot${botindex} p${loginfile.additionalaccinfo[botindex].thisproxyindex}`] = `${methodName} error: ${error} [${errordesc}]`
     }
-    
-    return false; //continue with next iteration
 
 }
