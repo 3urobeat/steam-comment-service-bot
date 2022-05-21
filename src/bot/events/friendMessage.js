@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 11.05.2022 12:42:46
+ * Last Modified: 21.05.2022 15:06:41
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -142,8 +142,6 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                     } catch (err) {
                         chatmsg(steamID, "Sorry, a non comment related error occurred while trying to process your request! Please try again later.");
                         logger("error", "A non comment related error occurred while trying to process a comment request. Aborting request to make sure nothing weird happens.\n        " + err.stack);
-
-                        //if (mainfile.activecommentprocess[steam64id].interval) clearInterval(mainfile.activecommentprocess[steam64id].interval);
                     }
                 })
                 break;
