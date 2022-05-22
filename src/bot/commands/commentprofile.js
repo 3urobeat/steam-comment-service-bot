@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 21.05.2022 23:53:17
+ * Last Modified: 22.05.2022 13:14:44
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -111,6 +111,8 @@ module.exports.run = async (chatmsg, steamID, args, lang, res, lastcommentdoc) =
             quotesArr: quotesArr,
             requestedby: requesterSteamID,
             accounts: accountOrder,
+            thisIteration: 0,
+            retryAttempt: 0,
             until: Date.now() + (numberOfComments * config.commentdelay) //botaccountcooldown should start after the last comment was processed
         }
 
@@ -123,7 +125,7 @@ module.exports.run = async (chatmsg, steamID, args, lang, res, lastcommentdoc) =
 
 
 //internal function that actually does the commenting
-module.exports.comment = async (recieverSteamID, steamID, lang, res, respond) => {
+module.exports.comment = (recieverSteamID, steamID, lang, res, respond) => {
     
     var acpEntry = mainfile.activecommentprocess[recieverSteamID] //make using the obj shorter
 
@@ -134,16 +136,14 @@ module.exports.comment = async (recieverSteamID, steamID, lang, res, respond) =>
 
 
     //Comment numberOfComments times using our syncLoop helper
-    require(srcdir + "/controller/helpers/syncLoop.js").syncLoop(acpEntry.amount, (loop, i) => {
+    require(srcdir + "/controller/helpers/syncLoop.js").syncLoop(acpEntry.amount - acpEntry.thisIteration, (loop, i) => { //eslint-disable-line no-unused-vars
         setTimeout(() => {
-            
+
             var botindex = acpEntry.accounts[accountOrderIndex];
 
             /* --------- Check for critical errors and decide if this iteration should still run --------- */
-            var { skipIteration, aSP } = require("../helpers/handleCommentErrors.js").handleCriticalCommentErrors(botindex, i, "postUserComment", recieverSteamID, alreadySkippedProxies, acpEntry.amount, res, lang, respond);
+            var { skipIteration, aSP } = require("../helpers/handleCommentErrors.js").handleCriticalCommentErrors(botindex, "postUserComment", recieverSteamID, alreadySkippedProxies, acpEntry.amount, res, lang, respond);
             if (aSP) alreadySkippedProxies = aSP;
-
-            logger("debug", `bot${botindex} does comment ${i}: ${config.commentdelay * i}ms timeout is over: skipIteration: ${skipIteration}`);
 
             if (skipIteration) {
                 loop.next(); //continue with next iteration
@@ -160,11 +160,11 @@ module.exports.comment = async (recieverSteamID, steamID, lang, res, respond) =>
 
                     
                     /* --------- Handle errors thrown by this comment attempt --------- */
-                    if (error) require("../helpers/handleCommentErrors.js").handleCommentErrors(error, botindex, i, "postUserComment", recieverSteamID, acpEntry.amount)
+                    if (error) require("../helpers/handleCommentErrors.js").handleCommentErrors(error, botindex, "postUserComment", recieverSteamID, acpEntry.amount)
 
 
                     /* --------- No error, run this on every successful iteration --------- */
-                    if (i == 0) { //Stuff below should only run in first iteration (main bot)
+                    if (acpEntry.thisIteration == 0) { //Stuff below should only run in first iteration
                         //converting steamID again to SteamID64 because it could have changed by a profileid argument
                         if (loginfile.proxies.length > 1) logger("info", `${logger.colors.fggreen}[${thisbot}] ${acpEntry.amount} Comment(s) requested. Comment on ${recieverSteamID} with proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}: ${String(comment).split("\n")[0]}`)
                             else logger("info", `${logger.colors.fggreen}[${thisbot}] ${acpEntry.amount} Comment(s) requested. Comment on ${recieverSteamID}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
@@ -174,7 +174,7 @@ module.exports.comment = async (recieverSteamID, steamID, lang, res, respond) =>
                         if (acpEntry.amount == 1) {
                             respond(200, lang.commentsuccess1)
 
-                            mainfile.activecommentprocess[recieverSteamID].status = "cooldown"
+                            acpEntry.status = "cooldown"
                             mainfile.commentcounter += 1
 
                         } else {
@@ -195,24 +195,30 @@ module.exports.comment = async (recieverSteamID, steamID, lang, res, respond) =>
 
                     } else { //Stuff below should only run for child accounts
                         if (!error) {
-                            if (loginfile.proxies.length > 1) logger("info", `[${thisbot}] Comment ${i + 1}/${acpEntry.amount} on ${recieverSteamID} with proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}: ${String(comment).split("\n")[0]}`)
-                                else logger("info", `[${thisbot}] Comment ${i + 1}/${acpEntry.amount} on ${recieverSteamID}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
+                            if (loginfile.proxies.length > 1) logger("info", `[${thisbot}] Comment ${acpEntry.thisIteration + 1}/${acpEntry.amount} on ${recieverSteamID} with proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}: ${String(comment).split("\n")[0]}`)
+                                else logger("info", `[${thisbot}] Comment ${acpEntry.thisIteration + 1}/${acpEntry.amount} on ${recieverSteamID}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
                         }
                     }
 
 
                     /* --------- Run this code on last iteration --------- */
-                    if (i == acpEntry.amount - 1 && acpEntry.amount > 1) { //I didn't put this code in the exit function of syncLoop as this message is not always the last message, it can be replaced by lang.commentsuccess1 as well as by the all proxies failed check
-                        var failedcmdreference = ""
+                    if (acpEntry.thisIteration == acpEntry.amount - 1 && acpEntry.amount > 1) { //I didn't put this code in the exit function of syncLoop as this message is not always the last message, it can be replaced by lang.commentsuccess1 as well as by the all proxies failed check
+                        
+                        //Call retryComments helper that will retry failed comments if retryFailedComments is enabled in advancedconfig.json
+                        require("../helpers/retryComments.js").retryComments(recieverSteamID, steamID, lang, res, respond, (finished) => {
+                            if (finished) {
+                                var failedcmdreference = ""
 
-                        if (Object.keys(mainfile.failedcomments[recieverSteamID]).length > 0) {
-                            failedcmdreference = "\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
-                        }
+                                if (Object.keys(mainfile.failedcomments[recieverSteamID]).length > 0) {
+                                    failedcmdreference = "\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
+                                }
 
-                        if (!res) respond(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(mainfile.failedcomments[recieverSteamID]).length).replace("numberOfComments", acpEntry.amount)}\n${failedcmdreference}`); //only send if not a webrequest
+                                if (!res) respond(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(mainfile.failedcomments[recieverSteamID]).length).replace("numberOfComments", acpEntry.amount)}\n${failedcmdreference}`); //only send if not a webrequest
 
-                        mainfile.activecommentprocess[recieverSteamID].status = "cooldown"
-                        mainfile.commentcounter += acpEntry.amount - Object.keys(mainfile.failedcomments[recieverSteamID]).length //add numberOfComments minus failedamount to commentcounter
+                                acpEntry.status = "cooldown"
+                                mainfile.commentcounter += acpEntry.amount - Object.keys(mainfile.failedcomments[recieverSteamID]).length //add numberOfComments minus failedamount to commentcounter
+                            }
+                        })
                     }
 
 
@@ -223,6 +229,7 @@ module.exports.comment = async (recieverSteamID, steamID, lang, res, respond) =>
 
             /* --------- Loop Management --------- */
             accountOrderIndex++;
+            acpEntry.thisIteration++;
 
             if (accountOrderIndex + 1 > Object.keys(controller.communityobject).length) {
                 const lastaccountint = String(acpEntry.accounts[accountOrderIndex - 1]) //save last used account (which is -1 because k++ was already executed again)
