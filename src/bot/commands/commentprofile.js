@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.05.2022 13:14:44
+ * Last Modified: 22.05.2022 14:00:55
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -111,7 +111,7 @@ module.exports.run = async (chatmsg, steamID, args, lang, res, lastcommentdoc) =
             quotesArr: quotesArr,
             requestedby: requesterSteamID,
             accounts: accountOrder,
-            thisIteration: 0,
+            thisIteration: -1, //set to -1 so that first iteration will increase it to 0
             retryAttempt: 0,
             until: Date.now() + (numberOfComments * config.commentdelay) //botaccountcooldown should start after the last comment was processed
         }
@@ -140,6 +140,7 @@ module.exports.comment = (recieverSteamID, steamID, lang, res, respond) => {
         setTimeout(() => {
 
             var botindex = acpEntry.accounts[accountOrderIndex];
+            acpEntry.thisIteration++;
 
             /* --------- Check for critical errors and decide if this iteration should still run --------- */
             var { skipIteration, aSP } = require("../helpers/handleCommentErrors.js").handleCriticalCommentErrors(botindex, "postUserComment", recieverSteamID, alreadySkippedProxies, acpEntry.amount, res, lang, respond);
@@ -229,7 +230,6 @@ module.exports.comment = (recieverSteamID, steamID, lang, res, respond) => {
 
             /* --------- Loop Management --------- */
             accountOrderIndex++;
-            acpEntry.thisIteration++;
 
             if (accountOrderIndex + 1 > Object.keys(controller.communityobject).length) {
                 const lastaccountint = String(acpEntry.accounts[accountOrderIndex - 1]) //save last used account (which is -1 because k++ was already executed again)
@@ -241,7 +241,7 @@ module.exports.comment = (recieverSteamID, steamID, lang, res, respond) => {
                 if (config.randomizeAccounts && acpEntry.accounts[0] == lastaccountint) acpEntry.accounts.push(acpEntry.accounts.shift()) //if lastaccountint is first account in new order then move it to the end
             }
 
-        }, config.commentdelay); //delay comment
+        }, config.commentdelay * (i > 0)); //delay every comment that is not the first one
 
     })
 
