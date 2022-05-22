@@ -4,7 +4,7 @@
  * Created Date: 22.02.2022 17:39:21
  * Author: 3urobeat
  * 
- * Last Modified: 23.02.2022 15:48:23
+ * Last Modified: 22.05.2022 15:21:42
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -28,7 +28,7 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
     delete require.cache[require.resolve(srcdir + "/../config.json")] //delete cache
     let newconfig = require(srcdir + "/../config.json")
 
-    logger("", `${logger.colors.fgyellow}Transfering your changes to new config.json...`, true, false, logger.animation("loading"))
+    logger("", `${logger.colors.fgyellow}Transferring your changes to new config.json...`, true, false, logger.animation("loading"))
     
     Object.keys(newconfig).forEach(e => {
         if (!Object.keys(oldconfig).includes(e)) return; //config value seems to be new so don't bother trying to set it to something (which would probably be undefined anyway)
@@ -61,7 +61,7 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
     delete require.cache[require.resolve(srcdir + "/../advancedconfig.json")] //delete cache
     let newadvancedconfig = require(srcdir + "/../advancedconfig.json")
 
-    logger("", `${logger.colors.fgyellow}Transfering your changes to new advancedconfig.json...`, true, false, logger.animation("loading"))
+    logger("", `${logger.colors.fgyellow}Transferring your changes to new advancedconfig.json...`, true, false, logger.animation("loading"))
     
     Object.keys(newadvancedconfig).forEach(e => {
         if (!Object.keys(oldadvancedconfig).includes(e)) return; //config value seems to be new so don't bother trying to set it to something (which would probably be undefined anyway)
@@ -94,7 +94,7 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
     delete require.cache[require.resolve(srcdir + "/data/data.json")] //delete cache
     let newextdata = require(srcdir + "/data/data.json")
 
-    logger("", `${logger.colors.fgyellow}Transfering changes to new data.json...${logger.colors.reset}`, true, false, logger.animation("loading"))
+    logger("", `${logger.colors.fgyellow}Transferring changes to new data.json...${logger.colors.reset}`, true, false, logger.animation("loading"))
 
     if (Object.keys(extdata).length > 2) { //Only do this if the data.json update call originates from the updater and not from the integrity check
         if (compatibilityfeaturedone) newextdata.compatibilityfeaturedone = true
