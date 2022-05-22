@@ -4,7 +4,7 @@
  * Created Date: 09.03.2022 12:58:17
  * Author: 3urobeat
  * 
- * Last Modified: 09.03.2022 14:11:59
+ * Last Modified: 22.05.2022 14:59:37
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -22,7 +22,7 @@ const steamIDResolver = require("steamid-resolver");
 /**
  * Handles converting profile/group URLs to steamIDs
  * @param {String} str The profileID argument provided by the user
- * @param {SteamID.Type} profileIDType The type of SteamID expected for profileID parameter (https://github.com/DoctorMcKay/node-steamid#types) or null if type should be ignored (if not a full URL is provided then type of profile will be assumed)
+ * @param {SteamID.Type} profileIDType The type of SteamID expected for profileID parameter (https://github.com/DoctorMcKay/node-steamid#types) or null if type should be assumed by checking SteamID(str).type
  * @param {function} [callback] Called with `err` (String or null) and `steamID64` (String or null) parameters on completion
  */
 module.exports.run = (str, profileIDType, callback) => {
@@ -64,7 +64,7 @@ module.exports.run = (str, profileIDType, callback) => {
         } else { //doesn't seem to be an URL
 
             //If user just provided the customURL part of the URL then try and figure out from the expected profileIDType if this could be a profile or group customURL
-            if (profileIDType == SteamID.Type.INDIVIDUAL || !profileIDType) {
+            if (profileIDType == SteamID.Type.INDIVIDUAL) {
                 logger("debug", "handleSteamIdResolving: User didn't provide a full url as profileID str. Expecting custom profile URL based on profileIDType...")
 
                 steamIDResolver.customUrlTosteamID64(str, handleResponse)
@@ -75,9 +75,30 @@ module.exports.run = (str, profileIDType, callback) => {
                 steamIDResolver.groupUrlToGroupID64(str, handleResponse)
                 
             } else {
-                logger("debug", "handleSteamIdResolving: Sending error message and aborting as user provided something as profileID argument which I don't understand: " + str);
-                
-                handleResponse("profileID parameter seems to be invalid.", null);
+
+                //profileIDType is null, we need to try and figure out what might have been provided
+                logger("debug", "handleSteamIdResolving: profileIDType is null. Trying to figure out what has been provided...")
+
+                steamIDResolver.customUrlTosteamID64(str, (err, steamID64) => { //check profile first, as it will probably be used more often
+                    if (err) {
+                        logger("debug", "handleSteamIdResolving: profile id check returned an error. Trying group id check...")
+
+                        steamIDResolver.groupUrlToGroupID64(str, (err, groupID) => {
+                            if (err) {
+                                logger("debug", "handleSteamIdResolving: group id check also returned an error! Sending error message and aborting as user provided something as profileID argument which I don't understand: " + str)
+                                handleResponse("ID parameter seems to be invalid.", null);
+                                
+                            } else {
+                                logger("debug", "handleSteamIdResolving: the provided id seems to be a group id! Returning groupID...")
+                                handleResponse(null, groupID);
+                            }
+                        })
+                        
+                    } else {
+                        logger("debug", "handleSteamIdResolving: the provided id seems to be a profile id! Returning steamID64...")
+                        handleResponse(null, steamID64);
+                    }
+                })
             }
         }
 

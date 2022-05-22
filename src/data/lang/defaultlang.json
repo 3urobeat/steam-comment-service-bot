@@ -57,7 +57,7 @@
     "groupcmdnolink": "The botowner of this instance hasn't provided any group or the group doesn't exist.",
     "groupcmdinvitesent": "I sent you an invite! Thanks for joining!",
     "groupcmdinvitelink": "Join my group here: ",
-    "abortcmdnoprocess": "/me There is no active comment process running for this profile.\nIf you requested comments for another profile or for a group then please provide the id as argument!",
+    "abortcmdnoprocess": "/me There is no active comment process running for this ID.\nIf you requested comments for another profile or for a group then please provide the id as argument!",
     "abortcmdsuccess": "/me Aborting your active comment process...",
 
     "resetcooldowncmdcooldowndisabled": "The cooldown is disabled in the config!",
