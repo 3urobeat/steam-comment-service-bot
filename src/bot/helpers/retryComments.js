@@ -4,7 +4,7 @@
  * Created Date: 08.03.2022 13:09:21
  * Author: 3urobeat
  * 
- * Last Modified: 22.05.2022 12:59:56
+ * Last Modified: 22.05.2022 14:07:41
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -52,7 +52,7 @@ module.exports.retryComments = (recieverSteamID, steamID, lang, res, respond, ca
 
             //call comment function again
             if (acpEntry.type == "profile") require("../commands/commentprofile.js").comment(recieverSteamID, steamID, lang, res, respond)
-                //else require("../commands/commentgroup.js").comment() //TODO: Not implemented yet
+                else require("../commands/commentgroup.js").comment(recieverSteamID, steamID, lang, res, respond)
         }, advancedconfig.retryFailedCommentsDelay);
 
     } else {

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.05.2022 14:00:55
+ * Last Modified: 22.05.2022 14:33:03
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -136,7 +136,7 @@ module.exports.comment = (recieverSteamID, steamID, lang, res, respond) => {
 
 
     //Comment numberOfComments times using our syncLoop helper
-    require(srcdir + "/controller/helpers/syncLoop.js").syncLoop(acpEntry.amount - acpEntry.thisIteration, (loop, i) => { //eslint-disable-line no-unused-vars
+    require(srcdir + "/controller/helpers/syncLoop.js").syncLoop(acpEntry.amount - (acpEntry.thisIteration + 1), (loop, i) => { //eslint-disable-line no-unused-vars
         setTimeout(() => {
 
             var botindex = acpEntry.accounts[accountOrderIndex];
@@ -166,7 +166,6 @@ module.exports.comment = (recieverSteamID, steamID, lang, res, respond) => {
 
                     /* --------- No error, run this on every successful iteration --------- */
                     if (acpEntry.thisIteration == 0) { //Stuff below should only run in first iteration
-                        //converting steamID again to SteamID64 because it could have changed by a profileid argument
                         if (loginfile.proxies.length > 1) logger("info", `${logger.colors.fggreen}[${thisbot}] ${acpEntry.amount} Comment(s) requested. Comment on ${recieverSteamID} with proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}: ${String(comment).split("\n")[0]}`)
                             else logger("info", `${logger.colors.fggreen}[${thisbot}] ${acpEntry.amount} Comment(s) requested. Comment on ${recieverSteamID}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
 
@@ -242,7 +241,5 @@ module.exports.comment = (recieverSteamID, steamID, lang, res, respond) => {
             }
 
         }, config.commentdelay * (i > 0)); //delay every comment that is not the first one
-
     })
-
 }

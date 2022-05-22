@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 11.05.2022 12:51:05
+ * Last Modified: 22.05.2022 14:32:54
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -81,9 +81,6 @@ const controller = require("../../controller/controller.js");
 
 
     /* --------- Start commenting --------- */
-    var alreadySkippedProxies = []
-    var lastQuotes            = [] //array to track last quotes used
-
     //Prepare new empty entry in failedcomments obj
     mainfile.failedcomments[recieverSteamID] = {}
 
@@ -92,113 +89,137 @@ const controller = require("../../controller/controller.js");
         status: "active",
         type: "group",
         amount: numberOfComments,
+        quotesArr: quotesArr,
         requestedby: requesterSteamID,
         accounts: accountOrder,
+        thisIteration: -1, //set to -1 so that first iteration will increase it to 0
+        retryAttempt: 0,
         until: Date.now() + (numberOfComments * config.commentdelay) //botaccountcooldown should start after the last comment was processed
     }
 
+    logger("debug", "Added user to activecommentprocess obj, starting comment loop...");
 
-    //Comment function that will be called numberOfComments times by the loop below
-    function comment(botindex, i) {
+    this.comment(recieverSteamID, steamID, lang, res, respond); //start commenting
+
+}
+
+
+//internal function that actually does the commenting
+module.exports.comment = (recieverSteamID, steamID, lang, res, respond) => {
+
+    var acpEntry = mainfile.activecommentprocess[recieverSteamID] //make using the obj shorter
+
+    var accountOrderIndex = 0; //The bot account to be used
+
+    var alreadySkippedProxies = [] //array to track proxies that were skipped
+    var lastQuotes            = [] //array to track last quotes used
+
+
+    //Comment numberOfComments times using our syncLoop helper
+    require(srcdir + "/controller/helpers/syncLoop.js").syncLoop(acpEntry.amount - (acpEntry.thisIteration + 1), (loop, i) => { //eslint-disable-line no-unused-vars
         setTimeout(() => {
-            
+
+            var botindex = acpEntry.accounts[accountOrderIndex];
+            acpEntry.thisIteration++;
+
             /* --------- Check for critical errors and decide if this iteration should still run --------- */
-            var { skipIteration, aSP } = require("../helpers/handleCommentErrors.js").handleCriticalCommentErrors(botindex, i, "postGroupComment", recieverSteamID, alreadySkippedProxies, numberOfComments, res, lang, respond);
+            var { skipIteration, aSP } = require("../helpers/handleCommentErrors.js").handleCriticalCommentErrors(botindex, "postGroupComment", recieverSteamID, alreadySkippedProxies, acpEntry.amount, res, lang, respond);
             if (aSP) alreadySkippedProxies = aSP;
 
-            logger("debug", `bot${botindex} does comment ${i}: ${config.commentdelay * i}ms timeout is over: skipIteration: ${skipIteration}`);
-
-            if (skipIteration) return; //skip iteration or stop here with every other iteration if we should not attempt to comment anymore
+            if (skipIteration) {
+                loop.next(); //continue with next iteration
+                return;
+            }
 
 
             /* --------- Try to comment --------- */
-            require("../helpers/getQuote.js").getQuote(quotesArr, lastQuotes, (comment) => { //get a random quote to comment with and wait for callback to ensure a quote has been found before trying to comment
-
+            require("../helpers/getQuote.js").getQuote(acpEntry.quotesArr, lastQuotes, (comment) => { //get a random quote to comment with and wait for callback to ensure a quote has been found before trying to comment
+                
                 controller.communityobject[botindex].postGroupComment(recieverSteamID, comment, (error) => { //post comment
                     if (botindex == 0) var thisbot = `Main`; //call bot 0 the main bot in logging messages
                         else var thisbot = `Bot ${botindex}`;
 
+                    
                     /* --------- Handle errors thrown by this comment attempt --------- */
-                    if (error) {
-                        if (require("../helpers/handleCommentErrors.js").handleCommentErrors(error, botindex, i, "postGroupComment", recieverSteamID, numberOfComments)) return;
-                    }
+                    if (error) require("../helpers/handleCommentErrors.js").handleCommentErrors(error, botindex, "postGroupComment", recieverSteamID, acpEntry.amount)
 
 
                     /* --------- No error, run this on every successful iteration --------- */
-                    if (i == 0) { //Stuff below should only run in first iteration (main bot)
-                        //converting steamID again to SteamID64 because it could have changed by a profileid argument
-                        if (loginfile.proxies.length > 1) logger("info", `${logger.colors.fggreen}[${thisbot}] ${numberOfComments} Comment(s) requested. Comment in group ${recieverSteamID} with proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}: ${String(comment).split("\n")[0]}`)
-                                else logger("info", `${logger.colors.fggreen}[${thisbot}] ${numberOfComments} Comment(s) requested. Comment in group ${recieverSteamID}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
+                    if (acpEntry.thisIteration == 0) { //Stuff below should only run in first iteration
+                        if (loginfile.proxies.length > 1) logger("info", `${logger.colors.fggreen}[${thisbot}] ${acpEntry.amount} Comment(s) requested. Comment in group ${recieverSteamID} with proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}: ${String(comment).split("\n")[0]}`)
+                            else logger("info", `${logger.colors.fggreen}[${thisbot}] ${acpEntry.amount} Comment(s) requested. Comment in group ${recieverSteamID}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
 
                         
                         //Send success message or estimated wait time message
-                        if (numberOfComments == 1) {
+                        if (acpEntry.amount == 1) {
                             respond(200, lang.commentsuccess1)
 
-                            mainfile.activecommentprocess[recieverSteamID].status = "cooldown"
+                            acpEntry.status = "cooldown"
                             mainfile.commentcounter += 1
 
                         } else {
-                            var waittime = ((numberOfComments - 1) * config.commentdelay) / 1000 //calculate estimated wait time (first comment is instant -> remove 1 from numberOfComments)
+                            var waittime = ((acpEntry.amount - 1) * config.commentdelay) / 1000 //calculate estimated wait time (first comment is instant -> remove 1 from numberOfComments)
                             var waittimeunit = "seconds"
                             if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "minutes" }
                             if (waittime > 120) { var waittime = waittime / 60; var waittimeunit = "hours" }
 
-                            respond(200, lang.commentprocessstarted.replace("numberOfComments", numberOfComments).replace("waittime", Number(Math.round(waittime+'e'+3)+'e-'+3)).replace("timeunit", waittimeunit))
+                            respond(200, lang.commentprocessstarted.replace("numberOfComments", acpEntry.amount).replace("waittime", Number(Math.round(waittime+'e'+3)+'e-'+3)).replace("timeunit", waittimeunit))
                         }
 
 
                         /* --------- Give user cooldown --------- */ 
                         //add estimated wait time in ms to start the cooldown after the last recieved comment
-                        controller.lastcomment.update({ id: requesterSteamID }, { $set: { time: Date.now() + ((numberOfComments - 1) * config.commentdelay) } }, {}, (err) => { 
+                        controller.lastcomment.update({ id: acpEntry.requestedby }, { $set: { time: Date.now() + ((acpEntry.amount - 1) * config.commentdelay) } }, {}, (err) => { 
                             if (err) logger("error", "Error adding cooldown to user in database! You should probably *not* ignore this error!\nError: " + err) 
                         })
 
                     } else { //Stuff below should only run for child accounts
                         if (!error) {
-                            if (loginfile.proxies.length > 1) logger("info", `[${thisbot}] Comment ${i + 1}/${numberOfComments} in group ${recieverSteamID} with proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}: ${String(comment).split("\n")[0]}`)
-                                else logger("info", `[${thisbot}] Comment ${i + 1}/${numberOfComments} in group ${recieverSteamID}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
+                            if (loginfile.proxies.length > 1) logger("info", `[${thisbot}] Comment ${acpEntry.thisIteration + 1}/${acpEntry.amount} in group ${recieverSteamID} with proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}: ${String(comment).split("\n")[0]}`)
+                                else logger("info", `[${thisbot}] Comment ${acpEntry.thisIteration + 1}/${acpEntry.amount} in group ${recieverSteamID}: ${String(comment).split("\n")[0]}`) //splitting \n to only get first line of multi line comments
                         }
                     }
 
 
                     /* --------- Run this code on last iteration --------- */
-                    if (i == numberOfComments - 1 && numberOfComments > 1) { //last iteration (run only when more than one comment is requested)
-                        var failedcmdreference = ""
+                    if (acpEntry.thisIteration == acpEntry.amount - 1 && acpEntry.amount > 1) { //I didn't put this code in the exit function of syncLoop as this message is not always the last message, it can be replaced by lang.commentsuccess1 as well as by the all proxies failed check
+                        
+                        //Call retryComments helper that will retry failed comments if retryFailedComments is enabled in advancedconfig.json
+                        require("../helpers/retryComments.js").retryComments(recieverSteamID, steamID, lang, res, respond, (finished) => {
+                            if (finished) {
+                                var failedcmdreference = ""
 
-                        if (Object.keys(mainfile.failedcomments[recieverSteamID]).length > 0) {
-                            failedcmdreference = "\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
-                        }
+                                if (Object.keys(mainfile.failedcomments[recieverSteamID]).length > 0) {
+                                    failedcmdreference = "\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems" 
+                                }
 
-                        if (!res) respond(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(mainfile.failedcomments[recieverSteamID]).length).replace("numberOfComments", numberOfComments)}\n${failedcmdreference}`); //only send if not a webrequest
+                                if (!res) respond(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(mainfile.failedcomments[recieverSteamID]).length).replace("numberOfComments", acpEntry.amount)}\n${failedcmdreference}`); //only send if not a webrequest
 
-                        mainfile.activecommentprocess[recieverSteamID].status = "cooldown"
-                        mainfile.commentcounter += numberOfComments - Object.keys(mainfile.failedcomments[recieverSteamID]).length //add numberOfComments minus failedamount to commentcounter
+                                acpEntry.status = "cooldown"
+                                mainfile.commentcounter += acpEntry.amount - Object.keys(mainfile.failedcomments[recieverSteamID]).length //add numberOfComments minus failedamount to commentcounter
+                            }
+                        })
                     }
+
+
+                    loop.next(); //continue with next iteration
                 })
             })
-        }, config.commentdelay * i); //delay every comment
-    }
 
 
-    //Call comment function numberOfComments times
-    var botindex = 0; //The bot account to be used
+            /* --------- Loop Management --------- */
+            accountOrderIndex++;
 
-    logger("debug", "Added user to activecommentprocess obj, starting comment loop...");
+            if (accountOrderIndex + 1 > Object.keys(controller.communityobject).length) {
+                const lastaccountint = String(acpEntry.accounts[accountOrderIndex - 1]) //save last used account (which is -1 because k++ was already executed again)
+                
+                accountOrderIndex = 0; //reset accountOrderIndex if it is greater than the amount of accounts
 
-    for (var i = 0; i < numberOfComments; i++) {
-        comment(accountOrder[botindex], i) //comment with botindex on user profile
+                //shuffle accountorder again if randomizeAccounts is true but check that the last used account isn't the first one
+                if (config.randomizeAccounts) acpEntry.accounts.sort(() => Math.random() - 0.5);
+                if (config.randomizeAccounts && acpEntry.accounts[0] == lastaccountint) acpEntry.accounts.push(acpEntry.accounts.shift()) //if lastaccountint is first account in new order then move it to the end
+            }
 
-        botindex++;
-
-        if (botindex + 1 > Object.keys(controller.communityobject).length) {
-            const lastaccountint = String(accountOrder[botindex - 1]) //save last used account (which is -1 because k++ was already executed again)
-            
-            botindex = 0; //reset botindex if it is greater than the amount of accounts
-
-            //shuffle accountorder again if randomizeAccounts is true but check that the last used account isn't the first one
-            if (config.randomizeAccounts) accountOrder.sort(() => Math.random() - 0.5);
-            if (config.randomizeAccounts && accountOrder[0] == lastaccountint) accountOrder.push(accountOrder.shift()) //if lastaccountint is first account in new order then move it to the end
-        }
-    }
+        }, config.commentdelay * (i > 0)); //delay every comment that is not the first one
+    })
 }
