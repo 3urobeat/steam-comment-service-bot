@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 10.03.2022 15:14:48
+ * Last Modified: 03.06.2022 13:58:34
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -26,6 +26,8 @@ var requestedKill;
 var handleUnhandledRejection;
 var handleUncaughtException;
 var parentExitEvent;
+
+const fs = require("fs")
 
 global.srcdir = __dirname;
 
@@ -212,13 +214,14 @@ module.exports.checkAndGetFile = (file, logger, norequire, force, callback) => {
         callback(undefined)
         return;
     }
-
-    var fs = require("fs")
     
 
-    if (!fs.existsSync(file) || force) { //Function that downloads filetostart if it doesn't exist (file location change etc.)
+    //Function that will download a new file, test it and make a callback
+    function getNewFile() {
+        
         //Determine branch
         var branch = "master" //Default to master
+
         try { 
             branch = require("./data/data.json").branch //Try to read from data.json (which will when user is coming from <2.11)
         } catch (err) {
@@ -265,13 +268,36 @@ module.exports.checkAndGetFile = (file, logger, norequire, force, callback) => {
                 }) 
             });
         } catch (err) { 
-            logger("error", "start.js get starter.js function error: " + err)
+            logger("error", "checkAndGetFile() error pulling new file: " + err)
 
             callback(null)
         }
-    } else {
-        if (norequire) callback(file)
-            else callback(require("." + file))
+    }
+    
+
+    //immediately get a new file if file doesn't exist or force is true 
+    if (!fs.existsSync(file) || force) {
+        getNewFile();
+
+    } else { //...otherwise check if file is intact if norequire is false
+
+        if (norequire) {
+            callback(file)
+        } else {
+
+            try {
+                logger("debug", `checkAndGetFile(): file ${file} exists, force and norequire are false. Testing integrity by requiring...`)
+
+                let fileToLoad = require("." + file);
+
+                callback(fileToLoad); //seems to be fine, otherwise we would already be in the catch block
+
+            } catch (err) {
+                logger("warn", `It looks like file ${file} is corrupted. Trying to pull new file from GitHub...`, false, true)
+
+                getNewFile();
+            }
+        }
     }
 }
 
