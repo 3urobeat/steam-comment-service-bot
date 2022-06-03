@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.06.2022 17:47:05
+ * Last Modified: 03.06.2022 18:15:42
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -18,16 +18,17 @@
 /**
  * Helper function to pull new file from GitHub
  */
-function pullNewFile(name, filepath, requirepath, resolve) {
+async function pullNewFile(name, filepath, requirepath, resolve) {
     logger("warn", "Backup seems to be broken/not available! Pulling file from GitHub...", true)
 
-    require("../../starter.js").checkAndGetFile(filepath, logger, true, true, () => {
-        //Only tell user to reconfigure config.json 
-        if (name == "config.json") logger("info", `Successfully pulled new ${name} from GitHub. Please configure it again!\n`, true)
-            else logger("info", `Successfully pulled new ${name} from GitHub.\n`, true)
+    let file = await require("../../starter.js").checkAndGetFile(filepath, logger, true, true)
+    if (!file) return;
+    
+    //Only tell user to reconfigure config.json 
+    if (name == "config.json") logger("info", `Successfully pulled new ${name} from GitHub. Please configure it again!\n`, true)
+        else logger("info", `Successfully pulled new ${name} from GitHub.\n`, true)
 
-        resolve(require(requirepath));
-    })
+    resolve(require(requirepath));
 }
 
 /**

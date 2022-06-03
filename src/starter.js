@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.06.2022 13:58:34
+ * Last Modified: 03.06.2022 18:07:54
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -206,99 +206,100 @@ function attachChildListeners() {
  * @param {function} logger Your current logger function
  * @param {Boolean} norequire If set to true the function will return the path instead of importing it
  * @param {Boolean} force If set to true the function will skip checking if the file exists and overwrite it.
- * @param {function} [callback] Called with `ready` (Boolean) on completion.
  */
-module.exports.checkAndGetFile = (file, logger, norequire, force, callback) => {
-    if (!file) {
-        logger("error", "checkAndGetFile() error: file parameter is undefined!")
-        callback(undefined)
-        return;
-    }
-    
-
-    //Function that will download a new file, test it and make a callback
-    function getNewFile() {
+module.exports.checkAndGetFile = (file, logger, norequire, force) => {
+    return new Promise((resolve) => {
+        if (!file) {
+            logger("error", "checkAndGetFile() error: file parameter is undefined!")
+            resolve(undefined)
+            return;
+        }
         
-        //Determine branch
-        var branch = "master" //Default to master
 
-        try { 
-            branch = require("./data/data.json").branch //Try to read from data.json (which will when user is coming from <2.11)
-        } catch (err) {
-            try {
-                var otherdata = require("./data.json") //then try to get the other, "compatibility" data file to check if versionstr includes the word BETA
-                
-                if (otherdata.versionstr.includes("BETA")) branch = "beta-testing"
-            } catch (err) { } //eslint-disable-line
-        }
+        //Function that will download a new file, test it and resolve/reject promise
+        function getNewFile() {
+            
+            //Determine branch
+            var branch = "master" //Default to master
 
-
-        var fileurl = `https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${branch}/${file.slice(2, file.length)}` //remove the dot at the beginning of the file string
-
-        logger("info", "Pulling: " + fileurl, false, true)
-
-        try {
-            var https = require("https")
-            var path  = require("path")
-
-            var output = ""
-
-            //Create the underlying folder structure to avoid error when trying to write the downloaded file
-            fs.mkdirSync(path.dirname(file), { recursive: true })
-
-            //Get the file
-            https.get(fileurl, function (res) {
-                res.setEncoding('utf8');
-
-                res.on('data', function (chunk) {
-                    output += chunk 
-                });
-
-                res.on('end', () => {
-                    fs.writeFile(file, output, (err) => {
-                        if (err) {
-                            logger("error", "checkAndGetFile() writeFile error: " + err)
-                            callback(null)
-                            return;
-                        }
-
-                        if (norequire) callback(file)
-                            else callback(require("." + file))
-                    })
-                }) 
-            });
-        } catch (err) { 
-            logger("error", "checkAndGetFile() error pulling new file: " + err)
-
-            callback(null)
-        }
-    }
-    
-
-    //immediately get a new file if file doesn't exist or force is true 
-    if (!fs.existsSync(file) || force) {
-        getNewFile();
-
-    } else { //...otherwise check if file is intact if norequire is false
-
-        if (norequire) {
-            callback(file)
-        } else {
-
-            try {
-                logger("debug", `checkAndGetFile(): file ${file} exists, force and norequire are false. Testing integrity by requiring...`)
-
-                let fileToLoad = require("." + file);
-
-                callback(fileToLoad); //seems to be fine, otherwise we would already be in the catch block
-
+            try { 
+                branch = require("./data/data.json").branch //Try to read from data.json (which will when user is coming from <2.11)
             } catch (err) {
-                logger("warn", `It looks like file ${file} is corrupted. Trying to pull new file from GitHub...`, false, true)
+                try {
+                    var otherdata = require("./data.json") //then try to get the other, "compatibility" data file to check if versionstr includes the word BETA
+                    
+                    if (otherdata.versionstr.includes("BETA")) branch = "beta-testing"
+                } catch (err) { } //eslint-disable-line
+            }
 
-                getNewFile();
+
+            var fileurl = `https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${branch}/${file.slice(2, file.length)}` //remove the dot at the beginning of the file string
+
+            logger("info", "Pulling: " + fileurl, false, true)
+
+            try {
+                var https = require("https")
+                var path  = require("path")
+
+                var output = ""
+
+                //Create the underlying folder structure to avoid error when trying to write the downloaded file
+                fs.mkdirSync(path.dirname(file), { recursive: true })
+
+                //Get the file
+                https.get(fileurl, function (res) {
+                    res.setEncoding('utf8');
+
+                    res.on('data', function (chunk) {
+                        output += chunk 
+                    });
+
+                    res.on('end', () => {
+                        fs.writeFile(file, output, (err) => {
+                            if (err) {
+                                logger("error", "checkAndGetFile() writeFile error: " + err)
+                                resolve(undefined)
+                                return;
+                            }
+
+                            if (norequire) resolve(file)
+                                else resolve(require("." + file))
+                        })
+                    }) 
+                });
+            } catch (err) { 
+                logger("error", "checkAndGetFile() error pulling new file: " + err)
+
+                resolve(undefined)
             }
         }
-    }
+        
+
+        //immediately get a new file if file doesn't exist or force is true 
+        if (!fs.existsSync(file) || force) {
+            getNewFile();
+
+        } else { //...otherwise check if file is intact if norequire is false
+
+            if (norequire) {
+                resolve(file)
+            } else {
+
+                try {
+                    logger("debug", `checkAndGetFile(): file ${file} exists, force and norequire are false. Testing integrity by requiring...`)
+
+                    let fileToLoad = require("." + file);
+
+                    resolve(fileToLoad); //seems to be fine, otherwise we would already be in the catch block
+
+                } catch (err) {
+                    logger("warn", `It looks like file ${file} is corrupted. Trying to pull new file from GitHub...`, false, true)
+
+                    getNewFile();
+                }
+            }
+        }
+    })
 }
 
 
@@ -307,7 +308,7 @@ module.exports.checkAndGetFile = (file, logger, norequire, force, callback) => {
 /**
  * Run the application
  */
-module.exports.run = () => {
+module.exports.run = async () => {
     if (process.env.started) return; //make sure this function can only run once to avoid possible bug and cause startup loop
     process.env.started = "true"; //env vars are always strings
 
@@ -317,12 +318,14 @@ module.exports.run = () => {
 
     process.title = `CommentBot` //sets process title in task manager etc.
 
-    this.checkAndGetFile("./src/controller/controller.js", logger, true, false, (file) => {
-        forkedprocess = cp.fork(file, [ __dirname, Date.now() ]) //create new process and provide srcdir and timestamp as argv parameters
-        childpid      = forkedprocess.pid
+    //get file to start
+    let file = await this.checkAndGetFile("./src/controller/controller.js", logger, true, false)
+    if (!file) return;
 
-        attachChildListeners();
-    })
+    forkedprocess = cp.fork(file, [ __dirname, Date.now() ]) //create new process and provide srcdir and timestamp as argv parameters
+    childpid      = forkedprocess.pid
+
+    attachChildListeners();
 }
 
 
@@ -340,12 +343,14 @@ module.exports.restart = (args) => {
         process.kill(args["pid"], "SIGKILL") //make sure the old child is dead
     } catch (err) {} //eslint-disable-line
 
-    setTimeout(() => {
-        this.checkAndGetFile("./src/controller/controller.js", logger, true, false, (file) => {
-            forkedprocess = cp.fork(file, [ __dirname, Date.now(), JSON.stringify(args) ]) //create new process and provide srcdir, timestamp and restartargs as argv parameters
-            childpid      = forkedprocess.pid
-    
-            attachChildListeners();
-        })
+    setTimeout(async () => {
+        //get file to start
+        let file = await this.checkAndGetFile("./src/controller/controller.js", logger, true, false)
+        if (!file) return;
+
+        forkedprocess = cp.fork(file, [ __dirname, Date.now(), JSON.stringify(args) ]) //create new process and provide srcdir, timestamp and restartargs as argv parameters
+        childpid      = forkedprocess.pid
+
+        attachChildListeners();
     }, 2000);
 }
