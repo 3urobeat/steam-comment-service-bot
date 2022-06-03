@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.06.2022 18:26:14
+ * Last Modified: 03.06.2022 18:36:07
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -163,12 +163,12 @@ module.exports.compatibility = (callback) => {
      * Runs the compatibility feature
      * @param {String} filename filename of the compatibility feature
      */
-    function runCompFeature(filename) {
-        starter.checkAndGetFile(`./src/updater/compatibility/${filename}.js`, logger, false, false, (file) => {
-            logger("info", `Running compatibility feature ${filename}.js...`, true)
+    async function runCompFeature(filename) {
+        let file = await starter.checkAndGetFile(`./src/updater/compatibility/${filename}.js`, logger, false, false)
+        if (!file) return;
 
-            file.run(callback)
-        })
+        logger("info", `Running compatibility feature ${filename}.js...`, true)
+        file.run(callback)
     }
 
 
