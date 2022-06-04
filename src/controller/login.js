@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 10.03.2022 14:41:52
+ * Last Modified: 04.06.2022 12:09:18
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -66,12 +66,12 @@ module.exports.startlogin = (logininfo) => {
 
     //Evaluate estimated wait time for login:
     logger("info", "Evaluating estimated login time...", false, true, logger.animation("loading"))
-    if (extdata.timesloggedin < 5) { //only use new evaluation method when the bot was started more than 5 times
-        var estimatedlogintime = ((advancedconfig.loginDelay * (Object.keys(logininfo).length - 1 - controller.skippedaccounts.length)) / 1000) + 10 //10 seconds tolerance
+    
+    if (extdata.timesloggedin < 5) { //only use "intelligent" evaluation method when the bot was started more than 5 times
+        var estimatedlogintime = ((advancedconfig.loginDelay * (Object.keys(logininfo).length - 1 - controller.skippedaccounts.length)) / 1000) + 5 //5 seconds tolerance
     } else {
         var estimatedlogintime = ((extdata.totallogintime / extdata.timesloggedin) + (advancedconfig.loginDelay / 1000)) * (Object.keys(logininfo).length - controller.skippedaccounts.length)
     }
-    
 
     var estimatedlogintimeunit = "seconds"
     if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "minutes" }
@@ -85,8 +85,7 @@ module.exports.startlogin = (logininfo) => {
     logger("info", "Loading logininfo for each account...", false, true, logger.animation("loading"))
 
     Object.keys(logininfo).forEach((k, i) => { //log all accounts in with the logindelay             
-        setTimeout(() => { //wait before interval to reduce ram usage on startup
-
+        setTimeout(() => {
             var startnextinterval = setInterval(() => { //run check every x ms
 
                 //Check if previous account is logged in
@@ -124,12 +123,11 @@ module.exports.startlogin = (logininfo) => {
                         }
 
                         b.run(logOnOptions, i); //run bot.js with this account
-                    }, advancedconfig.loginDelay) 
+                    }, advancedconfig.loginDelay * Number(i > 0)) //ignore delay for first account
                 }
-
             }, 250);
         
-        }, 1500 * (i - this.skippednow.length)); //1.5 seconds before checking if next account can be logged in should be ok
+        }, (advancedconfig.loginDelay * (i - this.skippednow.length)) * Number(i > 0)); //wait loginDelay ms before checking if the next account is ready to be logged in if not first iteration. This should reduce load and ram usage as less intervals run at the same time (this gets more interesting when lots of accs are used)
     }) 
 
 
