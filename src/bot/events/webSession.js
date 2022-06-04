@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 10.03.2022 12:16:04
+ * Last Modified: 04.06.2022 11:29:21
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -38,8 +38,8 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
     login.accisloggedin = true; //set to true to log next account in
 
 
-    //Accept offline group & friend invites
-    logger("info", `[${thisbot}] Got websession and set cookies.`, false, true, logger.animation("loading"))
+    if (!require("../../controller/ready.js").readyafter) logger("info", `[${thisbot}] Got websession and set cookies. Accepting offline friend & group invites...`, false, true, logger.animation("loading")) //only print message with animation if the bot was not fully started yet
+        else logger("info", `[${thisbot}] Got websession and set cookies. Accepting offline friend & group invites...`, false, true)
 
     //If this is a relog then remove this account from the queue and let the next account be able to relog
     if (controller.relogQueue.includes(loginindex)) {
@@ -50,9 +50,6 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
 
 
     /* ------------ Accept offline friend and group invites/requests: ------------ */
-    if (!require("../../controller/ready.js").readyafter) logger("info", `[${thisbot}] Accepting offline friend & group invites...`, false, true, logger.animation("loading")) //only print message with animation if the bot was not fully started yet
-        else logger("info", `[${thisbot}] Accepting offline friend & group invites...`, false, true)
-
     //Friends:
     let ignoredFriendRequests = 0;
 
@@ -118,7 +115,7 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
 
 
     /* ------------ Join botsgroup: ------------ */
-    logger("info", `[${thisbot}] Checking if bot account is in botsgroup...`, false, true, logger.animation("loading"));
+    logger("debug", `[${thisbot}] Checking if bot account is in botsgroup...`, false, true, logger.animation("loading"));
 
     require("../helpers/steamgroup.js").botsgroupID64(loginindex, thisbot, (botsgroupid) => { //Check if this account is not in botsgroup yet
         if (!botsgroupid) return;
@@ -131,7 +128,7 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
     })
 
 
-    /* ------------ Set primary group: ------------ */  //Sadly doesn't work atm: https://github.com/DoctorMcKay/node-steamcommunity/wiki/SteamCommunity#editprofilesettings-callback
+    /* ------------ Set primary group: ------------ */
     if (advancedconfig.setPrimaryGroup && cachefile.configgroup64id) {
         logger("info", `[${thisbot}] setPrimaryGroup is enabled and configgroup64id is set, setting ${cachefile.configgroup64id} as primary group...`, false, true, logger.animation("loading"))
 

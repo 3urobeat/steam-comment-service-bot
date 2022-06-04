@@ -4,7 +4,7 @@
  * Created Date: 26.02.2022 20:16:44
  * Author: 3urobeat
  * 
- * Last Modified: 26.02.2022 21:31:50
+ * Last Modified: 04.06.2022 14:50:35
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -66,7 +66,7 @@ module.exports.run = (callback) => {
     
         copyFolderRecursiveSync("./backup", ".", true);
     } else {
-        logger("error", "Unfortunately I was unable to find a backup. I don't know how to proceed from here so you sadly have to redownload the bot yourself: https://github.com/HerrEurobeat/steam-comment-service-bot\n        Please report his issue with all errors so that I'm able to fix this: https://github.com/HerrEurobeat/steam-comment-service-bot/issues\n        Exiting...", true);
+        logger("error", "Unfortunately I was unable to find a backup. I don't know how to proceed from here so you sadly have to redownload the bot yourself: https://github.com/HerrEurobeat/steam-comment-service-bot\n        Please report this issue with all errors so that I'm able to fix this: https://github.com/HerrEurobeat/steam-comment-service-bot/issues\n        Exiting...", true);
         process.send("stop()");
     }
 

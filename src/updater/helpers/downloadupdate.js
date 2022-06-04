@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 11.03.2022 13:49:44
+ * Last Modified: 04.06.2022 14:50:49
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -75,8 +75,11 @@
             
             //Delete old files except files and folders in dontdelete
             logger("", `${logger.colors.fgyellow}Deleting old files...${logger.colors.reset}`, true, false, logger.animation("loading"))
+            
             files.forEach((e, i) => {
-                if (fs.existsSync(e) && !dontdelete.includes(e) && !e.includes(`./steam-comment-service-bot-${releasemode}`) && !e.includes("./node_modules") && !e.includes("./backup") && !e.includes("./plugins")) { //respect dontdelete, the fresh downloaded files and the node_modules folder
+
+                //Remove old files except dontdelete, the fresh downloaded files and the node_modules folder
+                if (fs.existsSync(e) && !dontdelete.includes(e) && !e.includes(`./steam-comment-service-bot-${releasemode}`) && !e.includes("./node_modules") && !e.includes("./backup") && !e.includes("./plugins")) {
                     fs.rmSync(e, { recursive: true })
                 }
         
@@ -86,6 +89,7 @@
                     let newfiles = scandir(`./steam-comment-service-bot-${releasemode}`) //scan the directory of the new installation
         
                     logger("", `${logger.colors.fgyellow}Moving new files...${logger.colors.reset}`, true, false, logger.animation("loading"))
+                    
                     newfiles.forEach((e, i) => {
                         let eCut = e.replace(`steam-comment-service-bot-${releasemode}/`, "") //eCut should resemble the same path but how it would look like in the base directory
 
@@ -99,7 +103,7 @@
                             //Custom update rules for a few files
                             require("./customUpdateRules.js").customUpdateRules(compatibilityfeaturedone, oldconfig, oldadvancedconfig, oldextdata, callback);
 
-                            //Make callback to let caller carry ono
+                            //Make callback to let caller carry on
                             callback(null);
                         }
                     })
