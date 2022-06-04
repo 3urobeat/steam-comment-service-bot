@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.06.2022 10:01:40
+ * Last Modified: 04.06.2022 10:14:28
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -30,6 +30,9 @@ var parentExitEvent;
 const fs = require("fs")
 
 global.srcdir = __dirname;
+
+//Set timestamp checked in controller.js to 0 for the starter process (this one) to make sure the bot can never start here and only in the child process spawned by this.run()
+process.argv[3] = 0;
 
 
 //Provide function to only once attach listeners to parent process
@@ -319,10 +322,10 @@ module.exports.run = async () => {
     process.title = `CommentBot` //sets process title in task manager etc.
 
     //get file to start
-    let file = await this.checkAndGetFile("./src/controller/controller.js", logger, true, false)
+    let file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false) //we can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
     if (!file) return;
 
-    forkedprocess = cp.fork(file, [ __dirname, Date.now() ]) //create new process and provide srcdir and timestamp as argv parameters
+    forkedprocess = cp.fork("./src/controller/controller.js", [ __dirname, Date.now() ]) //create new process and provide srcdir and timestamp as argv parameters
     childpid      = forkedprocess.pid
 
     attachChildListeners();
@@ -345,10 +348,10 @@ module.exports.restart = (args) => {
 
     setTimeout(async () => {
         //get file to start
-        let file = await this.checkAndGetFile("./src/controller/controller.js", logger, true, false)
+        let file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false) //we can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
         if (!file) return;
 
-        forkedprocess = cp.fork(file, [ __dirname, Date.now(), JSON.stringify(args) ]) //create new process and provide srcdir, timestamp and restartargs as argv parameters
+        forkedprocess = cp.fork("./src/controller/controller.js", [ __dirname, Date.now(), JSON.stringify(args) ]) //create new process and provide srcdir, timestamp and restartargs as argv parameters
         childpid      = forkedprocess.pid
 
         attachChildListeners();
