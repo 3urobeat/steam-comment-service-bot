@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.06.2022 18:07:54
+ * Last Modified: 04.06.2022 10:01:40
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -286,7 +286,7 @@ module.exports.checkAndGetFile = (file, logger, norequire, force) => {
             } else {
 
                 try {
-                    logger("debug", `checkAndGetFile(): file ${file} exists, force and norequire are false. Testing integrity by requiring...`)
+                    if (!file.includes("logger.js")) logger("debug", `checkAndGetFile(): file ${file} exists, force and norequire are false. Testing integrity by requiring...`) //ignore message for logger.js as it won't use the real logger yet 
 
                     let fileToLoad = require("." + file);
 

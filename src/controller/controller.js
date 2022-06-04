@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.06.2022 18:14:29
+ * Last Modified: 04.06.2022 09:59:25
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -202,12 +202,6 @@ async function run() {
 
 /* ------------ Handle restart data: ------------ */
 
-//obj that can get populated by restart data to keep config through restarts
-var oldconfig = {} //eslint-disable-line
-var logafterrestart = [] //create array to log these error messages after restart
-var updateFailed = false;
-
-
 /**
  * Process data that should be kept over restarts
  */
@@ -226,6 +220,12 @@ function restartdata(data) {
 /* ------------ Start the bot: ------------ */
 
 if (parseInt(process.argv[3]) + 2500 > Date.now()) { //check if this process just got started in the last 2.5 seconds or just required by itself by checking the timestamp attached by starter.js
+
+    //obj that can get populated by restart data to keep config through restarts
+    var oldconfig = {} //eslint-disable-line
+    var logafterrestart = [] //create array to log these error messages after restart
+    var updateFailed = false;
+
     //Yes, I know, global variables are bad. But I need a few multiple times in different files and it would be a pain in the ass to import them every time and ensure that I don't create a circular dependency and what not.
     global.botisloggedin = false
     global.srcdir        = process.argv[2]
