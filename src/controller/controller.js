@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.06.2022 09:59:25
+ * Last Modified: 04.06.2022 10:45:00
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -163,28 +163,28 @@ async function run() {
 
 
     /* ------------ Run datacheck and updater: ------------ */
-    let datacheck = await starter.checkAndGetFile("./src/controller/helpers/datacheck.js", logger, false, false)
-    if (!datacheck) return;
-
-    datacheck.run(logininfo, async () => {
-
-        var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
-        if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
-        logger("info", `Comment config values: commentdelay = ${config.commentdelay} | maxCommentsOverall = ${maxCommentsOverall} | randomizeAcc = ${config.randomizeAccounts}`, false, true, logger.animation("loading"))
+    var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
+    if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
+    logger("info", `Comment config values: commentdelay = ${config.commentdelay} | maxCommentsOverall = ${maxCommentsOverall} | randomizeAcc = ${config.randomizeAccounts}`, false, true, logger.animation("loading"))
 
 
-        /* ------------ Run updater or start logging in when steam is online: ------------ */
-        let updater = await starter.checkAndGetFile("./src/updater/updater.js", logger, false, false)
-        if (!updater) return;
+    /* ------------ Run updater or start logging in when steam is online: ------------ */
+    let updater = await starter.checkAndGetFile("./src/updater/updater.js", logger, false, false)
+    if (!updater) return;
 
-        updater.compatibility(() => { //continue startup on any callback
+    updater.compatibility(() => { //continue startup on any callback
+        require("./helpers/internetconnection.js").run(true, true, true, async () => { //we can ignore callback because stoponerr is true
+            
+            if (updateFailed) { //skip checking for update if last update failed
+                logger("info", `It looks like the last update failed so let's skip the updater for now and hope ${extdata.mestr} fixes the issue.\n       If you haven't reported the error yet please do so as I'm only then able to fix it!`, true)
+                require("./login.js").startlogin(logininfo) //start logging in
+                
+            } else {
 
-            require("./helpers/internetconnection.js").run(true, true, true, () => { //we can ignore callback because stoponerr is true
+                let datacheck = await starter.checkAndGetFile("./src/controller/helpers/datacheck.js", logger, false, false)
+                if (!datacheck) return;
 
-                if (updateFailed) { //skip checking for update if last update failed
-                    logger("info", `It looks like the last update failed so let's skip the updater for now and hope ${extdata.mestr} fixes the issue.\n       If you haven't reported the error yet please do so as I'm only then able to fix it!`, true)
-                    require("./login.js").startlogin(logininfo) //start logging in
-                } else {
+                datacheck.run(logininfo, async () => {
                     require("../updater/updater.js").run(false, null, false, (foundanddone2, updateFailed) => {
 
                         if (!foundanddone2) {
@@ -193,8 +193,8 @@ async function run() {
                             process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, updatefailed: updateFailed == true })})`) //send request to parent process (checking updateFailed == true so that undefined will result in false instead of undefined)
                         }
                     })
-                }
-            })
+                })
+            }
         })
     })
 }
