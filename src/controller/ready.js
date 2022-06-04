@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 27.02.2022 14:38:31
+ * Last Modified: 04.06.2022 11:31:25
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -123,12 +123,12 @@ module.exports.readyCheck = (logininfo) => {
 
             
             //Log extra messages that were suppressed during login
-            logger("info", `Logging supressed logs...`, false, true, logger.animation("loading"))
+            logger("debug", `Logging supressed logs...`, false, true, logger.animation("loading"))
             controller.readyafterlogs.forEach(e => { logger(e[0], e[1], e[2], e[3], e[4]) }) //log suppressed logs
 
 
             //Add backups to cache.json
-            logger("info", "Writing backups to cache.json...", false, true, logger.animation("loading"))
+            logger("debug", "Writing backups to cache.json...", false, true, logger.animation("loading"))
             cache["configjson"] = config
             cache["advancedconfigjson"] = advancedconfig
             cache["datajson"] = extdata
@@ -172,7 +172,7 @@ module.exports.readyCheck = (logininfo) => {
 
             
             //Write logintime stuff to data.json
-            logger("info", `Writing logintime...`, false, true, logger.animation("loading"))
+            logger("debug", `Writing logintime to data.json...`, false, true, logger.animation("loading"))
             extdata.totallogintime = round(extdata.totallogintime, 2)
             extdata.firststart = false
 

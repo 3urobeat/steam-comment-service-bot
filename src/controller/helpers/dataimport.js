@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.06.2022 18:15:42
+ * Last Modified: 04.06.2022 11:23:38
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -13,6 +13,10 @@
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
  */
+
+
+const fs   = require("fs");
+const path = require("path");
 
 
 /**
@@ -51,9 +55,6 @@ function restoreBackup(name, filepath, requirepath, cacheentry, onlinelink, reso
         var stringified = JSON.stringify(cacheentry, null, 4)
     }
 
-    var fs = require("fs");
-    var path  = require("path");
-
     //Create the underlying folder structure to avoid error when trying to write the downloaded file
     fs.mkdirSync(path.dirname(filepath), { recursive: true })
 
@@ -83,17 +84,12 @@ function restoreBackup(name, filepath, requirepath, cacheentry, onlinelink, reso
  */
 module.exports.cache = () => {
     return new Promise((resolve) => {
-        logger("info", "Importing cache.json...", false, true, logger.animation("loading"))
-
         try {
             resolve(require(srcdir + "/data/cache.json"));
         } catch (err) {
             if (err) {
                 logger("", "", true, true)
                 logger("warn", "cache.json seems to have lost it's data/is corrupted. Trying to write/create...", true, true)
-
-                var fs = require("fs");
-                var path  = require("path");
 
                 //Create the underlying folder structure to avoid error when trying to write the downloaded file
                 fs.mkdirSync(path.dirname("./src/data/cache.json"), { recursive: true })
@@ -120,8 +116,6 @@ module.exports.cache = () => {
  */
 module.exports.extdata = (cache) => {
     return new Promise((resolve) => {
-        logger("info", "Importing data.json...", false, true, logger.animation("loading"))
-
         try {
             resolve(require(srcdir + "/data/data.json"));
         } catch (err) {
@@ -145,8 +139,6 @@ module.exports.extdata = (cache) => {
  */
 module.exports.config = (cache) => {
     return new Promise((resolve) => {
-        logger("info", "Importing config.json...", false, true, logger.animation("loading"))
-
         try {
             resolve(require(srcdir + "/../config.json"));
         } catch (err) {
@@ -170,8 +162,6 @@ module.exports.config = (cache) => {
  */
  module.exports.advancedconfig = (cache) => {
     return new Promise((resolve) => {
-        logger("info", "Importing advancedconfig.json...", false, true, logger.animation("loading"))
-
         try {
             resolve(require(srcdir + "/../advancedconfig.json"));
         } catch (err) {
@@ -192,9 +182,7 @@ module.exports.config = (cache) => {
  * Imports login information from accounts.txt & logininfo.json
  * @returns logininfo object
  */
-module.exports.logininfo = () => {
-    var fs = require("fs")
-    
+module.exports.logininfo = () => {    
     var logininfo;
 
     //Check accounts.txt first so we can ignore potential syntax errors in logininfo
@@ -237,14 +225,10 @@ module.exports.logininfo = () => {
  * @returns proxies array
  */
 module.exports.proxies = () => {
-    var fs = require("fs")
-
-    logger("info", "Loading proxies in proxies.txt or creating file if it doesn't exist...", false, true, logger.animation("loading"))
-
     var proxies = [] //when the file is just created there can't be proxies in it (this bot doesn't support magic)
 
     if (!fs.existsSync('./proxies.txt')) {
-        logger("info", "Creating proxies.txt file...", false, true, logger.animation("loading"))
+        logger("info", "Creating proxies.txt file as it doesn't exist yet...", false, true, logger.animation("loading"))
 
         fs.writeFile(srcdir + "/../proxies.txt", "", err => { 
             if (err) logger("error", "error creating proxies.txt file: " + err)
@@ -277,8 +261,6 @@ module.exports.proxies = () => {
 module.exports.lastcomment = () => {
     var nedb = require("@seald-io/nedb")
 
-    logger("info", "Loading lastcomment.db database...", false, true, logger.animation("loading"))
-
     return new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); //autoload and return instantly
 }
 
@@ -288,10 +270,6 @@ module.exports.lastcomment = () => {
  * @returns The quotes array
  */
 module.exports.quotes = () => {
-    var fs = require("fs")
-
-    logger("info", "Loading quotes from quotes.txt...", false, true, logger.animation("loading"))
-
     var quotes = []
     var quotes = fs.readFileSync(srcdir + '/../quotes.txt', 'utf8').split("\n") //get all quotes from the quotes.txt file into an array
     var quotes = quotes.filter(str => str != "") //remove empty quotes as empty comments will not work/make no sense
@@ -306,11 +284,11 @@ module.exports.quotes = () => {
         quotes[i] = e.replace(/\\n/g, "\n").replace("\\n", "\n")
     })
 
-    logger("info", `${quotes.length} quotes found.`, false, true, logger.animation("loading"))
-
     if (quotes.length == 0) { //check if quotes.txt is empty to avoid errors further down when trying to comment
         logger("error", `${logger.colors.fgred}You haven't put any comment quotes into the quotes.txt file! Aborting...`, true)
         return process.send("stop()")
+    } else {
+        logger("info", `Successfully loaded ${quotes.length} quotes from quotes.txt...`, false, true, logger.animation("loading"))
     }
 
     return quotes;
@@ -322,10 +300,6 @@ module.exports.quotes = () => {
  * @param {function} [callback] Called with `lang` (Object) on completion.
  */
 module.exports.lang = (callback) => {
-    var fs = require("fs")
-
-    logger("info", "Loading defaultlang.json and customlang.json...", false, true, logger.animation("loading"))
-
     var lang = require(srcdir + "/data/lang/defaultlang.json")
 
     //Check before trying to import if the user even created the file

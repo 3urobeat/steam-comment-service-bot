@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.06.2022 10:50:29
+ * Last Modified: 04.06.2022 11:15:24
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -102,20 +102,17 @@ async function run() {
 
 
     /* ------------ Import data: ------------ */
-    var extdata;
-    var config;
-    var advancedconfig;
-    var cache;
-    var logininfo;
-
     var dataimportfile = await starter.checkAndGetFile("./src/controller/helpers/dataimport.js", logger, false, false)
+    if (!dataimportfile) return;
 
-    cache   = await dataimportfile.cache()
-    extdata = await dataimportfile.extdata(cache)
-    config  = await dataimportfile.config(cache)
-    advancedconfig = await dataimportfile.advancedconfig(cache)
+    logger("info", "Importing data files and settings...", false, true, logger.animation("loading"));
 
-    logininfo = dataimportfile.logininfo();
+    var cache   = await dataimportfile.cache()
+    var extdata = await dataimportfile.extdata(cache)
+    var config  = await dataimportfile.config(cache)
+    var advancedconfig = await dataimportfile.advancedconfig(cache)
+
+    var logininfo = dataimportfile.logininfo();
 
     global.config         = config
     global.advancedconfig = advancedconfig;
@@ -138,14 +135,12 @@ async function run() {
 
 
     /* ------------ Print some diagnostic messages to log: ------------ */
-    logger("info", `steam-comment-service-bot made by ${extdata.mestr} version ${extdata.versionstr}`, false, true, logger.animation("loading"))
-    logger("info", `Using node.js version ${process.version}...`, false, true, logger.animation("loading"))
-    logger("info", `Running on ${process.platform}...`, false, true, logger.animation("loading"))
-    logger("info", `Using ${extdata.branch} branch | firststart is ${extdata.firststart} | This is start number ${extdata.timesloggedin + 1}`, false, true, logger.animation("loading"))
+    logger("info", `steam-comment-service-bot made by ${extdata.mestr} version ${extdata.versionstr} (${extdata.branch})`, false, true, logger.animation("loading"))
+    logger("info", `This is start number ${extdata.timesloggedin + 1} (firststart ${extdata.firststart}) on ${process.platform} with node.js ${process.version}...`, false, true, logger.animation("loading"))
 
 
     //Check for unsupported node.js version (<14.15.0)
-    let versionarr        = process.version.replace("v", "").split(".")
+    let versionarr = process.version.replace("v", "").split(".")
     
     versionarr.forEach((e, i) => { if (e.length == 1 && parseInt(e) < 10) versionarr[i] = `0${e}` }) //put 0 infront of single digits
     
@@ -159,13 +154,17 @@ async function run() {
     }
 
 
-    if (extdata.branch == "beta-testing") logger("", `${logger.colors.reset}[${logger.colors.fgred}Notice${logger.colors.reset}] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n`, true)
+    //Display warning/notice if user is running in beta mode
+    if (extdata.branch == "beta-testing") {
+        logger("", "", true, true) //add one empty line that only appears in output.txt
+        logger("", `${logger.colors.reset}[${logger.colors.fgred}Notice${logger.colors.reset}] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n`, true)
+    }
 
 
     /* ------------ Run datacheck and updater: ------------ */
     var maxCommentsOverall = config.maxOwnerComments //define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
     if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments
-    logger("info", `Comment config values: commentdelay = ${config.commentdelay} | maxCommentsOverall = ${maxCommentsOverall} | randomizeAcc = ${config.randomizeAccounts}`, false, true, logger.animation("loading"))
+    logger("info", `Comment settings: commentdelay: ${config.commentdelay} | botaccountcooldown: ${config.botaccountcooldown} | maxCommentsOverall: ${maxCommentsOverall} | randomizeAcc: ${config.randomizeAccounts}`, false, true, logger.animation("loading"))
 
 
     /* ------------ Run updater or start logging in when steam is online: ------------ */

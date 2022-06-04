@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 25.04.2022 16:11:38
+ * Last Modified: 04.06.2022 11:33:49
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -24,10 +24,9 @@ module.exports.run = (logininfo, callback) => {
     var fs              = require("fs")
     var steamidresolver = require("steamid-resolver")
 
+    logger("info", "Running datachecks...", false, true, logger.animation("loading"));
     
     //Refresh cache of ownerids. getOwnerID() will also print an error message if user provided invalid ids
-    logger("info", "Refreshing ownerids in cache.json...", false, true, logger.animation("loading"));
-
     if (config.ownerid.length == 0) {
         logger("error", "You forgot to set at least one ownerid in config.json! Error: The ownerid array is empty. Aborting!")
         process.send("stop()");
@@ -45,8 +44,7 @@ module.exports.run = (logininfo, callback) => {
     }
 
 
-    logger("info", "Checking config for 3urobeat's leftovers...", false, true, logger.animation("loading"))
-
+    //check config for default value leftovers 
     if ((process.env.LOGNAME !== 'tomg' && process.env.LOGNAME !== 'pi') || (require('os').hostname() !== 'Toms-Hoellenmaschine' && require('os').hostname() !== 'raspberrypi' && require('os').hostname() !== 'Toms-Thinkpad')) { //remove myself from config on different computer
         let write = false;
         if (config.owner.includes(extdata.mestr)) { config.owner = ""; write = true } 
@@ -77,8 +75,6 @@ module.exports.run = (logininfo, callback) => {
 
 
     //Check config values:
-    logger("info", "Checking for invalid config values...", false, true, logger.animation("loading"))
-
     config.maxComments = Math.round(config.maxComments) //round maxComments number everytime to avoid user being able to set weird numbers (who can comment 4.8 times? right - no one)
     config.maxOwnerComments = Math.round(config.maxOwnerComments)
 
@@ -116,7 +112,6 @@ module.exports.run = (logininfo, callback) => {
     global.checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"
 
     //Check if owner link is correct
-    logger("info", `Checking if owner link is valid...`, false, true, logger.animation("loading"))
     if (!config.owner.includes("steamcommunity.com")) { 
         logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.", true) 
     } else {
@@ -130,7 +125,7 @@ module.exports.run = (logininfo, callback) => {
                         if (err) return logger("error", "Error checking if owner is valid: " + err) //if a different error then display a generic message with the error
                     }
     
-                    logger("info", `Successfully checked owner link. customURL: ${ownerResult}`, false, true, logger.animation("loading"))
+                    logger("debug", `Successfully checked owner link. customURL: ${ownerResult}`, false, true, logger.animation("loading"))
                 })
             } else {
                 steamidresolver.customUrlTosteamID64(config.owner, (err, ownerResult) => {
@@ -140,7 +135,7 @@ module.exports.run = (logininfo, callback) => {
                         if (err) return logger("error", "Error checking if owner is valid: " + err) //if a different error then display a generic message with the error
                     }
     
-                    logger("info", `Successfully checked owner link. steamID64: ${ownerResult}`, false, true, logger.animation("loading"))
+                    logger("debug", `Successfully checked owner link. steamID64: ${ownerResult}`, false, true, logger.animation("loading"))
                 })
             }
         } catch (err) {

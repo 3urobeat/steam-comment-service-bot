@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 27.02.2022 14:39:19
+ * Last Modified: 04.06.2022 11:27:13
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -23,7 +23,7 @@
 module.exports.checklastcommentdb = (bot) => {
     var controller = require("../../controller/controller.js")
 
-    logger("info", "Checking if all friends are in lastcomment.db...", false, true, logger.animation("loading"))
+    logger("debug", "Checking if all friends are in lastcomment.db...", false, true, logger.animation("loading"))
     
     controller.lastcomment.find({}, (err, docs) => {
         Object.keys(bot.myFriends).forEach(e => {
