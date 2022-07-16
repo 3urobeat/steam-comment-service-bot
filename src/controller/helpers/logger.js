@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 27.02.2022 11:48:44
+ * Last Modified: 16.07.2022 20:28:23
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -17,6 +17,14 @@
 
 const outputlogger = require("output-logger") //look Mom, it's my own library!
 
+//Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)  (animation speed and printDebug will be changed later in controller.js after advancedconfig import)
+outputlogger.options({
+    required_from_childprocess: true,
+    msgstructure: `[${outputlogger.Const.ANIMATION}] [${outputlogger.Const.DATE} | ${outputlogger.Const.TYPE}] ${outputlogger.Const.MESSAGE}`,
+    paramstructure: [outputlogger.Const.TYPE, outputlogger.Const.MESSAGE, "nodate", "remove", outputlogger.Const.ANIMATION],
+    outputfile: srcdir + "/../output.txt"
+})
+
 
 /**
  * Logs text to the terminal and appends it to the output.txt file.
@@ -26,18 +34,11 @@ const outputlogger = require("output-logger") //look Mom, it's my own library!
  * @param {Boolean} remove Setting to true will remove this message with the next one
  */
 module.exports.logger = (type, str, nodate, remove, animation) => { //Function that passes args to my logger library and just exists to handle readyafterlogs atm
-    var controller   = require("../controller.js")
+    var controller = require("../controller.js")
 
 
     //NOTE: If the amount of parameters of this function changes then the logger call for readyafterlogs in ready.js and the readyafterlogs.push() call below need to be updated!!
 
-
-    //Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)  (animation speed and printDebug will be changed later in controller.js after advancedconfig import)
-    outputlogger.options({
-        msgstructure: `[${outputlogger.Const.ANIMATION}] [${outputlogger.Const.DATE} | ${outputlogger.Const.TYPE}] ${outputlogger.Const.MESSAGE}`,
-        paramstructure: [outputlogger.Const.TYPE, outputlogger.Const.MESSAGE, "nodate", "remove", outputlogger.Const.ANIMATION],
-        outputfile: srcdir + "/../output.txt"
-    })
     
     //Try to get readyafter or just ignore it if we can't. Previously I used checkAndGetFile() but that creates a circular dependency which I'd like to avoid
     try {

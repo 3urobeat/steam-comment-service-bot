@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.06.2022 12:09:18
+ * Last Modified: 05.06.2022 16:25:38
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -53,8 +53,8 @@ module.exports.startlogin = (logininfo) => {
 
     //Print ASCII art
     logger("", "", true)
-    if (Math.floor(Math.random() * 100) <= 2) logger("", ascii.hellothereascii + "\n", true)
-        else if (Math.floor(Math.random() * 100) <= 10) logger("", ascii.binaryascii + "\n", true)
+    if (Math.floor(Math.random() * 100) <= 2) logger("", ascii.hellothereascii + "\n", true) //2% chance
+        else if (Math.floor(Math.random() * 100) <= 5) logger("", ascii.binaryascii + "\n", true) //5% chance
         else logger("", ascii.ascii[Math.floor(Math.random() * ascii.ascii.length)] + "\n", true)
         
     logger("", "", true) //put one line above everything that will come to make the output cleaner

@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.06.2022 10:14:28
+ * Last Modified: 16.07.2022 22:59:55
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -48,7 +48,8 @@ function attachParentListeners() {
         console.log(`${type} ${separator} ${str}`)
     }
 
-    logger.animation = () => {} //just to be sure that no error occurs when trying to call this function without the real logger being present
+    logger.animation            = () => {} //just to be sure that no error occurs when trying to call this function without the real logger being present
+    logger.detachEventListeners = () => {}
 
     handleUnhandledRejection = (reason) => { //Should keep the bot at least from crashing
         logger("error", `Unhandled Rejection Error! Reason: ${reason.stack}`, true) 
@@ -101,8 +102,22 @@ function attachParentListeners() {
     process.on('unhandledRejection', handleUnhandledRejection);
     process.on('uncaughtException', handleUncaughtException);
 
+    /* ------------ Add exit event listener and import logger: ------------ */
+    //Attach exit event listener to display message in output & terminal when user stops the bot (before logger import so this runs before output-logger's exit event listener)
+    parentExitEvent = () => {
+        logger("debug", "Caller: " + process.pid + " | Child: " + childpid)
 
-    /* ------------ Import logger and add exit event listener: ------------ */
+        try {
+            process.kill(childpid, "SIGKILL") //make sure the old child is dead
+        } catch (err) {} //eslint-disable-line
+
+        logger("", "", true)
+        logger("info", `Recieved signal to exit...`, false, true);
+    }
+
+    process.on("exit", parentExitEvent);
+
+    //Import logger lib
     cp     = require('child_process');
     logger = require("output-logger") //look Mom, it's my own library!
 
@@ -113,28 +128,15 @@ function attachParentListeners() {
         msgstructure: `[${logger.Const.ANIMATION}] [${logger.Const.DATE} | ${logger.Const.TYPE}] ${logger.Const.MESSAGE}`,
         paramstructure: [logger.Const.TYPE, logger.Const.MESSAGE, "nodate", "remove", logger.Const.ANIMATION],    
         outputfile: __dirname + "/../output.txt",
-        animationdelay: 250
+        animationdelay: 250,
+        exitmessage: "Goodbye!"
     })
-
-
-    //Attach exit event listener to display message in output & terminal when user stops the bot
-    parentExitEvent = () => {
-        logger("debug", "Caller: " + process.pid + " | Child: " + childpid)
-
-        try {
-            process.kill(childpid, "SIGKILL") //make sure the old child is dead
-        } catch (err) {} //eslint-disable-line
-
-        logger("", "", true)
-        logger("info", `Recieved signal to exit...`, false, true);
-        logger("", "Goodbye!", true); //I'm intentionally not using exitmessage of output-logger here as it would print this message above the message above this line which sucks
-    }
-
-    process.on("exit", parentExitEvent);
 }
 
 function detachParentListeners() {
     logger("info", "Detaching parent's event listeners...", false, true)
+
+    logger.detachEventListeners();
 
     if (handleUnhandledRejection) process.removeListener("unhandledRejection", handleUnhandledRejection)
     if (handleUncaughtException)  process.removeListener("uncaughtException", handleUncaughtException)
