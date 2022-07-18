@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 18.07.2022 16:42:37
+ * Last Modified: 18.07.2022 17:00:15
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -135,8 +135,14 @@ module.exports.readyCheck = (logininfo) => {
             Object.keys(botobject).forEach((e, i) => {
                 tempArr.push(new SteamID(String(controller.botobject[i].steamID)).getSteamID64());
 
+                //Check if this bot account is listed as an owner id and display warning
+                if (cache.ownerid.includes(tempArr[i])) logger("warn", `You provided an ownerid in the config that points to a bot account used by this bot! This is not allowed.\n       Please change id ${tempArr[i]} to point to your personal steam account!`, true)
+
+                //Write tempArr to cachefile on last iteration
                 if (Object.keys(botobject).length == i + 1) {
-                    cachefile["botaccid"] = tempArr;
+                    cache["botaccid"] = tempArr;
+
+                    if (tempArr.includes(cache.ownerlinkid)) logger("warn", "The owner link you set in the config points to a bot account used by this bot! This is not allowed.\n       Please change the link to your personal steam account!", true)
                 }
             })
 
