@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.06.2022 11:31:25
+ * Last Modified: 18.07.2022 16:42:37
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -24,6 +24,7 @@ module.exports.plugins = {};
  */
 module.exports.readyCheck = (logininfo) => {
     var fs         = require("fs")
+    var SteamID    = require("steamid")
 
     var controller = require("./controller.js")
     var login      = require("./login.js")
@@ -125,6 +126,19 @@ module.exports.readyCheck = (logininfo) => {
             //Log extra messages that were suppressed during login
             logger("debug", `Logging supressed logs...`, false, true, logger.animation("loading"))
             controller.readyafterlogs.forEach(e => { logger(e[0], e[1], e[2], e[3], e[4]) }) //log suppressed logs
+
+
+            //Refresh cache of bot account ids, check if they inflict with owner settings
+            logger("debug", `Refreshing cache of bot account ids...`, false, true, logger.animation("loading"))
+            let tempArr = []
+
+            Object.keys(botobject).forEach((e, i) => {
+                tempArr.push(new SteamID(String(controller.botobject[i].steamID)).getSteamID64());
+
+                if (Object.keys(botobject).length == i + 1) {
+                    cachefile["botaccid"] = tempArr;
+                }
+            })
 
 
             //Add backups to cache.json
