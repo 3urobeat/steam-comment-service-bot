@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.06.2022 11:33:49
+ * Last Modified: 18.07.2022 16:55:55
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -118,14 +118,16 @@ module.exports.run = (logininfo, callback) => {
         try {
             //Check if user provided /profiles/steamID64 link or /id/customURL link
             if (config.owner.includes("/profiles/")) {
-                steamidresolver.steamID64ToCustomUrl(config.owner, (err, ownerResult) => {
+                steamidresolver.steamID64ToFullInfo(config.owner, (err, ownerResult) => {
                     if (err == "The specified profile could not be found.") { //if the profile couldn't be found display specific message
                         return logger("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.\n       Error: " + err, true)
                     } else {
                         if (err) return logger("error", "Error checking if owner is valid: " + err) //if a different error then display a generic message with the error
                     }
+
+                    cachefile["ownerlinkid"] = ownerResult.steamID64[0]; //refresh ownerlinkid in cache.json
     
-                    logger("debug", `Successfully checked owner link. customURL: ${ownerResult}`, false, true, logger.animation("loading"))
+                    logger("debug", `Successfully checked owner link. customURL: ${ownerResult.customURL[0]}`, false, true, logger.animation("loading"))
                 })
             } else {
                 steamidresolver.customUrlTosteamID64(config.owner, (err, ownerResult) => {
@@ -134,6 +136,8 @@ module.exports.run = (logininfo, callback) => {
                     } else {
                         if (err) return logger("error", "Error checking if owner is valid: " + err) //if a different error then display a generic message with the error
                     }
+
+                    cachefile["ownerlinkid"] = ownerResult; //refresh ownerlinkid in cache.json
     
                     logger("debug", `Successfully checked owner link. steamID64: ${ownerResult}`, false, true, logger.animation("loading"))
                 })
