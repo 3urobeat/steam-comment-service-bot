@@ -9,7 +9,7 @@
         "express": "^4.18.1",
         "htmlparser2": "^8.0.1",
         "https": "^1.0.0",
-        "output-logger": "^2.2.2",
+        "output-logger": "^2.2.3",
         "request": "^2.88.2",
         "steam-user": "^4.24.5",
         "steamcommunity": "^3.44.1",
