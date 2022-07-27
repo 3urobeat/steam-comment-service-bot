@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.06.2022 18:36:07
+ * Last Modified: 27.07.2022 23:14:14
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -42,14 +42,20 @@ module.exports.run = async (forceupdate, responseSteamID, compatibilityfeaturedo
             logger("", "", true)
             logger("", `${logger.colors.fggreen}Update available!${logger.colors.reset} Your version: ${logger.colors.fgred}${extdata.versionstr}${logger.colors.reset} | New version: ${logger.colors.fggreen}${chunk.versionstr}`, true)
             logger("", "", true)
+            logger("", `${logger.colors.underscore}What's new:${logger.colors.reset} ${chunk.whatsnew}\n`, true)
 
 
-            //respond to the user if he/she requested an update via the Steam chat
-            if (responseSteamID) { 
-                require('../controller/controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `Update available! Your version: ${extdata.versionstr} | New version: ${chunk.versionstr}`)
+            //respond to the user if he/she requested an update via the Steam chat (ignore if forceupdate to avoid some duplicate messages spam stuff)
+            if (responseSteamID && !forceupdate) {
+                let controller = require("../controller/controller.js");
 
+                controller.botobject[0].chat.sendFriendMessage(responseSteamID, `Update available! Your version: ${extdata.versionstr} | New version: ${chunk.versionstr}`)
+                controller.botobject[0].chat.sendFriendMessage(responseSteamID, `What's new: ${chunk.whatsnew}`)
+
+                //instruct user to force update if disableAutoUpdate is true and stop here
                 if (advancedconfig.disableAutoUpdate && !forceupdate) { 
-                    require('../controller/controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, "You have turned automatic updating off. You need to confirm the update in the console!") 
+                    controller.botobject[0].chat.sendFriendMessage(responseSteamID, "You have disabled the automatic updater. Would you like to update now?\nIf yes, please force an update using the command: !update true");
+                    return;
                 }
             }
 
@@ -106,9 +112,7 @@ module.exports.run = async (forceupdate, responseSteamID, compatibilityfeaturedo
 
             } else { //user has it disabled, ask for confirmation
 
-                if (botisloggedin == false || responseSteamID) { //only ask on start (or when user checked for an update from the Steam chat), otherwise this will annoy the user
-
-                    logger("", `${logger.colors.underscore}What's new:${logger.colors.reset} ${chunk.whatsnew}\n`, true)
+                if (botisloggedin == false) { //only ask on start, otherwise this will annoy the user
 
                     //Get user choice from terminal input
                     logger.readInput(`You have disabled the automatic updater.\n${logger.colors.brfgyellow}Would you like to update now?${logger.colors.reset} [y/n] `, 7500, (text) => {
