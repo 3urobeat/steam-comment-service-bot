@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 23.02.2022 15:53:33
+ * Last Modified: 28.07.2022 23:24:23
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -94,7 +94,7 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
 
         } else { //Got retries left or it is a relog...
 
-            logger("warn", `${err} (${err.eresult}) while trying to log in bot${loginindex}. Retrying in 5 seconds...`) //log error as warning
+            logger("warn", `${err} while trying to log in bot${loginindex}. Retrying in 5 seconds...`) //log error as warning
 
             //Call either relogAccount or logOnAccount function to continue where we started at after 5 sec
             setTimeout(() => {

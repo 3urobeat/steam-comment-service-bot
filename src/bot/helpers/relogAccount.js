@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 06.03.2022 11:09:21
+ * Last Modified: 28.07.2022 23:49:21
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -60,7 +60,7 @@ module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy) => {
         //Attach relogdelay timeout
         setTimeout(() => {
             if (thisproxy == null) logger("info", `[${thisbot}] Trying to relog without proxy...`, false, true, logger.animation("loading"))
-                else logger("info", `[${thisbot}] Trying to relog with proxy ${login.proxyShift - 1}...`, false, true, logger.animation("loading"))
+                else logger("info", `[${thisbot}] Trying to relog with proxy ${login.additionalaccinfo[loginindex].thisproxyindex}...`, false, true, logger.animation("loading"))
             
             bot.logOn(logOnOptions)
         }, advancedconfig.loginDelay);
