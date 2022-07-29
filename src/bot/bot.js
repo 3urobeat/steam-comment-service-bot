@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 06.03.2022 13:34:07
+ * Last Modified: 29.07.2022 10:49:26
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -48,7 +48,7 @@ module.exports.run = (logOnOptions, loginindex) => {
     logger("debug", `[${thisbot}] Using proxy ${login.proxyShift} "${thisproxy}" to log in to Steam and SteamCommunity...`)
 
     //Create bot & community instance
-    const bot       = new SteamUser({ autoRelogin: false, httpProxy: thisproxy });
+    const bot       = new SteamUser({ autoRelogin: false, httpProxy: thisproxy, protocol: SteamUser.EConnectionProtocol.WebSocket }); //forcing protocol for now: https://dev.doctormckay.com/topic/4187-disconnect-due-to-encryption-error-causes-relog-to-break-error-already-logged-on/?do=findComment&comment=10917
     const community = new SteamCommunity({ request: request.defaults({ "proxy": thisproxy }) }) //pass proxy to community library aswell 
 
 
