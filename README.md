@@ -33,9 +33,10 @@
 * Advertise your group & automatically invite users to it  
 * Use proxies and requests comments via URL in your browser  
   
+You can see and test out my 24/7 hosted comment bot in action [by clicking here!](https://steamcommunity.com/id/3urobeatscommentbot)  
+  
 If you would like to see a detailed tutorial in the form of a video, [click here!](https://www.youtube.com/watch?v=gmA-ccD05g4)  
-This written tutorial will also contain a video tutorial badge link for each specific part!  
-If you would like to see my 24/7 comment bot in action, [click here!](https://steamcommunity.com/id/3urobeatscommentbot)  
+This written tutorial also contains a video tutorial badge link for each specific part besides each header!  
   
 **Disclaimer!**  
 >I, the developer, am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.  
@@ -51,76 +52,84 @@ You need to have at least node.js version 14.15.0 installed: [Download](https://
 To get your version number type `node --version` in your console or terminal.  
 If you need a tutorial for this specific node part, [click here.](https://youtu.be/gmA-ccD05g4?t=35)  
   
-## **Setup & Configuration:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=111)  
-Open a power shell/terminal in the `steam-comment-service-bot` folder and type `npm install`.  
-  
+## **Setup & Configuration:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=111)    
 #### **Accounts**
-You have two options to provide the login informations for your bot accounts.  
-You can either use the `accounts.txt` file to provide login informations in the `username:password:shared_secret` format (shared_secret is optional) or the `logininfo.json` file to provide them in an object notation.  
-
-To use the first method, open the `accounts.txt` file and provide your accounts in the `username:password:shared_secret` format, one account per line. If you don't want to use a shared_secret just leave it out and only provide the account in the `username:password` format. Be advised that as soon as you have provided at least one account in the `accounts.txt` file you can't use the `logininfo.json` file anymore.
-
-To use the `logininfo.json` open the file with a text editor and fill out the usernames and passwords of each bot account you want to use, following the existing format.  
-If you have a shared_secret then you can add it there too, otherwise just leave the brackets empty.  
-You can add more accounts by extending the list ("bot4": ["username4", "password4", "shared_secret"], etc...). Make sure to **NOT** forget a comma after each line, **ONLY** the last line **MUST NOT** have a comma! (ignoring this will cause errors!)  
+Open the `accounts.txt` file and provide your accounts in the `username:password:shared_secret` format, one account per line.  
+If you don't want to use a shared_secret just leave it out and only provide the account in the `username:password` format.  
+  
+Please make sure you know about limited/unlimited accounts. Your accounts also need to have E-Mail Steam Guard active.  
+You can read a detailed explanation [here in the wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Steam-limitations).
+  
+<details>
+  <summary>Another, optional method (not recommended for new users):</summary>
+  
+  If you'd rather like to provide your accounts in an object notation (JSON), then delete the accounts.txt file and open the `logininfo.json` file.  
+  Fill out the usernames and passwords of each bot account you want to use, following the existing format.  
+  If you have a shared_secret then you can add it there too, otherwise just leave the brackets empty.  
+  You can add more accounts by extending the list ("bot4": ["username4", "password4", "shared_secret"], etc...).  
+    
+  Make sure to **NOT** forget a comma after each line, **ONLY** the last line **MUST NOT** have a comma! (ignoring this will cause errors!)  
+</details>  
   
 #### **Config**
 Open `config.json` with a text editor.  
-You need to provide the link to your steam profile at "owner" and the steam64 id of your profile at "ownerid".
-If you don't know how to find your steam64id, open [SteamDB](https://steamdb.info/calculator/), search your profile and copy the ID located down below at SteamID.  
-
-A complete documentation of the `config.json` can be found in the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki).  
+You need to provide the link to your steam profile at "owner" and the link or your steam64id of your profile at "ownerid", following the existing template.  
+Make sure to put your link and or ID inside the brackets, just like the template shows.  
   
-#### **Quotes**
-Open `quotes.txt` with a text editor. You can add as many quotes as you want, line by line. **Don't leave an empty line anywhere in this file!** The file already has default comments set up.  
-The bot will choose a random quote for **every** comment. If you only provide one quote, the bot will only use that quote.  
-
-You can also use comments that go over multiple lines (ASCII-Art, etc.).  
-To do that, just put a `\n` at the end of each line of the multi-line comment. Then move the next line of your comment behind the `\n` so that your multi line comment is **only one line** in your quotes.txt, with each line of the actual comment seperated by a `\n`.  
-Example: `My cool comment: \nline1\nline2\nline3`  
+For now you can ignore all the other settings, however if you'd like to customize more values later on then check out the [complete config documentation](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki).  
   
-The bot(s) is/are now setup! Don't modify any of the other files.  
+<details>
+  <summary><strong>Custom Quotes</strong> (optional)</summary>
+
+  The bot comes with a default set of quotes which are randomly selected for each comment.  
+  If you'd like to specify your own selection of quotes you can do so:  
+    
+  Open `quotes.txt` with a text editor. You can add as many quotes as you want, line by line.  
+  Make sure to not leave a line empty as it can otherwise lead to errors.   
+  The bot will choose a random quote for **every** comment. If you only provide one quote, the bot will only use that one for all comments.  
+
+  You can also use comments that go over multiple lines (ASCII-Art, etc.).  
+  To do that, just put a `\n` at the end of each line of the multi-line comment. Then move the next line of your comment behind the `\n` so that your multi line comment is **only one line** in your quotes.txt, with each line of the actual comment seperated by a `\n`.  
+
+  > Example: `My cool comment: \nline1\nline2\nline3`  
+</details>
+  
+&nbsp;
+
+The bot is now ready! Don't modify any of the other files.  
 
 ## **Usage:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=385)  
-Type `node start.js` in the power shell/terminal you opened earlier.  
-**Disclaimer:** Do not start the bot with a tool that restarts on changes (like nodemon etc)! Just use normal `node`.  
-Add the main bot (bot0 in logininfo.json) on steam and send him the message: `!help`  
+Open up a power shell/terminal in this folder and type `node start.js`.  
 
-To request a comment, simply type `!comment`!
-If you have more than 1 account set up in `logininfo.json` you can specify how many comments you want.
+> **Important Disclaimer:** Do not start the bot with a tool that restarts on changes (like nodemon etc)! Only use normal `node`.  
 
-## **Additional informations:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=611)  
+Head over to your Steam client, add the main bot (the first account in your accounts.txt) as friend and send him the message `!help`.  
+It should respond with a list of commands available to you.  
+
+To request a comment, simply type `!comment 1`!  
+You can see all commands and their usage [here in the wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Commands-documentation).  
+
+## **Additional Information:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=611)  
 Hey, if you like this project please consider donating a buck on my [PayPal!](https://paypal.me/3urobeat)  
 [![Donate](https://img.shields.io/badge/donate-%241-orange)](https://paypal.me/3urobeat)  
 If you like the work I put into this project, please give this repository a star!  
 ![Star](https://img.shields.io/github/stars/HerrEurobeat/steam-comment-service-bot)  
 
-#### **Web (URL) Comment Requests**
-To requests comment with an URL in your browser you need to turn the feature on.  
-Go into your `config.json` and set `enableurltocomment` to `true` and restart the bot.  
-
-Open localhost:3034 in your browser and follow the instructions there.  
-To request comments from outside your network you need to allow the port `3034` in your router settings and visit the server with your public ip address.  
+#### **The Wiki**
+The Wiki of this repository holds a lot of valuable information, please [check it out](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki)!  
+You can find pages there on how to add proxies to drastically increase the amount of possible comments, how to integrate the bot into your own application, adding your own language, documentation on errors, the config, advancedconfig and more.  
 
 #### **Bugs, Issues & Betas**
 If you encountered a **bug**, you **need help** or wish a feature to be added, please open an [**issue!**](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose)  
 If you are interested in beta builds of this project, visit the [beta-testing branch.](https://github.com/HerrEurobeat/steam-comment-service-bot/tree/beta-testing)  
 If you are interested in the active development progress, visit the [projects section.](https://github.com/HerrEurobeat/steam-comment-service-bot/projects)
 
-#### **Errors & FAQ**
-Please visit the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki) for a detailed description of known steam errors and bot errors.
-
-#### **Steam limitations**
-Steam sadly has some strict restrictions for commenting.  
-Read all of them here: [Steam Support](https://support.steampowered.com/kb_article.php?ref=3330-IAGK-7663)  
-**Important**: If you use *limited accounts* (<$5 spend) the user will need to send all of these accounts a friend request before requesting a comment!  
-Please be also advised that in order to comment on a profile the accounts need to have at least **email steam guard** activated. There are generators out there that can directly generate accounts with steam guard.
-
 #### **License**
-As the **license** already stated: If you want to use code from this repository in your project, feel free to do that as long as you **include credit** to this repository!  
-If you are using this bot as a whole: You are allowed to change bot messages (for translation). You are **not** allowed to remove any credit to myself.  
+The code is distributed under the GPL-3.0 license.  
+If you want to use code from this repository in your project, feel free to do so as long as you **include a link** as a comment to the file in this repository!  
+If you are using this bot as a whole: You are only allowed to change the config files. You are **not** allowed to remove any credit to myself.  
 
-#### **Credits**
+#### **Credits & Donations**
 Thank you [DoctorMcKay](https://github.com/DoctorMcKay) for creating the [steam-user](https://github.com/DoctorMcKay/node-steam-user) and [steamcommunity](https://github.com/DoctorMcKay/node-steamcommunity) libraries!  
 
 Special thanks to [KNO7](https://steamcommunity.com/id/KN07Gaming/) for testing early beta versions, providing many ideas behind this project and donating 5€!  
