@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 16.07.2022 22:59:55
+ * Last Modified: 30.07.2022 18:14:57
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -36,7 +36,7 @@ process.argv[3] = 0;
 
 
 //Provide function to only once attach listeners to parent process
-function attachParentListeners() {
+function attachParentListeners(callback) {
     var logafterrestart = [];
 
     /* ------------ Add unhandled rejection catches: ------------ */
@@ -131,6 +131,9 @@ function attachParentListeners() {
         animationdelay: 250,
         exitmessage: "Goodbye!"
     })
+
+    //resume start/restart
+    callback();
 }
 
 function detachParentListeners() {
@@ -313,24 +316,24 @@ module.exports.checkAndGetFile = (file, logger, norequire, force) => {
 /**
  * Run the application
  */
-module.exports.run = async () => {
+module.exports.run = () => {
     if (process.env.started) return; //make sure this function can only run once to avoid possible bug and cause startup loop
     process.env.started = "true"; //env vars are always strings
 
-    attachParentListeners();
+    attachParentListeners(async () => {
+        logger("info", "Starting process...")
 
-    logger("info", "Starting process...")
+        process.title = `CommentBot` //sets process title in task manager etc.
 
-    process.title = `CommentBot` //sets process title in task manager etc.
+        //get file to start
+        let file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false) //we can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
+        if (!file) return;
 
-    //get file to start
-    let file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false) //we can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
-    if (!file) return;
+        forkedprocess = cp.fork("./src/controller/controller.js", [ __dirname, Date.now() ]) //create new process and provide srcdir and timestamp as argv parameters
+        childpid      = forkedprocess.pid
 
-    forkedprocess = cp.fork("./src/controller/controller.js", [ __dirname, Date.now() ]) //create new process and provide srcdir and timestamp as argv parameters
-    childpid      = forkedprocess.pid
-
-    attachChildListeners();
+        attachChildListeners();
+    });   
 }
 
 
@@ -338,24 +341,24 @@ module.exports.run = async () => {
  * Restart the application
  * @param {Object} args The argument object that will be passed to `controller.restartargs()`
  */
-module.exports.restart = (args) => {
-    attachParentListeners();
+module.exports.restart = async (args) => {
+    attachParentListeners(() => {
+        logger("", "", true)
+        logger("info", "Starting new process...")
 
-    logger("", "", true)
-    logger("info", "Starting new process...")
+        try {
+            process.kill(args["pid"], "SIGKILL") //make sure the old child is dead
+        } catch (err) {} //eslint-disable-line
 
-    try {
-        process.kill(args["pid"], "SIGKILL") //make sure the old child is dead
-    } catch (err) {} //eslint-disable-line
+        setTimeout(async () => {
+            //get file to start
+            let file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false) //we can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
+            if (!file) return;
 
-    setTimeout(async () => {
-        //get file to start
-        let file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false) //we can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
-        if (!file) return;
+            forkedprocess = cp.fork("./src/controller/controller.js", [ __dirname, Date.now(), JSON.stringify(args) ]) //create new process and provide srcdir, timestamp and restartargs as argv parameters
+            childpid      = forkedprocess.pid
 
-        forkedprocess = cp.fork("./src/controller/controller.js", [ __dirname, Date.now(), JSON.stringify(args) ]) //create new process and provide srcdir, timestamp and restartargs as argv parameters
-        childpid      = forkedprocess.pid
-
-        attachChildListeners();
-    }, 2000);
+            attachChildListeners();
+        }, 2000);
+    });
 }
