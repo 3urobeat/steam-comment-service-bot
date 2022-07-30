@@ -76,6 +76,10 @@ Open `config.json` with a text editor.
 You need to provide the link to your steam profile at "owner" and the link or your steam64id of your profile at "ownerid", following the existing template.  
 Make sure to put your link and or ID inside the brackets, just like the template shows.  
   
+Set an amount of comments a normal user and the amount an owner is allowed to request from the bot.  
+This largely depends on how many accounts you use, the commentdelay set and if you use proxies.  
+I would recommend max 2 comments per account if you use no proxies and default settings, so if you use 5 accounts, try setting maxComments and maxOwnerComments to 10.  
+  
 For now you can ignore all the other settings, however if you'd like to customize more values later on then check out the [complete config documentation](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki).  
   
 <details>
