@@ -18,7 +18,7 @@
   <a href="#download-">Download</a> •
   <a href="#setup--configuration-">Setup & Config</a> •
   <a href="#usage-">Usage</a> •
-  <a href="#additional-informations-">Additional information</a>
+  <a href="#additional-information-">Additional information</a>
 </p>
   
 ![Showcase](https://3urobeat.com/comment-bot/showcase.gif)
