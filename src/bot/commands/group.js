@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 17:52:22
+ * Last Modified: 06.03.2022 12:57:17
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,6 +15,11 @@
  */
 
 
+const SteamID         = require("steamid");
+const steamidresolver = require("steamid-resolver")
+
+const controller      = require("../../controller/controller.js")
+
 
 /**
  * Runs the bot command
@@ -24,17 +29,13 @@
  * @param {Object} lang The language object
  */
 module.exports.group = (bot, chatmsg, steamID, lang) => {
-    var SteamID         = require("steamid")
 
-    var mainfile        = require("../main.js")
+    if (config.yourgroup.length < 1 || !cachefile.configgroup64id) return chatmsg(steamID, lang.groupcmdnolink) //no group info at all? stop.
 
-
-    if (config.yourgroup.length < 1 || !mainfile.configgroup64id) return chatmsg(steamID, lang.groupcmdnolink) //no group info at all? stop.
-
-    if (mainfile.configgroup64id && Object.keys(bot.myGroups).includes(mainfile.configgroup64id)) { 
-        bot.inviteToGroup(steamID, mainfile.configgroup64id); chatmsg(steamID, lang.groupcmdinvitesent); 
+    if (cachefile.configgroup64id && Object.keys(bot.myGroups).includes(cachefile.configgroup64id)) { 
+        bot.inviteToGroup(steamID, cachefile.configgroup64id); chatmsg(steamID, lang.groupcmdinvitesent); 
         
-        if (mainfile.configgroup64id != "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
+        if (cachefile.configgroup64id != "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
         bot.inviteToGroup(steamID, new SteamID("103582791464712227")); } 
         return; } //id? send invite and stop
 
@@ -50,11 +51,6 @@ module.exports.group = (bot, chatmsg, steamID, lang) => {
  * @param {Array} args The args array
  */
 module.exports.leaveGroup = (chatmsg, steamID, lang, args) => {
-    var steamidresolver = require("steamid-resolver")
-    var SteamID         = require("steamid")
-
-    var controller      = require("../../controller/controller.js")
-
 
     if (isNaN(args[0]) && !String(args[0]).startsWith('https://steamcommunity.com/groups/')) return chatmsg(steamID, lang.leavegroupcmdinvalidgroup)
 
@@ -100,12 +96,8 @@ module.exports.leaveGroup = (chatmsg, steamID, lang, args) => {
  * @param {Array} args The args array
  */
 module.exports.leaveAllGroups = (chatmsg, steamID, lang, args) => {
-    var controller      = require("../../controller/controller.js")
-    var cachefile       = require("../../data/cache.json")
-    var mainfile        = require("../main.js")
-
+    
     var abortleaveallgroups;
-
 
     if (args[0] == "abort") { 
         chatmsg(steamID, lang.leaveallgroupscmdabort); 
@@ -125,7 +117,7 @@ module.exports.leaveAllGroups = (chatmsg, steamID, lang, args) => {
                 try {
                     setTimeout(() => {
                         if (controller.botobject[i].myGroups[group] == 3) {
-                            if (group != cachefile.botsgroupid && group != mainfile.configgroup64id) controller.communityobject[i].leaveGroup(String(group)) 
+                            if (group != cachefile.botsgroupid && group != cachefile.configgroup64id) controller.communityobject[i].leaveGroup(String(group)) 
                         }
                     }, 1000 * i); //delay every iteration so that we don't make a ton of requests at once
                 } catch (err) {

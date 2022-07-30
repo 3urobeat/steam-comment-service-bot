@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 17.10.2021 11:48:54
+ * Last Modified: 30.07.2022 18:14:57
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -27,11 +27,16 @@ var handleUnhandledRejection;
 var handleUncaughtException;
 var parentExitEvent;
 
+const fs = require("fs")
+
 global.srcdir = __dirname;
+
+//Set timestamp checked in controller.js to 0 for the starter process (this one) to make sure the bot can never start here and only in the child process spawned by this.run()
+process.argv[3] = 0;
 
 
 //Provide function to only once attach listeners to parent process
-function attachParentListeners() {
+function attachParentListeners(callback) {
     var logafterrestart = [];
 
     /* ------------ Add unhandled rejection catches: ------------ */
@@ -43,7 +48,8 @@ function attachParentListeners() {
         console.log(`${type} ${separator} ${str}`)
     }
 
-    logger.animation = () => {} //just to be sure that no error occurs when trying to call this function without the real logger being present
+    logger.animation            = () => {} //just to be sure that no error occurs when trying to call this function without the real logger being present
+    logger.detachEventListeners = () => {}
 
     handleUnhandledRejection = (reason) => { //Should keep the bot at least from crashing
         logger("error", `Unhandled Rejection Error! Reason: ${reason.stack}`, true) 
@@ -53,7 +59,7 @@ function attachParentListeners() {
         //Try to fix error automatically by reinstalling all modules
         if (String(reason).includes("Error: Cannot find module")) {
             logger("", "", true)
-            logger("info", "Cannot find module error detected. Trying to fix error by reinstalling modules...\n")
+            if (global.extdata) logger("info", "Cannot find module error detected. Trying to fix error by reinstalling modules...\n") //check if extdata has been imported as workaround for hiding this message for new users to avoid confusion (because extdata.firststart can't be checked yet)
 
             require("./controller/helpers/npminteraction.js").reinstallAll(logger, (err, stdout) => { //eslint-disable-line
                 if (err) {
@@ -96,25 +102,10 @@ function attachParentListeners() {
     process.on('unhandledRejection', handleUnhandledRejection);
     process.on('uncaughtException', handleUncaughtException);
 
-
-    /* ------------ Import logger and add exit event listener: ------------ */
-    cp     = require('child_process');
-    logger = require("output-logger") //look Mom, it's my own library!
-
-    requestedKill = false;
-
-    //Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)
-    logger.options({
-        msgstructure: "[animation] [date | type] message",
-        paramstructure: ["type", "str", "nodate", "remove", "animation"],
-        outputfile: __dirname + "/../output.txt",
-        animationdelay: 250
-    })
-
-
-    //Attach exit event listener to display message in output & terminal when user stops the bot
+    /* ------------ Add exit event listener and import logger: ------------ */
+    //Attach exit event listener to display message in output & terminal when user stops the bot (before logger import so this runs before output-logger's exit event listener)
     parentExitEvent = () => {
-        //logger("debug", "Caller: " + process.pid + " | Child: " + childpid)
+        logger("debug", "Caller: " + process.pid + " | Child: " + childpid)
 
         try {
             process.kill(childpid, "SIGKILL") //make sure the old child is dead
@@ -122,14 +113,33 @@ function attachParentListeners() {
 
         logger("", "", true)
         logger("info", `Recieved signal to exit...`, false, true);
-        logger("", "Goodbye!", true);
     }
 
     process.on("exit", parentExitEvent);
+
+    //Import logger lib
+    cp     = require('child_process');
+    logger = require("output-logger") //look Mom, it's my own library!
+
+    requestedKill = false;
+
+    //Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)
+    logger.options({
+        msgstructure: `[${logger.Const.ANIMATION}] [${logger.Const.DATE} | ${logger.Const.TYPE}] ${logger.Const.MESSAGE}`,
+        paramstructure: [logger.Const.TYPE, logger.Const.MESSAGE, "nodate", "remove", logger.Const.ANIMATION],    
+        outputfile: __dirname + "/../output.txt",
+        animationdelay: 250,
+        exitmessage: "Goodbye!"
+    })
+
+    //resume start/restart
+    callback();
 }
 
 function detachParentListeners() {
     logger("info", "Detaching parent's event listeners...", false, true)
+
+    logger.detachEventListeners();
 
     if (handleUnhandledRejection) process.removeListener("unhandledRejection", handleUnhandledRejection)
     if (handleUncaughtException)  process.removeListener("uncaughtException", handleUncaughtException)
@@ -140,7 +150,7 @@ function detachParentListeners() {
 //Provide function to attach listeners to make communicating with child possible
 function attachChildListeners() {
     forkedprocess.on("message", (msg) => {
-        //logger("debug", "Recieved message from child: " + msg)
+        logger("debug", "Recieved message from child: " + msg)
 
         //Might need to switch to a switch case structure later on but for now this works fine for only two cases and is easier when trying to check for startsWith()
         if (msg.startsWith("restart(")) {
@@ -204,75 +214,100 @@ function attachChildListeners() {
  * @param {function} logger Your current logger function
  * @param {Boolean} norequire If set to true the function will return the path instead of importing it
  * @param {Boolean} force If set to true the function will skip checking if the file exists and overwrite it.
- * @param {function} [callback] Called with `ready` (Boolean) on completion.
  */
-module.exports.checkAndGetFile = (file, logger, norequire, force, callback) => {
-    if (!file) {
-        logger("error", "checkAndGetFile() error: file parameter is undefined!")
-        callback(undefined)
-        return;
-    }
+module.exports.checkAndGetFile = (file, logger, norequire, force) => {
+    return new Promise((resolve) => {
+        if (!file) {
+            logger("error", "checkAndGetFile() error: file parameter is undefined!")
+            resolve(undefined)
+            return;
+        }
+        
 
-    var fs = require("fs")
-    
+        //Function that will download a new file, test it and resolve/reject promise
+        function getNewFile() {
+            
+            //Determine branch
+            var branch = "master" //Default to master
 
-    if (!fs.existsSync(file) || force) { //Function that downloads filetostart if it doesn't exist (file location change etc.)
-        //Determine branch
-        var branch = "master" //Default to master
-        try { 
-            branch = require("./data/data.json").branch //Try to read from data.json (which will when user is coming from <2.11)
-        } catch (err) {
+            try { 
+                branch = require("./data/data.json").branch //Try to read from data.json (which will when user is coming from <2.11)
+            } catch (err) {
+                try {
+                    var otherdata = require("./data.json") //then try to get the other, "compatibility" data file to check if versionstr includes the word BETA
+                    
+                    if (otherdata.versionstr.includes("BETA")) branch = "beta-testing"
+                } catch (err) { } //eslint-disable-line
+            }
+
+
+            var fileurl = `https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${branch}/${file.slice(2, file.length)}` //remove the dot at the beginning of the file string
+
+            logger("info", "Pulling: " + fileurl, false, true)
+
             try {
-                var otherdata = require("./data.json") //then try to get the other, "compatibility" data file to check if versionstr includes the word BETA
-                
-                if (otherdata.versionstr.includes("BETA")) branch = "beta-testing"
-            } catch (err) { } //eslint-disable-line
-        }
+                var https = require("https")
+                var path  = require("path")
 
+                var output = ""
 
-        var fileurl = `https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${branch}/${file.slice(2, file.length)}` //remove the dot at the beginning of the file string
+                //Create the underlying folder structure to avoid error when trying to write the downloaded file
+                fs.mkdirSync(path.dirname(file), { recursive: true })
 
-        logger("info", "Pulling: " + fileurl, false, true)
+                //Get the file
+                https.get(fileurl, function (res) {
+                    res.setEncoding('utf8');
 
-        try {
-            var https = require("https")
-            var path  = require("path")
+                    res.on('data', function (chunk) {
+                        output += chunk 
+                    });
 
-            var output = ""
+                    res.on('end', () => {
+                        fs.writeFile(file, output, (err) => {
+                            if (err) {
+                                logger("error", "checkAndGetFile() writeFile error: " + err)
+                                resolve(undefined)
+                                return;
+                            }
 
-            //Create the underlying folder structure to avoid error when trying to write the downloaded file
-            fs.mkdirSync(path.dirname(file), { recursive: true })
-
-            //Get the file
-            https.get(fileurl, function (res) {
-                res.setEncoding('utf8');
-
-                res.on('data', function (chunk) {
-                    output += chunk 
+                            if (norequire) resolve(file)
+                                else resolve(require("." + file))
+                        })
+                    }) 
                 });
+            } catch (err) { 
+                logger("error", "checkAndGetFile() error pulling new file: " + err)
 
-                res.on('end', () => {
-                    fs.writeFile(file, output, (err) => {
-                        if (err) {
-                            logger("error", "checkAndGetFile() writeFile error: " + err)
-                            callback(null)
-                            return;
-                        }
-
-                        if (norequire) callback(file)
-                            else callback(require("." + file))
-                    })
-                }) 
-            });
-        } catch (err) { 
-            logger("error", "start.js get starter.js function error: " + err)
-
-            callback(null)
+                resolve(undefined)
+            }
         }
-    } else {
-        if (norequire) callback(file)
-            else callback(require("." + file))
-    }
+        
+
+        //immediately get a new file if file doesn't exist or force is true 
+        if (!fs.existsSync(file) || force) {
+            getNewFile();
+
+        } else { //...otherwise check if file is intact if norequire is false
+
+            if (norequire) {
+                resolve(file)
+            } else {
+
+                try {
+                    if (!file.includes("logger.js")) logger("debug", `checkAndGetFile(): file ${file} exists, force and norequire are false. Testing integrity by requiring...`) //ignore message for logger.js as it won't use the real logger yet 
+
+                    let fileToLoad = require("." + file);
+
+                    resolve(fileToLoad); //seems to be fine, otherwise we would already be in the catch block
+
+                } catch (err) {
+                    logger("warn", `It looks like file ${file} is corrupted. Trying to pull new file from GitHub...`, false, true)
+
+                    getNewFile();
+                }
+            }
+        }
+    })
 }
 
 
@@ -285,18 +320,20 @@ module.exports.run = () => {
     if (process.env.started) return; //make sure this function can only run once to avoid possible bug and cause startup loop
     process.env.started = "true"; //env vars are always strings
 
-    attachParentListeners();
+    attachParentListeners(async () => {
+        logger("info", "Starting process...")
 
-    logger("info", "Starting process...")
+        process.title = `CommentBot` //sets process title in task manager etc.
 
-    process.title = `CommentBot` //sets process title in task manager etc.
+        //get file to start
+        let file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false) //we can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
+        if (!file) return;
 
-    this.checkAndGetFile("./src/controller/controller.js", logger, true, false, (file) => {
-        forkedprocess = cp.fork(file, [ __dirname, Date.now() ]) //create new process and provide srcdir and timestamp as argv parameters
+        forkedprocess = cp.fork("./src/controller/controller.js", [ __dirname, Date.now() ]) //create new process and provide srcdir and timestamp as argv parameters
         childpid      = forkedprocess.pid
 
         attachChildListeners();
-    })
+    });   
 }
 
 
@@ -304,22 +341,24 @@ module.exports.run = () => {
  * Restart the application
  * @param {Object} args The argument object that will be passed to `controller.restartargs()`
  */
-module.exports.restart = (args) => {
-    attachParentListeners();
+module.exports.restart = async (args) => {
+    attachParentListeners(() => {
+        logger("", "", true)
+        logger("info", "Starting new process...")
 
-    logger("", "", true)
-    logger("info", "Starting new process...")
+        try {
+            process.kill(args["pid"], "SIGKILL") //make sure the old child is dead
+        } catch (err) {} //eslint-disable-line
 
-    try {
-        process.kill(args["pid"], "SIGKILL") //make sure the old child is dead
-    } catch (err) {} //eslint-disable-line
+        setTimeout(async () => {
+            //get file to start
+            let file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false) //we can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
+            if (!file) return;
 
-    setTimeout(() => {
-        this.checkAndGetFile("./src/controller/controller.js", logger, true, false, (file) => {
-            forkedprocess = cp.fork(file, [ __dirname, Date.now(), JSON.stringify(args) ]) //create new process and provide srcdir, timestamp and restartargs as argv parameters
+            forkedprocess = cp.fork("./src/controller/controller.js", [ __dirname, Date.now(), JSON.stringify(args) ]) //create new process and provide srcdir, timestamp and restartargs as argv parameters
             childpid      = forkedprocess.pid
-    
+
             attachChildListeners();
-        })
-    }, 2000);
+        }, 2000);
+    });
 }

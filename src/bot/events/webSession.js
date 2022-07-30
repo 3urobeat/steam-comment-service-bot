@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.10.2021 13:14:00
+ * Last Modified: 04.06.2022 11:29:21
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -38,8 +38,8 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
     login.accisloggedin = true; //set to true to log next account in
 
 
-    //Accept offline group & friend invites
-    logger("info", `[${thisbot}] Got websession and set cookies.`, false, true, logger.animation("loading"))
+    if (!require("../../controller/ready.js").readyafter) logger("info", `[${thisbot}] Got websession and set cookies. Accepting offline friend & group invites...`, false, true, logger.animation("loading")) //only print message with animation if the bot was not fully started yet
+        else logger("info", `[${thisbot}] Got websession and set cookies. Accepting offline friend & group invites...`, false, true)
 
     //If this is a relog then remove this account from the queue and let the next account be able to relog
     if (controller.relogQueue.includes(loginindex)) {
@@ -50,56 +50,92 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
 
 
     /* ------------ Accept offline friend and group invites/requests: ------------ */
-    if (!require("../../controller/ready.js").readyafter) logger("info", `[${thisbot}] Accepting offline friend & group invites...`, false, true, logger.animation("loading")) //only print message with animation if the bot was not fully started yet
-        else logger("info", `[${thisbot}] Accepting offline friend & group invites...`, false, true)
-
     //Friends:
+    let ignoredFriendRequests = 0;
+
     for (let i = 0; i < Object.keys(bot.myFriends).length; i++) { //Credit: https://dev.doctormckay.com/topic/1694-accept-friend-request-sent-in-offline/  
         if (bot.myFriends[Object.keys(bot.myFriends)[i]] == 2) {
 
-            //Accept friend request
-            bot.addFriend(Object.keys(bot.myFriends)[i]);
+            if (advancedconfig.acceptFriendRequests) {
+                //Accept friend request
+                bot.addFriend(Object.keys(bot.myFriends)[i]);
 
 
-            //Log message and send welcome message
-            logger("info", `[${thisbot}] Added user while I was offline! User: ` + Object.keys(bot.myFriends)[i])
-            controller.botobject[0].chat.sendFriendMessage(String(Object.keys(bot.myFriends)[i]), mainfile.lang.useradded)
+                //Log message and send welcome message
+                logger("info", `[${thisbot}] Added user while I was offline! User: ` + Object.keys(bot.myFriends)[i])
+                if (loginindex == 0) controller.botobject[0].chat.sendFriendMessage(String(Object.keys(bot.myFriends)[i]), mainfile.lang.useradded)
+                    else logger("debug", "Not sending useradded message because this isn't the main bot...")
 
 
-            //Add user to lastcomment database
-            let lastcommentobj = {
-                id: Object.keys(bot.myFriends)[i],
-                time: Date.now() - (config.commentcooldown * 60000) //subtract commentcooldown so that the user is able to use the command instantly
-            }
-
-            controller.lastcomment.remove({ id: Object.keys(bot.myFriends)[i] }, {}, (err) => { if (err) logger("error", "Error removing duplicate steamid from lastcomment.db on offline friend accept! Error: " + err) }) //remove any old entries
-            controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err) })
-
-
-            //Invite user to yourgroup (and to my to make some stonks)
-            if (mainfile.configgroup64id && Object.keys(bot.myGroups).includes(mainfile.configgroup64id)) { 
-                bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(mainfile.configgroup64id));
-
-                if (mainfile.configgroup64id !== "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
-                    bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID("103582791464712227"));
+                //Add user to lastcomment database
+                let lastcommentobj = {
+                    id: Object.keys(bot.myFriends)[i],
+                    time: Date.now() - (config.commentcooldown * 60000) //subtract commentcooldown so that the user is able to use the command instantly
                 }
+
+                controller.lastcomment.remove({ id: Object.keys(bot.myFriends)[i] }, {}, (err) => { if (err) logger("error", "Error removing duplicate steamid from lastcomment.db on offline friend accept! Error: " + err) }) //remove any old entries
+                controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err) })
+
+
+                //Invite user to yourgroup (and to my to make some stonks)
+                if (cachefile.configgroup64id && Object.keys(bot.myGroups).includes(cachefile.configgroup64id)) { 
+                    bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID(cachefile.configgroup64id));
+
+                    if (cachefile.configgroup64id !== "103582791464712227") { //https://steamcommunity.com/groups/3urobeatGroup
+                        bot.inviteToGroup(Object.keys(bot.myFriends)[i], new SteamID("103582791464712227"));
+                    }
+                }
+            } else {
+                ignoredFriendRequests++
             }
-        } 
+        }
+
+        //Log info msg about ignored friend requests 
+        if (i + 1 == Object.keys(bot.myFriends).length && ignoredFriendRequests > 0) {
+            logger("info", `Ignored ${ignoredFriendRequests} pending friend request(s) because acceptFriendRequests is turned off in advancedconfig.json.`)
+        }
     }
 
     //Groups:
     for (let i = 0; i < Object.keys(bot.myGroups).length; i++) {
         if (bot.myGroups[Object.keys(bot.myGroups)[i]] == 2) {
 
-            if (config.acceptgroupinvites !== true) { //check if group accept is false
-                if (config.botsgroup.length < 1) return; 
-
-                if (Object.keys(bot.myGroups)[i] !== config.botsgroup) return; //check if group id is bot group
+            //Check if acceptgroupinvites is set to false and only allow botsgroup invite to be accepted
+            if (!config.acceptgroupinvites) {
+                if (config.yourgroup.length < 1 && config.botsgroup.length < 1) return; 
+                if (Object.keys(bot.myGroups)[i] != cachefile.configgroup64id && Object.keys(bot.myGroups)[i] != cachefile.botsgroupid) return;
+                logger("info", "acceptgroupinvites is turned off but this is an invite to the group set as yourgroup or botsgroup. Accepting invite anyway...")
             }
 
             //Accept invite and log message
             bot.respondToGroupInvite(Object.keys(bot.myGroups)[i], true)
             logger("info", `[${thisbot}] Accepted group invite while I was offline: ` + Object.keys(bot.myGroups)[i])
         }
+    }
+
+
+    /* ------------ Join botsgroup: ------------ */
+    logger("debug", `[${thisbot}] Checking if bot account is in botsgroup...`, false, true, logger.animation("loading"));
+
+    require("../helpers/steamgroup.js").botsgroupID64(loginindex, thisbot, (botsgroupid) => { //Check if this account is not in botsgroup yet
+        if (!botsgroupid) return;
+
+        if (!Object.keys(bot.myGroups).includes(String(botsgroupid))) {
+            community.joinGroup(`${botsgroupid}`)
+
+            logger("info", `[${thisbot}] Joined/Requested to join steam group that has been set in the config (botsgroup).`) 
+        }
+    })
+
+
+    /* ------------ Set primary group: ------------ */
+    if (advancedconfig.setPrimaryGroup && cachefile.configgroup64id) {
+        logger("info", `[${thisbot}] setPrimaryGroup is enabled and configgroup64id is set, setting ${cachefile.configgroup64id} as primary group...`, false, true, logger.animation("loading"))
+
+        community.editProfile({
+            primaryGroup: new SteamID(cachefile.configgroup64id)
+        }, (err) => {
+            if (err) logger("err", `[${thisbot}] Error setting primary group: ${err}`, true);
+        })
     }
 }

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 18:04:37
+ * Last Modified: 29.07.2022 11:12:05
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -38,16 +38,19 @@ module.exports.run = (responseSteamID, callback) => {
         function initiateUpdate() { //make initating the update a function to simplify the activecomment check below
             controller.relogAfterDisconnect = false; //Prevents disconnect event (which will be called by logOff) to relog accounts
     
-            Object.keys(controller.botobject).forEach((e) => {
-                logger("info", `Logging off bot${e}...`, false, true, logger.animation("loading"))
-                controller.botobject[e].logOff() //logging off each account
-            })
+            logger("info", "Logging off all bot accounts in 2.5 seconds...", false, true, logger.animation("waiting"));
 
             setTimeout(() => {
-                botisloggedin = false
-
-                callback(); //start update
-            }, 2500)
+                Object.keys(controller.botobject).forEach((e) => {
+                    controller.botobject[e].logOff() //logging off each account
+                })
+    
+                setTimeout(() => {
+                    botisloggedin = false
+    
+                    callback(); //start update
+                }, 2500)
+            }, 2500);
         }
 
 
@@ -56,7 +59,7 @@ module.exports.run = (responseSteamID, callback) => {
 
             Object.keys(mainfile.activecommentprocess).forEach((e, i) => { //loop overr obj to filter invalid/expired entries
 
-                if (mainfile.activecommentprocess[e].status != "active" || Date.now() > mainfile.activecommentprocess[e].until + (config.globalcommentcooldown * 60000)) { //check if status is not active or if entry is finished (realistically the status can't be active and finished but it won't hurt to check both to avoid a possible bug)
+                if (mainfile.activecommentprocess[e].status != "active" || Date.now() > mainfile.activecommentprocess[e].until + (config.botaccountcooldown * 60000)) { //check if status is not active or if entry is finished (realistically the status can't be active and finished but it won't hurt to check both to avoid a possible bug)
                     delete mainfile.activecommentprocess[e] //remove entry from object
                 }
     

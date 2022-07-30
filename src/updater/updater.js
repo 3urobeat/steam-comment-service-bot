@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 17.10.2021 19:38:16
+ * Last Modified: 27.07.2022 23:14:14
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -24,7 +24,7 @@
  * @param {Boolean} compatibilityfeaturedone Only works with forceupdate! Changes compatibilityfeaturedone in data.json to true
  * @param {function} [callback] Called with `foundanddone` (Boolean) on completion. If `true` you should restart the bot and if `false` you can carry on.
  */
-module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, foundanddone) => {
+module.exports.run = async (forceupdate, responseSteamID, compatibilityfeaturedone, foundanddone) => {
     var starter = require("../starter.js")
 
     var releasemode             = extdata.branch
@@ -32,103 +32,119 @@ module.exports.run = (forceupdate, responseSteamID, compatibilityfeaturedone, fo
     module.exports.activeupdate = false
 
 
-    starter.checkAndGetFile("./src/updater/helpers/checkforupdate.js", logger, false, false, (file) => { //also too many nested callbacks
-        file.checkforupdate(releasemode, forceupdate, (ready, chunk) => {
-            if (ready) { //update found or forceupdate is true
+    let file = await starter.checkAndGetFile("./src/updater/helpers/checkforupdate.js", logger, false, false)
+    if (!file) return;
 
-                //log result of the check
-                logger("", "", true)
-                logger("", `\x1b[32mUpdate available!\x1b[0m Your version: \x1b[31m${extdata.versionstr}\x1b[0m | New version: \x1b[32m${chunk.versionstr}\x1b[0m`, true)
-                logger("", "", true)
+    file.checkforupdate(releasemode, forceupdate, (ready, chunk) => {
+        if (ready) { //update found or forceupdate is true
+
+            //log result of the check
+            logger("", "", true)
+            logger("", `${logger.colors.fggreen}Update available!${logger.colors.reset} Your version: ${logger.colors.fgred}${extdata.versionstr}${logger.colors.reset} | New version: ${logger.colors.fggreen}${chunk.versionstr}`, true)
+            logger("", "", true)
+            logger("", `${logger.colors.underscore}What's new:${logger.colors.reset} ${chunk.whatsnew}\n`, true)
 
 
-                //respond to the user if he/she requested an update via the Steam chat
-                if (responseSteamID) { 
-                    require('../controller/controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `Update available! Your version: ${extdata.versionstr} | New version: ${chunk.versionstr}`)
+            //respond to the user if he/she requested an update via the Steam chat (ignore if forceupdate to avoid some duplicate messages spam stuff)
+            if (responseSteamID && !forceupdate) {
+                let controller = require("../controller/controller.js");
 
-                    if (config.disableautoupdate == true && !forceupdate) { 
-                        require('../controller/controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, "You have turned automatic updating off. You need to confirm the update in the console!") 
-                    }
+                controller.botobject[0].chat.sendFriendMessage(responseSteamID, `Update available! Your version: ${extdata.versionstr} | New version: ${chunk.versionstr}`)
+                controller.botobject[0].chat.sendFriendMessage(responseSteamID, `What's new: ${chunk.whatsnew}`)
+
+                //instruct user to force update if disableAutoUpdate is true and stop here
+                if (advancedconfig.disableAutoUpdate && !forceupdate) { 
+                    controller.botobject[0].chat.sendFriendMessage(responseSteamID, "You have disabled the automatic updater. Would you like to update now?\nIf yes, please force an update using the command: !update true");
+                    return;
                 }
+            }
 
 
-                /* eslint-disable no-inner-declarations */
-                function initiateUpdate() { //make initating the update a function to simplify the permission check below
-                    this.activeupdate = true; //block new comment requests by setting active update to true and exporting it
+            /* eslint-disable no-inner-declarations */
+            async function initiateUpdate() { //make initating the update a function to simplify the permission check below
+                this.activeupdate = true; //block new comment requests by setting active update to true and exporting it
 
-                    starter.checkAndGetFile("./src/updater/helpers/prepareupdate.js", logger, false, false, (file2) => {
-                        file2.run(responseSteamID, () => {
-                            logger("", "Starting to download update...", true, false, logger.animation("loading"))
+                let file2 = await starter.checkAndGetFile("./src/updater/helpers/prepareupdate.js", logger, false, false) //prepare update (like waiting for active comment processes to finish, logging off accounts, etc.)
+                if (!file2) return;
+                
+                file2.run(responseSteamID, async () => {
+                    let file3 = await starter.checkAndGetFile("./src/updater/helpers/createBackup.js", logger, false, false) //create a backup of the current installation
+                    if (!file3) return;
 
-                            starter.checkAndGetFile("./src/updater/helpers/downloadupdate.js", logger, false, false, (file3) => {
-                                file3.downloadupdate(releasemode, compatibilityfeaturedone, (err) => {
-                                    if (err) logger("error", "I failed trying to download & install the update. Please check the log after other errors for more information.\nTrying to continue anyway...")
+                    file3.run(async () => {
+                        let file4 = await starter.checkAndGetFile("./src/updater/helpers/downloadupdate.js", logger, false, false)
+                        if (!file4) return;
 
-                                    logger("", "\x1b[33mUpdating packages with npm...\x1b[0m", true, false, logger.animation("loading"))
+                        let file5 = await starter.checkAndGetFile("./src/updater/helpers/restoreBackup.js", logger, false, false) //already load restoreBackup into memory
+                        if (!file5) return;
 
-                                    starter.checkAndGetFile("./src/controller/helpers/npminteraction.js", logger, false, false, (file4) => {
-                                        file4.update((err) => {
-                                            if (err) logger("error", "I failed trying to update the dependencies. Please check the log after other errors for more information.\nTrying to continue anyway...")
-
-                                            foundanddone(true); //finished updating!
-                                        })
-                                    })
+                        file4.downloadupdate(releasemode, compatibilityfeaturedone, async (err) => { //start downloading the update
+                            if (err) {
+                                logger("error", "I failed trying to download & install the update! Please contact the bot developer with the following error here: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose", true)
+                                logger("error", err.stack, true)
+                                
+                                logger("info", "Since I probably won't be able to continue from here, I'll try to restore from a backup if one exists.\n       I'll try to update again the next time you start the bot or in 6 hours should the auto updater be enabled.\n       If this issue keeps happening please think about setting disableAutoUpdate in advancedconfig.json to true.", true)
+                                file5.run(() => { //try to restore backup
+                                    foundanddone(true, true, global.checkm8)
                                 })
-                            })
+
+                            } else {
+                                logger("", `${logger.colors.fgyellow}Updating packages with npm...`, true, false, logger.animation("loading"))
+
+                                let file6 = await starter.checkAndGetFile("./src/controller/helpers/npminteraction.js", logger, false, false)
+                                if (!file6) return;
+
+                                file6.update((err) => {
+                                    if (err) logger("error", "I failed trying to update the dependencies. Please check the log after other errors for more information.\nTrying to continue anyway...")
+
+                                    foundanddone(true); //finished updating!
+                                })
+                            }
                         })
                     })
-                }
+                })
+            }
 
 
-                /* ------------------ Check for permission to update ------------------ */
-                if (config.disableautoupdate == false || forceupdate) { //check if the user has disabled the automatic updater or an update was forced
-                    initiateUpdate();
+            /* ------------------ Check for permission to update ------------------ */
+            if (!advancedconfig.disableAutoUpdate || forceupdate) { //check if the user has disabled the automatic updater or an update was forced
+                initiateUpdate();
 
-                } else { //user has it disabled, ask for confirmation
+            } else { //user has it disabled, ask for confirmation
 
-                    if (botisloggedin == false || responseSteamID) { //only ask on start (or when user checked for an update from the Steam chat), otherwise this will annoy the user
+                if (botisloggedin == false) { //only ask on start, otherwise this will annoy the user
 
-                        logger("", `\x1b[4mWhat's new:\x1b[0m ${chunk.whatsnew}\n`, true)
-                        logger("info", "You have disabled the automatic updater.", true, true) //Log once for output.txt (gets overwritten by the next line)
-                        logger("", `\x1b[93mWould you like to update now?\x1b[0m [y/n] `, true, true) //Split into two logger calls so that remove works correctly
-
-                        process.stdout.write(`You have disabled the automatic updater.\n\x1b[93mWould you like to update now?\x1b[0m [y/n] `)
-                        var updatestdin = process.openStdin();
-
-                        let noresponsetimeout = setTimeout(() => { //skip update after 7.5 sec if the user doesn't respond
-                            updatestdin.pause()
-                            process.stdout.write("\x1b[31mX\n") //write a X behind the y/n question
-                            logger("info", "\x1b[93mStopping updater since you didn't reply in 7.5 seconds...\x1b[0m\n\n", true, false, logger.animation("loading"))
-
+                    //Get user choice from terminal input
+                    logger.readInput(`You have disabled the automatic updater.\n${logger.colors.brfgyellow}Would you like to update now?${logger.colors.reset} [y/n] `, 7500, (text) => {
+                        
+                        if (!text) { //user didn't respond in 7.5 seconds
+                            process.stdout.write(`${logger.colors.fgred}X${logger.colors.reset}\n`) //write a X behind the y/n question
+                            logger("info", `${logger.colors.brfgyellow}Stopping updater since you didn't reply in 7.5 seconds...\n\n`, true, false)
                             foundanddone(false)
-                        }, 7500);
-
-                        updatestdin.addListener('data', text => {
-                            clearTimeout(noresponsetimeout) 
-                            updatestdin.pause() //stop reading
-
+                            
+                        } else {
                             var response = text.toString().trim()
 
                             if (response == "y") initiateUpdate()
                                 else foundanddone(false)
-                        })
-                    }
+                        }
+                    })
                 }
-
-            } else { //no update found
-
-                //log result and send message back to user if update was requested via chat
-                if (parseInt(process.argv[3]) + 10000 > Date.now()) logger("info", `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`, false, true, logger.animation("loading")) //only print message with animation if the start is more recent than 10 seconds
-                    else logger("info", `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`, false, true)
-
-                if (responseSteamID) require('../controller/controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`)
-
-                foundanddone(false) //make callback to let caller carry on
             }
 
-            //update the last time we checked for an update
-            lastupdatecheckinterval = Date.now() + 21600000 //6 hours in ms
-        })
+        } else { //no update found
+
+            //log result and send message back to user if update was requested via chat
+            if (parseInt(process.argv[3]) + 10000 > Date.now()) logger("info", `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`, false, true, logger.animation("loading")) //only print message with animation if the start is more recent than 10 seconds
+                else logger("info", `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`, false, true)
+
+            if (responseSteamID) require('../controller/controller.js').botobject[0].chat.sendFriendMessage(responseSteamID, `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`)
+
+            foundanddone(false) //make callback to let caller carry on
+        }
+
+        //update the last time we checked for an update
+        lastupdatecheckinterval = Date.now() + 21600000 //6 hours in ms
     })
 }
 
@@ -151,12 +167,12 @@ module.exports.compatibility = (callback) => {
      * Runs the compatibility feature
      * @param {String} filename filename of the compatibility feature
      */
-    function runCompFeature(filename) {
-        starter.checkAndGetFile(`./src/updater/compatibility/${filename}.js`, logger, false, false, (file) => {
-            logger("info", `Running compatibility feature ${filename}.js...`, false, false, logger.animation("loading"))
+    async function runCompFeature(filename) {
+        let file = await starter.checkAndGetFile(`./src/updater/compatibility/${filename}.js`, logger, false, false)
+        if (!file) return;
 
-            file.run(callback)
-        })
+        logger("info", `Running compatibility feature ${filename}.js...`, true)
+        file.run(callback)
     }
 
 
@@ -176,7 +192,7 @@ module.exports.compatibility = (callback) => {
     } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2100" || extdata.versionstr == "BETA 2.10 b5")) {
         runCompFeature("2100")
 
-    } else if (!extdata.compatibilityfeaturedone && extdata.version == "2103" && config.globalcommentcooldown != 10) {
+    } else if (!extdata.compatibilityfeaturedone && extdata.version == "2103" && config.botaccountcooldown != 10) {
         runCompFeature("2103")
 
     } else if (!extdata.compatibilityfeaturedone && extdata.version == "2104") {
@@ -184,6 +200,9 @@ module.exports.compatibility = (callback) => {
 
     } else if (!extdata.compatibilityfeaturedone && (extdata.version == "21100" || extdata.version.match(/2110b[0-9]/g))) { //run on every beta build with quick regex
         runCompFeature("21100")
+
+    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "21200" || extdata.version.match(/21200b[0-9]+/g))) { //won't hurt to do the same here
+        runCompFeature("21200")
     
     } else {
         callback(false)
@@ -192,7 +211,7 @@ module.exports.compatibility = (callback) => {
 
 
 /* ------------ Register update checker: ------------ */
-var fs                      = require("fs")
+var fs = require("fs")
 
 var lastupdatecheckinterval = Date.now()
 if (updatecheckinterval) clearInterval(updatecheckinterval) //this check should never run but I added it just to be sure
@@ -203,6 +222,7 @@ var updatecheckinterval = setInterval(() => {
             if (err) logger("error", "error checking output for update notice: " + err)
 
             if (!data.toString().split('\n').slice(data.toString().split('\n').length - 21).join('\n').includes("Update available!")) { //check last 20 lines of output.txt for update notice
+                logger("debug", "updatecheckinterval(): 6 hours passed, calling update checker...")
 
                 module.exports.run(false, null, false, (done) => { //check if there is an update available
                     if (done) process.send(`restart(${JSON.stringify({ skippedaccounts: require('../controller/controller.js').skippedaccounts })})`) //send request to parent process if the bot found and ran the update

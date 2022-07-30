@@ -4,7 +4,7 @@
  * Created Date: 13.07.2021 19:13:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 17:46:10
+ * Last Modified: 06.03.2022 13:53:52
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -37,10 +37,8 @@ module.exports.run = () => {
     })
 
 
-    //Define configgroup64id for the accounts to be able to access
-    require("./helpers/steamgroup.js").configgroup64id((configgroup64id) => {
-        module.exports.configgroup64id = configgroup64id //just get it and export it
-    })
+    //refresh configgroup in cache.json
+    require("./helpers/steamgroup.js").configgroup64id(() => {}); //ignore the callback here, but we need to pass a function to avoid an error
 
 
     /**

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 02.10.2021 18:40:31
+ * Last Modified: 30.07.2022 16:50:26
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -26,12 +26,12 @@ module.exports.reinstallAll = (logger, callback) => {
     var { exec } = require("child_process") //wanted to do it with the npm package but that didn't work out (BETA 2.8 b2)
 
     if (!fs.existsSync(srcdir + "/../node_modules")) {
-        logger("info", "Creating node_modules folder to avoid error...")
+        logger("info", "Creating node_modules folder...")
 
         fs.mkdirSync(srcdir + "/../node_modules")
+    } else {
+        logger("info", "Deleting node_modules folder content...")
     }
-
-    logger("info", "Deleting node_modules folder content...")
 
     fs.rm(srcdir + "/../node_modules", { recursive: true }, (err) => {
         if (err) return callback(err, null)

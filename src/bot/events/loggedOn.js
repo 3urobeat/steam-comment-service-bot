@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.09.2021 17:50:35
+ * Last Modified: 05.03.2022 17:52:42
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
  */
 
+
+const SteamUser = require("steam-user"); //eslint-disable-line
 
 
 /**
@@ -30,6 +32,8 @@ module.exports.run = (loginindex, thisbot, bot, community) => {
     //Print message and set status to online
     logger("info", `[${thisbot}] Account logged in! Waiting for websession...`, false, true, logger.animation("loading"))
     bot.setPersona(1); //set online status
+
+    logger("debug", `[${thisbot}] Public IP of this account: ${bot.publicIP}`)
     
     
     //Set playinggames for main account and child account

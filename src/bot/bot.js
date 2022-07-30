@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 16.10.2021 12:06:00
+ * Last Modified: 29.07.2022 10:49:26
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -28,13 +28,6 @@ module.exports.run = (logOnOptions, loginindex) => {
 
     var login           = require("../controller/login.js")
     var mainfile        = require("./main.js")
-
-    //var botdebugmsgs               = false //not implemented yet (maybe put these 3 into advancedconfig.json)
-    var steamuserdebug             = false
-    var steamuserdebugverbose      = false
-    var maxLogOnRetries            = 1 //How often a failed logOn will be retried
-
-    module.exports.maxLogOnRetries = maxLogOnRetries
     
 
     //Define the log message prefix of this account in order to 
@@ -52,38 +45,29 @@ module.exports.run = (logOnOptions, loginindex) => {
 
     login.proxyShift++ //switch to next proxy
 
+    logger("debug", `[${thisbot}] Using proxy ${login.proxyShift} "${thisproxy}" to log in to Steam and SteamCommunity...`)
 
     //Create bot & community instance
-    const bot       = new SteamUser({ autoRelogin: false, httpProxy: thisproxy });
+    const bot       = new SteamUser({ autoRelogin: false, httpProxy: thisproxy, protocol: SteamUser.EConnectionProtocol.WebSocket }); //forcing protocol for now: https://dev.doctormckay.com/topic/4187-disconnect-due-to-encryption-error-causes-relog-to-break-error-already-logged-on/?do=findComment&comment=10917
     const community = new SteamCommunity({ request: request.defaults({ "proxy": thisproxy }) }) //pass proxy to community library aswell 
 
 
     //Attach debug log events
-    if (steamuserdebug) {
+    if (advancedconfig.steamUserDebug) {
         bot.on("debug", (msg) => {
-            logger("debug", `[${thisbot}] debug: ${msg}`, false, true)
+            logger("debug", `[${thisbot}] steam-user debug: ${msg}`)
         })
     }
 
-    if (steamuserdebugverbose) {
+    if (advancedconfig.steamUserDebugVerbose) {
         bot.on("debug-verbose", (msg) => {
-            logger("debug", `[${thisbot}] debug-verbose: ${msg}`, false, true)
+            logger("debug", `[${thisbot}] steam-user debug-verbose: ${msg}`)
         })
     }
 
 
     //Run main.js if this is bot0
     if (loginindex == 0) mainfile.run()
-
-
-    /* ------------ Group stuff: ------------ */
-    require("./helpers/steamgroup.js").botsgroupID64(loginindex, thisbot, (botsgroupid) => { //Check if this account is not in botsgroup yet
-        if (!Object.keys(bot.myGroups).includes(String(botsgroupid))) {
-            community.joinGroup(`${botsgroupid}`)
-
-            logger("info", `[${thisbot}] Joined/Requested to join steam group that has been set in the config (botsgroup).`) 
-        }
-    })
 
 
     /* ------------ Login: ------------ */
@@ -104,8 +88,8 @@ module.exports.run = (logOnOptions, loginindex) => {
 
                 login.additionalaccinfo[loginindex].logOnTries++
 
-                if (thisproxy == null) logger("info", `[${thisbot}] Trying to log in without proxy... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
-                    else logger("info", `[${thisbot}] Trying to log in with proxy ${login.proxyShift - 1}... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
+                if (thisproxy == null) logger("info", `[${thisbot}] Trying to log in without proxy... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
+                    else logger("info", `[${thisbot}] Trying to log in with proxy ${login.proxyShift - 1}... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
                 
                 bot.logOn(logOnOptions)
             }
@@ -141,7 +125,7 @@ module.exports.run = (logOnOptions, loginindex) => {
     });
 
     bot.on('groupRelationship', (steamID, relationship) => {
-        require("./events/relationship.js").groupRelationship(loginindex, bot, steamID, relationship)
+        require("./events/relationship.js").groupRelationship(thisbot, bot, steamID, relationship)
     });
 
 

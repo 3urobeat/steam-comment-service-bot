@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 16.10.2021 12:06:18
+ * Last Modified: 05.06.2022 16:25:38
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -37,9 +37,8 @@ module.exports.startlogin = (logininfo) => {
     var round      = require("./helpers/round.js")
     var b          = require("../bot/bot.js")
 
-    var logindelay = 2500 //time to wait between logins
-
-    module.exports.proxies             = require("./helpers/dataimport.js").proxies() 
+    module.exports.proxies = require("./helpers/dataimport.js").proxies();
+    if (!this.proxies) return; //make sure ascii art isn't getting printed below error message
 
     module.exports.steamGuardInputTime = 0
     module.exports.accisloggedin       = true //var to check if previous acc is logged on (in case steamGuard event gets fired) -> set to true for first account
@@ -54,25 +53,25 @@ module.exports.startlogin = (logininfo) => {
 
     //Print ASCII art
     logger("", "", true)
-    if (Math.floor(Math.random() * 100) <= 2) logger("", ascii.hellothereascii + "\n", true)
-        else if (Math.floor(Math.random() * 100) <= 10) logger("", ascii.binaryascii + "\n", true)
+    if (Math.floor(Math.random() * 100) <= 2) logger("", ascii.hellothereascii + "\n", true) //2% chance
+        else if (Math.floor(Math.random() * 100) <= 5) logger("", ascii.binaryascii + "\n", true) //5% chance
         else logger("", ascii.ascii[Math.floor(Math.random() * ascii.ascii.length)] + "\n", true)
         
     logger("", "", true) //put one line above everything that will come to make the output cleaner
 
 
     //Print whatsnew message if this is the first start with this version
-    if (extdata.firststart) logger("", "\x1b[0mWhat's new: " + extdata.whatsnew + "\n")
+    if (extdata.firststart) logger("", `${logger.colors.reset}What's new: ${extdata.whatsnew}\n`)
 
 
     //Evaluate estimated wait time for login:
     logger("info", "Evaluating estimated login time...", false, true, logger.animation("loading"))
-    if (extdata.timesloggedin < 5) { //only use new evaluation method when the bot was started more than 5 times
-        var estimatedlogintime = ((logindelay * (Object.keys(logininfo).length - 1 - controller.skippedaccounts.length)) / 1000) + 10 //10 seconds tolerance
-    } else {
-        var estimatedlogintime = (extdata.totallogintime / extdata.timesloggedin) * (Object.keys(logininfo).length - controller.skippedaccounts.length) 
-    }
     
+    if (extdata.timesloggedin < 5) { //only use "intelligent" evaluation method when the bot was started more than 5 times
+        var estimatedlogintime = ((advancedconfig.loginDelay * (Object.keys(logininfo).length - 1 - controller.skippedaccounts.length)) / 1000) + 5 //5 seconds tolerance
+    } else {
+        var estimatedlogintime = ((extdata.totallogintime / extdata.timesloggedin) + (advancedconfig.loginDelay / 1000)) * (Object.keys(logininfo).length - controller.skippedaccounts.length)
+    }
 
     var estimatedlogintimeunit = "seconds"
     if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "minutes" }
@@ -86,8 +85,7 @@ module.exports.startlogin = (logininfo) => {
     logger("info", "Loading logininfo for each account...", false, true, logger.animation("loading"))
 
     Object.keys(logininfo).forEach((k, i) => { //log all accounts in with the logindelay             
-        setTimeout(() => { //wait before interval to reduce ram usage on startup
-
+        setTimeout(() => {
             var startnextinterval = setInterval(() => { //run check every x ms
 
                 //Check if previous account is logged in
@@ -101,7 +99,7 @@ module.exports.startlogin = (logininfo) => {
                         return;
                     } 
 
-                    if (i > 0) logger("info", `Waiting ${logindelay / 1000} seconds... (config logindelay)`, false, true, logger.animation("waiting")) //first iteration doesn't need to wait duh
+                    if (i > 0) logger("info", `Waiting ${advancedconfig.loginDelay / 1000} seconds... (advancedconfig loginDelay)`, false, true, logger.animation("waiting")) //first iteration doesn't need to wait duh
 
 
                     //Wait logindelay and then start bot.js with the account of this iteration
@@ -118,16 +116,18 @@ module.exports.startlogin = (logininfo) => {
 
                         //If a shared secret was provided in the logininfo then add it to logOnOptions object
                         if (logininfo[k][2] && logininfo[k][2] != "" && logininfo[k][2] != "shared_secret") { 
+                            logger("debug", `Found shared_secret for ${k}! Generating AuthCode and adding it to logOnOptions...`)
+                            
                             logOnOptions["twoFactorCode"] = SteamTotp.generateAuthCode(logininfo[k][2])
+                            logOnOptions["sharedSecretForRelog"] = logininfo[k][2]; //add raw shared_secret to obj aswell to be able to access it more easily from relogAccount.js
                         }
 
                         b.run(logOnOptions, i); //run bot.js with this account
-                    }, logindelay) 
+                    }, advancedconfig.loginDelay * Number(i > 0)) //ignore delay for first account
                 }
-
             }, 250);
         
-        }, 1500 * (i - this.skippednow.length)); //1.5 seconds before checking if next account can be logged in should be ok
+        }, (advancedconfig.loginDelay * (i - this.skippednow.length)) * Number(i > 0)); //wait loginDelay ms before checking if the next account is ready to be logged in if not first iteration. This should reduce load and ram usage as less intervals run at the same time (this gets more interesting when lots of accs are used)
     }) 
 
 

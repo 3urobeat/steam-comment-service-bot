@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.10.2021 19:04:03
+ * Last Modified: 21.05.2022 15:06:41
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
  */
 
+
+const lastmessage = {} //tracks the last cmd usage of a normal command to apply cooldown if the user spams
 
 
 /**
@@ -26,57 +28,74 @@
  * @param {String} message The message string provided by steam-user friendMessage event
  */
 module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => {
-    var controller = require("../../controller/controller.js")
-    var ready      = require("../../controller/ready.js")
-    var mainfile   = require("../main.js")
+    var controller  = require("../../controller/controller.js")
+    var ready       = require("../../controller/ready.js")
+    var mainfile    = require("../main.js")
 
-    var SteamID    = require('steamid');
+    var SteamID     = require('steamid');
 
-    var lang       = mainfile.lang
+    var lang        = mainfile.lang
 
-    var disablecommentcmd     = false //disables the comment and resetcooldown command and responds with maintenance message
-    var commandcooldown       = 12000 //The bot won't respond if a user sends more than 5 messages in this time frame
-    var lastmessage           = {}    //tracks the last cmd usage of a normal command to apply cooldown if the user spams
+    var steam64id   = new SteamID(String(steamID)).getSteamID64()
+    var ownercheck  = cachefile.ownerid.includes(steam64id)
+
+    //Check if user is blocked and ignore mmessage
+    if (bot.myFriends[steam64id] == 1 || bot.myFriends[steam64id] == 6) return; //User is blocked.
 
 
     /**
      * Make chat message method shorter
-     * @param steamID The steamID object of the recipient
-     * @param txt The text to send
+     * @param {SteamID} steamID The steamID object of the recipient
+     * @param {String} txt The text to send
+     * @param {Boolean} retry true if chatmsg() called itself again to send error message
      */
-    function chatmsg(steamID, txt) { //sadly needed to be included here in order to access bot instance before friendMessage got called at least once or needing to provide it as parameter
-        bot.chat.sendFriendMessage(steamID, txt)
+    function chatmsg(steamID, txt, retry) { //sadly needed to be included here in order to access bot instance before friendMessage got called at least once or needing to provide it as parameter
+        if (!txt) return logger("warn", "chatmsg() was called without txt parameter? Ignoring call...");
+
+        //Cut message if over 1k chars to try and reduce the risk of a RateLimitExceeded error
+        if (txt.length > 1000) {
+            logger("warn", `[${thisbot}] The bot tried to send a chat message that's longer than 1000 chars. Cutting it to 996 chars to reduce the risk of a RateLimitExceeded error!`)
+            txt = txt.slice(0, 996);
+            txt += "..."
+        }
+
+        logger("debug", `[${thisbot}] Sending message (${txt.length} chars) to ${new SteamID(String(steamID)).getSteamID64()} (retry: ${retry == true}): "${txt.replace(/\n/g, "\\n")}"`) //intentionally checking for == true to prevent showing undefined
+        
+        bot.chat.sendFriendMessage(steamID, txt, {}, (err) => {
+            if (err) { //check for error as some chat messages seem to not get send lately
+                logger("warn", `[${thisbot}] Error trying to send chat message of length ${txt.length} to ${new SteamID(String(steamID)).getSteamID64()}! ${err}`)
+                if (!retry) chatmsg(steamID, `Sorry, it looks like Steam blocked my last message. Please try again later.`, true) //send the user a fallback message just to indicate the bot is not down
+            }
+        })
     }
 
 
-    
-
-
-    var steam64id = new SteamID(String(steamID)).getSteamID64()
-    var ownercheck = config.ownerid.includes(steam64id)
-    if (bot.myFriends[steam64id] == 1 || bot.myFriends[steam64id] == 6) return; //User is blocked.
-
     //Spam "protection" because spamming the bot is bad!
-    if (!lastmessage[steam64id] || lastmessage[steam64id][0] + commandcooldown < Date.now()) lastmessage[steam64id] = [Date.now(), 0] //Add user to array or Reset time
-    if (lastmessage[steam64id] && lastmessage[steam64id][0] + commandcooldown > Date.now() && lastmessage[steam64id][1] > 5) return; //Just don't respond
+    if (!lastmessage[steam64id] || lastmessage[steam64id][0] + advancedconfig.commandCooldown < Date.now()) lastmessage[steam64id] = [Date.now(), 0] //Add user to array or Reset time
+    if (lastmessage[steam64id] && lastmessage[steam64id][0] + advancedconfig.commandCooldown > Date.now() && lastmessage[steam64id][1] > 5) return; //Just don't respond
 
-    if (lastmessage[steam64id] && lastmessage[steam64id][0] + commandcooldown > Date.now() && lastmessage[steam64id][1] > 4) { //Inform the user about the cooldown
+    if (lastmessage[steam64id] && lastmessage[steam64id][0] + advancedconfig.commandCooldown > Date.now() && lastmessage[steam64id][1] > 4) { //Inform the user about the cooldown
         chatmsg(steamID, lang.userspamblock)
         logger("info", `${steam64id} has been blocked for 90 seconds for spamming.`)
+
         lastmessage[steam64id][0] += 90000
         lastmessage[steam64id][1]++
+
         return; 
     }
 
     if (!ownercheck) lastmessage[steam64id][1]++ //push new message to array if user isn't an owner
 
+
     //log friend message but cut it if it is >= 75 chars
     if (message.length >= 75) logger("info", `[${thisbot}] Friend message from ${steam64id}: ${message.slice(0, 75) + "..."}`);
         else logger("info", `[${thisbot}] Friend message from ${steam64id}: ${message}`);
-        
+    
+    
     //Deny non-friends the use of any command
     if (bot.myFriends[steam64id] != 3) return chatmsg(steamID, lang.usernotfriend)
 
+    
     if (loginindex === 0) { //check if this is the main bot
 
         /**
@@ -101,7 +120,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
         })
 
         var cont = message.slice("!").split(" ");
-        var args = cont.slice(1); 
+        var args = cont.slice(1);
 
         switch(cont[0].toLowerCase()) {
             case '!h':
@@ -112,17 +131,17 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 break;
             
             case '!comment':
-                if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
+                if (advancedconfig.disableCommentCmd) return chatmsg(steamID, lang.botmaintenance)
                 if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
                 controller.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {
                     if (!lastcommentdoc) logger("error", "User is missing from database?? How is this possible?! Error maybe: " + err)
     
                     try { //catch any unhandled error to be able to remove user from activecommentprocess array
-                        require("../commands/comment/comment.js").run(chatmsg, steamID, args, null, lastcommentdoc)
+                        require("../commands/commentprofile.js").run(chatmsg, steamID, args, lang, null, lastcommentdoc)
                     } catch (err) {
-                        chatmsg(steamID, "Error while processing comment request: " + err.stack)
-                        logger("error", "Error while processing comment request: " + err.stack)
+                        chatmsg(steamID, "Sorry, a non comment related error occurred while trying to process your request! Please try again later.");
+                        logger("error", "A non comment related error occurred while trying to process a comment request. Aborting request to make sure nothing weird happens.\n        " + err.stack);
                     }
                 })
                 break;
@@ -131,14 +150,14 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
             case '!gcomment':
             case '!groupcomment':
                 if (!ownercheck) return notownerresponse();
-                if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
+                if (advancedconfig.disableCommentCmd) return chatmsg(steamID, lang.botmaintenance)
                 if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
                 controller.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {
                     if (!lastcommentdoc) logger("error", "User is missing from database?? How is this possible?! Error maybe: " + err)
     
                     try { //catch any unhandled error to be able to remove user from activecommentprocess array
-                        require("../commands/comment/groupcomment.js").run(chatmsg, steamID, args, null, lastcommentdoc)
+                        require("../commands/commentgroup.js").run(chatmsg, steamID, args, lang, null, lastcommentdoc)
                     } catch (err) {
                         chatmsg(steamID, "Error while processing group comment request: " + err.stack)
                         logger("error", "Error while processing group comment request: " + err)
@@ -165,15 +184,15 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
             case '!abort':
                 if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
-                require("../commands/comment/cmisc.js").abort(chatmsg, steamID, lang, args, steam64id)
+                require("../commands/commentmisc.js").abort(chatmsg, steamID, lang, args, steam64id)
                 break;
             
             case '!rc':
             case '!resetcooldown':
                 if (!ownercheck) return notownerresponse();
-                if (disablecommentcmd) return chatmsg(steamID, lang.botmaintenance)
+                if (advancedconfig.disableCommentCmd) return chatmsg(steamID, lang.botmaintenance)
 
-                require("../commands/comment/cmisc.js").resetCooldown(chatmsg, steamID, lang, args, steam64id)
+                require("../commands/commentmisc.js").resetCooldown(chatmsg, steamID, lang, args, steam64id)
                 break;
             
             case '!config':
@@ -184,17 +203,17 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 break;
             
             case '!failed':
-                require("../commands/comment/cmisc.js").failed(chatmsg, steamID, lang, args, steam64id)
+                require("../commands/commentmisc.js").failed(chatmsg, steamID, lang, args, steam64id)
                 break;
 
             case '!sessions':
                 if (!ownercheck) return notownerresponse();
                 
-                require("../commands/comment/cmisc.js").sessions(chatmsg, steamID, lang)
+                require("../commands/commentmisc.js").sessions(chatmsg, steamID, lang)
                 break;
 
             case '!mysessions':
-                require("../commands/comment/cmisc.js").mysessions(chatmsg, steamID, lang, steam64id)
+                require("../commands/commentmisc.js").mysessions(chatmsg, steamID, lang, steam64id)
                 break;
             
             case '!about': //Please don't change this message as it gives credit to me; the person who put really much of his free time into this project. The bot will still refer to you - the operator of this instance.
@@ -219,7 +238,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 if (!ownercheck) return notownerresponse();
                 if (!ready.readyafter || controller.relogQueue.length > 0) return chatmsg(steamID, lang.botnotready) //Check if bot is not fully started yet and block cmd usage to prevent errors
 
-                require("../commands/friend.js").unfriendall(chatmsg, steamID, lang, args)
+                require("../commands/friend.js").unfriendAll(chatmsg, steamID, lang, args)
                 break;
             
             case '!leavegroup':
@@ -278,10 +297,14 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 break;
             
             case '!eval':
-                if (config.enableevalcmd !== true) return chatmsg(steamID, lang.evalcmdturnedoff)
+                if (advancedconfig.enableevalcmd !== true) return chatmsg(steamID, lang.evalcmdturnedoff)
                 if (!ownercheck) return notownerresponse();
 
                 require("../commands/system.js").eval(chatmsg, steamID, lang, args, bot, community)
+                break;
+            
+            case ':)':
+                chatmsg(steamID, ":))")
                 break;
             
             default: //cmd not recognized

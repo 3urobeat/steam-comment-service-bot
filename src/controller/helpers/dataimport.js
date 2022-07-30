@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 17.10.2021 16:28:30
+ * Last Modified: 04.06.2022 11:23:38
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,25 +15,30 @@
  */
 
 
+const fs   = require("fs");
+const path = require("path");
+
+
 /**
  * Helper function to pull new file from GitHub
  */
-function pullNewFile(name, filepath, requirepath, callback) {
+async function pullNewFile(name, filepath, requirepath, resolve) {
     logger("warn", "Backup seems to be broken/not available! Pulling file from GitHub...", true)
 
-    require("../../starter.js").checkAndGetFile(filepath, logger, true, true, () => {
-        //Only tell user to reconfigure config.json 
-        if (name == "config.json") logger("info", `Successfully pulled new ${name} from GitHub. Please configure it again!\n`, true)
-            else logger("info", `Successfully pulled new ${name} from GitHub.\n`, true)
+    let file = await require("../../starter.js").checkAndGetFile(filepath, logger, true, true)
+    if (!file) return;
+    
+    //Only tell user to reconfigure config.json 
+    if (name == "config.json") logger("info", `Successfully pulled new ${name} from GitHub. Please configure it again!\n`, true)
+        else logger("info", `Successfully pulled new ${name} from GitHub.\n`, true)
 
-        callback(require(requirepath));
-    })
+    resolve(require(requirepath));
 }
 
 /**
  * Helper function to try and restore backup of corrupted file from cache.json
  */
-function restoreBackup(name, filepath, requirepath, cacheentry, onlinelink, callback) {
+function restoreBackup(name, filepath, requirepath, cacheentry, onlinelink, resolve) {
 
     //Try to get arrays on one line
     try {
@@ -50,9 +55,6 @@ function restoreBackup(name, filepath, requirepath, cacheentry, onlinelink, call
         var stringified = JSON.stringify(cacheentry, null, 4)
     }
 
-    var fs = require("fs");
-    var path  = require("path");
-
     //Create the underlying folder structure to avoid error when trying to write the downloaded file
     fs.mkdirSync(path.dirname(filepath), { recursive: true })
 
@@ -67,10 +69,10 @@ function restoreBackup(name, filepath, requirepath, cacheentry, onlinelink, call
 
             try { //Yes, this is a try catch inside a try catch please forgive me
                 logger("info", `Successfully restored backup of ${name}!\n`, true)
-                callback(require(requirepath));
+                resolve(require(requirepath));
 
             } catch (err) { //Worst case, even the backup seems to be broken (seems like this can't happen anymore since 2.11 because cache.json will get cleared before we get here if it contains an error)
-                pullNewFile(name, filepath, requirepath, callback)
+                pullNewFile(name, filepath, requirepath, resolve)
             }
         } 
     })
@@ -79,81 +81,100 @@ function restoreBackup(name, filepath, requirepath, cacheentry, onlinelink, call
 
 /**
  * Import, check and repair cache.json
- * @param {function} [callback] Called with `cache` (Object) on completion.
  */
-module.exports.cache = (callback) => {
-    logger("info", "Importing cache.json...", false, true, logger.animation("loading"))
+module.exports.cache = () => {
+    return new Promise((resolve) => {
+        try {
+            resolve(require(srcdir + "/data/cache.json"));
+        } catch (err) {
+            if (err) {
+                logger("", "", true, true)
+                logger("warn", "cache.json seems to have lost it's data/is corrupted. Trying to write/create...", true, true)
 
-    try {
-        callback(require(srcdir + "/data/cache.json"));
-    } catch (err) {
-        if (err) {
-            logger("", "", true, true)
-            logger("warn", "cache.json seems to have lost it's data/is corrupted. Trying to write/create...", true, true)
+                //Create the underlying folder structure to avoid error when trying to write the downloaded file
+                fs.mkdirSync(path.dirname("./src/data/cache.json"), { recursive: true })
 
-            var fs = require("fs");
-            var path  = require("path");
-
-            //Create the underlying folder structure to avoid error when trying to write the downloaded file
-            fs.mkdirSync(path.dirname("./src/data/cache.json"), { recursive: true })
-
-            fs.writeFile('./src/data/cache.json', "{}", (err) => { //write empty valid json
-                if (err) {
-                    logger("error", "Error writing {} to cache.json.\nPlease do this manually: Go into 'src' folder, open 'cache.json', write '{}' and save.\nOtherwise the bot will always crash.\nError: " + err + "\n\nAborting...", true); 
-                    return process.send("stop()") //abort since writeFile was unable to write and any further execution would crash
-                } else {
-                    logger("info", "Successfully cleared/created cache.json.\n", true, true)
-                    callback(require(srcdir + "/data/cache.json"));
-                }
-            })
+                fs.writeFile('./src/data/cache.json', "{}", (err) => { //write empty valid json
+                    if (err) {
+                        logger("error", "Error writing {} to cache.json.\nPlease do this manually: Go into 'src' folder, open 'cache.json', write '{}' and save.\nOtherwise the bot will always crash.\nError: " + err + "\n\nAborting...", true); 
+                        return process.send("stop()") //abort since writeFile was unable to write and any further execution would crash
+                    } else {
+                        logger("info", "Successfully cleared/created cache.json.\n", true, true)
+                        resolve(require(srcdir + "/data/cache.json"));
+                    }
+                })
+            }
         }
-    }
+    })
 }
 
 
 /**
  * Import, check and repair data.json
  * @param {Object} cache The cache.json file
- * @param {function} [callback] Called with `extdata` (Object) on completion.
+ * @returns {Object} extdata object
  */
-module.exports.extdata = (cache, callback) => {
-    logger("info", "Importing data.json...", false, true, logger.animation("loading"))
-
-    try {
-        callback(require(srcdir + "/data/data.json"));
-    } catch (err) {
-        if (err) { //Corrupted!
-            logger("", "", true, true)
-            logger("warn", "data.json seems to have lost it's data/is corrupted. Trying to restore from backup...", true)
-
-            //Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
-            if (cache.datajson) restoreBackup("data.json", "./src/data/data.json", srcdir + "/data/data.json", cache.datajson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/data/data.json", callback)
-                else pullNewFile("data.json", "./src/data/data.json", srcdir + "/data/data.json", callback)
+module.exports.extdata = (cache) => {
+    return new Promise((resolve) => {
+        try {
+            resolve(require(srcdir + "/data/data.json"));
+        } catch (err) {
+            if (err) { //Corrupted!
+                logger("", "", true, true)
+                logger("warn", "data.json seems to have lost it's data/is corrupted. Trying to restore from backup...", true)
+    
+                //Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
+                if (cache.datajson) restoreBackup("data.json", "./src/data/data.json", srcdir + "/data/data.json", cache.datajson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/data/data.json", resolve)
+                    else pullNewFile("data.json", "./src/data/data.json", srcdir + "/data/data.json", resolve)
+            }
         }
-    }
+    })
 }
 
 
 /**
  * Import, check and repair config.json
  * @param {Object} cache The cache.json file
- * @param {function} [callback] Called with `config` (Object) on completion.
+ * @returns {Object} config object
  */
-module.exports.config = (cache, callback) => {
-    logger("info", "Importing config.json...", false, true, logger.animation("loading"))
+module.exports.config = (cache) => {
+    return new Promise((resolve) => {
+        try {
+            resolve(require(srcdir + "/../config.json"));
+        } catch (err) {
+            if (err) { //Corrupted!
+                logger("", "", true, true)
+                logger("warn", "config.json seems to have lost it's data/is corrupted. Trying to restore from backup...", true)
 
-    try {
-        callback(require(srcdir + "/../config.json"));
-    } catch (err) {
-        if (err) { //Corrupted!
-            logger("", "", true, true)
-            logger("warn", "config.json seems to have lost it's data/is corrupted. Trying to restore from backup...", true)
-
-            //Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
-            if (cache.configjson) restoreBackup("config.json", "./config.json", srcdir + "/../config.json", cache.configjson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/config.json", callback)
-                else pullNewFile("config.json", "./config.json", srcdir + "/../config.json", callback)
+                //Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
+                if (cache.configjson) restoreBackup("config.json", "./config.json", srcdir + "/../config.json", cache.configjson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/config.json", resolve)
+                    else pullNewFile("config.json", "./config.json", srcdir + "/../config.json", resolve)
+            }
         }
-    }
+    })
+}
+
+
+/**
+ * Import, check and repair advancedconfig.json
+ * @param {Object} cache The cache.json file
+ * @returns {Object} advancedconfig object
+ */
+ module.exports.advancedconfig = (cache) => {
+    return new Promise((resolve) => {
+        try {
+            resolve(require(srcdir + "/../advancedconfig.json"));
+        } catch (err) {
+            if (err) { //Corrupted!
+                logger("", "", true, true)
+                logger("warn", "advancedconfig.json seems to have lost it's data/is corrupted. Trying to restore from backup...", true)
+
+                //Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
+                if (cache.advancedconfigjson) restoreBackup("advancedconfig.json", "./advancedconfig.json", srcdir + "/../advancedconfig.json", cache.advancedconfigjson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/advancedconfig.json", resolve)
+                    else pullNewFile("advancedconfig.json", "./advancedconfig.json", srcdir + "/../advancedconfig.json", resolve)
+            }
+        }
+    })
 }
 
 
@@ -161,20 +182,10 @@ module.exports.config = (cache, callback) => {
  * Imports login information from accounts.txt & logininfo.json
  * @returns logininfo object
  */
-module.exports.logininfo = () => {
-    var fs = require("fs")
+module.exports.logininfo = () => {    
+    var logininfo;
 
-    logger("info", "Loading logininfo from logininfo.json or accounts.txt...", false, true, logger.animation("loading"))
-
-    //Check logininfo for Syntax errors and display custom error message
-    try {
-        var logininfo = require(srcdir + "/../logininfo.json")
-    } catch (err) {
-        logger("error", "Error: It seems like you made a mistake in your logininfo.json. Please check if your Syntax looks exactly like in the example/template and try again.\nError: " + err, true)
-        return process.send("stop()")
-    }
-
-    //Either use logininfo.json or accounts.txt:
+    //Check accounts.txt first so we can ignore potential syntax errors in logininfo
     if (fs.existsSync("./accounts.txt")) {
         var data = fs.readFileSync("./accounts.txt", "utf8").split("\n")
 
@@ -183,17 +194,29 @@ module.exports.logininfo = () => {
         if (data != "") {
             logger("info", "Accounts.txt does exist and is not empty - using it instead of logininfo.json.", false, true)
 
-            logininfo = {} //Empty other object
+            logininfo = {} //Set empty object
             data.forEach((e, i) => {
                 if (e.length < 2) return; //if the line is empty ignore it to avoid issues like this: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/80
                 e = e.split(":")
                 e[e.length - 1] = e[e.length - 1].replace("\r", "") //remove Windows next line character from last index (which has to be the end of the line)
                 logininfo["bot" + i] = [e[0], e[1], e[2]]
             }) 
+
+            return logininfo;
         }
     }
 
-    return logininfo;
+    //Check logininfo for Syntax errors and display custom error message
+    try {
+        logger("info", "accounts.txt seems empty/not created, loading logininfo from logininfo.json...", false, true, logger.animation("loading"))
+        
+        logininfo = require(srcdir + "/../logininfo.json")
+
+        return logininfo;
+    } catch (err) {
+        logger("error", "It seems like you made a mistake in your logininfo.json. Please check if your Syntax looks exactly like in the example/template and try again.\n        " + err, true)
+        return process.send("stop()")
+    }
 }
 
 
@@ -202,14 +225,10 @@ module.exports.logininfo = () => {
  * @returns proxies array
  */
 module.exports.proxies = () => {
-    var fs = require("fs")
-
-    logger("info", "Loading proxies in proxies.txt or creating file if it doesn't exist...", false, true, logger.animation("loading"))
-
     var proxies = [] //when the file is just created there can't be proxies in it (this bot doesn't support magic)
 
     if (!fs.existsSync('./proxies.txt')) {
-        logger("info", "Creating proxies.txt file...", false, true, logger.animation("loading"))
+        logger("info", "Creating proxies.txt file as it doesn't exist yet...", false, true, logger.animation("loading"))
 
         fs.writeFile(srcdir + "/../proxies.txt", "", err => { 
             if (err) logger("error", "error creating proxies.txt file: " + err)
@@ -220,7 +239,15 @@ module.exports.proxies = () => {
         var proxies = fs.readFileSync('./proxies.txt', 'utf8').split("\n");
         var proxies = proxies.filter(str => str != "") //remove empty lines
 
-        proxies.unshift(null) //add no proxy (default)
+        if (advancedconfig.useLocalIP) proxies.unshift(null) //add no proxy (local ip) if useLocalIP is true
+
+        //check if no proxies were found (can only be the case when useLocalIP is false)
+        if (proxies.length == 0) {
+            logger("", "", true)
+            logger("error", "useLocalIP is turned off in advancedconfig.json but I couldn't find any proxies in proxies.txt!\n        Aborting as I don't have at least one IP to log in with!", true);
+            process.send("stop()");
+            return null;
+        }
     }
 
     return proxies;
@@ -234,8 +261,6 @@ module.exports.proxies = () => {
 module.exports.lastcomment = () => {
     var nedb = require("@seald-io/nedb")
 
-    logger("info", "Loading lastcomment.db database...", false, true, logger.animation("loading"))
-
     return new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); //autoload and return instantly
 }
 
@@ -245,10 +270,6 @@ module.exports.lastcomment = () => {
  * @returns The quotes array
  */
 module.exports.quotes = () => {
-    var fs = require("fs")
-
-    logger("info", "Loading quotes from quotes.txt...", false, true, logger.animation("loading"))
-
     var quotes = []
     var quotes = fs.readFileSync(srcdir + '/../quotes.txt', 'utf8').split("\n") //get all quotes from the quotes.txt file into an array
     var quotes = quotes.filter(str => str != "") //remove empty quotes as empty comments will not work/make no sense
@@ -263,11 +284,11 @@ module.exports.quotes = () => {
         quotes[i] = e.replace(/\\n/g, "\n").replace("\\n", "\n")
     })
 
-    logger("info", `${quotes.length} quotes found.`, false, true, logger.animation("loading"))
-
     if (quotes.length == 0) { //check if quotes.txt is empty to avoid errors further down when trying to comment
-        logger("error", "\x1b[31mYou haven't put any comment quotes into the quotes.txt file! Aborting...\x1b[0m", true)
+        logger("error", `${logger.colors.fgred}You haven't put any comment quotes into the quotes.txt file! Aborting...`, true)
         return process.send("stop()")
+    } else {
+        logger("info", `Successfully loaded ${quotes.length} quotes from quotes.txt...`, false, true, logger.animation("loading"))
     }
 
     return quotes;
@@ -279,10 +300,6 @@ module.exports.quotes = () => {
  * @param {function} [callback] Called with `lang` (Object) on completion.
  */
 module.exports.lang = (callback) => {
-    var fs = require("fs")
-
-    logger("info", "Loading defaultlang.json and customlang.json...", false, true, logger.animation("loading"))
-
     var lang = require(srcdir + "/data/lang/defaultlang.json")
 
     //Check before trying to import if the user even created the file

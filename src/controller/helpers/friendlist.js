@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 03.10.2021 18:31:37
+ * Last Modified: 04.06.2022 11:27:13
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -23,7 +23,7 @@
 module.exports.checklastcommentdb = (bot) => {
     var controller = require("../../controller/controller.js")
 
-    logger("info", "Checking if all friends are in lastcomment.db...", false, true, logger.animation("loading"))
+    logger("debug", "Checking if all friends are in lastcomment.db...", false, true, logger.animation("loading"))
     
     controller.lastcomment.find({}, (err, docs) => {
         Object.keys(bot.myFriends).forEach(e => {
@@ -54,6 +54,8 @@ module.exports.friendlistcapacitycheck = (loginindex, callback) => {
     var controller = require("../controller.js")
 
     try {
+        logger("debug", "friendlistcapacitycheck(): Calculating friendlist capacity of bot" + loginindex)
+
         controller.botobject[0].getSteamLevels([controller.botobject[loginindex].steamID], (err, users) => { //check steam level of botindex account with bot0
             if (!users) return; //users was undefined one time (I hope this will (hopefully) supress an error?)
 
@@ -62,6 +64,8 @@ module.exports.friendlistcapacitycheck = (loginindex, callback) => {
             let friendsamount = friends.length - friends.filter(val => val == 0).length - friends.filter(val => val == 5).length //Subtract friend enums 0 & 5
 
             let remaining = friendlistlimit - friendsamount
+
+            logger("debug", `friendlistcapacitycheck(): bot${loginindex} has ${friendsamount}/${friendlistlimit} friends`)
             
             if (remaining < 0) callback(null); //stop if number is negative somehow - maybe when bot profile is private?
                 else callback(remaining)
@@ -87,7 +91,7 @@ module.exports.lastcommentUnfriendCheck = () => {
             setTimeout(() => {
 
                 Object.keys(controller.botobject).forEach((f, j) => {
-                    if (controller.botobject[f].myFriends[e.id] == 3 && !config.ownerid.includes(e.id)) { //check if the targeted user is still friend
+                    if (controller.botobject[f].myFriends[e.id] == 3 && !cachefile.ownerid.includes(e.id)) { //check if the targeted user is still friend
                         if (j == 0) controller.botobject[0].chat.sendFriendMessage(new SteamID(e.id), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`)
 
                         setTimeout(() => {
@@ -96,7 +100,7 @@ module.exports.lastcommentUnfriendCheck = () => {
                         }, 1000 * j); //delay every iteration so that we don't make a ton of requests at once (IP)
                     }
                     
-                    if (!config.ownerid.includes(e.id)) controller.lastcomment.remove({ id: e.id }) //entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
+                    if (!cachefile.ownerid.includes(e.id)) controller.lastcomment.remove({ id: e.id }) //entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
                 })
                 
             }, 1000 * i); //delay every iteration so that we don't make a ton of requests at once (account)

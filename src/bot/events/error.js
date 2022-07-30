@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 05.10.2021 19:38:42
+ * Last Modified: 28.07.2022 23:24:23
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -33,10 +33,10 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
     
     //Custom behaviour for LogonSessionReplaced error:
     if (err.eresult == 34) {
-        logger("info", `\x1b[31m[${thisbot}] Lost connection to Steam. Reason: LogonSessionReplaced\x1b[0m`)
+        logger("info", `${logger.colors.fgred}[${thisbot}] Lost connection to Steam. Reason: LogonSessionReplaced`)
 
         if (loginindex == 0) {
-            logger("error", `\x1b[31mAccount is bot0. Aborting...\x1b[0m`, true); 
+            logger("error", `${logger.colors.fgred}Account is bot0. Aborting...`, true); 
             return process.send("stop()");
         }
         return; 
@@ -45,11 +45,11 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
 
     //Check if this is a connection loss and not a login error (because disconnects will be thrown here when autoRelogin is false)
     if (Object.keys(controller.botobject).includes(String(loginindex)) && !controller.relogQueue.includes(loginindex)) { //it must be a disconnect when the bot was once logged in and is not yet in the queue
-        logger("info", `\x1b[31m[${thisbot}] Lost connection to Steam. Reason: ${err}\x1b[0m`)
+        logger("info", `${logger.colors.fgred}[${thisbot}] Lost connection to Steam. Reason: ${err}`)
 
         //Check if this is an intended logoff
         if (controller.relogAfterDisconnect && !login.skippednow.includes(loginindex)) { 
-            logger("info", `\x1b[32m[${thisbot}] Initiating a relog in 30 seconds.\x1b[0m`) //Announce relog
+            logger("info", `${logger.colors.fggreen}[${thisbot}] Initiating a relog in 30 seconds.`) //Announce relog
 
             //Relog after waiting 30 sec
             setTimeout(() => {
@@ -67,14 +67,14 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
         let blockedEnumsForRetries = [5, 12, 13, 17, 18] //Enums: https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EResult.js
 
         //check if this is an initial login error and it is either a fatal error or all retries are used
-        if ((login.additionalaccinfo[loginindex].logOnTries > botfile.maxLogOnRetries && !controller.relogQueue.includes(loginindex)) || blockedEnumsForRetries.includes(err.eresult)) { 
+        if ((login.additionalaccinfo[loginindex].logOnTries > advancedconfig.maxLogOnRetries && !controller.relogQueue.includes(loginindex)) || blockedEnumsForRetries.includes(err.eresult)) { 
             logger("", "", true)
             logger("error", `Couldn't log in bot${loginindex} after ${login.additionalaccinfo[loginindex].logOnTries} attempt(s). ${err} (${err.eresult})`, true)
 
 
             //Add additional messages for specific errors to hopefully help the user diagnose the cause
             if (err.eresult == 5) logger("", `Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try leaving the shared_secret field empty and check the username & password of bot${loginindex}.`, true)
-            if (thisproxy != null) logger("", `Is your proxy ${controller.proxyShift} offline or maybe blocked by Steam?`, true)
+            if (thisproxy != null) logger("", `      Is your proxy ${login.proxyShift - 1} offline or maybe blocked by Steam?\n`, true)
 
 
             //Abort execution if account is bot0
@@ -94,7 +94,7 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
 
         } else { //Got retries left or it is a relog...
 
-            logger("warn", `${err} (${err.eresult}) while trying to log in bot${loginindex}. Retrying in 5 seconds...`) //log error as warning
+            logger("warn", `${err} while trying to log in bot${loginindex}. Retrying in 5 seconds...`) //log error as warning
 
             //Call either relogAccount or logOnAccount function to continue where we started at after 5 sec
             setTimeout(() => {

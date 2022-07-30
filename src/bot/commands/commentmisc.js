@@ -1,10 +1,10 @@
 /*
- * File: cmisc.js
+ * File: commentmisc.js
  * Project: steam-comment-service-bot
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.10.2021 19:21:00
+ * Last Modified: 18.05.2022 22:00:12
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -14,6 +14,12 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
  */
 
+
+const SteamID = require("steamid");
+
+const mainfile               = require("../main.js");
+const controller             = require("../../controller/controller.js");
+const handleSteamIdResolving = require("../helpers/handleSteamIdResolving.js");
 
 
 /**
@@ -25,20 +31,23 @@
  * @param {String} steam64id The steam64id of the requesting user
  */
 module.exports.abort = (chatmsg, steamID, lang, args, steam64id) => {
-    var mainfile = require("../../main.js")
 
-    if (args[0]) {
-        if (!config.ownerid.includes(steam64id)) return chatmsg(steamID, lang.commandowneronly)
+    handleSteamIdResolving.run(args[0], null, (err, res) => {
+        if (res) {
+            if (!cachefile.ownerid.includes(steam64id)) return chatmsg(steamID, lang.commandowneronly)
 
-        steam64id = args[0] //if user provided an id as argument then use that instead of his/her id
-    }
+            steam64id = res //if user provided an id as argument then use that instead of his/her id
+        }
 
-    if (!mainfile.activecommentprocess[steam64id] || mainfile.activecommentprocess[steam64id].status != "active") return chatmsg(steamID, lang.abortcmdnoprocess)
+        if (!mainfile.activecommentprocess[steam64id] || mainfile.activecommentprocess[steam64id].status != "active") return chatmsg(steamID, lang.abortcmdnoprocess)
 
-    mainfile.activecommentprocess[steam64id].status = "aborted"
+        //Set new status for comment process
+        mainfile.activecommentprocess[steam64id].status = "aborted"
 
-    logger("info", `Aborting comment process for profile/group ${steam64id}...`)
-    chatmsg(steamID, lang.abortcmdsuccess)
+        logger("info", `Aborting comment process for profile/group ${steam64id}...`)
+        chatmsg(steamID, lang.abortcmdsuccess)
+    })
+
 }
 
 
@@ -51,35 +60,28 @@ module.exports.abort = (chatmsg, steamID, lang, args, steam64id) => {
  * @param {String} steam64id The steam64id of the requesting user
  */
 module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
-    var SteamID    = require("steamid")
 
-    var mainfile   = require("../../main.js")
-    var controller = require("../../../controller/controller.js")
+    if (args[0] && args[0] == "global") { //Check if user wants to reset the global cooldown (will reset all until entries in activecommentprocess)
+        if (config.botaccountcooldown == 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the global cooldown enabled?
 
+        Object.keys(mainfile.activecommentprocess).forEach((e) => {
+            mainfile.activecommentprocess[e].until = Date.now() - (config.botaccountcooldown * 60000); //since the cooldown checks will add the cooldown we need to subtract it (can't delete the entry because we might abort running processes with it)
+        })
 
-    if (args[0]) {
-        if (args[0] == "global") { //Check if user wants to reset the global cooldown (will reset all until entries in activecommentprocess)
-            if (config.globalcommentcooldown == 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the global cooldown enabled?
-
-            Object.keys(mainfile.activecommentprocess).forEach((e) => {
-                mainfile.activecommentprocess[e].until = Date.now() - (config.globalcommentcooldown * 60000); //since the cooldown checks will add the cooldown we need to subtract it (can't delete the entry because we might abort running processes with it)
+        chatmsg(steamID, lang.resetcooldowncmdglobalreset) 
+    } else {
+        handleSteamIdResolving.run(args[0], SteamID.Type.INDIVIDUAL, (err, res) => {
+            if (err) return chatmsg(steamID, lang.invalidprofileid + "\n\nError: " + err);
+            if (res) steam64id = res //change steam64id to the provided id
+    
+            if (config.commentcooldown == 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the cooldown enabled?
+    
+            controller.lastcomment.update({ id: steam64id }, { $set: { time: Date.now() - (config.commentcooldown * 60000) } }, (err) => { 
+                if (err) return chatmsg(steamID, "Error updating database entry: " + err)
+                    else chatmsg(steamID, lang.resetcooldowncmdsuccess.replace("profileid", steam64id.toString())) 
             })
-
-            return chatmsg(steamID, lang.resetcooldowncmdglobalreset) 
-        }
-
-        if (isNaN(args[0])) return chatmsg(steamID, lang.invalidprofileid) 
-        if (new SteamID(args[0]).isValid() === false) return chatmsg(steamID, lang.invalidprofileid) 
-
-        var steam64id = args[0] //change steam64id to the provided id
+        })
     }
-
-    if (config.commentcooldown == 0) return chatmsg(steamID, lang.resetcooldowncmdcooldowndisabled) //is the cooldown enabled?
-
-    controller.lastcomment.update({ id: steam64id }, { $set: { time: Date.now() - (config.commentcooldown * 60000) } }, (err) => { 
-        if (err) return chatmsg(steamID, "Error updating database entry: " + err)
-            else chatmsg(steamID, lang.resetcooldowncmdsuccess.replace("profileid", steam64id.toString())) 
-    })
 }
 
 
@@ -92,28 +94,28 @@ module.exports.resetCooldown = (chatmsg, steamID, lang, args, steam64id) => {
  * @param {String} steam64id The steam64id of the requesting user
  */
 module.exports.failed = (chatmsg, steamID, lang, args, steam64id) => {
-    var mainfile   = require("../../main.js")
-    var controller = require("../../../controller/controller.js")
 
-    if (args[0]) {
-        if (!config.ownerid.includes(steam64id)) return chatmsg(steamID, lang.commandowneronly)
+    handleSteamIdResolving.run(args[0], null, (err, res) => {
+        if (res) {
+            if (!cachefile.ownerid.includes(steam64id)) return chatmsg(steamID, lang.commandowneronly)
 
-        steam64id = args[0] //if user provided an id as argument then use that instead of his/her id
-    }
+            steam64id = res //if user provided an id as argument then use that instead of his/her id
+        }
 
-    controller.lastcomment.findOne({ id: steam64id }, (err, doc) => {
-        if (!mainfile.failedcomments[steam64id] || Object.keys(mainfile.failedcomments[steam64id]).length < 1) return chatmsg(steamID, lang.failedcmdnothingfound);
+        controller.lastcomment.findOne({ id: steam64id }, (err, doc) => {
+            if (!mainfile.failedcomments[steam64id] || Object.keys(mainfile.failedcomments[steam64id]).length < 1) return chatmsg(steamID, lang.failedcmdnothingfound);
 
-        let requesttime = new Date(doc.time).toISOString().replace(/T/, ' ').replace(/\..+/, '')
-        
-        let failedcommentsobj = JSON.stringify(mainfile.failedcomments[steam64id], null, 4)
-        let failedcommentsstr = failedcommentsobj.slice(1, -1).split("\n").map(s => s.trim()).join("\n") //remove brackets and whitespaces
+            let requesttime = new Date(doc.time).toISOString().replace(/T/, ' ').replace(/\..+/, '')
+            
+            let failedcommentsobj = JSON.stringify(mainfile.failedcomments[steam64id], null, 4)
+            let failedcommentsstr = failedcommentsobj.slice(1, -1).split("\n").map(s => s.trim()).join("\n") //remove brackets and whitespaces
 
-        let messagestart = lang.failedcmdmsg.replace("steam64id", steam64id).replace("requesttime", requesttime)
+            let messagestart = lang.failedcmdmsg.replace("steam64id", steam64id).replace("requesttime", requesttime)
 
-        //Limit length to 750 characters to ensure the message can be sent
-        if (failedcommentsstr.length >= 800) chatmsg(steamID, "/pre " + messagestart + "\nc = Comment, p = Proxy\n" + failedcommentsstr.slice(0, 800) + "... \n\n ..." + failedcommentsstr.slice(800, failedcommentsstr.length).split("\n").length + " entries hidden because message would be too long.");
-            else chatmsg(steamID, "/pre " + messagestart + "\nc = Comment, p = Proxy\n" + failedcommentsstr);
+            //Limit length to 750 characters to ensure the message can be sent
+            if (failedcommentsstr.length >= 800) chatmsg(steamID, "/pre " + messagestart + "\nc = Comment, p = Proxy\n" + failedcommentsstr.slice(0, 800) + "... \n\n ..." + failedcommentsstr.slice(800, failedcommentsstr.length).split("\n").length + " entries hidden because message would be too long.");
+                else chatmsg(steamID, "/pre " + messagestart + "\nc = Comment, p = Proxy\n" + failedcommentsstr);
+        })
     })
 }
 
@@ -125,17 +127,16 @@ module.exports.failed = (chatmsg, steamID, lang, args, steam64id) => {
  * @param {Object} lang The language object
  */
 module.exports.sessions = (chatmsg, steamID, lang) => {
-    var mainfile = require("../../main.js")
-    var str      = "";
+    var str = "";
 
     if (Object.keys(mainfile.activecommentprocess).length > 0) { //Only loop through object if it isn't empty
         let objlength = Object.keys(mainfile.activecommentprocess).length //save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering
 
         Object.keys(mainfile.activecommentprocess).forEach((e, i) => {
 
-            if (Date.now() < mainfile.activecommentprocess[e].until + (config.globalcommentcooldown * 60000)) { //check if entry is not finished yet
+            if (Date.now() < mainfile.activecommentprocess[e].until + (config.botaccountcooldown * 60000)) { //check if entry is not finished yet
 
-                str += `- Status: ${mainfile.activecommentprocess[e].status} | ${mainfile.activecommentprocess[e].amount} comments with ${mainfile.activecommentprocess[e].accounts.length} accounts by ${mainfile.activecommentprocess[e].requestedby} for ${mainfile.activecommentprocess[e].type} ${Object.keys(mainfile.activecommentprocess)[i]}`
+                str += `- Status: ${mainfile.activecommentprocess[e].status} | ${mainfile.activecommentprocess[e].amount} comments with ${mainfile.activecommentprocess[e].accounts.length} accounts by ${mainfile.activecommentprocess[e].requestedby} for ${mainfile.activecommentprocess[e].type} ${Object.keys(mainfile.activecommentprocess)[i]}\n`
             } else {
                 delete mainfile.activecommentprocess[e] //remove entry from object if it is finished to keep the object clean
             }
@@ -162,15 +163,14 @@ module.exports.sessions = (chatmsg, steamID, lang) => {
  * @param {String} steam64id The steam64id of the requesting user
  */
 module.exports.mysessions = (chatmsg, steamID, lang, steam64id) => {
-    var mainfile = require("../../main.js")
-    var str      = ""
+    var str = ""
 
     if (Object.keys(mainfile.activecommentprocess).length > 0) { //Only loop through object if it isn't empty
         let objlength = Object.keys(mainfile.activecommentprocess).length //save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering
 
         Object.keys(mainfile.activecommentprocess).forEach((e, i) => {
 
-            if (Date.now() < mainfile.activecommentprocess[e].until + (config.globalcommentcooldown * 60000)) { //check if entry is not finished yet
+            if (Date.now() < mainfile.activecommentprocess[e].until + (config.botaccountcooldown * 60000)) { //check if entry is not finished yet
 
                 if (mainfile.activecommentprocess[e].requestedby == steam64id) str += `- Status: ${mainfile.activecommentprocess[e].status} | ${mainfile.activecommentprocess[e].amount} comments with ${mainfile.activecommentprocess[e].accounts.length} accounts by ${mainfile.activecommentprocess[e].requestedby} for ${mainfile.activecommentprocess[e].type} ${Object.keys(mainfile.activecommentprocess)[i]}`
             } else {
