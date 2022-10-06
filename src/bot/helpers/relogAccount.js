@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 28.07.2022 23:49:21
+ * Last Modified: 06.10.2022 20:09:43
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -51,10 +51,10 @@ module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy) => {
         logger("info", `[${thisbot}] It is now my turn. Waiting ${advancedconfig.loginDelay / 1000} seconds before attempting to relog...`, false, true, logger.animation("waiting"))
 
         //Generate steam guard code again if user provided a shared_secret
-        if (logOnOptions["sharedSecretForRelog"]) {
+        if (logOnOptions["steamGuardCodeForRelog"]) {
             logger("debug", `[${thisbot}] Found shared_secret in logOnOptions! Regenerating AuthCode and adding it to logOnOptions...`)
 
-            logOnOptions["twoFactorCode"] = SteamTotp.generateAuthCode(logOnOptions["sharedSecretForRelog"]);
+            logOnOptions["steamGuardCode"] = SteamTotp.generateAuthCode(logOnOptions["steamGuardCodeForRelog"]);
         }
 
         //Attach relogdelay timeout

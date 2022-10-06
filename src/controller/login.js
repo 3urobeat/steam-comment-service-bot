@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 05.06.2022 16:25:38
+ * Last Modified: 06.10.2022 20:09:19
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -118,8 +118,8 @@ module.exports.startlogin = (logininfo) => {
                         if (logininfo[k][2] && logininfo[k][2] != "" && logininfo[k][2] != "shared_secret") { 
                             logger("debug", `Found shared_secret for ${k}! Generating AuthCode and adding it to logOnOptions...`)
                             
-                            logOnOptions["twoFactorCode"] = SteamTotp.generateAuthCode(logininfo[k][2])
-                            logOnOptions["sharedSecretForRelog"] = logininfo[k][2]; //add raw shared_secret to obj aswell to be able to access it more easily from relogAccount.js
+                            logOnOptions["steamGuardCode"] = SteamTotp.generateAuthCode(logininfo[k][2])
+                            logOnOptions["steamGuardCodeForRelog"] = logininfo[k][2]; //add raw shared_secret to obj aswell to be able to access it more easily from relogAccount.js
                         }
 
                         b.run(logOnOptions, i); //run bot.js with this account
