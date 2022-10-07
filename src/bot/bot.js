@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.07.2022 10:49:26
+ * Last Modified: 07.10.2022 09:29:48
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -79,19 +79,24 @@ module.exports.run = (logOnOptions, loginindex) => {
      */
     module.exports.logOnAccount = () => { //make it a function in order to be able to retry a login from error.js
 
-        var loggedininterval = setInterval(() => { //set an interval to check if previous acc is logged on
+        var loggedininterval = setInterval(async () => { //set an interval to check if previous acc is logged on
 
             if (login.accisloggedin || login.additionalaccinfo[loginindex].logOnTries > 0) { //start attempt if previous account is logged on or if this call is a retry
                 clearInterval(loggedininterval) //stop interval
 
-                login.accisloggedin = false; //set to false again
+                login.accisloggedin = false; //set to false again so the next account waits for us to log in
 
-                login.additionalaccinfo[loginindex].logOnTries++
-
+                // Log login messsage for this account, with mentioning proxies or without
                 if (thisproxy == null) logger("info", `[${thisbot}] Trying to log in without proxy... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
                     else logger("info", `[${thisbot}] Trying to log in with proxy ${login.proxyShift - 1}... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
+
+                // Call our steam-session helper to get a valid refresh token for us
+                let refreshToken = await require("./helpers/steamSessionHandler.js").getRefreshToken(thisbot, logOnOptions);
+
+                login.additionalaccinfo[loginindex].logOnTries++
                 
-                bot.logOn(logOnOptions)
+                // Login with this account using the refreshToken we just obtained using steam-session
+                bot.logOn({ "refreshToken": refreshToken });
             }
     
         }, 250);
