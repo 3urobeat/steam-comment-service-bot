@@ -4,7 +4,7 @@
  * Created Date: 06.10.2022 20:02:03
  * Author: 3urobeat
  * 
- * Last Modified: 07.10.2022 17:48:58
+ * Last Modified: 07.10.2022 18:15:24
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -48,9 +48,22 @@ module.exports.getRefreshToken = (thisbot, loginindex, logOnOptions) => {
         // Login with credentials supplied in logOnOptions
         session.startWithCredentials(logOnOptions)
             .then((res) => {
+
                 // Check if Steam requests to do something (get a 2FA code for example)
                 if (res.actionRequired) {
                     logger("debug", `[${thisbot}] getRefreshToken(): Recieved startWithCredentials() actionRequired response. Type: ${res.validActions[0].type} | Detail: ${res.validActions[0].detail}`);
+
+                    // Check if user enabled skipSteamGuard and skip asking for 2FA if this is not the main account
+                    if (config.skipSteamGuard) {
+                        if (loginindex > 0) {
+                            logger("info", `[${thisbot}] Skipping account because skipSteamGuard is enabled...`, false, true, logger.animation("loading"))
+                            skipAccount(loginindex);
+                            resolve(null);
+                            return;
+                        } else {
+                            logger("warn", "Even with skipSteamGuard enabled, the first account always has to be logged in.", true);
+                        }
+                    } 
 
                     switch (res.validActions[0].type) {
                         case SteamSession.EAuthSessionGuardType.EmailCode: // 2
@@ -66,6 +79,7 @@ module.exports.getRefreshToken = (thisbot, loginindex, logOnOptions) => {
                             skipAccount(loginindex);
                     }
                 }
+
             })
             .catch((err) => {
                 if (err) logger("err", `[${thisbot}] Error trying to get SteamSession with credentials: ${err}`);
