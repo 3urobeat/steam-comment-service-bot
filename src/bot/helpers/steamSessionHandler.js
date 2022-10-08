@@ -84,14 +84,18 @@ function get2FAUserInput(thisbot, loginindex, logOnOptions, callback) {
 
 
 // Helper function to make accepting and re-requesting invalid steam guard codes easier
-function acceptSteamGuardCode(thisbot, loginindex, session, code) {
+function acceptSteamGuardCode(thisbot, loginindex, logOnOptions, session, code) {
 
     session.submitSteamGuardCode(code)
         .then((res) => {
             logger("debug", `[${thisbot}] acceptSteamGuardCode(): User supplied correct code, authenticated event should trigger. Response: ${res}`);
         })
         .catch((err) => {
-            logger("warn", `[${thisbot}] ${err}`); // TODO: Retry?
+            if (loginindex == 0) logger("warn", `Your code seems to be wrong, please try again! ${err}`);
+                else logger("warn", `Your code seems to be wrong, please try again or skip this account! ${err}`);
+            
+            // Ask user again
+            get2FAUserInput(thisbot, loginindex, logOnOptions, (code) => acceptSteamGuardCode(thisbot, loginindex, session, code));
         })
 
 }
@@ -163,7 +167,7 @@ module.exports.getRefreshToken = (thisbot, loginindex, logOnOptions) => {
                         case SteamSession.EAuthSessionGuardType.EmailCode:          // Type 2
                             logger("info", `Please enter the Steam Guard Code from your email address at ${res.validActions[0].detail}. Skipping automatically in 1.5 minutes if you don't respond...`, true);
 
-                            get2FAUserInput(thisbot, loginindex, logOnOptions, (code) => acceptSteamGuardCode(thisbot, loginindex, session, code)); // Pass callback directly to acceptSteamGuard helper function
+                            get2FAUserInput(thisbot, loginindex, logOnOptions, (code) => acceptSteamGuardCode(thisbot, loginindex, logOnOptions, session, code)); // Pass callback directly to acceptSteamGuard helper function
                             break;
 
                         case SteamSession.EAuthSessionGuardType.DeviceConfirmation: // Type 4 (more convenient than type 3, both can be active at the same time so we check for this one first)
@@ -173,7 +177,7 @@ module.exports.getRefreshToken = (thisbot, loginindex, logOnOptions) => {
                         case SteamSession.EAuthSessionGuardType.DeviceCode:         // Type 3
                             logger("info", `Please enter the Steam Guard Code from your Steam Mobile App. Skipping automatically in 1.5 minutes if you don't respond...`, true);
 
-                            get2FAUserInput(thisbot, loginindex, logOnOptions, (code) => acceptSteamGuardCode(thisbot, loginindex, session, code)); // Pass callback directly to acceptSteamGuard helper function
+                            get2FAUserInput(thisbot, loginindex, logOnOptions, (code) => acceptSteamGuardCode(thisbot, loginindex, logOnOptions, session, code)); // Pass callback directly to acceptSteamGuard helper function
                             break;
 
                         case SteamSession.EAuthSessionGuardType.EmailConfirmation:  // Type 5
