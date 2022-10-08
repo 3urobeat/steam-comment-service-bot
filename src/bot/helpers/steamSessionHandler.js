@@ -4,7 +4,7 @@
  * Created Date: 06.10.2022 20:02:03
  * Author: 3urobeat
  * 
- * Last Modified: 08.10.2022 13:54:55
+ * Last Modified: 08.10.2022 14:11:16
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -83,6 +83,20 @@ function get2FAUserInput(thisbot, loginindex, logOnOptions, callback) {
 }
 
 
+// Helper function to make accepting and re-requesting invalid steam guard codes easier
+function acceptSteamGuardCode(thisbot, loginindex, session, code) {
+
+    session.submitSteamGuardCode(code)
+        .then((res) => {
+            logger("debug", `[${thisbot}] acceptSteamGuardCode(): User supplied correct code, authenticated event should trigger. Response: ${res}`);
+        })
+        .catch((err) => {
+            logger("warn", `[${thisbot}] ${err}`); // TODO: Retry?
+        })
+
+}
+
+
 /**
  * Handles getting a refresh token using steam-session for steam-user to login with
  * @param {String} thisbot The thisbot string of the calling account
@@ -94,6 +108,8 @@ module.exports.getRefreshToken = (thisbot, loginindex, logOnOptions) => {
     return new Promise((resolve) => {
         
         logger("debug", `[${thisbot}] getRefreshToken(): Login request recieved`);
+
+        login.additionalaccinfo[loginindex].logOnTries++
 
         // Init new session
         let session = new SteamSession.LoginSession(SteamSession.EAuthTokenPlatformType.SteamClient);
@@ -122,9 +138,8 @@ module.exports.getRefreshToken = (thisbot, loginindex, logOnOptions) => {
                     switch (res.validActions[0].type) {
                         case SteamSession.EAuthSessionGuardType.EmailCode:          // Type 2
                             logger("info", `[${thisbot}] Please enter the Steam Guard Code from your email address at ${res.validActions[0].detail}. Skipping automatically in 1.5 minutes if you don't respond...`, true);
-                            get2FAUserInput(thisbot, loginindex, logOnOptions, (code) => {
-                                session.submitSteamGuardCode(code);
-                            })
+
+                            get2FAUserInput(thisbot, loginindex, logOnOptions, (code) => acceptSteamGuardCode(thisbot, loginindex, session, code)); // Pass callback directly to acceptSteamGuard helper function
                             break;
 
                         case SteamSession.EAuthSessionGuardType.DeviceConfirmation: // Type 4 (more convenient than type 3, both can be active at the same time so we check for this one first)
@@ -133,9 +148,8 @@ module.exports.getRefreshToken = (thisbot, loginindex, logOnOptions) => {
 
                         case SteamSession.EAuthSessionGuardType.DeviceCode:         // Type 3
                             logger("info", `[${thisbot}] Please enter the Steam Guard Code from your Steam Mobile App. Skipping automatically in 1.5 minutes if you don't respond...`, true);
-                            get2FAUserInput(thisbot, loginindex, logOnOptions, (code) => {
-                                session.submitSteamGuardCode(code);
-                            })
+
+                            get2FAUserInput(thisbot, loginindex, logOnOptions, (code) => acceptSteamGuardCode(thisbot, loginindex, session, code)); // Pass callback directly to acceptSteamGuard helper function
                             break;
 
                         case SteamSession.EAuthSessionGuardType.EmailConfirmation:  // Type 5
@@ -144,6 +158,7 @@ module.exports.getRefreshToken = (thisbot, loginindex, logOnOptions) => {
 
                         default: // Dunno what to do with the other types
                             logger("error", `[${thisbot}] Failed to get login session! Unexpected 2FA type ${res.validActions[0].type}! Sorry, I need to skip this account...`);
+
                             skipAccount(loginindex);
                             resolve(null);
                             return;
@@ -153,7 +168,10 @@ module.exports.getRefreshToken = (thisbot, loginindex, logOnOptions) => {
             })
             .catch((err) => {
                 if (err) {
-                    logger("err", `[${thisbot}] Error trying to get SteamSession with credentials: ${err}`); // TODO: retry?
+                    logger("err", `[${thisbot}] Error trying to get SteamSession with credentials: ${err}`); 
+
+                    // TODO: retry?
+
                     skipAccount(loginindex);
                     resolve(null);
                     return;
