@@ -1,0 +1,36 @@
+{
+    "env": {
+        "commonjs": true,
+        "es6": true,
+        "node": true
+    },
+    "extends": "eslint:recommended",
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly",
+
+        "started": true,
+        "srcdir": true,
+        "botisloggedin": true,
+        "logger": true,
+        "config": true,
+        "advancedconfig": true,
+        "extdata": true,
+        "cachefile": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 11
+    },
+    "rules": {
+        "no-redeclare": 0,
+
+        // Styling
+        "camelcase": "warn",
+        "capitalized-comments": ["warn", "always", { "ignoreConsecutiveComments": true }],
+        "comma-spacing": ["warn", { "before": false, "after": true }],
+        "no-tabs": "error",
+        "no-trailing-spaces": "error",
+        "quotes": ["error", "double", { "avoidEscape": true }],
+        "spaced-comment": "warn"
+    }
+}
