@@ -4,7 +4,7 @@
  * Created Date: 06.10.2022 20:02:03
  * Author: 3urobeat
  * 
- * Last Modified: 08.10.2022 14:11:16
+ * Last Modified: 08.10.2022 14:39:37
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -97,6 +97,30 @@ function acceptSteamGuardCode(thisbot, loginindex, session, code) {
 }
 
 
+// Helper function to make handling login errors easier
+function handleCredentialsLoginError(loginindex, err) {
+
+    logger("", "", true)
+    logger("error", `Couldn't log in bot${loginindex} after ${login.additionalaccinfo[loginindex].logOnTries} attempt(s). ${err} (${err.eresult})`, true)
+
+    // Add additional messages for specific errors to hopefully help the user diagnose the cause
+    if (err.eresult == 5) logger("", `Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try leaving the shared_secret field empty and check the username & password of bot${loginindex}.`, true)
+    if (login.additionalaccinfo[loginindex].thisproxy != null) logger("", `      Is your proxy ${login.proxyShift - 1} offline or maybe blocked by Steam?\n`, true)
+
+    // Abort execution if account is bot0
+    if (loginindex == 0) {
+        logger("", "", true)
+        logger("error", "Aborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true)
+        return process.send("stop()")
+
+    } else { // Skip account if not bot0
+
+        logger("info", `Failed account is not bot0. Skipping account...`, true)
+        skipAccount(loginindex);
+    }
+}
+
+
 /**
  * Handles getting a refresh token using steam-session for steam-user to login with
  * @param {String} thisbot The thisbot string of the calling account
@@ -137,27 +161,27 @@ module.exports.getRefreshToken = (thisbot, loginindex, logOnOptions) => {
                     // Get 2FA code/prompt confirmation from user, mentioning the correct source
                     switch (res.validActions[0].type) {
                         case SteamSession.EAuthSessionGuardType.EmailCode:          // Type 2
-                            logger("info", `[${thisbot}] Please enter the Steam Guard Code from your email address at ${res.validActions[0].detail}. Skipping automatically in 1.5 minutes if you don't respond...`, true);
+                            logger("info", `Please enter the Steam Guard Code from your email address at ${res.validActions[0].detail}. Skipping automatically in 1.5 minutes if you don't respond...`, true);
 
                             get2FAUserInput(thisbot, loginindex, logOnOptions, (code) => acceptSteamGuardCode(thisbot, loginindex, session, code)); // Pass callback directly to acceptSteamGuard helper function
                             break;
 
                         case SteamSession.EAuthSessionGuardType.DeviceConfirmation: // Type 4 (more convenient than type 3, both can be active at the same time so we check for this one first)
-                            logger("info", `[${thisbot}] Please confirm this login request in your Steam Mobile App.`, false, false, logger.animation("waiting"));
+                            logger("info", `Please confirm this login request in your Steam Mobile App.`, false, false, logger.animation("waiting"));
                             break;
 
                         case SteamSession.EAuthSessionGuardType.DeviceCode:         // Type 3
-                            logger("info", `[${thisbot}] Please enter the Steam Guard Code from your Steam Mobile App. Skipping automatically in 1.5 minutes if you don't respond...`, true);
+                            logger("info", `Please enter the Steam Guard Code from your Steam Mobile App. Skipping automatically in 1.5 minutes if you don't respond...`, true);
 
                             get2FAUserInput(thisbot, loginindex, logOnOptions, (code) => acceptSteamGuardCode(thisbot, loginindex, session, code)); // Pass callback directly to acceptSteamGuard helper function
                             break;
 
                         case SteamSession.EAuthSessionGuardType.EmailConfirmation:  // Type 5
-                            logger("info", `[${thisbot}] Please confirm this login request via the confirmation email sent to you.`, false, false, logger.animation("waiting"));
+                            logger("info", `Please confirm this login request via the confirmation email sent to you.`, false, false, logger.animation("waiting"));
                             break;
 
                         default: // Dunno what to do with the other types
-                            logger("error", `[${thisbot}] Failed to get login session! Unexpected 2FA type ${res.validActions[0].type}! Sorry, I need to skip this account...`);
+                            logger("error", `Failed to get login session! Unexpected 2FA type ${res.validActions[0].type} for account '${logOnOptions.accountName}'! Sorry, I need to skip this account...`);
 
                             skipAccount(loginindex);
                             resolve(null);
@@ -168,11 +192,7 @@ module.exports.getRefreshToken = (thisbot, loginindex, logOnOptions) => {
             })
             .catch((err) => {
                 if (err) {
-                    logger("err", `[${thisbot}] Error trying to get SteamSession with credentials: ${err}`); 
-
-                    // TODO: retry?
-
-                    skipAccount(loginindex);
+                    handleCredentialsLoginError(loginindex, err);
                     resolve(null);
                     return;
                 }
