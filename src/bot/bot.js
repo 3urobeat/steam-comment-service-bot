@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 08.10.2022 14:09:49
+ * Last Modified: 09.10.2022 21:33:34
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -91,13 +91,15 @@ module.exports.run = (logOnOptions, loginindex) => {
                     else logger("info", `[${thisbot}] Trying to log in with proxy ${login.proxyShift - 1}... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
 
                 // Call our steam-session helper to get a valid refresh token for us
-                let refreshToken = await require("./helpers/steamSessionHandler.js").getRefreshToken(thisbot, loginindex, logOnOptions);
-                if (!refreshToken) return; // Stop execution if getRefreshToken aborted login attempt
+                let sessionHandler = require("../sessions/sessionHandler.js");
+                let session = new sessionHandler(thisbot, loginindex, logOnOptions);
+
+                let refreshToken = await session.getToken();
+                if (!refreshToken) return; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the bot itself
                 
                 // Login with this account using the refreshToken we just obtained using steam-session
                 bot.logOn({ "refreshToken": refreshToken });
             }
-    
         }, 250);
     }
 
