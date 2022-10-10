@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:59:31
  * Author: 3urobeat
  * 
- * Last Modified: 09.10.2022 22:18:38
+ * Last Modified: 10.10.2022 16:23:49
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -123,8 +123,8 @@ sessionHandler.prototype._get2FAUserInput = function() {
 sessionHandler.prototype._acceptSteamGuardCode = function(code) {
 
     this.session.submitSteamGuardCode(code)
-        .then((res) => { // Success
-            logger("debug", `[${this.thisbot}] acceptSteamGuardCode(): User supplied correct code, authenticated event should trigger. Response: ${res}`);
+        .then(() => { // Success
+            logger("debug", `[${this.thisbot}] acceptSteamGuardCode(): User supplied correct code, authenticated event should trigger.`);
         })
         .catch((err) => { // Invalid code, ask again
             // Show different message depending on which account this is
