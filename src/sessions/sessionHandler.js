@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  * 
- * Last Modified: 10.10.2022 16:20:49
+ * Last Modified: 10.10.2022 16:29:47
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -67,8 +67,15 @@ sessionHandler.prototype.getToken = function() { // I'm not allowed to use arrow
         // Save promise resolve function so any other function of this object can resolve the promise itself 
         this.getTokenPromise = resolve;
 
-        // Start first attempt of logging in
-        this._attemptCredentialsLogin();
+        // First ask tokenStorageHandler if we already have a valid token for this account in storage
+        this._getTokenFromStorage((token) => {
+            // Instantly resolve promise if we still have a valid token on hand, otherwise start credentials login flow
+            if (token) {
+                resolve(token);
+            } else {
+                this._attemptCredentialsLogin(); // Start first attempt of logging in
+            }
+        })
     })
 }
 
@@ -89,10 +96,12 @@ sessionHandler.prototype._resolvePromise = function(token) {
         } else {
             logger("info", `[${this.thisbot}] Skipping account '${this.logOnOptions.accountName}'...`, true);
 
-            loginfile.accisloggedin = true; //set to true to log next account in
+            loginfile.accisloggedin = true; // Set to true to log next account in
 
             controller.skippedaccounts.push(this.loginindex);
             loginfile.skippednow.push(this.loginindex);
+
+            this.session.cancelLoginAttempt(); // Cancel this login attempt just to be sure
         }
     } else {
         // Save most recent valid token to tokens.db
