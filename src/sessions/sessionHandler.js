@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  * 
- * Last Modified: 09.10.2022 22:23:00
+ * Last Modified: 10.10.2022 16:20:49
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -16,6 +16,7 @@
 
 
 const SteamSession = require("steam-session");
+const nedb         = require("@seald-io/nedb")
 
 const controller = require("../controller/controller.js");
 const loginfile  = require("../controller/login.js");
@@ -40,10 +41,14 @@ const sessionHandler = function(thisbot, loginindex, logOnOptions) {
     this.getTokenPromise = null; // Can be called from a helper later on
     this.session = null;
 
+    // Load tokens database
+    this.tokensdb = new nedb({ filename: srcdir + "/data/tokens.db", autoload: true });
+
     // Load helper files
     require("./events/sessionEvents");
     require("./helpers/handle2FA.js");
     require("./helpers/handleCredentialsLoginError");
+    require("./helpers/tokenStorageHandler.js");
 
 };
 
@@ -89,6 +94,9 @@ sessionHandler.prototype._resolvePromise = function(token) {
             controller.skippedaccounts.push(this.loginindex);
             loginfile.skippednow.push(this.loginindex);
         }
+    } else {
+        // Save most recent valid token to tokens.db
+        this._saveTokenToStorage(token);
     }
 
     this.getTokenPromise(token);
