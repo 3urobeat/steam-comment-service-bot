@@ -4,7 +4,7 @@
  * Created Date: 10.10.2022 12:53:20
  * Author: 3urobeat
  * 
- * Last Modified: 10.10.2022 16:27:52
+ * Last Modified: 10.10.2022 19:10:31
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -81,3 +81,29 @@ sessionHandler.prototype._saveTokenToStorage = function(token) {
     // Update db entry for this account. Upsert is enabled so a new doc will be inserted if none exists yet
     this.tokensdb.updateAsync({ accountName: this.logOnOptions.accountName }, { $set: { token: token } }, { upsert: true });
 }
+
+
+// TODO: Add logic to this function when logininfo is available more easily (prob when controller is OOP and we don't need parameter passing)
+// Note: Code is not checked for issues!
+/**
+ * Internal - Cleans out every expired key from tokens.db of accounts that are not currently used. Call only for loginindex 0!
+ */
+/* sessionHandler.prototype._cleanTokenStorage = async function() {
+
+    const docs = await this.tokensdb.findAsync({ $where: function () { return true if 'this.accountName' is not in logininfo } )
+
+    const.forEach((e, i) => {
+        
+        // Decode the token we've found
+        let jwtObj = this._decodeJWT(e.token);
+
+        // Define valid until str to use it in log msg
+        let validUntilStr = `${(new Date(jwtObj.exp * 1000)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`;
+
+        // Remove entry if token is expired
+        if (jwtObj.exp * 1000 < Date.now()) {
+            logger("debug", `_cleanTokenStorage(): Removed expired token of unused account '${e.accountName}' from tokens.db. It was valid until '${validUntilStr}'.`);
+            this.tokensdb.remove({ _id: e._id });
+        }
+    })
+} */

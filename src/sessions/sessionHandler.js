@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  * 
- * Last Modified: 10.10.2022 16:29:47
+ * Last Modified: 10.10.2022 19:09:17
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -49,6 +49,9 @@ const sessionHandler = function(thisbot, loginindex, logOnOptions) {
     require("./helpers/handle2FA.js");
     require("./helpers/handleCredentialsLoginError");
     require("./helpers/tokenStorageHandler.js");
+
+    // Run tokens database cleanup helper once for loginindex 0
+    //if (loginindex == 0) this._cleanTokenStorage(); // TODO: Not implemented yet
 
 };
 
