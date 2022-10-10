@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 26.02.2022 12:30:05
+ * Last Modified: 10.10.2022 18:42:48
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -106,29 +106,28 @@ module.exports.eval = (chatmsg, steamID, lang, args, bot, community) => { //esli
 
     try {
         const code = args.join(" ");
-        if (code.includes('logininfo')) return chatmsg(steamID, lang.evalcmdlogininfoblock) //not 100% save but should be at least some protection (only owners can use this cmd)
+        if (code.includes('logininfo')) return chatmsg(steamID, lang.evalcmdlogininfoblock) //not 100% safe but should be at least some protection (only owners can use this cmd)
 
         //make using the command a little bit easier
-        var starter    = require("../../starter.js") //eslint-disable-line no-unused-vars
-        var controller = require("../../controller/controller.js") //eslint-disable-line no-unused-vars
-        var readyfile  = require("../../controller/ready.js") //eslint-disable-line no-unused-vars
-        var botfile    = require("../../bot/bot.js") //eslint-disable-line no-unused-vars
-        var mainfile   = require("../../bot/main.js") //eslint-disable-line no-unused-vars
+        var starter    = require("../../starter.js");               //eslint-disable-line no-unused-vars
+        var controller = require("../../controller/controller.js"); //eslint-disable-line no-unused-vars
+        var readyfile  = require("../../controller/ready.js");      //eslint-disable-line no-unused-vars
+        var botfile    = require("../../bot/bot.js");               //eslint-disable-line no-unused-vars
+        var mainfile   = require("../../bot/main.js");              //eslint-disable-line no-unused-vars
         
         let evaled = eval(code);
-        if (typeof evaled !== "string")
-        evaled = require("util").inspect(evaled);
+        if (typeof evaled !== "string") evaled = require("util").inspect(evaled);
 
         //Check for character limit and cut message (seems to be 5000)
-        let chatResult = clean(evaled)
+        let chatResult = clean(evaled);
 
-        if (chatResult.length >= 4950) chatmsg(steamID, `Code executed. Result:\n\n${chatResult.slice(0, 4950)}.......\n\n\nResult too long for chat.`)
-            else chatmsg(steamID, `Code executed. Result:\n\n${clean(evaled)}`)
+        if (chatResult.length >= 4950) chatmsg(steamID, `Code executed. Result:\n\n${chatResult.slice(0, 4950)}.......\n\n\nResult too long for chat.`);
+            else chatmsg(steamID, `Code executed. Result:\n\n${clean(evaled)}`);
         
-        logger("info", `${logger.colors.fgyellow}Eval result:${logger.colors.reset} \n${clean(evaled)}\n`, true)
+        logger("info", `${logger.colors.fgyellow}Eval result:${logger.colors.reset} \n${clean(evaled)}\n`, true);
     } catch (err) {
-        chatmsg(steamID, `Error:\n${clean(err)}`)
-        logger("error", `${logger.colors.fgyellow}Eval error:${logger.colors.reset} \n${clean(err)}\n`, true)                                                                                                                                                                                                                                                                                                                 //Hi I'm a comment that serves no purpose
+        chatmsg(steamID, `Error:\n${clean(err)}`);
+        logger("error", `${logger.colors.fgyellow}Eval error:${logger.colors.reset} \n${clean(err)}\n`, true);                                                                                                                                                                                                                                                                                                                //Hi I'm a comment that serves no purpose
         return; 
     }
 }
