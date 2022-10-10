@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.06.2022 11:23:38
+ * Last Modified: 10.10.2022 18:22:51
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -325,7 +325,7 @@ module.exports.lang = (callback) => {
 
             if (i == Object.keys(customlang).length - 1) { //check for last iteration
                 if (customlangkeys > 0) logger("info", `${customlangkeys} customlang key imported!`, false, true, logger.animation("loading"))
-                    else logger("info", "No customlang keys found...", false, true, logger.animation("loading"))
+                    else logger("info", "No customlang keys found.", false, true, logger.animation("loading"))
 
                 callback(lang)
             }

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 06.10.2022 20:09:19
+ * Last Modified: 10.10.2022 18:20:46
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -65,7 +65,7 @@ module.exports.startlogin = (logininfo) => {
 
 
     //Evaluate estimated wait time for login:
-    logger("info", "Evaluating estimated login time...", false, true, logger.animation("loading"))
+    logger("debug", "Evaluating estimated login time...");
     
     if (extdata.timesloggedin < 5) { //only use "intelligent" evaluation method when the bot was started more than 5 times
         var estimatedlogintime = ((advancedconfig.loginDelay * (Object.keys(logininfo).length - 1 - controller.skippedaccounts.length)) / 1000) + 5 //5 seconds tolerance
