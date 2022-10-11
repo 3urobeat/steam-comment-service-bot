@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  * 
- * Last Modified: 10.10.2022 19:09:17
+ * Last Modified: 11.10.2022 14:36:01
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -16,7 +16,7 @@
 
 
 const SteamSession = require("steam-session");
-const nedb         = require("@seald-io/nedb")
+const nedb         = require("@seald-io/nedb");
 
 const controller = require("../controller/controller.js");
 const loginfile  = require("../controller/login.js");

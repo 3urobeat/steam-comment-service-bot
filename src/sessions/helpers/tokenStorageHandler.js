@@ -4,7 +4,7 @@
  * Created Date: 10.10.2022 12:53:20
  * Author: 3urobeat
  * 
- * Last Modified: 10.10.2022 19:10:31
+ * Last Modified: 11.10.2022 20:54:30
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -28,9 +28,9 @@ sessionHandler.prototype._decodeJWT = function(token) {
         let parsed = JSON.parse(decoded.toString());
         return parsed;
     } catch (err) {
-        logger("err", `Failed to parse JWT from tokens.db! Returning null to get a new session. Please report this issue if it keeps occurring!\nError: ${err}`, true);
+        logger("err", `Failed to parse JWT from tokens.db! Please report this issue if it keeps occurring! Getting a new session...\nError: ${err}`, true);
         return null;
-    }
+    } // No need to invalidate token here as the new session will get a new token and overwrite the existing one anyway
 }
 
 
@@ -51,6 +51,7 @@ sessionHandler.prototype._getTokenFromStorage = function(callback) {
         if (doc) {
             // Decode the token we've found
             let jwtObj = this._decodeJWT(doc.token);
+            if (!jwtObj) return callback(null); // Get new session if _decodeJWT() failed
 
             // Define valid until str to use it in log msg
             let validUntilStr = `${(new Date(jwtObj.exp * 1000)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`;
@@ -83,6 +84,20 @@ sessionHandler.prototype._saveTokenToStorage = function(token) {
 }
 
 
+// TODO: Change to prototype and remove thisbot & accountName parameters when bot module is OOP and therefore this function is accessible from the bot object
+/**
+ * External - Removes a token from tokens.db. Intended to be called from the steam-user login error event when an invalid token was used so the next login attempt will create a new one.
+ * @param {String} accountName Name of the account to invalidate the token of
+ */
+module.exports.invalidateTokenInStorage = function(thisbot, accountName) {
+    logger("debug", `[${thisbot}] invalidateTokenInStorage(): Removing refreshToken for accountName '${accountName}' from tokens.db...`)
+
+    let tokensdb = new require("@seald-io/nedb")({ filename: srcdir + "/data/tokens.db", autoload: true }); // TODO: Remove when function is prototype and replace request in error.js
+
+    tokensdb.removeAsync({ accountName: accountName }, { multi: true });
+}
+
+
 // TODO: Add logic to this function when logininfo is available more easily (prob when controller is OOP and we don't need parameter passing)
 // Note: Code is not checked for issues!
 /**
@@ -96,6 +111,7 @@ sessionHandler.prototype._saveTokenToStorage = function(token) {
         
         // Decode the token we've found
         let jwtObj = this._decodeJWT(e.token);
+        if (!jwtObj) return this.tokensdb.remove({ _id: e._id }); // Instantly remove entry if _decodeJWT() failed
 
         // Define valid until str to use it in log msg
         let validUntilStr = `${(new Date(jwtObj.exp * 1000)).toISOString().replace(/T/, ' ').replace(/\..+/, '')} (GMT time)`;
