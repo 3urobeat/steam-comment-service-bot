@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 09.10.2022 21:33:34
+ * Last Modified: 11.10.2022 10:28:44
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -110,12 +110,6 @@ module.exports.run = (logOnOptions, loginindex) => {
     bot.on('error', (err) => { //Handle errors that were caused during logOn
         require("./events/error.js").run(err, loginindex, thisbot, thisproxy, logOnOptions, bot)
     })
-
-    bot.on('steamGuard', function(domain, callback, lastCodeWrong) { //fired when steamGuard code is requested when trying to log in
-        require("./events/steamguard.js").run(loginindex, thisbot, bot, logOnOptions, lastCodeWrong, (code) => {
-            if (code) callback(code)
-        })
-    });
 
     bot.on('loggedOn', () => { //this account is now logged on
         require("./events/loggedOn.js").run(loginindex, thisbot, bot, community)
