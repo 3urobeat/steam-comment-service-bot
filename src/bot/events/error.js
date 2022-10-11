@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 28.07.2022 23:24:23
+ * Last Modified: 11.10.2022 12:40:59
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -14,6 +14,12 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
  */
 
+
+const { EResult } = require("steam-user"); //Enums: https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EResult.js
+
+const controller = require("../../controller/controller.js");
+const login      = require("../../controller/login.js");
+const botfile    = require("../bot.js");
 
 
 /**
@@ -26,14 +32,12 @@
  * @param {SteamUser} bot The bot instance of the calling account
  */
 module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) => {    
-    var controller = require("../../controller/controller.js")
-    var login      = require("../../controller/login.js")
-    var botfile    = require("../bot.js")
+    
 
     
     //Custom behaviour for LogonSessionReplaced error:
-    if (err.eresult == 34) {
-        logger("info", `${logger.colors.fgred}[${thisbot}] Lost connection to Steam. Reason: LogonSessionReplaced`)
+    if (err.eresult == EResult.LogonSessionReplaced) {
+        logger("info", `${logger.colors.fgred}[${thisbot}] Lost connection to Steam. Reason: LogonSessionReplaced. I won't try to relog this account.`)
 
         if (loginindex == 0) {
             logger("error", `${logger.colors.fgred}Account is bot0. Aborting...`, true); 
@@ -61,10 +65,9 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
             logger("info", `[${thisbot}] I won't queue myself for a relog because this account was skipped or this is an intended logOff.`)
         }
 
-    } else {
+    } else { //Actual error durin login or relog
         
-        //Actual error durin login or relog:
-        let blockedEnumsForRetries = [5, 12, 13, 17, 18] //Enums: https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EResult.js
+        let blockedEnumsForRetries = [EResult.InvalidPassword, EResult.InvalidName, EResult.InvalidEmail, EResult.Banned, EResult.AccountNotFound];
 
         //check if this is an initial login error and it is either a fatal error or all retries are used
         if ((login.additionalaccinfo[loginindex].logOnTries > advancedconfig.maxLogOnRetries && !controller.relogQueue.includes(loginindex)) || blockedEnumsForRetries.includes(err.eresult)) { 
@@ -73,7 +76,6 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
 
 
             //Add additional messages for specific errors to hopefully help the user diagnose the cause
-            if (err.eresult == 5) logger("", `Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try leaving the shared_secret field empty and check the username & password of bot${loginindex}.`, true)
             if (thisproxy != null) logger("", `      Is your proxy ${login.proxyShift - 1} offline or maybe blocked by Steam?\n`, true)
 
 

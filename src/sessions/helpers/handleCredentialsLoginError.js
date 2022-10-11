@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 13:22:39
  * Author: 3urobeat
  * 
- * Last Modified: 09.10.2022 22:17:15
+ * Last Modified: 11.10.2022 12:42:22
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -15,9 +15,8 @@
  */
 
 
+const { EResult } = require("steam-session");
 const sessionHandler = require("../sessionHandler.js");
-
-const loginfile = require("../../controller/login.js");
 
 
 // Helper function to make handling login errors easier
@@ -29,8 +28,7 @@ sessionHandler.prototype._handleCredentialsLoginError = function(err) {
     logger("error", `Couldn't log in bot${this.loginindex} after ${this.additionalaccinfo.logOnTries} attempt(s). ${err} (${err.eresult})`, true)
 
     // Add additional messages for specific errors to hopefully help the user diagnose the cause
-    if (err.eresult == 5) logger("", `Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try leaving the shared_secret field empty and check the username & password of bot${this.loginindex}.`, true)
-    if (this.additionalaccinfo.thisproxy != null) logger("", `      Is your proxy ${loginfile.proxyShift - 1} offline or maybe blocked by Steam?\n`, true)
+    if (err.eresult == EResult.InvalidPassword) logger("", `Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try leaving the shared_secret field empty and check the username & password of bot${this.loginindex}.`, true)
 
     // Skip account (or abort if this is the first account)
     this._resolvePromise(null);
