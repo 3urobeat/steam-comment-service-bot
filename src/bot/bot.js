@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 11.10.2022 10:28:44
+ * Last Modified: 11.10.2022 11:58:25
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -52,7 +52,7 @@ module.exports.run = (logOnOptions, loginindex) => {
     const community = new SteamCommunity({ request: request.defaults({ "proxy": thisproxy }) }) //pass proxy to community library aswell 
 
 
-    //Attach debug log events
+    //Attach debug log events if enabled in advancedconfig
     if (advancedconfig.steamUserDebug) {
         bot.on("debug", (msg) => {
             logger("debug", `[${thisbot}] steam-user debug: ${msg}`)
@@ -74,11 +74,8 @@ module.exports.run = (logOnOptions, loginindex) => {
     login.additionalaccinfo[loginindex].logOnTries = 0;
     if(global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<")process.send("stop()");
 
-    /**
-     * Logs in all accounts
-     */
+    // Log in with this account when the previous account is done logging in
     module.exports.logOnAccount = () => { //make it a function in order to be able to retry a login from error.js
-
         var loggedininterval = setInterval(async () => { //set an interval to check if previous acc is logged on
 
             if (login.accisloggedin || login.additionalaccinfo[loginindex].logOnTries > 0) { //start attempt if previous account is logged on or if this call is a retry

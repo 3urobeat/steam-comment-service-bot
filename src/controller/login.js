@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 10.10.2022 18:20:46
+ * Last Modified: 11.10.2022 11:58:45
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -106,7 +106,7 @@ module.exports.startlogin = (logininfo) => {
                     setTimeout(() => {
                         logger("info", `Starting bot.js for ${k}...`, false, true, logger.animation("loading"))
 
-                        //Define steam-user logOnOptions
+                        //Define logOnOptions
                         var logOnOptions = {
                             accountName: logininfo[k][0],
                             password: logininfo[k][1],
