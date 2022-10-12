@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 12.10.2022 18:58:59
+ * Last Modified: 12.10.2022 20:05:46
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -63,7 +63,7 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
 
     } else { //Actual error durin login or relog
         
-        let blockedEnumsForRetries = [EResult.InvalidPassword, EResult.InvalidName, EResult.InvalidEmail, EResult.Banned, EResult.AccountNotFound];
+        let blockedEnumsForRetries = [EResult.Banned, EResult.AccountNotFound]; // No need to block InvalidPassword anymore as the sessionHandler handles credentials
 
         //check if this is an initial login error and it is either a fatal error or all retries are used
         if ((login.additionalaccinfo[loginindex].logOnTries > advancedconfig.maxLogOnRetries && !controller.relogQueue.includes(loginindex)) || blockedEnumsForRetries.includes(err.eresult)) { 
@@ -91,6 +91,12 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
         } else { //Got retries left or it is a relog...
 
             logger("warn", `${err} while trying to log in bot${loginindex}. Retrying in 5 seconds...`) //log error as warning
+
+            // Invalidate token to get a new session if this error was caused by an invalid refreshToken
+            if (err.eresult == EResult.InvalidPassword || err == "Error: InvalidSignature") { // These are the most likely enums that will occurr when an invalid token was used I guess (Checking via String here as it seems like there are EResults missing)
+                logger("debug", "Token login error: Calling tokenStorageHandler's _invalidateTokenInStorage() function to get a new session when retrying this login attempt")
+                require("../../sessions/helpers/tokenStorageHandler.js").invalidateTokenInStorage(thisbot, logOnOptions.accountName);
+            }
 
             //Call either relogAccount or logOnAccount function to continue where we started at after 5 sec
             setTimeout(() => {

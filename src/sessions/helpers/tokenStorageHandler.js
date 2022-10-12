@@ -4,7 +4,7 @@
  * Created Date: 10.10.2022 12:53:20
  * Author: 3urobeat
  * 
- * Last Modified: 11.10.2022 20:54:30
+ * Last Modified: 12.10.2022 20:04:49
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -92,7 +92,8 @@ sessionHandler.prototype._saveTokenToStorage = function(token) {
 module.exports.invalidateTokenInStorage = function(thisbot, accountName) {
     logger("debug", `[${thisbot}] invalidateTokenInStorage(): Removing refreshToken for accountName '${accountName}' from tokens.db...`)
 
-    let tokensdb = new require("@seald-io/nedb")({ filename: srcdir + "/data/tokens.db", autoload: true }); // TODO: Remove when function is prototype and replace request in error.js
+    let nedb = require("@seald-io/nedb");
+    let tokensdb = new nedb({ filename: srcdir + "/data/tokens.db", autoload: true }); // TODO: Remove when function is prototype and replace request in error.js
 
     tokensdb.removeAsync({ accountName: accountName }, { multi: true });
 }
