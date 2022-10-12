@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 11.10.2022 11:58:45
+ * Last Modified: 12.10.2022 14:04:59
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -61,7 +61,7 @@ module.exports.startlogin = (logininfo) => {
 
 
     //Print whatsnew message if this is the first start with this version
-    if (extdata.firststart) logger("", `${logger.colors.reset}What's new: ${extdata.whatsnew}\n`)
+    if (extdata.firststart) logger("", `${logger.colors.reset}What's new: ${extdata.whatsnew}\n`, false, false, null, true); // Force print message now
 
 
     //Evaluate estimated wait time for login:
@@ -77,7 +77,7 @@ module.exports.startlogin = (logininfo) => {
     if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "minutes" }
     if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "hours" }                                                                                                                                                                                                                                                                          //🥚!
 
-    logger("info", `Logging in... Estimated wait time: ${round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`, false, false, logger.animation("loading"))
+    logger("info", `Logging in... Estimated wait time: ${round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`, false, false, logger.animation("loading"), true);
     if(global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<")process.send("stop()");
 
 

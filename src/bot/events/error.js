@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 11.10.2022 12:40:59
+ * Last Modified: 12.10.2022 14:09:46
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -37,10 +37,11 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
     
     //Custom behaviour for LogonSessionReplaced error:
     if (err.eresult == EResult.LogonSessionReplaced) {
-        logger("info", `${logger.colors.fgred}[${thisbot}] Lost connection to Steam. Reason: LogonSessionReplaced. I won't try to relog this account.`)
+        logger("", "", true);
+        logger("warn", `${logger.colors.fgred}[${thisbot}] Lost connection to Steam! Reason: LogonSessionReplaced. I won't try to relog this account because someone else is using it now.`, false, false, null, true); // Force print this message now
 
         if (loginindex == 0) {
-            logger("error", `${logger.colors.fgred}Account is bot0. Aborting...`, true); 
+            logger("error", `${logger.colors.fgred} Failed account is bot0! Aborting...`, true); 
             return process.send("stop()");
         }
         return; 

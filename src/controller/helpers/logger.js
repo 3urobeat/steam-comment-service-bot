@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 16.07.2022 20:28:23
+ * Last Modified: 12.10.2022 14:06:21
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -32,8 +32,9 @@ outputlogger.options({
  * @param {String} str The text to log into the terminal
  * @param {Boolean} nodate Setting to true will hide date and time in the message
  * @param {Boolean} remove Setting to true will remove this message with the next one
+ * @param {Boolean} printNow Ignores the readyafterlogs check and force prints the message now
  */
-module.exports.logger = (type, str, nodate, remove, animation) => { //Function that passes args to my logger library and just exists to handle readyafterlogs atm
+module.exports.logger = (type, str, nodate, remove, animation, printNow) => { //Function that passes args to my logger library and just exists to handle readyafterlogs atm
     var controller = require("../controller.js")
 
 
@@ -47,10 +48,10 @@ module.exports.logger = (type, str, nodate, remove, animation) => { //Function t
         var readyafter = null
     }
 
-    //Push string to readyafterlogs if desired or print instantly
-    if (!nodate && !remove && !readyafter && type.toLowerCase() != "debug" && !str.toLowerCase().includes("error") && !str.includes('Logging in... Estimated wait time') && !str.includes("What's new:")) { //startup messages should have nodate enabled -> filter messages with date when bot is not started
+    //Push string to readyafterlogs if bot is still starting and logger calls meets these criterias
+    if (!nodate && !remove && !printNow && !readyafter && type.toLowerCase() != "debug" && !str.toLowerCase().includes("error")) { //startup messages should have nodate enabled -> filter messages with date when bot is not started
         controller.readyafterlogs.push([ type, str, nodate, remove, animation ]);
-        outputlogger("debug", `logger(): Pushing ${str} to readyafterlogs array`);
+        outputlogger("debug", `logger(): Pushing ${str}${outputlogger.colors.reset} to readyafterlogs array`);
     } else {
         outputlogger(type, str, nodate, remove, animation)
     }
