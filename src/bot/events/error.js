@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 12.10.2022 14:09:46
+ * Last Modified: 12.10.2022 18:58:59
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -31,10 +31,8 @@ const botfile    = require("../bot.js");
  * @param {Object} logOnOptions The steam-user logOnOptions object
  * @param {SteamUser} bot The bot instance of the calling account
  */
-module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) => {    
-    
+module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) => {
 
-    
     //Custom behaviour for LogonSessionReplaced error:
     if (err.eresult == EResult.LogonSessionReplaced) {
         logger("", "", true);
@@ -46,7 +44,6 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
         }
         return; 
     }
-
 
     //Check if this is a connection loss and not a login error (because disconnects will be thrown here when autoRelogin is false)
     if (Object.keys(controller.botobject).includes(String(loginindex)) && !controller.relogQueue.includes(loginindex)) { //it must be a disconnect when the bot was once logged in and is not yet in the queue
@@ -60,9 +57,7 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
             setTimeout(() => {
                 require("../helpers/relogAccount.js").run(loginindex, thisbot, logOnOptions, bot, thisproxy);
             }, 30000);
-
         } else {
-
             logger("info", `[${thisbot}] I won't queue myself for a relog because this account was skipped or this is an intended logOff.`)
         }
 
@@ -75,10 +70,8 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
             logger("", "", true)
             logger("error", `Couldn't log in bot${loginindex} after ${login.additionalaccinfo[loginindex].logOnTries} attempt(s). ${err} (${err.eresult})`, true)
 
-
             //Add additional messages for specific errors to hopefully help the user diagnose the cause
             if (thisproxy != null) logger("", `      Is your proxy ${login.proxyShift - 1} offline or maybe blocked by Steam?\n`, true)
-
 
             //Abort execution if account is bot0
             if (loginindex == 0) {
