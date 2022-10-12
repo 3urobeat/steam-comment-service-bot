@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  * 
- * Last Modified: 11.10.2022 14:36:01
+ * Last Modified: 12.10.2022 19:12:38
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -119,9 +119,6 @@ sessionHandler.prototype._resolvePromise = function(token) {
  * Internal - Attempts to log into account with credentials
  */
 sessionHandler.prototype._attemptCredentialsLogin = function() {
-
-    // Count this attempt
-    this.additionalaccinfo.logOnTries++
 
     // Init new session
     this.session = new SteamSession.LoginSession(SteamSession.EAuthTokenPlatformType.SteamClient);

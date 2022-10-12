@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 11.10.2022 11:58:25
+ * Last Modified: 12.10.2022 19:13:13
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -82,6 +82,9 @@ module.exports.run = (logOnOptions, loginindex) => {
                 clearInterval(loggedininterval) //stop interval
 
                 login.accisloggedin = false; //set to false again so the next account waits for us to log in
+
+                // Count this attempt
+                login.additionalaccinfo[loginindex].logOnTries++
 
                 // Log login messsage for this account, with mentioning proxies or without
                 if (thisproxy == null) logger("info", `[${thisbot}] Trying to log in without proxy... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"))
