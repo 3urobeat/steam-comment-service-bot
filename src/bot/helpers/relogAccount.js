@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 06.10.2022 20:09:43
+ * Last Modified: 12.10.2022 20:09:25
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -58,11 +58,19 @@ module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy) => {
         }
 
         //Attach relogdelay timeout
-        setTimeout(() => {
+        setTimeout(async () => {
             if (thisproxy == null) logger("info", `[${thisbot}] Trying to relog without proxy...`, false, true, logger.animation("loading"))
                 else logger("info", `[${thisbot}] Trying to relog with proxy ${login.additionalaccinfo[loginindex].thisproxyindex}...`, false, true, logger.animation("loading"))
             
-            bot.logOn(logOnOptions)
+            // Call our steam-session helper to get a valid refresh token for us
+            let sessionHandler = require(srcdir + "/sessions/sessionHandler.js");
+            let session = new sessionHandler(thisbot, loginindex, logOnOptions);
+
+            let refreshToken = await session.getToken();
+            if (!refreshToken) return; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the bot itself
+            
+            // Login with this account using the refreshToken we just obtained using steam-session
+            bot.logOn({ "refreshToken": refreshToken });
         }, advancedconfig.loginDelay);
     }, 1000);
 }
