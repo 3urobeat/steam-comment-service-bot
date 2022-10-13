@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 12.10.2022 19:13:13
+ * Last Modified: 13.10.2022 14:16:33
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -42,6 +42,7 @@ module.exports.run = (logOnOptions, loginindex) => {
 
     if (!login.additionalaccinfo[loginindex]) login.additionalaccinfo[loginindex] = {};
     login.additionalaccinfo[loginindex].thisproxyindex = login.proxyShift //add the proxyindex that is used for this account to the additionalaccinfo obj
+    login.additionalaccinfo[loginindex].thisproxy = thisproxy;            // Add this proxy to the additionalaccinfo obj
 
     login.proxyShift++ //switch to next proxy
 
