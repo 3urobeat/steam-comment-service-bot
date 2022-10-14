@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  * 
- * Last Modified: 14.10.2022 11:42:27
+ * Last Modified: 14.10.2022 13:20:27
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -15,7 +15,8 @@
  */
 
 
-const SteamSession = require("steam-session");
+const SteamUser    = require("steam-user"); // eslint-disable-line
+const SteamSession = require("steam-session"); // eslint-disable-line
 const nedb         = require("@seald-io/nedb");
 
 const controller = require("../controller/controller.js");
@@ -122,8 +123,10 @@ sessionHandler.prototype._resolvePromise = function(token) {
  */
 sessionHandler.prototype._attemptCredentialsLogin = function() {
 
+    // TODO: Disabled until old login method using steam-user stops working so we can use the existing sentry files to make updating automatically possible
+
     // Init new session
-    this.session = new SteamSession.LoginSession(SteamSession.EAuthTokenPlatformType.SteamClient);
+    /* this.session = new SteamSession.LoginSession(SteamSession.EAuthTokenPlatformType.SteamClient);
 
     // Attach event listeners
     this._attachEvents();
@@ -135,5 +138,91 @@ sessionHandler.prototype._attemptCredentialsLogin = function() {
         })
         .catch((err) => {
             if (err) this._handleCredentialsLoginError(err); // Let handleCredentialsLoginError helper handle a login error
+        }) */
+
+    
+    // TODO: Remove all of this when old login method stops working and enable the block above
+    /* ---- Login using old login style until it stops working (if a refreshToken was already saved in the db then it was already used for logging in and we wouldn't be here) ---- */
+
+    let parent = this; // Quick hack to make this accessible inside the functions below
+
+    // Attach old steamGuard event here, get code but supply it to the new system instead of the old one
+    this.bot.on("steamGuard", () => {
+        logger("debug", `[${parent.thisbot}] steam-user has no sentry file stored for '${parent.logOnOptions.accountName}', transferring login request to the new system...`);
+
+        // Get 2FA input (c&p from handle2FA, didn't want to modify it with callback stuff for this temp solution)
+        
+        function get2FAUserInput(callback) {
+            // Start timer to subtract it later from readyafter time
+            var steamGuardInputStart = Date.now(); // Measure time to subtract it later from readyafter time
+            
+            // Define different question and timeout for main account as it can't be skipped
+            let question;
+            let timeout;
+            
+            if (parent.loginindex == 0) {
+                question = `[${parent.logOnOptions.accountName}] Steam Guard Code: `;
+                timeout = 0;
+            } else {
+                question = `[${parent.logOnOptions.accountName}] Steam Guard Code (leave empty and press ENTER to skip account): `;
+                timeout = 90000;
+            }
+
+            // Ask user for code
+            logger.readInput(question, timeout, (text) => {
+                if (!text || text == "") { // No response or manual skip
+                        
+                    if (text == null) logger("info", "Skipping account because you didn't respond in 1.5 minutes...", true); // No need to check for main acc as timeout is disabled for it
+
+                    if (parent.loginindex == 0) { // First account can't be skipped, ask again
+                        logger("warn", "The first account always has to be logged in!", true)
+
+                        setTimeout(() => {
+                            get2FAUserInput(callback); // Run myself again, pass top level callback down the callstack 
+                        }, 500);
+                    } else { // Skip account if not bot0
+                        logger("info", `[${parent.thisbot}] steamGuard input empty, skipping account...`, false, true, logger.animation("loading"))
+                        
+                        parent._resolvePromise(null);
+                        return;
+                    }
+                } else { // User entered code
+                    logger("info", `[${parent.thisbot}] Accepting Steam Guard Code...`, false, true, logger.animation("loading"))
+
+                    callback(text.toString().trim()); // Pass code to back
+                }
+
+                loginfile.steamGuardInputTimeFunc(Date.now() - steamGuardInputStart) // Measure time and subtract it from readyafter time
+            })
+        }
+
+        // Get code input, but supply code to new login system instead of the old one
+        get2FAUserInput((code) => {
+            parent.session = new SteamSession.LoginSession(SteamSession.EAuthTokenPlatformType.SteamClient);
+
+            parent._attachEvents();
+
+            parent.logOnOptions.steamGuardCode = code; // modify steamGuardCode obj with code we obtained so the user won't get a second email for the following login request
+            clearTimeout(resolvePromiseTimeout);
+            
+            parent.session.startWithCredentials(parent.logOnOptions)
+                .then((res) => {
+                    if (res.actionRequired) logger("warn", "You shouldn't see this message. steam-session still wants a code but we supplied one?") // this should be impossible because we supplied a 2fa code
+                })
+                .catch((err) => {
+                    if (err) parent._handleCredentialsLoginError(err); // Let handleCredentialsLoginError helper handle a login error
+                })
         })
+    })
+
+    // Quick hack to resolve the promise if no steam guard event was fired
+    let resolvePromiseTimeout = setTimeout(() => {
+        logger("debug", `[${this.thisbot}] Looks like steam-user still had a sentry file stored for '${this.logOnOptions.accountName}', resolving promise with null`);
+        this.getTokenPromise(null);
+    }, 180000); // 3 min
+
+    // Call logOn() of steam-user. 
+    // Either it works instantly because we still have a sentry file stored, otherwise if the steamGuard event fires we just transfer to the new system to get a refreshToken 
+    this.bot.logOn(this.logOnOptions);
+
 }

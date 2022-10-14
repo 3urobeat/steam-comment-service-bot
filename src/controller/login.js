@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 12.10.2022 14:04:59
+ * Last Modified: 14.10.2022 13:15:12
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -111,7 +111,8 @@ module.exports.startlogin = (logininfo) => {
                             accountName: logininfo[k][0],
                             password: logininfo[k][1],
                             promptSteamGuardCode: false,
-                            machineName: `${extdata.mestr}'s Comment Bot`
+                            machineName: `${extdata.mestr}'s Comment Bot`,       // For steam-user
+                            deviceFriendlyName: `${extdata.mestr}'s Comment Bot` // For steam-session
                         };
 
                         //If a shared secret was provided in the logininfo then add it to logOnOptions object
