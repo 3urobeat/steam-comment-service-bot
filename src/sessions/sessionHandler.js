@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  * 
- * Last Modified: 12.10.2022 19:12:38
+ * Last Modified: 14.10.2022 11:42:27
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -24,13 +24,15 @@ const loginfile  = require("../controller/login.js");
 
 /**
  * Constructor - Object oriented approach for handling session for one account
+ * @param {SteamUser} bot The bot instance of the calling account
  * @param {String} thisbot The thisbot string of the calling account
  * @param {Number} loginindex The loginindex of the calling account
  * @param {Object} logOnOptions Object containing username, password and optionally steamGuardCode
  */
-const sessionHandler = function(thisbot, loginindex, logOnOptions) {
+const sessionHandler = function(bot, thisbot, loginindex, logOnOptions) {
 
     // Make parameters given to the constructor available
+    this.bot          = bot;
     this.thisbot      = thisbot;
     this.loginindex   = loginindex;
     this.logOnOptions = logOnOptions;
