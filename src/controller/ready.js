@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 14.10.2022 14:16:32
+ * Last Modified: 14.10.2022 17:27:43
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -220,6 +220,10 @@ module.exports.readyCheck = (logininfo) => {
             logger("", "\n       If you wish to convert your accounts now to not run into issues when this method stops working, delete/rename your sentry files and restart the bot. You'll need to type in the Steam Guard Code for every account again.", true);
             logger("", "       You can find the sentry file location for your OS here: https://github.com/DoctorMcKay/node-steam-user#datadirectory", true);
             logger("", "", true);
+
+
+            // Check tokens database for tokens that will soon expire
+            require("./helpers/handleExpiringTokens.js").detectExpiringTokens(botobject, logininfo);
 
 
             //Print startuo complete message and erase it after 5 sec
