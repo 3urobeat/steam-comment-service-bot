@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 06.03.2022 11:06:12
+ * Last Modified: 15.10.2022 17:22:03
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,6 +15,9 @@
  */
 
 
+const controller = require("../../controller/controller.js");
+const login      = require("../../controller/login.js");
+
 
 /**
  * Handles the disconnect event and tries to relog the accout
@@ -23,16 +26,15 @@
  * @param {String} msg The msg parameter of the steam-user disconnected event
  */
 module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy, msg) => {
-    var controller = require("../../controller/controller.js")
-    var login      = require("../../controller/login.js")
-
 
     if (!controller.relogQueue) return; //Don't even try to check anything when cache of controller was already cleared (for example by restart function)
     if (controller.relogQueue.includes(loginindex)) return; //disconnect is already handled
 
     logger("info", `${logger.colors.fgred}[${thisbot}] Lost connection to Steam. Message: ${msg} | Check: https://steamstat.us`)
 
-    if (!login.skippednow.includes(loginindex) && controller.relogAfterDisconnect) { //bot.logOff() also calls this event with NoConnection. To ensure the relog function doesn't call itself again here we better check if the account is already being relogged
+    if (!login.skippednow.includes(loginindex) && controller.relogAfterDisconnect) { //bot.logOff() also calls this event with NoConnection.        
+        if (controller.relogQueue.includes(loginindex)) return; // Ignore this call if the account is already being relogged (this happens for example when handleExpiringTokens.js calls the relog function directly)
+
         logger("info", `${logger.colors.fggreen}[${thisbot}] Initiating a relog in ${advancedconfig.relogTimeout / 1000} seconds.`) //Announce relog
 
         setTimeout(() => {

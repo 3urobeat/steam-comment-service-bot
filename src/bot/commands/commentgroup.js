@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 22.05.2022 14:32:54
+ * Last Modified: 15.10.2022 12:06:47
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -17,7 +17,6 @@
 
 const SteamID    = require('steamid');
 
-const updater    = require('../../updater/updater.js'); //paths get a 10/10 from me
 const mainfile   = require("../main.js");
 const loginfile  = require("../../controller/login.js");
 const controller = require("../../controller/controller.js");
@@ -56,7 +55,7 @@ const controller = require("../../controller/controller.js");
 
 
     /* --------- Check for disabled comment cmd or if update is queued --------- */
-    if (updater.activeupdate) return respond(403, lang.commentactiveupdate);
+    if (controller.activeRelog) return respond(403, lang.commentactiverelog);
     if (config.maxComments == 0 && !ownercheck) return respond(403, lang.commentcmdowneronly)
 
     

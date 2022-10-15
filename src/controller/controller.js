@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.06.2022 11:15:24
+ * Last Modified: 15.10.2022 12:06:14
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -30,6 +30,7 @@ async function run() {
     module.exports.relogQueue           = []
     module.exports.readyafterlogs       = []         //array to save suppressed logs during startup that get logged by ready.js
     module.exports.relogAfterDisconnect = true       //allows to prevent accounts from relogging when calling bot.logOff()
+    module.exports.activeRelog          = false      //allows to block new comment requests when waiting for the last request to finish
     
 
     /* ------------ Add unhandled rejection catches: ------------ */

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 05.06.2022 16:25:38
+ * Last Modified: 15.10.2022 16:51:15
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -61,11 +61,11 @@ module.exports.startlogin = (logininfo) => {
 
 
     //Print whatsnew message if this is the first start with this version
-    if (extdata.firststart) logger("", `${logger.colors.reset}What's new: ${extdata.whatsnew}\n`)
+    if (extdata.firststart) logger("", `${logger.colors.reset}What's new: ${extdata.whatsnew}\n`, false, false, null, true); // Force print message now
 
 
     //Evaluate estimated wait time for login:
-    logger("info", "Evaluating estimated login time...", false, true, logger.animation("loading"))
+    logger("debug", "Evaluating estimated login time...");
     
     if (extdata.timesloggedin < 5) { //only use "intelligent" evaluation method when the bot was started more than 5 times
         var estimatedlogintime = ((advancedconfig.loginDelay * (Object.keys(logininfo).length - 1 - controller.skippedaccounts.length)) / 1000) + 5 //5 seconds tolerance
@@ -77,7 +77,7 @@ module.exports.startlogin = (logininfo) => {
     if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "minutes" }
     if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "hours" }                                                                                                                                                                                                                                                                          //🥚!
 
-    logger("info", `Logging in... Estimated wait time: ${round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`, false, false, logger.animation("loading"))
+    logger("info", `Logging in... Estimated wait time: ${round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`, false, false, logger.animation("loading"), true);
     if(global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<")process.send("stop()");
 
 
@@ -106,20 +106,20 @@ module.exports.startlogin = (logininfo) => {
                     setTimeout(() => {
                         logger("info", `Starting bot.js for ${k}...`, false, true, logger.animation("loading"))
 
-                        //Define steam-user logOnOptions
+                        //Define logOnOptions
                         var logOnOptions = {
                             accountName: logininfo[k][0],
                             password: logininfo[k][1],
-                            promptSteamGuardCode: false,
-                            machineName: `${extdata.mestr}'s Comment Bot`
+                            machineName: `${extdata.mestr}'s Comment Bot`,       // For steam-user
+                            deviceFriendlyName: `${extdata.mestr}'s Comment Bot` // For steam-session
                         };
 
                         //If a shared secret was provided in the logininfo then add it to logOnOptions object
                         if (logininfo[k][2] && logininfo[k][2] != "" && logininfo[k][2] != "shared_secret") { 
                             logger("debug", `Found shared_secret for ${k}! Generating AuthCode and adding it to logOnOptions...`)
                             
-                            logOnOptions["twoFactorCode"] = SteamTotp.generateAuthCode(logininfo[k][2])
-                            logOnOptions["sharedSecretForRelog"] = logininfo[k][2]; //add raw shared_secret to obj aswell to be able to access it more easily from relogAccount.js
+                            logOnOptions["steamGuardCode"] = SteamTotp.generateAuthCode(logininfo[k][2])
+                            logOnOptions["steamGuardCodeForRelog"] = logininfo[k][2]; //add raw shared_secret to obj aswell to be able to access it more easily from relogAccount.js
                         }
 
                         b.run(logOnOptions, i); //run bot.js with this account

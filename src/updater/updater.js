@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 27.07.2022 23:14:14
+ * Last Modified: 15.10.2022 12:08:00
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -25,11 +25,10 @@
  * @param {function} [callback] Called with `foundanddone` (Boolean) on completion. If `true` you should restart the bot and if `false` you can carry on.
  */
 module.exports.run = async (forceupdate, responseSteamID, compatibilityfeaturedone, foundanddone) => {
-    var starter = require("../starter.js")
+    var starter    = require("../starter.js");
+    let controller = require("../controller/controller.js");
 
     var releasemode             = extdata.branch
-
-    module.exports.activeupdate = false
 
 
     let file = await starter.checkAndGetFile("./src/updater/helpers/checkforupdate.js", logger, false, false)
@@ -47,8 +46,6 @@ module.exports.run = async (forceupdate, responseSteamID, compatibilityfeaturedo
 
             //respond to the user if he/she requested an update via the Steam chat (ignore if forceupdate to avoid some duplicate messages spam stuff)
             if (responseSteamID && !forceupdate) {
-                let controller = require("../controller/controller.js");
-
                 controller.botobject[0].chat.sendFriendMessage(responseSteamID, `Update available! Your version: ${extdata.versionstr} | New version: ${chunk.versionstr}`)
                 controller.botobject[0].chat.sendFriendMessage(responseSteamID, `What's new: ${chunk.whatsnew}`)
 
@@ -62,7 +59,7 @@ module.exports.run = async (forceupdate, responseSteamID, compatibilityfeaturedo
 
             /* eslint-disable no-inner-declarations */
             async function initiateUpdate() { //make initating the update a function to simplify the permission check below
-                this.activeupdate = true; //block new comment requests by setting active update to true and exporting it
+                controller.activeRelog = true; //block new comment requests by setting active relog to true
 
                 let file2 = await starter.checkAndGetFile("./src/updater/helpers/prepareupdate.js", logger, false, false) //prepare update (like waiting for active comment processes to finish, logging off accounts, etc.)
                 if (!file2) return;

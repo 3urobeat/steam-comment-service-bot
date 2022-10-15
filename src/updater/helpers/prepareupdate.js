@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 29.07.2022 11:12:05
+ * Last Modified: 15.10.2022 12:07:27
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -87,7 +87,7 @@ module.exports.run = (responseSteamID, callback) => {
             logger("info", "Waiting for an active comment process to finish...", false, true, logger.animation("waiting"))
             if (responseSteamID) controller.botobject[0].chat.sendFriendMessage(responseSteamID, `/me Waiting for an active comment process to finish...`)
 
-            filterACPobj(); //Note: The comment command has already been blocked by updater.js by setting activeupdate = true
+            filterACPobj(); //Note: The comment command has already been blocked by controller.js by setting activeRelog = true
 
         } else {
             logger("info", "No active comment processes found. Starting to log off all accounts...", false, true, logger.animation("loading"))
