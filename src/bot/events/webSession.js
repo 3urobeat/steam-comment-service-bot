@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 04.06.2022 11:29:21
+ * Last Modified: 15.10.2022 17:33:20
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -14,6 +14,12 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
  */
 
+
+const SteamID    = require("steamid")
+
+const controller = require("../../controller/controller.js")
+const mainfile   = require("../main.js")
+const login      = require("../../controller/login.js")
 
 
 /**
@@ -25,12 +31,6 @@
  * @param cookies The cookies parameter provided by the webSession event
  */
 module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
-    var SteamID    = require("steamid")
-
-    var controller = require("../../controller/controller.js")
-    var mainfile   = require("../main.js")
-    var login      = require("../../controller/login.js")
-
 
     //Set cookies (otherwise the bot is unable to comment)
     community.setCookies(cookies) 
@@ -46,6 +46,7 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
         logger("info", `[${thisbot}] Relog successful.`)
 
         controller.relogQueue.splice(controller.relogQueue.indexOf(loginindex), 1) //remove this loginindex from the queue
+        logger("debug", `webSession event: Removing bot${loginindex} from relogQueue. Queue is now at length ${controller.relogQueue.length}.`)
     }
 
 
