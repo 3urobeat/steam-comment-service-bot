@@ -4,7 +4,7 @@
  * Created Date: 10.10.2022 12:53:20
  * Author: 3urobeat
  * 
- * Last Modified: 12.10.2022 20:04:49
+ * Last Modified: 15.10.2022 17:50:35
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -84,16 +84,15 @@ sessionHandler.prototype._saveTokenToStorage = function(token) {
 }
 
 
-// TODO: Change to prototype and remove thisbot & accountName parameters when bot module is OOP and therefore this function is accessible from the bot object
+// TODO: Change to prototype and remove parameters when bot module is OOP and therefore this function is accessible from the bot object
 /**
  * External - Removes a token from tokens.db. Intended to be called from the steam-user login error event when an invalid token was used so the next login attempt will create a new one.
+ * @param tokensdb tokensdb
+ * @param thisbot thisbot
  * @param {String} accountName Name of the account to invalidate the token of
  */
-module.exports.invalidateTokenInStorage = function(thisbot, accountName) {
+module.exports.invalidateTokenInStorage = function(tokensdb, thisbot, accountName) { // tokensdb needs to be passed manually atm as calling the function too fast otherwise fails
     logger("debug", `[${thisbot}] invalidateTokenInStorage(): Removing refreshToken for accountName '${accountName}' from tokens.db...`)
-
-    let nedb = require("@seald-io/nedb");
-    let tokensdb = new nedb({ filename: srcdir + "/data/tokens.db", autoload: true }); // TODO: Remove when function is prototype and replace request in error.js
 
     tokensdb.removeAsync({ accountName: accountName }, { multi: true });
 }

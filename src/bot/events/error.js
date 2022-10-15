@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 13.10.2022 14:09:31
+ * Last Modified: 15.10.2022 17:52:02
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -95,7 +95,11 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
             // Invalidate token to get a new session if this error was caused by an invalid refreshToken
             if (err.eresult == EResult.InvalidPassword || err == "Error: InvalidSignature") { // These are the most likely enums that will occurr when an invalid token was used I guess (Checking via String here as it seems like there are EResults missing)
                 logger("debug", "Token login error: Calling tokenStorageHandler's _invalidateTokenInStorage() function to get a new session when retrying this login attempt")
-                require("../../sessions/helpers/tokenStorageHandler.js").invalidateTokenInStorage(thisbot, logOnOptions.accountName);
+
+                let nedb = require("@seald-io/nedb");
+                let tokensdb = new nedb({ filename: srcdir + "/data/tokens.db", autoload: true });
+
+                require("../../sessions/helpers/tokenStorageHandler.js").invalidateTokenInStorage(tokensdb, thisbot, logOnOptions.accountName);
             }
 
             //Call either relogAccount or logOnAccount function to continue where we started at after 5 sec
