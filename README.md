@@ -39,10 +39,11 @@ If you would like to see a detailed tutorial in the form of a video, [click here
 This written tutorial also contains a video tutorial badge link for each specific part besides each header!  
   
 **Disclaimer!**  
->I, the developer, am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.  
+>I, 3urobeat (the developer), am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.  
+>By starting this bot you agree to not misuse it!  
   
-*Although this setup may seem long, don't worry, the setup can be done in <3 minutes.*  
-This is a basic setup guide. Visit the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki) for more detailed documentations!
+*Although this setup may seem long, don't worry, the setup can be done in <5 minutes.*  
+This is the basic setup guide. Visit the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki) for more detailed documentations! Let's get started:
   
 ## **Download:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=12)  
 Click here: [Download](https://github.com/HerrEurobeat/steam-comment-service-bot/archive/master.zip)  
@@ -137,12 +138,13 @@ If you are using this bot as a whole: You are only allowed to change the config 
 Thank you [DoctorMcKay](https://github.com/DoctorMcKay) for creating the [steam-user](https://github.com/DoctorMcKay/node-steam-user) and [steamcommunity](https://github.com/DoctorMcKay/node-steamcommunity) libraries!  
 
 Special thanks to [KNO7](https://steamcommunity.com/id/KN07Gaming/) for testing early beta versions, providing many ideas behind this project and donating 5€!  
-I also want to thank [Stiefel](https://steamcommunity.com/id/Stiefel1234) for finding weird bugs I wouldn't have found alone, being a cool dude and for hosting the bot with 9 unlimited accounts.  
+I also want to thank [Stiefel](https://steamcommunity.com/id/Stiefel1234) for finding weird bugs I wouldn't have found alone, being a cool dude and for hosting the bot himself.  
 Another thank you goes out to [effex1337](https://github.com/effex1337) for donating $5 via bitcoin, helping in issues and for supporting the project!  
-Also thank you [steel4me](https://github.com/steel4me) for donating 5€!  
+Thanks [steel4me](https://github.com/steel4me) for donating 5€!  
 Thanks [mikelobam](https://github.com/mikelobam) for contributing to this project!  
-Thanks [dunderzutt](https://steamcommunity.com/id/Dunderzutt/) for donating 25€! Really appreciate it!  
+Thanks [dunderzutt](https://steamcommunity.com/id/Dunderzutt/) for donating 25€! I really appreciate it!  
 Thanks [Lujza](https://steamcommunity.com/id/7656119829563751) for donating ~4€ in TF2 keys!  
 Thanks [Orel](https://steamcommunity.com/id/ReloBOT/) for donating 4€!  
 Thanks [Ecstasyyy](https://steamcommunity.com/id/elrondnetwork/) for donating ~10€ in TF2 keys!  
 Thanks [Leezzy](https://steamcommunity.com/id/Leezzy) for donating ~6,50€ in CSGO items!  
+Thank you Ilyas Türkan for donating 15€!  
