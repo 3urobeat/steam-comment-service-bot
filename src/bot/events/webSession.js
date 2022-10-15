@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 15.10.2022 17:33:20
+ * Last Modified: 15.10.2022 18:17:42
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -46,7 +46,13 @@ module.exports.run = (loginindex, thisbot, bot, community, cookies) => {
         logger("info", `[${thisbot}] Relog successful.`)
 
         controller.relogQueue.splice(controller.relogQueue.indexOf(loginindex), 1) //remove this loginindex from the queue
-        logger("debug", `webSession event: Removing bot${loginindex} from relogQueue. Queue is now at length ${controller.relogQueue.length}.`)
+        logger("debug", `webSession event: Removing bot${loginindex} from relogQueue. Queue is now at length ${controller.relogQueue.length}.`);
+
+        // Allow comment requests again when all accounts are done relogging
+        if (controller.relogQueue.length == 0) {
+            logger("debug", `webSession event: Relog queue is empty, setting activeRelog to false again`);
+            controller.activeRelog = false;
+        }
     }
 
 
