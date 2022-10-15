@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 28.07.2022 23:24:23
+ * Last Modified: 15.10.2022 17:52:02
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -14,6 +14,12 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
  */
 
+
+const { EResult } = require("steam-user"); //Enums: https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EResult.js
+
+const controller = require("../../controller/controller.js");
+const login      = require("../../controller/login.js");
+const botfile    = require("../bot.js");
 
 
 /**
@@ -25,23 +31,19 @@
  * @param {Object} logOnOptions The steam-user logOnOptions object
  * @param {SteamUser} bot The bot instance of the calling account
  */
-module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) => {    
-    var controller = require("../../controller/controller.js")
-    var login      = require("../../controller/login.js")
-    var botfile    = require("../bot.js")
+module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) => {
 
-    
     //Custom behaviour for LogonSessionReplaced error:
-    if (err.eresult == 34) {
-        logger("info", `${logger.colors.fgred}[${thisbot}] Lost connection to Steam. Reason: LogonSessionReplaced`)
+    if (err.eresult == EResult.LogonSessionReplaced) {
+        logger("", "", true);
+        logger("warn", `${logger.colors.fgred}[${thisbot}] Lost connection to Steam! Reason: LogonSessionReplaced. I won't try to relog this account because someone else is using it now.`, false, false, null, true); // Force print this message now
 
         if (loginindex == 0) {
-            logger("error", `${logger.colors.fgred}Account is bot0. Aborting...`, true); 
+            logger("error", `${logger.colors.fgred} Failed account is bot0! Aborting...`, true); 
             return process.send("stop()");
         }
         return; 
     }
-
 
     //Check if this is a connection loss and not a login error (because disconnects will be thrown here when autoRelogin is false)
     if (Object.keys(controller.botobject).includes(String(loginindex)) && !controller.relogQueue.includes(loginindex)) { //it must be a disconnect when the bot was once logged in and is not yet in the queue
@@ -55,27 +57,21 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
             setTimeout(() => {
                 require("../helpers/relogAccount.js").run(loginindex, thisbot, logOnOptions, bot, thisproxy);
             }, 30000);
-
         } else {
-
             logger("info", `[${thisbot}] I won't queue myself for a relog because this account was skipped or this is an intended logOff.`)
         }
 
-    } else {
+    } else { //Actual error durin login or relog
         
-        //Actual error durin login or relog:
-        let blockedEnumsForRetries = [5, 12, 13, 17, 18] //Enums: https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EResult.js
+        let blockedEnumsForRetries = [EResult.Banned, EResult.AccountNotFound]; // No need to block InvalidPassword anymore as the sessionHandler handles credentials
 
         //check if this is an initial login error and it is either a fatal error or all retries are used
         if ((login.additionalaccinfo[loginindex].logOnTries > advancedconfig.maxLogOnRetries && !controller.relogQueue.includes(loginindex)) || blockedEnumsForRetries.includes(err.eresult)) { 
             logger("", "", true)
             logger("error", `Couldn't log in bot${loginindex} after ${login.additionalaccinfo[loginindex].logOnTries} attempt(s). ${err} (${err.eresult})`, true)
 
-
             //Add additional messages for specific errors to hopefully help the user diagnose the cause
-            if (err.eresult == 5) logger("", `Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try leaving the shared_secret field empty and check the username & password of bot${loginindex}.`, true)
-            if (thisproxy != null) logger("", `      Is your proxy ${login.proxyShift - 1} offline or maybe blocked by Steam?\n`, true)
-
+            if (thisproxy != null) logger("", `        Is your proxy ${login.proxyShift - 1} offline or maybe blocked by Steam?`, true)
 
             //Abort execution if account is bot0
             if (loginindex == 0) {
@@ -95,6 +91,16 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
         } else { //Got retries left or it is a relog...
 
             logger("warn", `${err} while trying to log in bot${loginindex}. Retrying in 5 seconds...`) //log error as warning
+
+            // Invalidate token to get a new session if this error was caused by an invalid refreshToken
+            if (err.eresult == EResult.InvalidPassword || err == "Error: InvalidSignature") { // These are the most likely enums that will occurr when an invalid token was used I guess (Checking via String here as it seems like there are EResults missing)
+                logger("debug", "Token login error: Calling tokenStorageHandler's _invalidateTokenInStorage() function to get a new session when retrying this login attempt")
+
+                let nedb = require("@seald-io/nedb");
+                let tokensdb = new nedb({ filename: srcdir + "/data/tokens.db", autoload: true });
+
+                require("../../sessions/helpers/tokenStorageHandler.js").invalidateTokenInStorage(tokensdb, thisbot, logOnOptions.accountName);
+            }
 
             //Call either relogAccount or logOnAccount function to continue where we started at after 5 sec
             setTimeout(() => {

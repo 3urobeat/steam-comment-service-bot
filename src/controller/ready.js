@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  * 
- * Last Modified: 18.07.2022 17:00:15
+ * Last Modified: 14.10.2022 17:27:43
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -210,6 +210,20 @@ module.exports.readyCheck = (logininfo) => {
                     logger("error", `Error running plugin ${e.info.name}! Error:\n${err.stack}`)
                 }
             })
+
+
+            // Show information message about the login flow change
+            logger("", "", true);
+            logger("info", "Valve is changing the method of logging into Steam soon. The new system uses tokens which expire after 200 days, forcing you to **type in a Steam Guard Code every 200 days**.", true);
+            logger("", "       This sucks but we have to accept it. (This change does not affect accounts you have provided a shared_secret for, they'll work just like before)", true);
+            logger("", "       This bot will continue to support the old login style until it doesn't work anymore, any new accounts you add however will automatically use the new system.", true);
+            logger("", "\n       If you wish to convert your accounts now to not run into issues when this method stops working, delete/rename your sentry files and restart the bot. You'll need to type in the Steam Guard Code for every account again.", true);
+            logger("", "       You can find the sentry file location for your OS here: https://github.com/DoctorMcKay/node-steam-user#datadirectory", true);
+            logger("", "", true);
+
+
+            // Check tokens database for tokens that will soon expire
+            require("./helpers/handleExpiringTokens.js").detectExpiringTokens(botobject, logininfo);
 
 
             //Print startuo complete message and erase it after 5 sec
