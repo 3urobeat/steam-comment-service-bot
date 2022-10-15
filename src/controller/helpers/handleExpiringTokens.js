@@ -4,7 +4,7 @@
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
  * 
- * Last Modified: 14.10.2022 19:56:01
+ * Last Modified: 15.10.2022 11:13:09
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -42,6 +42,7 @@ module.exports.detectExpiringTokens = (botobject, logininfo) => {
 
     function scanDatabase() {
         let expiring = [];
+        let expired  = [];
         let tokensdb = new nedb({ filename: srcdir + "/data/tokens.db", autoload: true }); // TODO: Access tokensdb from controller obj
     
         // TODO: Access _decodeJWT() from bot.sessionHandler
@@ -58,6 +59,11 @@ module.exports.detectExpiringTokens = (botobject, logininfo) => {
 
                         // If index is -1 then the account found in tokens.db is not currently being used and thus we can ignore it
                         if (index >= 0) expiring.push(botobject[index]); // Push the bot object of the expiring account to our array
+
+                        // Check if token already expired and push to expired array as well to show separate warning message
+                        if (tokenObj.exp * 1000 <= Date.now()) {
+                            expired.push(botobject[index]);
+                        }
                     }
                 } else {
                     logger("err", `Failed to check when the login token for account '${e.accountName}' is going to expire!`);
@@ -68,16 +74,22 @@ module.exports.detectExpiringTokens = (botobject, logininfo) => {
                     let msg;
 
                     // Make it fancy and define different messages depending on how many accs were found
-                    if (expiring.length > 1) msg = `The login tokens of ${expiring.length} accounts are expiring in less than 7 days!`;
-                        else msg = `The login token of account '${e.accountName}' is expiring in less than 7 days!`;
+                    if (expiring.length > 1) msg = `The login tokens of ${expiring.length} accounts are expiring in less than 7 days`;
+                        else msg = `The login token of account '${e.accountName}' is expiring in less than 7 days`;
+
+                    // Mention how many accounts already expired
+                    if (expired.length > 1) msg += ` and ${logger.colors.fgred}${expired.length} accounts have already expired!${logger.colors.reset}\nRestarting will force you to type in their Steam Guard Codes`;           // Append
+                        else if (expired.length == 1) msg = `The login token of account '${e.accountName}' ${logger.colors.fgred}has expired!${logger.colors.reset} Restarting will force you to type in the Steam Guard Code`; // Overwrite
 
                     // Log warning and message owners
-                    logger("warn", msg);
+                    logger("", `${logger.colors.fgred}Warning:`);
+                    logger("", msg + "!", true);
                     
                     cachefile.ownerid.forEach((e, i) => {
                         setTimeout(() => {
-                            botobject[0].chat.sendFriendMessage(e, msg + "\nHead over to the terminal to refresh the tokens now if you wish."); 
-                        }, 500 * i);
+                            // eslint-disable-next-line no-control-regex
+                            botobject[0].chat.sendFriendMessage(e, msg.replace(/\x1B\[[0-9]+m/gm, "") + "!\nHead over to the terminal to refresh the tokens now if you wish."); // Remove color codes from string
+                        }, 1500 * i);
                     })
 
                     // Ask user if he/she wants to refresh the tokens now
