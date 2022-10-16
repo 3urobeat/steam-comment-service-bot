@@ -1,7 +1,7 @@
 {
     "name": "steam-comment-service-bot",
-    "version": "2.10.0",
-    "description": "Request multiple steam profile comments by texting a bot network!",
+    "version": "2.12.1",
+    "description": "Request a ton of steam profile/group comments from a bot network with just one command!",
     "main": "start.js",
     "dependencies": {
         "@seald-io/nedb": "^3.1.0",
