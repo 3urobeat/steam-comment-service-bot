@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 13:18:34
+ * Last Modified: 16.10.2022 16:41:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -238,6 +238,8 @@ module.exports.proxies = () => {
     } else { // File does seem to exist so now we can try and read it
         var proxies = fs.readFileSync("./proxies.txt", "utf8").split("\n");
         var proxies = proxies.filter(str => str != ""); // Remove empty lines
+
+        if (proxies[0].startsWith("//Comment")) proxies = proxies.slice(1); // Remove comment from array
 
         if (advancedconfig.useLocalIP) proxies.unshift(null); // Add no proxy (local ip) if useLocalIP is true
 
