@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 13:23:50
+ * Last Modified: 16.10.2022 18:45:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -110,11 +110,14 @@ module.exports.getCommentArgs = (args, steamID, requesterSteamID, profileIDType,
 
 
         /* --------- Check if user did not provide numberOfComments --------- */
-        if (numberOfComments == 0) { // No numberOfComments given? ask again
+        if (numberOfComments == 0) { // No numberOfComments given? Ask again if maxRequestAmount > 1 (numberOfComments default value at the top is 0)
             if (Object.keys(controller.botobject).length == 1 && maxRequestAmount == 1) {
-                var numberOfComments = 1; // If only one account is active, set 1 automatically
+                logger("debug", "getCommentArgs(): User didn't provide numberOfComments but maxRequestAmount is 1. Accepting request as numberOfComments = 1.");
+
+                var numberOfComments = 1;     // If only one account is active, set 1 automatically
+                profileID = requesterSteamID; // Define profileID so that the interval below resolves
             } else {
-                logger("debug", "getCommentArgs(): User didn't provide numberOfComments and maxRequestAmount is > 1. Stopping...");
+                logger("debug", `getCommentArgs(): User didn't provide numberOfComments and maxRequestAmount is ${maxRequestAmount} (> 1). Rejecting request.`);
 
                 respond(400, lang.commentmissingnumberofcomments.replace("maxRequestAmount", maxRequestAmount).replace("commentcmdusage", commentcmdUsage));
                 resolve(false);
