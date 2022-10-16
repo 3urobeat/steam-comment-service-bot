@@ -1,9 +1,9 @@
 {
     "version": "21201",
     "versionstr": "2.12.1",
-    "branch": "master",
+    "branch": "beta-testing",
     "filetostart": "./src/starter.js",
-    "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/starter.js",
+    "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/starter.js",
     "mestr": "3urobeat",
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://paypal.me/3urobeat",
     "firststart": true,
