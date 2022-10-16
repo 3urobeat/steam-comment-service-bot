@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 09.03.2022 13:46:43
+ * Last Modified: 16.10.2022 13:23:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -46,7 +46,7 @@ module.exports.getCommentArgs = (args, steamID, requesterSteamID, profileIDType,
         if (ownercheck) {
             maxRequestAmount = config.maxOwnerComments;
 
-            if (Object.keys(controller.communityobject).length > 1 || maxRequestAmount) var commentcmdUsage = lang.commentcmdusageowner.replace("maxRequestAmount", maxRequestAmount); // Typed confog here accidentaly and somehow found that really funny
+            if (Object.keys(controller.communityobject).length > 1 || maxRequestAmount) var commentcmdUsage = lang.commentcmdusageowner.replace("maxRequestAmount", maxRequestAmount);
                 else var commentcmdUsage = lang.commentcmdusageowner2;
         } else {
             if (Object.keys(controller.communityobject).length > 1 || maxRequestAmount) var commentcmdUsage = lang.commentcmdusage.replace("maxRequestAmount", maxRequestAmount);
@@ -95,7 +95,7 @@ module.exports.getCommentArgs = (args, steamID, requesterSteamID, profileIDType,
                     respond(403, lang.commentprofileidowneronly);
                 }
             } else {
-                logger("debug", "getCommentArgs(): No profileID parameter recieved, setting profileID to requesterSteamID...");
+                logger("debug", "getCommentArgs(): No profileID parameter received, setting profileID to requesterSteamID...");
 
                 profileID = requesterSteamID;
             }
@@ -130,7 +130,7 @@ module.exports.getCommentArgs = (args, steamID, requesterSteamID, profileIDType,
                 // Log debug values
                 logger("debug", `getCommentArgs() success. maxRequestAmount: ${maxRequestAmount} | numberOfComments: ${numberOfComments} | profileID: ${profileID} | quotesArr.length: ${quotesArr.length}`);
 
-                // Return obj if profileID is not null, otherwise return false as an error has ocurred, the user was informed and execution should be stopped
+                // Return obj if profileID is not null, otherwise return false as an error has occurred, the user was informed and execution should be stopped
                 if (profileID) resolve({ maxRequestAmount, numberOfComments, profileID, quotesArr });
                     else resolve(false);
             }

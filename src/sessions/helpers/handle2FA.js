@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:59:31
  * Author: 3urobeat
  *
- * Last Modified: 10.10.2022 16:23:49
+ * Last Modified: 16.10.2022 12:28:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -28,7 +28,7 @@ const loginfile = require("../../controller/login.js");
  */
 sessionHandler.prototype._handle2FA = function(res) {
 
-    logger("debug", `[${this.thisbot}] getRefreshToken(): Recieved startWithCredentials() actionRequired response. Type: ${res.validActions[0].type} | Detail: ${res.validActions[0].detail}`);
+    logger("debug", `[${this.thisbot}] getRefreshToken(): Received startWithCredentials() actionRequired response. Type: ${res.validActions[0].type} | Detail: ${res.validActions[0].detail}`);
 
     // Check if user enabled skipSteamGuard and skip asking for 2FA if this is not the main account
     if (config.skipSteamGuard) {

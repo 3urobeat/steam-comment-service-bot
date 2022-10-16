@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:37:38
  * Author: 3urobeat
  *
- * Last Modified: 09.03.2022 22:10:20
+ * Last Modified: 16.10.2022 12:35:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -21,16 +21,16 @@ const controller = require("../../controller/controller.js");
 
 /**
  * Arranges account order and checks if user is friend with limited accounts
- * @param {Boolean} checkLimitedFriend Set to true to check if recieverSteamID is friend with bot accounts (set to false for example when recieverSteamID is a group)
+ * @param {Boolean} checkLimitedFriend Set to true to check if receiverSteamID is friend with bot accounts (set to false for example when receiverSteamID is a group)
  * @param {Array} allAccounts Array of all bot accounts
  * @param {Number} accountsNeeded Amount of bot accounts needed for the request
  * @param {Number} numberOfComments The amount of comments requested
  * @param {SteamID} requesterSteamID The steamID object of the requesting user
- * @param {SteamID} recieverSteamID The steamID object of the recieving user/group
+ * @param {SteamID} receiverSteamID The steamID object of the receiving user/group
  * @param {Object} lang The language object
  * @param {Function} respond The function to send messages to the requesting user
  */
-module.exports.getAccountOrder = (checkLimitedFriend, allAccounts, accountsNeeded, numberOfComments, requesterSteamID, recieverSteamID, lang, respond) => {
+module.exports.getAccountOrder = (checkLimitedFriend, allAccounts, accountsNeeded, numberOfComments, requesterSteamID, receiverSteamID, lang, respond) => {
     var accountOrder = [];
     var accsToAdd    = [];
 
@@ -43,7 +43,7 @@ module.exports.getAccountOrder = (checkLimitedFriend, allAccounts, accountsNeede
     logger("debug", "getAccountOrder(): Filtering accountOrder to get as many accounts the user is friend with as possible...");
 
     // Remove all accounts the user is not friend with
-    accountOrder = accountOrder.filter(e => controller.botobject[e].myFriends[recieverSteamID] && controller.botobject[e].myFriends[recieverSteamID] == 3);
+    accountOrder = accountOrder.filter(e => controller.botobject[e].myFriends[receiverSteamID] && controller.botobject[e].myFriends[receiverSteamID] == 3);
 
     // If user is friend with more accounts than needed for the request then remove the remaining ones
     if (accountOrder.length > accountsNeeded) {
@@ -70,7 +70,7 @@ module.exports.getAccountOrder = (checkLimitedFriend, allAccounts, accountsNeede
             if (Number(i) + 1 <= numberOfComments && Number(i) + 1 <= Object.keys(controller.botobject).length) { // Only check if this acc is needed for a comment
                 try {
                     // If bot account limitations can be read from obj and bot account is limited and hasn't target account in friend list
-                    if (controller.botobject[accountOrder[i]].limitations && controller.botobject[accountOrder[i]].limitations.limited == true && !Object.keys(controller.botobject[accountOrder[i]].myFriends).includes(recieverSteamID)) {
+                    if (controller.botobject[accountOrder[i]].limitations && controller.botobject[accountOrder[i]].limitations.limited == true && !Object.keys(controller.botobject[accountOrder[i]].myFriends).includes(receiverSteamID)) {
                         accsToAdd[requesterSteamID].push(`' steamcommunity.com/profiles/${new SteamID(String(controller.botobject[accountOrder[i]].steamID)).getSteamID64()} '`); // ...then push profile URL into array
                     }
                 } catch (err) {

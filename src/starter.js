@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 30.07.2022 18:14:57
+ * Last Modified: 16.10.2022 12:28:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -112,7 +112,7 @@ function attachParentListeners(callback) {
         } catch (err) {} //eslint-disable-line
 
         logger("", "", true);
-        logger("info", "Recieved signal to exit...", false, true);
+        logger("info", "Received signal to exit...", false, true);
     };
 
     process.on("exit", parentExitEvent);
@@ -150,7 +150,7 @@ function detachParentListeners() {
 // Provide function to attach listeners to make communicating with child possible
 function attachChildListeners() {
     forkedprocess.on("message", (msg) => {
-        logger("debug", "Recieved message from child: " + msg);
+        logger("debug", "Received message from child: " + msg);
 
         // Might need to switch to a switch case structure later on but for now this works fine for only two cases and is easier when trying to check for startsWith()
         if (msg.startsWith("restart(")) {

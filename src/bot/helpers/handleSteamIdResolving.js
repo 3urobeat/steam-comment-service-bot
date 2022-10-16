@@ -4,7 +4,7 @@
  * Created Date: 09.03.2022 12:58:17
  * Author: 3urobeat
  *
- * Last Modified: 22.05.2022 14:59:37
+ * Last Modified: 16.10.2022 12:28:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -32,13 +32,13 @@ module.exports.run = (str, profileIDType, callback) => {
 
     // Function to handle all steamIDResolver callbacks as they are always roughly the same
     function handleResponse(err, res) { //eslint-disable-line
-        logger("debug", `handleSteamIdResolving: handleResponse(): Recieved callback from steamid-resolver. err: ${err} | res: ${res}`);
+        logger("debug", `handleSteamIdResolving: handleResponse(): Received callback from steamid-resolver. err: ${err} | res: ${res}`);
 
         if (err) {
             callback(err, null);
         } else {
             // Quickly check if the response has the expected type
-            if (profileIDType && new SteamID(res).type != profileIDType) callback(`Recieved steamID of type ${new SteamID(res).type} but expected ${profileIDType}.`, null);
+            if (profileIDType && new SteamID(res).type != profileIDType) callback(`Received steamID of type ${new SteamID(res).type} but expected ${profileIDType}.`, null);
                 else callback(null, res);
         }
     }
@@ -105,7 +105,7 @@ module.exports.run = (str, profileIDType, callback) => {
     } else {
         logger("debug", "handleSteamIdResolving: I don't need to convert anything as user seems to have already provided an steamID64. Cool!");
 
-        if (profileIDType && new SteamID(str).type != profileIDType) handleResponse(`Recieved steamID of type ${new SteamID(str).type} but expected ${profileIDType}.`, null);
+        if (profileIDType && new SteamID(str).type != profileIDType) handleResponse(`Received steamID of type ${new SteamID(str).type} but expected ${profileIDType}.`, null);
             else handleResponse(null, str);
     }
 

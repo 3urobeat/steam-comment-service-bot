@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:06:57
  * Author: 3urobeat
  *
- * Last Modified: 10.03.2022 14:25:22
+ * Last Modified: 16.10.2022 13:30:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -24,7 +24,7 @@ const round      = require("../../controller/helpers/round.js");
 
 /**
  * Checks for user cooldown, bot cooldown, calculates amount of accounts needed for a request and responds to the user if request is invalid
- * @param {SteamID} recieverSteamID The steamID object of the recieving user
+ * @param {SteamID} receiverSteamID The steamID object of the receiving user
  * @param {Number} numberOfComments The amount of comments requested
  * @param {Boolean} removeLimitedAccs Set to true to remove all limited bot accounts from available accounts list (for example for group comment cmd, as only unlimited accs can comment in groups)
  * @param {Object} lang The language object
@@ -33,7 +33,7 @@ const round      = require("../../controller/helpers/round.js");
  * @param {Function} respond The function to send messages to the requesting user
  * @returns {Object} allAccounts, accountsNeeded
  */
-module.exports.checkAvailability = (recieverSteamID, numberOfComments, removeLimitedAccs, lang, res, lastcommentdoc, respond) => {
+module.exports.checkAvailability = (receiverSteamID, numberOfComments, removeLimitedAccs, lang, res, lastcommentdoc, respond) => {
 
     /* ------------------ Check for cooldowns ------------------ */
     if (config.commentcooldown !== 0 && !res) { // Check for user specific cooldown (ignore if it is a webrequest)
@@ -50,11 +50,11 @@ module.exports.checkAvailability = (recieverSteamID, numberOfComments, removeLim
             respond(403, lang.commentuseroncooldown.replace("commentcooldown", config.commentcooldown).replace("remainingcooldown", round(remainingcooldown, 2)).replace("timeunit", remainingcooldownunit));
             return false;
         } else {
-            // Is the profile already recieving comments?
-            if (mainfile.activecommentprocess[recieverSteamID] && mainfile.activecommentprocess[recieverSteamID].status == "active") {
-                logger("debug", "checkAvailability(): Profile is already recieving comments. Stopping...");
+            // Is the profile already receiving comments?
+            if (mainfile.activecommentprocess[receiverSteamID] && mainfile.activecommentprocess[receiverSteamID].status == "active") {
+                logger("debug", "checkAvailability(): Profile is already receiving comments. Stopping...");
 
-                respond(403, lang.commentuseralreadyrecieving);
+                respond(403, lang.commentuseralreadyreceiving);
                 return false;
             }
         }
@@ -62,14 +62,14 @@ module.exports.checkAvailability = (recieverSteamID, numberOfComments, removeLim
 
 
     /* --------- Calculate the amount of accounts needed for this request ---------  */
-    // Method 1: Use as many accounts as possible to maximise the spread (Default)
+    // Method 1: Use as many accounts as possible to maximize the spread (Default)
     if (numberOfComments <= Object.keys(controller.communityobject).length) var accountsNeeded = numberOfComments;
         else var accountsNeeded = Object.keys(controller.communityobject).length; // Cap accountsNeeded at amount of accounts because if numberOfComments is greater we will start at account 1 again
 
-    // Method 2: Use as few accounts as possible to maximise the amount of parallel requests (Not implemented yet, probably coming in 2.12)
+    // Method 2: Use as few accounts as possible to maximize the amount of parallel requests (Not implemented yet, probably coming in 2.12)
 
 
-    /* --------- Check if enough bot accounts are available for this rerquest --------- */
+    /* --------- Check if enough bot accounts are available for this request --------- */
     logger("info", "Checking for available bot accounts for this request...", false, false, logger.animation("loading"));
 
     // Sort activecommentprocess obj by highest until value, decreasing, so that we can tell the user how long he/she has to wait if not enough accounts were found

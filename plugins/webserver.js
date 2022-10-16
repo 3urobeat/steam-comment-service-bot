@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 14:12:17
  * Author: 3urobeat
  *
- * Last Modified: 27.02.2022 14:40:01
+ * Last Modified: 16.10.2022 12:20:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -57,7 +57,8 @@ module.exports.run = (mainBot, botobject, communityobject) => { //eslint-disable
         });
 
         app.get("/comment", (req, res) => {
-            let ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress).replace("::ffff:", ""); // Get IP of visitor
+            // Get IP of visitor
+            let ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress).replace("::ffff:", ""); // eslint-disable-line spellcheck/spell-checker
 
             if (req.query.n == undefined) {
                 logger("info", `Web Request by ${ip} denied. Reason: numberofcomments (n) is not specified.`);
@@ -102,7 +103,8 @@ module.exports.run = (mainBot, botobject, communityobject) => { //eslint-disable
         });
 
         app.get("/output", (req, res) => { // Show output
-            let ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress).replace("::ffff:", ""); // Get IP of visitor
+            // Get IP of visitor
+            let ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress).replace("::ffff:", ""); // eslint-disable-line spellcheck/spell-checker
 
             logger("info", `[Web Request] ${ip} requested to see the output!`);
 
@@ -124,7 +126,7 @@ module.exports.run = (mainBot, botobject, communityobject) => { //eslint-disable
         });
 
         module.exports.server.on("error", (err) => {
-            logger("error", "An error occured trying to start the EnableURLToComment server. " + err, true);
+            logger("error", "An error occurred trying to start the EnableURLToComment server. " + err, true);
         });
     }
 

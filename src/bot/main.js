@@ -4,7 +4,7 @@
  * Created Date: 13.07.2021 19:13:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 11:25:12
+ * Last Modified: 16.10.2022 13:08:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -25,7 +25,7 @@ module.exports.run = () => {
 
     module.exports.quotes                = require("../controller/helpers/dataimport.js").quotes();
 
-    module.exports.failedcomments        = []; // Array saving failedcomments so the user can access them via the !failecomments command
+    module.exports.failedcomments        = []; // Array saving failedcomments so the user can access them via the !failedcomments command
     module.exports.activecommentprocess  = {}; // Object storing active comment processes so that a user can only request one process at a time, used accounts can only be used in one session, have a cooldown (not the user! that is handled by lastcomment) and the updater is blocked
     module.exports.lastcommentrequestmsg = []; // Array saving the last comment cmd request to apply higher cooldown to the comment cmd usage compared to normal cmd usage cooldown
     module.exports.commentcounter        = 0;  // This will count the total of comments requested since the last reboot

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.10.2022 18:22:51
+ * Last Modified: 16.10.2022 13:18:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -274,7 +274,7 @@ module.exports.quotes = () => {
     var quotes = fs.readFileSync(srcdir + "/../quotes.txt", "utf8").split("\n"); // Get all quotes from the quotes.txt file into an array
     var quotes = quotes.filter(str => str != ""); // Remove empty quotes as empty comments will not work/make no sense
 
-    quotes.forEach((e, i) => { // Multi line strings that contain \n will get splitted to \\n -> remove second \ so that node-steamcommunity understands the quote when commenting
+    quotes.forEach((e, i) => { // Multi line strings that contain \n will get split to \\n -> remove second \ so that node-steamcommunity understands the quote when commenting
         if (e.length > 999) {
             logger("warn", `The quote.txt line ${i} is longer than the limit of 999 characters. This quote will be ignored for now.`, true, false, logger.animation("loading"));
             quotes.splice(i, 1); // Remove this item from the array

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 18.07.2022 16:55:55
+ * Last Modified: 16.10.2022 13:25:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -44,16 +44,18 @@ module.exports.run = (logininfo, callback) => {
     }
 
 
-    // Check config for default value leftovers
-    if ((process.env.LOGNAME !== "tomg" && process.env.LOGNAME !== "pi") || (require("os").hostname() !== "Toms-Hoellenmaschine" && require("os").hostname() !== "raspberrypi" && require("os").hostname() !== "Toms-Thinkpad")) { // Remove myself from config on different computer
+    // Check config for default value leftovers and remove myself from config on different computer
+    if ((process.env.LOGNAME !== "tomg" && process.env.LOGNAME !== "pi") || (require("os").hostname() !== "Toms-Hoellenmaschine" && require("os").hostname() !== "raspberrypi" && require("os").hostname() !== "Toms-Thinkpad")) { // eslint-disable-line spellcheck/spell-checker
         let write = false;
         if (config.owner.includes(extdata.mestr)) { config.owner = ""; write = true; }
         if (config.ownerid.includes("76561198260031749")) { config.ownerid.splice(config.ownerid.indexOf("76561198260031749"), 1); write = true; }
         if (config.ownerid.includes("3urobeat")) { config.ownerid.splice(config.ownerid.indexOf("3urobeat"), 1); write = true; }
 
+        /* eslint-disable spellcheck/spell-checker */
         // Moin Tom, solltest du in der Zukunft noch einmal auf dieses Projekt zurückschauen, dann hoffe ich dass du etwas sinnvolles mit deinem Leben gemacht hast. (08.06.2020)
         // Dieses Projekt war das erste Projekt welches wirklich ein wenig Aufmerksamkeit bekommen hat. (1,5k Aufrufe in den letzten 14 Tagen auf GitHub, 1,3k Aufrufe auf mein YouTube Tutorial, 15k Aufrufe auf ein Tutorial zu meinem Bot von jemand fremden)
         // Das Projekt hat schon bis jetzt viel Zeit in Anspruch genommen, die ersten Klausuren nach der Corona Pandemie haben bisschen darunter gelitten. All der Code ist bis auf einzelne, markierte Schnipsel selbst geschrieben. Node Version zum aktuellen Zeitpunkt: v12.16.3
+        /* eslint-enable spellcheck/spell-checker */
 
         if (write) {
             // Get arrays on one line
@@ -75,7 +77,7 @@ module.exports.run = (logininfo, callback) => {
 
 
     // Check config values:
-    config.maxComments = Math.round(config.maxComments); // Round maxComments number everytime to avoid user being able to set weird numbers (who can comment 4.8 times? right - no one)
+    config.maxComments = Math.round(config.maxComments); // Round maxComments number every time to avoid user being able to set weird numbers (who can comment 4.8 times? right - no one)
     config.maxOwnerComments = Math.round(config.maxOwnerComments);
 
     var maxCommentsOverall = config.maxOwnerComments; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter

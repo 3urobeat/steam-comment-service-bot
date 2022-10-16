@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.03.2022 13:22:30
+ * Last Modified: 16.10.2022 12:26:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -22,7 +22,7 @@
  * @param {String} thisbot The thisbot string of the calling account
  * @param {SteamUser} bot The bot instance of the calling account
  * @param steamID The steamID object provided by the steam-user event
- * @param relationship The realtionship enum provided by the steam-user event
+ * @param relationship The relationship enum provided by the steam-user event
  */
 module.exports.friendRelationship = (loginindex, thisbot, bot, steamID, relationship) => {
     var SteamID = require("steamid");
@@ -34,7 +34,7 @@ module.exports.friendRelationship = (loginindex, thisbot, bot, steamID, relation
     if (relationship == 2) {
         let steamID64 = new SteamID(String(steamID)).getSteamID64();
 
-        if (!advancedconfig.acceptFriendRequests) return logger("info", `[${thisbot}] Recieved friend request from ${steamID64} but acceptFriendRequests is turned off in advancedconfig.json`);
+        if (!advancedconfig.acceptFriendRequests) return logger("info", `[${thisbot}] Received friend request from ${steamID64} but acceptFriendRequests is turned off in advancedconfig.json`);
 
         // Accept friend request
         bot.addFriend(steamID);
@@ -84,7 +84,7 @@ module.exports.friendRelationship = (loginindex, thisbot, bot, steamID, relation
  * @param {String} thisbot The thisbot string of the calling account
  * @param {SteamUser} bot The bot instance of the calling account
  * @param steamID The steamID object provided by the steam-user event
- * @param relationship The realtionship enum provided by the steam-user event
+ * @param relationship The relationship enum provided by the steam-user event
  */
 module.exports.groupRelationship = (thisbot, bot, steamID, relationship) => {
     var SteamID = require("steamid");

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 15.10.2022 12:07:27
+ * Last Modified: 16.10.2022 12:37:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -35,7 +35,7 @@ module.exports.run = (responseSteamID, callback) => {
         var mainfile   = require("../../bot/main.js");
 
         /* eslint-disable no-inner-declarations */
-        function initiateUpdate() { // Make initating the update a function to simplify the activecomment check below
+        function initiateUpdate() { // Make initiating the update a function to simplify the activecomment check below
             controller.relogAfterDisconnect = false; // Prevents disconnect event (which will be called by logOff) to relog accounts
 
             logger("info", "Logging off all bot accounts in 2.5 seconds...", false, true, logger.animation("waiting"));
@@ -57,7 +57,7 @@ module.exports.run = (responseSteamID, callback) => {
         function filterACPobj() {
             let objlength = Object.keys(mainfile.activecommentprocess).length; // Save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering
 
-            Object.keys(mainfile.activecommentprocess).forEach((e, i) => { // Loop overr obj to filter invalid/expired entries
+            Object.keys(mainfile.activecommentprocess).forEach((e, i) => { // Loop over obj to filter invalid/expired entries
 
                 if (mainfile.activecommentprocess[e].status != "active" || Date.now() > mainfile.activecommentprocess[e].until + (config.botaccountcooldown * 60000)) { // Check if status is not active or if entry is finished (realistically the status can't be active and finished but it won't hurt to check both to avoid a possible bug)
                     delete mainfile.activecommentprocess[e]; // Remove entry from object

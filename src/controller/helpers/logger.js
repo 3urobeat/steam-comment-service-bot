@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 11:38:17
+ * Last Modified: 16.10.2022 13:17:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -48,7 +48,7 @@ module.exports.logger = (type, str, nodate, remove, animation, printNow) => { //
         var readyafter = null;
     }
 
-    // Push string to readyafterlogs if bot is still starting and logger calls meets these criterias
+    // Push string to readyafterlogs if bot is still starting and logger calls meets these criteria
     if (!nodate && !remove && !printNow && !readyafter && type.toLowerCase() != "debug" && !str.toLowerCase().includes("error")) { // Startup messages should have nodate enabled -> filter messages with date when bot is not started
         controller.readyafterlogs.push([ type, str, nodate, remove, animation ]);
         outputlogger("debug", `logger(): Pushing ${str}${outputlogger.colors.reset} to readyafterlogs array`);

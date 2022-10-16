@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 15.10.2022 17:22:03
+ * Last Modified: 16.10.2022 13:21:47
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -20,7 +20,7 @@ const login      = require("../../controller/login.js");
 
 
 /**
- * Handles the disconnect event and tries to relog the accout
+ * Handles the disconnect event and tries to relog the account
  * @param {Number} loginindex The loginindex of the calling account
  * @param {String} thisbot The thisbot string of the calling account
  * @param {String} msg The msg parameter of the steam-user disconnected event

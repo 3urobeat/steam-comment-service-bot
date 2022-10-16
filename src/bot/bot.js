@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 11:40:45
+ * Last Modified: 16.10.2022 13:04:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -42,7 +42,7 @@ module.exports.run = (logOnOptions, loginindex) => {
 
     if (!login.additionalaccinfo[loginindex]) login.additionalaccinfo[loginindex] = {};
     login.additionalaccinfo[loginindex].thisproxyindex = login.proxyShift; // Add the proxyindex that is used for this account to the additionalaccinfo obj
-    login.additionalaccinfo[loginindex].thisproxy = thisproxy;            // Add this proxy to the additionalaccinfo obj
+    login.additionalaccinfo[loginindex].thisproxy = thisproxy;             // Add this proxy to the additionalaccinfo obj
 
     login.proxyShift++; // Switch to next proxy
 
@@ -50,7 +50,7 @@ module.exports.run = (logOnOptions, loginindex) => {
 
     // Create bot & community instance
     const bot       = new SteamUser({ autoRelogin: false, httpProxy: thisproxy, protocol: SteamUser.EConnectionProtocol.WebSocket }); // Forcing protocol for now: https://dev.doctormckay.com/topic/4187-disconnect-due-to-encryption-error-causes-relog-to-break-error-already-logged-on/?do=findComment&comment=10917
-    const community = new SteamCommunity({ request: request.defaults({ "proxy": thisproxy }) }); // Pass proxy to community library aswell
+    const community = new SteamCommunity({ request: request.defaults({ "proxy": thisproxy }) }); // Pass proxy to community library as well
 
 
     // Attach debug log events if enabled in advancedconfig
@@ -73,7 +73,7 @@ module.exports.run = (logOnOptions, loginindex) => {
 
     /* ------------ Login: ------------ */
     login.additionalaccinfo[loginindex].logOnTries = 0;
-    if(global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<")process.send("stop()");
+    if(global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<")process.send("stop()"); // eslint-disable-line
 
     // Log in with this account when the previous account is done logging in
     module.exports.logOnAccount = () => { // Make it a function in order to be able to retry a login from error.js
@@ -87,7 +87,7 @@ module.exports.run = (logOnOptions, loginindex) => {
                 // Count this attempt
                 login.additionalaccinfo[loginindex].logOnTries++;
 
-                // Log login messsage for this account, with mentioning proxies or without
+                // Log login message for this account, with mentioning proxies or without
                 if (!thisproxy) logger("info", `[${thisbot}] Trying to log in without proxy... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
                     else logger("info", `[${thisbot}] Trying to log in with proxy ${login.proxyShift - 1}... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
 

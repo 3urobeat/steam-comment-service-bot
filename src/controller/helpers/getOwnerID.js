@@ -4,7 +4,7 @@
  * Created Date: 27.02.2022 13:06:43
  * Author: 3urobeat
  *
- * Last Modified: 27.02.2022 14:59:40
+ * Last Modified: 16.10.2022 12:28:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -26,7 +26,7 @@ const steamidresolver = require("steamid-resolver");
 module.exports.getOwnerID = (index, callback) => {
     if (!isNaN(index) && index != null) {
         let target = config.ownerid[index];
-        logger("debug", "getOwnerID(): Recieved request for steamID64 of " + target);
+        logger("debug", "getOwnerID(): Received request for steamID64 of " + target);
 
         // Either convert to steamID64 or directly callback target
         if (isNaN(target) || !new SteamID(String(target)).isValid()) {
@@ -44,7 +44,7 @@ module.exports.getOwnerID = (index, callback) => {
         }
     } else {
         let tempArr = [];
-        logger("debug", "getOwnerID(): Recieved request for steamID64s of all ownerids");
+        logger("debug", "getOwnerID(): Received request for steamID64s of all ownerids");
 
         // Check for last iteration and make callback
         function finishedResponse(i) { // eslint-disable-line no-inner-declarations

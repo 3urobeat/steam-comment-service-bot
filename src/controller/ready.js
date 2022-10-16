@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 14.10.2022 17:27:43
+ * Last Modified: 16.10.2022 13:16:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -124,7 +124,7 @@ module.exports.readyCheck = (logininfo) => {
 
 
             // Log extra messages that were suppressed during login
-            logger("debug", "Logging supressed logs...", false, true, logger.animation("loading"));
+            logger("debug", "Logging suppressed logs...", false, true, logger.animation("loading"));
             controller.readyafterlogs.forEach(e => { logger(e[0], e[1], e[2], e[3], e[4]); }); // Log suppressed logs
 
 
@@ -178,7 +178,7 @@ module.exports.readyCheck = (logininfo) => {
 
             // Check for friends who haven't requested comments in config.unfriendtime days every 60 seconds and unfriend them if unfriendtime is > 0
             if (config.unfriendtime > 0) {
-                let lastcommentUnfriendCheck = Date.now(); // This is useful because intervals can get unprecise over time
+                let lastcommentUnfriendCheck = Date.now(); // This is useful because intervals can get imprecise over time
 
                 setInterval(() => {
                     if (lastcommentUnfriendCheck + 60000 > Date.now()) return; // Last check is more recent than 60 seconds
@@ -226,7 +226,7 @@ module.exports.readyCheck = (logininfo) => {
             require("./helpers/handleExpiringTokens.js").detectExpiringTokens(botobject, logininfo);
 
 
-            // Print startuo complete message and erase it after 5 sec
+            // Print startup complete message and erase it after 5 sec
             setTimeout(() => {
                 logger("info", "Startup complete!", false, true, ["✅"]);
 

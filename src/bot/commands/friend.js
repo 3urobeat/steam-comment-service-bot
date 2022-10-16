@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 09.03.2022 15:46:00
+ * Last Modified: 16.10.2022 13:21:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -64,7 +64,7 @@ module.exports.addFriend = (chatmsg, steamID, lang, args) => {
                     });
                 }, 5000 * i);
             } else {
-                logger("warn", `bot${i} is already friend with ${res} or the account was blocked/blocked you.`); // Somehow logs steamIDs in seperate row?!
+                logger("warn", `bot${i} is already friend with ${res} or the account was blocked/blocked you.`); // Somehow logs steamIDs in separate row?!
             }
         });
     });

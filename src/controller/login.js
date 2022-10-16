@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 15.10.2022 16:51:15
+ * Last Modified: 16.10.2022 13:16:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -78,7 +78,7 @@ module.exports.startlogin = (logininfo) => {
     if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "hours"; }                                                                                                                                                                                                                                                                          // 🥚!
 
     logger("info", `Logging in... Estimated wait time: ${round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`, false, false, logger.animation("loading"), true);
-    if(global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<")process.send("stop()");
+    if(global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<")process.send("stop()"); // eslint-disable-line
 
 
     // Start starting bot.js for each account
@@ -119,7 +119,7 @@ module.exports.startlogin = (logininfo) => {
                             logger("debug", `Found shared_secret for ${k}! Generating AuthCode and adding it to logOnOptions...`);
 
                             logOnOptions["steamGuardCode"] = SteamTotp.generateAuthCode(logininfo[k][2]);
-                            logOnOptions["steamGuardCodeForRelog"] = logininfo[k][2]; // Add raw shared_secret to obj aswell to be able to access it more easily from relogAccount.js
+                            logOnOptions["steamGuardCodeForRelog"] = logininfo[k][2]; // Add raw shared_secret to obj as well to be able to access it more easily from relogAccount.js
                         }
 
                         b.run(logOnOptions, i); // Run bot.js with this account

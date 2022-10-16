@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 15.10.2022 17:52:02
+ * Last Modified: 16.10.2022 13:21:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -33,7 +33,7 @@ const botfile    = require("../bot.js");
  */
 module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) => {
 
-    // Custom behaviour for LogonSessionReplaced error:
+    // Custom behavior for LogonSessionReplaced error:
     if (err.eresult == EResult.LogonSessionReplaced) {
         logger("", "", true);
         logger("warn", `${logger.colors.fgred}[${thisbot}] Lost connection to Steam! Reason: LogonSessionReplaced. I won't try to relog this account because someone else is using it now.`, false, false, null, true); // Force print this message now
@@ -61,7 +61,7 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
             logger("info", `[${thisbot}] I won't queue myself for a relog because this account was skipped or this is an intended logOff.`);
         }
 
-    } else { // Actual error durin login or relog
+    } else { // Actual error during login or relog
 
         let blockedEnumsForRetries = [EResult.Banned, EResult.AccountNotFound]; // No need to block InvalidPassword anymore as the sessionHandler handles credentials
 
@@ -93,7 +93,7 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
             logger("warn", `${err} while trying to log in bot${loginindex}. Retrying in 5 seconds...`); // Log error as warning
 
             // Invalidate token to get a new session if this error was caused by an invalid refreshToken
-            if (err.eresult == EResult.InvalidPassword || err == "Error: InvalidSignature") { // These are the most likely enums that will occurr when an invalid token was used I guess (Checking via String here as it seems like there are EResults missing)
+            if (err.eresult == EResult.InvalidPassword || err == "Error: InvalidSignature") { // These are the most likely enums that will occur when an invalid token was used I guess (Checking via String here as it seems like there are EResults missing)
                 logger("debug", "Token login error: Calling tokenStorageHandler's _invalidateTokenInStorage() function to get a new session when retrying this login attempt");
 
                 let nedb = require("@seald-io/nedb");

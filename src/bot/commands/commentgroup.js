@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 15.10.2022 12:06:47
+ * Last Modified: 16.10.2022 12:35:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -24,7 +24,7 @@ const controller = require("../../controller/controller.js");
 
 /**
  * Comments in a group
- * @param {String} chatmsg The chat message recieved
+ * @param {String} chatmsg The chat message received
  * @param {SteamID} steamID The steamID object of the requesting user
  * @param {Array} args The command arguments
  * @param {Object} lang The language object
@@ -61,30 +61,30 @@ const controller = require("../../controller/controller.js");
 
     /* --------- Calculate maxRequestAmount and get arguments from comment request --------- */
     var { maxRequestAmount, numberOfComments, profileID, quotesArr } = await require("../helpers/getCommentArgs.js").getCommentArgs(args, steamID, requesterSteamID, SteamID.Type.CLAN, lang, respond);
-    var recieverSteamID = profileID;
+    var receiverSteamID = profileID;
 
-    if (!maxRequestAmount && !numberOfComments && !quotesArr) return; // Looks like the helper aborted the request (don't check for recieverSteamID as it has a default value set above)
-    if (recieverSteamID == requesterSteamID) return respond(400, "You need to provide a group link or groupID!"); // Send custom error message if user forgot to provide group id
+    if (!maxRequestAmount && !numberOfComments && !quotesArr) return; // Looks like the helper aborted the request (don't check for receiverSteamID as it has a default value set above)
+    if (receiverSteamID == requesterSteamID) return respond(400, "You need to provide a group link or groupID!"); // Send custom error message if user forgot to provide group id
 
 
     /* --------- Check for cooldowns and calculate the amount of accounts needed for this request ---------  */
-    var { allAccounts, accountsNeeded } = require("../helpers/checkAvailability.js").checkAvailability(recieverSteamID, numberOfComments, true, lang, res, lastcommentdoc, respond);
+    var { allAccounts, accountsNeeded } = require("../helpers/checkAvailability.js").checkAvailability(receiverSteamID, numberOfComments, true, lang, res, lastcommentdoc, respond);
 
     if (!allAccounts && !accountsNeeded) return; // Looks like the helper aborted the request
 
 
     /* --------- Get account order and check if user is friend with limited accounts ---------  */
-    var accountOrder = require("../helpers/getAccountOrder.js").getAccountOrder(false, allAccounts, accountsNeeded, numberOfComments, requesterSteamID, recieverSteamID, lang, respond);
+    var accountOrder = require("../helpers/getAccountOrder.js").getAccountOrder(false, allAccounts, accountsNeeded, numberOfComments, requesterSteamID, receiverSteamID, lang, respond);
 
     if (!accountOrder) return; // Looks like the helper aborted the request
 
 
     /* --------- Start commenting --------- */
     // Prepare new empty entry in failedcomments obj
-    mainfile.failedcomments[recieverSteamID] = {};
+    mainfile.failedcomments[receiverSteamID] = {};
 
     // Make new entry in activecommentprocess obj to register this comment process
-    mainfile.activecommentprocess[recieverSteamID] = {
+    mainfile.activecommentprocess[receiverSteamID] = {
         status: "active",
         type: "group",
         amount: numberOfComments,
@@ -98,15 +98,15 @@ const controller = require("../../controller/controller.js");
 
     logger("debug", "Added user to activecommentprocess obj, starting comment loop...");
 
-    this.comment(recieverSteamID, steamID, lang, res, respond); // Start commenting
+    this.comment(receiverSteamID, steamID, lang, res, respond); // Start commenting
 
 };
 
 
 // Internal function that actually does the commenting
-module.exports.comment = (recieverSteamID, steamID, lang, res, respond) => {
+module.exports.comment = (receiverSteamID, steamID, lang, res, respond) => {
 
-    var acpEntry = mainfile.activecommentprocess[recieverSteamID]; // Make using the obj shorter
+    var acpEntry = mainfile.activecommentprocess[receiverSteamID]; // Make using the obj shorter
 
     var accountOrderIndex = 0; // The bot account to be used
 
@@ -122,7 +122,7 @@ module.exports.comment = (recieverSteamID, steamID, lang, res, respond) => {
             acpEntry.thisIteration++;
 
             /* --------- Check for critical errors and decide if this iteration should still run --------- */
-            var { skipIteration, aSP } = require("../helpers/handleCommentErrors.js").handleCriticalCommentErrors(botindex, "postGroupComment", recieverSteamID, alreadySkippedProxies, acpEntry.amount, res, lang, respond);
+            var { skipIteration, aSP } = require("../helpers/handleCommentErrors.js").handleCriticalCommentErrors(botindex, "postGroupComment", receiverSteamID, alreadySkippedProxies, acpEntry.amount, res, lang, respond);
             if (aSP) alreadySkippedProxies = aSP;
 
             if (skipIteration) {
@@ -134,19 +134,19 @@ module.exports.comment = (recieverSteamID, steamID, lang, res, respond) => {
             /* --------- Try to comment --------- */
             require("../helpers/getQuote.js").getQuote(acpEntry.quotesArr, lastQuotes, (comment) => { // Get a random quote to comment with and wait for callback to ensure a quote has been found before trying to comment
 
-                controller.communityobject[botindex].postGroupComment(recieverSteamID, comment, (error) => { // Post comment
+                controller.communityobject[botindex].postGroupComment(receiverSteamID, comment, (error) => { // Post comment
                     if (botindex == 0) var thisbot = "Main"; // Call bot 0 the main bot in logging messages
                         else var thisbot = `Bot ${botindex}`;
 
 
                     /* --------- Handle errors thrown by this comment attempt --------- */
-                    if (error) require("../helpers/handleCommentErrors.js").handleCommentErrors(error, botindex, "postGroupComment", recieverSteamID, acpEntry.amount);
+                    if (error) require("../helpers/handleCommentErrors.js").handleCommentErrors(error, botindex, "postGroupComment", receiverSteamID, acpEntry.amount);
 
 
                     /* --------- No error, run this on every successful iteration --------- */
                     if (acpEntry.thisIteration == 0) { // Stuff below should only run in first iteration
-                        if (loginfile.proxies.length > 1) logger("info", `${logger.colors.fggreen}[${thisbot}] ${acpEntry.amount} Comment(s) requested. Comment in group ${recieverSteamID} with proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}: ${String(comment).split("\n")[0]}`);
-                            else logger("info", `${logger.colors.fggreen}[${thisbot}] ${acpEntry.amount} Comment(s) requested. Comment in group ${recieverSteamID}: ${String(comment).split("\n")[0]}`); // Splitting \n to only get first line of multi line comments
+                        if (loginfile.proxies.length > 1) logger("info", `${logger.colors.fggreen}[${thisbot}] ${acpEntry.amount} Comment(s) requested. Comment in group ${receiverSteamID} with proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}: ${String(comment).split("\n")[0]}`);
+                            else logger("info", `${logger.colors.fggreen}[${thisbot}] ${acpEntry.amount} Comment(s) requested. Comment in group ${receiverSteamID}: ${String(comment).split("\n")[0]}`); // Splitting \n to only get first line of multi line comments
 
 
                         // Send success message or estimated wait time message
@@ -167,15 +167,15 @@ module.exports.comment = (recieverSteamID, steamID, lang, res, respond) => {
 
 
                         /* --------- Give user cooldown --------- */
-                        // add estimated wait time in ms to start the cooldown after the last recieved comment
+                        // add estimated wait time in ms to start the cooldown after the last received comment
                         controller.lastcomment.update({ id: acpEntry.requestedby }, { $set: { time: Date.now() + ((acpEntry.amount - 1) * config.commentdelay) } }, {}, (err) => {
                             if (err) logger("error", "Error adding cooldown to user in database! You should probably *not* ignore this error!\nError: " + err);
                         });
 
                     } else { // Stuff below should only run for child accounts
                         if (!error) {
-                            if (loginfile.proxies.length > 1) logger("info", `[${thisbot}] Comment ${acpEntry.thisIteration + 1}/${acpEntry.amount} in group ${recieverSteamID} with proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}: ${String(comment).split("\n")[0]}`);
-                                else logger("info", `[${thisbot}] Comment ${acpEntry.thisIteration + 1}/${acpEntry.amount} in group ${recieverSteamID}: ${String(comment).split("\n")[0]}`); // Splitting \n to only get first line of multi line comments
+                            if (loginfile.proxies.length > 1) logger("info", `[${thisbot}] Comment ${acpEntry.thisIteration + 1}/${acpEntry.amount} in group ${receiverSteamID} with proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}: ${String(comment).split("\n")[0]}`);
+                                else logger("info", `[${thisbot}] Comment ${acpEntry.thisIteration + 1}/${acpEntry.amount} in group ${receiverSteamID}: ${String(comment).split("\n")[0]}`); // Splitting \n to only get first line of multi line comments
                         }
                     }
 
@@ -184,18 +184,18 @@ module.exports.comment = (recieverSteamID, steamID, lang, res, respond) => {
                     if (acpEntry.thisIteration == acpEntry.amount - 1 && acpEntry.amount > 1) { // I didn't put this code in the exit function of syncLoop as this message is not always the last message, it can be replaced by lang.commentsuccess1 as well as by the all proxies failed check
 
                         // Call retryComments helper that will retry failed comments if retryFailedComments is enabled in advancedconfig.json
-                        require("../helpers/retryComments.js").retryComments(recieverSteamID, steamID, lang, res, respond, (finished) => {
+                        require("../helpers/retryComments.js").retryComments(receiverSteamID, steamID, lang, res, respond, (finished) => {
                             if (finished) {
                                 var failedcmdreference = "";
 
-                                if (Object.keys(mainfile.failedcomments[recieverSteamID]).length > 0) {
+                                if (Object.keys(mainfile.failedcomments[receiverSteamID]).length > 0) {
                                     failedcmdreference = "\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems";
                                 }
 
-                                if (!res) respond(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(mainfile.failedcomments[recieverSteamID]).length).replace("numberOfComments", acpEntry.amount)}\n${failedcmdreference}`); // Only send if not a webrequest
+                                if (!res) respond(200, `${lang.commentsuccess2.replace("failedamount", Object.keys(mainfile.failedcomments[receiverSteamID]).length).replace("numberOfComments", acpEntry.amount)}\n${failedcmdreference}`); // Only send if not a webrequest
 
                                 acpEntry.status = "cooldown";
-                                mainfile.commentcounter += acpEntry.amount - Object.keys(mainfile.failedcomments[recieverSteamID]).length; // Add numberOfComments minus failedamount to commentcounter
+                                mainfile.commentcounter += acpEntry.amount - Object.keys(mainfile.failedcomments[receiverSteamID]).length; // Add numberOfComments minus failedamount to commentcounter
                             }
                         });
                     }

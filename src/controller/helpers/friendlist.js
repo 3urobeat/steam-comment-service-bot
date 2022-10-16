@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2022 11:27:13
+ * Last Modified: 16.10.2022 13:18:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -57,7 +57,7 @@ module.exports.friendlistcapacitycheck = (loginindex, callback) => {
         logger("debug", "friendlistcapacitycheck(): Calculating friendlist capacity of bot" + loginindex);
 
         controller.botobject[0].getSteamLevels([controller.botobject[loginindex].steamID], (err, users) => { // Check steam level of botindex account with bot0
-            if (!users) return; // Users was undefined one time (I hope this will (hopefully) supress an error?)
+            if (!users) return; // Users was undefined one time (I hope this will (hopefully) suppress an error?)
 
             let friendlistlimit = Object.values(users)[0] * 5 + 250; // Profile Level * 5 + 250
             let friends = Object.values(controller.botobject[loginindex].myFriends);
