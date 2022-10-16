@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 12:35:06
+ * Last Modified: 16.10.2022 18:25:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -37,6 +37,9 @@ const mainfile   = require("../main.js");
 module.exports.handleCriticalCommentErrors = (botindex, methodName, receiverSteamID, alreadySkippedProxies, numberOfComments, res, lang, respond) => {
 
     var acpEntry = mainfile.activecommentprocess[receiverSteamID]; // Make using the obj shorter
+
+    // Stop if entry does not exist anymore. This can happen when updater or handleExpiringTokens.js delete inactive acp entries, leading to error below
+    if (!acpEntry) return { skipIteration: true, alreadySkippedProxies };
 
     // TODO: Rewrite to push all remaining comments at once and break loop
     // Check if profile is not anymore in mainfile.activecommentprocess obj or status is not active anymore (for example by using !abort)
