@@ -3,28 +3,28 @@
  * Project: steam-comment-service-bot
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
- * 
+ *
  * Last Modified: 15.10.2022 18:13:42
  * Modified By: 3urobeat
- * 
+ *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 
 const nedb = require("@seald-io/nedb");
 
 const controller = require("../../controller/controller.js");
-const mainfile   = require('../../bot/main.js');
+const mainfile   = require("../../bot/main.js");
 
 
 // Internal - Helper function which decodes a JsonWebToken - https://stackoverflow.com/a/38552302 (c&p from sessionHandler)
 function _decodeJWT(token) {
     let payload = token.split(".")[1];            // Remove header and signature as we only care about the payload
-    let decoded = Buffer.from(payload, 'base64'); // Decode
+    let decoded = Buffer.from(payload, "base64"); // Decode
 
     // Try to parse json object
     try {
@@ -39,7 +39,7 @@ function _decodeJWT(token) {
 /**
  * External - Sets interval that checks tokens.db every 24 hours for refreshToken expiration in <=7 days, logs warning and sends botowner a Steam msg
  * @param {Object} botobject The botobject
- * @param {Object} logininfo The logininfo object imported in login.js 
+ * @param {Object} logininfo The logininfo object imported in login.js
  */
 module.exports.detectExpiringTokens = (botobject, logininfo) => {
 
@@ -49,11 +49,11 @@ module.exports.detectExpiringTokens = (botobject, logininfo) => {
         let expiring = {};
         let expired  = {};
         let tokensdb = new nedb({ filename: srcdir + "/data/tokens.db", autoload: true }); // TODO: Access tokensdb from controller obj
-    
+
         // TODO: Access _decodeJWT() from bot.sessionHandler
         tokensdb.find({}, (err, docs) => { // Find all documents
             docs.forEach((e, i) => { // Check every document
-    
+
                 let tokenObj = _decodeJWT(e.token);
 
                 if (tokenObj) { // Only try to check acc if no error occurred (Code lookin funky cuz I can't use return here as the last iteration check would otherwise abort)
@@ -89,13 +89,13 @@ module.exports.detectExpiringTokens = (botobject, logininfo) => {
                     // Log warning and message owners
                     logger("", `${logger.colors.fgred}Warning:`);
                     logger("", msg + "!", true);
-                    
+
                     cachefile.ownerid.forEach((e, i) => {
                         setTimeout(() => {
                             // eslint-disable-next-line no-control-regex
                             botobject[0].chat.sendFriendMessage(e, msg.replace(/\x1B\[[0-9]+m/gm, "") + "!\nHead over to the terminal to refresh the token(s) now if you wish."); // Remove color codes from string
                         }, 1500 * i);
-                    })
+                    });
 
                     // Block new comment requests from happening
                     controller.activeRelog = true;
@@ -103,8 +103,8 @@ module.exports.detectExpiringTokens = (botobject, logininfo) => {
                     // Check for active comment processes before asking for relog
                     _checkForActiveCommentProcesses(expiring, logininfo);
                 }
-            })
-        })
+            });
+        });
     }
 
     // Scan once on startup
@@ -120,7 +120,7 @@ module.exports.detectExpiringTokens = (botobject, logininfo) => {
         lastScanTime = Date.now(); // Update var tracking timestamp of last execution
     }, 21600000); // 6h in ms - Intentionally so low to prevent function from only running every 48h should interval get unprecise over time
 
-}
+};
 
 
 // Internal - Helper function to check for active comment processes
@@ -133,13 +133,13 @@ function _checkForActiveCommentProcesses(expiring, logininfo) {
 
     Object.keys(mainfile.activecommentprocess).forEach((e, i) => { // Loop over obj to filter invalid/expired entries
         if (mainfile.activecommentprocess[e].status != "active" || Date.now() > mainfile.activecommentprocess[e].until + (config.botaccountcooldown * 60000)) { // Check if status is not active or if entry is finished (realistically the status can't be active and finished but it won't hurt to check both to avoid a possible bug)
-            delete mainfile.activecommentprocess[e] // Remove entry from object
+            delete mainfile.activecommentprocess[e]; // Remove entry from object
         }
 
         if (i == objlength - 1) {
-            if (Object.keys(mainfile.activecommentprocess).length > 0) { // Check if obj is still not empty and recursively call this function again 
+            if (Object.keys(mainfile.activecommentprocess).length > 0) { // Check if obj is still not empty and recursively call this function again
                 logger("info", "Waiting for an active comment process to finish...", false, true, logger.animation("waiting"));
-                
+
                 setTimeout(() => { // Wait 2.5 sec and check again
                     _checkForActiveCommentProcesses(expiring, logininfo);
                 }, 2500);
@@ -150,7 +150,7 @@ function _checkForActiveCommentProcesses(expiring, logininfo) {
                 _askForGetNewTokenNow(expiring, logininfo);
             }
         }
-    })
+    });
 }
 
 
@@ -168,7 +168,7 @@ function _askForGetNewTokenNow(expiring, logininfo) {
                 // TODO: Remove when bot is OOP and invalidateTokenInStorage() can access db from constructor
                 let nedb = require("@seald-io/nedb");
                 let tokensdb = new nedb({ filename: srcdir + "/data/tokens.db", autoload: true });
-                
+
                 // Invalidate tokens and call relogAccount for each account
                 Object.keys(expiring).forEach((e, i) => {
                     // Construct missing values until they're easily accessible from bot object // TODO: Remove and access from bot object
@@ -179,12 +179,12 @@ function _askForGetNewTokenNow(expiring, logininfo) {
                         password: Object.values(logininfo)[loginindex][1],
                         machineName: `${extdata.mestr}'s Comment Bot`,       // For steam-user
                         deviceFriendlyName: `${extdata.mestr}'s Comment Bot` // For steam-session
-                    }
+                    };
 
                     if (loginindex == 0) var thisbot = "Main";
                         else var thisbot = `Bot ${loginindex}`;
 
-                    let additionalaccinfo = require("../login.js").additionalaccinfo
+                    let additionalaccinfo = require("../login.js").additionalaccinfo;
 
                     // Invalidate existing token so the sessionHandler will do a credentials login to get a new token
                     require("../../sessions/helpers/tokenStorageHandler.js").invalidateTokenInStorage(tokensdb, thisbot, logOnOptions.accountName); // TODO: Access it from the corresponding bot object where the sessionHandler is linked to
@@ -193,10 +193,10 @@ function _askForGetNewTokenNow(expiring, logininfo) {
                     require("../../bot/helpers/relogAccount.js").run(loginindex, thisbot, logOnOptions, expiring[i], additionalaccinfo[loginindex].thisproxy); // TODO: Call from corresponding bot object
 
                     // Note: activeRelog is set to false again by webSession if relogQueue is empty
-                })
+                });
             } else {
                 logger("info", "Asking again in 24 hours...");
-                
+
                 controller.activeRelog = false; // Allow comment requests again
             }
         } else {

@@ -26,5 +26,8 @@
         "url": "https://github.com/HerrEurobeat/steam-comment-service-bot/issues"
     },
     "homepage": "https://github.com/HerrEurobeat",
-    "repository": "https://github.com/HerrEurobeat/steam-comment-service-bot"
+    "repository": "https://github.com/HerrEurobeat/steam-comment-service-bot",
+    "devDependencies": {
+        "eslint-plugin-spellcheck": "^0.0.19"
+    }
 }
