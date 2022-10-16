@@ -22,14 +22,21 @@
         "ecmaVersion": 11
     },
     "rules": {
-        "no-redeclare": 0,
+        "no-redeclare": "off",
+        "no-unreachable": "error",
+        "no-unexpected-multiline": "error",
 
         // Styling
         "camelcase": "warn",
         "capitalized-comments": ["warn", "always", { "ignoreConsecutiveComments": true }],
         "comma-spacing": ["warn", { "before": false, "after": true }],
+        "func-call-spacing": ["error", "never"],
         "no-tabs": "error",
         "no-trailing-spaces": "error",
+        "no-extra-semi": "error",
+        "semi": ["error", "always"],
+        "semi-spacing": "error",
+        "semi-style": ["error", "last"],
         "quotes": ["error", "double", { "avoidEscape": true }],
         "spaced-comment": "warn"
     }
