@@ -3,15 +3,15 @@
  * Project: steam-comment-service-bot
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
- * 
- * Last Modified: 09.03.2022 13:46:43
+ *
+ * Last Modified: 16.10.2022 18:45:52
  * Modified By: 3urobeat
- * 
+ *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 
@@ -30,110 +30,113 @@ const mainfile   = require("../main.js");
  * @returns {Object} maxRequestAmount, commentcmdUsage, numberOfComments, profileID, customQuotesArr
  */
 module.exports.getCommentArgs = (args, steamID, requesterSteamID, profileIDType, lang, respond) => {
-    //Lets create a promise to be able to use await in calling function to make sure profileID callbacks finished before continuing 
+    // Lets create a promise to be able to use await in calling function to make sure profileID callbacks finished before continuing
     return new Promise((resolve) => {
 
-        var maxRequestAmount = config.maxComments; //set to default value and if the requesting user is an owner it gets changed below
+        var maxRequestAmount = config.maxComments; // Set to default value and if the requesting user is an owner it gets changed below
         var numberOfComments = 0;
         var quotesArr        = mainfile.quotes;
 
         var profileID;
 
-        let ownercheck = cachefile.ownerid.includes(requesterSteamID)
-        
-        
-        /* --------- Define command usage messages & maxRequestAmount for each user's privileges --------- */ //Note: Web Comment Requests always use cachefile.ownerid[0]
-        if (ownercheck) {
-            maxRequestAmount = config.maxOwnerComments
+        let ownercheck = cachefile.ownerid.includes(requesterSteamID);
 
-            if (Object.keys(controller.communityobject).length > 1 || maxRequestAmount) var commentcmdUsage = lang.commentcmdusageowner.replace("maxRequestAmount", maxRequestAmount) //typed confog here accidentaly and somehow found that really funny
-                else var commentcmdUsage = lang.commentcmdusageowner2
+
+        /* --------- Define command usage messages & maxRequestAmount for each user's privileges --------- */ // Note: Web Comment Requests always use cachefile.ownerid[0]
+        if (ownercheck) {
+            maxRequestAmount = config.maxOwnerComments;
+
+            if (Object.keys(controller.communityobject).length > 1 || maxRequestAmount) var commentcmdUsage = lang.commentcmdusageowner.replace("maxRequestAmount", maxRequestAmount);
+                else var commentcmdUsage = lang.commentcmdusageowner2;
         } else {
-            if (Object.keys(controller.communityobject).length > 1 || maxRequestAmount) var commentcmdUsage = lang.commentcmdusage.replace("maxRequestAmount", maxRequestAmount)
-                else var commentcmdUsage = lang.commentcmdusage2
+            if (Object.keys(controller.communityobject).length > 1 || maxRequestAmount) var commentcmdUsage = lang.commentcmdusage.replace("maxRequestAmount", maxRequestAmount);
+                else var commentcmdUsage = lang.commentcmdusage2;
         }
 
 
         /* --------- Check numberOfComments argument if it was provided --------- */
         if (args[0] !== undefined) {
-            if (isNaN(args[0])) { //isn't a number?
+            if (isNaN(args[0])) { // Isn't a number?
                 if (args[0].toLowerCase() == "all") {
-                    args[0] = maxRequestAmount //replace the argument with the max amount of comments this user is allowed to request
+                    args[0] = maxRequestAmount; // Replace the argument with the max amount of comments this user is allowed to request
                 } else {
-                    logger("debug", `getCommentArgs(): User provided invalid request amount "${args[0]}". Stopping...`)
+                    logger("debug", `getCommentArgs(): User provided invalid request amount "${args[0]}". Stopping...`);
 
-                    respond(400, lang.commentinvalidnumber.replace("commentcmdusage", commentcmdUsage)) 
+                    respond(400, lang.commentinvalidnumber.replace("commentcmdusage", commentcmdUsage));
                     resolve(false);
                 }
             }
 
-            if (args[0] > maxRequestAmount) { //number is greater than maxRequestAmount?
-                logger("debug", `getCommentArgs(): User requested ${args[0]} but is only allowed ${maxRequestAmount} comments. Stopping...`)
+            if (args[0] > maxRequestAmount) { // Number is greater than maxRequestAmount?
+                logger("debug", `getCommentArgs(): User requested ${args[0]} but is only allowed ${maxRequestAmount} comments. Stopping...`);
 
-                respond(403, lang.commentrequesttoohigh.replace("maxRequestAmount", maxRequestAmount).replace("commentcmdusage", commentcmdUsage)) 
+                respond(403, lang.commentrequesttoohigh.replace("maxRequestAmount", maxRequestAmount).replace("commentcmdusage", commentcmdUsage));
                 resolve(false);
             }
 
-            var numberOfComments = args[0]
+            var numberOfComments = args[0];
 
-            
+
             /* --------- Check profileid argument if it was provided --------- */
             if (args[1]) {
-                if (cachefile.ownerid.includes(requesterSteamID) || args[1] == requesterSteamID) { //check if user is a bot owner or if he provided his own profile id
+                if (cachefile.ownerid.includes(requesterSteamID) || args[1] == requesterSteamID) { // Check if user is a bot owner or if he provided his own profile id
                     let arg = args[1];
 
                     require("../helpers/handleSteamIdResolving.js").run(arg, profileIDType, (err, res) => {
                         if (err) respond(400, lang.commentinvalidid.replace("commentcmdusage", commentcmdUsage) + "\n\nError: " + err);
 
-                        profileID = res; //will be null on err
-                    })
+                        profileID = res; // Will be null on err
+                    });
 
                 } else {
-                    logger("debug", "getCommentArgs(): Non-Owner tried to provide profileid for another profile. Stopping...")
-                    
+                    logger("debug", "getCommentArgs(): Non-Owner tried to provide profileid for another profile. Stopping...");
+
                     profileID = null;
-                    respond(403, lang.commentprofileidowneronly)
+                    respond(403, lang.commentprofileidowneronly);
                 }
             } else {
-                logger("debug", "getCommentArgs(): No profileID parameter recieved, setting profileID to requesterSteamID...")
+                logger("debug", "getCommentArgs(): No profileID parameter received, setting profileID to requesterSteamID...");
 
                 profileID = requesterSteamID;
             }
 
-            
+
             /* --------- Check if custom quotes were provided --------- */
             if (args[2] !== undefined) {
-                quotesArr = args.slice(2).join(" ").replace(/^\[|\]$/g, "").split(", "); //change default quotes to custom quotes
+                quotesArr = args.slice(2).join(" ").replace(/^\[|\]$/g, "").split(", "); // Change default quotes to custom quotes
             }
-            
-        } //arg[0] if statement ends here
+
+        } // Arg[0] if statement ends here
 
 
         /* --------- Check if user did not provide numberOfComments --------- */
-        if (numberOfComments == 0) { //no numberOfComments given? ask again
-            if (Object.keys(controller.botobject).length == 1 && maxRequestAmount == 1) { 
-                var numberOfComments = 1 //if only one account is active, set 1 automatically
+        if (numberOfComments == 0) { // No numberOfComments given? Ask again if maxRequestAmount > 1 (numberOfComments default value at the top is 0)
+            if (Object.keys(controller.botobject).length == 1 && maxRequestAmount == 1) {
+                logger("debug", "getCommentArgs(): User didn't provide numberOfComments but maxRequestAmount is 1. Accepting request as numberOfComments = 1.");
+
+                var numberOfComments = 1;     // If only one account is active, set 1 automatically
+                profileID = requesterSteamID; // Define profileID so that the interval below resolves
             } else {
-                logger("debug", "getCommentArgs(): User didn't provide numberOfComments and maxRequestAmount is > 1. Stopping...")
-                
-                respond(400, lang.commentmissingnumberofcomments.replace("maxRequestAmount", maxRequestAmount).replace("commentcmdusage", commentcmdUsage))
+                logger("debug", `getCommentArgs(): User didn't provide numberOfComments and maxRequestAmount is ${maxRequestAmount} (> 1). Rejecting request.`);
+
+                respond(400, lang.commentmissingnumberofcomments.replace("maxRequestAmount", maxRequestAmount).replace("commentcmdusage", commentcmdUsage));
                 resolve(false);
-            } 
+            }
         }
 
 
         /* --------- Resolve promise with calculated values when profileID is defined --------- */
-        var profileIDDefinedInterval = setInterval(() => { //check if profileID is defined every 250ms and only then return values
+        var profileIDDefinedInterval = setInterval(() => { // Check if profileID is defined every 250ms and only then return values
             if (profileID != undefined) {
                 clearInterval(profileIDDefinedInterval);
 
-                //Log debug values
-                logger("debug", `getCommentArgs() success. maxRequestAmount: ${maxRequestAmount} | numberOfComments: ${numberOfComments} | profileID: ${profileID} | quotesArr.length: ${quotesArr.length}`)
+                // Log debug values
+                logger("debug", `getCommentArgs() success. maxRequestAmount: ${maxRequestAmount} | numberOfComments: ${numberOfComments} | profileID: ${profileID} | quotesArr.length: ${quotesArr.length}`);
 
-                //Return obj if profileID is not null, otherwise return false as an error has ocurred, the user was informed and execution should be stopped
-                if (profileID) resolve({ maxRequestAmount, numberOfComments, profileID, quotesArr })
+                // Return obj if profileID is not null, otherwise return false as an error has occurred, the user was informed and execution should be stopped
+                if (profileID) resolve({ maxRequestAmount, numberOfComments, profileID, quotesArr });
                     else resolve(false);
             }
         }, 250);
-    })
-}
+    });
+};
