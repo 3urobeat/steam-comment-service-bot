@@ -62,10 +62,17 @@ Please make sure you know about limited/unlimited accounts. Your accounts also n
 You can read a detailed explanation [here in the wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Steam-limitations).
   
 <details>
-  <summary>Another, optional method (not recommended for new users):</summary>
+  <summary>Another, optional method (not recommended anymore):</summary>
   
-  If you'd rather like to provide your accounts in an object notation (JSON), then delete the accounts.txt file and open the `logininfo.json` file.  
-  Fill out the usernames and passwords of each bot account you want to use, following the existing format.  
+  If you'd rather like to provide your accounts in an object notation (JSON), then empty the accounts.txt file and create a `logininfo.json` file.  
+  Fill out the usernames and passwords of each bot account you want to use, following this object notation format:  
+  ```
+  {
+    "bot0": ["username0", "password0", "shared_secret"],
+    "bot1": ["username1", "password1", "shared_secret"],
+    "bot2": ["username2", "password2", "shared_secret"]
+  }
+  ```
   If you have a shared_secret then you can add it there too, otherwise just leave the brackets empty.  
   You can add more accounts by extending the list ("bot4": ["username4", "password4", "shared_secret"], etc...).  
     
