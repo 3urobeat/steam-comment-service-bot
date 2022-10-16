@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 16:41:09
+ * Last Modified: 16.10.2022 17:34:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -183,13 +183,13 @@ module.exports.config = (cache) => {
  * @returns logininfo object
  */
 module.exports.logininfo = () => {
-    var logininfo;
+    let logininfo = {};
 
     // Check accounts.txt first so we can ignore potential syntax errors in logininfo
     if (fs.existsSync("./accounts.txt")) {
         var data = fs.readFileSync("./accounts.txt", "utf8").split("\n");
 
-        if (data[0].startsWith("//Comment")) data = data.slice(1); // Remove comment from array
+        if (data.length > 0 && data[0].startsWith("//Comment")) data = data.slice(1); // Remove comment from array
 
         if (data != "") {
             logger("info", "Accounts.txt does exist and is not empty - using it instead of logininfo.json.", false, true);
@@ -210,7 +210,8 @@ module.exports.logininfo = () => {
     try {
         logger("info", "accounts.txt seems empty/not created, loading logininfo from logininfo.json...", false, true, logger.animation("loading"));
 
-        logininfo = require(srcdir + "/../logininfo.json");
+        // Only check if file exists (it is not shipped by default anymore since 2.12.1). If it doesn't an empty obj will be returned, leading to empty logininfo err msg in datacheck.js
+        if (fs.existsSync("./logininfo.json")) logininfo = require(srcdir + "/../logininfo.json");
 
         return logininfo;
     } catch (err) {
@@ -239,7 +240,7 @@ module.exports.proxies = () => {
         var proxies = fs.readFileSync("./proxies.txt", "utf8").split("\n");
         var proxies = proxies.filter(str => str != ""); // Remove empty lines
 
-        if (proxies[0].startsWith("//Comment")) proxies = proxies.slice(1); // Remove comment from array
+        if (proxies.length > 0 && proxies[0].startsWith("//Comment")) proxies = proxies.slice(1); // Remove comment from array
 
         if (advancedconfig.useLocalIP) proxies.unshift(null); // Add no proxy (local ip) if useLocalIP is true
 
