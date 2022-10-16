@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 13:25:02
+ * Last Modified: 16.10.2022 17:33:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -83,6 +83,10 @@ module.exports.run = (logininfo, callback) => {
     var maxCommentsOverall = config.maxOwnerComments; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
     if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments;
 
+    if (logininfo.bot0 == undefined) { // Check real quick if logininfo is empty
+        logger("error", `${logger.colors.fgred}Your accounts.txt or logininfo.json file (whichever you are using) doesn't seem to contain any valid login credentials! Aborting...`, true);
+        return process.send("stop()");
+    }
     if (config.maxOwnerComments < 1) {
         logger("info", `${logger.colors.fgred}Your maxOwnerComments value in config.json can't be smaller than 1! Automatically setting it to 1...`, true);
         config.maxOwnerComments = 1;
@@ -93,10 +97,6 @@ module.exports.run = (logininfo, callback) => {
     }
     if (config.commentdelay / (maxCommentsOverall / 2) < 1250) {
         logger("warn", `${logger.colors.fgred}You have raised maxComments or maxOwnerComments but I would recommend to raise the commentdelay further. Not increasing the commentdelay further raises the probability to get cooldown errors from Steam.`, true);
-    }
-    if (logininfo.bot0 == undefined) { // Check real quick if logininfo is empty
-        logger("error", `${logger.colors.fgred}Your logininfo.json or accounts.txt (whichever you are using) doesn't seem to contain valid login credentials! Aborting...`, true);
-        return process.send("stop()");
     }
     if (config.commentdelay * maxCommentsOverall > 2147483647) { // Check for 32-bit integer limit for commentcmd timeout
         logger("error", `${logger.colors.fgred}Your maxComments and/or maxOwnerComments and/or commentdelay value in the config are too high.\n        Please lower these values so that 'commentdelay * maxComments' is not bigger than 2147483647.\n\nThis will otherwise cause an error when trying to comment (32-bit integer limit). Aborting...\n`, true);
