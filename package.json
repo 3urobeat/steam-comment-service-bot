@@ -11,9 +11,9 @@
         "https": "^1.0.0",
         "output-logger": "^2.2.3",
         "request": "^2.88.2",
-        "steam-session": "^0.0.2-alpha",
+        "steam-session": "^0.0.3-alpha",
         "steam-user": "^4.25.0",
-        "steamcommunity": "^3.44.2",
+        "steamcommunity": "^3.44.3",
         "steamid": "^2.0.0",
         "steamid-resolver": "^1.2.2"
     },
