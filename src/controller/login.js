@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 13:16:40
+ * Last Modified: 31.10.2022 11:32:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -92,7 +92,10 @@ module.exports.startlogin = (logininfo) => {
                 if (module.exports.accisloggedin == true && i == Object.keys(controller.botobject).length + this.skippednow.length || module.exports.accisloggedin == true && this.skippednow.includes(i - 1)) { // I is being counted from 0, length from 1 -> checks if last iteration is as long as botobject
                     clearInterval(startnextinterval); // Stop checking
 
-                    // if this iteration exists in the skippedaccounts array, automatically skip acc again
+                    // Start ready check on last iteration
+                    if (Object.keys(logininfo).length == i + 1) require("./ready.js").readyCheck(logininfo);
+
+                    // If this iteration exists in the skippedaccounts array, automatically skip acc again
                     if (controller.skippedaccounts.includes(i)) {
                         logger("info", `[skippedaccounts] Automatically skipped ${k}!`, false, true);
                         this.skippednow.push(i);
@@ -129,8 +132,4 @@ module.exports.startlogin = (logininfo) => {
 
         }, (advancedconfig.loginDelay * (i - this.skippednow.length)) * Number(i > 0)); // Wait loginDelay ms before checking if the next account is ready to be logged in if not first iteration. This should reduce load and ram usage as less intervals run at the same time (this gets more interesting when lots of accs are used)
     });
-
-
-    // Start ready check
-    require("./ready.js").readyCheck(logininfo);
 };

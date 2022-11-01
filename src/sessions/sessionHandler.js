@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 15.10.2022 14:02:22
+ * Last Modified: 01.11.2022 14:09:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -107,7 +107,7 @@ sessionHandler.prototype._resolvePromise = function(token) {
             controller.skippedaccounts.push(this.loginindex);
             loginfile.skippednow.push(this.loginindex);
 
-            this.session.cancelLoginAttempt(); // Cancel this login attempt just to be sure
+            // Don't call cancelLoginAttempt() as this would result in an error because we aren't polling yet (https://github.com/DoctorMcKay/node-steam-session#polling)
         }
     } else {
         // Save most recent valid token to tokens.db
@@ -198,7 +198,7 @@ sessionHandler.prototype._attemptCredentialsLogin = function() {
 
         // Get code input, but supply code to new login system instead of the old one
         get2FAUserInput((code) => {
-            logger("info", "You will receive a second Steam Guard E-Mail from Steam for this account which you can ignore.", false, false, null, true); // https://github.com/DoctorMcKay/node-steam-session/issues/2
+            logger("info", "If this account uses E-Mail Steam Guard then you will receive a second E-Mail from Steam for this account which you can ignore.", false, false, null, true); // https://github.com/DoctorMcKay/node-steam-session/issues/2
 
             parent.session = new SteamSession.LoginSession(SteamSession.EAuthTokenPlatformType.SteamClient);
 
@@ -209,7 +209,10 @@ sessionHandler.prototype._attemptCredentialsLogin = function() {
 
             parent.session.startWithCredentials(parent.logOnOptions)
                 .then((res) => {
-                    if (res.actionRequired) logger("warn", "You shouldn't see this message. steam-session still wants a code but we supplied one?"); // This should be impossible because we supplied a 2fa code
+                    if (res.actionRequired) {
+                        logger("warn", "You shouldn't see this message. steam-session still wants a code but we supplied one? Skipping account to not soft-lock the bot...", false, false, null, true); // This should be impossible because we supplied a 2fa code}
+                        parent._resolvePromise(null);
+                    }
                 })
                 .catch((err) => {
                     if (err) parent._handleCredentialsLoginError(err); // Let handleCredentialsLoginError helper handle a login error
