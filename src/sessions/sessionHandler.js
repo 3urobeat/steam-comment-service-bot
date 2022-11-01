@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 01.11.2022 13:38:48
+ * Last Modified: 01.11.2022 14:09:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -209,7 +209,10 @@ sessionHandler.prototype._attemptCredentialsLogin = function() {
 
             parent.session.startWithCredentials(parent.logOnOptions)
                 .then((res) => {
-                    if (res.actionRequired) logger("warn", "You shouldn't see this message. steam-session still wants a code but we supplied one?", false, false, null, true); // This should be impossible because we supplied a 2fa code
+                    if (res.actionRequired) {
+                        logger("warn", "You shouldn't see this message. steam-session still wants a code but we supplied one? Skipping account to not soft-lock the bot...", false, false, null, true); // This should be impossible because we supplied a 2fa code}
+                        parent._resolvePromise(null);
+                    }
                 })
                 .catch((err) => {
                     if (err) parent._handleCredentialsLoginError(err); // Let handleCredentialsLoginError helper handle a login error
