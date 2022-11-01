@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 01.11.2022 11:28:18
+ * Last Modified: 01.11.2022 11:54:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -135,7 +135,7 @@ module.exports.readyCheck = (logininfo) => {
             let tempArr = [];
 
             Object.keys(botobject).forEach((e, i) => {
-                tempArr.push(new SteamID(String(controller.botobject[i].steamID)).getSteamID64());
+                tempArr.push(new SteamID(String(Object.values(botobject)[i].steamID)).getSteamID64()); // Use Object.values(obj)[index] to check by index, not by botindex to accomodate for skipped accounts
 
                 // Check if this bot account is listed as an owner id and display warning
                 if (cache.ownerid.includes(tempArr[i])) logger("warn", `You provided an ownerid in the config that points to a bot account used by this bot! This is not allowed.\n       Please change id ${tempArr[i]} to point to your personal steam account!`, true);
