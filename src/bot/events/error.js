@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.11.2022 13:23:44
+ * Last Modified: 06.11.2022 13:25:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -86,6 +86,9 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
 
                 controller.skippedaccounts.push(loginindex);
                 login.skippednow.push(loginindex);
+
+                // Remove account from relogQueue if included so that the next account can try to relog itself
+                if (controller.relogQueue.includes(loginindex)) controller.relogQueue.splice(controller.relogQueue.indexOf(loginindex), 1);
             }
 
         } else { // Got retries left or it is a relog...
