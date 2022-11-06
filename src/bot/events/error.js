@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.11.2022 11:59:14
+ * Last Modified: 06.11.2022 13:23:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -65,8 +65,8 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
 
         let blockedEnumsForRetries = [EResult.Banned, EResult.AccountNotFound]; // No need to block InvalidPassword anymore as the sessionHandler handles credentials
 
-        // check if this is an initial login error and it is either a fatal error or all retries are used
-        if ((login.additionalaccinfo[loginindex].logOnTries > advancedconfig.maxLogOnRetries && !controller.relogQueue.includes(loginindex)) || blockedEnumsForRetries.includes(err.eresult)) {
+        // Check if all logOnTries are used or if this is a fatal error
+        if (login.additionalaccinfo[loginindex].logOnTries > advancedconfig.maxLogOnRetries || blockedEnumsForRetries.includes(err.eresult)) {
             logger("", "", true);
             logger("error", `Couldn't log in bot${loginindex} after ${login.additionalaccinfo[loginindex].logOnTries} attempt(s). ${err} (${err.eresult})`, true);
 
