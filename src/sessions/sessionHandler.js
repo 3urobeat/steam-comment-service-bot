@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 01.11.2022 14:09:05
+ * Last Modified: 06.11.2022 13:03:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -225,6 +225,8 @@ sessionHandler.prototype._attemptCredentialsLogin = function() {
         logger("debug", `[${this.thisbot}] Looks like steam-user still had a sentry file stored for '${this.logOnOptions.accountName}', resolving promise with null`);
         this.getTokenPromise(null);
     }, 180000); // 3 min
+
+    logger("debug", `[${this.thisbot}] Attached resolvePromiseTimeout, calling logOn() with credentials now...`);
 
     // Call logOn() of steam-user.
     // Either it works instantly because we still have a sentry file stored, otherwise if the steamGuard event fires we just transfer to the new system to get a refreshToken
