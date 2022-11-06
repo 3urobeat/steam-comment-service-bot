@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.11.2022 13:25:33
+ * Last Modified: 06.11.2022 15:13:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -89,6 +89,10 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
 
                 // Remove account from relogQueue if included so that the next account can try to relog itself
                 if (controller.relogQueue.includes(loginindex)) controller.relogQueue.splice(controller.relogQueue.indexOf(loginindex), 1);
+
+                // Remove account from botobject & communityobject so that it won't be used for anything anymore
+                if (controller.botobject[String(loginindex)])       delete controller.botobject[String(loginindex)];
+                if (controller.communityobject[String(loginindex)]) delete controller.communityobject[String(loginindex)];
             }
 
         } else { // Got retries left or it is a relog...

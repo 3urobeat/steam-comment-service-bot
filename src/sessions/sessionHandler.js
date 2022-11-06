@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 06.11.2022 13:03:20
+ * Last Modified: 06.11.2022 14:56:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -106,6 +106,10 @@ sessionHandler.prototype._resolvePromise = function(token) {
 
             controller.skippedaccounts.push(this.loginindex);
             loginfile.skippednow.push(this.loginindex);
+
+            // Remove account from botobject & communityobject so that it won't be used for anything anymore (if it was logged in before, aka this being a relog)
+            if (controller.botobject[String(this.loginindex)])       delete controller.botobject[String(this.loginindex)];
+            if (controller.communityobject[String(this.loginindex)]) delete controller.communityobject[String(this.loginindex)];
 
             // Don't call cancelLoginAttempt() as this would result in an error because we aren't polling yet (https://github.com/DoctorMcKay/node-steam-session#polling)
         }
