@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 15.10.2022 17:10:27
+ * Last Modified: 06.11.2022 11:51:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -28,17 +28,21 @@ const login      = require("../../controller/login.js");
  * @param {Object} logOnOptions The steam-user logOnOptions object
  * @param {SteamUser} bot The bot instance of the calling account
  * @param {String} thisproxy The proxy of the calling account
+ * @param {Boolean} force Forces an relog even if the account is already in relogQueue (important for steam-user error event while relog)
  */
-module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy) => {
+module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy, force) => {
 
-    // Relog account if it is not already waiting in relogQueue
-    if (!controller.relogQueue.includes(loginindex)) {
-        controller.relogQueue.push(loginindex);
+    // Relog account if it is not already waiting in relogQueue or if force is true
+    if (!controller.relogQueue.includes(loginindex) || force) {
+        if (!controller.relogQueue.includes(loginindex)) { // Really only do these few calls if acc is not in relogQeue, even if force is true
+            controller.relogQueue.push(loginindex);
 
-        login.additionalaccinfo[loginindex].logOnTries = 0; // Reset logOnTries
+            login.additionalaccinfo[loginindex].logOnTries = 0; // Reset logOnTries
 
-        logger("info", `[${thisbot}] Queueing for a relog. ${controller.relogQueue.length - 1} other accounts are waiting...`, false, true);
-        logger("debug", "relogAccount.run(): Attaching relogInterval for bot" + loginindex);
+            logger("info", `[${thisbot}] Queueing for a relog. ${controller.relogQueue.length - 1} other accounts are waiting...`, false, true);
+        }
+
+        logger("debug", `relogAccount.run(): Attaching relogInterval for bot${loginindex}. Param force is ${force}.`);
 
         // Check every second if this account is now allowed to relog
         var relogInterval = setInterval(() => {
