@@ -3,6 +3,7 @@
     "_help_": "Read the docs: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Advanced-Config-Documentation",
     "disableAutoUpdate": false,
     "loginDelay": 2500,
+    "loginTimeout": 60000,
     "relogTimeout": 30000,
     "maxLogOnRetries": 1,
     "useLocalIP": true,

@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 01.11.2022 14:09:05
+ * Last Modified: 07.11.2022 10:31:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -106,6 +106,10 @@ sessionHandler.prototype._resolvePromise = function(token) {
 
             controller.skippedaccounts.push(this.loginindex);
             loginfile.skippednow.push(this.loginindex);
+
+            // Remove account from botobject & communityobject so that it won't be used for anything anymore (if it was logged in before, aka this being a relog)
+            if (controller.botobject[String(this.loginindex)])       delete controller.botobject[String(this.loginindex)];
+            if (controller.communityobject[String(this.loginindex)]) delete controller.communityobject[String(this.loginindex)];
 
             // Don't call cancelLoginAttempt() as this would result in an error because we aren't polling yet (https://github.com/DoctorMcKay/node-steam-session#polling)
         }
@@ -225,6 +229,11 @@ sessionHandler.prototype._attemptCredentialsLogin = function() {
         logger("debug", `[${this.thisbot}] Looks like steam-user still had a sentry file stored for '${this.logOnOptions.accountName}', resolving promise with null`);
         this.getTokenPromise(null);
     }, 180000); // 3 min
+
+    logger("debug", `[${this.thisbot}] Attached resolvePromiseTimeout, calling logOn() with credentials now...`);
+
+    // Call unresponsive login helper to detect and force progress if this login attempt should get stuck
+    require("../bot/helpers/handleLoginTimeout.js").handleLoginTimeout(this.loginindex, this.thisbot, this.logOnOptions, this.bot, this.additionalaccinfo.thisproxy);
 
     // Call logOn() of steam-user.
     // Either it works instantly because we still have a sentry file stored, otherwise if the steamGuard event fires we just transfer to the new system to get a refreshToken
