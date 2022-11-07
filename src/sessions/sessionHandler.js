@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 06.11.2022 14:56:40
+ * Last Modified: 07.11.2022 10:31:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -231,6 +231,9 @@ sessionHandler.prototype._attemptCredentialsLogin = function() {
     }, 180000); // 3 min
 
     logger("debug", `[${this.thisbot}] Attached resolvePromiseTimeout, calling logOn() with credentials now...`);
+
+    // Call unresponsive login helper to detect and force progress if this login attempt should get stuck
+    require("../bot/helpers/handleLoginTimeout.js").handleLoginTimeout(this.loginindex, this.thisbot, this.logOnOptions, this.bot, this.additionalaccinfo.thisproxy);
 
     // Call logOn() of steam-user.
     // Either it works instantly because we still have a sentry file stored, otherwise if the steamGuard event fires we just transfer to the new system to get a refreshToken

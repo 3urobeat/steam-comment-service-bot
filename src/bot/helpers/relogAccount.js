@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.11.2022 13:16:37
+ * Last Modified: 07.11.2022 11:01:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -66,6 +66,9 @@ module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy, force) 
 
                 if (thisproxy == null) logger("info", `[${thisbot}] Trying to relog without proxy... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
                     else logger("info", `[${thisbot}] Trying to relog with proxy ${login.additionalaccinfo[loginindex].thisproxyindex}... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+
+                // Call unresponsive login helper to detect and force progress if this login attempt should get stuck
+                require("./handleLoginTimeout.js").handleLoginTimeout(loginindex, thisbot, logOnOptions, bot, thisproxy);
 
                 // Call our steam-session helper to get a valid refresh token for us
                 let sessionHandler = require(srcdir + "/sessions/sessionHandler.js");
