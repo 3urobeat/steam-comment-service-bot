@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.11.2022 15:13:13
+ * Last Modified: 06.11.2022 16:16:42
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -38,9 +38,20 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
         logger("", "", true);
         logger("warn", `${logger.colors.fgred}[${thisbot}] Lost connection to Steam! Reason: LogonSessionReplaced. I won't try to relog this account because someone else is using it now.`, false, false, null, true); // Force print this message now
 
+        // Abort or skip account
         if (loginindex == 0) {
             logger("error", `${logger.colors.fgred} Failed account is bot0! Aborting...`, true);
             return process.send("stop()");
+        } else {
+            controller.skippedaccounts.push(loginindex);
+            login.skippednow.push(loginindex);
+
+            // Remove account from relogQueue if included so that the next account can try to relog itself
+            if (controller.relogQueue.includes(loginindex)) controller.relogQueue.splice(controller.relogQueue.indexOf(loginindex), 1);
+
+            // Remove account from botobject & communityobject so that it won't be used for anything anymore
+            if (controller.botobject[String(loginindex)])       delete controller.botobject[String(loginindex)];
+            if (controller.communityobject[String(loginindex)]) delete controller.communityobject[String(loginindex)];
         }
         return;
     }
