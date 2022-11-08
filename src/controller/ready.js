@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 17:13:20
+ * Last Modified: 01.11.2022 11:54:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -37,12 +37,12 @@ module.exports.readyCheck = (logininfo) => {
 
 
     var readyinterval = setInterval(async () => { // Run ready check every x ms
-        let allAccountsInStorage = Object.keys(communityobject).length + login.skippednow.length == Object.keys(logininfo).length;       // Make sure all accounts were processed and are either logged in or were skipped
-        let lastAccPopulated     = botobject[Object.keys(logininfo).length - 1] && botobject[Object.keys(logininfo).length - 1].steamID; // Make sure bot can only start when steamID is populated which sometimes takes a bit longer, causing issues below (see issue #135 for example)
+        let allAccountsInStorage = Object.keys(communityobject).length + login.skippednow.length == Object.keys(logininfo).length; // Make sure all accounts were processed and are either logged in or were skipped
+        let lastAccIndex         = Object.keys(logininfo).length - login.skippednow.length - 1;                                    // Calculate index of last account
+        let lastAccPopulated     = Object.values(botobject)[lastAccIndex] && Object.values(botobject)[lastAccIndex].steamID;       // Make sure bot can only start when steamID is populated which sometimes takes a bit longer, causing issues below (see issue #135 for example)
 
         if (allAccountsInStorage && login.accisloggedin == true && lastAccPopulated) {
             clearInterval(readyinterval); // Stop checking if startup is done
-
 
             // Load plugins
             var plugins = await require("./helpers/loadPlugins.js").loadPlugins();
@@ -135,7 +135,7 @@ module.exports.readyCheck = (logininfo) => {
             let tempArr = [];
 
             Object.keys(botobject).forEach((e, i) => {
-                tempArr.push(new SteamID(String(controller.botobject[i].steamID)).getSteamID64());
+                tempArr.push(new SteamID(String(Object.values(botobject)[i].steamID)).getSteamID64()); // Use Object.values(obj)[index] to check by index, not by botindex to accomodate for skipped accounts
 
                 // Check if this bot account is listed as an owner id and display warning
                 if (cache.ownerid.includes(tempArr[i])) logger("warn", `You provided an ownerid in the config that points to a bot account used by this bot! This is not allowed.\n       Please change id ${tempArr[i]} to point to your personal steam account!`, true);

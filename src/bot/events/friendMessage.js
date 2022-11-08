@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 12:25:23
+ * Last Modified: 08.11.2022 11:33:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -59,12 +59,22 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
             txt += "...";
         }
 
-        logger("debug", `[${thisbot}] Sending message (${txt.length} chars) to ${new SteamID(String(steamID)).getSteamID64()} (retry: ${retry == true}): "${txt.replace(/\n/g, "\\n")}"`); // Intentionally checking for == true to prevent showing undefined
+        // Log full message if in debug mode, otherwise log cut down version
+        let recipientSteamID64 = new SteamID(String(steamID)).getSteamID64();
+
+        if (advancedconfig.printDebug) {
+            logger("debug", `[${thisbot}] Sending message (${txt.length} chars) to ${recipientSteamID64} (retry: ${retry == true}): "${txt.replace(/\n/g, "\\n")}"`); // Intentionally checking for == true to prevent showing undefined
+        } else {
+            if (txt.length >= 75) logger("info", `[${thisbot}] Sending message to ${recipientSteamID64}: "${txt.slice(0, 75).replace(/\n/g, "\\n") + "..."}"`);
+                else logger("info", `[${thisbot}] Sending message to ${recipientSteamID64}: "${txt.replace(/\n/g, "\\n")}"`);
+        }
 
         bot.chat.sendFriendMessage(steamID, txt, {}, (err) => {
             if (err) { // Check for error as some chat messages seem to not get send lately
-                logger("warn", `[${thisbot}] Error trying to send chat message of length ${txt.length} to ${new SteamID(String(steamID)).getSteamID64()}! ${err}`);
-                if (!retry) chatmsg(steamID, "Sorry, it looks like Steam blocked my last message. Please try again later.", true); // Send the user a fallback message just to indicate the bot is not down
+                logger("warn", `[${thisbot}] Error trying to send chat message of length ${txt.length} to ${recipientSteamID64}! ${err}`);
+
+                // Send the user a fallback message after 5 seconds just to indicate the bot is not down
+                if (!retry) setTimeout(() => chatmsg(steamID, "Sorry, it looks like Steam blocked my last message. Please try again later.", true), 5000);
             }
         });
     }
@@ -309,6 +319,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
 
             default: // Cmd not recognized
                 if (message.startsWith("!")) chatmsg(steamID, lang.commandnotfound);
+                    else logger("debug", "Chat message is not a command, ignoring message.");
         }
     } else {
         switch(message.toLowerCase()) {
@@ -317,6 +328,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 break;
             default:
                 if (message.startsWith("!")) chatmsg(steamID, `${lang.childbotmessage}\nhttps://steamcommunity.com/profiles/${new SteamID(String(controller.botobject[0].steamID)).getSteamID64()}`);
+                    else logger("debug", "Chat message is not a command, ignoring message.");
         }
     }
 };

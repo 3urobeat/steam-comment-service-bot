@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:06:57
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 13:30:22
+ * Last Modified: 06.11.2022 13:53:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -83,7 +83,7 @@ module.exports.checkAvailability = (receiverSteamID, numberOfComments, removeLim
     var whenavailable; // We will save the until value of the activecommentprocess entry that the user has to wait for here
     var allAccounts = [ ... Object.keys(controller.communityobject) ]; // Clone keys array of communityobject
 
-    // loop over activecommentprocess obj and remove all valid entries from allAccounts array if object is not empty
+    // Loop over activecommentprocess obj and remove all valid entries from allAccounts array to remove all accounts that are currently being used in another request
     if (Object.keys(mainfile.activecommentprocess).length > 0) {
         Object.keys(mainfile.activecommentprocess).forEach((e) => {
 
