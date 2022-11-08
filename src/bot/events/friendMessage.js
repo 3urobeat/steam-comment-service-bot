@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 08.11.2022 11:31:19
+ * Last Modified: 08.11.2022 11:33:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -59,7 +59,15 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
             txt += "...";
         }
 
-        logger("debug", `[${thisbot}] Sending message (${txt.length} chars) to ${new SteamID(String(steamID)).getSteamID64()} (retry: ${retry == true}): "${txt.replace(/\n/g, "\\n")}"`); // Intentionally checking for == true to prevent showing undefined
+        // Log full message if in debug mode, otherwise log cut down version
+        let recipientSteamID64 = new SteamID(String(steamID)).getSteamID64();
+
+        if (advancedconfig.printDebug) {
+            logger("debug", `[${thisbot}] Sending message (${txt.length} chars) to ${recipientSteamID64} (retry: ${retry == true}): "${txt.replace(/\n/g, "\\n")}"`); // Intentionally checking for == true to prevent showing undefined
+        } else {
+            if (txt.length >= 75) logger("info", `[${thisbot}] Sending message to ${recipientSteamID64}: "${txt.slice(0, 75).replace(/\n/g, "\\n") + "..."}"`);
+                else logger("info", `[${thisbot}] Sending message to ${recipientSteamID64}: "${txt.replace(/\n/g, "\\n")}"`);
+        }
 
         bot.chat.sendFriendMessage(steamID, txt, {}, (err) => {
             if (err) { // Check for error as some chat messages seem to not get send lately
