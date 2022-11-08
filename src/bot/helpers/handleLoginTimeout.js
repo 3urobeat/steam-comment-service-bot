@@ -4,7 +4,7 @@
  * Created Date: 03.11.2022 12:27:46
  * Author: 3urobeat
  *
- * Last Modified: 07.11.2022 11:07:07
+ * Last Modified: 08.11.2022 13:18:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -34,6 +34,7 @@ module.exports.handleLoginTimeout = (loginindex, thisbot, logOnOptions, bot, thi
         return;
     }
 
+    let initialLogin    = !controller.relogQueue.includes(loginindex); // Save if this is an initial login (not a relog)
     let currentLogOnTry = login.additionalaccinfo[loginindex].logOnTries;
 
     logger("debug", `handleLoginTimeout(): Attached ${advancedconfig.loginTimeout / 1000} seconds timeout for bot${loginindex}...`);
@@ -41,12 +42,12 @@ module.exports.handleLoginTimeout = (loginindex, thisbot, logOnOptions, bot, thi
     // Check if account is still in relogQueue with the same logOnTries value 60 seconds later and force progress
     setTimeout(() => {
 
-        // Ignore timeout if account progressed since then
+        // Ignore timeout if account progressed since then (logOnTries has increased or acc is not anymore in relogQueue)
         let newLogOnTry = login.additionalaccinfo[loginindex].logOnTries;
         let accInQueue  = controller.relogQueue.includes(loginindex);
 
-        if (currentLogOnTry != newLogOnTry || !accInQueue) {
-            logger("debug", `[${thisbot}] handleLoginTimeout(): Timeout for bot${loginindex} done, acc not stuck. old/new logOnTries: ${currentLogOnTry}/${newLogOnTry} - acc in relogQueue: ${accInQueue}`);
+        if (currentLogOnTry != newLogOnTry || (!accInQueue && !initialLogin)) {
+            logger("debug", `[${thisbot}] handleLoginTimeout(): Timeout for bot${loginindex} done, acc not stuck. old/new logOnTries: ${currentLogOnTry}/${newLogOnTry} - acc in relogQueue: ${accInQueue} - initialLogin: ${initialLogin}`);
             return;
         }
 
@@ -82,7 +83,7 @@ module.exports.handleLoginTimeout = (loginindex, thisbot, logOnOptions, bot, thi
         } else {
 
             // Force progress if account is stuck
-            logger("warn", `Detected timed out login attempt for bot${loginindex}! Force progressing relog queue to avoid soft-locking the bot...`);
+            logger("warn", `Detected timed out login attempt for bot${loginindex}! Force progressing relog queue to avoid soft-locking the bot...`, false, false, null, true); // Force print so msg will show on initial login
 
             bot.logOff(); // Call logOff() just to be sure
 
