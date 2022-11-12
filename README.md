@@ -6,7 +6,7 @@
 </div>
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[![YouTube](https://img.shields.io/badge/YouTube-Tutorial-red)](https://youtu.be/gmA-ccD05g4)
+[![YouTube](https://img.shields.io/badge/YouTube-Tutorial-red)](https://youtu.be/8J78rC9Z28U)
 [![nodejs](https://img.shields.io/badge/node.js-v14-brightgreen)](https://nodejs.org/)
 [![Star](https://img.shields.io/badge/-Give%20this%20repo%20a%20star!-yellow)](https://github.com/HerrEurobeat/steam-comment-service-bot)
 [![Steam Group](https://img.shields.io/badge/Steam%20Group-Join!-blue)](https://steamcommunity.com/groups/3urobeatGroup)
@@ -35,7 +35,7 @@
   
 You can see and test out my 24/7 hosted comment bot in action [by clicking here!](https://steamcommunity.com/id/3urobeatscommentbot)  
   
-If you would like to see a detailed tutorial in the form of a video, [click here!](https://www.youtube.com/watch?v=gmA-ccD05g4)  
+If you would like to see a detailed tutorial in the form of a video, [click here!](https://www.youtube.com/watch?v=8J78rC9Z28U)  
 This written tutorial also contains a video tutorial badge link for each specific part besides each header!  
   
 **Disclaimer!**  
@@ -45,15 +45,15 @@ This written tutorial also contains a video tutorial badge link for each specifi
 *Although this setup may seem long, don't worry, the setup can be done in <5 minutes.*  
 This is the basic setup guide. Visit the [Wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki) for more detailed documentations! Let's get started:
   
-## **Download:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=12)  
+## **Download:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/8J78rC9Z28U?t=45)  
 Click here: [Download](https://github.com/HerrEurobeat/steam-comment-service-bot/archive/master.zip)  
 Extract the zip and open the `steam-comment-service-bot` folder.  
   
 You need to have at least node.js version 14.15.0 installed: [Download](https://nodejs.org)  
 To get your version number type `node --version` in your console or terminal.  
-If you need a tutorial for this specific node part, [click here.](https://youtu.be/gmA-ccD05g4?t=35)  
+If you need a tutorial for this specific node part, [click here.](https://youtu.be/8J78rC9Z28U?t=60)  
   
-## **Setup & Configuration:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=111)    
+## **Setup & Configuration:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/8J78rC9Z28U?t=125)    
 #### **Accounts**
 Open the `accounts.txt` file and provide your accounts in the `username:password:shared_secret` format, one account per line.  
 If you don't want to use a shared_secret just leave it out and only provide the account in the `username:password` format.  
@@ -79,7 +79,7 @@ You can read a detailed explanation [here in the wiki](https://github.com/HerrEu
   Make sure to **NOT** forget a comma after each line, **ONLY** the last line **MUST NOT** have a comma! (ignoring this will cause errors!)  
 </details>  
   
-#### **Config**
+#### **Config** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/8J78rC9Z28U?t=181)  
 Open `config.json` with a text editor.  
 You need to provide the link to your steam profile at "owner" and the link or your steam64id of your profile at "ownerid", following the existing template.  
 Make sure to put your link and or ID inside the brackets, just like the template shows.  
@@ -110,7 +110,7 @@ For now you can ignore all the other settings, however if you'd like to customiz
 
 The bot is now ready! Don't modify any of the other files.  
 
-## **Usage:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=385)  
+## **Usage:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/8J78rC9Z28U?t=239)  
 Open up a power shell/terminal in this folder and type `node start.js`.  
 
 > **Important Disclaimer:** Do not start the bot with a tool that restarts on changes (like nodemon etc)! Only use normal `node`.  
@@ -118,10 +118,10 @@ Open up a power shell/terminal in this folder and type `node start.js`.
 Head over to your Steam client, add the main bot (the first account in your accounts.txt) as friend and send him the message `!help`.  
 It should respond with a list of commands available to you.  
 
-To request a comment, simply type `!comment 1`!  
+To request a comment, simply type `!comment 1`! [Click to see Demo](https://youtu.be/8J78rC9Z28U?t=294)  
 You can see all commands and their usage [here in the wiki](https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Commands-documentation).  
 
-## **Additional Information:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/gmA-ccD05g4?t=611)  
+## **Additional Information:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/8J78rC9Z28U?t=339)  
 Hey, if you like this project please consider donating a buck on my [PayPal!](https://paypal.me/3urobeat)  
 [![Donate](https://img.shields.io/badge/donate-%241-orange)](https://paypal.me/3urobeat)  
 If you like the work I put into this project, please give this repository a star!  
