@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 08.11.2022 11:12:19
+ * Last Modified: 06.03.2023 21:17:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -202,7 +202,7 @@ sessionHandler.prototype._attemptCredentialsLogin = function() {
 
         // Get code input, but supply code to new login system instead of the old one
         get2FAUserInput((code) => {
-            logger("info", "If this account uses E-Mail Steam Guard then you will receive a second E-Mail from Steam for this account which you can ignore.", false, false, null, true); // https://github.com/DoctorMcKay/node-steam-session/issues/2
+            logger("info", "If this account uses E-Mail Steam Guard then you might receive a second E-Mail from Steam which you can ignore.", false, false, null, true); // https://github.com/DoctorMcKay/node-steam-session/issues/2
 
             parent.session = new SteamSession.LoginSession(SteamSession.EAuthTokenPlatformType.SteamClient);
 

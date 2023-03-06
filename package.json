@@ -1,18 +1,18 @@
 {
     "name": "steam-comment-service-bot",
-    "version": "2.12.2",
+    "version": "2.12.3",
     "description": "Request a ton of steam profile/group comments from a bot network with just one command!",
     "main": "start.js",
     "dependencies": {
-        "@seald-io/nedb": "^3.1.0",
+        "@seald-io/nedb": "^4.0.1",
         "download": "^8.0.0",
         "express": "^4.18.2",
         "htmlparser2": "^8.0.1",
         "https": "^1.0.0",
-        "output-logger": "^2.2.3",
+        "output-logger": "^2.2.4",
         "request": "^2.88.2",
         "steam-session": "^0.0.4-alpha",
-        "steam-user": "^4.25.0",
+        "steam-user": "^4.27.1",
         "steamcommunity": "^3.44.3",
         "steamid": "^2.0.0",
         "steamid-resolver": "^1.2.2"
@@ -28,6 +28,6 @@
     "homepage": "https://github.com/HerrEurobeat",
     "repository": "https://github.com/HerrEurobeat/steam-comment-service-bot",
     "devDependencies": {
-        "eslint-plugin-spellcheck": "^0.0.19"
+        "eslint-plugin-spellcheck": "^0.0.20"
     }
 }

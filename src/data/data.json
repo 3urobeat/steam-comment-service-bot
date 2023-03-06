@@ -1,6 +1,6 @@
 {
-    "version": "21202",
-    "versionstr": "2.12.2",
+    "version": "21203",
+    "versionstr": "2.12.3",
     "branch": "master",
     "filetostart": "./src/starter.js",
     "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/starter.js",
@@ -8,7 +8,7 @@
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://paypal.me/3urobeat",
     "firststart": true,
     "compatibilityfeaturedone": false,
-    "whatsnew": "Added a login timeout detection to fix potential soft-locks, fixed various bugs related to steamGuard skipping and the relog system and sent chat msgs will now always be logged.",
+    "whatsnew": "Fixed retreiving new session being broken and updated all dependencies.",
     "urlrequestsecretkey": "",
     "timesloggedin": 0,
     "totallogintime": 0
