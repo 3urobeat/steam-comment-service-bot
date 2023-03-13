@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 06.03.2023 21:17:52
+ * Last Modified: 14.03.2023 00:26:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -142,7 +142,7 @@ sessionHandler.prototype._attemptCredentialsLogin = function() {
         })
         .catch((err) => {
             if (err) this._handleCredentialsLoginError(err); // Let handleCredentialsLoginError helper handle a login error
-        }) */
+        }); */
 
 
     // TODO: Remove all of this when old login method stops working and enable the block above
@@ -235,8 +235,24 @@ sessionHandler.prototype._attemptCredentialsLogin = function() {
     // Call unresponsive login helper (if not done already by relogAccount) to detect and force progress if this login attempt should get stuck
     if (!controller.relogQueue.includes(this.loginindex)) require("../bot/helpers/handleLoginTimeout.js").handleLoginTimeout(this.loginindex, this.thisbot, this.logOnOptions, this.bot, this.additionalaccinfo.thisproxy);
 
-    // Call logOn() of steam-user.
+    // Call logOn() of steam-user if not using a shared_secret as that seems to fail now: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/152
     // Either it works instantly because we still have a sentry file stored, otherwise if the steamGuard event fires we just transfer to the new system to get a refreshToken
-    this.bot.logOn(this.logOnOptions);
+    if (this.logOnOptions.steamGuardCode) {
+        logger("debug", `[${this.thisbot}] Account has a shared_secret, going straight to the new login system to avoid issue #152...`);
+
+        this.session = new SteamSession.LoginSession(SteamSession.EAuthTokenPlatformType.SteamClient);
+
+        this._attachEvents();
+
+        this.session.startWithCredentials(this.logOnOptions)
+            .then((res) => {
+                if (res.actionRequired) this._handle2FA(res); // Let handle2FA helper handle 2FA if a code is requested
+            })
+            .catch((err) => {
+                if (err) this._handleCredentialsLoginError(err); // Let handleCredentialsLoginError helper handle a login error
+            });
+    } else {
+        this.bot.logOn(this.logOnOptions);
+    }
 
 };
