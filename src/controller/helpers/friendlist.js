@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 18.03.2023 17:01:30
+ * Last Modified: 18.03.2023 22:34:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -17,14 +17,15 @@
 
 const SteamID = require("steamid");
 
+const controller = require("../../controller/controller.js");
+const mainfile   = require("../../bot/main.js");
+
 
 /**
  * Check if all friends are in lastcomment database
  * @param {SteamUser} botacc The bot instance of the calling account
  */
 module.exports.checklastcommentdb = (bot) => {
-    var controller = require("../../controller/controller.js");
-
     logger("debug", "Checking if all friends are in lastcomment.db...", false, true, logger.animation("loading"));
 
     controller.lastcomment.find({}, (err, docs) => {
@@ -53,8 +54,6 @@ module.exports.checklastcommentdb = (bot) => {
  * @param {function} [callback] Called with `remaining` (Number) on completion
  */
 module.exports.friendlistcapacitycheck = (loginindex, callback) => {
-    let controller = require("../controller.js");
-
     try {
         logger("debug", "friendlistcapacitycheck(): Calculating friendlist capacity of bot" + loginindex);
 
@@ -89,7 +88,7 @@ module.exports.friendlistcapacitycheck = (loginindex, callback) => {
                                 let steamID = new SteamID(e.id);
 
                                 // Unfriend user and send him/her a message
-                                controller.botobject[loginindex].chat.sendFriendMessage(steamID, `You have been unfriended for being inactive for ${advancedconfig.forceFriendlistSpaceTime} days as the friendlist was running low on space.\nIf you need me again, feel free to add me again!`);
+                                controller.botobject[loginindex].chat.sendFriendMessage(steamID, mainfile.lang.userunfriend.replace("forceFriendlistSpaceTime", advancedconfig.forceFriendlistSpaceTime));
                                 controller.botobject[loginindex].removeFriend(steamID);
 
                                 logger("info", `[Bot ${loginindex}] Force-Unfriended ${e.id} after being inactive for ${advancedconfig.forceFriendlistSpaceTime} days to keep 1 empty slot on the friendlist`);
@@ -124,8 +123,6 @@ module.exports.friendlistcapacitycheck = (loginindex, callback) => {
  * Check for friends who haven't requested comments in config.unfriendtime days and unfriend them
  */
 module.exports.lastcommentUnfriendCheck = () => {
-    let controller = require("../../controller/controller.js");
-
     controller.lastcomment.find({ time: { $lte: Date.now() - (config.unfriendtime * 86400000) } }, (err, docs) => { // Until is a date in ms, so we check if it is less than right now
         if (docs.length < 1) return; // Nothing found
 
@@ -134,7 +131,7 @@ module.exports.lastcommentUnfriendCheck = () => {
 
                 Object.keys(controller.botobject).forEach((f, j) => {
                     if (controller.botobject[f].myFriends[e.id] == 3 && !cachefile.ownerid.includes(e.id)) { // Check if the targeted user is still friend
-                        if (j == 0) controller.botobject[0].chat.sendFriendMessage(new SteamID(e.id), `You have been unfriended for being inactive for ${config.unfriendtime} days.\nIf you need me again, feel free to add me again!`);
+                        if (j == 0) controller.botobject[0].chat.sendFriendMessage(new SteamID(e.id), mainfile.lang.userforceunfriend.replace("unfriendtime", config.unfriendtime));
 
                         setTimeout(() => {
                             controller.botobject[f].removeFriend(new SteamID(e.id)); // Unfriend user with each bot

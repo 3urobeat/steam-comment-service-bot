@@ -31,6 +31,8 @@
     "commentlimitederror": "-----------------------------------\nIt seems like at least one of the requested comments could have failed because you/the receiving account aren't/isn't friend with the commenting bot account.\n\nPlease make sure that you have added these accounts in order to eventually avoid this error in the future: \naccstoadd\n-----------------------------------",
 
     "useradded": "Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more commands or !about for more information!",
+    "userunfriend": "You have been unfriended for being inactive for forceFriendlistSpaceTime days as the friendlist was running low on space.\nIf you need me again, feel free to add me again!",
+    "userforceunfriend": "You have been unfriended for being inactive for unfriendtime days.\nIf you need me again, feel free to add me again!",
     "userspamblock": "/me You have been blocked for 90 seconds for spamming.",
     "usernotfriend": "/me Please add me before using a command!",
     "botnotready": "/me The bot is not completely started yet. Please wait a moment before using a command.",
