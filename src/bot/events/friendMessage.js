@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 18.03.2023 13:32:35
+ * Last Modified: 18.03.2023 13:55:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -40,7 +40,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
     var ownercheck  = cachefile.ownerid.includes(steam64id);
 
     // Check if user is blocked and ignore message
-    if (bot.myFriends[steam64id] == 1 || bot.myFriends[steam64id] == 6) return; // User is blocked.
+    if (bot.myFriends[steam64id] == 1 || bot.myFriends[steam64id] == 6) return logger("debug", `[${thisbot}] Blocked user '${steam64id}' sent message: ${message}`); // Ignore messages from blocked users but log a debug message
 
 
     /**
