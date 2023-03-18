@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 18:45:52
+ * Last Modified: 18.03.2023 11:51:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -57,7 +57,7 @@ module.exports.getCommentArgs = (args, steamID, requesterSteamID, profileIDType,
         /* --------- Check numberOfComments argument if it was provided --------- */
         if (args[0] !== undefined) {
             if (isNaN(args[0])) { // Isn't a number?
-                if (args[0].toLowerCase() == "all") {
+                if (args[0].toLowerCase() == "all" || args[0].toLowerCase() == "max") {
                     args[0] = maxRequestAmount; // Replace the argument with the max amount of comments this user is allowed to request
                 } else {
                     logger("debug", `getCommentArgs(): User provided invalid request amount "${args[0]}". Stopping...`);
