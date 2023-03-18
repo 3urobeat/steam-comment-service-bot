@@ -8,6 +8,7 @@
     "maxLogOnRetries": 1,
     "useLocalIP": true,
     "acceptFriendRequests": true,
+    "forceFriendlistSpaceTime": 4,
     "setPrimaryGroup": false,
     "commandCooldown": 12000,
     "disableCommentCmd": false,
