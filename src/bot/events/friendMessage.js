@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 08.11.2022 11:33:32
+ * Last Modified: 18.03.2023 13:32:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -44,7 +44,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
 
 
     /**
-     * Make chat message method shorter
+     * Send a chat message // TODO: Export it when bot account is an object
      * @param {SteamID} steamID The steamID object of the recipient
      * @param {String} txt The text to send
      * @param {Boolean} retry true if chatmsg() called itself again to send error message
@@ -74,7 +74,7 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
                 logger("warn", `[${thisbot}] Error trying to send chat message of length ${txt.length} to ${recipientSteamID64}! ${err}`);
 
                 // Send the user a fallback message after 5 seconds just to indicate the bot is not down
-                if (!retry) setTimeout(() => chatmsg(steamID, "Sorry, it looks like Steam blocked my last message. Please try again later.", true), 5000);
+                if (!retry) setTimeout(() => chatmsg(steamID, "Sorry, it looks like Steam blocked my last message. Please try again in 30 seconds.", true), 5000);
             }
         });
     }
