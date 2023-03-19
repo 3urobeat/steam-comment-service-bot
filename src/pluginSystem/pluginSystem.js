@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 19.03.2023 14:48:04
+ * Last Modified: 19.03.2023 15:03:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -27,7 +27,10 @@ const loadPlugins = require("./loadPlugins.js").loadPlugins;
 class PluginSystem {
 
     // Constructor
-    constructor() {
+    constructor(botobject, communityobject) {
+        this.botobject       = botobject;
+        this.communityobject = communityobject;
+
         this._loadPlugins();
     }
 
@@ -53,4 +56,4 @@ class PluginSystem {
 
 
 // The plugin system loads all plugins and provides functions for plugins to hook into
-module.exports = new PluginSystem();
+module.exports = PluginSystem;

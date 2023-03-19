@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 19.03.2023 14:39:31
+ * Last Modified: 19.03.2023 15:02:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -22,7 +22,7 @@
 async function run() {
     var starter = require("../starter.js");
 
-    /* ------------ Handle restart (if this is one): ------------ */
+    /* ------------ Export various variables: ------------ */
     module.exports.botobject            = {};         // Tracks the bot instances of all accounts to be able to access them from anywhere
     module.exports.communityobject      = {};         // Tracks the community instances of all accounts to be able to access them from anywhere
 
@@ -178,12 +178,15 @@ async function run() {
             let datacheck = await starter.checkAndGetFile("./src/controller/helpers/datacheck.js", logger, false, false);
             if (!datacheck) return;
 
+            let pluginSystem = await starter.checkAndGetFile("./src/pluginSystem/pluginSystem.js", logger, false, false);
+            if (!pluginSystem) return;
+
             datacheck.run(logininfo, async () => {
 
                 if (updateFailed) { // Skip checking for update if last update failed
                     logger("info", `It looks like the last update failed so let's skip the updater for now and hope ${extdata.mestr} fixes the issue.\n       If you haven't reported the error yet please do so as I'm only then able to fix it!`, true);
 
-                    module.exports.pluginSystem = require("../pluginSystem/pluginSystem.js"); // TODO: Remove when controller is OOP
+                    module.exports.pluginSystem = new pluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
 
                     require("./login.js").startlogin(logininfo); // Start logging in
 
@@ -191,7 +194,7 @@ async function run() {
 
                     require("../updater/updater.js").run(false, null, false, (foundanddone2, updateFailed) => {
                         if (!foundanddone2) {
-                            module.exports.pluginSystem = require("../pluginSystem/pluginSystem.js"); // TODO: Remove when controller is OOP
+                            module.exports.pluginSystem = new pluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
 
                             require("./login.js").startlogin(logininfo); // Start logging in
                         } else {
