@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 18.03.2023 13:24:25
+ * Last Modified: 19.03.2023 14:47:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,8 +15,6 @@
  */
 
 
-
-module.exports.plugins = {};
 
 /**
  * Checks if the startup is completed and shows some messages
@@ -43,10 +41,6 @@ module.exports.readyCheck = (logininfo) => {
 
         if (allAccountsInStorage && login.accisloggedin == true && lastAccPopulated) {
             clearInterval(readyinterval); // Stop checking if startup is done
-
-            // Load plugins
-            var plugins = await require("./helpers/loadPlugins.js").loadPlugins();
-            module.exports.plugins = plugins; // Refresh exported obj
 
 
             // Start logging the ready message block
@@ -85,7 +79,7 @@ module.exports.readyCheck = (logininfo) => {
 
 
             // Log amount of loaded plugins
-            if (Object.keys(plugins).length > 0) logger("", `${logger.colors.fgblack}>${logger.colors.reset} Successfully loaded ${Object.keys(plugins).length} plugins!`, true);
+            if (Object.keys(controller.pluginSystem.pluginList).length > 0) logger("", `${logger.colors.fgblack}>${logger.colors.reset} Successfully loaded ${Object.keys(controller.pluginSystem.pluginList).length} plugins!`, true);
 
 
             // Log which games the main and child bots are playing
@@ -204,7 +198,7 @@ module.exports.readyCheck = (logininfo) => {
 
 
             // Run all loaded plugins
-            Object.values(plugins).forEach((e) => {
+            Object.values(controller.pluginSystem.pluginList).forEach((e) => {
                 try {
                     logger("info", `Running plugin ${e.info.name} v${e.info.version} by ${e.info.author}...`, false, true, logger.animation("loading"));
                     e.run(botobject[0], botobject, communityobject);

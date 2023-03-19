@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 13:10:25
+ * Last Modified: 19.03.2023 14:39:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -162,7 +162,7 @@ async function run() {
     }
 
 
-    /* ------------ Run datacheck and updater: ------------ */
+    /* ------------ Log comment related config settings: ------------ */
     var maxCommentsOverall = config.maxOwnerComments; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
     if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments;
     logger("info", `Comment settings: commentdelay: ${config.commentdelay} | botaccountcooldown: ${config.botaccountcooldown} | maxCommentsOverall: ${maxCommentsOverall} | randomizeAcc: ${config.randomizeAccounts}`, false, true, logger.animation("loading"));
@@ -182,12 +182,17 @@ async function run() {
 
                 if (updateFailed) { // Skip checking for update if last update failed
                     logger("info", `It looks like the last update failed so let's skip the updater for now and hope ${extdata.mestr} fixes the issue.\n       If you haven't reported the error yet please do so as I'm only then able to fix it!`, true);
+
+                    module.exports.pluginSystem = require("../pluginSystem/pluginSystem.js"); // TODO: Remove when controller is OOP
+
                     require("./login.js").startlogin(logininfo); // Start logging in
 
                 } else {
 
                     require("../updater/updater.js").run(false, null, false, (foundanddone2, updateFailed) => {
                         if (!foundanddone2) {
+                            module.exports.pluginSystem = require("../pluginSystem/pluginSystem.js"); // TODO: Remove when controller is OOP
+
                             require("./login.js").startlogin(logininfo); // Start logging in
                         } else {
                             process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, updatefailed: updateFailed == true })})`); // Send request to parent process (checking updateFailed == true so that undefined will result in false instead of undefined)
