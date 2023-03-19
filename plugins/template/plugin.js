@@ -1,10 +1,10 @@
 /*
- * File: template.js
+ * File: plugin.js
  * Project: steam-comment-service-bot
  * Created Date: 25.02.2022 09:37:57
  * Author: 3urobeat
  *
- * Last Modified: 27.02.2022 15:06:46
+ * Last Modified: 19.03.2023 13:53:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>

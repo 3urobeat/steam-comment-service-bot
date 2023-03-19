@@ -1,10 +1,10 @@
 /*
- * File: webserver.js
+ * File: plugin.js
  * Project: steam-comment-service-bot
  * Created Date: 25.02.2022 14:12:17
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 12:20:05
+ * Last Modified: 19.03.2023 14:10:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -21,7 +21,7 @@ const SteamID        = require("steamid"); //eslint-disable-line
 const fs             = require("fs");
 const express        = require("express");
 
-const advancedconfig = require("../advancedconfig.json");
+const advancedconfig = require("../../advancedconfig.json");
 
 
 /**
@@ -33,11 +33,11 @@ const advancedconfig = require("../advancedconfig.json");
 module.exports.run = (mainBot, botobject, communityobject) => { //eslint-disable-line
 
     if (advancedconfig.enableurltocomment) {
-        var controller = require("../src/controller/controller.js");
-        var ready      = require("../src/controller/ready.js");
-        var mainfile   = require("../src/bot/main.js");
+        const controller = require("../../src/controller/controller.js");
+        const ready      = require("../../src/controller/ready.js");
+        const mainfile   = require("../../src/bot/main.js");
 
-        var app        = express();
+        const app        = express();
 
 
         // Generate urlrequestsecretkey if it is not created already
@@ -58,7 +58,7 @@ module.exports.run = (mainBot, botobject, communityobject) => { //eslint-disable
 
         app.get("/comment", (req, res) => {
             // Get IP of visitor
-            let ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress).replace("::ffff:", ""); // eslint-disable-line spellcheck/spell-checker
+            let ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress).replace("::ffff:", "");
 
             if (req.query.n == undefined) {
                 logger("info", `Web Request by ${ip} denied. Reason: numberofcomments (n) is not specified.`);
@@ -93,7 +93,7 @@ module.exports.run = (mainBot, botobject, communityobject) => { //eslint-disable
                 if (!lastcommentdoc) logger("error", "User is missing from database?? How is this possible?! Error maybe: " + err);
 
                 try { // Catch any unhandled error to be able to remove user from activecommentprocess array
-                    require("../src/bot/commands/comment/comment.js").run(null, steamID, [req.query.n, req.query.id], res, lastcommentdoc);
+                    require("../../src/bot/commands/commentprofile.js").run(null, steamID, [req.query.n, req.query.id], mainfile.lang, res, lastcommentdoc);
                 } catch (err) {
                     res.status(500).send("Error while processing comment request: " + err.stack);
                     logger("error", "Error while processing comment request: " + err.stack);
@@ -104,7 +104,7 @@ module.exports.run = (mainBot, botobject, communityobject) => { //eslint-disable
 
         app.get("/output", (req, res) => { // Show output
             // Get IP of visitor
-            let ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress).replace("::ffff:", ""); // eslint-disable-line spellcheck/spell-checker
+            let ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress).replace("::ffff:", "");
 
             logger("info", `[Web Request] ${ip} requested to see the output!`);
 

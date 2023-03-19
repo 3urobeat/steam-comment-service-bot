@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 09:36:27
  * Author: 3urobeat
  *
- * Last Modified: 25.02.2022 13:49:18
+ * Last Modified: 19.03.2023 14:03:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -29,38 +29,40 @@ module.exports.loadPlugins = () => {
         let plugins = {};
 
         fs.readdir("./plugins", (err, files) => {
+
+            // Check for any errors and reject promise
             if (err) {
                 logger("error", "Error while reading plugins dir: " + err, true);
                 return reject({});
             }
 
-            // Filter non js files
-            var jsfiles = files.filter(p => p.split(".").pop() === "js");
-
             // Resolve now if nothing was found
-            if (jsfiles.length == 0) {
+            if (files.length == 0) {
                 logger("info", "No plugins in ./plugins found!", false, true, logger.animation("loading"));
                 resolve(plugins);
             }
 
-            // Iterate over all js files in this dir
-            jsfiles.forEach((e, i) => {
+            // Iterate over all folders in this dir
+            files.forEach((e, i) => {
+                let thisPlugin;
+
+                // Try to load plugin
                 try {
                     logger("debug", `Loading plugin ${e}...`);
-                    var pl = require(`../../../plugins/${e}`);
+                    thisPlugin = require(`../../../plugins/${e}/plugin.js`);
                 } catch (err) {
-                    return logger("error", `Error loading plugin file ${e}! Error: ${err}`, true);
+                    return logger("error", `Error loading plugin ${e}! Error: ${err}`, true);
                 }
 
                 // Ignore template plugin
-                if (pl.info.name != "template") {
+                if (thisPlugin.info.name != "template") {
                     // Check if plugin with same name was already found and print error msg, otherwise add plugin to obj
-                    if (Object.keys(plugins).includes(pl.info.name)) logger("warn", `Duplicate plugin with the name ${pl.info.name} found! Ignoring this plugin...`, true);
-                        else plugins[pl.info.name] = pl;
+                    if (Object.keys(plugins).includes(thisPlugin.info.name)) logger("warn", `Duplicate plugin with the name ${thisPlugin.info.name} found! Ignoring this plugin...`, true);
+                        else plugins[thisPlugin.info.name] = thisPlugin;
                 }
 
                 // Resolve promise on last iteration
-                if (i + 1 == jsfiles.length) {
+                if (i + 1 == files.length) {
                     if (Object.keys(plugins).length == 0) logger("info", "No plugins in ./plugins found!", false, true, logger.animation("loading"));
                     resolve(plugins);
                 }
