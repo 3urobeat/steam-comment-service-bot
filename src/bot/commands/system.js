@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 11:52:40
+ * Last Modified: 20.03.2023 21:13:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -118,10 +118,10 @@ module.exports.eval = (chatmsg, steamID, lang, args, bot, community) => { // esl
         let evaled = eval(code);
         if (typeof evaled !== "string") evaled = require("util").inspect(evaled);
 
-        // Check for character limit and cut message (seems to be 5000)
+        // Check for character limit and cut message
         let chatResult = clean(evaled);
 
-        if (chatResult.length >= 4950) chatmsg(steamID, `Code executed. Result:\n\n${chatResult.slice(0, 4950)}.......\n\n\nResult too long for chat.`);
+        if (chatResult.length >= 950) chatmsg(steamID, `Code executed. Result:\n\n${chatResult.slice(0, 950)}.......\n\n\nResult too long for chat.`);
             else chatmsg(steamID, `Code executed. Result:\n\n${clean(evaled)}`);
 
         logger("info", `${logger.colors.fgyellow}Eval result:${logger.colors.reset} \n${clean(evaled)}\n`, true);
