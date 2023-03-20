@@ -1,6 +1,6 @@
 {
     "name": "steam-comment-service-bot",
-    "version": "2.12.4",
+    "version": "2.12.5",
     "description": "Request a ton of steam profile/group comments from a bot network with just one command!",
     "main": "start.js",
     "dependencies": {
@@ -11,7 +11,7 @@
         "https": "^1.0.0",
         "output-logger": "^2.2.4",
         "request": "^2.88.2",
-        "steam-session": "^0.0.5-alpha",
+        "steam-session": "^1.1.0",
         "steam-user": "^4.27.1",
         "steamcommunity": "^3.44.3",
         "steamid": "^2.0.0",

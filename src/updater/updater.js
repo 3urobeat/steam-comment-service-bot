@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 12:54:12
+ * Last Modified: 18.03.2023 19:20:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+
+const fs = require("fs");
 
 
 /* ------------ Check for update function: ------------ */
@@ -148,68 +150,44 @@ module.exports.run = async (forceupdate, responseSteamID, compatibilityfeaturedo
 
 /* ------------ Compatibility feature function to ensure automatic updating works: ------------ */
 /**
- * Runs the compatibility feature if compatibilityfeaturedone in data.json is false
- * @param {function} [callback] Called with `foundanddone`(Boolean) on completion. If `true` you should restart the bot and if `false` you can carry on.
+ * Gets the corresponding compatibility feature to this version and runs it if compatibilityfeaturedone in data.json is false
+ * @param {function} [callback] Called with `foundanddone` (Boolean) on completion. If `true` you should restart the bot and if `false` you can carry on.
  */
-module.exports.compatibility = (callback) => {
+module.exports.compatibility = async (callback) => {
+
+    // Check if compatibilityfeature was already run
     if (extdata.compatibilityfeaturedone) {
+        logger("debug", "compatibility(): Skipping compatibility check as it already ran previously...");
         callback(false);
         return;
     }
 
-    var starter = require("../starter.js");
+
+    // List all files in compatibility directory
+    let list = fs.readdirSync("./src/updater/compatibility");
+
+    // Try to find this version in list
+    let match = list.find(e => e == extdata.version.replace(/b[0-9]+/g, "") + ".js"); // Remove beta build from version so it still matches on every beta build | Old check used this regex pattern: str.match(/21200b[0-9]+/g)
 
 
-    /**
-     * Runs the compatibility feature
-     * @param {String} filename filename of the compatibility feature
-     */
-    async function runCompFeature(filename) {
-        let file = await starter.checkAndGetFile(`./src/updater/compatibility/${filename}.js`, logger, false, false);
+    // If we found a match test its integrity and execute it
+    if (match) {
+        let file = await require("../starter.js").checkAndGetFile(`./src/updater/compatibility/${match}`, logger, false, false); // Check integrity
         if (!file) return;
 
-        logger("info", `Running compatibility feature ${filename}.js...`, true);
-        file.run(callback);
-    }
+        logger("info", `Running compatibility feature ${match}...`, true);
+        file.run(callback); // Call compatibilityfeature and pass callback so the caller of this function gets a response
 
+    } else { // Continue startup like normal if no file was found for this version
 
-    try { // This is sadly needed when updating to 2.10 because I forgot in 2.9.x to set compatibilityfeature to false again which completely skips the comp feature
-        if (extdata.firststart && fs.existsSync("./src/lastcomment.json") && (extdata.version == "2100" || extdata.versionstr == "BETA 2.10 b5")) extdata.compatibilityfeaturedone = false;
-    } catch (err) { } //eslint-disable-line
-
-    if (!fs.existsSync("./src")) { // This has to trigger if user was on version <2.6
-        runCompFeature("2060");
-
-    } else if (Object.keys(config).includes("botsgroupid")) { // This has to trigger if user was on version <2.7
-        runCompFeature("2070");
-
-    } else if (!extdata.compatibilityfeaturedone && (extdata.versionstr == "2.8" || extdata.versionstr == "BETA 2.8 b3")) {
-        runCompFeature("2080");
-
-    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "2100" || extdata.versionstr == "BETA 2.10 b5")) {
-        runCompFeature("2100");
-
-    } else if (!extdata.compatibilityfeaturedone && extdata.version == "2103" && config.botaccountcooldown != 10) {
-        runCompFeature("2103");
-
-    } else if (!extdata.compatibilityfeaturedone && extdata.version == "2104") {
-        runCompFeature("2104");
-
-    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "21100" || extdata.version.match(/2110b[0-9]/g))) { // Run on every beta build with quick regex
-        runCompFeature("21100");
-
-    } else if (!extdata.compatibilityfeaturedone && (extdata.version == "21200" || extdata.version.match(/21200b[0-9]+/g))) { // Won't hurt to do the same here
-        runCompFeature("21200");
-
-    } else {
+        logger("debug", `compatibility(): No compatibility feature was found for ${extdata.version} in a list of ${list.length} files...`);
         callback(false);
     }
+
 };
 
 
 /* ------------ Register update checker: ------------ */
-var fs = require("fs");
-
 var lastupdatecheckinterval = Date.now();
 if (updatecheckinterval) clearInterval(updatecheckinterval); // This check should never run but I added it just to be sure
 

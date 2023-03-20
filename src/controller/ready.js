@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 01.11.2022 11:54:08
+ * Last Modified: 18.03.2023 13:24:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -214,14 +214,21 @@ module.exports.readyCheck = (logininfo) => {
             });
 
 
-            // Show information message about the login flow change
+            // Show information message and message all owners about the login flow change in 2.13.0
+            let loginFlowMsgs = [ // Store msgs in an array to easily send them seperately to avoid Steam chat cooldowns
+                "IMPORTANT:\nValve changed the method of logging in into Steam. The new system uses tokens which expire after 200 days, forcing you to **type in a Steam Guard Code every 200 days** (won't affect accounts with shared_secret).\nWith the upcoming version 2.13.0 this bot **will remove support for the old system** as Steam and the steam-user library dropped support for it as well.",
+                "If you haven't already followed the previous message displayed on start to convert your accs: Delete your sentry files and restart the bot. You can find the location for your OS here: https://github.com/DoctorMcKay/node-steam-user#datadirectory\nIf you don't do this now your bot won't start after automatically updating to 2.13 as it must wait for you to input your Steam Guard Codes. Please do this now to avoid inconveniences later."
+            ];
+
             logger("", "", true);
-            logger("info", "Valve is changing the method of logging into Steam soon. The new system uses tokens which expire after 200 days, forcing you to **type in a Steam Guard Code every 200 days**.", true);
-            logger("", "       This sucks but we have to accept it. (This change does not affect accounts you have provided a shared_secret for, they'll work just like before)", true);
-            logger("", "       This bot will continue to support the old login style until it doesn't work anymore, any new accounts you add however will automatically use the new system.", true);
-            logger("", "\n       If you wish to convert your accounts now to not run into issues when this method stops working, delete/rename your sentry files and restart the bot. You'll need to type in the Steam Guard Code for every account again.", true);
-            logger("", "       You can find the sentry file location for your OS here: https://github.com/DoctorMcKay/node-steam-user#datadirectory", true);
+            logger("warn", loginFlowMsgs[0], true);
+            logger("",     loginFlowMsgs[1], true);
             logger("", "", true);
+
+            cachefile.ownerid.forEach(e => {
+                setTimeout(() => botobject[0].chat.sendFriendMessage(e, loginFlowMsgs[0]), 5000);  // Delay msgs a lot to make sure everyone receives them as Steam looovees to block long-ish msgs
+                setTimeout(() => botobject[0].chat.sendFriendMessage(e, loginFlowMsgs[1]), 15000);
+            });
 
 
             // Check tokens database for tokens that will soon expire
