@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:37:38
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 12:35:06
+ * Last Modified: 20.03.2023 13:34:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -71,7 +71,7 @@ module.exports.getAccountOrder = (checkLimitedFriend, allAccounts, accountsNeede
                 try {
                     // If bot account limitations can be read from obj and bot account is limited and hasn't target account in friend list
                     if (controller.botobject[accountOrder[i]].limitations && controller.botobject[accountOrder[i]].limitations.limited == true && !Object.keys(controller.botobject[accountOrder[i]].myFriends).includes(receiverSteamID)) {
-                        accsToAdd[requesterSteamID].push(`' steamcommunity.com/profiles/${new SteamID(String(controller.botobject[accountOrder[i]].steamID)).getSteamID64()} '`); // ...then push profile URL into array
+                        accsToAdd[requesterSteamID].push(`' steamcommunity.com/profiles/${cachefile.botaccid[accountOrder[i]]} '`); // ...then push profile URL into array
                     }
                 } catch (err) {
                     logger("error", "Error checking if comment requester is friend with limited bot accounts: " + err); // This error check was implemented as a temporary solution to fix this error (and should be fine since it seems that this error is rare and at least prevents from crashing the bot): https://github.com/HerrEurobeat/steam-comment-service-bot/issues/54

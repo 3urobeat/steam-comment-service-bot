@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 19.03.2023 15:02:37
+ * Last Modified: 20.03.2023 15:22:18
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -103,22 +103,18 @@ async function run() {
 
 
     /* ------------ Import data: ------------ */
-    var dataimportfile = await starter.checkAndGetFile("./src/controller/helpers/dataimport.js", logger, false, false);
+    let dataimportfile = await starter.checkAndGetFile("./src/controller/helpers/dataimport.js", logger, false, false);
     if (!dataimportfile) return;
 
     logger("info", "Importing data files and settings...", false, true, logger.animation("loading"));
 
-    var cache   = await dataimportfile.cache();
-    var extdata = await dataimportfile.extdata(cache);
-    var config  = await dataimportfile.config(cache);
-    var advancedconfig = await dataimportfile.advancedconfig(cache);
+    global.cachefile      = await dataimportfile.cache();
+    global.extdata        = await dataimportfile.extdata(cachefile);
+    global.config         = await dataimportfile.config(cachefile);
+    global.advancedconfig = await dataimportfile.advancedconfig(cachefile);
 
-    var logininfo = dataimportfile.logininfo();
+    let logininfo = dataimportfile.logininfo();
 
-    global.config         = config;
-    global.advancedconfig = advancedconfig;
-    global.extdata        = extdata;
-    global.cachefile      = cache;
 
     // Call optionsUpdateAfterConfigLoad() to set previously inaccessible options
     loggerfile.optionsUpdateAfterConfigLoad();

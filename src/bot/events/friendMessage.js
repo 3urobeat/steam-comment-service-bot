@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 18.03.2023 13:55:04
+ * Last Modified: 20.03.2023 12:56:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,7 +15,7 @@
  */
 
 
-const lastmessage = {}; // Tracks the last cmd usage of a normal command to apply cooldown if the user spams
+const SteamID = require("steamid");
 
 
 /**
@@ -32,15 +32,10 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
     var ready       = require("../../controller/ready.js");
     var mainfile    = require("../main.js");
 
-    var SteamID     = require("steamid");
-
     var lang        = mainfile.lang;
 
     var steam64id   = new SteamID(String(steamID)).getSteamID64();
     var ownercheck  = cachefile.ownerid.includes(steam64id);
-
-    // Check if user is blocked and ignore message
-    if (bot.myFriends[steam64id] == 1 || bot.myFriends[steam64id] == 6) return logger("debug", `[${thisbot}] Blocked user '${steam64id}' sent message: ${message}`); // Ignore messages from blocked users but log a debug message
 
 
     /**
@@ -80,30 +75,14 @@ module.exports.run = (loginindex, thisbot, bot, community, steamID, message) => 
     }
 
 
-    // Spam "protection" because spamming the bot is bad!
-    if (!lastmessage[steam64id] || lastmessage[steam64id][0] + advancedconfig.commandCooldown < Date.now()) lastmessage[steam64id] = [Date.now(), 0]; // Add user to array or Reset time
-    if (lastmessage[steam64id] && lastmessage[steam64id][0] + advancedconfig.commandCooldown > Date.now() && lastmessage[steam64id][1] > 5) return; // Just don't respond
-
-    if (lastmessage[steam64id] && lastmessage[steam64id][0] + advancedconfig.commandCooldown > Date.now() && lastmessage[steam64id][1] > 4) { // Inform the user about the cooldown
-        chatmsg(steamID, lang.userspamblock);
-        logger("info", `${steam64id} has been blocked for 90 seconds for spamming.`);
-
-        lastmessage[steam64id][0] += 90000;
-        lastmessage[steam64id][1]++;
-
-        return;
-    }
-
-    if (!ownercheck) lastmessage[steam64id][1]++; // Push new message to array if user isn't an owner
+    // Check if this event should be handled or if user is blocked
+    let isBlocked = require("../helpers/checkMsgBlock.js").checkMsgBlock(thisbot, bot, steamID, message, lang, chatmsg);
+    if (isBlocked) return; // Stop right here if user is blocked, on cooldown or not a friend
 
 
-    // log friend message but cut it if it is >= 75 chars
+    // Log friend message but cut it if it is >= 75 chars
     if (message.length >= 75) logger("info", `[${thisbot}] Friend message from ${steam64id}: ${message.slice(0, 75) + "..."}`);
         else logger("info", `[${thisbot}] Friend message from ${steam64id}: ${message}`);
-
-
-    // Deny non-friends the use of any command
-    if (bot.myFriends[steam64id] != 3) return chatmsg(steamID, lang.usernotfriend);
 
 
     if (loginindex === 0) { // Check if this is the main bot
