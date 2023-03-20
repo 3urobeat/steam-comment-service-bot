@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 17:34:13
+ * Last Modified: 20.03.2023 12:33:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -146,9 +146,27 @@ module.exports.config = (cache) => {
                 logger("", "", true, true);
                 logger("warn", "config.json seems to have lost it's data/is corrupted. Trying to restore from backup...", true);
 
-                // Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
-                if (cache.configjson) restoreBackup("config.json", "./config.json", srcdir + "/../config.json", cache.configjson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/config.json", resolve);
-                    else pullNewFile("config.json", "./config.json", srcdir + "/../config.json", resolve);
+                let restoreTimeout = 0; // Allow the following firststart check to delay the restore process so the user has time to read the info message
+
+                // Display an informational message about what happened if extdata.firststart is true
+                if (extdata && extdata.firststart) {
+                    logger("", logger.colors.fgred + "\n--------------------------------------" + logger.colors.reset, true);
+                    logger("", `${logger.colors.fgcyan}Hey!${logger.colors.reset} It seems like this is your first start and you made a formatting mistake in your '${logger.colors.fgcyan}config.json${logger.colors.reset}' file. Because of this I'm sadly ${logger.colors.fgcyan}unable to load${logger.colors.reset} the file.`, true);
+                    logger("", `You can stop the bot now by pressing ${logger.colors.fgcyan}CTRL+C${logger.colors.reset} to fix the issue. Please make sure that you exactly follow the format of the provided 'config.json' when filling in your settings.`, true);
+                    logger("", `Take a look at the default config here and pay attention to every ${logger.colors.fgcyan}"${logger.colors.reset} and ${logger.colors.fgcyan},${logger.colors.reset} as you most likely forgot one of them: ${logger.colors.fgcyan}${logger.colors.underscore}https://github.com/HerrEurobeat/steam-comment-service-bot/blob/master/config.json${logger.colors.reset}`, true);
+                    logger("", `You can also take a look at this blog post to learn more about JSON formatting: ${logger.colors.fgcyan}${logger.colors.underscore}https://stackoverflow.blog/2022/06/02/a-beginners-guide-to-json-the-data-format-for-the-internet/${logger.colors.reset}`, true);
+                    logger("", logger.colors.fgred + "--------------------------------------\n" + logger.colors.reset, true);
+                    logger("", "Restoring the config to default in 15 seconds...", true, false, logger.animation("waiting"));
+
+                    restoreTimeout = 15000; // Delay restore process by 10 secs
+                }
+
+                // Wait restoreTimeout ms if set by firststart check from above
+                setTimeout(() => {
+                    // Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
+                    if (cache.configjson) restoreBackup("config.json", "./config.json", srcdir + "/../config.json", cache.configjson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/config.json", resolve);
+                        else pullNewFile("config.json", "./config.json", srcdir + "/../config.json", resolve);
+                }, restoreTimeout);
             }
         }
     });
