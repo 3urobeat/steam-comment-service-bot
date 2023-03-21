@@ -4,7 +4,7 @@
  * Created Date: 03.11.2022 12:27:46
  * Author: 3urobeat
  *
- * Last Modified: 07.11.2022 11:07:07
+ * Last Modified: 21.03.2023 01:12:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -25,9 +25,8 @@ const login      = require("../../controller/login.js");
  * @param {String} thisbot The thisbot string of the calling account
  * @param {Object} logOnOptions The steam-user logOnOptions object
  * @param {SteamUser} bot The bot instance of the calling account
- * @param {String} thisproxy The proxy of the calling account
  */
-module.exports.handleLoginTimeout = (loginindex, thisbot, logOnOptions, bot, thisproxy) => {
+module.exports.handleLoginTimeout = (loginindex, thisbot, logOnOptions, bot) => {
     // Ignore if login timeout handler is disabled in advancedconfig
     if (advancedconfig.loginTimeout == 0) {
         logger("debug", `handleLoginTimeout(): Ignoring timeout attach request for bot${loginindex} because loginTimeout is disabled in advancedconfig!`);
@@ -56,7 +55,7 @@ module.exports.handleLoginTimeout = (loginindex, thisbot, logOnOptions, bot, thi
             logger("error", `Couldn't log in bot${loginindex} after ${login.additionalaccinfo[loginindex].logOnTries} attempt(s). Error: Login attempt timed out and all available logOnRetries were used.`, true);
 
             // Add additional messages for specific errors to hopefully help the user diagnose the cause
-            if (thisproxy != null) logger("", `        Is your proxy ${login.proxyShift - 1} offline or maybe blocked by Steam?`, true);
+            if (logOnOptions.proxy != null) logger("", `        Is your proxy ${login.proxyShift - 1} offline or maybe blocked by Steam?`, true);
 
             // Abort execution if account is bot0
             if (loginindex == 0) {
@@ -86,7 +85,7 @@ module.exports.handleLoginTimeout = (loginindex, thisbot, logOnOptions, bot, thi
 
             bot.logOff(); // Call logOff() just to be sure
 
-            require("../helpers/relogAccount.js").run(loginindex, thisbot, logOnOptions, bot, thisproxy, true); // Force relog with last param
+            require("../helpers/relogAccount.js").run(loginindex, thisbot, logOnOptions, bot, true); // Force relog with last param
         }
 
     }, advancedconfig.loginTimeout);

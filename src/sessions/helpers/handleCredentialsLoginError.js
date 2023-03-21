@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 13:22:39
  * Author: 3urobeat
  *
- * Last Modified: 13.10.2022 14:17:56
+ * Last Modified: 20.03.2023 22:03:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -52,7 +52,7 @@ sessionHandler.prototype._handleCredentialsLoginError = function(err) {
         setTimeout(() => {
             // Log login log message again with incremented logOnTries as otherwise this retry would go unnoticed in the output
             if (!this.additionalaccinfo.thisproxy) logger("info", `[${this.thisbot}] Trying to log in without proxy... (Attempt ${this.additionalaccinfo.logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
-                else logger("info", `[${this.thisbot}] Trying to log in with proxy ${this.additionalaccinfo.thisproxyindex}... (Attempt ${this.additionalaccinfo.logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+                else logger("info", `[${this.thisbot}] Trying to log in with proxy ${this.additionalaccinfo.proxyIndex}... (Attempt ${this.additionalaccinfo.logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
 
             this._attemptCredentialsLogin();
         }, 5000);

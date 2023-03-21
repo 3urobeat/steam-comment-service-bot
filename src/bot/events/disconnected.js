@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 13:21:47
+ * Last Modified: 21.03.2023 01:11:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -25,7 +25,7 @@ const login      = require("../../controller/login.js");
  * @param {String} thisbot The thisbot string of the calling account
  * @param {String} msg The msg parameter of the steam-user disconnected event
  */
-module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy, msg) => {
+module.exports.run = (loginindex, thisbot, logOnOptions, bot, msg) => {
 
     if (!controller.relogQueue) return; // Don't even try to check anything when cache of controller was already cleared (for example by restart function)
     if (controller.relogQueue.includes(loginindex)) return; // Disconnect is already handled
@@ -38,7 +38,7 @@ module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy, msg) =>
         logger("info", `${logger.colors.fggreen}[${thisbot}] Initiating a relog in ${advancedconfig.relogTimeout / 1000} seconds.`); // Announce relog
 
         setTimeout(() => {
-            require("../helpers/relogAccount.js").run(loginindex, thisbot, logOnOptions, bot, thisproxy);
+            require("../helpers/relogAccount.js").run(loginindex, thisbot, logOnOptions, bot);
         }, advancedconfig.relogTimeout);
     } else {
         logger("info", `[${thisbot}] I won't queue myself for a relog because this account is either already being relogged, was skipped or this is an intended logOff.`);

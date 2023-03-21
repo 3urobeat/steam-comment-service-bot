@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.11.2022 11:01:44
+ * Last Modified: 21.03.2023 01:11:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -27,10 +27,9 @@ const login      = require("../../controller/login.js");
  * @param {String} thisbot The thisbot string of the calling account
  * @param {Object} logOnOptions The steam-user logOnOptions object
  * @param {SteamUser} bot The bot instance of the calling account
- * @param {String} thisproxy The proxy of the calling account
  * @param {Boolean} force Forces an relog even if the account is already in relogQueue (important for steam-user error event while relog)
  */
-module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy, force) => {
+module.exports.run = (loginindex, thisbot, logOnOptions, bot, force) => {
 
     // Relog account if it is not already waiting in relogQueue or if force is true
     if (!controller.relogQueue.includes(loginindex) || force) {
@@ -64,11 +63,11 @@ module.exports.run = (loginindex, thisbot, logOnOptions, bot, thisproxy, force) 
             setTimeout(async () => {
                 login.additionalaccinfo[loginindex].logOnTries++; // Count login attempt
 
-                if (thisproxy == null) logger("info", `[${thisbot}] Trying to relog without proxy... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
-                    else logger("info", `[${thisbot}] Trying to relog with proxy ${login.additionalaccinfo[loginindex].thisproxyindex}... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+                if (logOnOptions.proxy == null) logger("info", `[${thisbot}] Trying to relog without proxy... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+                    else logger("info", `[${thisbot}] Trying to relog with proxy ${login.additionalaccinfo[loginindex].proxyIndex}... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
 
                 // Call unresponsive login helper to detect and force progress if this login attempt should get stuck
-                require("./handleLoginTimeout.js").handleLoginTimeout(loginindex, thisbot, logOnOptions, bot, thisproxy);
+                require("./handleLoginTimeout.js").handleLoginTimeout(loginindex, thisbot, logOnOptions, bot);
 
                 // Call our steam-session helper to get a valid refresh token for us
                 let sessionHandler = require(srcdir + "/sessions/sessionHandler.js");

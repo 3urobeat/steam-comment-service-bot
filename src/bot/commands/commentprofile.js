@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 13:31:56
+ * Last Modified: 20.03.2023 22:03:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -165,7 +165,7 @@ module.exports.comment = (receiverSteamID, steamID, lang, res, respond) => {
 
                     /* --------- No error, run this on every successful iteration --------- */
                     if (acpEntry.thisIteration == 0) { // Stuff below should only run in first iteration
-                        if (loginfile.proxies.length > 1) logger("info", `${logger.colors.fggreen}[${thisbot}] ${acpEntry.amount} Comment(s) requested. Comment on ${receiverSteamID} with proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}: ${String(comment).split("\n")[0]}`);
+                        if (loginfile.proxies.length > 1) logger("info", `${logger.colors.fggreen}[${thisbot}] ${acpEntry.amount} Comment(s) requested. Comment on ${receiverSteamID} with proxy ${loginfile.additionalaccinfo[botindex].proxyIndex}: ${String(comment).split("\n")[0]}`);
                             else logger("info", `${logger.colors.fggreen}[${thisbot}] ${acpEntry.amount} Comment(s) requested. Comment on ${receiverSteamID}: ${String(comment).split("\n")[0]}`); // Splitting \n to only get first line of multi line comments
 
 
@@ -194,7 +194,7 @@ module.exports.comment = (receiverSteamID, steamID, lang, res, respond) => {
 
                     } else { // Stuff below should only run for child accounts
                         if (!error) {
-                            if (loginfile.proxies.length > 1) logger("info", `[${thisbot}] Comment ${acpEntry.thisIteration + 1}/${acpEntry.amount} on ${receiverSteamID} with proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}: ${String(comment).split("\n")[0]}`);
+                            if (loginfile.proxies.length > 1) logger("info", `[${thisbot}] Comment ${acpEntry.thisIteration + 1}/${acpEntry.amount} on ${receiverSteamID} with proxy ${loginfile.additionalaccinfo[botindex].proxyIndex}: ${String(comment).split("\n")[0]}`);
                                 else logger("info", `[${thisbot}] Comment ${acpEntry.thisIteration + 1}/${acpEntry.amount} on ${receiverSteamID}: ${String(comment).split("\n")[0]}`); // Splitting \n to only get first line of multi line comments
                         }
                     }

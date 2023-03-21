@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 18:25:58
+ * Last Modified: 20.03.2023 22:03:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -44,7 +44,7 @@ module.exports.handleCriticalCommentErrors = (botindex, methodName, receiverStea
     // TODO: Rewrite to push all remaining comments at once and break loop
     // Check if profile is not anymore in mainfile.activecommentprocess obj or status is not active anymore (for example by using !abort)
     if (!acpEntry || acpEntry.status == "aborted") {
-        mainfile.failedcomments[receiverSteamID][`c${acpEntry.thisIteration + 1} bot${botindex} p${loginfile.additionalaccinfo[botindex].thisproxyindex}`] = "Skipped because user aborted comment process."; // Push reason to mainfile.failedcomments obj
+        mainfile.failedcomments[receiverSteamID][`c${acpEntry.thisIteration + 1} bot${botindex} p${loginfile.additionalaccinfo[botindex].proxyIndex}`] = "Skipped because user aborted comment process."; // Push reason to mainfile.failedcomments obj
 
         logger("debug", "handleCriticalCommentErrors(): Skipping iteration because user aborted comment process");
 
@@ -61,7 +61,7 @@ module.exports.handleCriticalCommentErrors = (botindex, methodName, receiverStea
 
 
     // Skip comments on failed proxies
-    var thisproxy     = loginfile.additionalaccinfo[botindex].thisproxyindex;
+    var thisproxy     = loginfile.additionalaccinfo[botindex].proxyIndex;
     var failedProxies = [];
 
     Object.keys(mainfile.failedcomments[receiverSteamID]).forEach((e) => {
@@ -90,7 +90,7 @@ module.exports.handleCriticalCommentErrors = (botindex, methodName, receiverStea
                     m = 0;
                 }
 
-                if (l > acpEntry.thisIteration && loginfile.additionalaccinfo[m].thisproxyindex == thisproxy) { // Only push if we arrived at an iteration that uses a failed proxy and has not been sent already
+                if (l > acpEntry.thisIteration && loginfile.additionalaccinfo[m].proxyIndex == thisproxy) { // Only push if we arrived at an iteration that uses a failed proxy and has not been sent already
                     mainfile.failedcomments[receiverSteamID][`c${l} bot${m} p${thisproxy}`] = `${methodName} error: Skipped because of previous HTTP 429 error.`; // Push reason to mainfile.failedcomments obj
                 }
 
@@ -155,7 +155,7 @@ module.exports.handleCommentErrors = (error, botindex, methodName, receiverSteam
 
 
     var acpEntry  = mainfile.activecommentprocess[receiverSteamID]; // Make using the obj shorter
-    var thisproxy = loginfile.additionalaccinfo[botindex].thisproxyindex;
+    var thisproxy = loginfile.additionalaccinfo[botindex].proxyIndex;
     var errordesc = "";
 
 
@@ -165,7 +165,7 @@ module.exports.handleCommentErrors = (error, botindex, methodName, receiverSteam
             errordesc = "This account has commented too often recently and has been blocked by Steam for a few minutes.\nPlease wait a moment and then try again.";
 
             // Add 5 minutes of extra cooldown to all bot accounts that are also using this proxy
-            acpEntry.accounts = acpEntry.accounts.concat(Object.keys(loginfile.additionalaccinfo).filter(e => loginfile.additionalaccinfo[e].thisproxyindex == thisproxy && !acpEntry.accounts.includes(e)));
+            acpEntry.accounts = acpEntry.accounts.concat(Object.keys(loginfile.additionalaccinfo).filter(e => loginfile.additionalaccinfo[e].proxyIndex == thisproxy && !acpEntry.accounts.includes(e)));
             acpEntry.until = Date.now() + 300000; // Now + 5 min
 
             break;
@@ -199,13 +199,13 @@ module.exports.handleCommentErrors = (error, botindex, methodName, receiverSteam
 
     // Log error and continue with next iteration (if this is a critical error then handleCriticalCommentErrors() above will take action)
     if (loginfile.proxies.length > 1) {
-        logger("error", `[${thisbot}] ${methodName} ${acpEntry.thisIteration + 1}/${numberOfComments} error (using proxy ${loginfile.additionalaccinfo[botindex].thisproxyindex}): ${error}\nRequest info - noc: ${numberOfComments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - receiver: ${receiverSteamID}`);
+        logger("error", `[${thisbot}] ${methodName} ${acpEntry.thisIteration + 1}/${numberOfComments} error (using proxy ${loginfile.additionalaccinfo[botindex].proxyIndex}): ${error}\nRequest info - noc: ${numberOfComments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - receiver: ${receiverSteamID}`);
 
-        mainfile.failedcomments[receiverSteamID][`c${acpEntry.thisIteration + 1} bot${botindex} p${loginfile.additionalaccinfo[botindex].thisproxyindex}`] = `${methodName} error: ${error} [${errordesc}]`;
+        mainfile.failedcomments[receiverSteamID][`c${acpEntry.thisIteration + 1} bot${botindex} p${loginfile.additionalaccinfo[botindex].proxyIndex}`] = `${methodName} error: ${error} [${errordesc}]`;
     } else {
         logger("error", `[${thisbot}] ${methodName} ${acpEntry.thisIteration + 1}/${numberOfComments} error: ${error}\nRequest info - noc: ${numberOfComments} - accs: ${Object.keys(controller.botobject).length} - delay: ${config.commentdelay} - receiver: ${receiverSteamID}`);
 
-        mainfile.failedcomments[receiverSteamID][`c${acpEntry.thisIteration + 1} bot${botindex} p${loginfile.additionalaccinfo[botindex].thisproxyindex}`] = `${methodName} error: ${error} [${errordesc}]`;
+        mainfile.failedcomments[receiverSteamID][`c${acpEntry.thisIteration + 1} bot${botindex} p${loginfile.additionalaccinfo[botindex].proxyIndex}`] = `${methodName} error: ${error} [${errordesc}]`;
     }
 
 };

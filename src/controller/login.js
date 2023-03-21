@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.10.2022 11:32:41
+ * Last Modified: 20.03.2023 22:41:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+
+const Bot = require("../bot/bot.js");
 
 
 /**
@@ -35,7 +37,6 @@ module.exports.startlogin = (logininfo) => {
     var controller = require("./controller.js");
     var ascii      = require("../data/ascii.js");
     var round      = require("./helpers/round.js");
-    var b          = require("../bot/bot.js");
 
     module.exports.proxies = require("./helpers/dataimport.js").proxies();
     if (!this.proxies) return; // Make sure ascii art isn't getting printed below error message
@@ -125,7 +126,7 @@ module.exports.startlogin = (logininfo) => {
                             logOnOptions["steamGuardCodeForRelog"] = logininfo[k][2]; // Add raw shared_secret to obj as well to be able to access it more easily from relogAccount.js
                         }
 
-                        b.run(logOnOptions, i); // Run bot.js with this account
+                        new Bot(logOnOptions, i); // Run bot.js with this account
                     }, advancedconfig.loginDelay * Number(i > 0)); // Ignore delay for first account
                 }
             }, 250);
