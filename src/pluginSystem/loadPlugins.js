@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:46:09
  * Author: 3urobeat
  *
- * Last Modified: 19.03.2023 14:45:30
+ * Last Modified: 21.03.2023 00:56:42
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -17,57 +17,51 @@
 
 const fs = require("fs");
 
+const PluginSystem = require("./pluginSystem.js");
+
 
 /**
- * Load all plugins in /plugins dir
- * @returns {Promise} Promise that returns {@link {Object<string, object>} plugins (all plugins, key: name, value: everything that is exported by plugin)} if resolved and {@link {Object} empty object} if rejected.
+ * Internal: Loads all plugins in /plugins dir and exports them as PluginSystem.pluginList object
  */
-module.exports.loadPlugins = () => {
+PluginSystem.prototype._loadPlugins = function() {
+    this.pluginList = {};
 
     logger("info", "PluginSystem: Loading all plugins in /plugins directory...", false, true, logger.animation("loading"));
 
-    return new Promise((resolve, reject) => {
-        let plugins = {};
+    fs.readdir("./plugins", (err, files) => {
 
-        fs.readdir("./plugins", (err, files) => {
+        // Stop now on error or if nothing was found
+        if (err)               return logger("error", "Error while reading plugins dir: " + err, true);
+        if (files.length == 0) return logger("info", "No plugins in ./plugins found!", false, true, logger.animation("loading"));
 
-            // Check for any errors and reject promise
-            if (err) {
-                logger("error", "Error while reading plugins dir: " + err, true);
-                return reject({});
-            }
+        // Iterate over all folders in this dir
+        files.forEach((e) => {
+            let thisPlugin;
 
-            // Resolve now if nothing was found
-            if (files.length == 0) {
-                logger("info", "No plugins in ./plugins found!", false, true, logger.animation("loading"));
-                resolve(plugins);
-            }
-
-            // Iterate over all folders in this dir
-            files.forEach((e, i) => {
-                let thisPlugin;
-
-                // Try to load plugin
-                try {
-                    logger("debug", `Loading plugin ${e}...`);
-                    thisPlugin = require(`../../plugins/${e}/plugin.js`);
-                } catch (err) {
-                    return logger("error", `Error loading plugin '${e}'! Error: ${err}`, true);
-                }
+            // Try to load plugin
+            try {
+                // Load the plugin file
+                thisPlugin = require(`../../plugins/${e}/plugin.js`);
 
                 // Ignore template plugin
-                if (thisPlugin.info.name != "template") {
-                    // Check if plugin with same name was already found and print error msg, otherwise add plugin to obj
-                    if (Object.keys(plugins).includes(thisPlugin.info.name)) logger("warn", `Duplicate plugin with the name ${thisPlugin.info.name} found! Ignoring this plugin...`, true);
-                        else plugins[thisPlugin.info.name] = thisPlugin;
-                }
+                if (thisPlugin.info.name == "template") return;
 
-                // Resolve promise on last iteration
-                if (i + 1 == files.length) {
-                    if (Object.keys(plugins).length == 0) logger("info", "No plugins in ./plugins found!", false, true, logger.animation("loading"));
-                    resolve(plugins);
-                }
-            });
+
+                // Call the plugin's load function
+                logger("info", `Loading plugin ${thisPlugin.info.name} v${thisPlugin.info.version} by ${thisPlugin.info.author}...`, false, true, logger.animation("loading"));
+
+                thisPlugin.load(this); // Call the exported load function and pass a reference to the pluginSystem
+
+
+                // Check if plugin with same name was already found and print error msg, otherwise add plugin to obj
+                if (Object.keys(this.pluginList).includes(thisPlugin.info.name)) return logger("warn", `Duplicate plugin with the name ${thisPlugin.info.name} found! Ignoring this plugin...`, true);
+
+                this.pluginList[thisPlugin.info.name] = thisPlugin;
+
+            } catch (err) {
+
+                return logger("error", `Error loading plugin '${e}'! Error: ${err.stack}`, true);
+            }
         });
     });
 };

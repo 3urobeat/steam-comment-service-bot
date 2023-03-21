@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 19.03.2023 15:03:01
+ * Last Modified: 21.03.2023 00:55:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -15,44 +15,23 @@
  */
 
 
-// This file provides an interface of functions called by the controller which plugins can hook into
-
-
-const loadPlugins = require("./loadPlugins.js").loadPlugins;
-
-
 /**
- * The plugin system loads all plugins and provides functions for plugins to hook into
+ * Constructor - The plugin system loads all plugins and provides functions for plugins to hook into
+ * @param {Object.<String, SteamUser>} botobject Object containing references to the SteamUser instance of every bot account which is used for interacting with Steam
+ * @param {Object.<String, SteamCommunity>} communityobject Object containing references to the SteamCommunity instance of every bot account which is used for interacting with the SteamCommunity
  */
-class PluginSystem {
+const PluginSystem = function(botobject, communityobject) {
 
-    // Constructor
-    constructor(botobject, communityobject) {
-        this.botobject       = botobject;
-        this.communityobject = communityobject;
+    this.botobject       = botobject;
+    this.communityobject = communityobject;
 
-        this._loadPlugins();
-    }
+    // Load helper files
+    require("./loadPlugins.js");
 
+    // Load all plugins now
+    this._loadPlugins();
 
-    /* -------- Internal functions -------- */
-
-    /**
-     * Internal: Loads all plugins from /plugins dir
-     */
-    async _loadPlugins() {
-        this.pluginList = await loadPlugins();
-    }
-
-
-    /* -------- External functions for hooking -------- */
-
-    /**
-     * Executed when the bot is done logging in all accounts
-     */
-    botIsReady() {}
-
-}
+};
 
 
 // The plugin system loads all plugins and provides functions for plugins to hook into

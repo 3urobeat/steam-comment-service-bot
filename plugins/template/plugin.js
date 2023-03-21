@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 09:37:57
  * Author: 3urobeat
  *
- * Last Modified: 19.03.2023 13:53:38
+ * Last Modified: 20.03.2023 23:24:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -15,26 +15,24 @@
  */
 
 
-const SteamUser      = require("steam-user"); //eslint-disable-line
-const SteamCommunity = require("steamcommunity"); //eslint-disable-line
-const SteamID        = require("steamid"); //eslint-disable-line
+const PluginSystem = require("../../src/pluginSystem/pluginSystem.js"); // eslint-disable-line
+
+const SteamID = require("steamid");
 
 
 /**
- * This function will be called by the plugin loader when the bot finished logging in. Initialize your plugin here.
- * @param {SteamUser} mainBot The main bot account (botobject[0]), the account you interact with, the account listening for events etc.
- * @param {Object.<number, SteamUser>} botobject Object of all bot accounts SteamUser instances (used for general steam interactions)
- * @param {Object.<number, SteamCommunity>} communityobject Object of all bot accounts SteamCommunity instances (used for community interactions like commenting etc.)
+ * This function will be called by the plugin loader after updating but before logging in. Initialize your plugin here.
+ * @param {PluginSystem} sys Your connector to the application
  */
-module.exports.run = (mainBot, botobject, communityobject) => { //eslint-disable-line
+module.exports.load = (sys) => { //eslint-disable-line
 
     logger("info", "Hello World!"); // Log something for example
 
 
     // Example of pretending the first owner used the '!ping' command
-    var firstOwnerSteamID = new SteamID(cachefile.ownerid[0]); // Makes a steamID object of the first owner so we can pass it to the friendMessage event
+    let firstOwnerSteamID = new SteamID(cachefile.ownerid[0]); // Makes a steamID object of the first owner so we can pass it to the friendMessage event
 
-    mainBot.emit("friendMessage", firstOwnerSteamID, "!ping"); // Pretend like the first owner send the bot the message "!ping" - Result: The bot will send you a response
+    //sys.botobject[0].emit("friendMessage", firstOwnerSteamID, "!ping"); // Pretend like the first owner send the bot the message "!ping" - Result: The bot will send you a response
 
 };
 
@@ -60,4 +58,4 @@ module.exports.info = {
  * @param {Array} animation Call `logger.animation("animation-name")` in this parameter to get pre-defined animations. Valid animation-name's: loading, waiting, bounce, progress, arrows, bouncearrows
  * @returns {String} The full formatted message which will be logged
  */
-var logger = global.logger;
+const logger = global.logger;

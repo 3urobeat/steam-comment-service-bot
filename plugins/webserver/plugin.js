@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 14:12:17
  * Author: 3urobeat
  *
- * Last Modified: 19.03.2023 14:10:01
+ * Last Modified: 21.03.2023 00:57:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -15,8 +15,7 @@
  */
 
 
-const SteamUser      = require("steam-user"); //eslint-disable-line
-const SteamCommunity = require("steamcommunity"); //eslint-disable-line
+const PluginSystem   = require("../../src/pluginSystem/pluginSystem.js"); // eslint-disable-line
 const SteamID        = require("steamid"); //eslint-disable-line
 const fs             = require("fs");
 const express        = require("express");
@@ -25,12 +24,10 @@ const advancedconfig = require("../../advancedconfig.json");
 
 
 /**
- * This function will be called by the plugin loader when the bot finished logging in. Initialize your plugin here.
- * @param {SteamUser} mainBot The main bot account (botobject[0]), the account you interact with, the account listening for events etc.
- * @param {Object.<number, SteamUser>} botobject Object of all bot accounts SteamUser instances (used for general steam interactions)
- * @param {Object.<number, SteamCommunity>} communityobject Object of all bot accounts SteamCommunity instances (used for community interactions like commenting etc.)
+ * This function will be called by the plugin loader after updating but before logging in. Initialize your plugin here.
+ * @param {PluginSystem} sys Your connector to the application
  */
-module.exports.run = (mainBot, botobject, communityobject) => { //eslint-disable-line
+module.exports.load = (sys) => { //eslint-disable-line
 
     if (advancedconfig.enableurltocomment) {
         const controller = require("../../src/controller/controller.js");

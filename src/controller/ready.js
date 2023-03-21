@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 19.03.2023 14:47:29
+ * Last Modified: 19.03.2023 23:33:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -194,17 +194,6 @@ module.exports.readyCheck = (logininfo) => {
 
             fs.writeFile(srcdir + "/data/data.json", JSON.stringify(extdata, null, 4), err => { // Write changes
                 if (err) logger("error", "change extdata to false error: " + err);
-            });
-
-
-            // Run all loaded plugins
-            Object.values(controller.pluginSystem.pluginList).forEach((e) => {
-                try {
-                    logger("info", `Running plugin ${e.info.name} v${e.info.version} by ${e.info.author}...`, false, true, logger.animation("loading"));
-                    e.run(botobject[0], botobject, communityobject);
-                } catch (err) {
-                    logger("error", `Error running plugin ${e.info.name}! Error:\n${err.stack}`);
-                }
             });
 
 
