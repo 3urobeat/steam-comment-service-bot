@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 22.03.2023 20:48:17
+ * Last Modified: 23.03.2023 00:17:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -25,6 +25,17 @@ const starter = require("../starter.js"); // Load starter to access checkAndGetF
 const DataManager = function(controller) {
     this.controller      = controller;
     this.checkAndGetFile = starter.checkAndGetFile; // Reference checkAndGetFile() already defined in starter to use it more easily
+
+    // Register dataImport vars to let the IntelliSense know
+    this.cachefile      = {};
+    this.datafile       = {};
+    this.config         = {};
+    this.advancedconfig = {};
+    this.logininfo      = {};
+    this.proxies        = [];
+    this.quotes         = [];
+    this.lang           = {};
+    this.lastCommentDB  = {};
 
     // Load helpers
     if (!this.checkAndGetFile("./src/dataManagement/dataImport.js",         controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataImport.js'!");

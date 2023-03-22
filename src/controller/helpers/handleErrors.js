@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:53:37
  * Author: 3urobeat
  *
- * Last Modified: 22.03.2023 12:43:42
+ * Last Modified: 23.03.2023 00:20:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -37,7 +37,7 @@ Controller.prototype._handleErrors = function() {
             logger("", "", true);
             logger("info", "Cannot find module error detected. Trying to fix error by reinstalling modules...\n");
 
-            require("./helpers/npminteraction.js").reinstallAll(logger, (err, stdout) => { //eslint-disable-line
+            require("./npminteraction.js").reinstallAll(logger, (err, stdout) => { //eslint-disable-line
                 if (err) {
                     logger("error", "I was unable to reinstall all modules. Please try running 'npm install' manually. Error: " + err);
                     return process.send("stop()");
