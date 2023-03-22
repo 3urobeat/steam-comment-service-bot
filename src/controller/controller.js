@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 22.03.2023 23:06:36
+ * Last Modified: 22.03.2023 23:08:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -72,24 +72,15 @@ async function run() {
     logger("", "---------------------------------------------------------", true, true);
 
 
-    /* ------------ Import data: ------------ */
-    let dataimportfile = await starter.checkAndGetFile("./src/controller/helpers/dataimport.js", logger, false, false);
-    if (!dataimportfile) return;
+    /* ------------ Init dataManagement system: ------------ */
+    if (!checkAndGetFile("./src/dataManagement/dataManagement.js", logger, false, false)) return;
+    let DataManager = require("../dataManagement/dataManagement.js");
 
-    logger("info", "Importing data files and settings...", false, true, logger.animation("loading"));
-
-    global.cachefile      = await dataimportfile.cache();
-    global.extdata        = await dataimportfile.extdata(cachefile);
-    global.config         = await dataimportfile.config(cachefile);
-    global.advancedconfig = await dataimportfile.advancedconfig(cachefile);
-
-    let logininfo = dataimportfile.logininfo();
+    this.data = new DataManager(this); // All functions provided by the DataManager, as well as all imported file data will be accessible here
 
 
     // Call optionsUpdateAfterConfigLoad() to set previously inaccessible options
     loggerfile.optionsUpdateAfterConfigLoad();
-
-    module.exports.lastcomment = dataimportfile.lastcomment();
 
 
     /* ------------ Change terminal title: ------------ */
