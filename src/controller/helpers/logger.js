@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.10.2022 09:13:16
+ * Last Modified: 23.03.2023 00:14:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -16,6 +16,7 @@
 
 
 const outputlogger = require("output-logger"); // Look Mom, it's my own library!
+
 
 // Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)  (animation speed and printDebug will be changed later in controller.js after advancedconfig import)
 outputlogger.options({
@@ -57,11 +58,13 @@ module.exports.logger = (type, str, nodate, remove, animation, printNow) => { //
     }
 };
 
+global.logger = this.logger;
+
 
 /**
  * Call this function after loading advancedconfig.json to set previously inaccessible options
  */
-module.exports.optionsUpdateAfterConfigLoad = () => {
+module.exports.optionsUpdateAfterConfigLoad = (advancedconfig) => {
     outputlogger.options({
         animationinterval: advancedconfig.logAnimationSpeed,
         printdebug: advancedconfig.printDebug

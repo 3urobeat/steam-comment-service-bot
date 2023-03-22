@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 20.03.2023 22:41:11
+ * Last Modified: 23.03.2023 00:35:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -29,17 +29,17 @@ module.exports.steamGuardInputTimeFunc = (arg) => { // Small function to return 
 
 /**
   * Prints an ASCII Art and starts to login all bot accounts
-  * @param {Object} logininfo The logininfo object
   */
-module.exports.startlogin = (logininfo) => {
+module.exports.startlogin = (controller) => {
+    console.log(controller.skippedaccounts)
+    process.send("stop()")
+
     var SteamTotp  = require("steam-totp");
 
-    var controller = require("./controller.js");
     var ascii      = require("../data/ascii.js");
     var round      = require("./helpers/round.js");
 
-    module.exports.proxies = require("./helpers/dataimport.js").proxies();
-    if (!this.proxies) return; // Make sure ascii art isn't getting printed below error message
+    module.exports.proxies = controller.data.proxies; // TODO: Compatibility
 
     module.exports.steamGuardInputTime = 0;
     module.exports.accisloggedin       = true; // Var to check if previous acc is logged on (in case steamGuard event gets fired) -> set to true for first account
@@ -69,9 +69,9 @@ module.exports.startlogin = (logininfo) => {
     logger("debug", "Evaluating estimated login time...");
 
     if (extdata.timesloggedin < 5) { // Only use "intelligent" evaluation method when the bot was started more than 5 times
-        var estimatedlogintime = ((advancedconfig.loginDelay * (Object.keys(logininfo).length - 1 - controller.skippedaccounts.length)) / 1000) + 5; // 5 seconds tolerance
+        var estimatedlogintime = ((advancedconfig.loginDelay * (Object.keys(controller.data.logininfo).length - 1 - controller.skippedaccounts.length)) / 1000) + 5; // 5 seconds tolerance
     } else {
-        var estimatedlogintime = ((extdata.totallogintime / extdata.timesloggedin) + (advancedconfig.loginDelay / 1000)) * (Object.keys(logininfo).length - controller.skippedaccounts.length);
+        var estimatedlogintime = ((extdata.totallogintime / extdata.timesloggedin) + (advancedconfig.loginDelay / 1000)) * (Object.keys(controller.data.logininfo).length - controller.skippedaccounts.length);
     }
 
     var estimatedlogintimeunit = "seconds";
@@ -85,7 +85,7 @@ module.exports.startlogin = (logininfo) => {
     // Start starting bot.js for each account
     logger("info", "Loading logininfo for each account...", false, true, logger.animation("loading"));
 
-    Object.keys(logininfo).forEach((k, i) => { // Log all accounts in with the logindelay
+    Object.keys(controller.data.logininfo).forEach((k, i) => { // Log all accounts in with the logindelay
         setTimeout(() => {
             var startnextinterval = setInterval(() => { // Run check every x ms
 
@@ -94,7 +94,7 @@ module.exports.startlogin = (logininfo) => {
                     clearInterval(startnextinterval); // Stop checking
 
                     // Start ready check on last iteration
-                    if (Object.keys(logininfo).length == i + 1) require("./ready.js").readyCheck(logininfo);
+                    if (Object.keys(controller.data.logininfo).length == i + 1) require("./ready.js").readyCheck(controller.data.logininfo);
 
                     // If this iteration exists in the skippedaccounts array, automatically skip acc again
                     if (controller.skippedaccounts.includes(i)) {
@@ -112,18 +112,18 @@ module.exports.startlogin = (logininfo) => {
 
                         // Define logOnOptions
                         var logOnOptions = {
-                            accountName: logininfo[k][0],
-                            password: logininfo[k][1],
+                            accountName: controller.data.logininfo[k][0],
+                            password: controller.data.logininfo[k][1],
                             machineName: `${extdata.mestr}'s Comment Bot`,       // For steam-user
                             deviceFriendlyName: `${extdata.mestr}'s Comment Bot` // For steam-session
                         };
 
                         // If a shared secret was provided in the logininfo then add it to logOnOptions object
-                        if (logininfo[k][2] && logininfo[k][2] != "" && logininfo[k][2] != "shared_secret") {
+                        if (controller.data.logininfo[k][2] && controller.data.logininfo[k][2] != "" && controller.data.logininfo[k][2] != "shared_secret") {
                             logger("debug", `Found shared_secret for ${k}! Generating AuthCode and adding it to logOnOptions...`);
 
-                            logOnOptions["steamGuardCode"] = SteamTotp.generateAuthCode(logininfo[k][2]);
-                            logOnOptions["steamGuardCodeForRelog"] = logininfo[k][2]; // Add raw shared_secret to obj as well to be able to access it more easily from relogAccount.js
+                            logOnOptions["steamGuardCode"] = SteamTotp.generateAuthCode(controller.data.logininfo[k][2]);
+                            logOnOptions["steamGuardCodeForRelog"] = controller.data.logininfo[k][2]; // Add raw shared_secret to obj as well to be able to access it more easily from relogAccount.js
                         }
 
                         new Bot(logOnOptions, i); // Run bot.js with this account

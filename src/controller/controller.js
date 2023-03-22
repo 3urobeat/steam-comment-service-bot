@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 22.03.2023 23:08:44
+ * Last Modified: 23.03.2023 00:41:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,43 +15,44 @@
  */
 
 
-
 /**
- * Runs the controller which runs & controls the bot.
+ * Constructor - Initializes the controller and starts all bot accounts
  */
-async function run() {
-    var starter = require("../starter.js");
-    let checkAndGetFile = require("../starter.js").checkAndGetFile; // Temp var to use checkAndGetFile() before it is referenced in DataManager
+const Controller = function() {
+    this.srcdir = srcdir; // Let users see the global var srcdir more easily
 
-    /* ------------ Export various variables: ------------ */
+    /* ------------ Store various stuff: ------------ */ // TODO: Remove unnecessary variables from below
+    this.info = {};
+    this.info.bootStartTimestamp = Date.now(); // Save timestamp to be able to calculate startup time in ready event
+
     module.exports.botobject            = {};         // Tracks the bot instances of all accounts to be able to access them from anywhere
     module.exports.communityobject      = {};         // Tracks the community instances of all accounts to be able to access them from anywhere
 
-    module.exports.bootstart            = Date.now();
     module.exports.relogQueue           = [];
     module.exports.readyafterlogs       = [];         // Array to save suppressed logs during startup that get logged by ready.js
     module.exports.relogAfterDisconnect = true;       // Allows to prevent accounts from relogging when calling bot.logOff()
     module.exports.activeRelog          = false;      // Allows to block new comment requests when waiting for the last request to finish
 
+};
 
-    /* ------------ Add unhandled rejection catches: ------------ */
-    var logger = (type, str) => { // Make a "fake" logger function in order to be able to log the error message when the user forgot to run 'npm install'
-        logafterrestart.push(`${type} | ${str}`); // Push message to array that will be carried through restart
-        console.log(`${type} | ${str}`);
-    };
 
-    logger.animation = () => {}; // Just to be sure that no error occurs when trying to call this function without the real logger being present
-
+/**
+ * Internal: Inits the DataManager system, runs the updater and starts all bot accounts
+ */
+Controller.prototype._start = async function() {
+    let checkAndGetFile = require("../starter.js").checkAndGetFile; // Temp var to use checkAndGetFile() before it is referenced in DataManager
 
     /* ------------ Init error handler: ------------ */
     if (!checkAndGetFile("./src/controller/helpers/handleErrors.js", logger, false, false)) return;
     this._handleErrors();
 
-    /* ------------ Introduce logger function: ------------ */
-    var loggerfile = await starter.checkAndGetFile("./src/controller/helpers/logger.js", logger, false, false);
 
-    logger = loggerfile.logger;
-    global.logger = logger;
+    /* ------------ Introduce logger function: ------------ */
+    if (!checkAndGetFile("./src/controller/helpers/logger.js", logger, false, false)) return;
+    let loggerfile = require("./helpers/logger.js");
+
+    logger      = loggerfile.logger; // Update "fake" logger with "real" logger
+    this.logger = loggerfile.logger; // Add logger to controller object to let users see the global function more easily
 
     // Log held back messages from before this start
     if (logafterrestart.length > 0) {
@@ -64,12 +65,7 @@ async function run() {
         });
     }
 
-    logafterrestart = []; // Clear array
-
-
-    /* ------------ Mark new execution in output: ------------ */
-    logger("", "\n\nBootup sequence started...", true, true);
-    logger("", "---------------------------------------------------------", true, true);
+    logafterrestart = []; // Clear array // TODO: Export logafterrestart or smth
 
 
     /* ------------ Init dataManagement system: ------------ */
@@ -79,22 +75,37 @@ async function run() {
     this.data = new DataManager(this); // All functions provided by the DataManager, as well as all imported file data will be accessible here
 
 
+    /* ------------ Mark new execution in output: ------------ */
+    logger("", "\n\nBootup sequence started...", true, true);
+    logger("", "---------------------------------------------------------", true, true);
+
+
+    /* ------------ Import data: ------------ */
+    await this.data._importFromDisk();
+
+    // TODO: Remove, exists for compatibility
+    global.cachefile      = this.data.cachefile;
+    global.extdata        = this.data.datafile;
+    global.config         = this.data.config;
+    global.advancedconfig = this.data.advancedconfig;
+    module.exports.lastcomment = this.data.lastCommentDB;
+
     // Call optionsUpdateAfterConfigLoad() to set previously inaccessible options
-    loggerfile.optionsUpdateAfterConfigLoad();
+    loggerfile.optionsUpdateAfterConfigLoad(this.data.advancedconfig);
 
 
     /* ------------ Change terminal title: ------------ */
     if (process.platform == "win32") { // Set node process name to find it in task manager etc.
-        process.title = `${extdata.mestr}'s Steam Comment Service Bot v${extdata.versionstr} | ${process.platform}`; // Windows allows long terminal/process names
+        process.title = `${this.data.datafile.mestr}'s Steam Comment Service Bot v${this.data.datafile.versionstr} | ${process.platform}`; // Windows allows long terminal/process names
     } else {
-        process.stdout.write(`${String.fromCharCode(27)}]0;${extdata.mestr}'s Steam Comment Service Bot v${extdata.versionstr} | ${process.platform}${String.fromCharCode(7)}`); // Sets terminal title (thanks: https://stackoverflow.com/a/30360821/12934162)
+        process.stdout.write(`${String.fromCharCode(27)}]0;${this.data.datafile.mestr}'s Steam Comment Service Bot v${this.data.datafile.versionstr} | ${process.platform}${String.fromCharCode(7)}`); // Sets terminal title (thanks: https://stackoverflow.com/a/30360821/12934162)
         process.title = "CommentBot"; // Sets process title in task manager etc.
     }
 
 
     /* ------------ Print some diagnostic messages to log: ------------ */
-    logger("info", `steam-comment-service-bot made by ${extdata.mestr} version ${extdata.versionstr} (${extdata.branch})`, false, true, logger.animation("loading"));
-    logger("info", `This is start number ${extdata.timesloggedin + 1} (firststart ${extdata.firststart}) on ${process.platform} with node.js ${process.version}...`, false, true, logger.animation("loading"));
+    logger("info", `steam-comment-service-bot made by ${this.data.datafile.mestr} version ${this.data.datafile.versionstr} (${this.data.datafile.branch})`, false, true, logger.animation("loading"));
+    logger("info", `This is start number ${this.data.datafile.timesloggedin + 1} (firststart ${this.data.datafile.firststart}) on ${process.platform} with node.js ${process.version}...`, false, true, logger.animation("loading"));
 
 
     // Check for unsupported node.js version (<14.15.0)
@@ -102,9 +113,7 @@ async function run() {
 
     versionarr.forEach((e, i) => { if (e.length == 1 && parseInt(e) < 10) versionarr[i] = `0${e}`; }); // Put 0 in front of single digits
 
-    let parsednodeversion = parseInt(versionarr.join(""));
-
-    if (parsednodeversion < 141500) {
+    if (parseInt(versionarr.join("")) < 141500) {
         logger("", "\n************************************************************************************\n", true);
         logger("error", `This application requires at least node.js ${logger.colors.reset}v14.15.0${logger.colors.fgred} but you have ${logger.colors.reset}${process.version}${logger.colors.fgred} installed!\n        Please update your node.js installation: ${logger.colors.reset} https://nodejs.org/`, true);
         logger("", "\n************************************************************************************\n", true);
@@ -113,39 +122,39 @@ async function run() {
 
 
     // Display warning/notice if user is running in beta mode
-    if (extdata.branch == "beta-testing") {
+    if (this.data.datafile.branch == "beta-testing") {
         logger("", "", true, true); // Add one empty line that only appears in output.txt
         logger("", `${logger.colors.reset}[${logger.colors.fgred}Notice${logger.colors.reset}] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n`, true);
     }
 
 
     /* ------------ Log comment related config settings: ------------ */
-    var maxCommentsOverall = config.maxOwnerComments; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
-    if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments;
-    logger("info", `Comment settings: commentdelay: ${config.commentdelay} | botaccountcooldown: ${config.botaccountcooldown} | maxCommentsOverall: ${maxCommentsOverall} | randomizeAcc: ${config.randomizeAccounts}`, false, true, logger.animation("loading"));
+    let maxCommentsOverall = this.data.config.maxOwnerComments; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
+    if (this.data.config.maxComments > this.data.config.maxOwnerComments) maxCommentsOverall = this.data.config.maxComments;
+    logger("info", `Comment settings: commentdelay: ${this.data.config.commentdelay} | botaccountcooldown: ${this.data.config.botaccountcooldown} | maxCommentsOverall: ${maxCommentsOverall} | randomizeAcc: ${this.data.config.randomizeAccounts}`, false, true, logger.animation("loading"));
 
 
     /* ------------ Run updater or start logging in when steam is online: ------------ */
-    let updater = await starter.checkAndGetFile("./src/updater/updater.js", logger, false, false);
+    let updater = await checkAndGetFile("./src/updater/updater.js", logger, false, false);
     if (!updater) return;
 
     updater.compatibility(() => { // Continue startup on any callback
         require("./helpers/internetconnection.js").run(true, true, true, async () => { // We can ignore callback because stoponerr is true
 
-            let datacheck = await starter.checkAndGetFile("./src/controller/helpers/datacheck.js", logger, false, false);
+            let datacheck = await checkAndGetFile("./src/controller/helpers/datacheck.js", logger, false, false);
             if (!datacheck) return;
 
-            let PluginSystem = await starter.checkAndGetFile("./src/pluginSystem/pluginSystem.js", logger, false, false);
+            let PluginSystem = await checkAndGetFile("./src/pluginSystem/pluginSystem.js", logger, false, false);
             if (!PluginSystem) return;
 
-            datacheck.run(logininfo, async () => {
+            datacheck.run(this.data.logininfo, async () => {
 
                 if (updateFailed) { // Skip checking for update if last update failed
-                    logger("info", `It looks like the last update failed so let's skip the updater for now and hope ${extdata.mestr} fixes the issue.\n       If you haven't reported the error yet please do so as I'm only then able to fix it!`, true);
+                    logger("info", `It looks like the last update failed so let's skip the updater for now and hope ${this.data.datafile.mestr} fixes the issue.\n       If you haven't reported the error yet please do so as I'm only then able to fix it!`, true);
 
                     module.exports.pluginSystem = new PluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
 
-                    require("./login.js").startlogin(logininfo); // Start logging in
+                    require("./login.js").startlogin(this); // Start logging in
 
                 } else {
 
@@ -153,7 +162,7 @@ async function run() {
                         if (!foundanddone2) {
                             module.exports.pluginSystem = new PluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
 
-                            require("./login.js").startlogin(logininfo); // Start logging in
+                            require("./login.js").startlogin(this); // Start logging in
                         } else {
                             process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, updatefailed: updateFailed == true })})`); // Send request to parent process (checking updateFailed == true so that undefined will result in false instead of undefined)
                         }
@@ -162,7 +171,9 @@ async function run() {
             });
         });
     });
-}
+};
+
+module.exports = Controller;
 
 
 /* ------------ Handle restart data: ------------ */
@@ -177,16 +188,21 @@ function restartdata(data) {
     if (data.logafterrestart) logafterrestart = data.logafterrestart; // We can't print now since the logger function isn't imported yet.
     if (data.skippedaccounts) module.exports.skippedaccounts = data.skippedaccounts;
     if (data.updatefailed) updateFailed = data.updatefailed;
-
-    run(); // Start the bot
 }
 
+// Make a "fake" logger backup function to use when no npm packages were installed
+let logger = function(type, str) {
+    logafterrestart.push(`${type} | ${str}`); // Push message to array that will be carried through restart
+    console.log(`${type} | ${str}`);
+};
+logger.animation = () => {}; // Just to be sure that no error occurs when trying to call this function without the real logger being present
 
-/* ------------ Start the bot: ------------ */
+
+/* ------------ Start the bot: ------------ */ // TODO: Not rewritten yet
 
 if (parseInt(process.argv[3]) + 2500 > Date.now()) { // Check if this process just got started in the last 2.5 seconds or just required by itself by checking the timestamp attached by starter.js
 
-    // obj that can get populated by restart data to keep config through restarts
+    // Obj that can get populated by restart data to keep config through restarts
     var oldconfig = {} //eslint-disable-line
     var logafterrestart = []; // Create array to log these error messages after restart
     var updateFailed = false;
@@ -199,5 +215,8 @@ if (parseInt(process.argv[3]) + 2500 > Date.now()) { // Check if this process ju
 
     // Start the bot through the restartdata function if this is a restart to keep some data or start the bot directly
     if (process.argv[4]) restartdata(process.argv[4]);
-        else run();
+
+    // Start the bot
+    let controller = new Controller();
+    controller._start();
 }
