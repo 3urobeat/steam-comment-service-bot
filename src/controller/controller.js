@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 20.03.2023 23:09:54
+ * Last Modified: 22.03.2023 23:06:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -21,6 +21,7 @@
  */
 async function run() {
     var starter = require("../starter.js");
+    let checkAndGetFile = require("../starter.js").checkAndGetFile; // Temp var to use checkAndGetFile() before it is referenced in DataManager
 
     /* ------------ Export various variables: ------------ */
     module.exports.botobject            = {};         // Tracks the bot instances of all accounts to be able to access them from anywhere
@@ -41,41 +42,10 @@ async function run() {
 
     logger.animation = () => {}; // Just to be sure that no error occurs when trying to call this function without the real logger being present
 
-    process.on("unhandledRejection", (reason) => { // Should keep the bot at least from crashing
-        logger("error", `Unhandled Rejection Error! Reason: ${reason.stack}`, true);
-    });
 
-    process.on("uncaughtException", (reason) => { // Known issue: This event listener doesn't seem to capture uncaught exceptions in the checkAndGetFile callback function below. However if it is inside for example a setTimeout it suddently works.
-        // Try to fix error automatically by reinstalling all modules
-        if (String(reason).includes("Error: Cannot find module")) {
-            logger("", "", true);
-            logger("info", "Cannot find module error detected. Trying to fix error by reinstalling modules...\n");
-
-            require("./helpers/npminteraction.js").reinstallAll(logger, (err, stdout) => { //eslint-disable-line
-                if (err) {
-                    logger("error", "I was unable to reinstall all modules. Please try running 'npm install' manually. Error: " + err);
-                    return process.send("stop()");
-                } else {
-                    // Logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
-                    logger("info", "Successfully reinstalled all modules. Restarting...");
-                    process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, logafterrestart: logafterrestart })})`); // Send request to parent process
-                }
-            });
-        } else { // Logging this message but still trying to fix it would probably confuse the user
-            logger("error", `Uncaught Exception Error! Reason: ${reason.stack}`, true);
-            logger("", "", true);
-            logger("warn", "If the bot doesn't work correctly anymore after this error then please restart it!");
-
-            // Always restarting causes unnecessary restarts so I need to investigate this further
-
-            /* logger("warn", "Restarting bot in 5 seconds since the application can be in an unrecoverable state...") //https://nodejs.org/dist/latest-v16.x/docs/api/process.html#process_warning_using_uncaughtexception_correctly
-            logger("", "", true)
-
-            setTimeout(() => {
-                process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, logafterrestart: logafterrestart })})`) //send request to parent process
-            }, 5000); */
-        }
-    });
+    /* ------------ Init error handler: ------------ */
+    if (!checkAndGetFile("./src/controller/helpers/handleErrors.js", logger, false, false)) return;
+    this._handleErrors();
 
     /* ------------ Introduce logger function: ------------ */
     var loggerfile = await starter.checkAndGetFile("./src/controller/helpers/logger.js", logger, false, false);
