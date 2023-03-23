@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 23.03.2023 00:17:27
+ * Last Modified: 23.03.2023 13:45:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -39,6 +39,7 @@ const DataManager = function(controller) {
 
     // Load helpers
     if (!this.checkAndGetFile("./src/dataManagement/dataImport.js",         controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataImport.js'!");
+    if (!this.checkAndGetFile("./src/dataManagement/helpers/getQuote.js",   controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'getQuote.js'!");
     if (!this.checkAndGetFile("./src/dataManagement/helpers/repairFile.js", controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'repairFile.js'!");
 
 };
