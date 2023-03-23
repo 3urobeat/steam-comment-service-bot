@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 19.03.2023 23:33:00
+ * Last Modified: 23.03.2023 22:06:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -215,7 +215,7 @@ module.exports.readyCheck = (logininfo) => {
 
 
             // Check tokens database for tokens that will soon expire
-            require("./helpers/handleExpiringTokens.js").detectExpiringTokens(botobject, logininfo);
+            require("../sessions/helpers/handleExpiringTokens.js").detectExpiringTokens(botobject, logininfo);
 
 
             // Print startup complete message and erase it after 5 sec

@@ -4,7 +4,7 @@
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 15.10.2022 18:13:42
+ * Last Modified: 23.03.2023 22:06:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -184,10 +184,10 @@ function _askForGetNewTokenNow(expiring, logininfo) {
                     if (loginindex == 0) var thisbot = "Main";
                         else var thisbot = `Bot ${loginindex}`;
 
-                    let additionalaccinfo = require("../login.js").additionalaccinfo;
+                    let additionalaccinfo = require("../../controller/login.js").additionalaccinfo;
 
                     // Invalidate existing token so the sessionHandler will do a credentials login to get a new token
-                    require("../../sessions/helpers/tokenStorageHandler.js").invalidateTokenInStorage(tokensdb, thisbot, logOnOptions.accountName); // TODO: Access it from the corresponding bot object where the sessionHandler is linked to
+                    require("./tokenStorageHandler.js").invalidateTokenInStorage(tokensdb, thisbot, logOnOptions.accountName); // TODO: Access it from the corresponding bot object where the sessionHandler is linked to
 
                     // Push account into relog queue without advancedconfig.relogTimeout, relogAccount.js will handle getting a new session etc.
                     require("../../bot/helpers/relogAccount.js").run(loginindex, thisbot, logOnOptions, expiring[i], additionalaccinfo[loginindex].thisproxy); // TODO: Call from corresponding bot object
