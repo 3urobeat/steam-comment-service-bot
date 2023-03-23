@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 23.03.2023 13:45:45
+ * Last Modified: 23.03.2023 19:53:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -38,6 +38,7 @@ const DataManager = function(controller) {
     this.lastCommentDB  = {};
 
     // Load helpers
+    if (!this.checkAndGetFile("./src/dataManagement/dataCheck.js",          controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataCheck.js'!");
     if (!this.checkAndGetFile("./src/dataManagement/dataImport.js",         controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataImport.js'!");
     if (!this.checkAndGetFile("./src/dataManagement/helpers/getQuote.js",   controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'getQuote.js'!");
     if (!this.checkAndGetFile("./src/dataManagement/helpers/repairFile.js", controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'repairFile.js'!");
@@ -46,6 +47,12 @@ const DataManager = function(controller) {
 
 
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
+
+/**
+ * Checks currently loaded data for validity and logs some recommendations for a few settings.
+ * @returns {Promise} Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
+ */
+DataManager.prototype.checkData = function() {};
 
 /**
  * Internal: Loads all config & data files from disk and handles potential errors

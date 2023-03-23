@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 23.03.2023 00:41:25
+ * Last Modified: 23.03.2023 21:41:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -93,6 +93,9 @@ Controller.prototype._start = async function() {
     // Call optionsUpdateAfterConfigLoad() to set previously inaccessible options
     loggerfile.optionsUpdateAfterConfigLoad(this.data.advancedconfig);
 
+    // Check imported data
+    await this.data.checkData().catch(() => process.send("stop()")); // Terminate the bot if some critical check failed
+
 
     /* ------------ Change terminal title: ------------ */
     if (process.platform == "win32") { // Set node process name to find it in task manager etc.
@@ -141,34 +144,28 @@ Controller.prototype._start = async function() {
     updater.compatibility(() => { // Continue startup on any callback
         require("./helpers/internetconnection.js").run(true, true, true, async () => { // We can ignore callback because stoponerr is true
 
-            let datacheck = await checkAndGetFile("./src/controller/helpers/datacheck.js", logger, false, false);
-            if (!datacheck) return;
-
             let PluginSystem = await checkAndGetFile("./src/pluginSystem/pluginSystem.js", logger, false, false);
             if (!PluginSystem) return;
 
-            datacheck.run(this.data.logininfo, async () => {
+            if (updateFailed) { // Skip checking for update if last update failed
+                logger("info", `It looks like the last update failed so let's skip the updater for now and hope ${this.data.datafile.mestr} fixes the issue.\n       If you haven't reported the error yet please do so as I'm only then able to fix it!`, true);
 
-                if (updateFailed) { // Skip checking for update if last update failed
-                    logger("info", `It looks like the last update failed so let's skip the updater for now and hope ${this.data.datafile.mestr} fixes the issue.\n       If you haven't reported the error yet please do so as I'm only then able to fix it!`, true);
+                module.exports.pluginSystem = new PluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
 
-                    module.exports.pluginSystem = new PluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
+                require("./login.js").startlogin(this); // Start logging in
 
-                    require("./login.js").startlogin(this); // Start logging in
+            } else {
 
-                } else {
+                require("../updater/updater.js").run(false, null, false, (foundanddone2, updateFailed) => {
+                    if (!foundanddone2) {
+                        module.exports.pluginSystem = new PluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
 
-                    require("../updater/updater.js").run(false, null, false, (foundanddone2, updateFailed) => {
-                        if (!foundanddone2) {
-                            module.exports.pluginSystem = new PluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
-
-                            require("./login.js").startlogin(this); // Start logging in
-                        } else {
-                            process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, updatefailed: updateFailed == true })})`); // Send request to parent process (checking updateFailed == true so that undefined will result in false instead of undefined)
-                        }
-                    });
-                }
-            });
+                        require("./login.js").startlogin(this); // Start logging in
+                    } else {
+                        process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, updatefailed: updateFailed == true })})`); // Send request to parent process (checking updateFailed == true so that undefined will result in false instead of undefined)
+                    }
+                });
+            }
         });
     });
 };
