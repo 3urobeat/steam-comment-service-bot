@@ -44,4 +44,37 @@ const DataManager = function(controller) {
 
 };
 
+
+/* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
+
+/**
+ * Internal: Loads all config & data files from disk and handles potential errors
+ * @returns {Promise} Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ */
+DataManager.prototype._importFromDisk = async function() {};
+
+/**
+ * Gets a random quote
+ * @param {Array} quotesArr Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
+ * @returns {Promise} Resolves with `quote` (String)
+ */
+DataManager.prototype.getQuote = function(quotesArr = null) {}; // eslint-disable-line
+
+/**
+ * Internal: Helper function to try and restore backup of corrupted file from cache.json
+ * @param {String} name Name of the file
+ * @param {String} filepath Absolute path of the file on the disk
+ * @param {Object} cacheentry Backup-Object of the file in cache.json
+ * @param {String} onlinelink Link to the raw file in the GitHub repository
+ * @param {Function} resolve Function to resolve the caller's promise
+ */
+DataManager.prototype._restoreBackup = function(name, filepath, cacheentry, onlinelink, resolve) {}; // eslint-disable-line
+
+/**
+ * Internal: Helper function to pull new file from GitHub
+ */
+DataManager.prototype._pullNewFile = function(name, filepath, resolve) {}; // eslint-disable-line
+
+
+// Export our freshly baked bread
 module.exports = DataManager;
