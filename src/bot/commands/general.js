@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.09.2021 17:52:37
+ * Last Modified: 24.03.2023 19:31:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -58,28 +58,26 @@ module.exports.help = (ownercheck, chatmsg, steamID, lang) => {
  * @param {Object} steamID The steamID object from steam-user
  */
 module.exports.info = (steam64id, chatmsg, steamID) => {
-    var mainfile   = require("../main.js");
-    var controller = require("../../controller/controller.js");
+    let controller = require("../../controller/controller.js");
 
+    this.controller.data.lastCommentDB.findOne({ id: steam64id }, async (err, doc) => {
+        let lastReq = await this.controller.data.getLastCommentRequest();
 
-    controller.lastcomment.findOne({ id: steam64id }, (err, doc) => {
-        mainfile.lastsuccessfulcomment(cb => {
-            /* eslint-disable no-irregular-whitespace */
-            chatmsg(steamID, `
-                -----------------------------------~~~~~------------------------------------ 
-                >   ${extdata.mestr}'s Comment Bot [Version ${extdata.versionstr}] (More info: !about)
-                >   Uptime: ${Number(Math.round(((new Date() - controller.bootstart) / 3600000)+"e"+2)+"e-"+2)} hours | Branch: ${extdata.branch}
-                >   'node.js' Version: ${process.version} | RAM Usage (RSS): ${Math.round(process.memoryUsage()["rss"] / 1024 / 1024 * 100) / 100} MB
-                >   Accounts: ${Object.keys(controller.communityobject).length} | maxComments/owner: ${config.maxComments}/${config.maxOwnerComments} | delay: ${config.commentdelay}
-                |
-                >   Your steam64ID: ${steam64id}
-                >   Your last comment request: ${(new Date(doc.time)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)
-                >   Last processed comment request: ${(new Date(cb)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)
-                >   I have commented ${mainfile.commentcounter} times since my last restart and completed request!
-                -----------------------------------~~~~~------------------------------------
-            `);
-            /* eslint-enable no-irregular-whitespace */
-        });
+        /* eslint-disable no-irregular-whitespace */
+        chatmsg(steamID, `
+            -----------------------------------~~~~~------------------------------------ 
+            >   ${extdata.mestr}'s Comment Bot [Version ${extdata.versionstr}] (More info: !about)
+            >   Uptime: ${Number(Math.round(((new Date() - controller.bootstart) / 3600000)+"e"+2)+"e-"+2)} hours | Branch: ${extdata.branch}
+            >   'node.js' Version: ${process.version} | RAM Usage (RSS): ${Math.round(process.memoryUsage()["rss"] / 1024 / 1024 * 100) / 100} MB
+            >   Accounts: ${Object.keys(controller.communityobject).length} | maxComments/owner: ${config.maxComments}/${config.maxOwnerComments} | delay: ${config.commentdelay}
+            |
+            >   Your steam64ID: ${steam64id}
+            >   Your last comment request: ${(new Date(doc.time)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)
+            >   Last processed comment request: ${(new Date(lastReq)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)
+            >   I have commented ${mainfile.commentcounter} times since my last restart and completed request!
+            -----------------------------------~~~~~------------------------------------
+        `);
+        /* eslint-enable no-irregular-whitespace */
     });
 };
 

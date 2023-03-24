@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 23.03.2023 19:53:05
+ * Last Modified: 24.03.2023 19:37:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -41,6 +41,7 @@ const DataManager = function(controller) {
     if (!this.checkAndGetFile("./src/dataManagement/dataCheck.js",          controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataCheck.js'!");
     if (!this.checkAndGetFile("./src/dataManagement/dataImport.js",         controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataImport.js'!");
     if (!this.checkAndGetFile("./src/dataManagement/helpers/getQuote.js",   controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'getQuote.js'!");
+    if (!this.checkAndGetFile("./src/dataManagement/helpers/misc.js",       controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'misc.js'!");
     if (!this.checkAndGetFile("./src/dataManagement/helpers/repairFile.js", controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'repairFile.js'!");
 
 };
@@ -66,6 +67,13 @@ DataManager.prototype._importFromDisk = async function() {};
  * @returns {Promise} Resolves with `quote` (String)
  */
 DataManager.prototype.getQuote = function(quotesArr = null) {}; // eslint-disable-line
+
+/**
+ * Retrieves the last processed comment request of anyone or a specific steamID64 from the lastcomment database
+ * @param {String} steamID64 Search for a specific user
+ * @returns {Promise} Called with the greatest timestamp (Number) found
+ */
+DataManager.prototype.getLastCommentRequest = function(steamID64 = null) {}; // eslint-disable-line
 
 /**
  * Internal: Helper function to try and restore backup of corrupted file from cache.json

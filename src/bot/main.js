@@ -4,7 +4,7 @@
  * Created Date: 13.07.2021 19:13:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 13:08:40
+ * Last Modified: 24.03.2023 19:32:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -40,22 +40,4 @@ module.exports.run = () => {
     // Refresh configgroup in cache.json
     require("./helpers/steamgroup.js").configgroup64id(() => {}); // Ignore the callback here, but we need to pass a function to avoid an error
 
-
-    /**
-     * Function to return last successful comment from lastcomment.db
-     * @param {function} [callback] Called with `timestamp` (Number) on completion
-     */
-    module.exports.lastsuccessfulcomment = (callback) => {
-        var greatesttimevalue = 0;
-
-        controller.lastcomment.find({}, (err, docs) => { // Get all documents
-            docs.forEach((e, i) => {
-                if (e.time > greatesttimevalue) greatesttimevalue = Number(e.time);
-
-                if (i == docs.length - 1) {
-                    return callback(greatesttimevalue);
-                }
-            });
-        });
-    };
 };
