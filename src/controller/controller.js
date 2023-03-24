@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 23.03.2023 21:41:01
+ * Last Modified: 24.03.2023 15:32:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -152,7 +152,8 @@ Controller.prototype._start = async function() {
 
                 module.exports.pluginSystem = new PluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
 
-                require("./login.js").startlogin(this); // Start logging in
+                require("./login.js"); // Load helper
+                this._login(); // Start logging in
 
             } else {
 
@@ -160,7 +161,8 @@ Controller.prototype._start = async function() {
                     if (!foundanddone2) {
                         module.exports.pluginSystem = new PluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
 
-                        require("./login.js").startlogin(this); // Start logging in
+                        require("./login.js"); // Load helper
+                        this._login(); // Start logging in
                     } else {
                         process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, updatefailed: updateFailed == true })})`); // Send request to parent process (checking updateFailed == true so that undefined will result in false instead of undefined)
                     }

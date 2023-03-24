@@ -21,20 +21,10 @@
  */
 module.exports.run = () => {
 
-    var controller                       = require("../controller/controller.js");
-
-    module.exports.quotes                = require("../controller/helpers/dataimport.js").quotes();
-
     module.exports.failedcomments        = []; // Array saving failedcomments so the user can access them via the !failedcomments command
     module.exports.activecommentprocess  = {}; // Object storing active comment processes so that a user can only request one process at a time, used accounts can only be used in one session, have a cooldown (not the user! that is handled by lastcomment) and the updater is blocked
     module.exports.lastcommentrequestmsg = []; // Array saving the last comment cmd request to apply higher cooldown to the comment cmd usage compared to normal cmd usage cooldown
     module.exports.commentcounter        = 0;  // This will count the total of comments requested since the last reboot
-
-
-    // Import lang object
-    require("../controller/helpers/dataimport.js").lang((lang) => {
-        module.exports.lang = lang;
-    });
 
 
     // Refresh configgroup in cache.json

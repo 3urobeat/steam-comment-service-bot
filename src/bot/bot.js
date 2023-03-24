@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 21.03.2023 01:15:18
+ * Last Modified: 24.03.2023 18:52:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -19,6 +19,7 @@ const SteamUser      = require("steam-user");
 const SteamCommunity = require("steamcommunity");
 const request        = require("request"); // Yes I know, the library is deprecated but steamcommunity uses it as well so it is being used anyway
 
+const Controller     = require("../controller/controller.js");
 const sessionHandler = require("../sessions/sessionHandler.js");
 const login          = require("../controller/login.js");
 const mainfile       = require("./main.js");
@@ -26,13 +27,13 @@ const mainfile       = require("./main.js");
 
 /**
  * Constructor - Initializes an object which represents a user steam account
- * @param {Object} logOnOptions The steam-user logOnOptions object // TODO: Replace with reference to controller object which we then can get our information from using the index
+ * @param {Controller} controller Reference to the controller object
  * @param {Number} index The index of this account in the logininfo object
  */
-const Bot = function(logOnOptions, index) {
-    this.index     = index;
-    this.loginInfo = logOnOptions; // More information is going to be added to loginInfo, for now start with the logOnOptions obj
-
+const Bot = function(controller, index) {
+    this.controller = controller;
+    this.index      = index;
+    this.loginData  = {}; // Provide array for additional login related information
 
     // Define the log message prefix of this account in order to
     if (index == 0) this.logPrefix = "Main";
@@ -44,24 +45,19 @@ const Bot = function(logOnOptions, index) {
 
 
     // Get proxy of this user account
-    if (login.proxyShift >= login.proxies.length) login.proxyShift = 0; // Reset proxy counter if we used all proxies to start over again
+    if (login.proxyShift >= controller.data.proxies.length) login.proxyShift = 0; // Reset proxy counter if we used all proxies to start over again
 
-    this.loginInfo.proxy      = login.proxies[login.proxyShift]; // Define the proxy that will be used for this account
-    this.loginInfo.proxyIndex = login.proxyShift;                // Add the index of this proxy
+    this.proxy      = controller.data.proxies[login.proxyShift]; // Define the proxy that will be used for this account
+    this.proxyIndex = login.proxyShift;                          // Add the index of this proxy
 
     login.proxyShift++; // Switch to next proxy
 
 
     // Create user & community instance
-    logger("debug", `[${this.logPrefix}] Using proxy ${this.loginInfo.proxyIndex} "${this.loginInfo.proxy}" to log in to Steam and SteamCommunity...`);
+    logger("debug", `[${this.logPrefix}] Using proxy ${this.loginData.proxyIndex} "${this.loginData.proxy}" to log in to Steam and SteamCommunity...`);
 
-    this.user      = new SteamUser({ autoRelogin: false, httpProxy: this.loginInfo.proxy, protocol: SteamUser.EConnectionProtocol.WebSocket }); // Forcing protocol for now: https://dev.doctormckay.com/topic/4187-disconnect-due-to-encryption-error-causes-relog-to-break-error-already-logged-on/?do=findComment&comment=10917
-    this.community = new SteamCommunity({ request: request.defaults({ "proxy": this.loginInfo.proxy }) });                                      // Pass proxy to community library as well
-
-
-    // TODO: Remove - Legacy stuff so that the bot still starts for now
-    if (!login.additionalaccinfo[this.index]) login.additionalaccinfo[this.index] = {};
-    login.additionalaccinfo[this.index] = this.loginInfo;
+    this.user      = new SteamUser({ autoRelogin: false, httpProxy: this.loginData.proxy, protocol: SteamUser.EConnectionProtocol.WebSocket }); // Forcing protocol for now: https://dev.doctormckay.com/topic/4187-disconnect-due-to-encryption-error-causes-relog-to-break-error-already-logged-on/?do=findComment&comment=10917
+    this.community = new SteamCommunity({ request: request.defaults({ "proxy": this.loginData.proxy }) });                                      // Pass proxy to community library as well
 
 
     // Run main.js if this is the main bot account
@@ -71,7 +67,7 @@ const Bot = function(logOnOptions, index) {
 
 
     // Reset logOnTries and login!
-    this.loginInfo.logOnTries = 0;
+    this.loginData.logOnTries = 0;
 
     this._loginToSteam();
 
@@ -87,22 +83,21 @@ const Bot = function(logOnOptions, index) {
 Bot.prototype._loginToSteam = function() {
     let loginInterval = setInterval(async () => { // Set an interval to check if previous acc is logged on
 
-        if (login.accisloggedin || this.loginInfo.logOnTries > 0) { // Start attempt if previous account is logged on or if this call is a retry
+        if (login.accisloggedin || this.loginData.logOnTries > 0) { // Start attempt if previous account is logged on or if this call is a retry
             clearInterval(loginInterval); // Stop interval
 
             login.accisloggedin = false; // Set to false again so the next account waits for us to log in
 
             // Count this attempt
-            this.loginInfo.logOnTries++;
-            login.additionalaccinfo[this.index].logOnTries = this.loginInfo.logOnTries; // TODO: Remove - Legacy stuff so that the bot still starts for now
+            this.loginData.logOnTries++;
 
             // Log login message for this account, with mentioning proxies or without
-            if (!this.proxy) logger("info", `[${this.logPrefix}] Trying to log in without proxy... (Attempt ${this.loginInfo.logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
-                else logger("info", `[${this.logPrefix}] Trying to log in with proxy ${login.proxyShift - 1}... (Attempt ${this.loginInfo.logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+            if (!this.proxy) logger("info", `[${this.logPrefix}] Trying to log in without proxy... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+                else logger("info", `[${this.logPrefix}] Trying to log in with proxy ${login.proxyShift - 1}... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
 
 
             // Call our steam-session helper to get a valid refresh token for us
-            let session = new sessionHandler(this.user, this.logPrefix, this.index, this.loginInfo);
+            let session = new sessionHandler(this.user, this.logPrefix, this.index, this.loginData);
 
             let refreshToken = await session.getToken();
             if (!refreshToken) return; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the user itself
