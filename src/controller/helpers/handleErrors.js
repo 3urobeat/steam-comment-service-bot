@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:53:37
  * Author: 3urobeat
  *
- * Last Modified: 23.03.2023 00:20:56
+ * Last Modified: 24.03.2023 18:56:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -36,6 +36,7 @@ Controller.prototype._handleErrors = function() {
         if (String(reason).includes("Error: Cannot find module")) {
             logger("", "", true);
             logger("info", "Cannot find module error detected. Trying to fix error by reinstalling modules...\n");
+            logger("debug", "uncaughtException " + reason.stack, true);
 
             require("./npminteraction.js").reinstallAll(logger, (err, stdout) => { //eslint-disable-line
                 if (err) {
