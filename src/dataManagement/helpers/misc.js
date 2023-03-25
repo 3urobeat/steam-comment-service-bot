@@ -4,7 +4,7 @@
  * Created Date: 24.03.2023 18:58:55
  * Author: 3urobeat
  *
- * Last Modified: 24.03.2023 19:28:15
+ * Last Modified: 25.03.2023 14:01:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -31,11 +31,13 @@ DataManager.prototype.getLastCommentRequest = function(steamID64 = null) {
         if (steamID64) searchFor = { id: steamID64 }; // Get a specific id
 
         let greatestValue = 0;
-    
-        this.lastCommentDB.find(searchFor, (err, docs) => {
-            if (e.time > greatestValue) greatestValue = Number(e.time); // Check if this iteration is a new highscore
 
-            if (i == docs.length - 1) resolve(greatestValue); // Resolve on the last iteration
+        this.lastCommentDB.find(searchFor, (err, docs) => {
+            docs.forEach((e, i) => {
+                if (e.time > greatestValue) greatestValue = Number(e.time); // Check if this iteration is a new highscore
+
+                if (i == docs.length - 1) resolve(greatestValue); // Resolve on the last iteration
+            });
         });
 
     });
