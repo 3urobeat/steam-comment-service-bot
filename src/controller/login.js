@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 24.03.2023 17:01:15
+ * Last Modified: 25.03.2023 13:45:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -55,6 +55,12 @@ Controller.prototype._login = function() {
         else logger("", ascii.ascii[Math.floor(Math.random() * ascii.ascii.length)] + "\n", true);
 
     logger("", "", true); // Put one line above everything that will come to make the output cleaner
+
+
+    /* ------------ Log comment related config settings: ------------ */
+    let maxCommentsOverall = this.data.config.maxOwnerComments; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
+    if (this.data.config.maxComments > this.data.config.maxOwnerComments) maxCommentsOverall = this.data.config.maxComments;
+    logger("info", `Comment settings: commentdelay: ${this.data.config.commentdelay} | botaccountcooldown: ${this.data.config.botaccountcooldown} | maxCommentsOverall: ${maxCommentsOverall} | randomizeAcc: ${this.data.config.randomizeAccounts}`, false, true, logger.animation("loading"));
 
 
     // Print whatsnew message if this is the first start with this version
