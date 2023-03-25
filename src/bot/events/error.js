@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.11.2022 16:16:42
+ * Last Modified: 25.03.2023 21:04:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -27,11 +27,10 @@ const botfile    = require("../bot.js");
  * @param err The error provided by steam-user
  * @param {Number} loginindex The loginindex of the calling account
  * @param {String} thisbot The thisbot string of the calling account
- * @param {String} thisproxy The proxy of the calling account
  * @param {Object} logOnOptions The steam-user logOnOptions object
  * @param {SteamUser} bot The bot instance of the calling account
  */
-module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) => {
+module.exports.run = (err, loginindex, thisbot, logOnOptions, bot) => {
 
     // Custom behavior for LogonSessionReplaced error:
     if (err.eresult == EResult.LogonSessionReplaced) {
@@ -66,7 +65,7 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
 
             // Relog after waiting 30 sec
             setTimeout(() => {
-                require("../helpers/relogAccount.js").run(loginindex, thisbot, logOnOptions, bot, thisproxy);
+                require("../helpers/relogAccount.js").run(loginindex, thisbot, logOnOptions, bot);
             }, 30000);
         } else {
             logger("info", `[${thisbot}] I won't queue myself for a relog because this account was skipped or this is an intended logOff.`);
@@ -82,7 +81,7 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
             logger("error", `Couldn't log in bot${loginindex} after ${login.additionalaccinfo[loginindex].logOnTries} attempt(s). ${err} (${err.eresult})`, true);
 
             // Add additional messages for specific errors to hopefully help the user diagnose the cause
-            if (thisproxy != null) logger("", `        Is your proxy ${login.proxyShift - 1} offline or maybe blocked by Steam?`, true);
+            if (this.loginData.proxy) logger("", `        Is your proxy ${this.proxyIndex} offline or maybe blocked by Steam?`, true);
 
             // Abort execution if account is bot0
             if (loginindex == 0) {
@@ -122,7 +121,7 @@ module.exports.run = (err, loginindex, thisbot, thisproxy, logOnOptions, bot) =>
 
             // Call either relogAccount or logOnAccount function to continue where we started at after 5 sec
             setTimeout(() => {
-                if (controller.relogQueue.includes(loginindex)) require("../helpers/relogAccount.js").run(loginindex, thisbot, logOnOptions, bot, thisproxy, true); // Force relog with last param
+                if (controller.relogQueue.includes(loginindex)) require("../helpers/relogAccount.js").run(loginindex, thisbot, logOnOptions, bot, true); // Force relog with last param
                     else botfile.logOnAccount();
             }, 5000);
         }

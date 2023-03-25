@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 25.03.2023 17:17:12
+ * Last Modified: 25.03.2023 20:55:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -41,7 +41,6 @@ Controller.prototype._login = async function() {
     module.exports.accisloggedin       = true; // Var to check if previous acc is logged on (in case steamGuard event gets fired) -> set to true for first account
     module.exports.skippednow          = [];   // Array to track which accounts have been skipped
     module.exports.additionalaccinfo   = {};   // Tracks additional account information that are bound to their loginindex
-    module.exports.proxyShift          = 0;
 
 
     // Update global var

@@ -4,7 +4,7 @@
  * Created Date: 03.11.2022 12:27:46
  * Author: 3urobeat
  *
- * Last Modified: 21.03.2023 01:12:21
+ * Last Modified: 25.03.2023 21:22:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -55,7 +55,7 @@ module.exports.handleLoginTimeout = (loginindex, thisbot, logOnOptions, bot) => 
             logger("error", `Couldn't log in bot${loginindex} after ${login.additionalaccinfo[loginindex].logOnTries} attempt(s). Error: Login attempt timed out and all available logOnRetries were used.`, true);
 
             // Add additional messages for specific errors to hopefully help the user diagnose the cause
-            if (logOnOptions.proxy != null) logger("", `        Is your proxy ${login.proxyShift - 1} offline or maybe blocked by Steam?`, true);
+            if (this.loginData.proxy != null) logger("", `        Is your proxy ${this.loginData.proxyIndex} offline or maybe blocked by Steam?`, true);
 
             // Abort execution if account is bot0
             if (loginindex == 0) {

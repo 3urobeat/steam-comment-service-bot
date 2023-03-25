@@ -4,7 +4,7 @@
  * Created Date: 20.03.2023 16:47:39
  * Author: 3urobeat
  *
- * Last Modified: 21.03.2023 01:11:17
+ * Last Modified: 25.03.2023 21:04:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -25,7 +25,7 @@ Bot.prototype._attachSteamEvents = function() {
 
     /* ------------ Events: ------------ */
     this.user.on("error", (err) => { // Handle errors that were caused during logOn
-        require("../events/error.js").run(err, this.index, this.logPrefix, this.loginInfo.proxy, this.logOnOptions, this.user);
+        require("../events/error.js").run(err, this.index, this.logPrefix, this.logOnOptions, this.user);
     });
 
     this.user.on("loggedOn", () => { // This account is now logged on

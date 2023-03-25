@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 21.03.2023 01:11:55
+ * Last Modified: 25.03.2023 21:23:18
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -63,8 +63,8 @@ module.exports.run = (loginindex, thisbot, logOnOptions, bot, force) => {
             setTimeout(async () => {
                 login.additionalaccinfo[loginindex].logOnTries++; // Count login attempt
 
-                if (logOnOptions.proxy == null) logger("info", `[${thisbot}] Trying to relog without proxy... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
-                    else logger("info", `[${thisbot}] Trying to relog with proxy ${login.additionalaccinfo[loginindex].proxyIndex}... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+                if (!this.loginData.proxy) logger("info", `[${thisbot}] Trying to relog without proxy... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+                    else logger("info", `[${thisbot}] Trying to relog with proxy ${this.loginData.proxyIndex}... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
 
                 // Call unresponsive login helper to detect and force progress if this login attempt should get stuck
                 require("./handleLoginTimeout.js").handleLoginTimeout(loginindex, thisbot, logOnOptions, bot);
