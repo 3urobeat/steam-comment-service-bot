@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:06:57
  * Author: 3urobeat
  *
- * Last Modified: 06.11.2022 13:53:55
+ * Last Modified: 25.03.2023 16:17:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -19,7 +19,7 @@ const SteamID    = require("steamid"); //eslint-disable-line
 
 const controller = require("../../controller/controller.js");
 const mainfile   = require("../main.js");
-const round      = require("../../controller/helpers/round.js");
+const { round }  = require("../../controller/helpers/misc.js");
 
 
 /**

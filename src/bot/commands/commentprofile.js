@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 20.03.2023 22:03:43
+ * Last Modified: 25.03.2023 16:21:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,11 +15,12 @@
  */
 
 
-const SteamID    = require("steamid");
+const SteamID = require("steamid");
 
-const mainfile   = require("../main.js");
-const loginfile  = require("../../controller/login.js");
-const controller = require("../../controller/controller.js");
+const mainfile     = require("../main.js");
+const loginfile    = require("../../controller/login.js");
+const controller   = require("../../controller/controller.js");
+const { syncLoop } = require("../../controller/helpers/misc.js");
 
 
 /**
@@ -135,7 +136,7 @@ module.exports.comment = (receiverSteamID, steamID, lang, res, respond) => {
 
 
     // Comment numberOfComments times using our syncLoop helper
-    require(srcdir + "/controller/helpers/syncLoop.js").syncLoop(acpEntry.amount - (acpEntry.thisIteration + 1), (loop, i) => { // eslint-disable-line no-unused-vars
+    syncLoop(acpEntry.amount - (acpEntry.thisIteration + 1), (loop, i) => { // eslint-disable-line no-unused-vars
         setTimeout(() => {
 
             var botindex = acpEntry.accounts[accountOrderIndex];

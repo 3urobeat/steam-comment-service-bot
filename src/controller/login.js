@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 25.03.2023 13:45:26
+ * Last Modified: 25.03.2023 16:15:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -20,7 +20,7 @@ const SteamTotp = require("steam-totp");
 const Controller = require("./controller.js");
 const Bot        = require("../bot/bot.js");
 const ascii      = require("../data/ascii.js");
-const round      = require("./helpers/round.js");
+const misc       = require("./helpers/misc.js");
 
 
 /**
@@ -35,7 +35,7 @@ module.exports.steamGuardInputTimeFunc = (arg) => { // Small function to return 
 /**
   * Internal: Creates a new bot object for every account
   */
-Controller.prototype._login = function() {
+Controller.prototype._login = async function() {
 
     module.exports.steamGuardInputTime = 0;
     module.exports.accisloggedin       = true; // Var to check if previous acc is logged on (in case steamGuard event gets fired) -> set to true for first account
@@ -55,6 +55,22 @@ Controller.prototype._login = function() {
         else logger("", ascii.ascii[Math.floor(Math.random() * ascii.ascii.length)] + "\n", true);
 
     logger("", "", true); // Put one line above everything that will come to make the output cleaner
+
+
+    // Check if SteamCommunity is up
+    logger("info", "Checking if Steam is reachable...", false, true, logger.animation("loading"));
+
+    await misc.checkConnection("https://steamcommunity.com", true)
+        .then((msg, resCode) => {
+            logger("info", `SteamCommunity is up! Status code: ${resCode}`, false, true, logger.animation("loading"));
+        })
+        .catch((msg, resCode) => {
+            // Check if the request itself failed and display a different message
+            if (!resCode) logger("error", `SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n        ${msg}\n\n        Aborting...\n`, true);
+                else logger("error", `Your internet is working but SteamCommunity seems to be down! Check: https://steamstat.us \n        ${msg} (Status Code ${resCode})\n\n        Aborting...\n`, true);
+
+            return process.send("stop()"); // Stop the bot as there is nothing more we can do
+        });
 
 
     /* ------------ Log comment related config settings: ------------ */
@@ -79,7 +95,7 @@ Controller.prototype._login = function() {
     if (estimatedlogintime > 60) { estimatedlogintime = estimatedlogintime / 60; estimatedlogintimeunit = "minutes"; }
     if (estimatedlogintime > 60) { estimatedlogintime = estimatedlogintime / 60; estimatedlogintimeunit = "hours"; }                                                                                                                                                                                                                                                                          // 🥚!
 
-    logger("info", `Logging in... Estimated wait time: ${round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`, false, false, logger.animation("loading"), true);
+    logger("info", `Logging in... Estimated wait time: ${misc.round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`, false, false, logger.animation("loading"), true);
     if (checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<") process.send("stop()"); // eslint-disable-line
 
 

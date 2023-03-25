@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 23.03.2023 22:06:38
+ * Last Modified: 25.03.2023 16:18:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+
+const { round } = require("./helpers/misc.js");
 
 
 /**
@@ -26,7 +28,6 @@ module.exports.readyCheck = (logininfo) => {
 
     var controller = require("./controller.js");
     var login      = require("./login.js");
-    var round      = require("./helpers/round.js");
     var cache      = require("../data/cache.json");
 
     var { botobject, communityobject } = controller; // Import these two directly for simplicity

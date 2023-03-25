@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 25.03.2023 14:25:43
+ * Last Modified: 25.03.2023 16:08:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -132,38 +132,37 @@ Controller.prototype._start = async function() {
     }
 
 
-    /* ------------ Run updater or start logging in when steam is online: ------------ */
+    /* ------------ Run updater or start logging in: ------------ */
     let updater = await checkAndGetFile("./src/updater/updater.js", logger, false, false);
     if (!updater) return;
 
-    updater.compatibility(() => { // Continue startup on any callback
-        require("./helpers/internetconnection.js").run(true, true, true, async () => { // We can ignore callback because stoponerr is true
+    updater.compatibility(async () => { // Continue startup on any callback
 
-            let PluginSystem = await checkAndGetFile("./src/pluginSystem/pluginSystem.js", logger, false, false);
-            if (!PluginSystem) return;
+        let PluginSystem = await checkAndGetFile("./src/pluginSystem/pluginSystem.js", logger, false, false);
+        if (!PluginSystem) return;
 
-            if (updateFailed) { // Skip checking for update if last update failed
-                logger("info", `It looks like the last update failed so let's skip the updater for now and hope ${this.data.datafile.mestr} fixes the issue.\n       If you haven't reported the error yet please do so as I'm only then able to fix it!`, true);
+        if (updateFailed) { // Skip checking for update if last update failed
+            logger("info", `It looks like the last update failed so let's skip the updater for now and hope ${this.data.datafile.mestr} fixes the issue.\n       If you haven't reported the error yet please do so as I'm only then able to fix it!`, true);
 
-                module.exports.pluginSystem = new PluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
+            module.exports.pluginSystem = new PluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
 
-                require("./login.js"); // Load helper
-                this._login(); // Start logging in
+            require("./login.js"); // Load helper
+            this._login(); // Start logging in
 
-            } else {
+        } else {
 
-                require("../updater/updater.js").run(false, null, false, (foundanddone2, updateFailed) => {
-                    if (!foundanddone2) {
-                        module.exports.pluginSystem = new PluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
+            require("../updater/updater.js").run(false, null, false, (foundanddone2, updateFailed) => {
+                if (!foundanddone2) {
+                    module.exports.pluginSystem = new PluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
 
-                        require("./login.js"); // Load helper
-                        this._login(); // Start logging in
-                    } else {
-                        process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, updatefailed: updateFailed == true })})`); // Send request to parent process (checking updateFailed == true so that undefined will result in false instead of undefined)
-                    }
-                });
-            }
-        });
+                    require("./login.js"); // Load helper
+                    this._login(); // Start logging in
+                } else {
+                    process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, updatefailed: updateFailed == true })})`); // Send request to parent process (checking updateFailed == true so that undefined will result in false instead of undefined)
+                }
+            });
+        }
+
     });
 };
 

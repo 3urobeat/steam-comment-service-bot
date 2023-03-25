@@ -4,7 +4,7 @@
  * Created Date: 08.03.2022 13:09:21
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 12:35:06
+ * Last Modified: 25.03.2023 16:17:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -15,8 +15,8 @@
  */
 
 
-const mainfile = require("../main.js");
-const round    = require("../../controller/helpers/round.js");
+const mainfile  = require("../main.js");
+const { round } = require("../../controller/helpers/misc.js");
 
 /**
  * Retries failed comments after completed request if enabled in advancedconfig.json
