@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 25.03.2023 16:15:33
+ * Last Modified: 25.03.2023 17:17:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -61,13 +61,13 @@ Controller.prototype._login = async function() {
     logger("info", "Checking if Steam is reachable...", false, true, logger.animation("loading"));
 
     await misc.checkConnection("https://steamcommunity.com", true)
-        .then((msg, resCode) => {
-            logger("info", `SteamCommunity is up! Status code: ${resCode}`, false, true, logger.animation("loading"));
+        .then((res) => {
+            logger("info", `SteamCommunity is up! Status code: ${res.statusCode}`, false, true, logger.animation("loading"));
         })
-        .catch((msg, resCode) => {
+        .catch((res) => {
             // Check if the request itself failed and display a different message
-            if (!resCode) logger("error", `SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n        ${msg}\n\n        Aborting...\n`, true);
-                else logger("error", `Your internet is working but SteamCommunity seems to be down! Check: https://steamstat.us \n        ${msg} (Status Code ${resCode})\n\n        Aborting...\n`, true);
+            if (!res.statusCode) logger("error", `SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n        ${res.statusMessage}\n\n        Aborting...\n`, true);
+                else logger("error", `Your internet is working but SteamCommunity seems to be down! Check: https://steamstat.us \n        ${res.statusMessage} (Status Code ${res.statusCode})\n\n        Aborting...\n`, true);
 
             return process.send("stop()"); // Stop the bot as there is nothing more we can do
         });

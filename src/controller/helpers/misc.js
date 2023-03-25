@@ -4,7 +4,7 @@
  * Created Date: 25.03.2023 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 25.03.2023 16:07:16
+ * Last Modified: 25.03.2023 17:42:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -65,7 +65,7 @@ module.exports.round = (value, decimals) => {
  * Pings an URL to check if the service and this internet connection is working
  * @param {String} url The URL of the service to check
  * @param {Boolean} throwTimeout If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
- * @returns {Promise} Resolves on response code 2xx and rejects on any other response code. Both are called with parameters `message` (String) & `resCode` (Number). `resCode` is null if the get request failed. If throwTimeout is enabled and triggered `resCode` will be 0.
+ * @returns {Promise} Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
  */
 module.exports.checkConnection = (url, throwTimeout) => {
 
@@ -75,20 +75,20 @@ module.exports.checkConnection = (url, throwTimeout) => {
         let timeoutTimeout; // Phenomenal name, I know
 
         if (throwTimeout) {
-            timeoutTimeout = setTimeout(() => reject("Timeout: Received no response within 20 seconds.", 0), 20000);
+            timeoutTimeout = setTimeout(() => reject({ "statusMessage": "Timeout: Received no response within 20 seconds.", "statusCode": null }), 20000);
         }
 
         https.get(url, function (res) {
             if (throwTimeout) clearTimeout(timeoutTimeout);
 
-            if (res.statusCode >= 200 && res.statusCode < 300) resolve(res.statusMessage, res.statusCode);
-                else reject(res.statusCode, res.statusCode);
+            if (res.statusCode >= 200 && res.statusCode < 300) resolve(res);
+                else reject(res);
 
         }).on("error", function(err) {
 
             if (throwTimeout) clearTimeout(timeoutTimeout);
 
-            reject(err.message, null);
+            reject({ "statusMessage": err.message, "statusCode": null });
         });
 
     });
