@@ -112,7 +112,7 @@ Controller.prototype._login = function() {
                         logger("info", `Starting bot.js for ${k}...`, false, true, logger.animation("loading"));
 
                         // Overwrite logininfo entry for this account with a properly formatted object
-                        this.data.logininfo[k] = {
+                        this.data.logininfo[i] = {
                             accountName: this.data.logininfo[k][0],
                             password: this.data.logininfo[k][1],
                             machineName: `${this.data.datafile.mestr}'s Comment Bot`,       // For steam-user
@@ -127,7 +127,7 @@ Controller.prototype._login = function() {
                             this.data.logininfo[k]["steamGuardCodeForRelog"] = this.data.logininfo[k][2]; // Add raw shared_secret to obj as well to be able to access it more easily from relogAccount.js
                         }
 
-                        new Bot(this, i); // Run bot.js with this account
+                        this.bots[i] = new Bot(this, i); // Create a new bot object for this account and store a reference to it
                     }, this.data.advancedconfig.loginDelay * Number(i > 0)); // Ignore delay for first account
                 }
 

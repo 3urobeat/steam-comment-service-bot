@@ -22,6 +22,7 @@ const Controller = function() {
     this.srcdir = srcdir; // Let users see the global var srcdir more easily
 
     /* ------------ Store various stuff: ------------ */ // TODO: Remove unnecessary variables from below
+    this.bots = {}; // Store references to all bot account objects here
     this.info = {};
     this.info.bootStartTimestamp = Date.now(); // Save timestamp to be able to calculate startup time in ready event
 
