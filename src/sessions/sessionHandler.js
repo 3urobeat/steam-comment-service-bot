@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 11:39:20
+ * Last Modified: 26.03.2023 17:34:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -17,7 +17,6 @@
 
 const SteamUser    = require("steam-user"); // eslint-disable-line
 const SteamSession = require("steam-session"); // eslint-disable-line
-const nedb         = require("@seald-io/nedb");
 
 const controller = require("../controller/controller.js");
 const loginfile  = require("../controller/login.js");
@@ -44,8 +43,8 @@ const SessionHandler = function(bot, thisbot, loginindex, logOnOptions) {
     this.getTokenPromise = null; // Can be called from a helper later on
     this.session = null;
 
-    // Load tokens database
-    this.tokensdb = new nedb({ filename: srcdir + "/data/tokens.db", autoload: true });
+    // Make accessing tokensDB shorter
+    this.tokensdb = bot.controller.data.tokensDB;
 
     // Load helper files
     require("./events/sessionEvents");
@@ -166,14 +165,6 @@ SessionHandler.prototype._acceptSteamGuardCode = function(code) {}; // eslint-di
 
 // Helper function to make handling login errors easier
 SessionHandler.prototype._handleCredentialsLoginError = function(err) {}; // eslint-disable-line
-
-/**
- * External - Sets interval that checks tokens.db every 24 hours for refreshToken expiration in <=7 days, logs warning and sends botowner a Steam msg
- */
-SessionHandler.prototype.detectExpiringTokens = (botobject, logininfo) => {}; // eslint-disable-line
-
-// Helper function which decodes a JsonWebToken - https://stackoverflow.com/a/38552302
-SessionHandler.prototype._decodeJWT = function(token) {}; // eslint-disable-line
 
 /**
  * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid

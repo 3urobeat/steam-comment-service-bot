@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 11:00:30
+ * Last Modified: 26.03.2023 17:28:47
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -36,13 +36,15 @@ const DataManager = function(controller) {
     this.quotes         = [];
     this.lang           = {};
     this.lastCommentDB  = {};
+    this.tokensDB       = {};
 
     // Load helpers
-    if (!this.checkAndGetFile("./src/dataManager/dataCheck.js",          controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataCheck.js'!");
-    if (!this.checkAndGetFile("./src/dataManager/dataImport.js",         controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataImport.js'!");
-    if (!this.checkAndGetFile("./src/dataManager/helpers/getQuote.js",   controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'getQuote.js'!");
-    if (!this.checkAndGetFile("./src/dataManager/helpers/misc.js",       controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'misc.js'!");
-    if (!this.checkAndGetFile("./src/dataManager/helpers/repairFile.js", controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'repairFile.js'!");
+    if (!this.checkAndGetFile("./src/dataManager/dataCheck.js",                    controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataCheck.js'!");
+    if (!this.checkAndGetFile("./src/dataManager/dataImport.js",                   controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataImport.js'!");
+    if (!this.checkAndGetFile("./src/dataManager/helpers/getQuote.js",             controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'getQuote.js'!");
+    if (!this.checkAndGetFile("./src/dataManager/helpers/handleExpiringTokens.js", controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'handleExpiringTokens.js'!");
+    if (!this.checkAndGetFile("./src/dataManager/helpers/misc.js",                 controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'misc.js'!");
+    if (!this.checkAndGetFile("./src/dataManager/helpers/repairFile.js",           controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'repairFile.js'!");
 
 };
 
@@ -69,11 +71,29 @@ DataManager.prototype._importFromDisk = async function() {};
 DataManager.prototype.getQuote = function(quotesArr = null) {}; // eslint-disable-line
 
 /**
+ * Internal: Checks tokens.db every 24 hours for refreshToken expiration in <=7 days, logs warning and sends botowner a Steam msg
+ */
+DataManager.prototype._startExpiringTokensCheckInterval = () => {};
+
+/**
+ * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active comment process was found and sends them to the relogQueue
+ * @param {Object} expiring Object of botobject entries to ask user for
+ */
+DataManager.prototype._askForGetNewToken = function(expiring) {}; // eslint-disable-line
+
+/**
  * Retrieves the last processed comment request of anyone or a specific steamID64 from the lastcomment database
  * @param {String} steamID64 Search for a specific user
  * @returns {Promise} Called with the greatest timestamp (Number) found
  */
 DataManager.prototype.getLastCommentRequest = function(steamID64 = null) {}; // eslint-disable-line
+
+/**
+ * Decodes a JsonWebToken - https://stackoverflow.com/a/38552302
+ * @param {String} token The token to decode
+ * @returns JWT object on success, `null` on failure
+ */
+DataManager.prototype.decodeJWT = function(token) {}; // eslint-disable-line
 
 /**
  * Internal: Helper function to try and restore backup of corrupted file from cache.json

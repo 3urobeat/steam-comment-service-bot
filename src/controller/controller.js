@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 11:00:30
+ * Last Modified: 26.03.2023 17:29:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -22,7 +22,9 @@ const Controller = function() {
     this.srcdir = srcdir; // Let users see the global var srcdir more easily
 
     /* ------------ Store various stuff: ------------ */ // TODO: Remove unnecessary variables from below
-    this.bots = {}; // Store references to all bot account objects here
+    this.bots = {};           // Store references to all bot account objects here
+    this.main = this.bots[0]; // Store short-hand reference to the main acc
+
     this.info = {};
     this.info.bootStartTimestamp = Date.now(); // Save timestamp to be able to calculate startup time in ready event
 
@@ -69,19 +71,17 @@ Controller.prototype._start = async function() {
     logafterrestart = []; // Clear array // TODO: Export logafterrestart or smth
 
 
-    /* ------------ Init dataManager system: ------------ */
-    if (!checkAndGetFile("./src/dataManager/dataManager.js", logger, false, false)) return;
-    let DataManager = require("../dataManager/dataManager.js");
-
-    this.data = new DataManager(this); // All functions provided by the DataManager, as well as all imported file data will be accessible here
-
-
     /* ------------ Mark new execution in output: ------------ */
     logger("", "\n\nBootup sequence started...", true, true);
     logger("", "---------------------------------------------------------", true, true);
 
 
-    /* ------------ Import data: ------------ */
+    /* ------------ Init dataManager system and import: ------------ */
+    if (!checkAndGetFile("./src/dataManager/dataManager.js", logger, false, false)) return;
+    let DataManager = require("../dataManager/dataManager.js");
+
+    this.data = new DataManager(this); // All functions provided by the DataManager, as well as all imported file data will be accessible here
+
     await this.data._importFromDisk();
 
     // TODO: Remove, exists for compatibility

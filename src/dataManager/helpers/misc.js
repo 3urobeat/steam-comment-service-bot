@@ -4,7 +4,7 @@
  * Created Date: 24.03.2023 18:58:55
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 11:00:30
+ * Last Modified: 26.03.2023 15:03:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -42,4 +42,24 @@ DataManager.prototype.getLastCommentRequest = function(steamID64 = null) {
 
     });
 
+};
+
+
+/**
+ * Decodes a JsonWebToken - https://stackoverflow.com/a/38552302
+ * @param {String} token The token to decode
+ * @returns JWT object on success, `null` on failure
+ */
+DataManager.prototype.decodeJWT = function(token) {
+    let payload = token.split(".")[1];            // Remove header and signature as we only care about the payload
+    let decoded = Buffer.from(payload, "base64"); // Decode
+
+    // Try to parse json object
+    try {
+        let parsed = JSON.parse(decoded.toString());
+        return parsed;
+    } catch (err) {
+        logger("err", `Failed to decode JWT! Error: ${err}`, true);
+        return null;
+    }
 };
