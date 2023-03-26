@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:59:31
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 10:51:26
+ * Last Modified: 26.03.2023 18:31:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -17,9 +17,8 @@
 
 const SteamSession = require("steam-session"); // Only needed for the enum definitions below
 
-const SessionHandler = require("../SessionHandler.js");
-
-const loginfile = require("../../controller/login.js");
+const SessionHandler = require("../sessionHandler.js");
+const loginfile      = require("../../controller/login.js");
 
 
 /**
@@ -28,12 +27,12 @@ const loginfile = require("../../controller/login.js");
  */
 SessionHandler.prototype._handle2FA = function(res) {
 
-    logger("debug", `[${this.thisbot}] getRefreshToken(): Received startWithCredentials() actionRequired response. Type: ${res.validActions[0].type} | Detail: ${res.validActions[0].detail}`);
+    logger("debug", `[${this.bot.logPrefix}] getRefreshToken(): Received startWithCredentials() actionRequired response. Type: ${res.validActions[0].type} | Detail: ${res.validActions[0].detail}`);
 
     // Check if user enabled skipSteamGuard and skip asking for 2FA if this is not the main account
-    if (config.skipSteamGuard) {
-        if (this.loginindex > 0) {
-            logger("info", `[${this.thisbot}] Skipping account because skipSteamGuard is enabled...`, false, true, logger.animation("loading"));
+    if (this.controller.data.config.skipSteamGuard) {
+        if (this.bot.index > 0) {
+            logger("info", `[${this.bot.logPrefix}] Skipping account because skipSteamGuard is enabled...`, false, true, logger.animation("loading"));
 
             this._resolvePromise(null);
             return;
@@ -83,7 +82,7 @@ SessionHandler.prototype._get2FAUserInput = function() {
     let question;
     let timeout;
 
-    if (this.loginindex == 0) {
+    if (this.bot.index == 0) {
         question = `[${this.logOnOptions.accountName}] Steam Guard Code: `;
         timeout = 0;
     } else {
@@ -97,20 +96,20 @@ SessionHandler.prototype._get2FAUserInput = function() {
 
             if (text == null) logger("info", "Skipping account because you didn't respond in 1.5 minutes...", true); // No need to check for main acc as timeout is disabled for it
 
-            if (this.loginindex == 0) { // First account can't be skipped, ask again
+            if (this.bot.index == 0) { // First account can't be skipped, ask again
                 logger("warn", "The first account always has to be logged in!", true);
 
                 setTimeout(() => {
                     this._get2FAUserInput(); // Run myself again
                 }, 500);
             } else { // Skip account if not bot0
-                logger("info", `[${this.thisbot}] steamGuard input empty, skipping account...`, false, true, logger.animation("loading"));
+                logger("info", `[${this.bot.logPrefix}] steamGuard input empty, skipping account...`, false, true, logger.animation("loading"));
 
                 this._resolvePromise(null);
                 return;
             }
         } else { // User entered code
-            logger("info", `[${this.thisbot}] Accepting Steam Guard Code...`, false, true, logger.animation("loading"));
+            logger("info", `[${this.bot.logPrefix}] Accepting Steam Guard Code...`, false, true, logger.animation("loading"));
             this._acceptSteamGuardCode(text.toString().trim()); // Pass code to accept function
         }
 
@@ -124,11 +123,11 @@ SessionHandler.prototype._acceptSteamGuardCode = function(code) {
 
     this.session.submitSteamGuardCode(code)
         .then(() => { // Success
-            logger("debug", `[${this.thisbot}] acceptSteamGuardCode(): User supplied correct code, authenticated event should trigger.`);
+            logger("debug", `[${this.bot.logPrefix}] acceptSteamGuardCode(): User supplied correct code, authenticated event should trigger.`);
         })
         .catch((err) => { // Invalid code, ask again
             // Show different message depending on which account this is
-            if (this.loginindex == 0) logger("warn", `Your code seems to be wrong, please try again! ${err}`);
+            if (this.bot.index == 0) logger("warn", `Your code seems to be wrong, please try again! ${err}`);
                 else logger("warn", `Your code seems to be wrong, please try again or skip this account! ${err}`);
 
             // Ask user again

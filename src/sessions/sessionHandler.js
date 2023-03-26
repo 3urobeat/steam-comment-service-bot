@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 17:34:10
+ * Last Modified: 26.03.2023 18:46:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -15,36 +15,32 @@
  */
 
 
-const SteamUser    = require("steam-user"); // eslint-disable-line
 const SteamSession = require("steam-session"); // eslint-disable-line
 
-const controller = require("../controller/controller.js");
+const Bot        = require("../bot/bot.js"); // eslint-disable-line
+const Controller = require("../controller/controller.js");
 const loginfile  = require("../controller/login.js");
 
 
 /**
  * Constructor - Object oriented approach for handling session for one account
- * @param {SteamUser} bot The bot instance of the calling account
- * @param {String} thisbot The thisbot string of the calling account
- * @param {Number} loginindex The loginindex of the calling account
- * @param {Object} logOnOptions Object containing username, password and optionally steamGuardCode
+ * @param {Bot} bot The bot object of this account
  */
-const SessionHandler = function(bot, thisbot, loginindex, logOnOptions) {
+const SessionHandler = function(bot) {
 
     // Make parameters given to the constructor available
-    this.bot          = bot;
-    this.thisbot      = thisbot;
-    this.loginindex   = loginindex;
-    this.logOnOptions = logOnOptions;
+    this.bot        = bot;
+    this.controller = bot.controller;
 
-    this.additionalaccinfo = loginfile.additionalaccinfo[loginindex];
+    this.additionalaccinfo = loginfile.additionalaccinfo[bot.index]; // TODO: Remove
 
     // Define vars that will be populated
     this.getTokenPromise = null; // Can be called from a helper later on
-    this.session = null;
+    this.session         = null;
 
-    // Make accessing tokensDB shorter
-    this.tokensdb = bot.controller.data.tokensDB;
+    // Make accessing tokensDB & logOnOptions of this account shorter
+    this.tokensdb     = bot.controller.data.tokensDB;
+    this.logOnOptions = this.controller.data.logininfo[this.bot.index];
 
     // Load helper files
     require("./events/sessionEvents");
@@ -67,7 +63,7 @@ module.exports = SessionHandler;
  */
 SessionHandler.prototype.getToken = function() { // I'm not allowed to use arrow styled functions here... (https://stackoverflow.com/questions/59344601/javascript-nodejs-typeerror-cannot-set-property-validation-of-undefined)
     return new Promise((resolve) => {
-        logger("debug", `[${this.thisbot}] getToken(): Created new object for token request`);
+        logger("debug", `[${this.bot.logPrefix}] getToken(): Created new object for token request`);
 
         // Save promise resolve function so any other function of this object can resolve the promise itself
         this.getTokenPromise = resolve;
@@ -93,22 +89,21 @@ SessionHandler.prototype._resolvePromise = function(token) {
 
     // Skip this account if token is null or stop bot if this is the main account
     if (!token) {
-        if (this.loginindex == 0) {
+        if (this.bot.index == 0) {
             logger("", "", true);
             logger("error", "Aborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true);
             process.send("stop()");
             return;
         } else {
-            logger("info", `[${this.thisbot}] Skipping account '${this.logOnOptions.accountName}'...`, true);
+            logger("info", `[${this.bot.logPrefix}] Skipping account '${this.logOnOptions.accountName}'...`, true);
 
             loginfile.accisloggedin = true; // Set to true to log next account in
 
-            controller.skippedaccounts.push(this.loginindex);
-            loginfile.skippednow.push(this.loginindex);
+            Controller.skippedaccounts.push(this.bot.index);
+            loginfile.skippednow.push(this.bot.index);
 
-            // Remove account from botobject & communityobject so that it won't be used for anything anymore (if it was logged in before, aka this being a relog)
-            if (controller.botobject[String(this.loginindex)])       delete controller.botobject[String(this.loginindex)];
-            if (controller.communityobject[String(this.loginindex)]) delete controller.communityobject[String(this.loginindex)];
+            // Remove account from bots object so that it won't be used for anything anymore (if it was logged in before, aka this being a relog)
+            if (this.controller.bots[String(this.bot.index)]) delete this.controller.bots[String(this.bot.index)];
 
             // Don't call cancelLoginAttempt() as this would result in an error because we aren't polling yet (https://github.com/DoctorMcKay/node-steam-session#polling)
         }

@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:52:30
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 11:23:16
+ * Last Modified: 26.03.2023 18:15:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -24,7 +24,7 @@ const SessionHandler = require("../SessionHandler.js");
 SessionHandler.prototype._attachEvents = function() {
 
     this.session.on("authenticated", () => { // Success
-        logger("debug", `[${this.thisbot}] getRefreshToken(): Login request successful, '${this.session.accountName}' authenticated. Resolving Promise...`);
+        logger("debug", `[${this.bot.logPrefix}] getRefreshToken(): Login request successful, '${this.session.accountName}' authenticated. Resolving Promise...`);
 
         this._resolvePromise(this.session.refreshToken);
     });
@@ -34,14 +34,14 @@ SessionHandler.prototype._attachEvents = function() {
 
         // TODO: Retry?
 
-        logger("warn", `[${this.thisbot}] Login attempt timed out!`);
+        logger("warn", `[${this.bot.logPrefix}] Login attempt timed out!`);
 
         this._resolvePromise(null);
     });
 
 
     this.session.on("error", (err) => { // Failure
-        logger("error", `[${this.thisbot}] Failed to get a session for account '${this.logOnOptions.accountName}'! Error: ${err}`); // Session.accountName is only defined on success
+        logger("error", `[${this.bot.logPrefix}] Failed to get a session for account '${this.logOnOptions.accountName}'! Error: ${err}`); // Session.accountName is only defined on success
 
         // TODO: When does this event fire? Do I need to do something else?
         // TODO: Retry until advancedconfig.maxLogOnRetries?
