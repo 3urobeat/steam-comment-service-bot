@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 10:57:01
+ * Last Modified: 26.03.2023 11:37:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -256,3 +256,51 @@ SessionHandler.prototype._attemptCredentialsLogin = function() {
     }
 
 };
+
+
+/* ------------ Reference helper functions to let the IntelliSense know about them ------------ */
+
+/**
+ * Internal: Attaches listeners to all steam-session events we care about
+ */
+SessionHandler.prototype._attachEvents = function() {};
+
+/**
+ * Internal - Handles submitting 2FA code
+ * @param {Object} res Response object from startWithCredentials() promise
+ */
+SessionHandler.prototype._handle2FA = function(res) {}; // eslint-disable-line
+
+// Helper function to get 2FA code from user and passing it to accept function or skipping account if desired
+SessionHandler.prototype._get2FAUserInput = function() {};
+
+// Helper function to make accepting and re-requesting invalid steam guard codes easier
+SessionHandler.prototype._acceptSteamGuardCode = function(code) {}; // eslint-disable-line
+
+// Helper function to make handling login errors easier
+SessionHandler.prototype._handleCredentialsLoginError = function(err) {}; // eslint-disable-line
+
+/**
+ * External - Sets interval that checks tokens.db every 24 hours for refreshToken expiration in <=7 days, logs warning and sends botowner a Steam msg
+ */
+SessionHandler.prototype.detectExpiringTokens = (botobject, logininfo) => {}; // eslint-disable-line
+
+// Helper function which decodes a JsonWebToken - https://stackoverflow.com/a/38552302
+SessionHandler.prototype._decodeJWT = function(token) {}; // eslint-disable-line
+
+/**
+ * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
+ * @param {function} [callback] Called with `refreshToken` (String) on success or `null` on failure
+ */
+SessionHandler.prototype._getTokenFromStorage = function(callback) {}; // eslint-disable-line
+
+/**
+ * Internal - Saves a new token for this account to tokens.db
+ * @param {String} token The refreshToken to store
+ */
+SessionHandler.prototype._saveTokenToStorage = function(token) {}; // eslint-disable-line
+
+/**
+ * External - Removes the token of this account from tokens.db. Intended to be called from the steam-user login error event when an invalid token was used so the next login attempt will create a new one.
+ */
+SessionHandler.prototype.invalidateTokenInStorage = function() {};

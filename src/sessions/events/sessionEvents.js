@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:52:30
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 10:51:26
+ * Last Modified: 26.03.2023 11:23:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -18,6 +18,9 @@
 const SessionHandler = require("../SessionHandler.js");
 
 
+/**
+ * Internal: Attaches listeners to all steam-session events we care about
+ */
 SessionHandler.prototype._attachEvents = function() {
 
     this.session.on("authenticated", () => { // Success

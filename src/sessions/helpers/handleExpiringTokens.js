@@ -41,7 +41,7 @@ function _decodeJWT(token) {
  * @param {Object} botobject The botobject
  * @param {Object} logininfo The logininfo object imported in login.js
  */
-module.exports.detectExpiringTokens = (botobject, logininfo) => {
+SessionHandler.prototype.detectExpiringTokens = (botobject, logininfo) => {
 
     function scanDatabase() {
         logger("debug", "detectExpiringTokens(): Scanning tokens.db for expiring tokens...");
