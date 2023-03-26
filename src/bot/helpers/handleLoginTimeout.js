@@ -4,7 +4,7 @@
  * Created Date: 03.11.2022 12:27:46
  * Author: 3urobeat
  *
- * Last Modified: 25.03.2023 21:22:48
+ * Last Modified: 26.03.2023 19:31:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -33,7 +33,7 @@ module.exports.handleLoginTimeout = (loginindex, thisbot, logOnOptions, bot) => 
         return;
     }
 
-    let currentLogOnTry = login.additionalaccinfo[loginindex].logOnTries;
+    let currentLogOnTry = this.loginData.logOnTries;
 
     logger("debug", `handleLoginTimeout(): Attached ${advancedconfig.loginTimeout / 1000} seconds timeout for bot${loginindex}...`);
 
@@ -41,7 +41,7 @@ module.exports.handleLoginTimeout = (loginindex, thisbot, logOnOptions, bot) => 
     setTimeout(() => {
 
         // Ignore timeout if account progressed since then
-        let newLogOnTry = login.additionalaccinfo[loginindex].logOnTries;
+        let newLogOnTry = this.loginData.logOnTries;
         let accInQueue  = controller.relogQueue.includes(loginindex);
 
         if (currentLogOnTry != newLogOnTry || !accInQueue) {
@@ -50,9 +50,9 @@ module.exports.handleLoginTimeout = (loginindex, thisbot, logOnOptions, bot) => 
         }
 
         // Check if all logOnRetries are used up and skip account
-        if (login.additionalaccinfo[loginindex].logOnTries > advancedconfig.maxLogOnRetries) {
+        if (this.loginData.logOnTries > advancedconfig.maxLogOnRetries) {
             logger("", "", true);
-            logger("error", `Couldn't log in bot${loginindex} after ${login.additionalaccinfo[loginindex].logOnTries} attempt(s). Error: Login attempt timed out and all available logOnRetries were used.`, true);
+            logger("error", `Couldn't log in bot${loginindex} after ${this.loginData.logOnTries} attempt(s). Error: Login attempt timed out and all available logOnRetries were used.`, true);
 
             // Add additional messages for specific errors to hopefully help the user diagnose the cause
             if (this.loginData.proxy != null) logger("", `        Is your proxy ${this.loginData.proxyIndex} offline or maybe blocked by Steam?`, true);

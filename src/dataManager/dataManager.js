@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 17:28:47
+ * Last Modified: 26.03.2023 19:07:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -61,7 +61,7 @@ DataManager.prototype.checkData = function() {};
  * Internal: Loads all config & data files from disk and handles potential errors
  * @returns {Promise} Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
-DataManager.prototype._importFromDisk = async function() {};
+DataManager.prototype._importFromDisk = function() {};
 
 /**
  * Gets a random quote

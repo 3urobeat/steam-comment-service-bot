@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 18:46:03
+ * Last Modified: 26.03.2023 19:15:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -31,8 +31,6 @@ const SessionHandler = function(bot) {
     // Make parameters given to the constructor available
     this.bot        = bot;
     this.controller = bot.controller;
-
-    this.additionalaccinfo = loginfile.additionalaccinfo[bot.index]; // TODO: Remove
 
     // Define vars that will be populated
     this.getTokenPromise = null; // Can be called from a helper later on

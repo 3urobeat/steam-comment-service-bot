@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 10:51:26
+ * Last Modified: 26.03.2023 19:31:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -18,7 +18,6 @@
 const SteamTotp  = require("steam-totp");
 
 const controller = require("../../controller/controller.js");
-const login      = require("../../controller/login.js");
 
 
 /**
@@ -36,7 +35,7 @@ module.exports.run = (loginindex, thisbot, logOnOptions, bot, force) => {
         if (!controller.relogQueue.includes(loginindex)) { // Really only do these few calls if acc is not in relogQeue, even if force is true
             controller.relogQueue.push(loginindex);
 
-            login.additionalaccinfo[loginindex].logOnTries = 0; // Reset logOnTries
+            this.loginData.logOnTries = 0; // Reset logOnTries
 
             logger("info", `[${thisbot}] Queueing for a relog. ${controller.relogQueue.length - 1} other accounts are waiting...`, false, true);
         }
@@ -61,10 +60,10 @@ module.exports.run = (loginindex, thisbot, logOnOptions, bot, force) => {
 
             // Attach relogdelay timeout
             setTimeout(async () => {
-                login.additionalaccinfo[loginindex].logOnTries++; // Count login attempt
+                this.loginData.logOnTries++; // Count login attempt
 
-                if (!this.loginData.proxy) logger("info", `[${thisbot}] Trying to relog without proxy... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
-                    else logger("info", `[${thisbot}] Trying to relog with proxy ${this.loginData.proxyIndex}... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+                if (!this.loginData.proxy) logger("info", `[${thisbot}] Trying to relog without proxy... (Attempt ${this.loginData.logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+                    else logger("info", `[${thisbot}] Trying to relog with proxy ${this.loginData.proxyIndex}... (Attempt ${this.loginData.logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
 
                 // Call unresponsive login helper to detect and force progress if this login attempt should get stuck
                 require("./handleLoginTimeout.js").handleLoginTimeout(loginindex, thisbot, logOnOptions, bot);

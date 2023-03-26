@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 10:51:26
+ * Last Modified: 26.03.2023 19:31:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -76,9 +76,9 @@ module.exports.run = (err, loginindex, thisbot, logOnOptions, bot) => {
         let blockedEnumsForRetries = [EResult.Banned, EResult.AccountNotFound]; // No need to block InvalidPassword anymore as the SessionHandler handles credentials
 
         // Check if all logOnTries are used or if this is a fatal error
-        if (login.additionalaccinfo[loginindex].logOnTries > advancedconfig.maxLogOnRetries || blockedEnumsForRetries.includes(err.eresult)) {
+        if (this.loginData.logOnTries > advancedconfig.maxLogOnRetries || blockedEnumsForRetries.includes(err.eresult)) {
             logger("", "", true);
-            logger("error", `Couldn't log in bot${loginindex} after ${login.additionalaccinfo[loginindex].logOnTries} attempt(s). ${err} (${err.eresult})`, true);
+            logger("error", `Couldn't log in bot${loginindex} after ${this.loginData.logOnTries} attempt(s). ${err} (${err.eresult})`, true);
 
             // Add additional messages for specific errors to hopefully help the user diagnose the cause
             if (this.loginData.proxy) logger("", `        Is your proxy ${this.proxyIndex} offline or maybe blocked by Steam?`, true);
@@ -116,7 +116,7 @@ module.exports.run = (err, loginindex, thisbot, logOnOptions, bot) => {
                 let tokensdb = new nedb({ filename: srcdir + "/data/tokens.db", autoload: true });
                 logger("debug", "Token login error: Calling SessionHandler's _invalidateTokenInStorage() function to get a new session when retrying this login attempt");
 
-                require("../../sessions/helpers/tokenStorageHandler.js").invalidateTokenInStorage(tokensdb, thisbot, logOnOptions.accountName);
+                require("../../sessions/helpers/tokenStorageHandler.js").invalidateTokenInStorage(this.controller.data.tokensDB, thisbot, logOnOptions.accountName);
             }
 
             // Call either relogAccount or logOnAccount function to continue where we started at after 5 sec
