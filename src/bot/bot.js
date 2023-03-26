@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 11:47:09
+ * Last Modified: 26.03.2023 19:48:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -33,7 +33,11 @@ const mainfile       = require("./main.js");
 const Bot = function(controller, index) {
     this.controller = controller;
     this.index      = index;
-    this.loginData  = {}; // Provide array for additional login related information
+
+     // Provide array for additional login related information
+    this.loginData  = {
+        logOnTries: 0
+    };
 
     // Define the log message prefix of this account in order to
     if (index == 0) this.logPrefix = "Main";
@@ -62,13 +66,8 @@ const Bot = function(controller, index) {
     if (global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<") process.send("stop()"); // eslint-disable-line
 
 
-    // Reset logOnTries and login!
-    this.loginData.logOnTries = 0;
-
+    // Login and attach all SteamUser event listeners we need!
     this._loginToSteam();
-
-
-    // Attach all SteamUser event listeners we need
     this._attachSteamEvents();
 };
 

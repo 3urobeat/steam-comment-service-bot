@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 17:29:16
+ * Last Modified: 26.03.2023 17:57:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -27,9 +27,6 @@ const Controller = function() {
 
     this.info = {};
     this.info.bootStartTimestamp = Date.now(); // Save timestamp to be able to calculate startup time in ready event
-
-    module.exports.botobject            = {};         // Tracks the bot instances of all accounts to be able to access them from anywhere
-    module.exports.communityobject      = {};         // Tracks the community instances of all accounts to be able to access them from anywhere
 
     module.exports.relogQueue           = [];
     module.exports.readyafterlogs       = [];         // Array to save suppressed logs during startup that get logged by ready.js

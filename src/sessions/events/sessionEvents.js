@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:52:30
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 18:15:37
+ * Last Modified: 26.03.2023 19:45:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -15,7 +15,7 @@
  */
 
 
-const SessionHandler = require("../SessionHandler.js");
+const SessionHandler = require("../sessionHandler.js");
 
 
 /**

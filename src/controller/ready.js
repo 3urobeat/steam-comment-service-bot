@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 25.03.2023 16:18:24
+ * Last Modified: 26.03.2023 19:49:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -213,10 +213,6 @@ module.exports.readyCheck = (logininfo) => {
                 setTimeout(() => botobject[0].chat.sendFriendMessage(e, loginFlowMsgs[0]), 5000);  // Delay msgs a lot to make sure everyone receives them as Steam looovees to block long-ish msgs
                 setTimeout(() => botobject[0].chat.sendFriendMessage(e, loginFlowMsgs[1]), 15000);
             });
-
-
-            // Check tokens database for tokens that will soon expire
-            require("../sessions/helpers/handleExpiringTokens.js").detectExpiringTokens(botobject, logininfo);
 
 
             // Print startup complete message and erase it after 5 sec

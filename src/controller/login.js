@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 19:15:44
+ * Last Modified: 26.03.2023 19:45:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -33,8 +33,8 @@ module.exports.steamGuardInputTimeFunc = (arg) => { // Small function to return 
 
 
 /**
-  * Internal: Creates a new bot object for every account
-  */
+ * Internal: Creates a new bot object for every account
+ */
 Controller.prototype._login = async function() {
 
     module.exports.steamGuardInputTime = 0;
@@ -105,11 +105,11 @@ Controller.prototype._login = async function() {
             let startnextinterval = setInterval(() => { // Run check every x ms
 
                 // Check if previous account is logged in
-                if (module.exports.accisloggedin == true && i == Object.keys(Controller.botobject).length + module.exports.skippednow.length || module.exports.accisloggedin == true && module.exports.skippednow.includes(i - 1)) { // I is being counted from 0, length from 1 -> checks if last iteration is as long as botobject
+                if (module.exports.accisloggedin == true && i == Object.keys(this.bots).length + module.exports.skippednow.length || module.exports.accisloggedin == true && module.exports.skippednow.includes(i - 1)) { // I is being counted from 0, length from 1 -> checks if last iteration is as long as botobject
                     clearInterval(startnextinterval); // Stop checking
 
                     // Start ready check on last iteration
-                    if (Object.keys(this.data.logininfo).length == i + 1) require("./ready.js").readyCheck(this.data.logininfo);
+                    //if (Object.keys(this.data.logininfo).length == i + 1) require("./ready.js").readyCheck(this.data.logininfo); // TODO: Disabled for now
 
                     // If this iteration exists in the skippedaccounts array, automatically skip acc again
                     if (Controller.skippedaccounts.includes(i)) {
