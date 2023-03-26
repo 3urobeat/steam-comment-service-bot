@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 25.03.2023 16:08:30
+ * Last Modified: 26.03.2023 11:00:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -69,9 +69,9 @@ Controller.prototype._start = async function() {
     logafterrestart = []; // Clear array // TODO: Export logafterrestart or smth
 
 
-    /* ------------ Init dataManagement system: ------------ */
-    if (!checkAndGetFile("./src/dataManagement/dataManagement.js", logger, false, false)) return;
-    let DataManager = require("../dataManagement/dataManagement.js");
+    /* ------------ Init dataManager system: ------------ */
+    if (!checkAndGetFile("./src/dataManager/dataManager.js", logger, false, false)) return;
+    let DataManager = require("../dataManager/dataManager.js");
 
     this.data = new DataManager(this); // All functions provided by the DataManager, as well as all imported file data will be accessible here
 

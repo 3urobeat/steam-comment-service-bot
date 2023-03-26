@@ -4,7 +4,7 @@
  * Created Date: 02.03.2022 16:21:11
  * Author: 3urobeat
  *
- * Last Modified: 23.03.2023 18:05:10
+ * Last Modified: 26.03.2023 11:00:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -15,7 +15,7 @@
  */
 
 
-const DataManager = require("../dataManagement.js");
+const DataManager = require("../dataManager.js");
 
 
 const randomstring = arr => arr[Math.floor(Math.random() * arr.length)]; // Smol function to get random string from array

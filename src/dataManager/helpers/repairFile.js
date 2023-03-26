@@ -4,7 +4,7 @@
  * Created Date: 22.03.2023 12:35:01
  * Author: 3urobeat
  *
- * Last Modified: 22.03.2023 21:53:16
+ * Last Modified: 26.03.2023 11:00:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -17,7 +17,7 @@
 
 const fs          = require("fs");
 const path        = require("path");
-const DataManager = require("../dataManagement.js");
+const DataManager = require("../dataManager.js");
 
 
 /**

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 22.03.2023 22:52:57
+ * Last Modified: 26.03.2023 11:00:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -18,7 +18,7 @@
 const fs          = require("fs");
 const path        = require("path");
 const nedb        = require("@seald-io/nedb");
-const DataManager = require("./dataManagement.js");
+const DataManager = require("./dataManager.js");
 
 
 /**
@@ -287,6 +287,7 @@ DataManager.prototype._importFromDisk = function() {
             this.lang           = await loadLanguage();
 
             this.lastCommentDB  = new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); // Autoload
+            this.tokensDB       = new nedb({ filename: srcdir + "/data/tokens.db",      autoload: true });
 
             // Resolve our promise to let caller know the dataImport is finished
             resolve();

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 23.03.2023 21:41:30
+ * Last Modified: 26.03.2023 11:00:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -19,7 +19,7 @@ const fs              = require("fs");
 const os              = require("os");
 const steamIdResolver = require("steamid-resolver");
 
-const DataManager = require("./dataManagement.js");
+const DataManager = require("./dataManager.js");
 
 
 /**

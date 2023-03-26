@@ -1,10 +1,10 @@
 /*
- * File: dataManagement.js
+ * File: dataManager.js
  * Project: steam-comment-service-bot
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 24.03.2023 19:37:53
+ * Last Modified: 26.03.2023 11:00:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -19,7 +19,7 @@ const starter = require("../starter.js"); // Load starter to access checkAndGetF
 
 
 /**
- * Constructor - The dataManagement system imports, checks, handles errors and provides a file updating service for all configuration files
+ * Constructor - The dataManager system imports, checks, handles errors and provides a file updating service for all configuration files
  * @param {Object} controller Reference to the controller object
  */
 const DataManager = function(controller) {
@@ -38,11 +38,11 @@ const DataManager = function(controller) {
     this.lastCommentDB  = {};
 
     // Load helpers
-    if (!this.checkAndGetFile("./src/dataManagement/dataCheck.js",          controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataCheck.js'!");
-    if (!this.checkAndGetFile("./src/dataManagement/dataImport.js",         controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataImport.js'!");
-    if (!this.checkAndGetFile("./src/dataManagement/helpers/getQuote.js",   controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'getQuote.js'!");
-    if (!this.checkAndGetFile("./src/dataManagement/helpers/misc.js",       controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'misc.js'!");
-    if (!this.checkAndGetFile("./src/dataManagement/helpers/repairFile.js", controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'repairFile.js'!");
+    if (!this.checkAndGetFile("./src/dataManager/dataCheck.js",          controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataCheck.js'!");
+    if (!this.checkAndGetFile("./src/dataManager/dataImport.js",         controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataImport.js'!");
+    if (!this.checkAndGetFile("./src/dataManager/helpers/getQuote.js",   controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'getQuote.js'!");
+    if (!this.checkAndGetFile("./src/dataManager/helpers/misc.js",       controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'misc.js'!");
+    if (!this.checkAndGetFile("./src/dataManager/helpers/repairFile.js", controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'repairFile.js'!");
 
 };
 
