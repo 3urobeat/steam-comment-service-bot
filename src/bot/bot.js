@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 25.03.2023 21:01:49
+ * Last Modified: 26.03.2023 10:51:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -20,7 +20,7 @@ const SteamCommunity = require("steamcommunity");
 const request        = require("request"); // Yes I know, the library is deprecated but steamcommunity uses it as well so it is being used anyway
 
 const Controller     = require("../controller/controller.js"); // eslint-disable-line
-const sessionHandler = require("../sessions/sessionHandler.js");
+const SessionHandler = require("../sessions/SessionHandler.js");
 const login          = require("../controller/login.js");
 const mainfile       = require("./main.js");
 
@@ -93,9 +93,9 @@ Bot.prototype._loginToSteam = function() {
 
 
             // Call our steam-session helper to get a valid refresh token for us
-            let session = new sessionHandler(this);
+            this.sessionHandler = new SessionHandler(this);
 
-            let refreshToken = await session.getToken();
+            let refreshToken = await sessionHandler.getToken();
             if (!refreshToken) return; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the user itself
 
             // Login with this account using the refreshToken we just obtained using steam-session

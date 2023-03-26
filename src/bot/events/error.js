@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 25.03.2023 21:04:11
+ * Last Modified: 26.03.2023 10:51:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -73,7 +73,7 @@ module.exports.run = (err, loginindex, thisbot, logOnOptions, bot) => {
 
     } else { // Actual error during login or relog
 
-        let blockedEnumsForRetries = [EResult.Banned, EResult.AccountNotFound]; // No need to block InvalidPassword anymore as the sessionHandler handles credentials
+        let blockedEnumsForRetries = [EResult.Banned, EResult.AccountNotFound]; // No need to block InvalidPassword anymore as the SessionHandler handles credentials
 
         // Check if all logOnTries are used or if this is a fatal error
         if (login.additionalaccinfo[loginindex].logOnTries > advancedconfig.maxLogOnRetries || blockedEnumsForRetries.includes(err.eresult)) {
@@ -111,10 +111,10 @@ module.exports.run = (err, loginindex, thisbot, logOnOptions, bot) => {
 
             // Invalidate token to get a new session if this error was caused by an invalid refreshToken
             if (err.eresult == EResult.InvalidPassword || err == "Error: InvalidSignature") { // These are the most likely enums that will occur when an invalid token was used I guess (Checking via String here as it seems like there are EResults missing)
-                logger("debug", "Token login error: Calling tokenStorageHandler's _invalidateTokenInStorage() function to get a new session when retrying this login attempt");
 
                 let nedb = require("@seald-io/nedb");
                 let tokensdb = new nedb({ filename: srcdir + "/data/tokens.db", autoload: true });
+                logger("debug", "Token login error: Calling SessionHandler's _invalidateTokenInStorage() function to get a new session when retrying this login attempt");
 
                 require("../../sessions/helpers/tokenStorageHandler.js").invalidateTokenInStorage(tokensdb, thisbot, logOnOptions.accountName);
             }

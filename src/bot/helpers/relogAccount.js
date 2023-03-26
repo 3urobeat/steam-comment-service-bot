@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 25.03.2023 21:23:18
+ * Last Modified: 26.03.2023 10:51:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -70,8 +70,8 @@ module.exports.run = (loginindex, thisbot, logOnOptions, bot, force) => {
                 require("./handleLoginTimeout.js").handleLoginTimeout(loginindex, thisbot, logOnOptions, bot);
 
                 // Call our steam-session helper to get a valid refresh token for us
-                let sessionHandler = require(srcdir + "/sessions/sessionHandler.js");
-                let session = new sessionHandler(bot, thisbot, loginindex, logOnOptions);
+                let SessionHandler = require(srcdir + "/sessions/SessionHandler.js");
+                let session = new SessionHandler(bot, thisbot, loginindex, logOnOptions);
 
                 let refreshToken = await session.getToken();
                 if (!refreshToken) return; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the bot itself

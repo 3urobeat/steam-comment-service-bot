@@ -4,7 +4,7 @@
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 23.03.2023 22:06:38
+ * Last Modified: 26.03.2023 10:51:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -21,7 +21,7 @@ const controller = require("../../controller/controller.js");
 const mainfile   = require("../../bot/main.js");
 
 
-// Internal - Helper function which decodes a JsonWebToken - https://stackoverflow.com/a/38552302 (c&p from sessionHandler)
+// Internal - Helper function which decodes a JsonWebToken - https://stackoverflow.com/a/38552302 (c&p from SessionHandler)
 function _decodeJWT(token) {
     let payload = token.split(".")[1];            // Remove header and signature as we only care about the payload
     let decoded = Buffer.from(payload, "base64"); // Decode

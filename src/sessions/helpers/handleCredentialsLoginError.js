@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 13:22:39
  * Author: 3urobeat
  *
- * Last Modified: 25.03.2023 21:30:31
+ * Last Modified: 26.03.2023 10:51:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -16,11 +16,11 @@
 
 
 const { EResult } = require("steam-session");
-const sessionHandler = require("../sessionHandler.js");
+const SessionHandler = require("../SessionHandler.js");
 
 
 // Helper function to make handling login errors easier
-sessionHandler.prototype._handleCredentialsLoginError = function(err) {
+SessionHandler.prototype._handleCredentialsLoginError = function(err) {
 
     // Define a few enums on which we won't bother to relog
     let blockedEnumsForRetries = [EResult.InvalidPassword, EResult.LoggedInElsewhere, EResult.InvalidName, EResult.InvalidEmail, EResult.Banned, EResult.AccountNotFound];

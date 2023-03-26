@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:59:31
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 12:28:39
+ * Last Modified: 26.03.2023 10:51:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -17,7 +17,7 @@
 
 const SteamSession = require("steam-session"); // Only needed for the enum definitions below
 
-const sessionHandler = require("../sessionHandler.js");
+const SessionHandler = require("../SessionHandler.js");
 
 const loginfile = require("../../controller/login.js");
 
@@ -26,7 +26,7 @@ const loginfile = require("../../controller/login.js");
  * Internal - Handles submitting 2FA code
  * @param {Object} res Response object from startWithCredentials() promise
  */
-sessionHandler.prototype._handle2FA = function(res) {
+SessionHandler.prototype._handle2FA = function(res) {
 
     logger("debug", `[${this.thisbot}] getRefreshToken(): Received startWithCredentials() actionRequired response. Type: ${res.validActions[0].type} | Detail: ${res.validActions[0].detail}`);
 
@@ -74,7 +74,7 @@ sessionHandler.prototype._handle2FA = function(res) {
 
 
 // Helper function to get 2FA code from user and passing it to accept function or skipping account if desired
-sessionHandler.prototype._get2FAUserInput = function() {
+SessionHandler.prototype._get2FAUserInput = function() {
 
     // Start timer to subtract it later from readyafter time
     var steamGuardInputStart = Date.now(); // Measure time to subtract it later from readyafter time
@@ -120,7 +120,7 @@ sessionHandler.prototype._get2FAUserInput = function() {
 
 
 // Helper function to make accepting and re-requesting invalid steam guard codes easier
-sessionHandler.prototype._acceptSteamGuardCode = function(code) {
+SessionHandler.prototype._acceptSteamGuardCode = function(code) {
 
     this.session.submitSteamGuardCode(code)
         .then(() => { // Success

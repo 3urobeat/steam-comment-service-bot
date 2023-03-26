@@ -4,7 +4,7 @@
  * Created Date: 10.10.2022 12:53:20
  * Author: 3urobeat
  *
- * Last Modified: 15.10.2022 17:50:35
+ * Last Modified: 26.03.2023 10:51:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -15,11 +15,11 @@
  */
 
 
-const sessionHandler = require("../sessionHandler.js");
+const SessionHandler = require("../SessionHandler.js");
 
 
 // Helper function which decodes a JsonWebToken - https://stackoverflow.com/a/38552302
-sessionHandler.prototype._decodeJWT = function(token) {
+SessionHandler.prototype._decodeJWT = function(token) {
     let payload = token.split(".")[1];           // Remove header and signature as we only care about the payload
     let decoded = Buffer.from(payload, "base64"); // Decode
 
@@ -38,7 +38,7 @@ sessionHandler.prototype._decodeJWT = function(token) {
  * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
  * @param {function} [callback] Called with `refreshToken` (String) on success or `null` on failure
  */
-sessionHandler.prototype._getTokenFromStorage = function(callback) {
+SessionHandler.prototype._getTokenFromStorage = function(callback) {
 
     // Search tokens database with accountName for a valid token so we can skip creating a new session
     this.tokensdb.findOne({ accountName: this.logOnOptions.accountName }, (err, doc) => {
@@ -76,8 +76,8 @@ sessionHandler.prototype._getTokenFromStorage = function(callback) {
  * Internal - Saves a new token for this account to tokens.db
  * @param {String} token The refreshToken to store
  */
-sessionHandler.prototype._saveTokenToStorage = function(token) {
     logger("debug", `[${this.thisbot}] _saveTokenToStorage(): Updating tokens.db entry for accountName '${this.logOnOptions.accountName}'...`);
+SessionHandler.prototype._saveTokenToStorage = function(token) {
 
     // Update db entry for this account. Upsert is enabled so a new doc will be inserted if none exists yet
     this.tokensdb.updateAsync({ accountName: this.logOnOptions.accountName }, { $set: { token: token } }, { upsert: true });
@@ -103,7 +103,7 @@ module.exports.invalidateTokenInStorage = function(tokensdb, thisbot, accountNam
 /**
  * Internal - Cleans out every expired key from tokens.db of accounts that are not currently used. Call only for loginindex 0!
  */
-/* sessionHandler.prototype._cleanTokenStorage = async function() {
+/* SessionHandler.prototype._cleanTokenStorage = async function() {
 
     const docs = await this.tokensdb.findAsync({ $where: function () { return true if 'this.accountName' is not in logininfo } )
 

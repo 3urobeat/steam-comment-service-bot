@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 14.03.2023 00:26:52
+ * Last Modified: 26.03.2023 10:57:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -30,7 +30,7 @@ const loginfile  = require("../controller/login.js");
  * @param {Number} loginindex The loginindex of the calling account
  * @param {Object} logOnOptions Object containing username, password and optionally steamGuardCode
  */
-const sessionHandler = function(bot, thisbot, loginindex, logOnOptions) {
+const SessionHandler = function(bot, thisbot, loginindex, logOnOptions) {
 
     // Make parameters given to the constructor available
     this.bot          = bot;
@@ -59,14 +59,14 @@ const sessionHandler = function(bot, thisbot, loginindex, logOnOptions) {
 };
 
 // Make object accessible from outside
-module.exports = sessionHandler;
+module.exports = SessionHandler;
 
 
 /**
  * Handles getting a refresh token for steam-user to auth with
  * @returns {Promise} `refreshToken` on success or `null` on failure
  */
-sessionHandler.prototype.getToken = function() { // I'm not allowed to use arrow styled functions here... (https://stackoverflow.com/questions/59344601/javascript-nodejs-typeerror-cannot-set-property-validation-of-undefined)
+SessionHandler.prototype.getToken = function() { // I'm not allowed to use arrow styled functions here... (https://stackoverflow.com/questions/59344601/javascript-nodejs-typeerror-cannot-set-property-validation-of-undefined)
     return new Promise((resolve) => {
         logger("debug", `[${this.thisbot}] getToken(): Created new object for token request`);
 
@@ -90,7 +90,7 @@ sessionHandler.prototype.getToken = function() { // I'm not allowed to use arrow
  * Internal - Handles resolving the getToken() promise and skipping the account if necessary
  * @param {String} token The token to resolve with or null when account should be skipped
  */
-sessionHandler.prototype._resolvePromise = function(token) {
+SessionHandler.prototype._resolvePromise = function(token) {
 
     // Skip this account if token is null or stop bot if this is the main account
     if (!token) {
@@ -125,7 +125,7 @@ sessionHandler.prototype._resolvePromise = function(token) {
 /**
  * Internal - Attempts to log into account with credentials
  */
-sessionHandler.prototype._attemptCredentialsLogin = function() {
+SessionHandler.prototype._attemptCredentialsLogin = function() {
 
     // TODO: Disabled until old login method using steam-user stops working so we can use the existing sentry files to make updating automatically possible
 

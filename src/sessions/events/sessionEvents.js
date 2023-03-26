@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:52:30
  * Author: 3urobeat
  *
- * Last Modified: 09.10.2022 21:57:18
+ * Last Modified: 26.03.2023 10:51:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -15,10 +15,10 @@
  */
 
 
-const sessionHandler = require("../sessionHandler.js");
+const SessionHandler = require("../SessionHandler.js");
 
 
-sessionHandler.prototype._attachEvents = function() {
+SessionHandler.prototype._attachEvents = function() {
 
     this.session.on("authenticated", () => { // Success
         logger("debug", `[${this.thisbot}] getRefreshToken(): Login request successful, '${this.session.accountName}' authenticated. Resolving Promise...`);
