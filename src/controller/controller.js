@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 17:57:24
+ * Last Modified: 28.03.2023 00:23:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -90,6 +90,9 @@ Controller.prototype._start = async function() {
 
     // Call optionsUpdateAfterConfigLoad() to set previously inaccessible options
     loggerfile.optionsUpdateAfterConfigLoad(this.data.advancedconfig);
+
+    // Process imported owner & group ids and update cachefile
+    await this.data.processData();
 
     // Check imported data
     await this.data.checkData().catch(() => process.send("stop()")); // Terminate the bot if some critical check failed

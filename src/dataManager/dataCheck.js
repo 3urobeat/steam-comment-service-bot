@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 11:00:30
+ * Last Modified: 27.03.2023 23:54:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -32,16 +32,11 @@ DataManager.prototype.checkData = function() {
 
         logger("info", "Running datachecks...", false, true, logger.animation("loading"));
 
-        // Refresh cache of ownerids. getOwnerID() will also print an error message if user provided invalid ids
-        require("../controller/helpers/getOwnerID.js").getOwnerID(null, (ids) => {
-            this.cachefile["ownerid"] = ids; // Refresh cache
-
-            // Filter all invalid entries which got replaced with null
-            if (ids.filter(e => e != null).length == 0) {
-                logger("error", "Error: You did not set at least one valid ownerid in config.json! Aborting!");
-                return reject("no-ownerid-found");
-            }
-        });
+        // Filter all invalid ownerids which got replaced with null by processData()
+        if (this.cachefile.ownerid.filter(e => e != null).length == 0) {
+            logger("error", "Error: You did not set at least one valid ownerid in config.json! Aborting!");
+            return reject("no-ownerid-found");
+        }
 
 
         // Check config for default value leftovers and remove myself from config on different computer

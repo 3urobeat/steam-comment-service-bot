@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 19:07:03
+ * Last Modified: 28.03.2023 00:08:14
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -41,6 +41,7 @@ const DataManager = function(controller) {
     // Load helpers
     if (!this.checkAndGetFile("./src/dataManager/dataCheck.js",                    controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataCheck.js'!");
     if (!this.checkAndGetFile("./src/dataManager/dataImport.js",                   controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataImport.js'!");
+    if (!this.checkAndGetFile("./src/dataManager/dataProcessing.js",               controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataProcessing.js'!");
     if (!this.checkAndGetFile("./src/dataManager/helpers/getQuote.js",             controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'getQuote.js'!");
     if (!this.checkAndGetFile("./src/dataManager/helpers/handleExpiringTokens.js", controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'handleExpiringTokens.js'!");
     if (!this.checkAndGetFile("./src/dataManager/helpers/misc.js",                 controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'misc.js'!");
@@ -56,6 +57,11 @@ const DataManager = function(controller) {
  * @returns {Promise} Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
  */
 DataManager.prototype.checkData = function() {};
+
+/**
+ * Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
+ */
+DataManager.prototype.processData = async function() {};
 
 /**
  * Internal: Loads all config & data files from disk and handles potential errors
