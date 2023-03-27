@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 19:48:26
+ * Last Modified: 27.03.2023 14:29:23
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -36,7 +36,9 @@ const Bot = function(controller, index) {
 
      // Provide array for additional login related information
     this.loginData  = {
-        logOnTries: 0
+        logOnTries: 0,
+        proxyIndex: this.index % controller.data.proxies.length, // Spread all accounts equally with a simple modulo calculation
+        proxy:      controller.data.proxies[this.loginData.proxyIndex]
     };
 
     // Define the log message prefix of this account in order to
@@ -45,12 +47,12 @@ const Bot = function(controller, index) {
 
 
     // Load helper files
-    require("./helpers/attachSteamEvents.js");
-
-
-    // Get proxy for this user account
-    this.loginData.proxyIndex = this.index % controller.data.proxies.length; // Spread all accounts equally with a simple modulo calculation
-    this.loginData.proxy      = controller.data.proxies[this.loginData.proxyIndex];
+    require("./events/disconnected.js");
+    require("./events/error.js");
+    require("./events/friendMessage.js");
+    require("./events/loggedOn.js");
+    require("./events/relationship.js");
+    require("./events/webSession.js");
 
 
     // Create user & community instance
@@ -68,7 +70,26 @@ const Bot = function(controller, index) {
 
     // Login and attach all SteamUser event listeners we need!
     this._loginToSteam();
-    this._attachSteamEvents();
+
+    this._attachSteamDisconnectedEvent();
+    this._attachSteamErrorEvent();
+    this._attachSteamFriendMessageEvent();
+    this._attachSteamLoggedOnEvent();
+    this._attachSteamFriendRelationshipEvent();
+    this._attachSteamGroupRelationshipEvent();
+    this._attachSteamWebSessionEvent();
+
+
+    // Get new websession as sometimes the this.user would relog after a lost connection but wouldn't get a websession. Read more about cookies & expiration: https://dev.doctormckay.com/topic/365-cookies/
+    let lastWebSessionRefresh = Date.now(); // Track when the last refresh was to avoid spamming webLogOn() on sessionExpired
+
+    this.community.on("sessionExpired", () => {
+        if (Date.now() - lastWebSessionRefresh < 15000) return; // Last refresh was 15 seconds ago so ignore this call
+
+        logger("info", `[${this.logPrefix}] Session seems to be expired. Trying to get new websession...`);
+        lastWebSessionRefresh = Date.now(); // Update time
+        this.user.webLogOn();
+    });
 };
 
 
@@ -107,3 +128,12 @@ Bot.prototype._loginToSteam = function() {
 
 // Make bot accessible from outside
 module.exports = Bot;
+
+
+/* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
+
+/**
+ * Attempt to relog this bot account. This function regulates automatic relogging by delaying it depending on how many other accounts requested a relog as well.
+ * @param {Boolean} force Forces an relog even if the account is already in relogQueue (important for steam-user error event while relog)
+ */
+Bot.prototype.relogAccount = (force) => {}; // eslint-disable-line
