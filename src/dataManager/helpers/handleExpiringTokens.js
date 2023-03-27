@@ -4,7 +4,7 @@
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 17:23:32
+ * Last Modified: 28.03.2023 00:24:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -17,7 +17,6 @@
 
 const DataManager = require("../dataManager.js");
 const Controller  = require("../../controller/controller.js");
-const mainfile    = require("../../bot/main.js");
 
 
 /**
@@ -146,17 +145,17 @@ DataManager.prototype._askForGetNewToken = function(expiring) {
     // Check for an active comment process before asking user for relog
     logger("debug", "DataManager _askForGetNewToken(): Checking for active comment process...");
 
-    let objlength = Object.keys(mainfile.activecommentprocess).length; // Save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering
+    let objlength = Object.keys(this.controller.activecommentprocess).length; // Save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering
 
-    if (Object.keys(mainfile.activecommentprocess).length == 0) askForRelog(); // Don't bother with loop below if acp obj is empty
+    if (Object.keys(this.controller.activecommentprocess).length == 0) askForRelog(); // Don't bother with loop below if acp obj is empty
 
-    Object.keys(mainfile.activecommentprocess).forEach((e, i) => { // Loop over obj to filter invalid/expired entries
-        if (mainfile.activecommentprocess[e].status != "active" || Date.now() > mainfile.activecommentprocess[e].until + (_this.config.botaccountcooldown * 60000)) { // Check if status is not active or if entry is finished (realistically the status can't be active and finished but it won't hurt to check both to avoid a possible bug)
-            delete mainfile.activecommentprocess[e]; // Remove entry from object
+    Object.keys(this.controller.activecommentprocess).forEach((e, i) => { // Loop over obj to filter invalid/expired entries
+        if (this.controller.activecommentprocess[e].status != "active" || Date.now() > this.controller.activecommentprocess[e].until + (_this.config.botaccountcooldown * 60000)) { // Check if status is not active or if entry is finished (realistically the status can't be active and finished but it won't hurt to check both to avoid a possible bug)
+            delete this.controller.activecommentprocess[e]; // Remove entry from object
         }
 
         if (i == objlength - 1) {
-            if (Object.keys(mainfile.activecommentprocess).length > 0) { // Check if obj is still not empty and recursively call this function again
+            if (Object.keys(this.controller.activecommentprocess).length > 0) { // Check if obj is still not empty and recursively call this function again
                 logger("info", "Waiting for an active comment process to finish...", false, true, logger.animation("waiting"));
 
                 setTimeout(() => { // Wait 2.5 sec and check again
