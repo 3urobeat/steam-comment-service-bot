@@ -4,7 +4,7 @@
  * Created Date: 27.03.2023 21:34:45
  * Author: 3urobeat
  *
- * Last Modified: 28.03.2023 00:17:31
+ * Last Modified: 28.03.2023 13:52:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -119,7 +119,7 @@ DataManager.prototype.processData = function() {
                 return new Promise((resolve) => {
 
                     let tempArr = [];
-                    logger("debug", `DataManager processData(): Converting ${_this.config.ownerid.length} owners...`);
+                    logger("debug", `DataManager processData(): Converting ${_this.config.ownerid.length} owner(s)...`);
 
                     // Check for last iteration, update cache and resolve Promise
                     function finishedResponse(i) {
@@ -156,10 +156,8 @@ DataManager.prototype.processData = function() {
             }
 
 
-            // Process all three after another, then update cache.json
-            await yourgroup();
-            await botsgroup();
-            await owners();
+            // Process all three, then update cache.json
+            await Promise.all([yourgroup(), botsgroup(), owners()]);
 
             fs.writeFile(srcdir + "/data/cache.json", JSON.stringify(this.cachefile, null, 4), err => {
                 if (err) logger("error", `DataManager processData(): Error updating cache.json: ${err}`);
