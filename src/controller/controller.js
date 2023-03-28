@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 28.03.2023 00:23:41
+ * Last Modified: 28.03.2023 15:19:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -25,13 +25,22 @@ const Controller = function() {
     this.bots = {};           // Store references to all bot account objects here
     this.main = this.bots[0]; // Store short-hand reference to the main acc
 
-    this.info = {};
-    this.info.bootStartTimestamp = Date.now(); // Save timestamp to be able to calculate startup time in ready event
+    this.info = {
+        bootStartTimestamp: Date.now(), // Save timestamp to be able to calculate startup time in ready event
+        steamGuardInputTime: 0,
+        readyAfter: 0
+    };
 
-    module.exports.relogQueue           = [];
-    module.exports.readyafterlogs       = [];         // Array to save suppressed logs during startup that get logged by ready.js
-    module.exports.relogAfterDisconnect = true;       // Allows to prevent accounts from relogging when calling bot.logOff()
-    module.exports.activeRelog          = false;      // Allows to block new comment requests when waiting for the last request to finish
+    this.relogQueue = [];
+
+    // TODO: Legacy stuff
+    this.readyafterlogs        = [];         // Array to save suppressed logs during startup that get logged by ready.js
+    this.relogAfterDisconnect  = true;       // Allows to prevent accounts from relogging when calling bot.logOff()
+    this.activeRelog           = false;      // Allows to block new comment requests when waiting for the last request to finish
+    this.failedcomments        = []; // Array saving failedcomments so the user can access them via the !failedcomments command
+    this.activecommentprocess  = {}; // Object storing active comment processes so that a user can only request one process at a time, used accounts can only be used in one session, have a cooldown (not the user! that is handled by lastcomment) and the updater is blocked
+    this.lastcommentrequestmsg = []; // Array saving the last comment cmd request to apply higher cooldown to the comment cmd usage compared to normal cmd usage cooldown
+    this.commentcounter        = 0;  // This will count the total of comments requested since the last reboot
 
 };
 
@@ -147,7 +156,8 @@ Controller.prototype._start = async function() {
             module.exports.pluginSystem = new PluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
 
             require("./login.js"); // Load helper
-            this._login(); // Start logging in
+            this._preLogin(); // Run one-time pre-login tasks
+            this.login(); // Start logging in
 
         } else {
 
@@ -156,7 +166,8 @@ Controller.prototype._start = async function() {
                     module.exports.pluginSystem = new PluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
 
                     require("./login.js"); // Load helper
-                    this._login(); // Start logging in
+                    this._preLogin(); // Run one-time pre-login tasks
+                    this.login(); // Start logging in
                 } else {
                     process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, updatefailed: updateFailed == true })})`); // Send request to parent process (checking updateFailed == true so that undefined will result in false instead of undefined)
                 }
@@ -213,3 +224,17 @@ if (parseInt(process.argv[3]) + 2500 > Date.now()) { // Check if this process ju
     let controller = new Controller();
     controller._start();
 }
+
+
+/* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
+
+/**
+ * Internal: Performs certain checks before logging in for the first time and then calls login()
+ */
+Controller.prototype._preLogin = async function() {};
+
+/**
+ * Attempts to log in all bot accounts which are currently offline one after another
+ * Creates a new bot object for every new account and reuses existing one if possible
+ */
+Controller.prototype.login = function() {};

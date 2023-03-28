@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 28.03.2023 00:23:11
+ * Last Modified: 28.03.2023 21:23:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -21,7 +21,6 @@ const request        = require("request"); // Yes I know, the library is depreca
 
 const Controller     = require("../controller/controller.js"); // eslint-disable-line
 const SessionHandler = require("../sessions/sessionHandler.js");
-const login          = require("../controller/login.js");
 
 
 /**
@@ -32,12 +31,14 @@ const login          = require("../controller/login.js");
 const Bot = function(controller, index) {
     this.controller = controller;
     this.index      = index;
+    // Provide array for additional login related information
+    let proxyIndex = this.index % controller.data.proxies.length;
 
-     // Provide array for additional login related information
     this.loginData  = {
-        logOnTries: 0,
-        proxyIndex: this.index % controller.data.proxies.length, // Spread all accounts equally with a simple modulo calculation
-        proxy:      controller.data.proxies[this.loginData.proxyIndex]
+        logOnOptions: Object.values(controller.data.logininfo)[index], // TODO: This could be an issue later when the index could change at runtime
+        logOnTries:   0,
+        proxyIndex:   proxyIndex, // Spread all accounts equally with a simple modulo calculation
+        proxy:        controller.data.proxies[proxyIndex]
     };
 
     // Define the log message prefix of this account in order to

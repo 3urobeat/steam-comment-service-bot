@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:59:31
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 18:31:46
+ * Last Modified: 27.03.2023 12:38:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -18,7 +18,6 @@
 const SteamSession = require("steam-session"); // Only needed for the enum definitions below
 
 const SessionHandler = require("../sessionHandler.js");
-const loginfile      = require("../../controller/login.js");
 
 
 /**
@@ -113,7 +112,7 @@ SessionHandler.prototype._get2FAUserInput = function() {
             this._acceptSteamGuardCode(text.toString().trim()); // Pass code to accept function
         }
 
-        loginfile.steamGuardInputTimeFunc(Date.now() - steamGuardInputStart); // Measure time and subtract it from readyafter time
+        this.controller.info.steamGuardInputTime += Date.now() - steamGuardInputStart; // Measure time and subtract it from readyafter time
     });
 };
 

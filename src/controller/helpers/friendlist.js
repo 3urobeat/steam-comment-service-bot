@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 18.03.2023 22:34:38
+ * Last Modified: 28.03.2023 11:45:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -18,7 +18,6 @@
 const SteamID = require("steamid");
 
 const controller = require("../../controller/controller.js");
-const mainfile   = require("../../bot/main.js");
 
 
 /**
