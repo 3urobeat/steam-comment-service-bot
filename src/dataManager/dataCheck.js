@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.03.2023 23:54:24
+ * Last Modified: 28.03.2023 15:22:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -77,8 +77,8 @@ DataManager.prototype.checkData = function() {
         let maxCommentsOverall = this.config.maxOwnerComments; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
         if (this.config.maxComments > this.config.maxOwnerComments) maxCommentsOverall = this.config.maxComments;
 
-        if (this.logininfo.bot0 == undefined) { // Check real quick if logininfo is empty
-            logger("error", `${logger.colors.fgred}Your accounts.txt or logininfo.json file (whichever you are using) doesn't seem to contain any valid login credentials! Aborting...`, true);
+        if (Object.keys(this.logininfo).length == 0) { // Check real quick if logininfo is empty
+            logger("error", `${logger.colors.fgred}Your accounts.txt or logininfo.json file doesn't seem to contain any valid login credentials! Aborting...`, true);
             return reject("no-logininfo-found");
         }
         if (this.config.maxOwnerComments < 1) {
