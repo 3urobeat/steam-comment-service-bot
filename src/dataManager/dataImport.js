@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 17:28:37
+ * Last Modified: 28.03.2023 14:13:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -146,11 +146,20 @@ DataManager.prototype._importFromDisk = function() {
                             logger("info", "Accounts.txt does exist and is not empty - using it instead of logininfo.json.", false, true);
 
                             logininfo = {}; // Set empty object
-                            data.forEach((e, i) => {
+                            data.forEach((e) => {
                                 if (e.length < 2) return; // If the line is empty ignore it to avoid issues like this: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/80
                                 e = e.split(":");
                                 e[e.length - 1] = e[e.length - 1].replace("\r", ""); // Remove Windows next line character from last index (which has to be the end of the line)
-                                logininfo["bot" + i] = [e[0], e[1], e[2]];
+
+                                // Format logininfo object and use accountName as key to allow the order to change
+                                logininfo[e[0]] = {
+                                    accountName: e[0],
+                                    password: e[1],
+                                    sharedSecret: e[2],
+                                    steamGuardCode: null,
+                                    machineName: `${_this.datafile.mestr}'s Comment Bot`,        // For steam-user
+                                    deviceFriendlyName: `${_this.datafile.mestr}'s Comment Bot`, // For steam-session
+                                };
                             });
 
                             resolve(logininfo);
@@ -161,8 +170,24 @@ DataManager.prototype._importFromDisk = function() {
                     try {
                         logger("info", "accounts.txt seems empty/not created, loading logininfo from logininfo.json...", false, true, logger.animation("loading"));
 
-                        // Only check if file exists (it is not shipped by default anymore since 2.12.1). If it doesn't an empty obj will be returned, leading to empty logininfo err msg in datacheck.js
-                        if (fs.existsSync("./logininfo.json")) logininfo = require(srcdir + "/../logininfo.json");
+                        // Only check if file exists (it is not shipped by default anymore since 2.12.1). If it doesn't an empty obj will be returned, leading to empty logininfo err msg in checkData()
+                        if (fs.existsSync("./logininfo.json")) {
+                            logininfo = require(srcdir + "/../logininfo.json");
+
+                            // Reformat to use new logininfo object structure and use accountName as key instead of bot0 etc to allow the order to change
+                            Object.keys(logininfo).forEach((k) => {
+                                logininfo[logininfo[k][0]] = {
+                                    accountName: logininfo[k][0],
+                                    password: logininfo[k][1],
+                                    sharedSecret: logininfo[k][2],
+                                    steamGuardCode: null,
+                                    machineName: `${_this.datafile.mestr}'s Comment Bot`,       // For steam-user
+                                    deviceFriendlyName: `${_this.datafile.mestr}'s Comment Bot` // For steam-session
+                                };
+
+                                delete logininfo[k]; // Remove old entry
+                            });
+                        }
 
                         resolve(logininfo);
                     } catch (err) {
