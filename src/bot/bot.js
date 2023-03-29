@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 28.03.2023 21:23:09
+ * Last Modified: 29.03.2023 12:15:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -31,6 +31,8 @@ const SessionHandler = require("../sessions/sessionHandler.js");
 const Bot = function(controller, index) {
     this.controller = controller;
     this.index      = index;
+    this.status     = "offline";
+
     // Provide array for additional login related information
     let proxyIndex = this.index % controller.data.proxies.length;
 
@@ -64,9 +66,7 @@ const Bot = function(controller, index) {
     if (global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<") process.send("stop()"); // eslint-disable-line
 
 
-    // Login and attach all SteamUser event listeners we need!
-    this._loginToSteam();
-
+    // Attach all SteamUser event listeners we need
     this._attachSteamDisconnectedEvent();
     this._attachSteamErrorEvent();
     this._attachSteamFriendMessageEvent();
@@ -92,33 +92,25 @@ const Bot = function(controller, index) {
 /**
  * Logs this account into Steam
  */
-Bot.prototype._loginToSteam = function() {
-    let loginInterval = setInterval(async () => { // Set an interval to check if previous acc is logged on
+Bot.prototype._loginToSteam = async function() {
 
-        if (login.accisloggedin || this.loginData.logOnTries > 0) { // Start attempt if previous account is logged on or if this call is a retry
-            clearInterval(loginInterval); // Stop interval
+    // Count this attempt
+    this.loginData.logOnTries++;
 
-            login.accisloggedin = false; // Set to false again so the next account waits for us to log in
-
-            // Count this attempt
-            this.loginData.logOnTries++;
-
-            // Log login message for this account, with mentioning proxies or without
-            if (!this.loginData.proxy) logger("info", `[${this.logPrefix}] Trying to log in without proxy... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
-                else logger("info", `[${this.logPrefix}] Trying to log in with proxy ${this.loginData.proxyIndex}... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+    // Log login message for this account, with mentioning proxies or without
+    if (!this.loginData.proxy) logger("info", `[${this.logPrefix}] Trying to log in without proxy... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+        else logger("info", `[${this.logPrefix}] Trying to log in with proxy ${this.loginData.proxyIndex}... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
 
 
-            // Call our steam-session helper to get a valid refresh token for us
-            this.sessionHandler = new SessionHandler(this);
+    // Call our steam-session helper to get a valid refresh token for us
+    this.sessionHandler = new SessionHandler(this);
 
-            let refreshToken = await this.sessionHandler.getToken();
-            if (!refreshToken) return; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the user itself
+    let refreshToken = await this.sessionHandler.getToken();
+    if (!refreshToken) return; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the user itself
 
-            // Login with this account using the refreshToken we just obtained using steam-session
-            this.user.logOn({ "refreshToken": refreshToken });
-        }
+    // Login with this account using the refreshToken we just obtained using steam-session
+    this.user.logOn({ "refreshToken": refreshToken });
 
-    }, 250);
 };
 
 

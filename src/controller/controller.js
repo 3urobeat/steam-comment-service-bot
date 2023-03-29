@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 28.03.2023 15:19:53
+ * Last Modified: 28.03.2023 23:48:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -21,19 +21,20 @@
 const Controller = function() {
     this.srcdir = srcdir; // Let users see the global var srcdir more easily
 
-    /* ------------ Store various stuff: ------------ */ // TODO: Remove unnecessary variables from below
-    this.bots = {};           // Store references to all bot account objects here
-    this.main = this.bots[0]; // Store short-hand reference to the main acc
+    /* ------------ Store various stuff: ------------ */
+    this.bots = {};                          // Store references to all bot account objects here
+    this.main = Object.values(this.bots)[0]; // Store short-hand reference to the main acc
 
     this.info = {
         bootStartTimestamp: Date.now(), // Save timestamp to be able to calculate startup time in ready event
+        lastLoginTimestamp: 0,  // Save timestamp of last login attempted by any account to calculate wait time for next account
         steamGuardInputTime: 0,
         readyAfter: 0
     };
 
     this.relogQueue = [];
 
-    // TODO: Legacy stuff
+    // TODO: Legacy stuff, filter out what is not needed
     this.readyafterlogs        = [];         // Array to save suppressed logs during startup that get logged by ready.js
     this.relogAfterDisconnect  = true;       // Allows to prevent accounts from relogging when calling bot.logOff()
     this.activeRelog           = false;      // Allows to block new comment requests when waiting for the last request to finish
