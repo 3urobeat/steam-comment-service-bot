@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 17:44:47
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 17:58:41
+ * Last Modified: 29.03.2023 18:19:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -31,7 +31,7 @@ DataManager.prototype.refreshCache = function() {
     let tempArr = [];
 
     Object.keys(this.controller.bots).forEach((e, i) => {
-        tempArr.push(new SteamID(String(Object.values(this.controller.bots)[i].steamID)).getSteamID64()); // Use Object.values(obj)[index] to check by index, not by botindex to accomodate for skipped accounts
+        tempArr.push(new SteamID(String(Object.values(this.controller.bots)[i].user.steamID)).getSteamID64()); // Use Object.values(obj)[index] to check by index, not by botindex to accomodate for skipped accounts
 
         // Check if this bot account is listed as an owner id and display warning
         if (this.cachefile.ownerid.includes(tempArr[i])) logger("warn", `You provided an ownerid in the config that points to a bot account used by this bot! This is not allowed.\n       Please change id ${tempArr[i]} to point to your personal steam account!`, true);

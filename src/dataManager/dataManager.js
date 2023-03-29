@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 17:47:19
+ * Last Modified: 29.03.2023 18:18:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -45,6 +45,7 @@ const DataManager = function(controller) {
     if (!this.checkAndGetFile("./src/dataManager/helpers/getQuote.js",             controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'getQuote.js'!");
     if (!this.checkAndGetFile("./src/dataManager/helpers/handleExpiringTokens.js", controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'handleExpiringTokens.js'!");
     if (!this.checkAndGetFile("./src/dataManager/helpers/misc.js",                 controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'misc.js'!");
+    if (!this.checkAndGetFile("./src/dataManager/helpers/refreshCache.js",         controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'refreshCache.js'!");
     if (!this.checkAndGetFile("./src/dataManager/helpers/repairFile.js",           controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'repairFile.js'!");
 
 };
