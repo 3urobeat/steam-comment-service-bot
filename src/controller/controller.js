@@ -15,11 +15,20 @@
  */
 
 
+const { EventEmitter } = require("events");
+
+
 /**
  * Constructor - Initializes the controller and starts all bot accounts
+ * @extends EventEmitter
  */
 const Controller = function() {
     this.srcdir = srcdir; // Let users see the global var srcdir more easily
+
+    // Create eventEmitter
+    this.events = new EventEmitter();
+
+    this.pluginSystem = {};
 
     /* ------------ Store various stuff: ------------ */
     this.bots = {};                          // Store references to all bot account objects here
@@ -148,9 +157,6 @@ Controller.prototype._start = async function() {
     if (!updater) return;
 
     updater.compatibility(async () => { // Continue startup on any callback
-
-        let PluginSystem = await checkAndGetFile("./src/pluginSystem/pluginSystem.js", logger, false, false);
-        if (!PluginSystem) return;
 
         if (updateFailed) { // Skip checking for update if last update failed
             logger("info", `It looks like the last update failed so let's skip the updater for now and hope ${this.data.datafile.mestr} fixes the issue.\n       If you haven't reported the error yet please do so as I'm only then able to fix it!`, true);

@@ -41,6 +41,16 @@ Controller.prototype._preLogin = async function() {
     logger("", "", true); // Put one line above everything that will come to make the output cleaner
 
 
+    // Load intern event handlers
+    require("./events/ready.js");
+
+
+    // Load pluginSystem
+    let PluginSystem = require("../pluginSystem/pluginSystem");
+
+    this.pluginSystem = new PluginSystem(this);
+
+
     // Check if SteamCommunity is up
     logger("info", "Checking if Steam is reachable...", false, true, logger.animation("loading"));
 

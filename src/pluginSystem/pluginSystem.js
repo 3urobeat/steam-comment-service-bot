@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 21.03.2023 00:55:44
+ * Last Modified: 29.03.2023 17:15:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -17,13 +17,11 @@
 
 /**
  * Constructor - The plugin system loads all plugins and provides functions for plugins to hook into
- * @param {Object.<String, SteamUser>} botobject Object containing references to the SteamUser instance of every bot account which is used for interacting with Steam
- * @param {Object.<String, SteamCommunity>} communityobject Object containing references to the SteamCommunity instance of every bot account which is used for interacting with the SteamCommunity
+ * @param {Controller} controller Reference to the controller object
  */
-const PluginSystem = function(botobject, communityobject) {
+const PluginSystem = function(controller) {
 
-    this.botobject       = botobject;
-    this.communityobject = communityobject;
+    this.controller = controller;
 
     // Load helper files
     require("./loadPlugins.js");
