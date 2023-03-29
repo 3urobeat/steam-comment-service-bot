@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 18:13:40
+ * Last Modified: 29.03.2023 18:40:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -148,23 +148,6 @@ Controller.prototype._readyEvent = function() {
 
     fs.writeFile(srcdir + "/data/data.json", JSON.stringify(this.data.datafile, null, 4), err => { // Write changes
         if (err) logger("error", "change this.data.datafile to false error: " + err);
-    });
-
-
-    // Show information message and message all owners about the login flow change in 2.13.0
-    let loginFlowMsgs = [ // Store msgs in an array to easily send them seperately to avoid Steam chat cooldowns
-        "IMPORTANT:\nValve changed the method of logging in into Steam. The new system uses tokens which expire after 200 days, forcing you to **type in a Steam Guard Code every 200 days** (won't affect accounts with shared_secret).\nWith the upcoming version 2.13.0 this bot **will remove support for the old system** as Steam and the steam-user library dropped support for it as well.",
-        "If you haven't already followed the previous message displayed on start to convert your accs: Delete your sentry files and restart the bot. You can find the location for your OS here: https://github.com/DoctorMcKay/node-steam-user#datadirectory\nIf you don't do this now your bot won't start after automatically updating to 2.13 as it must wait for you to input your Steam Guard Codes. Please do this now to avoid inconveniences later."
-    ];
-
-    logger("", "", true);
-    logger("warn", loginFlowMsgs[0], true);
-    logger("",     loginFlowMsgs[1], true);
-    logger("", "", true);
-
-    cachefile.ownerid.forEach(e => {
-        setTimeout(() => this.main.chat.sendFriendMessage(e, loginFlowMsgs[0]), 5000);  // Delay msgs a lot to make sure everyone receives them as Steam looovees to block long-ish msgs
-        setTimeout(() => this.main.chat.sendFriendMessage(e, loginFlowMsgs[1]), 15000);
     });
 
 
