@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 12:48:20
+ * Last Modified: 29.03.2023 17:37:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -29,12 +29,13 @@ const Controller = function() {
         bootStartTimestamp: Date.now(), // Save timestamp to be able to calculate startup time in ready event
         lastLoginTimestamp: 0,  // Save timestamp of last login attempted by any account to calculate wait time for next account
         steamGuardInputTime: 0,
-        readyAfter: 0
+        readyAfter: 0 // Length of last startup in seconds
     };
 
     this.relogQueue = [];
 
     // TODO: Legacy stuff, filter out what is not needed
+    this.skippednow    = [];   // Array to track which accounts have been skipped
     this.readyafterlogs        = [];         // Array to save suppressed logs during startup that get logged by ready.js
     this.relogAfterDisconnect  = true;       // Allows to prevent accounts from relogging when calling bot.logOff()
     this.activeRelog           = false;      // Allows to block new comment requests when waiting for the last request to finish
@@ -154,8 +155,6 @@ Controller.prototype._start = async function() {
         if (updateFailed) { // Skip checking for update if last update failed
             logger("info", `It looks like the last update failed so let's skip the updater for now and hope ${this.data.datafile.mestr} fixes the issue.\n       If you haven't reported the error yet please do so as I'm only then able to fix it!`, true);
 
-            module.exports.pluginSystem = new PluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
-
             require("./login.js"); // Load helper
             this._preLogin(); // Run one-time pre-login tasks
             this.login(); // Start logging in
@@ -164,8 +163,6 @@ Controller.prototype._start = async function() {
 
             require("../updater/updater.js").run(false, null, false, (foundanddone2, updateFailed) => {
                 if (!foundanddone2) {
-                    module.exports.pluginSystem = new PluginSystem(this.botobject, this.communityobject); // TODO: Remove when controller is OOP
-
                     require("./login.js"); // Load helper
                     this._preLogin(); // Run one-time pre-login tasks
                     this.login(); // Start logging in
@@ -250,3 +247,8 @@ Controller.prototype._preLogin = async function() {};
  * Creates a new bot object for every new account and reuses existing one if possible
  */
 Controller.prototype.login = function() {};
+
+/**
+ * Runs internal ready event code and emits ready event for plugins
+ */
+Controller.prototype._readyEvent = function() {};

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 12:46:04
+ * Last Modified: 29.03.2023 17:37:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -27,10 +27,6 @@ const misc       = require("./helpers/misc.js");
  * Internal: Performs certain checks before logging in for the first time and then calls login()
  */
 Controller.prototype._preLogin = async function() {
-
-    // TODO: Legacy stuff - Do this differently
-    this.skippednow    = [];   // Array to track which accounts have been skipped
-
 
     // Update global var
     botisloggedin = true;
@@ -149,10 +145,11 @@ Controller.prototype.login = function() {
 
                 logger("debug", `Controller login(): bot${i} changed status from offline to ${this.bots[k.accountName].status}! Continuing with next account...`);
 
-                // Check for last iteration
+                // Check for last iteration, call again and emit ready event
                 if (i + 1 == Object.keys(this.data.logininfo).length) {
                     logger("debug", "Controller login(): Finished logging in all accounts! Calling myself again to check for any new accounts...");
                     this.login();
+                    this._readyEvent();
                 }
             }, 250);
 
