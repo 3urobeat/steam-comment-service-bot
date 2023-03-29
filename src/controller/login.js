@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 17:37:38
+ * Last Modified: 29.03.2023 18:40:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -152,6 +152,9 @@ Controller.prototype.login = function() {
 
                 clearInterval(accIsOnlineInterval);
                 this.info.lastLoginTimestamp = Date.now();
+
+                // Populate this.main if we just logged in the first account
+                if (Object.keys(this.bots)[0] == k.accountName) this.main = this.bots[k.accountName];
 
                 logger("debug", `Controller login(): bot${i} changed status from offline to ${this.bots[k.accountName].status}! Continuing with next account...`);
 

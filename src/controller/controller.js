@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 17:37:35
+ * Last Modified: 29.03.2023 18:27:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -31,8 +31,8 @@ const Controller = function() {
     this.pluginSystem = {};
 
     /* ------------ Store various stuff: ------------ */
-    this.bots = {};                          // Store references to all bot account objects here
-    this.main = Object.values(this.bots)[0]; // Store short-hand reference to the main acc
+    this.bots = {}; // Store references to all bot account objects here
+    this.main = {}; // Store short-hand reference to the main acc (populated later)
 
     this.info = {
         bootStartTimestamp: Date.now(), // Save timestamp to be able to calculate startup time in ready event
