@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:53:37
  * Author: 3urobeat
  *
- * Last Modified: 24.03.2023 18:56:09
+ * Last Modified: 29.03.2023 12:54:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -41,11 +41,11 @@ Controller.prototype._handleErrors = function() {
             require("./npminteraction.js").reinstallAll(logger, (err, stdout) => { //eslint-disable-line
                 if (err) {
                     logger("error", "I was unable to reinstall all modules. Please try running 'npm install' manually. Error: " + err);
-                    return process.send("stop()");
+                    return this.stop();
                 } else {
                     // Logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
                     logger("info", "Successfully reinstalled all modules. Restarting...");
-                    process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, logafterrestart: this.logafterrestart })})`); // Send request to parent process
+                    this.restart(JSON.stringify({ skippedaccounts: this.skippedaccounts, logafterrestart: this.logafterrestart })); // Send request to parent process
                 }
             });
 
@@ -57,11 +57,11 @@ Controller.prototype._handleErrors = function() {
 
 
             // Always restarting causes unnecessary restarts so I need to investigate this further
-            /* logger("warn", "Restarting bot in 5 seconds since the application can be in an unrecoverable state...") //https://nodejs.org/dist/latest-v16.x/docs/api/process.html#process_warning_using_uncaughtexception_correctly
-            logger("", "", true)
+            /* logger("warn", "Restarting bot in 5 seconds since the application can be in an unrecoverable state..."); // https://nodejs.org/dist/latest-v16.x/docs/api/process.html#process_warning_using_uncaughtexception_correctly
+            logger("", "", true);
 
             setTimeout(() => {
-                process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, logafterrestart: logafterrestart })})`) //send request to parent process
+                this.restart(JSON.stringify({ skippedaccounts: this.skippedaccounts, logafterrestart: logafterrestart })); // Send request to parent process
             }, 5000); */
         }
     });

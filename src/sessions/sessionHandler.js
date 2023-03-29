@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 28.03.2023 21:11:14
+ * Last Modified: 29.03.2023 12:47:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -90,7 +90,7 @@ SessionHandler.prototype._resolvePromise = function(token) {
         if (this.bot.index == 0) {
             logger("", "", true);
             logger("error", "Aborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true);
-            process.send("stop()");
+            this.controller.stop();
             return;
         } else {
             logger("info", `[${this.bot.logPrefix}] Skipping account '${this.logOnOptions.accountName}'...`, true);

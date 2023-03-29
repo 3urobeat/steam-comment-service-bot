@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 28.03.2023 14:13:22
+ * Last Modified: 29.03.2023 12:46:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -48,7 +48,7 @@ DataManager.prototype._importFromDisk = function() {
                             fs.writeFile("./src/data/cache.json", "{}", (err) => { // Write empty valid json
                                 if (err) {
                                     logger("error", "Error writing {} to cache.json.\nPlease do this manually: Go into 'src' folder, open 'cache.json', write '{}' and save.\nOtherwise the bot will always crash.\nError: " + err + "\n\nAborting...", true);
-                                    return process.send("stop()"); // Abort since writeFile was unable to write and any further execution would crash
+                                    return _this.controller.stop(); // Abort since writeFile was unable to write and any further execution would crash
                                 } else {
                                     logger("info", "Successfully cleared/created cache.json.\n", true, true);
                                     resolve(require(srcdir + "/data/cache.json"));
@@ -192,7 +192,7 @@ DataManager.prototype._importFromDisk = function() {
                         resolve(logininfo);
                     } catch (err) {
                         logger("error", "It seems like you made a mistake in your logininfo.json. Please check if your Syntax looks exactly like in the example/template and try again.\n        " + err, true);
-                        return process.send("stop()");
+                        return _this.controller.stop();
                     }
                 });
             }
@@ -221,7 +221,7 @@ DataManager.prototype._importFromDisk = function() {
                         if (proxies.length == 0) {
                             logger("", "", true);
                             logger("error", "useLocalIP is turned off in advancedconfig.json but I couldn't find any proxies in proxies.txt!\n        Aborting as I don't have at least one IP to log in with!", true);
-                            return process.send("stop()");
+                            return _this.controller.stop();
                         }
                     }
 
@@ -248,7 +248,7 @@ DataManager.prototype._importFromDisk = function() {
 
                     if (quotes.length == 0) { // Check if quotes.txt is empty to avoid errors further down when trying to comment
                         logger("error", `${logger.colors.fgred}You haven't put any comment quotes into the quotes.txt file! Aborting...`, true);
-                        return process.send("stop()");
+                        return _this.controller.stop();
                     } else {
                         logger("info", `Successfully loaded ${quotes.length} quotes from quotes.txt...`, false, true, logger.animation("loading"));
                     }

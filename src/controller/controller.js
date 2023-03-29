@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 28.03.2023 23:48:41
+ * Last Modified: 29.03.2023 12:48:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -105,7 +105,7 @@ Controller.prototype._start = async function() {
     await this.data.processData();
 
     // Check imported data
-    await this.data.checkData().catch(() => process.send("stop()")); // Terminate the bot if some critical check failed
+    await this.data.checkData().catch(() => this.stop()); // Terminate the bot if some critical check failed
 
 
     /* ------------ Change terminal title: ------------ */
@@ -131,7 +131,7 @@ Controller.prototype._start = async function() {
         logger("", "\n************************************************************************************\n", true);
         logger("error", `This application requires at least node.js ${logger.colors.reset}v14.15.0${logger.colors.fgred} but you have ${logger.colors.reset}${process.version}${logger.colors.fgred} installed!\n        Please update your node.js installation: ${logger.colors.reset} https://nodejs.org/`, true);
         logger("", "\n************************************************************************************\n", true);
-        return process.send("stop()");
+        return this.stop();
     }
 
 
@@ -170,7 +170,7 @@ Controller.prototype._start = async function() {
                     this._preLogin(); // Run one-time pre-login tasks
                     this.login(); // Start logging in
                 } else {
-                    process.send(`restart(${JSON.stringify({ skippedaccounts: this.skippedaccounts, updatefailed: updateFailed == true })})`); // Send request to parent process (checking updateFailed == true so that undefined will result in false instead of undefined)
+                    this.restart(JSON.stringify({ skippedaccounts: this.skippedaccounts, updatefailed: updateFailed == true })); // Send request to parent process (checking updateFailed == true so that undefined will result in false instead of undefined)
                 }
             });
         }
@@ -228,6 +228,17 @@ if (parseInt(process.argv[3]) + 2500 > Date.now()) { // Check if this process ju
 
 
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
+
+/**
+ * Restarts the whole application
+ * @param {String} data Stringified restartdata object that will be kept through restarts
+ */
+Controller.prototype.restart = function(data) { process.send(`restart(${data})`); };
+
+/**
+ * Stops the whole application
+ */
+Controller.prototype.stop = function() { process.send("stop()"); };
 
 /**
  * Internal: Performs certain checks before logging in for the first time and then calls login()

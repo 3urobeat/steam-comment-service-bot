@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 28.03.2023 20:55:46
+ * Last Modified: 29.03.2023 12:45:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -38,7 +38,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
             // Abort or skip account
             if (this.index == 0) {
                 logger("error", `${logger.colors.fgred} Failed account is bot0! Aborting...`, true);
-                return process.send("stop()");
+                return this.controller.stop();
             } else {
                 this.controller.skippedaccounts.push(this.index);
                 this.controller.skippednow.push(this.index);
@@ -84,7 +84,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
                 if (this.index == 0) {
                     logger("", "", true);
                     logger("error", "Aborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true);
-                    return process.send("stop()");
+                    return this.controller.stop();
 
                 } else { // Skip account if not bot0
 

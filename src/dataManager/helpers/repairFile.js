@@ -4,7 +4,7 @@
  * Created Date: 22.03.2023 12:35:01
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 11:00:30
+ * Last Modified: 29.03.2023 12:47:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -53,7 +53,7 @@ DataManager.prototype._restoreBackup = function(name, filepath, cacheentry, onli
     fs.writeFile(filepath, stringified, (err) => { // Write last backup to it from cache.json
         if (err) {
             logger("error", `Error writing data to '${name}'! I'm therefore sadly unable to repair this issue automatically.\nPlease do this manually: Visit ${onlinelink}, copy everything and replace everything in the local file with it.\nYou can optionally redownload and reconfigure the whole bot.\nError: ${err}\n\nAborting...`, true);
-            return process.send("stop()"); // Abort since writeFile was unable to write and any further execution would crash
+            return this.controller.stop(); // Abort since writeFile was unable to write and any further execution would crash
         }
 
         // Test backup:
