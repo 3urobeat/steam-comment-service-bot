@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 18:11:49
+ * Last Modified: 29.03.2023 18:13:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -15,8 +15,7 @@
  */
 
 
-const fs      = require("fs");
-const SteamID = require("steamid");
+const fs = require("fs");
 
 const Controller = require("../controller");
 const { round }  = require("../helpers/misc.js");
@@ -109,36 +108,8 @@ Controller.prototype._readyEvent = function() {
     this.readyafterlogs.forEach(e => { logger(e[0], e[1], e[2], e[3], e[4]); }); // Log suppressed logs
 
 
-    // Refresh cache of bot account ids, check if they inflict with owner settings
-    let tempArr = [];
-
-    Object.keys(this.controller.bots).forEach((e, i) => {
-        tempArr.push(new SteamID(String(Object.values(this.controller.bots)[i].steamID)).getSteamID64()); // Use Object.values(obj)[index] to check by index, not by botindex to accomodate for skipped accounts
-
-        // Check if this bot account is listed as an owner id and display warning
-        if (this.cachefile.ownerid.includes(tempArr[i])) logger("warn", `You provided an ownerid in the config that points to a bot account used by this bot! This is not allowed.\n       Please change id ${tempArr[i]} to point to your personal steam account!`, true);
-
-        // Write tempArr to cachefile on last iteration
-        if (Object.keys(this.controller.bots).length == i + 1) {
-            this.cachefile["botaccid"] = tempArr;
-
-            // TODO: This must be run through steamidresolver beforehand or am I wrong?
-            if (tempArr.includes(this.cachefile.ownerlinkid)) logger("warn", "The owner link you set in the config points to a bot account used by this bot! This is not allowed.\n       Please change the link to your personal steam account!", true);
-        }
-    });
-
-
-    // Update Backups
-    logger("debug", "Writing backups to cache.json...", false, true, logger.animation("loading"));
-    this.cachefile["configjson"] = this.config;
-    this.cachefile["advancedconfigjson"] = this.advancedconfig;
-    this.cachefile["datajson"] = this.datafile;
-
-
-    // Write changes to file
-    fs.writeFile(srcdir + "/data/cache.json", JSON.stringify(this.cachefile, null, 4), err => {
-        if (err) logger("error", "error writing file backups to cache.json: " + err);
-    });
+    // Refresh backups in cache.json
+    this.data.refreshCache();
 
 
     // Friendlist capacity check
@@ -205,5 +176,9 @@ Controller.prototype._readyEvent = function() {
             logger("", "", true, true); // Clear out last remove message
         }, 5000);
     }, 2000);
+
+
+    // Emit ready event for plugins to use
+    this.events.emit("ready");
 
 };

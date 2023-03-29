@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 28.03.2023 00:08:14
+ * Last Modified: 29.03.2023 17:47:19
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -100,6 +100,11 @@ DataManager.prototype.getLastCommentRequest = function(steamID64 = null) {}; // 
  * @returns JWT object on success, `null` on failure
  */
 DataManager.prototype.decodeJWT = function(token) {}; // eslint-disable-line
+
+/**
+ * Refreshes Backups in cache.json with new data
+ */
+DataManager.prototype.refreshCache = function() {};
 
 /**
  * Internal: Helper function to try and restore backup of corrupted file from cache.json
