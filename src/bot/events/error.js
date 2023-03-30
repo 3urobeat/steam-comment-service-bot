@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 12:45:04
+ * Last Modified: 30.03.2023 21:30:42
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -28,7 +28,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
     // Handle errors that were caused during logOn
     this.user.on("error", (err) => {
 
-        this.status = "offline"; // Set status of this account to offline
+        this.controller._statusUpdateEvent(this, "offline"); // Set status of this account to offline
 
         // Custom behavior for LogonSessionReplaced error:
         if (err.eresult == EResult.LogonSessionReplaced) {
@@ -89,7 +89,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
                 } else { // Skip account if not bot0
 
                     logger("info", "Failed account is not bot0. Skipping account...", true);
-                    this.status = "skipped";
+                    this.controller._statusUpdateEvent(this, "skipped");
 
                     this.controller.skippedaccounts.push(this.index);
                     this.controller.skippednow.push(this.index);

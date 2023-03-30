@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 28.03.2023 13:14:55
+ * Last Modified: 30.03.2023 21:30:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -30,7 +30,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
         // Set cookies (otherwise the bot is unable to comment)
         this.community.setCookies(cookies);
 
-        this.status = "online"; // Set status of this account to online
+        this.controller._statusUpdateEvent(this, "online"); // Set status of this account to online
 
 
         if (!this.controller.info.readyAfter) logger("info", `[${this.logPrefix}] Got websession and set cookies. Accepting offline friend & group invites...`, false, true, logger.animation("loading")); // Only print message with animation if the bot was not fully started yet

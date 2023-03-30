@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 18:40:13
+ * Last Modified: 30.03.2023 21:32:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -43,6 +43,7 @@ Controller.prototype._preLogin = async function() {
 
     // Load intern event handlers
     require("./events/ready.js");
+    require("./events/statusUpdate.js");
 
 
     // Load pluginSystem

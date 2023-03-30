@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 12:47:03
+ * Last Modified: 30.03.2023 21:31:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -95,7 +95,7 @@ SessionHandler.prototype._resolvePromise = function(token) {
         } else {
             logger("info", `[${this.bot.logPrefix}] Skipping account '${this.logOnOptions.accountName}'...`, true);
 
-            this.bot.status = "skipped"; // Set to true to log next account in
+            this.controller._statusUpdateEvent(this.bot, "skipped");
 
             Controller.skippedaccounts.push(this.bot.index);
             loginfile.skippednow.push(this.bot.index);

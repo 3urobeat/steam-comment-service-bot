@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 18:27:57
+ * Last Modified: 30.03.2023 21:28:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -258,3 +258,10 @@ Controller.prototype.login = function() {};
  * Runs internal ready event code and emits ready event for plugins
  */
 Controller.prototype._readyEvent = function() {};
+
+/**
+ * Runs internal statusUpdate event code and emits statusUpdate event for plugins
+ * @param {Bot} bot Bot instance
+ * @param {String} newStatus The new status
+ */
+Controller.prototype._statusUpdateEvent = function(bot, newStatus) {}; // eslint-disable-line

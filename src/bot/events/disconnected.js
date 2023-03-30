@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 28.03.2023 13:24:37
+ * Last Modified: 30.03.2023 21:29:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -31,7 +31,7 @@ Bot.prototype._attachSteamDisconnectedEvent = function() {
 
         logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam. Message: ${msg} | Check: https://steamstat.us`);
 
-        this.status = "offline"; // Set status of this account to offline
+        this.controller._statusUpdateEvent(this, "offline"); // Set status of this account to offline
 
         if (!this.controller.skippednow.includes(this.index) && this.controller.relogAfterDisconnect) { // Bot.logOff() also calls this event with NoConnection.
             if (this.controller.relogQueue.includes(this.index)) return; // Ignore this call if the account is already being relogged (this happens for example when handleExpiringTokens.js calls the relog function directly)
