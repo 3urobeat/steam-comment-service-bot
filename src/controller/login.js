@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.03.2023 23:03:22
+ * Last Modified: 31.03.2023 23:50:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -103,40 +103,39 @@ Controller.prototype._preLogin = async function() {
 Controller.prototype.login = function() {
     logger("debug", "Controller login(): Login requested, checking for any accounts currently offline...");
 
-    // Iterate over all accounts in logininfo
-    Object.values(this.data.logininfo).forEach((k, i) => { // TODO: Might need to store which accounts are currently being logged in to avoid duplicate logOn attempts should this function be called multiple times
-
-        // Check if no bot object entry exists for this account and create one
-        if (!this.bots[k.accountName]) {
-            logger("info", `Creating new bot object for ${k.accountName}...`, false, true, logger.animation("loading"));
-
-            this.bots[k.accountName] = new Bot(this, i); // Create a new bot object for this account and store a reference to it
-
-        } else {
-
-            // Ignore iteration if account is currently not offline
-            if (this.bots[k.accountName].status != "offline") return;
-
-            logger("info", `Found existing bot object for ${k.accountName}! Reusing it...`, false, true, logger.animation("loading"));
-        }
-
-        // TODO: Check for connection loss timestamp when it is available and wait a bit before retrying a login
+    // Iterate over all accounts in logininfo, use syncLoop() helper to make our job easier
+    misc.syncLoop(Object.keys(this.data.logininfo).length, (loop, i) => {
+        let k = Object.values(this.data.logininfo)[i];
 
         // Ignore account if it was skipped
         if (Controller.skippedaccounts.includes(k.accountName)) {
-            logger("info", `[skippedaccounts] Automatically skipped ${k.accountName}!`, false, true);
+            logger("info", `[skippedaccounts] ${k.accountName} is in skippedaccounts array, skipping login request`, false, true);
             module.exports.skippednow.push(k.accountName);
             return;
         }
+
+        // TODO: Check for connection loss timestamp when it is available and wait a bit before retrying a failed login. Maybe add reason why account was skipped to not reattempt steam guard login
 
         // Calculate wait time
         let waitTime = (this.info.lastLoginTimestamp + this.data.advancedconfig.loginDelay) - Date.now();
         if (waitTime < 0) waitTime = 0; // Cap wait time to positive numbers
 
-        if (waitTime > 0) logger("info", `Waiting ${waitTime / 1000} seconds... (advancedconfig loginDelay)`, false, true, logger.animation("waiting"));
+        if (waitTime > 0) logger("info", `Waiting ${misc.round(waitTime / 1000, 2)} seconds... (advancedconfig loginDelay)`, false, true, logger.animation("waiting"));
 
-        // Wait loginDelay time after last login
+        // Wait before starting to log in
         setTimeout(() => {
+
+            // Check if no bot object entry exists for this account and create one
+            if (!this.bots[k.accountName]) {
+                logger("info", `Creating new bot object for ${k.accountName}...`, false, true, logger.animation("loading"));
+                this.bots[k.accountName] = new Bot(this, i); // Create a new bot object for this account and store a reference to it
+
+            } else {
+
+                // Ignore iteration if account is currently not offline
+                if (this.bots[k.accountName].status != "offline") return;
+                logger("info", `Found existing bot object for ${k.accountName}! Reusing it...`, false, true, logger.animation("loading"));
+            }
 
             // Generate steamGuardCode with shared secret if one was provided
             if (this.data.logininfo[k.accountName].sharedSecret) {
@@ -168,9 +167,11 @@ Controller.prototype.login = function() {
                     this.login();
                     this._readyEvent();
                 }
+
+                // Continue with next iteration
+                loop.next();
             }, 250);
 
         }, waitTime);
-
     });
 };
