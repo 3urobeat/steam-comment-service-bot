@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 28.03.2023 15:22:25
+ * Last Modified: 31.03.2023 22:06:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -31,6 +31,14 @@ DataManager.prototype.checkData = function() {
     return new Promise((resolve, reject) => {
 
         logger("info", "Running datachecks...", false, true, logger.animation("loading"));
+
+
+        // Display warning/notice if user is running in beta mode
+        if (this.datafile.branch == "beta-testing") {
+            logger("", "", true, true); // Add one empty line that only appears in output.txt
+            logger("", `${logger.colors.reset}[${logger.colors.fgred}Notice${logger.colors.reset}] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n`, true);
+        }
+
 
         // Filter all invalid ownerids which got replaced with null by processData()
         if (this.cachefile.ownerid.filter(e => e != null).length == 0) {

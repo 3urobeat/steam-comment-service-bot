@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.03.2023 18:57:49
+ * Last Modified: 31.03.2023 22:09:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -97,35 +97,20 @@ Controller.prototype._start = async function() {
 
     await this.data._importFromDisk();
 
-    // TODO: Remove, exists for compatibility
-    global.cachefile      = this.data.cachefile;
-    global.extdata        = this.data.datafile;
-    global.config         = this.data.config;
-    global.advancedconfig = this.data.advancedconfig;
-    module.exports.lastcomment = this.data.lastCommentDB;
-
     // Call optionsUpdateAfterConfigLoad() to set previously inaccessible options
     this._loggerOptionsUpdateAfterConfigLoad(this.data.advancedconfig);
 
-    // Process imported owner & group ids and update cachefile
-    await this.data.processData();
 
-    // Check imported data
-    await this.data.checkData().catch(() => this.stop()); // Terminate the bot if some critical check failed
+    /* ------------ Print startup messages to log and set terminal title: ------------ */
+    logger("info", `steam-comment-service-bot made by ${this.data.datafile.mestr} version ${this.data.datafile.versionstr} (branch ${this.data.datafile.branch})`, false, true, logger.animation("loading"));
+    logger("info", `This is start number ${this.data.datafile.timesloggedin + 1} (firststart ${this.data.datafile.firststart}) on ${process.platform} with node.js ${process.version}...`, false, true, logger.animation("loading"));
 
-
-    /* ------------ Change terminal title: ------------ */
     if (process.platform == "win32") { // Set node process name to find it in task manager etc.
         process.title = `${this.data.datafile.mestr}'s Steam Comment Service Bot v${this.data.datafile.versionstr} | ${process.platform}`; // Windows allows long terminal/process names
     } else {
         process.stdout.write(`${String.fromCharCode(27)}]0;${this.data.datafile.mestr}'s Steam Comment Service Bot v${this.data.datafile.versionstr} | ${process.platform}${String.fromCharCode(7)}`); // Sets terminal title (thanks: https://stackoverflow.com/a/30360821/12934162)
         process.title = "CommentBot"; // Sets process title in task manager etc.
     }
-
-
-    /* ------------ Print some diagnostic messages to log: ------------ */
-    logger("info", `steam-comment-service-bot made by ${this.data.datafile.mestr} version ${this.data.datafile.versionstr} (${this.data.datafile.branch})`, false, true, logger.animation("loading"));
-    logger("info", `This is start number ${this.data.datafile.timesloggedin + 1} (firststart ${this.data.datafile.firststart}) on ${process.platform} with node.js ${process.version}...`, false, true, logger.animation("loading"));
 
 
     // Check for unsupported node.js version (<14.15.0)
@@ -141,11 +126,20 @@ Controller.prototype._start = async function() {
     }
 
 
-    // Display warning/notice if user is running in beta mode
-    if (this.data.datafile.branch == "beta-testing") {
-        logger("", "", true, true); // Add one empty line that only appears in output.txt
-        logger("", `${logger.colors.reset}[${logger.colors.fgred}Notice${logger.colors.reset}] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n`, true);
-    }
+    /* ------------ Check imported data : ------------ */
+
+    // TODO: Remove, exists for compatibility
+    global.cachefile      = this.data.cachefile;
+    global.extdata        = this.data.datafile;
+    global.config         = this.data.config;
+    global.advancedconfig = this.data.advancedconfig;
+    module.exports.lastcomment = this.data.lastCommentDB;
+
+    // Process imported owner & group ids and update cachefile
+    await this.data.processData();
+
+    // Check imported data
+    await this.data.checkData().catch(() => this.stop()); // Terminate the bot if some critical check failed
 
 
     /* ------------ Run updater or start logging in: ------------ */
