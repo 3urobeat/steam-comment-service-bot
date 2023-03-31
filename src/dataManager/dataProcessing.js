@@ -4,7 +4,7 @@
  * Created Date: 27.03.2023 21:34:45
  * Author: 3urobeat
  *
- * Last Modified: 28.03.2023 13:52:05
+ * Last Modified: 31.03.2023 21:43:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -88,7 +88,7 @@ DataManager.prototype.processData = function() {
 
                     // Check if URL was processed previously and skip conversion
                     if (_this.cachefile.botsgroup == _this.config.botsgroup) {
-                        logger("debug", "DataManager processData(): ID of yourgroup is stored in cache.json, skipping...");
+                        logger("debug", "DataManager processData(): ID of botsgroup is stored in cache.json, skipping...");
                         return resolve();
                     }
 

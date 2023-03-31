@@ -4,7 +4,7 @@
  * Created Date: 30.03.2023 21:05:13
  * Author: 3urobeat
  *
- * Last Modified: 30.03.2023 21:28:17
+ * Last Modified: 31.03.2023 19:23:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -31,7 +31,7 @@ Controller.prototype._statusUpdateEvent = function(bot, newStatus) {
     bot.status = newStatus;
 
     // Log debug message
-    logger("debug", `Controller stausUpdateEvent: bot${bot.index} changed status from ${oldStatus} to ${newStatus}`);
+    logger("debug", `Controller statusUpdateEvent: bot${bot.index} changed status from ${oldStatus} to ${newStatus}`);
 
     // Emit event
     this.events.emit("statusUpdate", (oldStatus, newStatus));
