@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 12:46:45
+ * Last Modified: 31.03.2023 22:01:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -143,8 +143,6 @@ DataManager.prototype._importFromDisk = function() {
                         if (data.length > 0 && data[0].startsWith("//Comment")) data = data.slice(1); // Remove comment from array
 
                         if (data != "") {
-                            logger("info", "Accounts.txt does exist and is not empty - using it instead of logininfo.json.", false, true);
-
                             logininfo = {}; // Set empty object
                             data.forEach((e) => {
                                 if (e.length < 2) return; // If the line is empty ignore it to avoid issues like this: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/80
@@ -162,14 +160,14 @@ DataManager.prototype._importFromDisk = function() {
                                 };
                             });
 
-                            resolve(logininfo);
+                            logger("info", `Found ${Object.keys(logininfo).length} accounts in accounts.txt, not checking for logininfo.json...`, false, true, logger.animation("loading"));
+
+                            return resolve(logininfo);
                         }
                     }
 
                     // Check logininfo for Syntax errors and display custom error message
                     try {
-                        logger("info", "accounts.txt seems empty/not created, loading logininfo from logininfo.json...", false, true, logger.animation("loading"));
-
                         // Only check if file exists (it is not shipped by default anymore since 2.12.1). If it doesn't an empty obj will be returned, leading to empty logininfo err msg in checkData()
                         if (fs.existsSync("./logininfo.json")) {
                             logininfo = require(srcdir + "/../logininfo.json");
@@ -188,6 +186,8 @@ DataManager.prototype._importFromDisk = function() {
                                 delete logininfo[k]; // Remove old entry
                             });
                         }
+
+                        logger("info", `Found ${Object.keys(logininfo).length} accounts in logininfo.json...`, false, true, logger.animation("loading"));
 
                         resolve(logininfo);
                     } catch (err) {
