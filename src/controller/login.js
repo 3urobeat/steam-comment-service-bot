@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 30.03.2023 21:32:56
+ * Last Modified: 31.03.2023 23:03:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -150,6 +150,9 @@ Controller.prototype.login = function() {
             // Check if this bot is not offline anymore, resolve this iteration and update lastLoginTimestamp
             let accIsOnlineInterval = setInterval(() => {
                 if (this.bots[k.accountName].status == "offline") return;
+
+                // Keep waiting if we are on the last iteration and user object is not fully populated yet, this takes a few seconds after login
+                if (i + 1 == Object.keys(this.data.logininfo).length && !this.bots[k.accountName].user.limitations) return logger("info", "Last account logged in, waiting for user object to populate...", false, true, logger.animation("waiting"));
 
                 clearInterval(accIsOnlineInterval);
                 this.info.lastLoginTimestamp = Date.now();
