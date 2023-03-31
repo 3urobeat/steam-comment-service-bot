@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 30.03.2023 21:30:53
+ * Last Modified: 31.03.2023 21:46:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -36,7 +36,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
         if (!this.controller.info.readyAfter) logger("info", `[${this.logPrefix}] Got websession and set cookies. Accepting offline friend & group invites...`, false, true, logger.animation("loading")); // Only print message with animation if the bot was not fully started yet
             else logger("info", `[${this.logPrefix}] Got websession and set cookies. Accepting offline friend & group invites...`, false, true);
 
-        // If this is a relog then remove this account from the queue and let the next account be able to relog
+        // If this is a relog then remove this account from the queue and let the next account be able to relog // TODO: Does this need rework when relogging is redone?
         if (this.controller.relogQueue.includes(this.index)) {
             logger("info", `[${this.logPrefix}] Relog successful.`);
 
@@ -119,15 +119,11 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
         /* ------------ Join botsgroup: ------------ */
         logger("debug", `[${this.logPrefix}] Checking if bot account is in botsgroup...`, false, true, logger.animation("loading"));
 
-        require("../helpers/steamgroup.js").botsgroupID64(this.index, this.logPrefix, (botsgroupid) => { // Check if this account is not in botsgroup yet
-            if (!botsgroupid) return;
+        if (this.controller.data.cachefile.botsgroupid && (!this.user.myGroups[this.controller.data.cachefile.botsgroupid] || this.user.myGroups[this.controller.data.cachefile.botsgroupid] != 3)) { // If botsgroupid is defined, not in myGroups or in it but not enum 3
+            this.community.joinGroup(new SteamID(this.controller.data.cachefile.botsgroupid));
 
-            if (!Object.keys(this.user.myGroups).includes(String(botsgroupid))) {
-                this.community.joinGroup(`${botsgroupid}`);
-
-                logger("info", `[${this.logPrefix}] Joined/Requested to join steam group that has been set in the this.controller.data.config (botsgroup).`);
-            }
-        });
+            logger("info", `[${this.logPrefix}] Joined/Requested to join steam group that has been set as botsgroup.`);
+        }
 
 
         /* ------------ Set primary group: ------------ */
