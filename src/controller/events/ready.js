@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 31.03.2023 19:03:04
+ * Last Modified: 31.03.2023 22:57:47
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -48,13 +48,28 @@ Controller.prototype._readyEvent = function() {
     }
 
 
-    // Display amount of limited accounts
-    require("../helpers/limitedcheck.js").check(this.bots, (limited, failed) => {
-        let failedtocheckmsg = "";
-        if (failed > 0) failedtocheckmsg = `(Couldn't check ${failed} account(s))`;
+    // Calculate and display amount of limited accounts
+    let limitedaccs = 0;
+    let failedtocheck = 0;
 
-        logger("", `${logger.colors.brfggreen}>${logger.colors.reset} ${limited}/${Object.keys(this.bots).length} account(s) are ${logger.colors.fgred}limited${logger.colors.reset} ${failedtocheckmsg}`, true);
-    });
+    for (let i = 0; i < Object.keys(this.bots).length; i++) { // Iterate over all accounts
+        let thisbot = Object.values(this.bots)[i].user;
+
+        if (thisbot.limitations && thisbot.limitations.limited) { // Check if limitations obj is populated before accessing limited just to be sure. The ready event should not have been called if limitations is not populated but better safe than sorry
+            limitedaccs++;
+        } else {
+            logger("debug", `Controller limitedCheck(): Failed to check if bot${i} is limited, showing it as unlimited...`);
+            failedtocheck++;
+        }
+
+        // Check for last iteration
+        if (i + 1 == Object.keys(this.bots).length) {
+            let failedtocheckmsg = "";
+            if (failedtocheck > 0) failedtocheckmsg = `(Couldn't check ${failedtocheck} account(s))`;
+
+            logger("", `${logger.colors.brfggreen}>${logger.colors.reset} ${limitedaccs}/${Object.keys(this.bots).length} account(s) are ${logger.colors.fgred}limited${logger.colors.reset} ${failedtocheckmsg}`, true);
+        }
+    }
 
 
     // Log warning message if automatic updater is turned off
