@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 18:40:40
+ * Last Modified: 31.03.2023 19:03:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -104,8 +104,7 @@ Controller.prototype._readyEvent = function() {
 
 
     // Log extra messages that were suppressed during login
-    logger("debug", "Logging suppressed logs...", false, true, logger.animation("loading"));
-    this.readyafterlogs.forEach(e => { logger(e[0], e[1], e[2], e[3], e[4]); }); // Log suppressed logs
+    this._loggerLogAfterReady();
 
 
     // Refresh backups in cache.json

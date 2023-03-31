@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 30.03.2023 21:28:30
+ * Last Modified: 31.03.2023 18:57:49
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -45,7 +45,6 @@ const Controller = function() {
 
     // TODO: Legacy stuff, filter out what is not needed
     this.skippednow    = [];   // Array to track which accounts have been skipped
-    this.readyafterlogs        = [];         // Array to save suppressed logs during startup that get logged by ready.js
     this.relogAfterDisconnect  = true;       // Allows to prevent accounts from relogging when calling bot.logOff()
     this.activeRelog           = false;      // Allows to block new comment requests when waiting for the last request to finish
     this.failedcomments        = []; // Array saving failedcomments so the user can access them via the !failedcomments command
@@ -69,10 +68,7 @@ Controller.prototype._start = async function() {
 
     /* ------------ Introduce logger function: ------------ */
     if (!checkAndGetFile("./src/controller/helpers/logger.js", logger, false, false)) return;
-    let loggerfile = require("./helpers/logger.js");
-
-    logger      = loggerfile.logger; // Update "fake" logger with "real" logger
-    this.logger = loggerfile.logger; // Add logger to controller object to let users see the global function more easily
+    logger = this.logger; // Update "fake" logger with "real" logger
 
     // Log held back messages from before this start
     if (logafterrestart.length > 0) {
@@ -109,7 +105,7 @@ Controller.prototype._start = async function() {
     module.exports.lastcomment = this.data.lastCommentDB;
 
     // Call optionsUpdateAfterConfigLoad() to set previously inaccessible options
-    loggerfile.optionsUpdateAfterConfigLoad(this.data.advancedconfig);
+    this._loggerOptionsUpdateAfterConfigLoad(this.data.advancedconfig);
 
     // Process imported owner & group ids and update cachefile
     await this.data.processData();
@@ -265,3 +261,13 @@ Controller.prototype._readyEvent = function() {};
  * @param {String} newStatus The new status
  */
 Controller.prototype._statusUpdateEvent = function(bot, newStatus) {}; // eslint-disable-line
+
+/**
+ * Logs text to the terminal and appends it to the output.txt file.
+ * @param {String} type String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
+ * @param {String} str The text to log into the terminal
+ * @param {Boolean} nodate Setting to true will hide date and time in the message
+ * @param {Boolean} remove Setting to true will remove this message with the next one
+ * @param {Boolean} printNow Ignores the readyafterlogs check and force prints the message now
+ */
+Controller.prototype.logger = function(type, str, nodate, remove, animation, printNow) {}; // eslint-disable-line

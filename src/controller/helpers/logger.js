@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 23.03.2023 00:14:12
+ * Last Modified: 31.03.2023 19:08:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,18 +15,26 @@
  */
 
 
-const outputlogger = require("output-logger"); // Look Mom, it's my own library!
+const logger = require("output-logger"); // Look Mom, it's my own library!
+
+const Controller = require("../controller.js");
 
 
 // Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)  (animation speed and printDebug will be changed later in controller.js after advancedconfig import)
-outputlogger.options({
+logger.options({
     required_from_childprocess: true, // eslint-disable-line camelcase
-    msgstructure: `[${outputlogger.Const.ANIMATION}] [${outputlogger.Const.DATE} | ${outputlogger.Const.TYPE}] ${outputlogger.Const.MESSAGE}`,
-    paramstructure: [outputlogger.Const.TYPE, outputlogger.Const.MESSAGE, "nodate", "remove", outputlogger.Const.ANIMATION],
+    msgstructure: `[${logger.Const.ANIMATION}] [${logger.Const.DATE} | ${logger.Const.TYPE}] ${logger.Const.MESSAGE}`,
+    paramstructure: [logger.Const.TYPE, logger.Const.MESSAGE, "nodate", "remove", logger.Const.ANIMATION, "customTimestamp"],
     outputfile: srcdir + "/../output.txt"
 });
 
 
+// Save suppressed logs during startup that get logged by ready event
+let logAfterReady = [];
+let botIsReady = false;
+
+
+// Modfied output-logger function to hold back certain messages until ready event fired
 /**
  * Logs text to the terminal and appends it to the output.txt file.
  * @param {String} type String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
@@ -35,37 +43,39 @@ outputlogger.options({
  * @param {Boolean} remove Setting to true will remove this message with the next one
  * @param {Boolean} printNow Ignores the readyafterlogs check and force prints the message now
  */
-module.exports.logger = (type, str, nodate, remove, animation, printNow) => { // Function that passes args to my logger library and just exists to handle readyafterlogs atm
-    var controller = require("../controller.js");
+Controller.prototype.logger = function(type, str, nodate, remove, animation, printNow) {
 
+    // Push string to _logAfterReady if bot is still starting (Note: We cannot use "this." here as context is missing when global var is called)
+    if (!nodate && !remove && !printNow // Log instant if msg should have no date, it will be removed or printNow is forced
+        && !botIsReady                  // Log instant if bot is already started, var gets updated by _loggerLogAfterReady
+        && !type.toLowerCase().includes("err") // Log errors instantly
+        && type.toLowerCase() != "debug"       // Log debug messages immediately
+        && !str.toLowerCase().includes("error")) { // Log instantly if message contains Error
 
-    // NOTE: If the amount of parameters of this function changes then the logger call for readyafterlogs in ready.js and the readyafterlogs.push() call below need to be updated!!
+        logAfterReady.push([ type, str, nodate, remove, animation, Date.now() ]); // Push all arguments this function got to the array, including a customTimestamp
 
+        logger("debug", `Controller logger: Pushing "${str}${logger.colors.reset}" to logAfterReady array...`);
 
-    // Try to get readyafter or just ignore it if we can't. Previously I used checkAndGetFile() but that creates a circular dependency which I'd like to avoid
-    try {
-        var readyafter = require("../ready.js").readyafter;
-    } catch (err) {
-        var readyafter = null;
-    }
-
-    // Push string to readyafterlogs if bot is still starting and logger calls meets these criteria
-    if (!nodate && !remove && !printNow && !readyafter && type.toLowerCase() != "debug" && !str.toLowerCase().includes("error")) { // Startup messages should have nodate enabled -> filter messages with date when bot is not started
-        controller.readyafterlogs.push([ type, str, nodate, remove, animation ]);
-        outputlogger("debug", `logger(): Pushing "${str}${outputlogger.colors.reset}" to readyafterlogs array`);
     } else {
-        outputlogger(type, str, nodate, remove, animation);
+
+        logger(type, str, nodate, remove, animation);
+
     }
+
 };
 
-global.logger = this.logger;
+// Add all nested functions from output-logger to our modified logger function
+Object.assign(Controller.prototype.logger, logger);
+
+// Make our logger public so we can use it everywhere
+global.logger = Controller.prototype.logger;
 
 
 /**
  * Call this function after loading advancedconfig.json to set previously inaccessible options
  */
-module.exports.optionsUpdateAfterConfigLoad = (advancedconfig) => {
-    outputlogger.options({
+Controller.prototype._loggerOptionsUpdateAfterConfigLoad = function(advancedconfig) {
+    logger.options({
         animationinterval: advancedconfig.logAnimationSpeed,
         printdebug: advancedconfig.printDebug
     });
@@ -73,29 +83,14 @@ module.exports.optionsUpdateAfterConfigLoad = (advancedconfig) => {
 
 
 /**
- * Waits for input from the terminal and returns it in a callback (logger() calls while waiting for input will be queued and logged after callback)
- * @param {String} question Ask user something before waiting for input. Pass a line break manually at the end of your String if user input should appear below this message, it will otherwise appear behind it. Pass empty String to disable.
- * @param {Number} timeout Time in ms after which a callback will be made if user does not respond. Pass 0 to disable (not recommended as your application can get stuck)
- * @param {function} [callback] Called with `input` (String) on completion or `null` if user did not respond in timeout ms.
+ * Logs all held back messages from logAfterReady array
  */
-module.exports.logger.readInput = outputlogger.readInput;
+Controller.prototype._loggerLogAfterReady = function() {
+    logger("debug", `Controller logger: Logging ${logAfterReady.length} suppressed log messages...`);
 
+    logAfterReady.forEach(e => { logger(e[0], e[1], e[2], e[3], e[4], e[5]); }); // Log suppressed logs
 
-/**
- * Returns one of the default animations
- * @param {String} animation Valid animations: `loading`, `waiting`, `bounce`, `progress`, `arrows` or `bouncearrows`
- * @returns Array of the chosen animation
- */
-module.exports.logger.animation = outputlogger.animation;
-
-
-/**
- * Stops any animation currently active
- */
-module.exports.logger.stopAnimation = outputlogger.stopAnimation;
-
-
-/**
- * Color shortcuts to use color codes more easily in your strings
- */
-module.exports.logger.colors = outputlogger.colors;
+    // Clear content and prevent new entries
+    logAfterReady = [];
+    botIsReady = true;
+};
