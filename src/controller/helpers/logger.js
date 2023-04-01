@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.03.2023 21:33:58
+ * Last Modified: 01.04.2023 14:56:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -86,6 +86,8 @@ Controller.prototype._loggerOptionsUpdateAfterConfigLoad = function(advancedconf
  * Logs all held back messages from logAfterReady array
  */
 Controller.prototype._loggerLogAfterReady = function() {
+    botIsReady = true;
+
     if (logAfterReady.length == 0) return; // Don't do anything if empty to confuse me less when debugging
 
     logger("debug", `Controller logger: Logging ${logAfterReady.length} suppressed log messages...`);
@@ -94,5 +96,4 @@ Controller.prototype._loggerLogAfterReady = function() {
 
     // Clear content and prevent new entries
     logAfterReady = [];
-    botIsReady = true;
 };
