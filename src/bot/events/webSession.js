@@ -51,6 +51,10 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
         }
 
 
+        // Run check if all friends are in lastcomment.db database for main bot account
+        if (this.index == 0) this.controller.checkLastcommentDB(this.index);
+
+
         /* ------------ Accept offline friend and group invites/requests: ------------ */
         // Friends:
         let ignoredFriendRequests = 0;

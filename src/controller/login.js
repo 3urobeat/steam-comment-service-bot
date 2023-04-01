@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.03.2023 23:50:02
+ * Last Modified: 01.04.2023 13:06:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -41,9 +41,10 @@ Controller.prototype._preLogin = async function() {
     logger("", "", true); // Put one line above everything that will come to make the output cleaner
 
 
-    // Load intern event handlers
+    // Load intern event handlers & helpers
     require("./events/ready.js");
     require("./events/statusUpdate.js");
+    require("./helpers/friendlist.js");
 
 
     // Load pluginSystem

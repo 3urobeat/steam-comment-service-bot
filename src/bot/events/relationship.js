@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.03.2023 14:22:03
+ * Last Modified: 01.04.2023 14:52:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -40,7 +40,7 @@ Bot.prototype._attachSteamFriendRelationshipEvent = function() {
             logger("info", `[${this.logPrefix}] Added User: ` + steamID64);
 
             if (this.index == 0) {
-                this.controller.bots[0].chat.sendFriendMessage(steamID, this.controller.data.lang.useradded);
+                this.user.chat.sendFriendMessage(steamID, this.controller.data.lang.useradded);
             }
 
 
@@ -65,7 +65,7 @@ Bot.prototype._attachSteamFriendRelationshipEvent = function() {
 
 
             // Check remaining friendlist space
-            require("../../controller/helpers/friendlist.js").friendlistcapacitycheck(this.index, (remaining) => {
+            this.controller.friendListCapacityCheck(this.index, (remaining) => {
                 if (remaining < 25) {
                     logger("warn", `The friendlist space of bot${this.index} is running low! (${remaining} remaining)`);
                 }

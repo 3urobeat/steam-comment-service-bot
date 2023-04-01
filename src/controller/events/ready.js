@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 01.04.2023 14:18:44
+ * Last Modified: 01.04.2023 14:33:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -126,12 +126,10 @@ Controller.prototype._readyEvent = function() {
     this.data.refreshCache();
 
 
-    // Friendlist capacity check
-    Object.keys(this.bots).forEach((e) => {
-        require("../helpers/friendlist.js").friendlistcapacitycheck(parseInt(e), (remaining) => {
-            if (remaining < 25) {
-                logger("warn", `The friendlist space of bot${e} is running low! (${remaining} remaining)`);
-            }
+    // Friendlist capacity check for all accounts
+    Object.values(this.bots).forEach((e) => {
+        this.friendListCapacityCheck(e.index, (remaining) => {
+            if (remaining && remaining < 25) logger("warn", `The friendlist space of bot${e} is running low! (${remaining} remaining)`);
         });
     });
 
@@ -141,16 +139,14 @@ Controller.prototype._readyEvent = function() {
 
 
     // Check for friends who haven't requested comments in config.unfriendtime days every 60 seconds and unfriend them if unfriendtime is > 0
-    if (config.unfriendtime > 0) {
+    if (this.data.config.unfriendtime > 0) {
         let lastcommentUnfriendCheck = Date.now(); // This is useful because intervals can get imprecise over time
 
         setInterval(() => {
             if (lastcommentUnfriendCheck + 60000 > Date.now()) return; // Last check is more recent than 60 seconds
             lastcommentUnfriendCheck = Date.now();
 
-            logger("debug", "60 seconds passed, calling lastcommentUnfriendCheck()...");
-
-            require("../helpers/friendlist.js").lastcommentUnfriendCheck();
+            this._lastcommentUnfriendCheck();
         }, 60000); // 60 seconds
     }
 

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.03.2023 13:59:50
+ * Last Modified: 01.04.2023 14:04:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -35,12 +35,6 @@ Bot.prototype._attachSteamLoggedOnEvent = function() {
         // Set playinggames for main account and child account
         if (this.index == 0) this.user.gamesPlayed(this.controller.data.config.playinggames);
         if (this.index != 0) this.user.gamesPlayed(this.controller.data.config.childaccplayinggames);
-
-
-        // Run check if all friends are in lastcomment.db database
-        if (this.index == 0) {
-            require("../../controller/helpers/friendlist.js").checklastcommentdb(this.index);
-        }
 
     });
 
