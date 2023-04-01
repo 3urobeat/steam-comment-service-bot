@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.03.2023 13:57:25
+ * Last Modified: 01.04.2023 14:23:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -300,7 +300,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
                     chatmsg(steamID, this.controller.data.datafile.aboutstr);
                     break;
                 default:
-                    if (message.startsWith("!")) chatmsg(steamID, `${this.controller.data.lang.childbotmessage}\nhttps://steamcommunity.com/profiles/${new SteamID(String(this.controller.main.steamID)).getSteamID64()}`);
+                    if (message.startsWith("!")) chatmsg(steamID, `${this.controller.data.lang.childbotmessage}\nhttps://steamcommunity.com/profiles/${new SteamID(String(this.controller.main.user.steamID)).getSteamID64()}`);
                         else logger("debug", "Chat message is not a command, ignoring message.");
             }
         }

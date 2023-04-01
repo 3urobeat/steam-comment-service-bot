@@ -4,7 +4,7 @@
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 28.03.2023 00:24:34
+ * Last Modified: 01.04.2023 14:20:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -73,7 +73,7 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
                     _this.cachefile.ownerid.forEach((e, i) => {
                         setTimeout(() => {
                             // eslint-disable-next-line no-control-regex
-                            this.controller.main.chat.sendFriendMessage(e, msg.replace(/\x1B\[[0-9]+m/gm, "") + "!\nHead over to the terminal to refresh the token(s) now if you wish."); // Remove color codes from string
+                            this.controller.main.user.chat.sendFriendMessage(e, msg.replace(/\x1B\[[0-9]+m/gm, "") + "!\nHead over to the terminal to refresh the token(s) now if you wish."); // Remove color codes from string
                         }, 1500 * i);
                     });
 

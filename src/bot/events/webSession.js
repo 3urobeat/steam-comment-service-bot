@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.03.2023 21:46:26
+ * Last Modified: 01.04.2023 14:18:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -65,7 +65,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
                     // Log message and send welcome message
                     logger("info", `[${this.logPrefix}] Added user while I was offline! User: ` + Object.keys(this.user.myFriends)[i]);
-                    if (this.index == 0) this.controller.main.chat.sendFriendMessage(String(Object.keys(this.user.myFriends)[i]), this.controller.data.lang.useradded);
+                    if (this.index == 0) this.controller.main.user.chat.sendFriendMessage(String(Object.keys(this.user.myFriends)[i]), this.controller.data.lang.useradded);
                         else logger("debug", "Not sending useradded message because this isn't the main this.user...");
 
 
