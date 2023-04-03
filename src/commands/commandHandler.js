@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 03.04.2023 13:28:24
+ * Last Modified: 03.04.2023 19:49:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -15,7 +15,7 @@
  */
 
 
-const https = require("https");
+const fs = require("fs");
 
 const Controller = require("../controller/controller.js"); // eslint-disable-line
 
@@ -32,23 +32,44 @@ const CommandHandler = function(context, respondModule, controller) {
     this.respond    = respondModule;
     this.controller = controller;
 
+    this.commands = []; // Array of objects, where each object represents a command
+
 };
 
 
 /**
- * The ping command
- * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command)
+ * Internal: Imports core commands on startup
  */
-CommandHandler.prototype.ping = function(resInfo) {
-    let respond = ((txt) => this.respond(this.context, resInfo, txt)); // Shorten each call
+CommandHandler.prototype._importCoreCommands = function() {
 
-    let pingStart = Date.now();
+    logger("info", "CommandHandler: Loading all core commands...", false, true, logger.animation("loading"));
 
-    https.get("https://steamcommunity.com/ping", (res) => { // Ping steamcommunity.com/ping and measure time
-        res.setEncoding("utf8");
-        res.on("data", () => {});
-        res.on("end", () => respond(this.controller.data.lang.pingcmdmessage.replace("pingtime", Date.now() - pingStart)));
+    fs.readdir("./src/commands/core", (err, files) => {
+
+        // Stop now on error or if nothing was found
+        if (err)               return logger("error", "Error while reading core dir: " + err, true);
+        if (files.length == 0) return logger("info", "No commands in ./core found!", false, true, logger.animation("loading"));
+
+        // Iterate over all files in this dir
+        files.forEach((e) => {
+            let thisFile;
+
+            // Try to load plugin
+            try {
+                // Load the plugin file
+                thisFile = require(`./core/${e}`);
+
+                // Push all exported commands in this file into the command list
+                Object.values(thisFile).every(val => this.commands.push(val));
+
+            } catch (err) {
+
+                return logger("error", `Error loading core command '${e}'! ${err.stack}`, true);
+            }
+        });
     });
+
+};
 };
 
 

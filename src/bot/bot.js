@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 03.04.2023 13:24:54
+ * Last Modified: 03.04.2023 19:50:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -89,9 +89,6 @@ const Bot = function(controller, index) {
         this.user.webLogOn();
     });
 
-
-    // Register a command handler for the main bot which uses the steamChatInteraction helper to send steam chat messages
-    if (this.index == 0) this.commandHandler = new CommandHandler(this, this.sendChatMessage, this.controller);
 };
 
 
