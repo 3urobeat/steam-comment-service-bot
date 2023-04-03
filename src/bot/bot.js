@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 12:49:18
+ * Last Modified: 03.04.2023 13:24:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -21,6 +21,7 @@ const request        = require("request"); // Yes I know, the library is depreca
 
 const Controller     = require("../controller/controller.js"); // eslint-disable-line
 const SessionHandler = require("../sessions/sessionHandler.js");
+const CommandHandler = require("../commands/commandHandler.js");
 
 
 /**
@@ -55,6 +56,7 @@ const Bot = function(controller, index) {
     require("./events/loggedOn.js");
     require("./events/relationship.js");
     require("./events/webSession.js");
+    require("./helpers/steamChatInteraction.js");
 
 
     // Create user & community instance
@@ -86,6 +88,10 @@ const Bot = function(controller, index) {
         lastWebSessionRefresh = Date.now(); // Update time
         this.user.webLogOn();
     });
+
+
+    // Register a command handler for the main bot which uses the steamChatInteraction helper to send steam chat messages
+    if (this.index == 0) this.commandHandler = new CommandHandler(this, this.sendChatMessage, this.controller);
 };
 
 
@@ -124,4 +130,12 @@ module.exports = Bot;
  * Attempt to relog this bot account. This function regulates automatic relogging by delaying it depending on how many other accounts requested a relog as well.
  * @param {Boolean} force Forces an relog even if the account is already in relogQueue (important for steam-user error event while relog)
  */
-Bot.prototype.relogAccount = (force) => {}; // eslint-disable-line
+Bot.prototype.relogAccount = function(force) {}; // eslint-disable-line
+
+/**
+ * Send a message to a Steam user
+ * @param {Object} resInf Object containing information passed to command by friendMessage event
+ * @param {String} txt The text to send
+ * @param {Boolean} retry Internal: true if this message called itself again to send failure message
+ */
+Bot.prototype.sendChatMessage = function(resInf, txt, retry) {}; // eslint-disable-line
