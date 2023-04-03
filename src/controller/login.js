@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 01.04.2023 13:06:33
+ * Last Modified: 03.04.2023 19:26:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -45,6 +45,13 @@ Controller.prototype._preLogin = async function() {
     require("./events/ready.js");
     require("./events/statusUpdate.js");
     require("./helpers/friendlist.js");
+
+
+    // Load commandHandler
+    let CommandHandler = require("../commands/commandHandler.js");
+
+    this.commandHandler = new CommandHandler(this);
+    this.commandHandler._importCoreCommands();
 
 
     // Load pluginSystem

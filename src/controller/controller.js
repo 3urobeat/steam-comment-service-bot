@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.03.2023 22:09:34
+ * Last Modified: 03.04.2023 19:51:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -28,6 +28,7 @@ const Controller = function() {
     // Create eventEmitter
     this.events = new EventEmitter();
 
+    this.commandHandler = {};
     this.pluginSystem = {};
 
     /* ------------ Store various stuff: ------------ */

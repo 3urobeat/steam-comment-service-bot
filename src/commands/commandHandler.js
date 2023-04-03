@@ -21,15 +21,12 @@ const Controller = require("../controller/controller.js"); // eslint-disable-lin
 
 
 /**
- * Constructor - Initializes the commandHandler which allows you to integrate bot commands into your plugin
+ * Constructor - Initializes the commandHandler which allows you to integrate core commands into your plugin or add new commands from your plugin.
  * @param {Object} context The context (this.) of the object implementing this commandHandler. Will be passed to respondModule() as first parameter.
- * @param {function(Object, Object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
  * @param {Controller} controller Reference to the current controller object
  */
-const CommandHandler = function(context, respondModule, controller) {
+const CommandHandler = function(controller) {
 
-    this.context    = context;
-    this.respond    = respondModule;
     this.controller = controller;
 
     this.commands = []; // Array of objects, where each object represents a command
