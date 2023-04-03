@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 03.04.2023 13:22:56
+ * Last Modified: 03.04.2023 14:32:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -24,17 +24,14 @@ const Bot = require("../bot");
 
 
 /**
- * Send a message to a Steam user
+ * Our commandHandler respondModule implementation - Sends a message to a Steam user
  * @param {Object} _this The Bot object context
  * @param {Object} resInf Object containing information passed to command by friendMessage event
  * @param {String} txt The text to send
  * @param {Boolean} retry Internal: true if this message called itself again to send failure message
  */
 Bot.prototype.sendChatMessage = function(_this, resInf, txt, retry) {
-
-    _this.user.chat.sendFriendMessage(resInf.steamID, txt);
-
-    /* if (!txt) return logger("warn", "chatmsg() was called without txt parameter? Ignoring call...");
+    if (!txt) return logger("warn", "sendChatMessage() was called without any message content! Ignoring call...");
 
     // Cut message if over 1k chars to try and reduce the risk of a RateLimitExceeded error
     if (txt.length > 1000) {
@@ -45,7 +42,7 @@ Bot.prototype.sendChatMessage = function(_this, resInf, txt, retry) {
     }
 
     // Log full message if in debug mode, otherwise log cut down version
-    let recipientSteamID64 = new SteamID(String(steamID)).getSteamID64();
+    let recipientSteamID64 = new SteamID(String(resInf.steamID)).getSteamID64();
 
     if (_this.controller.data.advancedconfig.printDebug) {
         logger("debug", `[${_this.logPrefix}] Sending message (${txt.length} chars) to ${recipientSteamID64} (retry: ${retry == true}): "${txt.replace(/\n/g, "\\n")}"`); // Intentionally checking for == true to prevent showing undefined
@@ -54,12 +51,12 @@ Bot.prototype.sendChatMessage = function(_this, resInf, txt, retry) {
             else logger("info", `[${_this.logPrefix}] Sending message to ${recipientSteamID64}: "${txt.replace(/\n/g, "\\n")}"`);
     }
 
-    _this.user.chat.sendFriendMessage(steamID, txt, {}, (err) => {
+    _this.user.chat.sendFriendMessage(resInf.steamID, txt, {}, (err) => {
         if (err) { // Check for error as some chat messages seem to not get send lately
             logger("warn", `[${_this.logPrefix}] Error trying to send chat message of length ${txt.length} to ${recipientSteamID64}! ${err}`);
 
             // Send the user a fallback message after 5 seconds just to indicate the bot is not down
-            if (!retry) setTimeout(() => chatmsg(steamID, "Sorry, it looks like Steam blocked my last message. Please try again in 30 seconds.", true), 5000);
+            if (!retry) setTimeout(() => _this.sendChatMessage(resInf.steamID, "Sorry, it looks like Steam blocked my last message. Please try again in 30 seconds.", true), 5000);
         }
-    }); */
+    });
 };
