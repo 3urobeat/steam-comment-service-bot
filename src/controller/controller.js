@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 03.04.2023 19:51:20
+ * Last Modified: 05.04.2023 01:32:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -33,6 +33,11 @@ const Controller = function() {
 
     /* ------------ Store various stuff: ------------ */
     this.bots = {}; // Store references to all bot account objects here
+
+    /**
+     * The main bot account
+     * @type {Bot}
+     */
     this.main = {}; // Store short-hand reference to the main acc (populated later)
 
     this.info = {
@@ -41,12 +46,14 @@ const Controller = function() {
         steamGuardInputTime: 0,
         readyAfter: 0, // Length of last startup in seconds
         activeRelog: false, // Allows to block new comment requests when waiting for the last request to finish
+        commentCounter: 0
     };
+
+    this.activeRequests = {}; // Stores active comment etc. requests
 
     this.relogQueue = [];
 
     // TODO: Legacy stuff, filter out what is not needed
-    this.commentcounter        = 0;  // This will count the total of comments requested since the last reboot
     this.skippednow            = [];    // Array to track which accounts have been skipped
     this.relogAfterDisconnect  = true;  // Allows to prevent accounts from relogging when calling bot.logOff()
     this.failedcomments        = [];    // Array saving failedcomments so the user can access them via the !failedcomments command
