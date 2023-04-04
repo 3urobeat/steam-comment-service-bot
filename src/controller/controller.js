@@ -39,19 +39,19 @@ const Controller = function() {
         bootStartTimestamp: Date.now(), // Save timestamp to be able to calculate startup time in ready event
         lastLoginTimestamp: 0,  // Save timestamp of last login attempted by any account to calculate wait time for next account
         steamGuardInputTime: 0,
-        readyAfter: 0 // Length of last startup in seconds
+        readyAfter: 0, // Length of last startup in seconds
+        activeRelog: false, // Allows to block new comment requests when waiting for the last request to finish
     };
 
     this.relogQueue = [];
 
     // TODO: Legacy stuff, filter out what is not needed
-    this.skippednow    = [];   // Array to track which accounts have been skipped
-    this.relogAfterDisconnect  = true;       // Allows to prevent accounts from relogging when calling bot.logOff()
-    this.activeRelog           = false;      // Allows to block new comment requests when waiting for the last request to finish
-    this.failedcomments        = []; // Array saving failedcomments so the user can access them via the !failedcomments command
-    this.activecommentprocess  = {}; // Object storing active comment processes so that a user can only request one process at a time, used accounts can only be used in one session, have a cooldown (not the user! that is handled by lastcomment) and the updater is blocked
-    this.lastcommentrequestmsg = []; // Array saving the last comment cmd request to apply higher cooldown to the comment cmd usage compared to normal cmd usage cooldown
     this.commentcounter        = 0;  // This will count the total of comments requested since the last reboot
+    this.skippednow            = [];    // Array to track which accounts have been skipped
+    this.relogAfterDisconnect  = true;  // Allows to prevent accounts from relogging when calling bot.logOff()
+    this.failedcomments        = [];    // Array saving failedcomments so the user can access them via the !failedcomments command
+    this.activecommentprocess  = {};    // Object storing active comment processes so that a user can only request one process at a time, used accounts can only be used in one session, have a cooldown (not the user! that is handled by lastcomment) and the updater is blocked
+    this.lastcommentrequestmsg = [];    // Array saving the last comment cmd request to apply higher cooldown to the comment cmd usage compared to normal cmd usage cooldown
 
 };
 

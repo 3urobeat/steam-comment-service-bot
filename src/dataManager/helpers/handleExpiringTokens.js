@@ -4,7 +4,7 @@
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 01.04.2023 14:20:22
+ * Last Modified: 05.04.2023 01:34:15
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -78,7 +78,7 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
                     });
 
                     // Block new comment requests from happening
-                    Controller.activeRelog = true;
+                    _this.controller.info.activeRelog = true;
 
                     // Check for active comment processes before asking for relog
                     _this._askForGetNewToken(expiring);
@@ -130,12 +130,12 @@ DataManager.prototype._askForGetNewToken = function(expiring) {
                 } else {
                     logger("info", "Asking again in 24 hours...");
 
-                    Controller.activeRelog = false; // Allow comment requests again
+                    _this.controller.info.activeRelog = false; // Allow comment requests again
                 }
             } else {
                 logger("info", "Stopped waiting because you didn't respond in 1.5 minutes. Asking again in 24 hours...");
 
-                Controller.activeRelog = false; // Allow comment requests again
+                _this.controller.info.activeRelog = false; // Allow comment requests again
             }
         });
 

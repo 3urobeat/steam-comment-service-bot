@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 01.04.2023 14:18:33
+ * Last Modified: 05.04.2023 01:32:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -46,7 +46,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
             // Allow comment requests again when all accounts are done relogging
             if (this.controller.relogQueue.length == 0) {
                 logger("debug", "webSession event: Relog queue is empty, setting activeRelog to false again");
-                this.controller.activeRelog = false;
+                this.controller.info.activeRelog = false;
             }
         }
 

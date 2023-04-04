@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 18.03.2023 19:20:59
+ * Last Modified: 05.04.2023 01:34:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -61,7 +61,7 @@ module.exports.run = async (forceupdate, responseSteamID, compatibilityfeaturedo
 
             /* eslint-disable no-inner-declarations */
             async function initiateUpdate() { // Make initiating the update a function to simplify the permission check below
-                controller.activeRelog = true; // Block new comment requests by setting active relog to true
+                controller.info.activeRelog = true; // Block new comment requests by setting active relog to true
 
                 let file2 = await starter.checkAndGetFile("./src/updater/helpers/prepareupdate.js", logger, false, false); // Prepare update (like waiting for active comment processes to finish, logging off accounts, etc.)
                 if (!file2) return;
