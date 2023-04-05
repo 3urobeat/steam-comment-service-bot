@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 03.04.2023 19:49:33
+ * Last Modified: 05.04.2023 20:09:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -22,12 +22,12 @@ const Controller = require("../controller/controller.js"); // eslint-disable-lin
 
 /**
  * Constructor - Initializes the commandHandler which allows you to integrate core commands into your plugin or add new commands from your plugin.
- * @param {Object} context The context (this.) of the object implementing this commandHandler. Will be passed to respondModule() as first parameter.
  * @param {Controller} controller Reference to the current controller object
  */
 const CommandHandler = function(controller) {
 
     this.controller = controller;
+    this.data       = controller.data;
 
     this.commands = []; // Array of objects, where each object represents a command
 
@@ -48,7 +48,7 @@ CommandHandler.prototype._importCoreCommands = function() {
         if (files.length == 0) return logger("info", "No commands in ./core found!", false, true, logger.animation("loading"));
 
         // Iterate over all files in this dir
-        files.forEach((e) => {
+        files.forEach((e, i) => {
             let thisFile;
 
             // Try to load plugin
@@ -61,8 +61,10 @@ CommandHandler.prototype._importCoreCommands = function() {
 
             } catch (err) {
 
-                return logger("error", `Error loading core command '${e}'! ${err.stack}`, true);
+                logger("error", `Error loading core command '${e}'! ${err.stack}`, true);
             }
+
+            if (i + 1 == files.length) logger("info", `Loaded ${this.commands.length} core commands`, false, true, logger.animation("loading"));
         });
     });
 
