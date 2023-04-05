@@ -69,6 +69,31 @@ CommandHandler.prototype._importCoreCommands = function() {
     });
 
 };
+/**
+ * Finds a loaded command by name and runs it
+ * @param {String} name The name of the command
+ * @param {Array} args Array of arguments that will be passed to the command
+ * @param {function(Object, Object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+ * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+ * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
+ * @returns `true` if command was found, `false` if not
+ */
+CommandHandler.prototype.runCommand = function(name, args, respondModule, context, resInfo) {
+
+    // Iterate through all command objects in commands array and check if name is included in names array of each command.
+    let thisCmd = this.commands.find(e => e.names.includes(name));
+
+    if (!thisCmd) {
+        logger("error", `CommandHandler runCommand(): Command '${name}' was not found!`);
+        return false;
+    }
+
+    // Run command if one was found
+    thisCmd.run(this, args, respondModule, context, resInfo);
+
+    // Return true if command was found
+    return true;
+
 };
 
 
