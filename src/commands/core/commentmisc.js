@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.04.2023 00:56:14
+ * Last Modified: 05.04.2023 20:05:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -18,7 +18,7 @@
 const SteamID = require("steamid");
 
 const CommandHandler         = require("../commandHandler.js"); // eslint-disable-line
-const handleSteamIdResolving = require("../helpers/handleSteamIdResolving.js");
+const handleSteamIdResolving = require("../../bot/helpers/handleSteamIdResolving.js");
 
 
 module.exports.abort = {

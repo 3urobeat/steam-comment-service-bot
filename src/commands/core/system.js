@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.04.2023 00:58:52
+ * Last Modified: 06.04.2023 19:17:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -21,7 +21,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 
 module.exports.restart = {
-    names: ["restart"],
+    names: ["rs", "restart"],
     description: "",
     ownersOnly: true,
 
@@ -156,11 +156,9 @@ module.exports.eval = {
             if (code.includes("logininfo")) return respond(commandHandler.data.lang.evalcmdlogininfoblock); // Not 100% safe but should be at least some protection (only owners can use this cmd)
 
             // Make using the command a little bit easier
-            let starter    = require("../../starter.js");               // eslint-disable-line no-unused-vars
-            let controller = require("../../controller/controller.js"); // eslint-disable-line no-unused-vars
-            let readyfile  = require("../../controller/ready.js");      // eslint-disable-line no-unused-vars
-            let botfile    = require("../../bot/bot.js");               // eslint-disable-line no-unused-vars
-            let mainfile   = require("../../bot/main.js");              // eslint-disable-line no-unused-vars
+            let controller = commandHandler.controller;      // eslint-disable-line
+            let main       = commandHandler.controller.main; // eslint-disable-line
+            let data       = commandHandler.data;            // eslint-disable-line
 
             let evaled = eval(code);
             if (typeof evaled !== "string") evaled = require("util").inspect(evaled);

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.04.2023 00:58:29
+ * Last Modified: 06.04.2023 19:07:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -39,7 +39,7 @@ module.exports.group = {
 
         if (commandHandler.data.config.yourgroup.length < 1 || !commandHandler.data.cachefile.configgroup64id) return respond(commandHandler.data.lang.groupcmdnolink); // No group info at all? stop.
 
-        if (cachefile.configgroup64id && Object.keys(commandHandler.controller.main.user.myGroups).includes(commandHandler.data.cachefile.configgroup64id)) {
+        if (commandHandler.data.cachefile.configgroup64id && Object.keys(commandHandler.controller.main.user.myGroups).includes(commandHandler.data.cachefile.configgroup64id)) {
             commandHandler.controller.main.user.inviteToGroup(resInfo.steamID, commandHandler.data.cachefile.configgroup64id);
             respond(commandHandler.data.lang.groupcmdinvitesent);
 
@@ -92,7 +92,7 @@ module.exports.leaveGroup = {
 
         function startleavegroup() { // eslint-disable-line no-inner-declarations, no-case-declarations
             let argsSteamID = new SteamID(String(args[0]));
-            if (argsSteamID.isValid() === false || argsSteamID["type"] !== 7) return respond(commandHandler.data.lang.leavegroupcmdinvalidgroup);
+            if (!argsSteamID.isValid() || argsSteamID["type"] !== 7) return respond(commandHandler.data.lang.leavegroupcmdinvalidgroup);
 
             Object.values(commandHandler.controller.bots).forEach((e, i) => {
                 setTimeout(() => {
@@ -139,12 +139,12 @@ module.exports.leaveAllGroups = {
             respond(commandHandler.data.lang.leaveallgroupscmdstart);
             logger("info", "Starting to leave all groups...");
 
-            for (let i = 0; i < Object.keys(this.bots).length; i++) {
-                for (let group in Object.values(this.bots)[i].user.myGroups) {
+            for (let i = 0; i < Object.keys(commandHandler.controller.bots).length; i++) {
+                for (let group in Object.values(commandHandler.controller.bots)[i].user.myGroups) {
                     try {
                         setTimeout(() => {
-                            if (Object.values(this.bots)[i].user.myGroups[group] == 3) {
-                                if (group != commandHandler.data.cachefile.botsgroupid && group != commandHandler.data.cachefile.configgroup64id) Object.values(this.bots)[i].community.leaveGroup(String(group));
+                            if (Object.values(commandHandler.controller.bots)[i].user.myGroups[group] == 3) {
+                                if (group != commandHandler.data.cachefile.botsgroupid && group != commandHandler.data.cachefile.configgroup64id) Object.values(commandHandler.controller.bots)[i].community.leaveGroup(String(group));
                             }
                         }, 1000 * i); // Delay every iteration so that we don't make a ton of requests at once
                     } catch (err) {

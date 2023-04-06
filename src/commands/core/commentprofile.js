@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.04.2023 01:33:33
+ * Last Modified: 06.04.2023 12:04:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -41,6 +41,7 @@ module.exports.commentProfile = {
         let requesterSteamID = resInfo.steamID;
         let receiverSteamID  = requesterSteamID;
         let ownercheck       = cachefile.ownerid.includes(requesterSteamID);
+        let lastCommentDoc   = commandHandler.data.lastCommentDB.findOneAsync({ id: resInfo.steamID });
 
 
         /* --------- Check for disabled comment cmd or if update is queued --------- */
