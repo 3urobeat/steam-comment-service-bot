@@ -1,14 +1,14 @@
 ---
 name: Bug report
-about: Report a bug
+about: Report an error/a problem you experienced
 title: ''
-labels: bug
+labels: Bug
 assignees: ''
 
 ---
 
 **Describe the bug**
-A clear description of what you did and what happened.
+What happened?
 
 **Full error**
 Please post the **complete** error here!
