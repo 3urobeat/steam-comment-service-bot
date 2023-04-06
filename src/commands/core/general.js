@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.04.2023 00:58:14
+ * Last Modified: 06.04.2023 17:58:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -38,13 +38,12 @@ module.exports.help = {
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
     run: (commandHandler, args, respondModule, context, resInfo) => {
-        let respond   = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let steamID64 = new SteamID(String(args.steamID)).getSteamID64();
+        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // Construct comment text for owner or non owner
         let commentText;
 
-        if (commandHandler.data.cachefile.ownerid.includes(steamID64)) {
+        if (commandHandler.data.cachefile.ownerid.includes(resInfo.steamID)) {
             if (Object.keys(commandHandler.controller.bots).length > 1 || commandHandler.data.config.maxOwnerComments) commentText = `'!comment (amount/"all") [profileid] [custom, quotes]' - ${commandHandler.data.lang.helpcommentowner1.replace("maxOwnerComments", commandHandler.data.config.maxOwnerComments)}`;
                 else commentText = `'!comment ("1") [profileid] [custom, quotes]' - ${commandHandler.data.lang.helpcommentowner2}`;
         } else {
@@ -86,11 +85,13 @@ module.exports.info = {
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
     run: (commandHandler, args, respondModule, context, resInfo) => {
-        let respond   = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let steamID64 = new SteamID(String(args.steamID)).getSteamID64();
+        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        commandHandler.data.lastCommentDB.findOne({ id: steamID64 }, async (err, doc) => {
-            let lastReq = await this.data.getLastCommentRequest();
+        commandHandler.data.lastCommentDB.findOne({ id: resInfo.steamID }, async (err, doc) => {
+            let lastReq = await commandHandler.data.getLastCommentRequest();
+
+            let userLastReq = "Never";
+            if (doc) userLastReq = ((new Date(doc.time)).toISOString().replace(/T/, " ").replace(/\..+/, "")) + " (GMT time)";
 
             /* eslint-disable no-irregular-whitespace */
             respond(`
@@ -100,8 +101,8 @@ module.exports.info = {
                 >   'node.js' Version: ${process.version} | RAM Usage (RSS): ${Math.round(process.memoryUsage()["rss"] / 1024 / 1024 * 100) / 100} MB
                 >   Accounts: ${Object.keys(commandHandler.controller.bots).length} | maxComments/owner: ${commandHandler.data.config.maxComments}/${commandHandler.data.config.maxOwnerComments} | delay: ${commandHandler.data.config.commentdelay}
                 |
-                >   Your steam64ID: ${steamID64}
-                >   Your last comment request: ${(new Date(doc.time)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)
+                >   Your steam64ID: ${resInfo.steamID}
+                >   Your last comment request: ${userLastReq}
                 >   Last processed comment request: ${(new Date(lastReq)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)
                 >   I have commented ${commandHandler.controller.info.commentcounter} times since my last restart and completed request!
                 -----------------------------------~~~~~------------------------------------
@@ -126,14 +127,13 @@ module.exports.ping = {
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
     run: (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-
+        let respond   = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
         let pingStart = Date.now();
 
         https.get("https://steamcommunity.com/ping", (res) => { // Ping steamcommunity.com/ping and measure time
             res.setEncoding("utf8");
             res.on("data", () => {});
-            res.on("end", () => respond(this.data.lang.pingcmdmessage.replace("pingtime", Date.now() - pingStart)));
+            res.on("end", () => respond(commandHandler.data.lang.pingcmdmessage.replace("pingtime", Date.now() - pingStart)));
         });
     }
 };
@@ -177,7 +177,7 @@ module.exports.owner = {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // Check if no owner link is set
-        if (config.owner.length < 1) return respond(commandHandler.data.lang.ownercmdnolink);
+        if (commandHandler.data.config.owner.length < 1) return respond(commandHandler.data.lang.ownercmdnolink);
 
         respond(commandHandler.data.lang.ownercmdmsg + "\n" + commandHandler.data.config.owner);
     }
