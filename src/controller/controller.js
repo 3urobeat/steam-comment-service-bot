@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.04.2023 01:32:39
+ * Last Modified: 05.04.2023 20:01:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -28,7 +28,16 @@ const Controller = function() {
     // Create eventEmitter
     this.events = new EventEmitter();
 
+    /**
+     * The commandHandler object
+     * @type {CommandHandler}
+     */
     this.commandHandler = {};
+
+    /**
+     * The pluginSystem handler
+     * @type {PluginSystem}
+     */
     this.pluginSystem = {};
 
     /* ------------ Store various stuff: ------------ */
