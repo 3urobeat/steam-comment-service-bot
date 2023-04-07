@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.04.2023 19:15:11
+ * Last Modified: 07.04.2023 13:48:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -29,12 +29,12 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
     this.user.on("friendMessage", (steamID, message) => {
 
         let resInfo    = { steamID: steamID.getSteamID64() };                         // Object required for sendChatMessage(), our commandHandler respondModule implementation
-        let steam64id  = new SteamID(String(steamID)).getSteamID64();
-        let ownercheck = cachefile.ownerid.includes(steam64id);
+        let steamID64  = new SteamID(String(steamID)).getSteamID64();
+        let ownercheck = cachefile.ownerid.includes(steamID64);
 
 
         // Check if this event should be handled or if user is blocked
-        let isBlocked = require("../helpers/checkMsgBlock.js").checkMsgBlock(this.logPrefix, this.user, steamID, message, this.controller.data.lang, chatmsg);
+        let isBlocked = this.checkMsgBlock(steamID64, message);
         if (isBlocked) return; // Stop right here if user is blocked, on cooldown or not a friend
 
 
@@ -43,8 +43,8 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
 
 
         // Log friend message but cut it if it is >= 75 chars
-        if (message.length >= 75) logger("info", `[${this.logPrefix}] Friend message from ${steam64id}: ${message.slice(0, 75) + "..."}`);
-            else logger("info", `[${this.logPrefix}] Friend message from ${steam64id}: ${message}`);
+        if (message.length >= 75) logger("info", `[${this.logPrefix}] Friend message from ${steamID64}: ${message.slice(0, 75) + "..."}`);
+            else logger("info", `[${this.logPrefix}] Friend message from ${steamID64}: ${message}`);
 
 
         // Sort out any chat messages not sent to the main bot
@@ -65,7 +65,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         /* -------------- Handle message event for the main bot -------------- */
 
         // Check if user is in lastcomment database
-        this.controller.data.lastCommentDB.findOne({ id: steam64id }, (err, doc) => {
+        this.controller.data.lastCommentDB.findOne({ id: steamID64 }, (err, doc) => {
             if (err) logger("error", "Database error on friendMessage. This is weird. Error: " + err);
 
             if (!doc) { // Add user to database if he/she is missing for some reason

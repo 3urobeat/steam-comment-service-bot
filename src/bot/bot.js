@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 03.04.2023 19:50:04
+ * Last Modified: 07.04.2023 13:48:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -56,6 +56,7 @@ const Bot = function(controller, index) {
     require("./events/loggedOn.js");
     require("./events/relationship.js");
     require("./events/webSession.js");
+    require("./helpers/checkMsgBlock.js");
     require("./helpers/steamChatInteraction.js");
 
 
@@ -128,6 +129,14 @@ module.exports = Bot;
  * @param {Boolean} force Forces an relog even if the account is already in relogQueue (important for steam-user error event while relog)
  */
 Bot.prototype.relogAccount = function(force) {}; // eslint-disable-line
+
+/**
+ * Checks if user is blocked, has an active cooldown for spamming or isn't a friend
+ * @param {Object} steamID64 The steamID64 of the message sender
+ * @param {String} message The message string provided by steam-user friendMessage event
+ * @returns {Boolean} `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
+ */
+Bot.prototype.checkMsgBlock = function(steamID64, message) {}; // eslint-disable-line
 
 /**
  * Send a message to a Steam user
