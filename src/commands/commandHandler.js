@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 05.04.2023 20:09:52
+ * Last Modified: 06.04.2023 19:14:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -84,7 +84,7 @@ CommandHandler.prototype.runCommand = function(name, args, respondModule, contex
     let thisCmd = this.commands.find(e => e.names.includes(name));
 
     if (!thisCmd) {
-        logger("error", `CommandHandler runCommand(): Command '${name}' was not found!`);
+        logger("warn", `CommandHandler runCommand(): Command '${name}' was not found!`);
         return false;
     }
 

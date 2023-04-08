@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.04.2023 00:58:00
+ * Last Modified: 08.04.2023 12:36:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -22,7 +22,7 @@ const handleSteamIdResolving = require("../../bot/helpers/handleSteamIdResolving
 
 
 module.exports.addFriend = {
-    names: ["addFriend"],
+    names: ["addfriend"],
     description: "",
     ownersOnly: true,
 
@@ -97,7 +97,7 @@ module.exports.unfriend = {
         // Unfriend message sender with all bot accounts if no id was provided
         if (!args[0]) {
             respond(commandHandler.data.lang.unfriendcmdsuccess);
-            logger("info", `Removing friend ${new SteamID(String(resInfo.steamID)).getSteamID64()} from all bot accounts...`);
+            logger("info", `Removing friend ${resInfo.steamID} from all bot accounts...`);
 
             Object.values(commandHandler.controller.bots).forEach((e, i) => {
                 setTimeout(() => {
