@@ -4,7 +4,7 @@
  * Created Date: 25.03.2023 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 25.03.2023 17:42:03
+ * Last Modified: 13.04.2023 22:29:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -58,6 +58,21 @@ module.exports.syncLoop = (iterations, func, exit) => {
  */
 module.exports.round = (value, decimals) => {
     return Number(Math.round(value+"e"+decimals)+"e-"+decimals);
+};
+
+
+/**
+ * Converts a timestamp to a human-readable until from now format. Does not care about past/future.
+ * @returns {String} "x seconds/minutes/hours/days"
+ */
+module.exports.timeToString = (timestamp) => {
+    let until = Math.abs((Date.now() - timestamp) / 1000);
+    let untilUnit = "seconds";
+    if (until > 120) { until = until / 60; untilUnit = "minutes"; }
+    if (until > 120) { until = until / 60; untilUnit = "hours"; }
+    if (until > 48)  { until = until / 24; untilUnit = "days"; }
+
+    return `${until} ${untilUnit}`;
 };
 
 

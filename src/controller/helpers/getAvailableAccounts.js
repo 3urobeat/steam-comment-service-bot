@@ -4,7 +4,7 @@
  * Created Date: 09.04.2023 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 13.04.2023 15:17:34
+ * Last Modified: 13.04.2023 22:24:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -16,6 +16,7 @@
 
 
 const Controller = require("../controller");
+const { timeToString } = require("./misc.js");
 
 
 /**
@@ -23,7 +24,7 @@ const Controller = require("../controller");
  * @param {Number} numberOfComments Number of requested comments
  * @param {Boolean} canBeLimited If the accounts are allowed to be limited
  * @param {String} receiverSteamID Optional: steamID64 of the receiving user. If set, accounts that are friend with the user will be prioritized and accsToAdd will be calculated.
- * @returns {Object} Object containing accsNeeded (Number), availableAccounts (Array of account names from bot object), accsToAdd (Array of account names from bot object which are limited and not friend) and whenAvailable (Timestamp representing how long to wait until accsNeeded amount of accounts will be available)
+ * @returns {Object} Object containing `accsNeeded` (Number), `availableAccounts` (Array of account names from bot object), `accsToAdd` (Array of account names from bot object which are limited and not friend) and `whenAvailable` (Timestamp representing how long to wait until accsNeeded amount of accounts will be available), `whenAvailableStr` (Timestamp formatted human-readable as time from now)
  */
 Controller.prototype.getAvailableAccountsForCommenting = function(numberOfComments, canBeLimited, receiverSteamID = null) {
 
@@ -49,6 +50,7 @@ Controller.prototype.getAvailableAccountsForCommenting = function(numberOfCommen
 
 
     let whenAvailable; // We will save the until value of the account that the user has to wait for here
+    let whenAvailableStr;
     let allAccounts = [ ... Object.keys(this.bots) ]; // Clone keys array (bot usernames) of bots object
 
     // Loop over activeRequests and remove all active entries from allAccounts
@@ -63,6 +65,7 @@ Controller.prototype.getAvailableAccountsForCommenting = function(numberOfCommen
                 // If this removal causes the user to need to wait, update whenAvailable
                 if (allAccounts.length - this.activeRequests[e].accounts.length < numberOfComments) {
                     whenAvailable = this.activeRequests[e].until + (this.data.config.botaccountcooldown * 60000);
+                    whenAvailableStr = timeToString(whenAvailable);
                 }
             } else {
                 delete this.activeRequests[e]; // Remove entry from object if it is finished to keep the object clean
@@ -110,7 +113,8 @@ Controller.prototype.getAvailableAccountsForCommenting = function(numberOfCommen
         "accsNeeded": accountsNeeded,
         "availableAccounts": allAccounts,
         "accsToAdd": accsToAdd,
-        "whenAvailable": whenAvailable
+        "whenAvailable": whenAvailable,
+        "whenAvailableStr": whenAvailableStr
     };
 
 };
