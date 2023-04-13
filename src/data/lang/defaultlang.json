@@ -16,7 +16,6 @@
     "commentinvalidid": "This does not seem to be a valid steamID64, profile or group link or you provided the wrong steamID type for this command!\nA profile steamID64 must look like this: 76561198260031749\n...or a group steamID64 like this: 103582791464712227\n\nCommand usage: commentcmdusage",
     "commentprofileidowneronly": "Specifying a profileid is only allowed for bot owners.\nIf you are a bot owner, make sure you added your ownerid to the config.json.",
     "commentmissingnumberofcomments": "Please specify how many comments out of maxRequestAmount you would like to request.\nCommand usage: commentcmdusage",
-    "commentaccslimitedremoved": "Sorry but there are not enough accounts available for your request because this request can't be fulfilled with limited accounts. You can request max. maxComments at the moment.",
     "commentzeroavailableaccs": "Sorry but there are currently not enough accounts available to fulfill your request. Please wait waittime timeunit and try again!",
     "commentnotenoughavailableaccs": "Sorry but there are currently not enough accounts available to fulfill your request. Please wait waittime timeunit and try again or only request availablenow comments now.",
     "commentaddbotaccounts": "Please add these accounts and then request again: (limited accounts)",

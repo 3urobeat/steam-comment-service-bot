@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:37:38
  * Author: 3urobeat
  *
- * Last Modified: 20.03.2023 13:34:27
+ * Last Modified: 12.04.2023 20:19:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -34,23 +34,9 @@ module.exports.getAccountOrder = (checkLimitedFriend, allAccounts, accountsNeede
     var accountOrder = [];
     var accsToAdd    = [];
 
-    // Randomize account order if enabled in config
-    if (config.randomizeAccounts) allAccounts.sort(() => Math.random() - 0.5); // Randomize order if enabled in config
-
     // Make copy of allAccounts and put it into accountOrder
     var accountOrder = [ ... allAccounts ];
 
-    logger("debug", "getAccountOrder(): Filtering accountOrder to get as many accounts the user is friend with as possible...");
-
-    // Remove all accounts the user is not friend with
-    accountOrder = accountOrder.filter(e => controller.botobject[e].myFriends[receiverSteamID] && controller.botobject[e].myFriends[receiverSteamID] == 3);
-
-    // If user is friend with more accounts than needed for the request then remove the remaining ones
-    if (accountOrder.length > accountsNeeded) {
-        logger("debug", "getAccountOrder(): User is friend with more accounts than needed for this request! Cutting array...");
-
-        accountOrder = accountOrder.slice(0, accountsNeeded);
-    }
 
     // If user is not friend with enough accounts then fill accountOrder with random ones
     if (accountOrder.length < accountsNeeded) {

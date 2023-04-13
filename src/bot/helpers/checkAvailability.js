@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:06:57
  * Author: 3urobeat
  *
- * Last Modified: 25.03.2023 16:17:45
+ * Last Modified: 11.04.2023 13:13:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -51,7 +51,7 @@ module.exports.checkAvailability = (receiverSteamID, numberOfComments, removeLim
             return false;
         } else {
             // Is the profile already receiving comments?
-            if (mainfile.activecommentprocess[receiverSteamID] && mainfile.activecommentprocess[receiverSteamID].status == "active") {
+            if (controller.activeRequests[receiverSteamID] && controller.activeRequests[receiverSteamID].status == "active") {
                 logger("debug", "checkAvailability(): Profile is already receiving comments. Stopping...");
 
                 respond(403, lang.commentuseralreadyreceiving);
@@ -61,71 +61,22 @@ module.exports.checkAvailability = (receiverSteamID, numberOfComments, removeLim
     }
 
 
-    /* --------- Calculate the amount of accounts needed for this request ---------  */
-    // Method 1: Use as many accounts as possible to maximize the spread (Default)
-    if (numberOfComments <= Object.keys(controller.communityobject).length) var accountsNeeded = numberOfComments;
-        else var accountsNeeded = Object.keys(controller.communityobject).length; // Cap accountsNeeded at amount of accounts because if numberOfComments is greater we will start at account 1 again
-
-    // Method 2: Use as few accounts as possible to maximize the amount of parallel requests (Not implemented yet, probably coming in 2.12)
 
 
-    /* --------- Check if enough bot accounts are available for this request --------- */
-    logger("info", "Checking for available bot accounts for this request...", false, false, logger.animation("loading"));
-
-    // Sort activecommentprocess obj by highest until value, decreasing, so that we can tell the user how long he/she has to wait if not enough accounts were found
-    let sortedvals = Object.keys(mainfile.activecommentprocess).sort((a, b) => {
-        return mainfile.activecommentprocess[b].until - mainfile.activecommentprocess[a].until;
-    });
-
-    if (sortedvals.length > 0) mainfile.activecommentprocess = Object.assign(...sortedvals.map(k => ( {[k]: mainfile.activecommentprocess[k] } ) )); // Map sortedvals back to object if array is not empty - credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
 
 
-    var whenavailable; // We will save the until value of the activecommentprocess entry that the user has to wait for here
-    var allAccounts = [ ... Object.keys(controller.communityobject) ]; // Clone keys array of communityobject
-
-    // Loop over activecommentprocess obj and remove all valid entries from allAccounts array to remove all accounts that are currently being used in another request
-    if (Object.keys(mainfile.activecommentprocess).length > 0) {
-        Object.keys(mainfile.activecommentprocess).forEach((e) => {
-
-            if (Date.now() < mainfile.activecommentprocess[e].until + (config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
-
-                mainfile.activecommentprocess[e].accounts.forEach((f) => { // Loop over every account used in this request
-                    allAccounts.splice(allAccounts.indexOf(f), 1); // Remove that accountindex from the allAccounts array
-                });
-
-                if (allAccounts.length - mainfile.activecommentprocess[e].accounts.length < numberOfComments) {
-                    whenavailable = mainfile.activecommentprocess[e].until + (config.botaccountcooldown * 60000);
-                }
-            } else {
-                delete mainfile.activecommentprocess[e]; // Remove entry from object if it is finished to keep the object clean
-            }
-        });
-    }
 
 
-    // Remove limited accounts from allAccounts array if desired
-    if (removeLimitedAccs) {
-        let previousLength = allAccounts.length;
-        allAccounts = allAccounts.filter(e => controller.botobject[e].limitations && !controller.botobject[e].limitations.limited);
-
-        if (previousLength - allAccounts.length > 0) logger("info", `${previousLength - allAccounts.length} of ${previousLength} were removed from available accounts as they are limited and can't be used for this request!`);
-
-        // Check if all accounts that were previously available are now removed and send custom error message
-        if (previousLength != 0 && allAccounts.length < accountsNeeded) { respond(403, lang.commentaccslimitedremoved.replace("maxComments", allAccounts.length)); return false; } // Using allAccounts.length works for the "spread requests on as many accounts as possible" method
-    }
-
-
-    // If not enough accounts are available respond with error message
     if (allAccounts.length < accountsNeeded) {
         // Calculate how far away whenavailable is from Date.now()
-        var remaining     = Math.abs((whenavailable - Date.now()) / 1000);
-        var remainingunit = "seconds";
-        if (remaining > 120) { var remaining = remaining / 60; var remainingunit = "minutes"; }
-        if (remaining > 120) { var remaining = remaining / 60; var remainingunit = "hours"; }
+        let remaining     = Math.abs((whenavailable - Date.now()) / 1000);
+        let remainingUnit = "seconds";
+        if (remaining > 120) { remaining = remaining / 60; remainingUnit = "minutes"; }
+        if (remaining > 120) { remaining = remaining / 60; remainingUnit = "hours"; }
 
         // Respond with note about how many comments can be requested right now if more than 0 accounts are available
-        if (allAccounts.length > 0) respond(500, lang.commentnotenoughavailableaccs.replace("waittime", round(remaining, 2)).replace("timeunit", remainingunit).replace("availablenow", allAccounts.length)); // Using allAccounts.length works for the "spread requests on as many accounts as possible" method
-            else respond(500, lang.commentzeroavailableaccs.replace("waittime", round(remaining, 2)).replace("timeunit", remainingunit));
+        if (allAccounts.length > 0) respond(500, lang.commentnotenoughavailableaccs.replace("waittime", round(remaining, 2)).replace("timeunit", remainingUnit).replace("availablenow", allAccounts.length)); // Using allAccounts.length works for the "spread requests on as many accounts as possible" method
+            else respond(500, lang.commentzeroavailableaccs.replace("waittime", round(remaining, 2)).replace("timeunit", remainingUnit));
 
         logger("info", `Found only ${allAccounts.length} available account(s) but ${accountsNeeded} account(s) are needed to send ${numberOfComments} comments.`);
         return false;
@@ -133,9 +84,6 @@ module.exports.checkAvailability = (receiverSteamID, numberOfComments, removeLim
         logger("info", `Found ${allAccounts.length} available account(s)!`);
     }
 
-    // Log debug values
-    logger("debug", `checkAvailability() success. allAccounts: ${allAccounts} | accountsNeeded: ${accountsNeeded}`);
 
-    // Return values
-    return { allAccounts, accountsNeeded };
+
 };
