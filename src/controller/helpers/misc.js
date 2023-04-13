@@ -4,7 +4,7 @@
  * Created Date: 25.03.2023 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 13.04.2023 22:29:06
+ * Last Modified: 13.04.2023 23:06:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -72,7 +72,7 @@ module.exports.timeToString = (timestamp) => {
     if (until > 120) { until = until / 60; untilUnit = "hours"; }
     if (until > 48)  { until = until / 24; untilUnit = "days"; }
 
-    return `${until} ${untilUnit}`;
+    return `${this.round(until, 2)} ${untilUnit}`;
 };
 
 

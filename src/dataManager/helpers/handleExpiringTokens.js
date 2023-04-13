@@ -4,7 +4,7 @@
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 05.04.2023 01:34:15
+ * Last Modified: 13.04.2023 18:00:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -16,7 +16,6 @@
 
 
 const DataManager = require("../dataManager.js");
-const Controller  = require("../../controller/controller.js");
 
 
 /**

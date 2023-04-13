@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 13.04.2023 20:03:00
+ * Last Modified: 13.04.2023 21:56:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -43,6 +43,7 @@ const DataManager = function(controller) {
     if (!this.checkAndGetFile("./src/dataManager/dataImport.js",                   controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataImport.js'!");
     if (!this.checkAndGetFile("./src/dataManager/dataProcessing.js",               controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'dataProcessing.js'!");
     if (!this.checkAndGetFile("./src/dataManager/helpers/getQuote.js",             controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'getQuote.js'!");
+    if (!this.checkAndGetFile("./src/dataManager/helpers/handleCooldowns.js",      controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'handleCooldowns.js'!");
     if (!this.checkAndGetFile("./src/dataManager/helpers/handleExpiringTokens.js", controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'handleExpiringTokens.js'!");
     if (!this.checkAndGetFile("./src/dataManager/helpers/misc.js",                 controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'misc.js'!");
     if (!this.checkAndGetFile("./src/dataManager/helpers/refreshCache.js",         controller.logger, false, false)) logger("err", "Error! DataManager: Failed to load 'refreshCache.js'!");
