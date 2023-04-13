@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 18:18:02
+ * Last Modified: 13.04.2023 20:03:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -76,6 +76,20 @@ DataManager.prototype._importFromDisk = function() {};
  * @returns {Promise} Resolves with `quote` (String)
  */
 DataManager.prototype.getQuote = function(quotesArr = null) {}; // eslint-disable-line
+
+/**
+ * Checks if a user ID is currently on cooldown and formats human readable lastRequestStr and untilStr strings.
+ * @param {String} id ID of the user to look up
+ * @returns {Promise} Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as String), `untilStr` (Wait until as String). If id wasn't found, `null` will be returned.
+ */
+DataManager.prototype.getUserCooldown = function(id) {}; // eslint-disable-line
+
+/**
+ * Updates or inserts timestamp of a user
+ * @param {String} id ID of the user to update
+ * @param {Number} timestamp Unix timestamp of the last interaction the user received
+ */
+DataManager.prototype.setUserCooldown = function(id, timestamp) {}; // eslint-disable-line
 
 /**
  * Internal: Checks tokens.db every 24 hours for refreshToken expiration in <=7 days, logs warning and sends botowner a Steam msg
