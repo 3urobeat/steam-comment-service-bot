@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 03.04.2023 14:32:32
+ * Last Modified: 15.04.2023 13:25:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -29,34 +29,44 @@ const Bot = require("../bot");
  * @param {Object} resInf Object containing information passed to command by friendMessage event
  * @param {String} txt The text to send
  * @param {Boolean} retry Internal: true if this message called itself again to send failure message
+ * @param {Number} part Internal: Index of which part to send for messages larger than 750 chars
  */
-Bot.prototype.sendChatMessage = function(_this, resInf, txt, retry) {
+Bot.prototype.sendChatMessage = function(_this, resInf, txt, retry, part = 0) {
     if (!txt) return logger("warn", "sendChatMessage() was called without any message content! Ignoring call...");
 
-    // Cut message if over 1k chars to try and reduce the risk of a RateLimitExceeded error
-    if (txt.length > 1000) {
-        logger("warn", `[${this.logPrefix}] The bot tried to send a chat message that's longer than 1000 chars. Cutting it to 996 chars to reduce the risk of a RateLimitExceeded error!`);
-
-        txt = txt.slice(0, 996);
-        txt += "...";
-    }
+    // Get the correct part to send // TODO: This should handle line breaks better to avoid cutting links in half (for accsToAdd for example)
+    let thisPart = txt.slice(750 * part, 750 * (part + 1));
 
     // Log full message if in debug mode, otherwise log cut down version
-    let recipientSteamID64 = new SteamID(String(resInf.steamID)).getSteamID64();
-
     if (_this.controller.data.advancedconfig.printDebug) {
-        logger("debug", `[${_this.logPrefix}] Sending message (${txt.length} chars) to ${recipientSteamID64} (retry: ${retry == true}): "${txt.replace(/\n/g, "\\n")}"`); // Intentionally checking for == true to prevent showing undefined
+        logger("debug", `[${_this.logPrefix}] Sending message (${txt.length} chars) to ${resInf.steamID} (retry: ${retry == true}, part: ${part}): "${thisPart.replace(/\n/g, "\\n")}"`); // Intentionally checking for == true to prevent showing undefined
     } else {
-        if (txt.length >= 75) logger("info", `[${_this.logPrefix}] Sending message to ${recipientSteamID64}: "${txt.slice(0, 75).replace(/\n/g, "\\n") + "..."}"`);
-            else logger("info", `[${_this.logPrefix}] Sending message to ${recipientSteamID64}: "${txt.replace(/\n/g, "\\n")}"`);
+        if (txt.length >= 75) logger("info", `[${_this.logPrefix}] Sending message to ${resInf.steamID}: "${thisPart.slice(0, 75).replace(/\n/g, "\\n") + "..."}"`);
+            else logger("info", `[${_this.logPrefix}] Sending message to ${resInf.steamID}: "${thisPart.replace(/\n/g, "\\n")}"`);
     }
 
+    // Send part and call function again if this wasn't the last one
     _this.user.chat.sendFriendMessage(resInf.steamID, txt, {}, (err) => {
         if (err) { // Check for error as some chat messages seem to not get send lately
-            logger("warn", `[${_this.logPrefix}] Error trying to send chat message of length ${txt.length} to ${recipientSteamID64}! ${err}`);
+            logger("warn", `[${_this.logPrefix}] Error trying to send chat message of length ${txt.length} to ${resInf.steamID}! ${err}`);
 
             // Send the user a fallback message after 5 seconds just to indicate the bot is not down
-            if (!retry) setTimeout(() => _this.sendChatMessage(resInf.steamID, "Sorry, it looks like Steam blocked my last message. Please try again in 30 seconds.", true), 5000);
+            //if (!retry) setTimeout(() => _this.sendChatMessage(resInf.steamID, "Sorry, it looks like Steam blocked my last message. Please try again in 30 seconds.", true), 5000);
+
+            // Retry message in 10 seconds // TODO: Can I start typing to indicate the bot is not down?
+            setTimeout(() => {
+                this.sendChatMessage(_this, resInf, txt, retry, part); // Send the same part again
+            }, 10000);
+
+        } else {
+
+            // Send next part if there is one left
+            if (750 * (part + 1) <= txt.length) {
+                logger("info", `Message longer than 750 chars, sending next part to '${resInf.steamID}' in 7.5 seconds...`, false, false, logger.animation("waiting"));
+                setTimeout(() => this.sendChatMessage(_this, resInf, txt, retry, part + 1), 7500);
+            } else {
+                logger("debug", "Bot sendChatMessage(): All parts of the message have been sent");
+            }
         }
     });
 };
