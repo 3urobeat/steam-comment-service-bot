@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.04.2023 12:04:20
+ * Last Modified: 16.04.2023 19:11:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -38,10 +38,9 @@ module.exports.commentProfile = {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
         if (commandHandler.data.advancedconfig.disableCommentCmd) return respond(commandHandler.data.lang.botmaintenance);
 
-        let requesterSteamID = resInfo.steamID;
+        let requesterSteamID = resInfo.steamID64;
         let receiverSteamID  = requesterSteamID;
         let ownercheck       = cachefile.ownerid.includes(requesterSteamID);
-        let lastCommentDoc   = commandHandler.data.lastCommentDB.findOneAsync({ id: resInfo.steamID });
 
 
         /* --------- Check for disabled comment cmd or if update is queued --------- */
@@ -50,7 +49,7 @@ module.exports.commentProfile = {
 
 
         /* --------- Calculate maxRequestAmount and get arguments from comment request --------- */
-        let { maxRequestAmount, numberOfComments, profileID, quotesArr } = await require("../../bot/helpers/getCommentArgs.js").getCommentArgs(args, resInfo.steamID, requesterSteamID, SteamID.Type.INDIVIDUAL, commandHandler.data.lang, respond);
+        let { maxRequestAmount, numberOfComments, profileID, quotesArr } = await require("../../bot/helpers/getCommentArgs.js").getCommentArgs(args, resInfo.steamID64, requesterSteamID, SteamID.Type.INDIVIDUAL, commandHandler.data.lang, respond);
 
         if (!maxRequestAmount && !numberOfComments && !quotesArr) return; // Looks like the helper aborted the request
 

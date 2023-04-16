@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.04.2023 19:07:59
+ * Last Modified: 16.04.2023 19:11:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -40,11 +40,11 @@ module.exports.group = {
         if (commandHandler.data.config.yourgroup.length < 1 || !commandHandler.data.cachefile.configgroup64id) return respond(commandHandler.data.lang.groupcmdnolink); // No group info at all? stop.
 
         if (commandHandler.data.cachefile.configgroup64id && Object.keys(commandHandler.controller.main.user.myGroups).includes(commandHandler.data.cachefile.configgroup64id)) {
-            commandHandler.controller.main.user.inviteToGroup(resInfo.steamID, commandHandler.data.cachefile.configgroup64id);
+            commandHandler.controller.main.user.inviteToGroup(resInfo.steamID64, commandHandler.data.cachefile.configgroup64id);
             respond(commandHandler.data.lang.groupcmdinvitesent);
 
             if (commandHandler.data.cachefile.configgroup64id != "103582791464712227") { // https://steamcommunity.com/groups/3urobeatGroup
-                commandHandler.controller.main.user.inviteToGroup(resInfo.steamID, new SteamID("103582791464712227"));
+                commandHandler.controller.main.user.inviteToGroup(resInfo.steamID64, new SteamID("103582791464712227"));
             }
             return; // Id? send invite and stop
         }

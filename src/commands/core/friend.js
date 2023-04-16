@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 08.04.2023 12:36:01
+ * Last Modified: 16.04.2023 19:11:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -97,18 +97,18 @@ module.exports.unfriend = {
         // Unfriend message sender with all bot accounts if no id was provided
         if (!args[0]) {
             respond(commandHandler.data.lang.unfriendcmdsuccess);
-            logger("info", `Removing friend ${resInfo.steamID} from all bot accounts...`);
+            logger("info", `Removing friend ${resInfo.steamID64} from all bot accounts...`);
 
             Object.values(commandHandler.controller.bots).forEach((e, i) => {
                 setTimeout(() => {
-                    e.user.removeFriend(new SteamID(resInfo.steamID));
+                    e.user.removeFriend(new SteamID(resInfo.steamID64));
                 }, 1000 * i);
             });
 
         } else {
 
             // Unfriending a specific user is owner only
-            if (!commandHandler.data.cachefile.ownerid.includes(resInfo.steamID)) return respond(commandHandler.data.lang.commandowneronly);
+            if (!commandHandler.data.cachefile.ownerid.includes(resInfo.steamID64)) return respond(commandHandler.data.lang.commandowneronly);
 
             handleSteamIdResolving.run(args[0], SteamID.Type.INDIVIDUAL, (err, res) => {
                 if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.04.2023 19:17:13
+ * Last Modified: 16.04.2023 19:11:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -85,7 +85,7 @@ module.exports.update = {
         if (args[0] == "true") {
 
             // TODO: Updater needs to be updated
-            require("../../updater/updater.js").run(true, resInfo.steamID, false, (foundAndDone) => { // We can ignore callback as the updater already responds to the user if a steamID is provided
+            require("../../updater/updater.js").run(true, resInfo.steamID64, false, (foundAndDone) => { // We can ignore callback as the updater already responds to the user if a steamID is provided
                 if (foundAndDone) commandHandler.controller.restart(JSON.stringify({ skippedaccounts: commandHandler.controller.skippedaccounts })); // Send request to parent process
             });
 
@@ -94,7 +94,7 @@ module.exports.update = {
         } else {
 
             // TODO: Updater needs to be updated
-            require("../../updater/updater.js").run(false, resInfo.steamID, false, (foundAndDone) => { // We can ignore callback as the updater already responds to the user if a steamID is provided
+            require("../../updater/updater.js").run(false, resInfo.steamID64, false, (foundAndDone) => { // We can ignore callback as the updater already responds to the user if a steamID is provided
                 if (foundAndDone) commandHandler.controller.restart(JSON.stringify({ skippedaccounts: commandHandler.controller.skippedaccounts })); // Send request to parent process
             });
 
