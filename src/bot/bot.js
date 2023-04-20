@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.04.2023 13:48:08
+ * Last Modified: 20.04.2023 23:21:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -34,13 +34,13 @@ const Bot = function(controller, index) {
     this.index      = index;
     this.status     = "offline";
 
-    // Provide array for additional login related information
-    let proxyIndex = this.index % controller.data.proxies.length;
+    let proxyIndex = this.index % controller.data.proxies.length; // Spread all accounts equally with a simple modulo calculation
 
-    this.loginData  = {
+    // Provide array for additional login related information
+    this.loginData = {
         logOnOptions: Object.values(controller.data.logininfo)[index], // TODO: This could be an issue later when the index could change at runtime
         logOnTries:   0,
-        proxyIndex:   proxyIndex, // Spread all accounts equally with a simple modulo calculation
+        proxyIndex:   proxyIndex,
         proxy:        controller.data.proxies[proxyIndex]
     };
 
@@ -89,7 +89,6 @@ const Bot = function(controller, index) {
         lastWebSessionRefresh = Date.now(); // Update time
         this.user.webLogOn();
     });
-
 };
 
 
