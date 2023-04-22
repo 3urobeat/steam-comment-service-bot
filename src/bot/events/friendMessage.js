@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.04.2023 19:11:24
+ * Last Modified: 22.04.2023 13:22:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -30,16 +30,12 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
 
         let resInfo    = { steamID: steamID.getSteamID64() };                         // Object required for sendChatMessage(), our commandHandler respondModule implementation
         let steamID64  = new SteamID(String(steamID)).getSteamID64();
-        let ownercheck = cachefile.ownerid.includes(steamID64);
+        let ownercheck = this.data.cachefile.ownerid.includes(steamID64);
 
 
         // Check if this event should be handled or if user is blocked
         let isBlocked = this.checkMsgBlock(steamID64, message);
         if (isBlocked) return; // Stop right here if user is blocked, on cooldown or not a friend
-
-
-        // Function to quickly respond with owneronly message and stop command execution
-        let notOwnerResponse = (() => { return this.sendChatMessage(resInfo, this.controller.data.lang.commandowneronly); });
 
 
         // Log friend message but cut it if it is >= 75 chars
@@ -71,7 +67,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
             if (!doc) { // Add user to database if he/she is missing for some reason
                 let lastcommentobj = {
                     id: new SteamID(String(steamID)).getSteamID64(),
-                    time: Date.now() - (config.commentcooldown * 60000) // Subtract commentcooldown so that the user is able to use the command instantly
+                    time: Date.now() - (this.data.config.commentcooldown * 60000) // Subtract commentcooldown so that the user is able to use the command instantly
                 };
 
                 this.controller.data.lastCommentDB.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err); });
@@ -92,7 +88,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         let cont = message.slice(1).split(" "); // Remove prefix and split
         let args = cont.slice(1);               // Remove cmd name to only get arguments
 
-        let success = this.controller.commandHandler.runCommand(cont[0].toLowerCase(), args, this.sendChatMessage, this, resInfo);
+        let success = this.controller.commandHandler.runCommand(cont[0].toLowerCase(), args, steamID64, this.sendChatMessage, this, resInfo);
 
         if (!success) this.sendChatMessage(steamID, this.controller.data.lang.commandnotfound); // Send cmd not found msg if runCommand() returned false
 
