@@ -145,13 +145,6 @@ Controller.prototype._start = async function() {
 
     /* ------------ Check imported data : ------------ */
 
-    // TODO: Remove, exists for compatibility
-    global.cachefile      = this.data.cachefile;
-    global.extdata        = this.data.datafile;
-    global.config         = this.data.config;
-    global.advancedconfig = this.data.advancedconfig;
-    module.exports.lastcomment = this.data.lastCommentDB;
-
     // Process imported owner & group ids and update cachefile
     await this.data.processData();
 

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 01.04.2023 14:35:13
+ * Last Modified: 21.04.2023 21:15:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -126,7 +126,7 @@ Controller.prototype.friendListCapacityCheck = function(index, callback) {
  * Check for friends who haven't requested comments in config.unfriendtime days and unfriend them
  */
 Controller.prototype._lastcommentUnfriendCheck = function() {
-    logger("debug", "Controller lastcommentUnfriendCheck(): 60 seconds passed, checking for users to unfriend...");
+    // Logger("debug", "Controller lastcommentUnfriendCheck(): 60 seconds passed, checking for users to unfriend..."); // This debug call annoys me
 
     this.data.lastCommentDB.find({ time: { $lte: Date.now() - (this.data.config.unfriendtime * 86400000) } }, (err, docs) => { // Until is a date in ms, so we check if it is less than right now
         if (docs.length < 1) return; // Nothing found

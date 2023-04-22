@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 20.04.2023 23:21:26
+ * Last Modified: 21.04.2023 22:31:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -31,6 +31,7 @@ const CommandHandler = require("../commands/commandHandler.js");
  */
 const Bot = function(controller, index) {
     this.controller = controller;
+    this.data       = controller.data;
     this.index      = index;
     this.status     = "offline";
 

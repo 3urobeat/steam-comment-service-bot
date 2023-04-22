@@ -12,11 +12,7 @@
         "started": true,
         "srcdir": true,
         "botisloggedin": true,
-        "logger": true,
-        "config": true,
-        "advancedconfig": true,
-        "extdata": true,
-        "cachefile": true
+        "logger": true
     },
     "parserOptions": {
         "ecmaVersion": 11
