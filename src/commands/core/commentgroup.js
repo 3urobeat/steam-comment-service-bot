@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.04.2023 19:11:24
+ * Last Modified: 22.04.2023 18:02:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -34,13 +34,13 @@ module.exports.groupComment = {
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
-    run: async (commandHandler, args, respondModule, context, resInfo) => {
+    run: async (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
         if (commandHandler.data.advancedconfig.disableCommentCmd) return respond(commandHandler.data.lang.botmaintenance);
 
-        let requesterSteamID = resInfo.steamID64;
+        let requesterSteamID = steamID64;
         let ownercheck       = commandHandler.data.cachefile.ownerid.includes(requesterSteamID);
-        let lastCommentDoc   = commandHandler.data.lastCommentDB.findOneAsync({ id: resInfo.steamID64 });
+        let lastCommentDoc   = commandHandler.data.lastCommentDB.findOneAsync({ id: steamID64 });
 
 
         /* --------- Check for disabled comment cmd or if update is queued --------- */

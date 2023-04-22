@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.04.2023 19:11:24
+ * Last Modified: 22.04.2023 18:03:23
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -34,7 +34,7 @@ module.exports.addFriend = {
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         if (!args[0]) return respond(commandHandler.data.lang.invalidprofileid);
@@ -91,24 +91,24 @@ module.exports.unfriend = {
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // Unfriend message sender with all bot accounts if no id was provided
         if (!args[0]) {
             respond(commandHandler.data.lang.unfriendcmdsuccess);
-            logger("info", `Removing friend ${resInfo.steamID64} from all bot accounts...`);
+            logger("info", `Removing friend ${steamID64} from all bot accounts...`);
 
             Object.values(commandHandler.controller.bots).forEach((e, i) => {
                 setTimeout(() => {
-                    e.user.removeFriend(new SteamID(resInfo.steamID64));
+                    e.user.removeFriend(new SteamID(steamID64));
                 }, 1000 * i);
             });
 
         } else {
 
             // Unfriending a specific user is owner only
-            if (!commandHandler.data.cachefile.ownerid.includes(resInfo.steamID64)) return respond(commandHandler.data.lang.commandowneronly);
+            if (!commandHandler.data.cachefile.ownerid.includes(steamID64)) return respond(commandHandler.data.lang.commandowneronly);
 
             handleSteamIdResolving.run(args[0], SteamID.Type.INDIVIDUAL, (err, res) => {
                 if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
@@ -141,7 +141,7 @@ module.exports.unfriendall = {
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // TODO: This is bad. Rewrite using a message collector, maybe add one to steamChatInteraction helper

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.04.2023 19:11:24
+ * Last Modified: 22.04.2023 18:03:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -34,13 +34,12 @@ module.exports.abort = {
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond   = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let steamID64 = resInfo.steamID64;
 
         handleSteamIdResolving.run(args[0], null, (err, res) => {
             if (res) {
-                if (!commandHandler.data.cachefile.ownerid.includes(resInfo.steamID64)) return respond(commandHandler.data.lang.commandowneronly);
+                if (!commandHandler.data.cachefile.ownerid.includes(steamID64)) return respond(commandHandler.data.lang.commandowneronly);
 
                 steamID64 = res; // If user provided an id as argument then use that instead of his/her id
             }
@@ -70,7 +69,7 @@ module.exports.resetCooldown = {
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
         if (commandHandler.data.advancedconfig.disableCommentCmd) return respond(commandHandler.data.lang.botmaintenance);
 
@@ -84,8 +83,6 @@ module.exports.resetCooldown = {
             respond(commandHandler.data.lang.resetcooldowncmdglobalreset);
 
         } else {
-
-            let steamID64 = resInfo.steamID64;
 
             handleSteamIdResolving.run(args[0], SteamID.Type.INDIVIDUAL, (err, res) => {
                 if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
@@ -116,9 +113,8 @@ module.exports.abort = {
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond   = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let steamID64 = resInfo.steamID64;
 
         handleSteamIdResolving.run(args[0], null, (err, res) => {
             if (res) {
@@ -159,7 +155,7 @@ module.exports.sessions = {
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         var str = "";
@@ -204,7 +200,7 @@ module.exports.mySessions = {
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
         let str = "";
 
@@ -215,7 +211,7 @@ module.exports.mySessions = {
 
                 if (Date.now() < commandHandler.controller.activeRequests[e].until + (config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
 
-                    if (commandHandler.controller.activeRequests[e].requestedby == resInfo.steamID64) str += `- Status: ${commandHandler.controller.activeRequests[e].status} | ${commandHandler.controller.activeRequests[e].amount} comments with ${commandHandler.controller.activeRequests[e].accounts.length} accounts by ${commandHandler.controller.activeRequests[e].requestedby} for ${commandHandler.controller.activeRequests[e].type} ${Object.keys(commandHandler.controller.activeRequests)[i]}`;
+                    if (commandHandler.controller.activeRequests[e].requestedby == steamID64) str += `- Status: ${commandHandler.controller.activeRequests[e].status} | ${commandHandler.controller.activeRequests[e].amount} comments with ${commandHandler.controller.activeRequests[e].accounts.length} accounts by ${commandHandler.controller.activeRequests[e].requestedby} for ${commandHandler.controller.activeRequests[e].type} ${Object.keys(commandHandler.controller.activeRequests)[i]}`;
                 } else {
                     delete commandHandler.controller.activeRequests[e]; // Remove entry from object if it is finished to keep the object clean
                 }

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 22.04.2023 13:22:58
+ * Last Modified: 22.04.2023 18:21:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -28,7 +28,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
 
     this.user.on("friendMessage", (steamID, message) => {
 
-        let resInfo    = { steamID: steamID.getSteamID64() };                         // Object required for sendChatMessage(), our commandHandler respondModule implementation
+        let resInfo    = { steamID64: steamID.getSteamID64() };                         // Object required for sendChatMessage(), our commandHandler respondModule implementation
         let steamID64  = new SteamID(String(steamID)).getSteamID64();
         let ownercheck = this.data.cachefile.ownerid.includes(steamID64);
 
@@ -50,7 +50,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
                     this.sendChatMessage(resInfo, this.controller.data.datafile.aboutstr);
                     break;
                 default:
-                    if (message.startsWith("!")) this.sendChatMessage(resInfo.steamID64, `${this.controller.data.lang.childbotmessage}\nhttps://steamcommunity.com/profiles/${new SteamID(String(this.controller.main.user.steamID)).getSteamID64()}`);
+                    if (message.startsWith("!")) this.sendChatMessage(steamID64, `${this.controller.data.lang.childbotmessage}\nhttps://steamcommunity.com/profiles/${new SteamID(String(this.controller.main.user.steamID)).getSteamID64()}`);
                         else logger("debug", `[${this.logPrefix}] Chat message is not a command, ignoring message.`);
             }
 

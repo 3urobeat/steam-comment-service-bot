@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.04.2023 19:11:24
+ * Last Modified: 22.04.2023 18:03:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -33,7 +33,7 @@ module.exports.restart = {
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         respond(commandHandler.data.lang.restartcmdrestarting);
@@ -56,7 +56,7 @@ module.exports.stop = {
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         respond(commandHandler.data.lang.stopcmdstopping);
@@ -79,13 +79,13 @@ module.exports.update = {
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         if (args[0] == "true") {
 
             // TODO: Updater needs to be updated
-            require("../../updater/updater.js").run(true, resInfo.steamID64, false, (foundAndDone) => { // We can ignore callback as the updater already responds to the user if a steamID is provided
+            require("../../updater/updater.js").run(true, steamID64, false, (foundAndDone) => { // We can ignore callback as the updater already responds to the user if a steamID is provided
                 if (foundAndDone) commandHandler.controller.restart(JSON.stringify({ skippedaccounts: commandHandler.controller.skippedaccounts })); // Send request to parent process
             });
 
@@ -94,7 +94,7 @@ module.exports.update = {
         } else {
 
             // TODO: Updater needs to be updated
-            require("../../updater/updater.js").run(false, resInfo.steamID64, false, (foundAndDone) => { // We can ignore callback as the updater already responds to the user if a steamID is provided
+            require("../../updater/updater.js").run(false, steamID64, false, (foundAndDone) => { // We can ignore callback as the updater already responds to the user if a steamID is provided
                 if (foundAndDone) commandHandler.controller.restart(JSON.stringify({ skippedaccounts: commandHandler.controller.skippedaccounts })); // Send request to parent process
             });
 
@@ -117,7 +117,7 @@ module.exports.output = {
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         fs.readFile("./output.txt", function (err, data) {
@@ -142,7 +142,7 @@ module.exports.eval = {
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
         if (!commandHandler.data.advancedconfig.enableevalcmd) return respond(commandHandler.data.lang.evalcmdturnedoff);
 

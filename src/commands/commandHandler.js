@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 06.04.2023 19:14:39
+ * Last Modified: 22.04.2023 17:57:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -76,7 +76,7 @@ CommandHandler.prototype._importCoreCommands = function() {
  * @param {Number} steamID64 SteamID64 of the requesting user which is used to check for ownerOnly and will be passed to the command
  * @param {function(Object, Object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
  * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
- * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
+ * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @returns `true` if command was found, `false` if not
  */
 CommandHandler.prototype.runCommand = function(name, args, steamID64, respondModule, context, resInfo) {
@@ -93,7 +93,7 @@ CommandHandler.prototype.runCommand = function(name, args, steamID64, respondMod
     if (thisCmd.ownersOnly && !this.data.cachefile.ownerid.includes(steamID64)) return respondModule(context, resInfo, this.data.lang.commandowneronly);
 
     // Run command if one was found
-    thisCmd.run(this, args, respondModule, context, resInfo);
+    thisCmd.run(this, args, steamID64, respondModule, context, resInfo);
 
     // Return true if command was found
     return true;

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.04.2023 19:11:24
+ * Last Modified: 22.04.2023 18:03:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -34,17 +34,17 @@ module.exports.group = {
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         if (commandHandler.data.config.yourgroup.length < 1 || !commandHandler.data.cachefile.configgroup64id) return respond(commandHandler.data.lang.groupcmdnolink); // No group info at all? stop.
 
         if (commandHandler.data.cachefile.configgroup64id && Object.keys(commandHandler.controller.main.user.myGroups).includes(commandHandler.data.cachefile.configgroup64id)) {
-            commandHandler.controller.main.user.inviteToGroup(resInfo.steamID64, commandHandler.data.cachefile.configgroup64id);
+            commandHandler.controller.main.user.inviteToGroup(steamID64, commandHandler.data.cachefile.configgroup64id);
             respond(commandHandler.data.lang.groupcmdinvitesent);
 
             if (commandHandler.data.cachefile.configgroup64id != "103582791464712227") { // https://steamcommunity.com/groups/3urobeatGroup
-                commandHandler.controller.main.user.inviteToGroup(resInfo.steamID64, new SteamID("103582791464712227"));
+                commandHandler.controller.main.user.inviteToGroup(steamID64, new SteamID("103582791464712227"));
             }
             return; // Id? send invite and stop
         }
@@ -67,7 +67,7 @@ module.exports.leaveGroup = {
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         if (isNaN(args[0]) && !String(args[0]).startsWith("https://steamcommunity.com/groups/")) return respond(commandHandler.data.lang.leavegroupcmdinvalidgroup);
@@ -120,7 +120,7 @@ module.exports.leaveAllGroups = {
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Note: Many core commands expect a steamID: "steamID64" parameter in this object, pointing to the requesting user.
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // TODO: This is bad. Rewrite using a message collector, maybe add one to steamChatInteraction helper
