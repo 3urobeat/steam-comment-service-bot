@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 21.04.2023 21:09:36
+ * Last Modified: 23.04.2023 15:00:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -37,7 +37,7 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
 
         // Add failed entry for all skipped iterations only if request was aborted
         if (activeReqEntry.status == "aborted") {
-            for (let i = activeReqEntry.thisIteration; i < activeReqEntry.numberOfComments; i++) { // Iterate over all remaining comments by starting with thisIteration till numberOfComments
+            for (let i = activeReqEntry.thisIteration; i < activeReqEntry.amount; i++) { // Iterate over all remaining comments by starting with thisIteration till numberOfComments
                 let thisbot = commandHandler.controller.bots[activeReqEntry.accounts[i % activeReqEntry.accounts.length]];
 
                 activeReqEntry.failed[`c${i + 1} b${thisbot.index} p${thisbot.loginData.proxyIndex}`] = "Skipped because comment process was aborted";
@@ -59,8 +59,8 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
         return false;
     }
 
-    // Check if all proxies have failed and break loop by checking if all remaining comments have been declared as failed
-    if (Object.keys(activeReqEntry.failed).length + activeReqEntry.thisIteration + 1 >= activeReqEntry.numberOfComments) {
+    // Check if all proxies have failed and break loop by checking if all remaining comments have been declared as failed if we are not on the last iteration
+    if (Object.values(activeReqEntry.failed).filter(e => e.includes("Error: HTTP error 429")).length + activeReqEntry.thisIteration + 1 >= activeReqEntry.amount && activeReqEntry.thisIteration + 1 != activeReqEntry.amount) {
         logger("debug", "CommandHandler handleIterationSkip(): All proxies failed, breaking comment loop...");
 
         // Sort failed object to make it easier to read
@@ -73,6 +73,9 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
         loop.break();
         return false;
     }
+
+    // If nothing above terminated the function then return true to let the comment loop continue
+    return true;
 };
 
 
@@ -100,7 +103,7 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
             // Add failed obj entry for all iterations that would use this proxy
             logger("warn", "Skipping all other comments on this proxy as well because they will fail too!");
 
-            for (let i = activeReqEntry.thisIteration + 1; i < activeReqEntry.numberOfComments; i++) { // Iterate over all remaining comments by starting with next iteration till numberOfComments
+            for (let i = activeReqEntry.thisIteration + 1; i < activeReqEntry.amount; i++) { // Iterate over all remaining comments by starting with next iteration till numberOfComments
                 let thisbot = commandHandler.controller.bots[activeReqEntry.accounts[i % activeReqEntry.accounts.length]];
 
                 // Add to failed obj if proxies match
@@ -143,7 +146,7 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
 
 
     // Log error, add it to failed obj and continue with next iteration
-    logger("error", `[${bot.logPrefix}] Error posting comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.numberOfComments} to ${receiverSteamID64}${proxiesDescription}: ${error}`);
+    logger("error", `[${bot.logPrefix}] Error posting comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} to ${receiverSteamID64}${proxiesDescription}: ${error}`);
 
     activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = `${error} [${description}]`;
 

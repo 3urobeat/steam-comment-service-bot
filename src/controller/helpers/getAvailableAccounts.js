@@ -4,7 +4,7 @@
  * Created Date: 09.04.2023 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 23.04.2023 12:44:57
+ * Last Modified: 23.04.2023 15:06:14
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -37,8 +37,6 @@ Controller.prototype.getAvailableAccountsForCommenting = function(numberOfCommen
 
     // Method 2: Use as few accounts as possible to maximize the amount of parallel requests (Not implemented yet, probably coming in 2.12)
     // TODO
-
-    logger("debug", `Controller getAvailableAccountsForCommenting(): Calculated ${accountsNeeded} accounts needed to request ${numberOfComments} comments...`);
 
 
     // Sort activeRequests by highest until value, decreasing, so that we can tell the user how long he/she has to wait if not enough accounts were found
@@ -106,7 +104,8 @@ Controller.prototype.getAvailableAccountsForCommenting = function(numberOfCommen
 
 
     // Log debug values
-    logger("debug", `Controller getAvailableAccountsForCommenting(): Success! availableAccounts: ${allAccounts}`);
+    if (allAccounts.length < accountsNeeded) logger("debug", `Controller getAvailableAccountsForCommenting(): Calculated ${accountsNeeded} accs needed for ${numberOfComments} comments but only ${allAccounts.length} are available. User needs to wait ${whenAvailableStr}...`);
+        else logger("debug", `Controller getAvailableAccountsForCommenting(): Calculated ${accountsNeeded} accs needed for ${numberOfComments} comments and ${allAccounts.length} are available: ${allAccounts}`);
 
     // Return values
     return {
