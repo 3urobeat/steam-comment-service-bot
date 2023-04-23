@@ -4,7 +4,7 @@
  * Created Date: 09.04.2023 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 13.04.2023 22:24:22
+ * Last Modified: 23.04.2023 12:44:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -91,8 +91,8 @@ Controller.prototype.getAvailableAccountsForCommenting = function(numberOfCommen
     // Prioritize accounts the user is friend with
     if (receiverSteamID) {
         allAccounts = [
-            ...allAccounts.filter(e =>  this.bots[e].user.myFriends.includes(receiverSteamID)), // Cool trick to get every acc with user as friend to the top
-            ...allAccounts.filter(e => !this.bots[e].user.myFriends.includes(receiverSteamID))  // ...and every non-friend acc below
+            ...allAccounts.filter(e => this.bots[e].user.myFriends[receiverSteamID] == 3), // Cool trick to get every acc with user as friend to the top
+            ...allAccounts.filter(e => this.bots[e].user.myFriends[receiverSteamID] != 3)  // ...and every non-friend acc below
         ];
     }
 
@@ -102,11 +102,11 @@ Controller.prototype.getAvailableAccountsForCommenting = function(numberOfCommen
 
 
     // Filter all accounts needed for this request which must be added first
-    let accsToAdd = allAccounts.filter(e => !this.bots[e].user.myFriends.includes(receiverSteamID) && this.bots[e].user.limitations.limited);
+    let accsToAdd = allAccounts.filter(e => this.bots[e].user.myFriends[receiverSteamID] != 3 && this.bots[e].user.limitations.limited);
 
 
     // Log debug values
-    logger("debug", `Controller getAvailableAccountsForCommenting(): Success! allAccounts: ${allAccounts}`);
+    logger("debug", `Controller getAvailableAccountsForCommenting(): Success! availableAccounts: ${allAccounts}`);
 
     // Return values
     return {
