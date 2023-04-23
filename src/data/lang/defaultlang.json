@@ -22,7 +22,7 @@
     "commentuserprofileprivate": "Your/the receiving profile seems to be private. Please edit your/the privacy settings on your/the receiving profile and try again!",
     "commenterroroccurred": "Oops, an error occurred!",
     "commentsuccess1": "Okay I commented on/in your/the receiving profile/group! If you are a nice person then please comment on my profile too!",
-    "commentprocessstarted": "Estimated wait time for numberOfComments comments: waittime timeunit.",
+    "commentprocessstarted": "Estimated wait time for numberOfComments comments: waittime.",
     "commentfailedcmdreference": "To get detailed information why which comment failed please type '!failed'. You can read what probably caused your error here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems",
     "comment429stop": "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error. Please try again later. Failed: failedamount/numberOfComments",
     "commentretrying": "failedamount/numberOfComments comments have failed. I'm going to retry the failed comments in retrydelay minutes. (Attempt thisattempt/maxattempt)",

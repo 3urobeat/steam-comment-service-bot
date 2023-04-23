@@ -120,7 +120,7 @@
                 "norequire",
                 "mysessions",
                 "npminteraction",
-                "commentcounter",
+                "commentCounter",
                 "lastaccountint",
                 "leaveallgroups",
                 "numberofcomments",

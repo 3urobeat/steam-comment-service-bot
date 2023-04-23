@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 22.04.2023 19:58:39
+ * Last Modified: 23.04.2023 15:09:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -17,8 +17,6 @@
 
 // Steam Chat interaction helper which is implemented by the main bot account. It gets called by commands to respond to the user
 
-
-const SteamID = require("steamid"); // eslint-disable-line
 
 const Bot = require("../bot");
 
@@ -33,6 +31,7 @@ const Bot = require("../bot");
  */
 Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry, part = 0) {
     if (!txt) return logger("warn", "sendChatMessage() was called without any message content! Ignoring call...");
+    if (typeof txt !== "string") return logger("warn", "sendChatMessage() was called with txt that isn't a string! Ignoring call...");
 
     // Get the correct part to send // TODO: This should handle line breaks better to avoid cutting links in half (for accsToAdd for example)
     let thisPart = txt.slice(750 * part, 750 * (part + 1));

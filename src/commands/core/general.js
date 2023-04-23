@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 22.04.2023 18:22:28
+ * Last Modified: 22.04.2023 19:26:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -104,7 +104,7 @@ module.exports.info = {
                 >   Your steam64ID: ${steamID64}
                 >   Your last comment request: ${userLastReq}
                 >   Last processed comment request: ${(new Date(lastReq)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)
-                >   I have commented ${commandHandler.controller.info.commentcounter} times since my last restart and completed request!
+                >   I have commented ${commandHandler.controller.info.commentCounter} times since my last restart and completed request!
                 -----------------------------------~~~~~------------------------------------
             `);
             /* eslint-enable no-irregular-whitespace */

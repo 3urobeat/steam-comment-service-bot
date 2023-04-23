@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 22.04.2023 18:22:28
+ * Last Modified: 23.04.2023 14:52:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -100,13 +100,13 @@ module.exports.resetCooldown = {
 };
 
 
-module.exports.abort = {
-    names: ["abort"],
+module.exports.failed = {
+    names: ["failed"],
     description: "",
     ownersOnly: false,
 
     /**
-     * The abort command
+     * The failed command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {function(Object, Object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
@@ -114,7 +114,7 @@ module.exports.abort = {
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
-        let respond   = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         handleSteamIdResolving.run(args[0], null, (err, res) => {
             if (res) {
@@ -124,7 +124,7 @@ module.exports.abort = {
             }
 
             commandHandler.controller.data.lastCommentDB.findOne({ id: steamID64 }, (err, doc) => {
-                if (!commandHandler.controller.activeRequests[steamID64].failed || Object.keys(commandHandler.controller.activeRequests[steamID64].failed).length < 1) return respond(commandHandler.data.lang.failedcmdnothingfound);
+                if (!commandHandler.controller.activeRequests[steamID64] || Object.keys(commandHandler.controller.activeRequests[steamID64].failed).length < 1) return respond(commandHandler.data.lang.failedcmdnothingfound);
 
                 let requesttime = new Date(doc.time).toISOString().replace(/T/, " ").replace(/\..+/, "");
 
