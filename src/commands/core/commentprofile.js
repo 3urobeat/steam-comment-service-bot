@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 24.04.2023 21:38:45
+ * Last Modified: 24.04.2023 22:19:17
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -197,7 +197,6 @@ function comment(commandHandler, respond, receiverSteamID64) {
     }, () => { // Function that will run on exit, aka the last iteration: Respond to the user
 
         // TODO: Implement retryComments functionality
-        // TODO: Check for aborted status and send different message
 
         // Handle singular comments with a different message
         if (activeReqEntry.amount == 1) {
@@ -212,8 +211,13 @@ function comment(commandHandler, respond, receiverSteamID64) {
             return;
         }
 
-        // Check if comment process stopped because of a HTTP 429 error and send a different message
-        if (activeReqEntry.status == "error") {
+        // Check if comment process was stopped manually or because of a HTTP 429 error and send a different message
+        if (activeReqEntry.status == "aborted") {
+
+            respond(commandHandler.data.lang.commentaborted.replace("successAmount", activeReqEntry.amount - Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount));
+            commandHandler.controller.info.commentCounter += activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
+
+        } else if (activeReqEntry.status == "error") {
 
             respond(`${commandHandler.data.lang.comment429stop.replace("failedamount", activeReqEntry.amount - activeReqEntry.thisIteration + 1).replace("numberOfComments", activeReqEntry.amount)}\n\n${commandHandler.data.lang.commentfailedcmdreference}`); // Add !failed cmd reference to message
             logger("warn", "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error!");

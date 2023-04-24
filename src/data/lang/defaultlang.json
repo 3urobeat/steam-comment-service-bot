@@ -24,6 +24,7 @@
     "commentsuccess1": "Okay, I left a comment! If you are a nice person then please comment on my profile too!",
     "commentprocessstarted": "Estimated wait time for numberOfComments comments: waittime.",
     "commentfailedcmdreference": "To get detailed information why which comment failed please type '!failed'. You can read what probably caused your error here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems",
+    "commentaborted": "Your active comment process was manually aborted by either yourself or an owner.\nsuccessAmount/numberOfComments comments have been sent successfully.",
     "comment429stop": "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error. Please try again later. Failed: failedamount/numberOfComments",
     "commentretrying": "failedamount/numberOfComments comments have failed. I'm going to retry the failed comments in retrydelay minutes. (Attempt thisattempt/maxattempt)",
     "commentsuccess2": "All comments have been sent. Failed: failedamount/numberOfComments\nIf you are a nice person then please comment on my profile too!",
@@ -74,7 +75,7 @@
     "settingscmdvaluechanged": "targetkey has been changed from oldvalue to newvalue.\nPlease remember that certain values might need a restart to take effect. You can do that by typing !restart.",
 
     "failedcmdnothingfound": "I can't remember any failed comments on your/that profile.\nIf you requested comments for another profile or for a group then please provide the id as argument!",
-    "failedcmdmsg": "Your last request for 'steam64id' from 'requesttime' (GMT time) had these errors:",
+    "failedcmdmsg": "Your last request for 'steamID64' from 'requesttime' (GMT time) had these errors:",
 
     "sessionscmdnosessions": "There are currently no active sessions and no bot accounts on cooldown.",
     "sessionscmdmsg": "There are currently amount active session(s):",
