@@ -73,7 +73,7 @@ module.exports.commentProfile = {
         // Check if user has cooldown
         let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterSteamID64);
 
-        if (until > Date.now()) return respond(commandHandler.lang.commentuseroncooldown.replace("remainingcooldown", untilStr));
+        if (until > Date.now()) return respond(commandHandler.data.lang.commentuseroncooldown.replace("remainingcooldown", untilStr));
 
 
         // Get all currently available bot accounts
@@ -105,9 +105,7 @@ module.exports.commentProfile = {
             } else {
                 logger("debug", "Successfully checked privacyState of receiving user: " + user.privacyState);
 
-                if (user.privacyState != "public") {
-                    return respond(commandHandler.data.lang.commentuserprofileprivate); // Only check if getting the Steam user's data didn't result in an error
-                }
+                if (user.privacyState != "public") return respond(commandHandler.data.lang.commentuserprofileprivate); // Only check if getting the Steam user's data didn't result in an error
             }
 
             // Make new entry in activecommentprocess obj to register this comment process
