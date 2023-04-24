@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 23.04.2023 15:11:09
+ * Last Modified: 24.04.2023 20:59:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -174,18 +174,8 @@ function comment(commandHandler, respond, receiverSteamID64) {
                     let waitTime = Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay);
 
 
-                    // Send success message or estimated wait time message
-                    if (activeReqEntry.amount == 1) {
-                        respond(commandHandler.data.lang.commentsuccess1);
-
-                        // Instantly set status of this request to cooldown
-                        activeReqEntry.status = "cooldown";
-                        commandHandler.controller.info.commentCounter += 1;
-
-                    } else {
-
-                        respond(commandHandler.data.lang.commentprocessstarted.replace("numberOfComments", activeReqEntry.amount).replace("waittime", timeToString(waitTime)));
-                    }
+                    // Only send estimated wait time message for multiple comments
+                    if (activeReqEntry.amount > 1) respond(commandHandler.data.lang.commentprocessstarted.replace("numberOfComments", activeReqEntry.amount).replace("waittime", timeToString(waitTime)));
 
 
                     // Give requesting user cooldown
@@ -210,6 +200,19 @@ function comment(commandHandler, respond, receiverSteamID64) {
 
         // TODO: Implement retryComments functionality
         // TODO: Check for aborted status and send different message
+
+        // Handle singular comments with a different message
+        if (activeReqEntry.amount == 1) {
+            // Check if an error occurred
+            if (Object.keys(activeReqEntry.failed).length > 0) respond(`${commandHandler.data.lang.commenterroroccurred}\n${Object.values(activeReqEntry.failed)[0]}`); // TODO: Do I want to handle retryComments for singular comments?
+                else respond(commandHandler.data.lang.commentsuccess1);
+
+            // Instantly set status of this request to cooldown
+            activeReqEntry.status = "cooldown";
+            commandHandler.controller.info.commentCounter += 1;
+
+            return;
+        }
 
         // Check if comment process stopped because of a HTTP 429 error and send a different message
         if (activeReqEntry.status == "error") {
