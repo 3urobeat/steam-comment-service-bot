@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 23.04.2023 15:00:41
+ * Last Modified: 25.04.2023 00:06:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -92,8 +92,8 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
 
 
     // Add description to errors to make it easier to understand for users. Add extra cooldown for certain errors
-    switch (error) {
-        case "Error: HTTP error 429":
+    switch (error.toLowerCase()) {
+        case "error: http error 429":
             description = "This account has commented too often recently and has been blocked by Steam for a few minutes. Please wait a moment and then try again.";
 
             // Add 5 minutes of extra cooldown to all bot accounts that are also using this proxy by adding them to the accounts list of this request
@@ -112,27 +112,27 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
                 }
             }
             break;
-        case "Error: HTTP Error 502":
+        case "error: http error 502":
             description = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us";
             break;
-        case "Error: HTTP Error 504":
+        case "error: http error 504":
             description = "The steam servers are slow atm/are down. Check Steam's status here: https://steamstat.us";
             break;
-        case "Error: You've been posting too frequently, and can't make another post right now":
+        case "error: you've been posting too frequently, and can't make another post right now":
             description = "This account has commented too often recently and has been blocked by Steam for a few minutes. Please wait a moment and then try again.";
 
             activeReqEntry.until += 300000; // Add 5 minutes of cooldown
             break;
-        case "Error: There was a problem posting your comment. Please try again":
+        case "error: there was a problem posting your comment. please try again":
             description = "Unknown reason - please wait a minute and try again.";
             break;
-        case "Error: The settings on this account do not allow you to add comments":
+        case "error: the settings on this account do not allow you to add comments":
             description = "The profile's comment section is private, the account doesn't meet steams regulations or has a cooldown. Try again later and maybe add bot account as friend.";
             break;
-        case "Error: To post this comment, your account must have Steam Guard enabled":
+        case "error: to post this comment, your account must have steam guard enabled":
             description = "The account trying to comment doesn't seem to have steam guard enabled.";
             break;
-        case "Error: socket hang up":
+        case "error: socket hang up":
             description = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us";
             break;
         default:
