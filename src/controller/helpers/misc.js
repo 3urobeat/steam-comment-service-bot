@@ -4,7 +4,7 @@
  * Created Date: 25.03.2023 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 13.04.2023 23:06:28
+ * Last Modified: 25.04.2023 00:33:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -68,9 +68,9 @@ module.exports.round = (value, decimals) => {
 module.exports.timeToString = (timestamp) => {
     let until = Math.abs((Date.now() - timestamp) / 1000);
     let untilUnit = "seconds";
-    if (until > 120) { until = until / 60; untilUnit = "minutes"; }
-    if (until > 120) { until = until / 60; untilUnit = "hours"; }
-    if (until > 48)  { until = until / 24; untilUnit = "days"; }
+    if (until > 60) { until = until / 60; untilUnit = "minutes"; }
+    if (until > 60) { until = until / 60; untilUnit = "hours"; }
+    if (until > 24) { until = until / 24; untilUnit = "days"; }
 
     return `${this.round(until, 2)} ${untilUnit}`;
 };
