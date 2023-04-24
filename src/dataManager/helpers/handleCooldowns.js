@@ -4,7 +4,7 @@
  * Created Date: 13.04.2023 17:58:23
  * Author: 3urobeat
  *
- * Last Modified: 25.04.2023 00:35:24
+ * Last Modified: 25.04.2023 00:42:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -32,18 +32,36 @@ DataManager.prototype.getUserCooldown = function(id) {
             // Format lastRequestStr
             let lastReq = Math.abs((Date.now() - doc.time) / 1000);
             let lastReqUnit = "seconds";
-            if (lastReq > 60) { lastReq = lastReq / 60; lastReqUnit = "minutes"; }
-            if (lastReq > 60) { lastReq = lastReq / 60; lastReqUnit = "hours"; }
-            if (lastReq > 24) { lastReq = lastReq / 24; lastReqUnit = "days"; }
+
+            if (lastReq > 60) {
+                lastReq = lastReq / 60; lastReqUnit = "minutes";
+
+                if (lastReq > 60) {
+                    lastReq = lastReq / 60; lastReqUnit = "hours";
+
+                    if (lastReq > 24) {
+                        lastReq = lastReq / 24; lastReqUnit = "days";
+                    }
+                }
+            }
 
             lastReq = Number(Math.round(lastReq+"e"+2)+"e-"+2); // Limit lastReq value to two decimals
 
             // Format untilStr
             let until = Math.abs(((Date.now() - doc.time) / 1000) - (this.config.commentcooldown * 60));
             let untilUnit = "seconds";
-            if (until > 60) { until = until / 60; untilUnit = "minutes"; }
-            if (until > 60) { until = until / 60; untilUnit = "hours"; }
-            if (until > 24) { until = until / 24; untilUnit = "days"; }
+
+            if (until > 60) {
+                until = until / 60; untilUnit = "minutes";
+
+                if (until > 60) {
+                    until = until / 60; untilUnit = "hours";
+
+                    if (until > 24) {
+                        until = until / 24; untilUnit = "days";
+                    }
+                }
+            }
 
             until = Number(Math.round(until+"e"+2)+"e-"+2); // Limit until value to two decimals
 
