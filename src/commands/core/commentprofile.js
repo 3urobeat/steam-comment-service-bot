@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 24.04.2023 20:59:10
+ * Last Modified: 24.04.2023 21:38:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -71,7 +71,7 @@ module.exports.commentProfile = {
 
 
         // Check if user has cooldown
-        let { until, untilStr } = commandHandler.data.getUserCooldown(requesterSteamID64);
+        let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterSteamID64);
 
         if (until > Date.now()) return respond(commandHandler.lang.commentuseroncooldown.replace("remainingcooldown", untilStr));
 

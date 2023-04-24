@@ -4,7 +4,7 @@
  * Created Date: 13.04.2023 17:58:23
  * Author: 3urobeat
  *
- * Last Modified: 13.04.2023 20:00:02
+ * Last Modified: 24.04.2023 21:44:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -31,10 +31,12 @@ DataManager.prototype.getUserCooldown = function(id) {
 
             // Format lastRequestStr
             let lastReq = Math.abs((Date.now() - doc.time) / 1000);
-            var lastReqUnit = "seconds";
+            let lastReqUnit = "seconds";
             if (lastReq > 120) { lastReq = lastReq / 60; lastReqUnit = "minutes"; }
             if (lastReq > 120) { lastReq = lastReq / 60; lastReqUnit = "hours"; }
             if (lastReq > 48)  { lastReq = lastReq / 24; lastReqUnit = "days"; }
+
+            lastReq = Number(Math.round(lastReq+"e"+2)+"e-"+2); // Limit lastReq value to two decimals
 
             // Format untilStr
             let until = Math.abs(((Date.now() - doc.time) / 1000) - (this.config.commentcooldown * 60));
@@ -42,6 +44,8 @@ DataManager.prototype.getUserCooldown = function(id) {
             if (until > 120) { until = until / 60; untilUnit = "minutes"; }
             if (until > 120) { until = until / 60; untilUnit = "hours"; }
             if (until > 48)  { until = until / 24; untilUnit = "days"; }
+
+            until = Number(Math.round(until+"e"+2)+"e-"+2); // Limit until value to two decimals
 
             resolve({
                 "lastRequest": doc.time,
@@ -61,6 +65,7 @@ DataManager.prototype.getUserCooldown = function(id) {
  * @param {Number} timestamp Unix timestamp of the last interaction the user received
  */
 DataManager.prototype.setUserCooldown = function(id, timestamp) {
+    logger("debug", `DataManager setUserCooldown(): Updating lastcomment db entry for ${id} to ${timestamp}.`);
 
     this.lastCommentDB.update({ id: id }, { $set: { time: timestamp } }, { upsert: true }, (err) => {
         if (err) logger("error", "Error adding cooldown to user in database! You should probably *not* ignore this error!\nError: " + err);
