@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 25.04.2023 00:06:27
+ * Last Modified: 26.04.2023 11:23:17
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -52,15 +52,8 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
         return false;
     }
 
-    // Check if this iteration would use a blocked proxy by checking for existing failed obj entry for this iteration
-    if (activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`]) {
-        logger("debug", "CommandHandler handleIterationSkip(): Iteration would use a failed proxy, skipping...");
-        loop.next();
-        return false;
-    }
-
     // Check if all proxies have failed and break loop by checking if all remaining comments have been declared as failed if we are not on the last iteration
-    if (Object.values(activeReqEntry.failed).filter(e => e.includes("Error: HTTP error 429")).length + activeReqEntry.thisIteration + 1 >= activeReqEntry.amount && activeReqEntry.thisIteration + 1 != activeReqEntry.amount) {
+    if (Object.values(activeReqEntry.failed).filter(e => e.toLowerCase().includes("http error 429")).length + activeReqEntry.thisIteration + 1 >= activeReqEntry.amount && activeReqEntry.thisIteration + 1 != activeReqEntry.amount) {
         logger("debug", "CommandHandler handleIterationSkip(): All proxies failed, breaking comment loop...");
 
         // Sort failed object to make it easier to read
@@ -71,6 +64,13 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
 
         // Break the loop and return false
         loop.break();
+        return false;
+    }
+
+    // Check if this iteration would use a blocked proxy by checking for existing failed obj entry for this iteration
+    if (activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`]) {
+        logger("debug", "CommandHandler handleIterationSkip(): Iteration would use a failed proxy, skipping...");
+        loop.next();
         return false;
     }
 
