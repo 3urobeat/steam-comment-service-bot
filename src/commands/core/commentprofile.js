@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 24.04.2023 22:19:17
+ * Last Modified: 26.04.2023 12:52:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -119,6 +119,7 @@ module.exports.commentProfile = {
                 thisIteration: -1, // Set to -1 so that first iteration will increase it to 0
                 retryAttempt: 0,
                 until: Date.now() + (numberOfComments * commandHandler.data.config.commentdelay), // Botaccountcooldown should start after the last comment was processed
+                amountBeforeRetry: 0, // Saves the amount of requested comments before the most recent retry attempt was made to send a correct finished message
                 failed: {}
             };
 
@@ -196,8 +197,6 @@ function comment(commandHandler, respond, receiverSteamID64) {
 
     }, () => { // Function that will run on exit, aka the last iteration: Respond to the user
 
-        // TODO: Implement retryComments functionality
-
         // Handle singular comments with a different message
         if (activeReqEntry.amount == 1) {
             // Check if an error occurred
@@ -211,15 +210,62 @@ function comment(commandHandler, respond, receiverSteamID64) {
             return;
         }
 
-        // Check if comment process was stopped manually or because of a HTTP 429 error and send a different message
+
+        /* --------- Retry comments if enabled. Skip aborted requests and when max retries are exceeded ---------  */
+        if (commandHandler.data.advancedconfig.retryFailedComments && Object.keys(activeReqEntry.failed).length > 0 && activeReqEntry.status != "aborted" && activeReqEntry.retryAttempt < commandHandler.data.advancedconfig.retryFailedCommentsAttempts) {
+            activeReqEntry.status        = "active";                  // Keep status alive so that !abort still works
+            activeReqEntry.thisIteration = activeReqEntry.amount - 1; // Set thisIteration to last iteration so that the comment function won't get confused
+            activeReqEntry.retryAttempt++;
+
+            // Log and notify user about retry attempt starting in retryFailedCommentsDelay ms
+            let untilStr = timeToString(Date.now() + commandHandler.data.advancedconfig.retryFailedCommentsDelay);
+
+            respond(commandHandler.data.lang.commentretrying.replace("failedamount", Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount - activeReqEntry.amountBeforeRetry).replace("untilStr", untilStr).replace("thisattempt", activeReqEntry.retryAttempt).replace("maxattempt", commandHandler.data.advancedconfig.retryFailedCommentsAttempts));
+            logger("info", `${Object.keys(activeReqEntry.failed).length}/${activeReqEntry.amount - activeReqEntry.amountBeforeRetry} comments failed for ${receiverSteamID64}. Retrying in ${untilStr} (Attempt ${activeReqEntry.retryAttempt}/${commandHandler.data.advancedconfig.retryFailedCommentsAttempts})`, false, false, logger.animation("waiting"));
+
+            // Wait retryFailedCommentsDelay ms before retrying failed comments
+            setTimeout(() => {
+                // Check if comment process was aborted, send finished message and avoid increasing cooldown etc.
+                if (!activeReqEntry || activeReqEntry.status == "aborted") {
+                    respond(commandHandler.data.lang.commentaborted.replace("successAmount", "0").replace("numberOfComments", Object.keys(activeReqEntry.failed).length));
+                    logger("info", `Comment process for ${receiverSteamID64} was aborted while waiting for retry attempt ${activeReqEntry.retryAttempt}. Stopping...`);
+                    return;
+                }
+
+                // Store amountBeforeRetry and increase numberOfComments by amount of failed comments
+                activeReqEntry.amountBeforeRetry = activeReqEntry.amount;
+                activeReqEntry.amount += Object.keys(activeReqEntry.failed).length;
+
+                // Increase until value (amount of retried comments * commentdelay) + delay before starting retry attempts
+                activeReqEntry.until = activeReqEntry.until + (Object.keys(activeReqEntry.failed).length * commandHandler.data.config.commentdelay) + commandHandler.data.advancedconfig.retryFailedCommentsDelay;
+
+                // Update cooldown to new extended until value
+                commandHandler.data.setUserCooldown(activeReqEntry.requestedby, activeReqEntry.until);
+
+                // Reset failed comments
+                activeReqEntry.failed = {};
+
+                // Call comment function again
+                comment(commandHandler, respond, receiverSteamID64);
+            }, commandHandler.data.advancedconfig.retryFailedCommentsDelay);
+
+            return;
+        }
+
+
+        if (commandHandler.data.advancedconfig.retryFailedComments) logger("debug", "retryComments: Looks like all retryAttempts have been made or no comments failed. Sending finished message...");
+            else logger("debug", "retryComments: retryFailedComments is disabled. Sending finished message...");
+
+
+        /* ------------- Send finished message for each status -------------  */
         if (activeReqEntry.status == "aborted") {
 
-            respond(commandHandler.data.lang.commentaborted.replace("successAmount", activeReqEntry.amount - Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount));
             commandHandler.controller.info.commentCounter += activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
+            respond(commandHandler.data.lang.commentaborted.replace("successAmount", activeReqEntry.amount - activeReqEntry.amountBeforeRetry - Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount - activeReqEntry.amountBeforeRetry));
 
         } else if (activeReqEntry.status == "error") {
 
-            respond(`${commandHandler.data.lang.comment429stop.replace("failedamount", activeReqEntry.amount - activeReqEntry.thisIteration + 1).replace("numberOfComments", activeReqEntry.amount)}\n\n${commandHandler.data.lang.commentfailedcmdreference}`); // Add !failed cmd reference to message
+            respond(`${commandHandler.data.lang.comment429stop.replace("failedamount", Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount - activeReqEntry.amountBeforeRetry)}\n\n${commandHandler.data.lang.commentfailedcmdreference}`); // Add !failed cmd reference to message
             logger("warn", "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error!");
 
             commandHandler.controller.info.commentCounter += activeReqEntry.amount - (activeReqEntry.amount - activeReqEntry.thisIteration + 1); // Add numberOfComments minus failedamount to commentCounter
@@ -234,7 +280,7 @@ function comment(commandHandler, respond, receiverSteamID64) {
             }
 
             // Send finished message
-            respond(`${commandHandler.data.lang.commentsuccess2.replace("failedamount", Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount)}\n${failedcmdreference}`); // Only send if not a webrequest
+            respond(`${commandHandler.data.lang.commentsuccess2.replace("failedamount", Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount - activeReqEntry.amountBeforeRetry)}\n${failedcmdreference}`); // Only send if not a webrequest
 
             // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
             activeReqEntry.status = "cooldown";
