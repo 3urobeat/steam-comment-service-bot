@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 22.04.2023 18:22:28
+ * Last Modified: 26.04.2023 20:33:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -17,8 +17,8 @@
 
 const SteamID = require("steamid");
 
-const CommandHandler         = require("../commandHandler.js"); // eslint-disable-line
-const handleSteamIdResolving = require("../../bot/helpers/handleSteamIdResolving.js");
+const CommandHandler             = require("../commandHandler.js"); // eslint-disable-line
+const { handleSteamIdResolving } = require("../../bot/helpers/handleSteamIdResolving.js");
 
 
 module.exports.block = {
@@ -39,7 +39,7 @@ module.exports.block = {
 
         if (!args[0]) return respond(commandHandler.data.lang.invalidprofileid);
 
-        handleSteamIdResolving.run(args[0], SteamID.Type.INDIVIDUAL, (err, res) => {
+        handleSteamIdResolving(args[0], SteamID.Type.INDIVIDUAL, (err, res) => {
             if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
             if (commandHandler.data.cachefile.ownerid.includes(res)) return respond(commandHandler.data.lang.idisownererror);
 
@@ -72,7 +72,7 @@ module.exports.unblock = {
 
         if (!args[0]) return respond(commandHandler.data.lang.invalidprofileid);
 
-        handleSteamIdResolving.run(args[0], SteamID.Type.INDIVIDUAL, (err, res) => {
+        handleSteamIdResolving(args[0], SteamID.Type.INDIVIDUAL, (err, res) => {
             if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
 
             Object.values(commandHandler.controller.bots).forEach((e, i) => {

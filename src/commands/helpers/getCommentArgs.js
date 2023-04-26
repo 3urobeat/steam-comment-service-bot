@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 23.04.2023 02:04:42
+ * Last Modified: 26.04.2023 20:34:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -17,7 +17,8 @@
 
 const SteamID = require("steamid"); // eslint-disable-line
 
-const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
+const CommandHandler             = require("../commandHandler.js"); // eslint-disable-line
+const { handleSteamIdResolving } = require("../../bot/helpers/handleSteamIdResolving.js");
 
 
 /**
@@ -81,7 +82,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, profi
                 if (commandHandler.data.cachefile.ownerid.includes(requesterSteamID64) || args[1] == requesterSteamID64) { // Check if user is a bot owner or if he provided his own profile id
                     let arg = args[1];
 
-                    require("../../bot/helpers/handleSteamIdResolving.js").run(arg, profileIDType, (err, res) => {
+                    handleSteamIdResolving(arg, null, (err, res) => {
                         if (err) respond(commandHandler.data.lang.commentinvalidid.replace("commentcmdusage", commentcmdUsage) + "\n\nError: " + err);
 
                         profileID = res; // Will be null on err
@@ -125,7 +126,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, profi
 
 
         /* --------- Resolve promise with calculated values when profileID is defined --------- */
-        var profileIDDefinedInterval = setInterval(() => { // Check if profileID is defined every 250ms and only then return values
+        let profileIDDefinedInterval = setInterval(() => { // Check if profileID is defined every 250ms and only then return values
             if (profileID != undefined) {
                 clearInterval(profileIDDefinedInterval);
 

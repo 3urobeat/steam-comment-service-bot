@@ -4,7 +4,7 @@
  * Created Date: 09.03.2022 12:58:17
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 12:28:39
+ * Last Modified: 26.04.2023 20:32:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -25,7 +25,7 @@ const steamIDResolver = require("steamid-resolver");
  * @param {SteamID.Type} profileIDType The type of SteamID expected for profileID parameter (https://github.com/DoctorMcKay/node-steamid#types) or null if type should be assumed by checking SteamID(str).type
  * @param {function} [callback] Called with `err` (String or null) and `steamID64` (String or null) parameters on completion
  */
-module.exports.run = (str, profileIDType, callback) => {
+module.exports.handleSteamIdResolving = (str, profileIDType, callback) => {
 
     // Instantly callback nothing if nothing was provided
     if (!str) return callback(null, null);
