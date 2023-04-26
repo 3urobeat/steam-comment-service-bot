@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 23.04.2023 15:09:43
+ * Last Modified: 26.04.2023 11:32:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -64,7 +64,7 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry, part = 0) {
                 logger("info", `Message is ${txt.length} chars long, sending next chunk of 750 chars to '${resInfo.steamID64}' in 7.5 seconds...`, false, false, logger.animation("waiting"));
                 setTimeout(() => _this.sendChatMessage(_this, resInfo, txt, retry, part + 1), 7500);
             } else {
-                logger("debug", "Bot sendChatMessage(): All parts of the message have been sent");
+                if (part != 0) logger("debug", "Bot sendChatMessage(): All parts of the message have been sent"); // Only log debug for multi-part messages
             }
         }
     });
