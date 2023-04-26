@@ -4,7 +4,7 @@
  * Created Date: 09.04.2023 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 23.04.2023 15:06:14
+ * Last Modified: 27.04.2023 01:18:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -76,7 +76,7 @@ Controller.prototype.getAvailableAccountsForCommenting = function(numberOfCommen
     // Remove limited accounts from allAccounts array if desired
     if (!canBeLimited) {
         let previousLength = allAccounts.length;
-        allAccounts = allAccounts.filter(e => this.bots[e].limitations && !this.bots[e].limitations.limited);
+        allAccounts = allAccounts.filter(e => this.bots[e].user.limitations && !this.bots[e].user.limitations.limited);
 
         if (previousLength - allAccounts.length > 0) logger("info", `${previousLength - allAccounts.length} of ${previousLength} were removed from available accounts as they are limited and can't be used for this request!`);
     }
