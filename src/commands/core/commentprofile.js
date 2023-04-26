@@ -101,7 +101,7 @@ module.exports.commentProfile = {
         /* --------- Check if profile is private ---------  */
         commandHandler.controller.main.community.getSteamUser(new SteamID(receiverSteamID64), (err, user) => {
             if (err) {
-                logger("warn", `[Main] Failed to check if ${steamID64}: ${err}\n       Trying to comment anyway and hoping no error occurs...`); // This can happen sometimes and most of the times commenting will still work
+                logger("warn", `[Main] Failed to check if ${steamID64} is private: ${err}\n       Trying to comment anyway and hoping no error occurs...`); // This can happen sometimes and most of the times commenting will still work
             } else {
                 logger("debug", "Successfully checked privacyState of receiving user: " + user.privacyState);
 
@@ -118,8 +118,8 @@ module.exports.commentProfile = {
                 accounts: availableAccounts,
                 thisIteration: -1, // Set to -1 so that first iteration will increase it to 0
                 retryAttempt: 0,
-                until: Date.now() + (numberOfComments * commandHandler.data.config.commentdelay), // Botaccountcooldown should start after the last comment was processed
                 amountBeforeRetry: 0, // Saves the amount of requested comments before the most recent retry attempt was made to send a correct finished message
+                until: Date.now() + ((numberOfComments - 1) * commandHandler.data.config.commentdelay), // Calculate estimated wait time (first comment is instant -> remove 1 from numberOfComments)
                 failed: {}
             };
 
@@ -132,7 +132,7 @@ module.exports.commentProfile = {
 
 
 /**
- * Internal function that actually does the commenting
+ * Internal: Do the actual commenting, activeRequests entry with all relevant information was processed by the comment command function above.
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {function(string)} respond Shortened respondModule call
  * @param {String} receiverSteamID64 steamID64 of the profile to receive the comments
@@ -169,16 +169,12 @@ function comment(commandHandler, respond, receiverSteamID64) {
                         else logger("info", `${logger.colors.fggreen}[${bot.logPrefix}] ${activeReqEntry.amount} Comment(s) requested. Comment on ${receiverSteamID64}: ${String(quote).split("\n")[0]}`); // Splitting \n to only get first line of multi line comments
 
 
-                    // Calculate estimated wait time (first comment is instant -> remove 1 from numberOfComments)
-                    let waitTime = Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay);
-
-
                     // Only send estimated wait time message for multiple comments
-                    if (activeReqEntry.amount > 1) respond(commandHandler.data.lang.commentprocessstarted.replace("numberOfComments", activeReqEntry.amount).replace("waittime", timeToString(waitTime)));
+                    if (activeReqEntry.amount > 1) respond(commandHandler.data.lang.commentprocessstarted.replace("numberOfComments", activeReqEntry.amount).replace("waittime", timeToString(activeReqEntry.until)));
 
 
                     // Give requesting user cooldown
-                    commandHandler.data.setUserCooldown(activeReqEntry.requestedby, waitTime);
+                    commandHandler.data.setUserCooldown(activeReqEntry.requestedby, activeReqEntry.until);
 
                 } else { // Stuff below should only run for child accounts
 
@@ -260,15 +256,12 @@ function comment(commandHandler, respond, receiverSteamID64) {
         /* ------------- Send finished message for each status -------------  */
         if (activeReqEntry.status == "aborted") {
 
-            commandHandler.controller.info.commentCounter += activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
             respond(commandHandler.data.lang.commentaborted.replace("successAmount", activeReqEntry.amount - activeReqEntry.amountBeforeRetry - Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount - activeReqEntry.amountBeforeRetry));
 
         } else if (activeReqEntry.status == "error") {
 
             respond(`${commandHandler.data.lang.comment429stop.replace("failedamount", Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount - activeReqEntry.amountBeforeRetry)}\n\n${commandHandler.data.lang.commentfailedcmdreference}`); // Add !failed cmd reference to message
             logger("warn", "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error!");
-
-            commandHandler.controller.info.commentCounter += activeReqEntry.amount - (activeReqEntry.amount - activeReqEntry.thisIteration + 1); // Add numberOfComments minus failedamount to commentCounter
 
         } else {
 
@@ -284,9 +277,10 @@ function comment(commandHandler, respond, receiverSteamID64) {
 
             // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
             activeReqEntry.status = "cooldown";
-            commandHandler.controller.info.commentCounter += activeReqEntry.amount - Object.keys(activeReqEntry.failed).length; // Add numberOfComments minus failedamount to commentCounter
 
         }
+
+        commandHandler.controller.info.commentCounter += activeReqEntry.amount - activeReqEntry.amountBeforeRetry - Object.keys(activeReqEntry.failed).length; // Add numberOfComments of this attempt minus failedamount to commentCounter
 
     });
 }

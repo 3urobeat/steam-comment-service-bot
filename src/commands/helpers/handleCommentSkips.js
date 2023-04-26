@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 11:23:17
+ * Last Modified: 26.04.2023 12:16:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -94,7 +94,7 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
     // Add description to errors to make it easier to understand for users. Add extra cooldown for certain errors
     switch (error.toLowerCase()) {
         case "error: http error 429":
-            description = "This account has commented too often recently and has been blocked by Steam for a few minutes. Please wait a moment and then try again.";
+            description = "This IP has commented too often recently and has been blocked by Steam for a few minutes. Please wait a moment and then try again.";
 
             // Add 5 minutes of extra cooldown to all bot accounts that are also using this proxy by adding them to the accounts list of this request
             activeReqEntry.accounts = activeReqEntry.accounts.concat(Object.keys(commandHandler.controller.bots).filter(e => commandHandler.controller.bots[e].loginData.proxyIndex == bot.loginData.proxyIndex && !activeReqEntry.accounts.includes(e))); // Append all accounts with the same proxy which aren't included yet
