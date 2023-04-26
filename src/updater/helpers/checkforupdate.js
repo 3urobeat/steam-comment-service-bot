@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 11:26:38
+ * Last Modified: 26.04.2023 20:43:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,6 +15,8 @@
  */
 
 
+const https = require("https");
+
 
 /**
  * Checks for an available update from the GitHub repo
@@ -23,16 +25,15 @@
  * @param {function} [callback] Called with `updatefound` (Boolean) and `output` (Object) the data.json found online parameters on completion. `updatefound` will be false if the check should fail.
  */
 module.exports.checkforupdate = (releasemode, forceupdate, callback) => {
-    var https = require("https");
 
     /* ------------------ Check for new version ------------------ */
     if (forceupdate) logger("info", `Forcing update from ${releasemode} branch...`, false, true, logger.animation("loading"));
         else logger("info", `Checking for update in ${releasemode} branch...`, false, true, logger.animation("loading"));
 
-    var output = "";
+    let output = "";
 
     try {
-        var httpsrequest = https.get(`https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${releasemode}/src/data/data.json`, function(res) {
+        let httpsrequest = https.get(`https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${releasemode}/src/data/data.json`, function(res) {
             res.setEncoding("utf8");
 
             res.on("data", (chunk) => {
@@ -41,8 +42,8 @@ module.exports.checkforupdate = (releasemode, forceupdate, callback) => {
 
             res.on("end", () => {
                 output = JSON.parse(output);
-                var onlineversion = output.version;
-                var onlineversionstr = output.versionstr;
+                let onlineversion = output.version;
+                let onlineversionstr = output.versionstr;
 
                 if(output.mestr!==extdata.mestr||output.aboutstr!==extdata.aboutstr){extdata.mestr=output.mestr;extdata.aboutstr=output.aboutstr;global.checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<";require("fs").writeFile(srcdir + "/data/data.json",JSON.stringify(extdata,null,4),()=>{process.send("restart({})");});}else{global.checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"} // eslint-disable-line
 
@@ -58,7 +59,6 @@ module.exports.checkforupdate = (releasemode, forceupdate, callback) => {
             logger("warn", `${logger.colors.reset}[${logger.colors.fgred}Notice${logger.colors.reset}]: Couldn't check for an available update because either GitHub is down or your internet isn't working.\n          Error: ${err}`, true);
             callback(false, {});
         });
-
     } catch (err) {
         logger("error", "checkforupdate function Error: " + err, true);
         callback(false, {});

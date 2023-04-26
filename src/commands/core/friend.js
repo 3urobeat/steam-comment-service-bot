@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 20:34:16
+ * Last Modified: 26.04.2023 20:38:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -145,7 +145,7 @@ module.exports.unfriendall = {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // TODO: This is bad. Rewrite using a message collector, maybe add one to steamChatInteraction helper
-        var abortunfriendall;
+        var abortunfriendall; // eslint-disable-line no-var
 
         if (args[0] == "abort") {
             respond(commandHandler.data.lang.unfriendallcmdabort);

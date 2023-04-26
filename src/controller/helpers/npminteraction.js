@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 30.07.2022 16:50:26
+ * Last Modified: 26.04.2023 20:41:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,6 +15,9 @@
  */
 
 
+const fs       = require("fs");
+const { exec } = require("child_process"); // Wanted to do it with the npm package but that didn't work out (BETA 2.8 b2)
+
 
 /**
  * Attempts to reinstall all modules
@@ -22,9 +25,6 @@
  * @param {function} [callback] Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
 module.exports.reinstallAll = (logger, callback) => {
-    var fs       = require("fs");
-    var { exec } = require("child_process"); // Wanted to do it with the npm package but that didn't work out (BETA 2.8 b2)
-
     if (!fs.existsSync(srcdir + "/../node_modules")) {
         logger("info", "Creating node_modules folder...");
 
@@ -54,8 +54,6 @@ module.exports.reinstallAll = (logger, callback) => {
  * @param {function} [callback] Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
 module.exports.update = (callback) => {
-    var { exec } = require("child_process"); // Wanted to do it with the npm package but that didn't work out (BETA 2.8 b2)
-
     logger("info", "Running 'npm install'...", false, false, logger.animation("loading"));
 
     exec("npm install", { cwd: srcdir + "/.." }, (err, stdout) => {

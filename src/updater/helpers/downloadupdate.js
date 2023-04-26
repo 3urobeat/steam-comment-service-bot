@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 12:38:24
+ * Last Modified: 26.04.2023 20:45:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,6 +15,8 @@
  */
 
 
+const fs = require("fs");
+
 
 /**
  * Downloads all files from the repository and installs them
@@ -22,8 +24,7 @@
  * @param {function} [callback] Called with `err` (String or null) parameter on completion
  */
  module.exports.downloadupdate = (releasemode, compatibilityfeaturedone, callback) => {
-    var fs       = require("fs");
-    var download = require("download");
+    const download = require("download");
 
     logger("", "Starting to download update...", true, false, logger.animation("loading"));
 
@@ -32,13 +33,13 @@
 
     // Process dontdelete array in order to include parent folders of a dontdelete file in the array as well
     dontdelete.forEach((e) => {
-        var str = e.split("/");
+        let str = e.split("/");
         str.splice(0, 1); // Remove '.'
 
         str.forEach((k, j) => {
             if (j == 0) return; // The path './' won't deleted either way so we can ignore it
 
-            var pathtopush = "./" + str.slice(0, j).join("/");
+            let pathtopush = "./" + str.slice(0, j).join("/");
             if (!dontdelete.includes(pathtopush)) dontdelete.push(pathtopush); // Construct path from first part of the path until this iteration
         });
     });
@@ -55,14 +56,14 @@
     download(url, "./", { extract: true }).then(() => { // The download library makes downloading and extracting easier
         try {
             // Scan directory recursively to get an array of all paths in this directory
-            var scandir = function(dir) { // Credit for this function before I modified it: https://stackoverflow.com/a/16684530/12934162
-                var results = [];
-                var list = fs.readdirSync(dir);
+            let scandir = function(dir) { // Credit for this function before I modified it: https://stackoverflow.com/a/16684530/12934162
+                let results = [];
+                let list = fs.readdirSync(dir);
 
                 list.forEach(function(file) {
                     file = dir + "/" + file;
 
-                    var stat = fs.statSync(file);
+                    let stat = fs.statSync(file);
 
                     results.push(file); // Push the file and folder in order to avoid an ENOTEMPTY error and push it before the recursive part in order to have the folder above its files in the array to avoid ENOENT error
 

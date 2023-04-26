@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:59:31
  * Author: 3urobeat
  *
- * Last Modified: 31.03.2023 12:14:29
+ * Last Modified: 26.04.2023 20:41:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -75,7 +75,7 @@ SessionHandler.prototype._handle2FA = function(res) {
 SessionHandler.prototype._get2FAUserInput = function() {
 
     // Start timer to subtract it later from readyafter time
-    var steamGuardInputStart = Date.now(); // Measure time to subtract it later from readyafter time
+    let steamGuardInputStart = Date.now(); // Measure time to subtract it later from readyafter time
 
     // Define different question and timeout for main account as it can't be skipped
     let question;

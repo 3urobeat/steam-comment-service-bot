@@ -4,7 +4,7 @@
  * Created Date: 26.02.2022 20:16:44
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2022 14:50:35
+ * Last Modified: 26.04.2023 20:53:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -17,6 +17,7 @@
 
 const fs   = require("fs");
 const path = require("path");
+
 
 /**
  * Tries to restore a previously made backup
@@ -31,10 +32,10 @@ module.exports.run = (callback) => {
 
         // This but slightly modified - thanks: https://stackoverflow.com/a/26038979/12934162
         function copyFolderRecursiveSync(src, dest, firstCall) { // eslint-disable-line no-inner-declarations
-            var files = [];
+            let files = [];
 
             // Check if folder needs to be created
-            var targetFolder = path.join(dest, path.basename(src));
+            let targetFolder = path.join(dest, path.basename(src));
 
             if (!fs.existsSync(targetFolder)) fs.mkdirSync(targetFolder);
 
@@ -44,7 +45,7 @@ module.exports.run = (callback) => {
 
                 files.forEach((file) => {
                     if (dontCopy.includes(file)) return; // Ignore this file/folder if name is in dontCopy
-                    var curSource = path.join(src, file);
+                    let curSource = path.join(src, file);
 
                     if (fs.lstatSync(curSource).isDirectory()) {
                         copyFolderRecursiveSync(curSource, targetFolder, false);

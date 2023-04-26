@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 01.04.2023 14:33:01
+ * Last Modified: 26.04.2023 20:40:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -36,8 +36,9 @@ Controller.prototype._readyEvent = function() {
     let maxCommentsOverall = config.maxOwnerComments; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
     if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments;
 
-    if (maxCommentsOverall > 3) var repeatedCommentsStr = `${logger.colors.underscore}${logger.colors.fgred}${round(maxCommentsOverall / Object.keys(this.bots).length, 2)}`;
-        else var repeatedCommentsStr = round(maxCommentsOverall / Object.keys(this.bots).length, 2);
+    let repeatedCommentsStr;
+    if (maxCommentsOverall > 3) repeatedCommentsStr = `${logger.colors.underscore}${logger.colors.fgred}${round(maxCommentsOverall / Object.keys(this.bots).length, 2)}`;
+        else repeatedCommentsStr = round(maxCommentsOverall / Object.keys(this.bots).length, 2);
 
     logger("", `${logger.colors.brfgblue}>${logger.colors.reset} ${Object.keys(this.bots).length} total account(s) | ${repeatedCommentsStr} comments per account allowed`, true);
 

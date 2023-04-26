@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.04.2023 01:34:28
+ * Last Modified: 26.04.2023 20:54:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -27,10 +27,10 @@ const fs = require("fs");
  * @param {function} [callback] Called with `foundanddone` (Boolean) on completion. If `true` you should restart the bot and if `false` you can carry on.
  */
 module.exports.run = async (forceupdate, responseSteamID, compatibilityfeaturedone, foundanddone) => {
-    var starter    = require("../starter.js");
+    let starter    = require("../starter.js");
     let controller = require("../controller/controller.js");
 
-    var releasemode             = extdata.branch;
+    let releasemode = extdata.branch;
 
 
     let file = await starter.checkAndGetFile("./src/updater/helpers/checkforupdate.js", logger, false, false);
@@ -122,7 +122,7 @@ module.exports.run = async (forceupdate, responseSteamID, compatibilityfeaturedo
                             foundanddone(false);
 
                         } else {
-                            var response = text.toString().trim();
+                            let response = text.toString().trim();
 
                             if (response == "y") initiateUpdate();
                                 else foundanddone(false);
@@ -188,10 +188,10 @@ module.exports.compatibility = async (callback) => {
 
 
 /* ------------ Register update checker: ------------ */
-var lastupdatecheckinterval = Date.now();
+let lastupdatecheckinterval = Date.now();
 if (updatecheckinterval) clearInterval(updatecheckinterval); // This check should never run but I added it just to be sure
 
-var updatecheckinterval = setInterval(() => {
+let updatecheckinterval = setInterval(() => {
     if (Date.now() > lastupdatecheckinterval) {
         fs.readFile("./output.txt", function (err, data) {
             if (err) logger("error", "error checking output for update notice: " + err);

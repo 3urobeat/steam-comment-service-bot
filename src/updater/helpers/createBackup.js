@@ -4,7 +4,7 @@
  * Created Date: 26.02.2022 16:54:03
  * Author: 3urobeat
  *
- * Last Modified: 26.02.2022 21:31:57
+ * Last Modified: 26.04.2023 20:43:47
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -29,10 +29,10 @@ module.exports.run = (callback) => {
 
     // This but slightly modified - thanks: https://stackoverflow.com/a/26038979/12934162
     function copyFolderRecursiveSync(src, dest, firstCall) {
-        var files = [];
+        let files = [];
 
         // Check if folder needs to be created
-        var targetFolder = path.join(dest, path.basename(src));
+        let targetFolder = path.join(dest, path.basename(src));
 
         if (!fs.existsSync(targetFolder)) fs.mkdirSync(targetFolder);
 
@@ -42,7 +42,7 @@ module.exports.run = (callback) => {
 
             files.forEach((file) => {
                 if (dontCopy.includes(file)) return; // Ignore this file/folder if name is in dontCopy
-                var curSource = path.join(src, file);
+                let curSource = path.join(src, file);
 
                 if (fs.lstatSync(curSource).isDirectory()) {
                     copyFolderRecursiveSync(curSource, targetFolder, false);

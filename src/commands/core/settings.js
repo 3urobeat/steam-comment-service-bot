@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 22.04.2023 18:22:28
+ * Last Modified: 26.04.2023 20:38:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -81,7 +81,7 @@ module.exports.settings = {
             return respond(commandHandler.data.lang.settingscmdblockedvalues);
         }
 
-        var keyvalue = config[args[0]]; // Save old value to be able to reset changes
+        let keyvalue = config[args[0]]; // Save old value to be able to reset changes
 
         // I'm not proud of this code but whatever -> used to convert array into usable array
         if (Array.isArray(keyvalue)) {

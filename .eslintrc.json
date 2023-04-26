@@ -21,6 +21,7 @@
         // "spellcheck"
     ],
     "rules": {
+        "no-var": "error",
         "no-redeclare": "off",
         "no-unreachable": "error",
         "no-unexpected-multiline": "error",

@@ -4,7 +4,7 @@
  * Created Date: 15.01.2020 10:38:00
  * Author: 3urobeat
  *
- * Last Modified: 02.10.2021 19:43:47
+ * Last Modified: 26.04.2023 20:54:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -45,14 +45,14 @@ module.exports.restart = (args) => {
 
 
 /* ---------- Get filetostart if it doesn't exist ---------- */
-var fs = require("fs");
-var extdata = getExtdata();
+let fs = require("fs");
+let extdata = getExtdata();
 
 if (!fs.existsSync(extdata.filetostart)) { // Function that downloads filetostart if it doesn't exist (file location change etc.)
-    var output = "";
+    let output = "";
 
     try {
-        var https = require("https");
+        let https = require("https");
 
         if (!fs.existsSync("./src")) fs.mkdirSync("./src"); // Create src dir if it doesn't exist
 

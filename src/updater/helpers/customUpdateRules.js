@@ -4,7 +4,7 @@
  * Created Date: 22.02.2022 17:39:21
  * Author: 3urobeat
  *
- * Last Modified: 22.05.2022 15:21:42
+ * Last Modified: 26.04.2023 20:44:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -37,9 +37,8 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
     });
 
     // Get arrays on one line
-    var stringifiedconfig = JSON.stringify(newconfig, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
-        if(v instanceof Array)
-        return JSON.stringify(v);
+    let stringifiedconfig = JSON.stringify(newconfig, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
+        if (v instanceof Array) return JSON.stringify(v);
         return v;
     }, 4)
         .replace(/"\[/g, "[")
@@ -70,7 +69,7 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
     });
 
     // Get arrays on one line
-    var stringifiedadvancedconfig = JSON.stringify(newadvancedconfig, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
+    let stringifiedadvancedconfig = JSON.stringify(newadvancedconfig, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
         if(v instanceof Array)
         return JSON.stringify(v);
         return v;

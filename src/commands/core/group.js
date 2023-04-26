@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 22.04.2023 18:22:28
+ * Last Modified: 26.04.2023 20:38:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -124,7 +124,7 @@ module.exports.leaveAllGroups = {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // TODO: This is bad. Rewrite using a message collector, maybe add one to steamChatInteraction helper
-        var abortleaveallgroups;
+        var abortleaveallgroups; // eslint-disable-line no-var
 
         if (args[0] == "abort") {
             respond(commandHandler.data.lang.leaveallgroupscmdabort);

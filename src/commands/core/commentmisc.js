@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 20:33:59
+ * Last Modified: 26.04.2023 20:38:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -158,7 +158,7 @@ module.exports.sessions = {
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        var str = "";
+        let str = "";
 
         if (Object.keys(commandHandler.controller.activeRequests).length > 0) { // Only loop through object if it isn't empty
             let objlength = Object.keys(commandHandler.controller.activeRequests).length; // Save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering

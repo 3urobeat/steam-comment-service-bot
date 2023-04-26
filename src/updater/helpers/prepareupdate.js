@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 12:37:16
+ * Last Modified: 26.04.2023 20:53:47
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -26,13 +26,11 @@ module.exports.run = (responseSteamID, callback) => {
     /* ------------------ Check stuff & Initiate updater & log out ------------------ */
 
     if (botisloggedin) { // If bot is already logged in we need to check for ongoing comment processes and log all bots out when finished
-
         logger("", "", true);
         logger("info", "Bot is logged in. Checking for active comment process...", false, true, logger.animation("loading"));
 
 
-        var controller = require("../../controller/controller.js");
-        var mainfile   = require("../../bot/main.js");
+        let controller = require("../../controller/controller.js");
 
         /* eslint-disable no-inner-declarations */
         function initiateUpdate() { // Make initiating the update a function to simplify the activecomment check below
@@ -55,16 +53,16 @@ module.exports.run = (responseSteamID, callback) => {
 
 
         function filterACPobj() {
-            let objlength = Object.keys(mainfile.activecommentprocess).length; // Save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering
+            let objlength = Object.keys(controller.activeRequests).length; // Save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering
 
-            Object.keys(mainfile.activecommentprocess).forEach((e, i) => { // Loop over obj to filter invalid/expired entries
+            Object.keys(controller.activeRequests).forEach((e, i) => { // Loop over obj to filter invalid/expired entries
 
-                if (mainfile.activecommentprocess[e].status != "active" || Date.now() > mainfile.activecommentprocess[e].until + (config.botaccountcooldown * 60000)) { // Check if status is not active or if entry is finished (realistically the status can't be active and finished but it won't hurt to check both to avoid a possible bug)
-                    delete mainfile.activecommentprocess[e]; // Remove entry from object
+                if (controller.activeRequests[e].status != "active" || Date.now() > controller.activeRequests[e].until + (config.botaccountcooldown * 60000)) { // Check if status is not active or if entry is finished (realistically the status can't be active and finished but it won't hurt to check both to avoid a possible bug)
+                    delete controller.activeRequests[e]; // Remove entry from object
                 }
 
                 if (i == objlength - 1) {
-                    if (Object.keys(mainfile.activecommentprocess).length > 0) { // Check if obj is still not empty and recursively call this function again
+                    if (Object.keys(controller.activeRequests).length > 0) { // Check if obj is still not empty and recursively call this function again
 
                         setTimeout(() => { // Wait 2.5 sec and check again
                             filterACPobj();
@@ -82,7 +80,7 @@ module.exports.run = (responseSteamID, callback) => {
 
 
         // Check for active comment process. If obj not empty then first sort out all invalid/expired entries.
-        if (Object.keys(mainfile.activecommentprocess).length > 0 && Object.values(mainfile.activecommentprocess).some(a => a["status"] == "active")) { // Only check object if it isn't empty and has at least one comment process with the status active
+        if (Object.keys(controller.activeRequests).length > 0 && Object.values(controller.activeRequests).some(a => a["status"] == "active")) { // Only check object if it isn't empty and has at least one comment process with the status active
 
             logger("info", "Waiting for an active comment process to finish...", false, true, logger.animation("waiting"));
             if (responseSteamID) controller.botobject[0].chat.sendFriendMessage(responseSteamID, "/me Waiting for an active comment process to finish...");
