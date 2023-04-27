@@ -1,7 +1,6 @@
 {
     "note": "This file contains nearly all messages the bot sends via the steam chat. If you want to modify messages, read here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/How-to-add-custom-messages",
 
-    "pleasedontspam": "/me Please don't spam this command.",
     "commentactiverelog": "The bot is currently waiting for the last requested comment to be finished in order to relog accounts.\nPlease wait a few minutes and try again.",
     "commentcmdowneronly": "The bot owner set this command to owners only.\nType !owner to get information who the owner is.\nType !about to get a link to the bot creator.",
     "commentcmdusageowner": "'!comment amount/\"all\" profileid' for X many or the max amount of comments (max maxRequestAmount). Provide a profile id to comment on a specific profile.",
@@ -10,7 +9,6 @@
     "commentcmdusage2": "'!comment' for a comment on your profile!",
     "commentuseroncooldown": "You recently requested comments. Please wait the remaining remainingcooldown and try again.",
     "commentuseralreadyreceiving": "This profile is currently receiving previously requested comments. Please wait for them to be completed.",
-    "commentglobaloncooldown": "Someone else requested a comment in the last botaccountcooldown minutes or Steam has applied a cooldown on this account.\nPlease wait the remaining remainingglobalcooldown timeunit before trying again.",
     "commentinvalidnumber": "This is not a valid number!\nCommand usage: commentcmdusage",
     "commentrequesttoohigh": "You can request max. maxRequestAmount comments.\nCommand usage: commentcmdusage",
     "commentinvalidid": "This does not seem to be a valid steamID64, profile or group link or you provided the wrong steamID type for this command!\nA profile steamID64 must look like this: 76561198260031749\n...or a group steamID64 like this: 103582791464712227\n\nCommand usage: commentcmdusage",
@@ -28,7 +26,6 @@
     "comment429stop": "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error. Please try again later. Failed: failedamount/numberOfComments",
     "commentretrying": "failedamount/numberOfComments comments have failed. I'm going to retry the failed comments in untilStr. (Attempt thisattempt/maxattempt)",
     "commentsuccess2": "All comments have been sent. Failed: failedamount/numberOfComments\nIf you are a nice person then please comment on my profile too!",
-    "commentlimitederror": "-----------------------------------\nIt seems like at least one of the requested comments could have failed because you/the receiving account aren't/isn't friend with the commenting bot account.\n\nPlease make sure that you have added these accounts in order to eventually avoid this error in the future: \naccstoadd\n-----------------------------------",
 
     "useradded": "Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more commands or !about for more information!",
     "userunfriend": "You have been unfriended for being inactive for forceFriendlistSpaceTime days as the friendlist was running low on space.\nIf you need me again, feel free to add me again!",
