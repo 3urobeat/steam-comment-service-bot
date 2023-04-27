@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.04.2023 02:02:28
+ * Last Modified: 27.04.2023 02:05:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -24,7 +24,7 @@ const { logCommentError, handleIterationSkip } = require("../helpers/handleComme
 
 
 module.exports.commentProfile = {
-    names: ["comment"],
+    names: ["comment", "gcomment", "groupcomment"],
     description: "",
     ownersOnly: false,
 
