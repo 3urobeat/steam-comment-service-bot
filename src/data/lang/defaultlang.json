@@ -16,6 +16,8 @@
     "commentmissingnumberofcomments": "Please specify how many comments out of maxRequestAmount you would like to request.\nCommand usage: commentcmdusage",
     "commentzeroavailableaccs": "Sorry but there are currently not enough accounts available to fulfill your request. Please wait waittime and try again!",
     "commentnotenoughavailableaccs": "Sorry but there are currently not enough accounts available to fulfill your request. Please wait waittime and try again or only request availablenow comments now.",
+    "commentnoaccounts": "Sorry but there are no accounts to fulfill this request. Please contact the bot administrator of this instance.\nUse the !owner command to get information about who runs this instance.",
+    "commentnounlimitedaccs": "Sorry but there are no unlimited accounts which are needed to fulfill this request. Please contact the bot administrator of this instance.\nUse the !owner command to get information about who runs this instance.",
     "commentaddbotaccounts": "Please add these accounts and then request again: (limited accounts)",
     "commentuserprofileprivate": "Your/the receiving profile seems to be private. Please edit your/the privacy settings on your/the receiving profile and try again!",
     "commenterroroccurred": "Oops, an error occurred! I sadly wasn't able to comment.",

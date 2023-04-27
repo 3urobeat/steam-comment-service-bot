@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.04.2023 02:05:38
+ * Last Modified: 27.04.2023 02:21:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -76,8 +76,16 @@ module.exports.commentProfile = {
         if (until > Date.now()) return respond(commandHandler.data.lang.commentuseroncooldown.replace("remainingcooldown", untilStr));
 
 
-        // Get all currently available bot accounts. Exclude limited accounts for group comments by only passing true when idType is equal to INDIVIDUAL
-        let { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = commandHandler.controller.getAvailableAccountsForCommenting(numberOfComments, idType == SteamID.Type.INDIVIDUAL, receiverSteamID64);
+        // Get all currently available bot accounts. Only allow limited accounts for profile comments by only passing true when idType is equal to INDIVIDUAL
+        let allowLimitedAccounts = (idType == SteamID.Type.INDIVIDUAL);
+        let { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = commandHandler.controller.getAvailableAccountsForCommenting(numberOfComments, allowLimitedAccounts, receiverSteamID64);
+
+        if (availableAccounts.length - accsToAdd < accsNeeded && accsToAdd.length == 0 && !whenAvailableStr) { // Check if this bot has no suitable accounts for this request and there won't be any available at any point
+            if (!allowLimitedAccounts) respond(commandHandler.data.lang.commentnounlimitedaccs); // Send less generic message for requests which require unlimited accounts
+                else respond(commandHandler.data.lang.commentnoaccounts);
+
+            return;
+        }
 
         if (availableAccounts.length - accsToAdd.length < accsNeeded && !whenAvailableStr) { // Check if user needs to add accounts first. Make sure the lack of accounts is caused by accsToAdd, not cooldown
             let addStr = commandHandler.data.lang.commentaddbotaccounts;
