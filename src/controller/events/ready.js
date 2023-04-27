@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 20:40:24
+ * Last Modified: 27.04.2023 12:11:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -112,7 +112,7 @@ Controller.prototype._readyEvent = function() {
 
 
     // Log amount of skippedaccounts
-    if (Controller.skippedaccounts.length > 0) logger("info", `Skipped Accounts: ${Controller.skippedaccounts.length}/${Object.keys(this.data.logininfo).length}\n`, true);
+    if (this.info.skippedaccounts.length > 0) logger("info", `Skipped Accounts: ${this.info.skippedaccounts.length}/${Object.keys(this.data.logininfo).length}\n`, true);
 
 
     // Please star my repo :)

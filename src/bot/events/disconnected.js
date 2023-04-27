@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 30.03.2023 21:29:56
+ * Last Modified: 27.04.2023 12:20:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -33,7 +33,7 @@ Bot.prototype._attachSteamDisconnectedEvent = function() {
 
         this.controller._statusUpdateEvent(this, "offline"); // Set status of this account to offline
 
-        if (!this.controller.skippednow.includes(this.index) && this.controller.relogAfterDisconnect) { // Bot.logOff() also calls this event with NoConnection.
+        if (!this.controller.info.skippedaccounts.includes(this.loginData.logOnOptions.accountName) && this.controller.relogAfterDisconnect) { // Bot.logOff() also calls this event with NoConnection.
             if (this.controller.relogQueue.includes(this.index)) return; // Ignore this call if the account is already being relogged (this happens for example when handleExpiringTokens.js calls the relog function directly)
 
             logger("info", `${logger.colors.fggreen}[${this.logPrefix}] Initiating a relog in ${this.controller.data.advancedconfig.relogTimeout / 1000} seconds.`); // Announce relog

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 13.04.2023 16:35:47
+ * Last Modified: 27.04.2023 12:27:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -54,6 +54,7 @@ const Controller = function() {
         lastLoginTimestamp: 0,  // Save timestamp of last login attempted by any account to calculate wait time for next account
         steamGuardInputTime: 0,
         readyAfter: 0, // Length of last startup in seconds
+        skippedaccounts: [], // Array of account names which have been skipped
         activeRelog: false, // Allows to block new comment requests when waiting for the last request to finish
         commentCounter: 0
     };
@@ -63,7 +64,6 @@ const Controller = function() {
     this.relogQueue = [];
 
     // TODO: Legacy stuff, filter out what is not needed
-    this.skippednow            = [];    // Array to track which accounts have been skipped
     this.relogAfterDisconnect  = true;  // Allows to prevent accounts from relogging when calling bot.logOff()
     this.failedcomments        = [];    // Array saving failedcomments so the user can access them via the !failedcomments command
     this.activecommentprocess  = {};    // Object storing active comment processes so that a user can only request one process at a time, used accounts can only be used in one session, have a cooldown (not the user! that is handled by lastcomment) and the updater is blocked
@@ -99,6 +99,9 @@ Controller.prototype._start = async function() {
     }
 
     logafterrestart = []; // Clear array // TODO: Export logafterrestart or smth
+
+    // Update data in Controller object with data that has been passed through restart
+    this.info.skippedaccounts = skippedaccounts;
 
 
     /* ------------ Mark new execution in output: ------------ */
@@ -173,7 +176,7 @@ Controller.prototype._start = async function() {
                     this._preLogin(); // Run one-time pre-login tasks
                     this.login(); // Start logging in
                 } else {
-                    this.restart(JSON.stringify({ skippedaccounts: this.skippedaccounts, updatefailed: updateFailed == true })); // Send request to parent process (checking updateFailed == true so that undefined will result in false instead of undefined)
+                    this.restart(JSON.stringify({ skippedaccounts: this.info.skippedaccounts, updatefailed: updateFailed == true })); // Send request to parent process (checking updateFailed == true so that undefined will result in false instead of undefined)
                 }
             });
         }
@@ -194,7 +197,7 @@ function restartdata(data) {
 
     if (data.oldconfig) oldconfig = data.oldconfig //eslint-disable-line
     if (data.logafterrestart) logafterrestart = data.logafterrestart; // We can't print now since the logger function isn't imported yet.
-    if (data.skippedaccounts) module.exports.skippedaccounts = data.skippedaccounts;
+    if (data.skippedaccounts) skippedaccounts = data.skippedaccounts;
     if (data.updatefailed) updateFailed = data.updatefailed;
 }
 
@@ -214,12 +217,11 @@ if (parseInt(process.argv[3]) + 2500 > Date.now()) { // Check if this process ju
     var oldconfig = {} //eslint-disable-line
     var logafterrestart = []; // Create array to log these error messages after restart
     var updateFailed = false;
+    var skippedaccounts = [];
 
     // Yes, I know, global variables are bad. But I need a few multiple times in different files and it would be a pain in the ass to import them every time and ensure that I don't create a circular dependency and what not.
     global.botisloggedin = false;
     global.srcdir        = process.argv[2];
-
-    module.exports.skippedaccounts = []; // Array to save which accounts have been skipped to skip them automatically when restarting
 
     // Start the bot through the restartdata function if this is a restart to keep some data or start the bot directly
     if (process.argv[4]) restartdata(process.argv[4]);

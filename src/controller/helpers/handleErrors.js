@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:53:37
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 12:54:11
+ * Last Modified: 27.04.2023 12:11:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -45,7 +45,7 @@ Controller.prototype._handleErrors = function() {
                 } else {
                     // Logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
                     logger("info", "Successfully reinstalled all modules. Restarting...");
-                    this.restart(JSON.stringify({ skippedaccounts: this.skippedaccounts, logafterrestart: this.logafterrestart })); // Send request to parent process
+                    this.restart(JSON.stringify({ skippedaccounts: this.info.skippedaccounts, logafterrestart: this.logafterrestart })); // Send request to parent process
                 }
             });
 
@@ -61,7 +61,7 @@ Controller.prototype._handleErrors = function() {
             logger("", "", true);
 
             setTimeout(() => {
-                this.restart(JSON.stringify({ skippedaccounts: this.skippedaccounts, logafterrestart: logafterrestart })); // Send request to parent process
+                this.restart(JSON.stringify({ skippedaccounts: this.info.skippedaccounts, logafterrestart: logafterrestart })); // Send request to parent process
             }, 5000); */
         }
     });

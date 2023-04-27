@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 13.04.2023 14:58:20
+ * Last Modified: 27.04.2023 12:30:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -92,8 +92,8 @@ Controller.prototype._preLogin = async function() {
     let estimatedlogintime;
 
     // Only use "intelligent" evaluation method when the bot was started more than 5 times
-    if (this.data.datafile.timesloggedin < 5) estimatedlogintime = ((this.data.advancedconfig.loginDelay * (Object.keys(this.data.logininfo).length - 1 - Controller.skippedaccounts.length)) / 1000) + 5; // 5 seconds tolerance
-        else estimatedlogintime = ((this.data.datafile.totallogintime / this.data.datafile.timesloggedin) + (this.data.advancedconfig.loginDelay / 1000)) * (Object.keys(this.data.logininfo).length - Controller.skippedaccounts.length);
+    if (this.data.datafile.timesloggedin < 5) estimatedlogintime = ((this.data.advancedconfig.loginDelay * (Object.keys(this.data.logininfo).length - 1 - this.info.skippedaccounts.length)) / 1000) + 5; // 5 seconds tolerance
+        else estimatedlogintime = ((this.data.datafile.totallogintime / this.data.datafile.timesloggedin) + (this.data.advancedconfig.loginDelay / 1000)) * (Object.keys(this.data.logininfo).length - this.info.skippedaccounts.length);
 
     let estimatedlogintimeunit = "seconds";
     if (estimatedlogintime > 60) { estimatedlogintime = estimatedlogintime / 60; estimatedlogintimeunit = "minutes"; }
@@ -112,16 +112,21 @@ Controller.prototype._preLogin = async function() {
 Controller.prototype.login = function() {
     logger("debug", "Controller login(): Login requested, checking for any accounts currently offline...");
 
-    // Iterate over all accounts in logininfo, use syncLoop() helper to make our job easier
-    misc.syncLoop(Object.keys(this.data.logininfo).length, (loop, i) => {
-        let k = Object.values(this.data.logininfo)[i];
+    // Get array of all account names
+    let allAccounts = Object.keys(this.data.logininfo);
 
-        // Ignore account if it was skipped
-        if (Controller.skippedaccounts.includes(k.accountName)) {
-            logger("info", `[skippedaccounts] ${k.accountName} is in skippedaccounts array, skipping login request`, false, true);
-            module.exports.skippednow.push(k.accountName);
-            return;
-        }
+    // Filter accounts which were skipped
+    allAccounts = allAccounts.filter(e => !this.info.skippedaccounts.includes(e));
+
+    // Filter accounts which are not offline
+    allAccounts = allAccounts.filter(e => !this.bots[e] || this.bots[e].status == "offline"); // If no bot object exists yet the account must be offline
+
+    logger("debug", `Controller login(): Found ${allAccounts.length} accounts which aren't logged in and weren't skipped`);
+
+
+    // Iterate over all accounts, use syncLoop() helper to make our job easier
+    misc.syncLoop(allAccounts.length, (loop, i) => {
+        let k = this.data.logininfo[allAccounts[i]]; // Get logininfo for this account name
 
         // TODO: Check for connection loss timestamp when it is available and wait a bit before retrying a failed login. Maybe add reason why account was skipped to not reattempt steam guard login
 
@@ -137,12 +142,9 @@ Controller.prototype.login = function() {
             // Check if no bot object entry exists for this account and create one
             if (!this.bots[k.accountName]) {
                 logger("info", `Creating new bot object for ${k.accountName}...`, false, true, logger.animation("loading"));
+
                 this.bots[k.accountName] = new Bot(this, i); // Create a new bot object for this account and store a reference to it
-
             } else {
-
-                // Ignore iteration if account is currently not offline
-                if (this.bots[k.accountName].status != "offline") return;
                 logger("info", `Found existing bot object for ${k.accountName}! Reusing it...`, false, true, logger.animation("loading"));
             }
 

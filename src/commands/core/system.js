@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 22.04.2023 18:22:28
+ * Last Modified: 27.04.2023 11:29:49
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -38,7 +38,7 @@ module.exports.restart = {
 
         respond(commandHandler.data.lang.restartcmdrestarting);
 
-        commandHandler.controller.restart(JSON.stringify({ skippedaccounts: commandHandler.controller.skippedaccounts }));
+        commandHandler.controller.restart(JSON.stringify({ skippedaccounts: commandHandler.controller.info.skippedaccounts }));
     }
 };
 
@@ -86,7 +86,7 @@ module.exports.update = {
 
             // TODO: Updater needs to be updated
             require("../../updater/updater.js").run(true, steamID64, false, (foundAndDone) => { // We can ignore callback as the updater already responds to the user if a steamID is provided
-                if (foundAndDone) commandHandler.controller.restart(JSON.stringify({ skippedaccounts: commandHandler.controller.skippedaccounts })); // Send request to parent process
+                if (foundAndDone) commandHandler.controller.restart(JSON.stringify({ skippedaccounts: commandHandler.controller.info.skippedaccounts })); // Send request to parent process
             });
 
             respond(commandHandler.data.lang.updatecmdforce.replace("branchname", commandHandler.data.datafile.branch));
@@ -95,7 +95,7 @@ module.exports.update = {
 
             // TODO: Updater needs to be updated
             require("../../updater/updater.js").run(false, steamID64, false, (foundAndDone) => { // We can ignore callback as the updater already responds to the user if a steamID is provided
-                if (foundAndDone) commandHandler.controller.restart(JSON.stringify({ skippedaccounts: commandHandler.controller.skippedaccounts })); // Send request to parent process
+                if (foundAndDone) commandHandler.controller.restart(JSON.stringify({ skippedaccounts: commandHandler.controller.info.skippedaccounts })); // Send request to parent process
             });
 
             respond(commandHandler.data.lang.updatecmdcheck.replace("branchname", commandHandler.data.datafile.branch));

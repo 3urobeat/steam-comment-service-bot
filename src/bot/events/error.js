@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 30.03.2023 21:30:42
+ * Last Modified: 27.04.2023 12:22:18
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -40,10 +40,9 @@ Bot.prototype._attachSteamErrorEvent = function() {
                 logger("error", `${logger.colors.fgred} Failed account is bot0! Aborting...`, true);
                 return this.controller.stop();
             } else {
-                this.controller.skippedaccounts.push(this.index);
-                this.controller.skippednow.push(this.index);
+                this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
 
-                // Remove account from relogQueue if included so that the next account can try to relog itself
+                // Remove account from relogQueue if included so that the nex t account can try to relog itself
                 if (this.controller.relogQueue.includes(this.index)) this.controller.relogQueue.splice(this.controller.relogQueue.indexOf(this.index), 1);
 
                 // Remove account from botobject & communityobject so that it won't be used for anything anymore
@@ -57,7 +56,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
             logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam. Reason: ${err}`);
 
             // Check if this is an intended logoff
-            if (this.controller.relogAfterDisconnect && !this.controller.skippednow.includes(this.index)) {
+            if (this.controller.relogAfterDisconnect && !this.controller.info.skippedaccounts.includes(this.loginData.logOnOptions.accountName)) {
                 logger("info", `${logger.colors.fggreen}[${this.logPrefix}] Initiating a relog in 30 seconds.`); // Announce relog
 
                 // Relog after waiting 30 sec
@@ -91,8 +90,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
                     logger("info", "Failed account is not bot0. Skipping account...", true);
                     this.controller._statusUpdateEvent(this, "skipped");
 
-                    this.controller.skippedaccounts.push(this.index);
-                    this.controller.skippednow.push(this.index);
+                    this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
 
                     // Remove account from relogQueue if included so that the next account can try to relog itself
                     if (this.controller.relogQueue.includes(this.index)) this.controller.relogQueue.splice(this.controller.relogQueue.indexOf(this.index), 1);

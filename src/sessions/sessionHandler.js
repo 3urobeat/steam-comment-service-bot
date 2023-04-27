@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 30.03.2023 21:31:21
+ * Last Modified: 27.04.2023 12:25:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -96,9 +96,7 @@ SessionHandler.prototype._resolvePromise = function(token) {
             logger("info", `[${this.bot.logPrefix}] Skipping account '${this.logOnOptions.accountName}'...`, true);
 
             this.controller._statusUpdateEvent(this.bot, "skipped");
-
-            Controller.skippedaccounts.push(this.bot.index);
-            loginfile.skippednow.push(this.bot.index);
+            this.controller.info.skippedaccounts.push(this.bot.loginData.logOnOptions.accountName);
 
             // Remove account from bots object so that it won't be used for anything anymore (if it was logged in before, aka this being a relog)
             if (this.controller.bots[String(this.bot.index)]) delete this.controller.bots[String(this.bot.index)];
