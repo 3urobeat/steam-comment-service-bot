@@ -1,10 +1,10 @@
 /*
- * File: commentprofile.js
+ * File: comment.js
  * Project: steam-comment-service-bot
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 12:52:08
+ * Last Modified: 27.04.2023 02:02:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -51,7 +51,7 @@ module.exports.commentProfile = {
 
 
         /* --------- Calculate maxRequestAmount and get arguments from comment request --------- */
-        let { maxRequestAmount, numberOfComments, profileID, quotesArr } = await getCommentArgs(commandHandler, args, requesterSteamID64, SteamID.Type.INDIVIDUAL, respond);
+        let { maxRequestAmount, numberOfComments, profileID, idType, quotesArr } = await getCommentArgs(commandHandler, args, requesterSteamID64, respond);
 
         if (!maxRequestAmount && !numberOfComments && !quotesArr) return; // Looks like the helper aborted the request
 
@@ -76,8 +76,8 @@ module.exports.commentProfile = {
         if (until > Date.now()) return respond(commandHandler.data.lang.commentuseroncooldown.replace("remainingcooldown", untilStr));
 
 
-        // Get all currently available bot accounts
-        let { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = commandHandler.controller.getAvailableAccountsForCommenting(numberOfComments, true, receiverSteamID64);
+        // Get all currently available bot accounts. Exclude limited accounts for group comments by only passing true when idType is equal to INDIVIDUAL
+        let { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = commandHandler.controller.getAvailableAccountsForCommenting(numberOfComments, idType == SteamID.Type.INDIVIDUAL, receiverSteamID64);
 
         if (availableAccounts.length - accsToAdd.length < accsNeeded && !whenAvailableStr) { // Check if user needs to add accounts first. Make sure the lack of accounts is caused by accsToAdd, not cooldown
             let addStr = commandHandler.data.lang.commentaddbotaccounts;
@@ -98,35 +98,46 @@ module.exports.commentProfile = {
         }
 
 
-        /* --------- Check if profile is private ---------  */
-        commandHandler.controller.main.community.getSteamUser(new SteamID(receiverSteamID64), (err, user) => {
-            if (err) {
-                logger("warn", `[Main] Failed to check if ${steamID64} is private: ${err}\n       Trying to comment anyway and hoping no error occurs...`); // This can happen sometimes and most of the times commenting will still work
-            } else {
-                logger("debug", "Successfully checked privacyState of receiving user: " + user.privacyState);
+        /* --------- Check if profile is private if idType is INDIVIDUAL ---------  */
+        let activeRequestsObj = {
+            status: "active",
+            type: idType == SteamID.Type.INDIVIDUAL ? "profileComment" : "groupComment",
+            amount: numberOfComments,
+            quotesArr: quotesArr,
+            requestedby: requesterSteamID64,
+            accounts: availableAccounts,
+            thisIteration: -1, // Set to -1 so that first iteration will increase it to 0
+            retryAttempt: 0,
+            amountBeforeRetry: 0, // Saves the amount of requested comments before the most recent retry attempt was made to send a correct finished message
+            until: Date.now() + ((numberOfComments - 1) * commandHandler.data.config.commentdelay), // Calculate estimated wait time (first comment is instant -> remove 1 from numberOfComments)
+            failed: {}
+        };
 
-                if (user.privacyState != "public") return respond(commandHandler.data.lang.commentuserprofileprivate); // Only check if getting the Steam user's data didn't result in an error
-            }
+        if (idType == SteamID.Type.INDIVIDUAL) {
+            commandHandler.controller.main.community.getSteamUser(new SteamID(receiverSteamID64), (err, user) => {
+                if (err) {
+                    logger("warn", `[Main] Failed to check if ${steamID64} is private: ${err}\n       Trying to comment anyway and hoping no error occurs...`); // This can happen sometimes and most of the times commenting will still work
+                } else {
+                    logger("debug", "Successfully checked privacyState of receiving user: " + user.privacyState);
 
-            // Make new entry in activecommentprocess obj to register this comment process
-            commandHandler.controller.activeRequests[receiverSteamID64] = {
-                status: "active",
-                type: "profileComment",
-                amount: numberOfComments,
-                quotesArr: quotesArr,
-                requestedby: requesterSteamID64,
-                accounts: availableAccounts,
-                thisIteration: -1, // Set to -1 so that first iteration will increase it to 0
-                retryAttempt: 0,
-                amountBeforeRetry: 0, // Saves the amount of requested comments before the most recent retry attempt was made to send a correct finished message
-                until: Date.now() + ((numberOfComments - 1) * commandHandler.data.config.commentdelay), // Calculate estimated wait time (first comment is instant -> remove 1 from numberOfComments)
-                failed: {}
-            };
+                    if (user.privacyState != "public") return respond(commandHandler.data.lang.commentuserprofileprivate); // Only check if getting the Steam user's data didn't result in an error
+                }
 
+                // Register this comment process in activeRequests
+                commandHandler.controller.activeRequests[receiverSteamID64] = activeRequestsObj;
+
+                // Start commenting
+                logger("debug", "Made activeRequest entry for user, starting comment loop...");
+                comment(commandHandler, respond, receiverSteamID64);
+            });
+        } else {
+            // Register this comment process in activeRequests
+            commandHandler.controller.activeRequests[receiverSteamID64] = activeRequestsObj;
+
+            // Start commenting
             logger("debug", "Made activeRequest entry for user, starting comment loop...");
-
-            comment(commandHandler, respond, receiverSteamID64); // Start commenting
-        });
+            comment(commandHandler, respond, receiverSteamID64);
+        }
     }
 };
 
@@ -155,18 +166,21 @@ function comment(commandHandler, respond, receiverSteamID64) {
 
 
             /* --------- Try to comment --------- */
-            let quote = await commandHandler.data.getQuote(activeReqEntry.quotesArr); // Get a random quote to comment with
+            let postComment = activeReqEntry.type == "profileComment" ? bot.community.postUserComment : bot.community.postGroupComment; // Get the correct comment function for this type
+            let quote       = await commandHandler.data.getQuote(activeReqEntry.quotesArr);                                             // Get a random quote to comment with
 
-            bot.community.postUserComment(new SteamID(receiverSteamID64), quote, (error) => { // Post comment
+            postComment.call(bot.community, receiverSteamID64, quote, (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment! SteamUser will break without this.
 
                 /* --------- Handle errors thrown by this comment attempt --------- */
                 if (error) logCommentError(error, commandHandler, bot, receiverSteamID64);
 
 
                 /* --------- No error, run this on every successful iteration --------- */
+                let whereStr = activeReqEntry.type == "profileComment" ? `on profile ${receiverSteamID64}` : `in group ${receiverSteamID64}`; // Shortcut to convey more precise information in the 4 log messages below
+
                 if (activeReqEntry.thisIteration == 0) { // Stuff below should only run in first iteration
-                    if (commandHandler.data.proxies.length > 1) logger("info", `${logger.colors.fggreen}[${bot.logPrefix}] ${activeReqEntry.amount} Comment(s) requested. Comment on ${receiverSteamID64} with proxy ${bot.loginData.proxyIndex}: ${String(quote).split("\n")[0]}`);
-                        else logger("info", `${logger.colors.fggreen}[${bot.logPrefix}] ${activeReqEntry.amount} Comment(s) requested. Comment on ${receiverSteamID64}: ${String(quote).split("\n")[0]}`); // Splitting \n to only get first line of multi line comments
+                    if (commandHandler.data.proxies.length > 1) logger("info", `${logger.colors.fggreen}[${bot.logPrefix}] ${activeReqEntry.amount} Comment(s) requested. Comment ${whereStr} with proxy ${bot.loginData.proxyIndex}: ${String(quote).split("\n")[0]}`);
+                        else logger("info", `${logger.colors.fggreen}[${bot.logPrefix}] ${activeReqEntry.amount} Comment(s) requested. Comment ${whereStr}: ${String(quote).split("\n")[0]}`); // Splitting \n to only get first line of multi line comments
 
 
                     // Only send estimated wait time message for multiple comments
@@ -176,17 +190,18 @@ function comment(commandHandler, respond, receiverSteamID64) {
                     // Give requesting user cooldown
                     commandHandler.data.setUserCooldown(activeReqEntry.requestedby, activeReqEntry.until);
 
-                } else { // Stuff below should only run for child accounts
+                } else { // Stuff below should run for every iteration that is not the first one
 
                     if (!error) {
-                        if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${receiverSteamID64} with proxy ${this.loginData.proxyIndex}: ${String(quote).split("\n")[0]}`);
-                            else logger("info", `[${bot.logPrefix}] Comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${receiverSteamID64}: ${String(quote).split("\n")[0]}`); // Splitting \n to only get first line of multi line comments
+                        if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${whereStr} with proxy ${this.loginData.proxyIndex}: ${String(quote).split("\n")[0]}`);
+                            else logger("info", `[${bot.logPrefix}] Comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${whereStr}: ${String(quote).split("\n")[0]}`); // Splitting \n to only get first line of multi line comments
                     }
                 }
 
 
-                // Continue with next iteration
+                // Continue with the next iteration
                 loop.next();
+
             });
 
         }, commandHandler.data.config.commentdelay * (i > 0)); // Delay every comment that is not the first one

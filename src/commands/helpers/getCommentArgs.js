@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 20:34:30
+ * Last Modified: 26.04.2023 21:41:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -26,11 +26,10 @@ const { handleSteamIdResolving } = require("../../bot/helpers/handleSteamIdResol
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Array} args The command arguments
  * @param {String} requesterSteamID64 The steamID64 of the requesting user
- * @param {SteamID.Type} profileIDType The type of SteamID expected for profileID parameter (https://github.com/DoctorMcKay/node-steamid#types)
  * @param {Function} respond The function to send messages to the requesting user
- * @returns {Object} maxRequestAmount, commentcmdUsage, numberOfComments, profileID, customQuotesArr
+ * @returns {Object} maxRequestAmount, commentcmdUsage, numberOfComments, profileID, idType, customQuotesArr
  */
-module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, profileIDType, respond) => {
+module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respond) => {
     return new Promise((resolve) => {
 
         let maxRequestAmount = commandHandler.data.config.maxComments; // Set to default value and if the requesting user is an owner it gets changed below
@@ -38,6 +37,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, profi
         let quotesArr        = commandHandler.data.quotes;
 
         let profileID;
+        let idType = SteamID.Type.INDIVIDUAL; // Set user as default because that makes sense (because it can only be a group when param was provided yk)
 
 
         /* --------- Define command usage messages & maxRequestAmount for each user's privileges --------- */
@@ -86,6 +86,8 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, profi
                         if (err) respond(commandHandler.data.lang.commentinvalidid.replace("commentcmdusage", commentcmdUsage) + "\n\nError: " + err);
 
                         profileID = res; // Will be null on err
+
+                        if (res) idType = new SteamID(res).type; // Only attempt to update type if id was resolved successfully
                     });
 
                 } else {
@@ -134,7 +136,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, profi
                 logger("debug", `CommandHandler getCommentArgs() success. maxRequestAmount: ${maxRequestAmount} | numberOfComments: ${numberOfComments} | profileID: ${profileID} | quotesArr.length: ${quotesArr.length}`);
 
                 // Return obj if profileID is not null, otherwise return false as an error has occurred, the user was informed and execution should be stopped
-                if (profileID) resolve({ maxRequestAmount, numberOfComments, profileID, quotesArr });
+                if (profileID) resolve({ maxRequestAmount, numberOfComments, profileID, idType, quotesArr });
                     else resolve(false);
             }
         }, 250);
