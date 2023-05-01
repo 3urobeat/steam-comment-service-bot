@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.04.2023 02:21:05
+ * Last Modified: 29.04.2023 15:11:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -23,7 +23,7 @@ const { syncLoop, timeToString }               = require("../../controller/helpe
 const { logCommentError, handleIterationSkip } = require("../helpers/handleCommentSkips.js");
 
 
-module.exports.commentProfile = {
+module.exports.comment = {
     names: ["comment", "gcomment", "groupcomment"],
     description: "",
     ownersOnly: false,
@@ -46,7 +46,7 @@ module.exports.commentProfile = {
 
 
         /* --------- Check for disabled comment cmd or if update is queued --------- */
-        if (commandHandler.controller.info.activeRelog) return respond(commandHandler.data.lang.commentactiverelog);
+        if (commandHandler.controller.info.activeLogin) return respond(commandHandler.data.lang.commentactiverelog);
         if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(commandHandler.data.lang.commentcmdowneronly);
 
 

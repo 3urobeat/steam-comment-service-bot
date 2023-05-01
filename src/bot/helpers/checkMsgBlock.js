@@ -4,7 +4,7 @@
  * Created Date: 20.03.2023 12:46:47
  * Author: 3urobeat
  *
- * Last Modified: 07.04.2023 13:50:17
+ * Last Modified: 27.04.2023 02:08:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
-const SteamID = require("steamid");
 
 const Bot = require("../bot.js");
 

@@ -4,7 +4,7 @@
  * Created Date: 15.01.2020 10:38:00
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 20:54:51
+ * Last Modified: 26.04.2023 22:39:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -23,9 +23,9 @@
 
 function getExtdata() {
     try { // Just try to require, if it should fail then the actual restoring process will be handled later
-        return extdata = require("./src/data/data.json");
+        return require("./src/data/data.json");
     } catch (err) {
-        return extdata = { filetostart: "./src/starter.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/starter.js" };
+        return { filetostart: "./src/starter.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/starter.js" };
     }
 }
 

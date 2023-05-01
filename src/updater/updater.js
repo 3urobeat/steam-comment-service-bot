@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 20:54:20
+ * Last Modified: 29.04.2023 15:11:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -61,7 +61,7 @@ module.exports.run = async (forceupdate, responseSteamID, compatibilityfeaturedo
 
             /* eslint-disable no-inner-declarations */
             async function initiateUpdate() { // Make initiating the update a function to simplify the permission check below
-                controller.info.activeRelog = true; // Block new comment requests by setting active relog to true
+                controller.info.activeLogin = true; // Block new comment requests by setting active relog to true
 
                 let file2 = await starter.checkAndGetFile("./src/updater/helpers/prepareupdate.js", logger, false, false); // Prepare update (like waiting for active comment processes to finish, logging off accounts, etc.)
                 if (!file2) return;
@@ -191,7 +191,7 @@ module.exports.compatibility = async (callback) => {
 let lastupdatecheckinterval = Date.now();
 if (updatecheckinterval) clearInterval(updatecheckinterval); // This check should never run but I added it just to be sure
 
-let updatecheckinterval = setInterval(() => {
+var updatecheckinterval = setInterval(() => { // eslint-disable-line no-var
     if (Date.now() > lastupdatecheckinterval) {
         fs.readFile("./output.txt", function (err, data) {
             if (err) logger("error", "error checking output for update notice: " + err);

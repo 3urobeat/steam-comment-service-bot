@@ -4,7 +4,7 @@
  * Created Date: 03.11.2022 12:27:46
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 19:31:05
+ * Last Modified: 27.04.2023 12:22:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -18,6 +18,8 @@
 const controller = require("../../controller/controller.js");
 const login      = require("../../controller/login.js");
 
+
+// TODO!
 
 /**
  * Handles force progressing the relog queue should an account get stuck while trying to log in to prevent the bot from softlocking (see issue #139)
@@ -67,8 +69,7 @@ module.exports.handleLoginTimeout = (loginindex, thisbot, logOnOptions, bot) => 
 
                 logger("info", "Failed account is not bot0. Skipping account...", true);
 
-                controller.skippedaccounts.push(loginindex);
-                login.skippednow.push(loginindex);
+                controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
 
                 // Remove account from relogQueue if included so that the next account can try to relog itself
                 if (controller.relogQueue.includes(loginindex)) controller.relogQueue.splice(controller.relogQueue.indexOf(loginindex), 1);

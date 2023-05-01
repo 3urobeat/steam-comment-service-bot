@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 14:12:17
  * Author: 3urobeat
  *
- * Last Modified: 21.03.2023 00:57:50
+ * Last Modified: 27.04.2023 01:43:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -90,7 +90,7 @@ module.exports.load = (sys) => { //eslint-disable-line
                 if (!lastcommentdoc) logger("error", "User is missing from database?? How is this possible?! Error maybe: " + err);
 
                 try { // Catch any unhandled error to be able to remove user from activecommentprocess array
-                    require("../../src/bot/commands/commentprofile.js").run(null, steamID, [req.query.n, req.query.id], mainfile.lang, res, lastcommentdoc);
+                    require("../../src/bot/commands/comment.js").run(null, steamID, [req.query.n, req.query.id], mainfile.lang, res, lastcommentdoc);
                 } catch (err) {
                     res.status(500).send("Error while processing comment request: " + err.stack);
                     logger("error", "Error while processing comment request: " + err.stack);
