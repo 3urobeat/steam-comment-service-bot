@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.04.2023 15:28:58
+ * Last Modified: 01.05.2023 23:55:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -28,9 +28,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
     // Handle errors that were caused during logOn
     this.user.on("error", (err) => {
 
-        this.controller._statusUpdateEvent(this, "offline"); // Set status of this account to offline
-
-        // Custom behavior for LogonSessionReplaced error:
+        // Custom behavior for LogonSessionReplaced error
         if (err.eresult == EResult.LogonSessionReplaced) {
             logger("", "", true);
             logger("warn", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam! Reason: LogonSessionReplaced. I won't try to relog this account because someone else is using it now.`, false, false, null, true); // Force print this message now
@@ -42,32 +40,27 @@ Bot.prototype._attachSteamErrorEvent = function() {
             } else {
                 this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
 
-                // Remove account from relogQueue if included so that the nex t account can try to relog itself
-                if (this.controller.relogQueue.includes(this.index)) this.controller.relogQueue.splice(this.controller.relogQueue.indexOf(this.index), 1);
-
-                // Remove account from botobject & communityobject so that it won't be used for anything anymore
-                if (this.controller.bots[String(this.index)]) delete this.controller.bots[String(this.index)];
+                // Set status to error so it won't be used for anything anymore
+                this.controller._statusUpdateEvent(this, "error");
             }
             return;
         }
 
-        // Check if this is a connection loss and not a login error (because disconnects will be thrown here when autoRelogin is false)
-        if (Object.keys(this.controller.bots).includes(String(this.index)) && !this.controller.relogQueue.includes(this.index)) { // It must be a disconnect when the bot was once logged in and is not yet in the queue
+        // Check if this is a connection loss and not a login error (because disconnects are thrown here when SteamUser's autoRelogin is false)
+        if (this.status == "online") { // It must be a fresh connection loss if status has not changed yet
             logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam. Reason: ${err}`);
+            this.controller._statusUpdateEvent(this, "offline"); // Set status of this account to offline
 
             // Check if this is an intended logoff
             if (this.controller.relogAfterDisconnect && !this.controller.info.skippedaccounts.includes(this.loginData.logOnOptions.accountName)) {
                 logger("info", `${logger.colors.fggreen}[${this.logPrefix}] Initiating a relog in 30 seconds.`); // Announce relog
 
-                // Relog after waiting 30 sec
-                setTimeout(() => {
-                    this.controller.login();
-                }, 30000);
+                setTimeout(() => this.controller.login(), 30000); // Relog after waiting 30 sec
             } else {
                 logger("info", `[${this.logPrefix}] I won't queue myself for a relog because this account was skipped or this is an intended logOff.`);
             }
 
-        } else { // Actual error during login or relog
+        } else { // Actual error during login
 
             let blockedEnumsForRetries = [EResult.Banned, EResult.AccountNotFound]; // No need to block InvalidPassword anymore as the SessionHandler handles credentials
 
@@ -91,12 +84,6 @@ Bot.prototype._attachSteamErrorEvent = function() {
                     this.controller._statusUpdateEvent(this, "skipped");
 
                     this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
-
-                    // Remove account from relogQueue if included so that the next account can try to relog itself
-                    if (this.controller.relogQueue.includes(this.index)) this.controller.relogQueue.splice(this.controller.relogQueue.indexOf(this.index), 1);
-
-                    // Remove account from botobject & communityobject so that it won't be used for anything anymore
-                    if (this.controller.bots[String(this.index)]) delete this.controller.bots[String(this.index)];
                 }
 
             } else { // Got retries left or it is a relog...
@@ -111,9 +98,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
                 }
 
                 // Try again in 5 sec, Controller's login function waits for any status that is not offline
-                setTimeout(() => {
-                    this._loginToSteam(); // TODO: Controller's login func waits for any status that is not offline, we might need to set error or smth as status here if it fails repeatedly
-                }, 5000);
+                setTimeout(() => this._loginToSteam(), 5000);
             }
         }
 

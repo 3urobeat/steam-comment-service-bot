@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 13.04.2023 21:56:46
+ * Last Modified: 01.05.2023 20:45:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -98,7 +98,7 @@ DataManager.prototype.setUserCooldown = function(id, timestamp) {}; // eslint-di
 DataManager.prototype._startExpiringTokensCheckInterval = () => {};
 
 /**
- * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active comment process was found and sends them to the relogQueue
+ * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active comment process was found and relogs them
  * @param {Object} expiring Object of botobject entries to ask user for
  */
 DataManager.prototype._askForGetNewToken = function(expiring) {}; // eslint-disable-line

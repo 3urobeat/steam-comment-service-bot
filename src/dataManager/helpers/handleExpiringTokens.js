@@ -4,7 +4,7 @@
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 29.04.2023 15:11:40
+ * Last Modified: 01.05.2023 20:47:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -101,7 +101,7 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
 
 
 /**
- * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active comment process was found and sends them to the relogQueue
+ * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active comment process was found and relogs them
  * @param {Object} expiring Object of botobject entries to ask user for
  */
 DataManager.prototype._askForGetNewToken = function(expiring) {

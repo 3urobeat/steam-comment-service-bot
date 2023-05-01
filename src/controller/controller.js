@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.04.2023 15:31:30
+ * Last Modified: 01.05.2023 15:08:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -60,8 +60,6 @@ const Controller = function() {
     };
 
     this.activeRequests = {}; // Stores active comment etc. requests
-
-    this.relogQueue = [];
 
     // TODO: Legacy stuff, filter out what is not needed
     this.relogAfterDisconnect  = true;  // Allows to prevent accounts from relogging when calling bot.logOff()
