@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 21.04.2023 22:31:27
+ * Last Modified: 29.04.2023 15:26:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -21,7 +21,6 @@ const request        = require("request"); // Yes I know, the library is depreca
 
 const Controller     = require("../controller/controller.js"); // eslint-disable-line
 const SessionHandler = require("../sessions/sessionHandler.js");
-const CommandHandler = require("../commands/commandHandler.js");
 
 
 /**
@@ -123,12 +122,6 @@ module.exports = Bot;
 
 
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
-
-/**
- * Attempt to relog this bot account. This function regulates automatic relogging by delaying it depending on how many other accounts requested a relog as well.
- * @param {Boolean} force Forces an relog even if the account is already in relogQueue (important for steam-user error event while relog)
- */
-Bot.prototype.relogAccount = function(force) {}; // eslint-disable-line
 
 /**
  * Checks if user is blocked, has an active cooldown for spamming or isn't a friend
