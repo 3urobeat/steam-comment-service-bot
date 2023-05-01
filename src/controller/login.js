@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.04.2023 12:30:09
+ * Last Modified: 01.05.2023 13:40:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -106,11 +106,12 @@ Controller.prototype._preLogin = async function() {
 
 
 /**
- * Attempts to log in all bot accounts which are currently offline one after another
+ * Attempts to log in all bot accounts which are currently offline one after another.
  * Creates a new bot object for every new account and reuses existing one if possible
  */
 Controller.prototype.login = function() {
-    logger("debug", "Controller login(): Login requested, checking for any accounts currently offline...");
+    if (this.info.activeLogin) return logger("debug", "Controller login(): Login requested but there is already a login process active. Ignoring...");
+        else logger("debug", "Controller login(): Login requested, checking for any accounts currently offline...");
 
     // Get array of all account names
     let allAccounts = Object.keys(this.data.logininfo);
@@ -121,8 +122,14 @@ Controller.prototype.login = function() {
     // Filter accounts which are not offline
     allAccounts = allAccounts.filter(e => !this.bots[e] || this.bots[e].status == "offline"); // If no bot object exists yet the account must be offline
 
-    logger("debug", `Controller login(): Found ${allAccounts.length} accounts which aren't logged in and weren't skipped`);
+    logger("debug", `Controller login(): Found ${allAccounts.length} account(s) which aren't logged in and weren't skipped`);
 
+    // TODO: Idee: Status von allen accs hier zu waiting setzen? Dann kann jeder in queue pushen und alle die warten werden automatisch gefiltert
+    // Problem dass mehrere login prozesse gleichzeitig gestartet werden könnten existiert aber noch immer
+
+    // Set activeLogin to true if allAccounts is not empty
+    if (allAccounts.length == 0) return this.info.activeLogin = false;
+        else this.info.activeLogin = true;
 
     // Iterate over all accounts, use syncLoop() helper to make our job easier
     misc.syncLoop(allAccounts.length, (loop, i) => {
@@ -145,8 +152,11 @@ Controller.prototype.login = function() {
 
                 this.bots[k.accountName] = new Bot(this, i); // Create a new bot object for this account and store a reference to it
             } else {
-                logger("info", `Found existing bot object for ${k.accountName}! Reusing it...`, false, true, logger.animation("loading"));
+                logger("debug", `Found existing bot object for ${k.accountName}! Reusing it...`, false, true, logger.animation("loading"));
             }
+
+            // Reset logOnTries (do this here to guarantee a bot object exists for this account)
+            this.bots[k.accountName].loginData.logOnTries = 0;
 
             // Generate steamGuardCode with shared secret if one was provided
             if (this.data.logininfo[k.accountName].sharedSecret) {
@@ -173,10 +183,11 @@ Controller.prototype.login = function() {
                 logger("debug", `Controller login(): bot${i} changed status from offline to ${this.bots[k.accountName].status}! Continuing with next account...`);
 
                 // Check for last iteration, call again and emit ready event
-                if (i + 1 == Object.keys(this.data.logininfo).length) {
+                if (i + 1 == allAccounts.length) {
                     logger("debug", "Controller login(): Finished logging in all accounts! Calling myself again to check for any new accounts...");
+                    this.info.activeLogin = false;
                     this.login();
-                    this._readyEvent();
+                    if (this.info.readyAfter == 0) this._readyEvent(); // Only call ready event if this is the first start
                 }
 
                 // Continue with next iteration

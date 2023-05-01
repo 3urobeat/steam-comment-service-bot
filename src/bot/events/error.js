@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.04.2023 12:22:18
+ * Last Modified: 29.04.2023 15:28:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -61,7 +61,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
                 // Relog after waiting 30 sec
                 setTimeout(() => {
-                    this.relogAccount(false);
+                    this.controller.login();
                 }, 30000);
             } else {
                 logger("info", `[${this.logPrefix}] I won't queue myself for a relog because this account was skipped or this is an intended logOff.`);
@@ -110,10 +110,9 @@ Bot.prototype._attachSteamErrorEvent = function() {
                     this.sessionHandler.invalidateTokenInStorage();
                 }
 
-                // Call either relogAccount or logOnAccount function to continue where we started at after 5 sec
+                // Try again in 5 sec, Controller's login function waits for any status that is not offline
                 setTimeout(() => {
-                    if (this.controller.relogQueue.includes(this.index)) this.relogAccount(true); // Force relog
-                        else this._loginToSteam();
+                    this._loginToSteam(); // TODO: Controller's login func waits for any status that is not offline, we might need to set error or smth as status here if it fails repeatedly
                 }, 5000);
             }
         }

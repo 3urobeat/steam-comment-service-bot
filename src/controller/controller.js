@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.04.2023 12:27:27
+ * Last Modified: 29.04.2023 15:31:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -53,9 +53,9 @@ const Controller = function() {
         bootStartTimestamp: Date.now(), // Save timestamp to be able to calculate startup time in ready event
         lastLoginTimestamp: 0,  // Save timestamp of last login attempted by any account to calculate wait time for next account
         steamGuardInputTime: 0,
+        activeLogin: false, // Allows to block new comment requests when waiting for the last request to finish
         readyAfter: 0, // Length of last startup in seconds
         skippedaccounts: [], // Array of account names which have been skipped
-        activeRelog: false, // Allows to block new comment requests when waiting for the last request to finish
         commentCounter: 0
     };
 

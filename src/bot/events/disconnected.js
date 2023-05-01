@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.04.2023 12:20:04
+ * Last Modified: 27.04.2023 12:33:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -39,7 +39,7 @@ Bot.prototype._attachSteamDisconnectedEvent = function() {
             logger("info", `${logger.colors.fggreen}[${this.logPrefix}] Initiating a relog in ${this.controller.data.advancedconfig.relogTimeout / 1000} seconds.`); // Announce relog
 
             setTimeout(() => {
-                this.relogAccount(false);
+                this.controller.login();
             }, this.controller.data.advancedconfig.relogTimeout);
         } else {
             logger("info", `[${this.logPrefix}] I won't queue myself for a relog because this account is either already being relogged, was skipped or this is an intended logOff.`);

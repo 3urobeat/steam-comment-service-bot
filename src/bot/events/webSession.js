@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.04.2023 01:32:53
+ * Last Modified: 01.05.2023 14:08:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -36,20 +36,6 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
         if (!this.controller.info.readyAfter) logger("info", `[${this.logPrefix}] Got websession and set cookies. Accepting offline friend & group invites...`, false, true, logger.animation("loading")); // Only print message with animation if the bot was not fully started yet
             else logger("info", `[${this.logPrefix}] Got websession and set cookies. Accepting offline friend & group invites...`, false, true);
 
-        // If this is a relog then remove this account from the queue and let the next account be able to relog // TODO: Does this need rework when relogging is redone?
-        if (this.controller.relogQueue.includes(this.index)) {
-            logger("info", `[${this.logPrefix}] Relog successful.`);
-
-            this.controller.relogQueue.splice(this.controller.relogQueue.indexOf(this.index), 1); // Remove this this.index from the queue
-            logger("debug", `webSession event: Removing bot${this.index} from relogQueue. Queue is now at length ${this.controller.relogQueue.length}.`);
-
-            // Allow comment requests again when all accounts are done relogging
-            if (this.controller.relogQueue.length == 0) {
-                logger("debug", "webSession event: Relog queue is empty, setting activeRelog to false again");
-                this.controller.info.activeRelog = false;
-            }
-        }
-
 
         // Run check if all friends are in lastcomment.db database for main bot account
         if (this.index == 0) this.controller.checkLastcommentDB(this.index);
@@ -66,12 +52,10 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
                     // Accept friend request
                     this.user.addFriend(Object.keys(this.user.myFriends)[i]);
 
-
                     // Log message and send welcome message
                     logger("info", `[${this.logPrefix}] Added user while I was offline! User: ` + Object.keys(this.user.myFriends)[i]);
                     if (this.index == 0) this.controller.main.user.chat.sendFriendMessage(String(Object.keys(this.user.myFriends)[i]), this.controller.data.lang.useradded);
                         else logger("debug", "Not sending useradded message because this isn't the main this.user...");
-
 
                     // Add user to lastcomment database
                     let lastcommentobj = {
@@ -81,7 +65,6 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
                     this.controller.data.lastCommentDB.remove({ id: Object.keys(this.user.myFriends)[i] }, {}, (err) => { if (err) logger("error", "Error removing duplicate steamid from lastcomment.db on offline friend accept! Error: " + err); }); // Remove any old entries
                     this.controller.data.lastCommentDB.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err); });
-
 
                     // Invite user to yourgroup (and to my to make some stonks)
                     if (this.controller.data.cachefile.configgroup64id && Object.keys(this.user.myGroups).includes(this.controller.data.cachefile.configgroup64id)) {
@@ -130,7 +113,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
         }
 
 
-        /* ------------ Set primary group: ------------ */
+        /* ------------ Set primary group: ------------ */ // TODO: Add further delays? https://github.com/HerrEurobeat/steam-comment-service-bot/issues/165
         if (this.controller.data.advancedconfig.setPrimaryGroup && this.controller.data.cachefile.configgroup64id) {
             logger("info", `[${this.logPrefix}] setPrimaryGroup is enabled and configgroup64id is set, setting ${this.controller.data.cachefile.configgroup64id} as primary group...`, false, true, logger.animation("loading"));
 
