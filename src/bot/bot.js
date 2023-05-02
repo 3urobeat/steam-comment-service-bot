@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.04.2023 15:26:13
+ * Last Modified: 02.05.2023 13:30:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -59,6 +59,8 @@ const Bot = function(controller, index) {
     require("./helpers/checkMsgBlock.js");
     require("./helpers/steamChatInteraction.js");
 
+    // Create sessionHandler object for this account
+    this.sessionHandler = new SessionHandler(this);
 
     // Create user & community instance
     logger("debug", `[${this.logPrefix}] Using proxy ${this.loginData.proxyIndex} "${this.loginData.proxy}" to log in to Steam and SteamCommunity...`);
@@ -93,7 +95,7 @@ const Bot = function(controller, index) {
 
 
 /**
- * Logs this account into Steam
+ * Calls SteamUser logOn() for this account. This will either trigger the SteamUser loggedOn or error event.
  */
 Bot.prototype._loginToSteam = async function() {
 
@@ -106,10 +108,8 @@ Bot.prototype._loginToSteam = async function() {
 
 
     // Call our steam-session helper to get a valid refresh token for us
-    this.sessionHandler = new SessionHandler(this);
-
     let refreshToken = await this.sessionHandler.getToken();
-    if (!refreshToken) return; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the user itself
+    if (!refreshToken) return; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the bot itself
 
     // Login with this account using the refreshToken we just obtained using steam-session
     this.user.logOn({ "refreshToken": refreshToken });
