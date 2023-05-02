@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 01.05.2023 13:40:21
+ * Last Modified: 02.05.2023 12:21:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -171,8 +171,10 @@ Controller.prototype.login = function() {
             let accIsOnlineInterval = setInterval(() => {
                 if (this.bots[k.accountName].status == "offline") return;
 
-                // Keep waiting if we are on the last iteration and user object is not fully populated yet, this takes a few seconds after login
-                if (i + 1 == Object.keys(this.data.logininfo).length && !this.bots[k.accountName].user.limitations) return logger("info", "Last account logged in, waiting for user object to populate...", false, true, logger.animation("waiting"));
+                // Keep waiting if we are on the last iteration and user object is not fully populated yet, this takes a few seconds after login. Make sure to check for limitations of last entry in array instead of this iteration to not break when the this last acc got skipped
+                if (i + 1 == Object.keys(this.data.logininfo).length && !Object.values(this.bots)[Object.values(this.bots).filter(e => e.status == "online").length - 1].user.limitations) { // Get index of the last acc marked as online. I know, this line really sucks readability-wise
+                    return logger("info", "Last account logged in, waiting for user object to populate...", false, true, logger.animation("waiting"));
+                }
 
                 clearInterval(accIsOnlineInterval);
                 this.info.lastLoginTimestamp = Date.now();

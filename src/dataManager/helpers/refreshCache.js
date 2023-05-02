@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 17:44:47
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 18:19:24
+ * Last Modified: 02.05.2023 12:39:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -31,6 +31,8 @@ DataManager.prototype.refreshCache = function() {
     let tempArr = [];
 
     Object.keys(this.controller.bots).forEach((e, i) => {
+        if (this.controller.bots[e].status != "online") return; // Ignore accounts that are offline
+
         tempArr.push(new SteamID(String(Object.values(this.controller.bots)[i].user.steamID)).getSteamID64()); // Use Object.values(obj)[index] to check by index, not by botindex to accomodate for skipped accounts
 
         // Check if this bot account is listed as an owner id and display warning
