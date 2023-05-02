@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 01.05.2023 23:55:21
+ * Last Modified: 02.05.2023 13:25:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -53,9 +53,9 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
             // Check if this is an intended logoff
             if (this.controller.relogAfterDisconnect && !this.controller.info.skippedaccounts.includes(this.loginData.logOnOptions.accountName)) {
-                logger("info", `${logger.colors.fggreen}[${this.logPrefix}] Initiating a relog in 30 seconds.`); // Announce relog
+                logger("info", `${logger.colors.fggreen}[${this.logPrefix}] Initiating a relog in ${this.controller.data.advancedconfig.relogTimeout / 1000} seconds.`); // Announce relog
 
-                setTimeout(() => this.controller.login(), 30000); // Relog after waiting 30 sec
+                setTimeout(() => this.controller.login(), this.controller.data.advancedconfig.relogTimeout); // Relog after waiting relogTimeout ms
             } else {
                 logger("info", `[${this.logPrefix}] I won't queue myself for a relog because this account was skipped or this is an intended logOff.`);
             }
@@ -82,7 +82,6 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
                     logger("info", "Failed account is not bot0. Skipping account...", true);
                     this.controller._statusUpdateEvent(this, "skipped");
-
                     this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
                 }
 
