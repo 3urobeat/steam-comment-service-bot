@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 14:12:22
+ * Last Modified: 02.05.2023 23:53:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -155,8 +155,10 @@ Controller.prototype.login = function() {
                 logger("debug", `Found existing bot object for ${k.accountName}! Reusing it...`, false, true, logger.animation("loading"));
             }
 
+            let thisbot = this.bots[k.accountName];
+
             // Reset logOnTries (do this here to guarantee a bot object exists for this account)
-            this.bots[k.accountName].loginData.logOnTries = 0;
+            thisbot.loginData.logOnTries = 0;
 
             // Generate steamGuardCode with shared secret if one was provided
             if (this.data.logininfo[k.accountName].sharedSecret) {
@@ -165,11 +167,11 @@ Controller.prototype.login = function() {
             }
 
             // Login!
-            this.bots[k.accountName]._loginToSteam();
+            thisbot._loginToSteam();
 
             // Check if this bot is not offline anymore, resolve this iteration and update lastLoginTimestamp
             let accIsOnlineInterval = setInterval(() => {
-                if (this.bots[k.accountName].status == "offline") return;
+                if (thisbot.status == "offline") return;
 
                 // Keep waiting if we are on the last iteration and user object is not fully populated yet, this takes a few seconds after login. Make sure to check for limitations of last entry in array instead of this iteration to not break when the this last acc got skipped
                 if (i + 1 == Object.keys(this.data.logininfo).length && !Object.values(this.bots)[Object.values(this.bots).filter(e => e.status == "online").length - 1].user.limitations) { // Get index of the last acc marked as online. I know, this line really sucks readability-wise
@@ -180,9 +182,9 @@ Controller.prototype.login = function() {
                 this.info.lastLoginTimestamp = Date.now();
 
                 // Populate this.main if we just logged in the first account
-                if (Object.keys(this.bots)[0] == k.accountName) this.main = this.bots[k.accountName];
+                if (Object.keys(this.bots)[0] == k.accountName) this.main = thisbot;
 
-                logger("debug", `Controller login(): bot${i} changed status from offline to ${this.bots[k.accountName].status}! Continuing with next account...`);
+                logger("debug", `Controller login(): bot${i} changed status from offline to ${thisbot}! Continuing with next account...`);
 
                 // Check for last iteration, call again and emit ready event
                 if (i + 1 == allAccounts.length) {

@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 27.04.2023 12:11:13
+ * Last Modified: 02.05.2023 22:59:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -33,19 +33,19 @@ Controller.prototype._readyEvent = function() {
 
 
     // Calculate what the max amount of comments per account is and log it
-    let maxCommentsOverall = config.maxOwnerComments; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
-    if (config.maxComments > config.maxOwnerComments) maxCommentsOverall = config.maxComments;
+    let maxCommentsOverall = this.data.config.maxOwnerComments; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
+    if (this.data.config.maxComments > this.data.config.maxOwnerComments) maxCommentsOverall = this.data.config.maxComments;
 
     let repeatedCommentsStr;
-    if (maxCommentsOverall > 3) repeatedCommentsStr = `${logger.colors.underscore}${logger.colors.fgred}${round(maxCommentsOverall / Object.keys(this.bots).length, 2)}`;
-        else repeatedCommentsStr = round(maxCommentsOverall / Object.keys(this.bots).length, 2);
+    if (maxCommentsOverall > 3) repeatedCommentsStr = `${logger.colors.underscore}${logger.colors.fgred}${round(maxCommentsOverall / this.getBots().length, 2)}`;
+        else repeatedCommentsStr = round(maxCommentsOverall / this.getBots().length, 2);
 
-    logger("", `${logger.colors.brfgblue}>${logger.colors.reset} ${Object.keys(this.bots).length} total account(s) | ${repeatedCommentsStr} comments per account allowed`, true);
+    logger("", `${logger.colors.brfgblue}>${logger.colors.reset} ${this.getBots().length} total account(s) | ${repeatedCommentsStr} comments per account allowed`, true);
 
 
     // Display amount of proxies if any were used
     if (this.data.proxies.length > 1) { // 'null' will always be in the array (your own ip)
-        logger("", `${logger.colors.fgcyan}>${logger.colors.reset} Using ${this.data.proxies.length} proxies | ${round(Object.keys(this.bots).length / this.data.proxies.length, 2)} account(s) per proxy`, true);
+        logger("", `${logger.colors.fgcyan}>${logger.colors.reset} Using ${this.data.proxies.length} proxies | ${round(this.getBots().length / this.data.proxies.length, 2)} account(s) per proxy`, true);
     }
 
 
@@ -53,28 +53,26 @@ Controller.prototype._readyEvent = function() {
     let limitedaccs = 0;
     let failedtocheck = 0;
 
-    for (let i = 0; i < Object.keys(this.bots).length; i++) { // Iterate over all accounts
-        let thisbot = Object.values(this.bots)[i].user;
-
-        if (thisbot.limitations && thisbot.limitations.limited) { // Check if limitations obj is populated before accessing limited just to be sure. The ready event should not have been called if limitations is not populated but better safe than sorry
+    this.getBots().forEach((e, i) => {
+        if (e.user.limitations && e.user.limitations.limited) { // Check if limitations obj is populated before accessing limited just to be sure. The ready event should not have been called if limitations is not populated but better safe than sorry
             limitedaccs++;
         } else {
-            logger("debug", `Controller limitedCheck(): Failed to check if bot${i} is limited, showing it as unlimited...`);
+            logger("debug", `Controller limitedCheck(): Failed to check if bot${e.index} is limited, showing it as unlimited...`);
             failedtocheck++;
         }
 
         // Check for last iteration
-        if (i + 1 == Object.keys(this.bots).length) {
+        if (i + 1 == this.getBots().length) {
             let failedtocheckmsg = "";
             if (failedtocheck > 0) failedtocheckmsg = `(Couldn't check ${failedtocheck} account(s))`;
 
-            logger("", `${logger.colors.brfggreen}>${logger.colors.reset} ${limitedaccs}/${Object.keys(this.bots).length} account(s) are ${logger.colors.fgred}limited${logger.colors.reset} ${failedtocheckmsg}`, true);
+            logger("", `${logger.colors.brfggreen}>${logger.colors.reset} ${limitedaccs}/${this.getBots().length} account(s) are ${logger.colors.fgred}limited${logger.colors.reset} ${failedtocheckmsg}`, true);
         }
-    }
+    });
 
 
     // Log warning message if automatic updater is turned off
-    if (advancedconfig.disableAutoUpdate) logger("", `${logger.colors.bgred}${logger.colors.fgblack}>${logger.colors.reset} Automatic updating is ${logger.colors.underscore}${logger.colors.fgred}turned off${logger.colors.reset}!`, true);
+    if (this.data.advancedconfig.disableAutoUpdate) logger("", `${logger.colors.bgred}${logger.colors.fgblack}>${logger.colors.reset} Automatic updating is ${logger.colors.underscore}${logger.colors.fgred}turned off${logger.colors.reset}!`, true);
 
 
     // Log amount of loaded plugins
@@ -83,9 +81,9 @@ Controller.prototype._readyEvent = function() {
 
     // Log which games the main and child bots are playing
     let playinggames = "";
-    if (config.playinggames[1]) playinggames = `(${config.playinggames.slice(1, config.playinggames.length)})`;
+    if (this.data.config.playinggames[1]) playinggames = `(${this.data.config.playinggames.slice(1, this.data.config.playinggames.length)})`;
 
-    logger("", `${logger.colors.brfgyellow}>${logger.colors.reset} Playing status: ${logger.colors.fggreen}${config.playinggames[0]}${logger.colors.reset} ${playinggames}`, true);
+    logger("", `${logger.colors.brfgyellow}>${logger.colors.reset} Playing status: ${logger.colors.fggreen}${this.data.config.playinggames[0]}${logger.colors.reset} ${playinggames}`, true);
 
 
     // Calculate time the bot took to start
@@ -99,7 +97,7 @@ Controller.prototype._readyEvent = function() {
 
     logger("", `${logger.colors.brfgred}>${logger.colors.reset} Ready after ${round(readyAfter, 2)} ${readyAfterUnit}!`, true);
     this.data.datafile.timesloggedin++;
-    this.data.datafile.totallogintime += this.info.readyAfter / Object.keys(this.bots).length; // Get rough logintime of only one account
+    this.data.datafile.totallogintime += this.info.readyAfter / this.getBots("*").length; // Get rough logintime of only one account
 
 
     // Finished logging ready message
@@ -128,7 +126,7 @@ Controller.prototype._readyEvent = function() {
 
 
     // Friendlist capacity check for all accounts
-    Object.values(this.bots).forEach((e) => {
+    this.getBots().forEach((e) => {
         this.friendListCapacityCheck(e.index, (remaining) => {
             if (remaining && remaining < 25) logger("warn", `The friendlist space of bot${e} is running low! (${remaining} remaining)`);
         });

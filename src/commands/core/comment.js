@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 13:54:43
+ * Last Modified: 02.05.2023 23:46:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -79,7 +79,7 @@ module.exports.comment = {
 
         // Get all currently available bot accounts. Only allow limited accounts for profile comments by only passing true when idType is equal to INDIVIDUAL
         let allowLimitedAccounts = (idType == SteamID.Type.INDIVIDUAL);
-        let { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = getAvailableBotsForCommenting(numberOfComments, allowLimitedAccounts, receiverSteamID64);
+        let { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = getAvailableBotsForCommenting(commandHandler, numberOfComments, allowLimitedAccounts, receiverSteamID64);
 
         if (availableAccounts.length - accsToAdd < accsNeeded && accsToAdd.length == 0 && !whenAvailableStr) { // Check if this bot has no suitable accounts for this request and there won't be any available at any point
             if (!allowLimitedAccounts) respond(commandHandler.data.lang.commentnounlimitedaccs); // Send less generic message for requests which require unlimited accounts
@@ -90,7 +90,7 @@ module.exports.comment = {
 
         if (availableAccounts.length - accsToAdd.length < accsNeeded && !whenAvailableStr) { // Check if user needs to add accounts first. Make sure the lack of accounts is caused by accsToAdd, not cooldown
             let addStr = commandHandler.data.lang.commentaddbotaccounts;
-            accsToAdd.forEach(e => addStr += `\n' steamcommunity.com/profiles/${commandHandler.data.cachefile.botaccid[commandHandler.controller.bots[e].index]} '`);
+            accsToAdd.forEach(e => addStr += `\n' steamcommunity.com/profiles/${commandHandler.data.cachefile.botaccid[commandHandler.controller.getBots(null, true)[e].index]} '`);
 
             logger("info", `Found enough available accounts but user needs to add ${accsToAdd.length} limited accounts first before I'm able to comment.`);
 
@@ -166,7 +166,7 @@ function comment(commandHandler, respond, receiverSteamID64) {
         setTimeout(async () => {
 
             /* --------- Get the correct account for this iteration and update iteration in activeRequests obj --------- */
-            let bot = commandHandler.controller.bots[activeReqEntry.accounts[i % activeReqEntry.accounts.length]]; // Iteration modulo amount of accounts gives us index of account to use inside the accounts array. This returns the bot account name which we can lookup in the bots object.
+            let bot = commandHandler.controller.getBots(null, true)[activeReqEntry.accounts[i % activeReqEntry.accounts.length]]; // Iteration modulo amount of accounts gives us index of account to use inside the accounts array. This returns the bot account name which we can lookup in the bots object.
             activeReqEntry.thisIteration++;
 
 

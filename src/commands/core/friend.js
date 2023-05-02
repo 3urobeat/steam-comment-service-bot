@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 20:38:51
+ * Last Modified: 02.05.2023 20:46:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -48,10 +48,10 @@ module.exports.addFriend = {
                 return;
             }
 
-            respond(commandHandler.data.lang.addfriendcmdsuccess.replace("profileid", res).replace("estimatedtime", 5 * Object.keys(commandHandler.controller.bots).length));
-            logger("info", `Adding friend ${res} with all bot accounts... This will take ~${5 * Object.keys(commandHandler.controller.bots).length} seconds.`);
+            respond(commandHandler.data.lang.addfriendcmdsuccess.replace("profileid", res).replace("estimatedtime", 5 * commandHandler.controller.getBots().length));
+            logger("info", `Adding friend ${res} with all bot accounts... This will take ~${5 * commandHandler.controller.getBots().length} seconds.`);
 
-            Object.values(commandHandler.controller.bots).forEach((e, i) => {
+            commandHandler.controller.getBots().forEach((e, i) => {
                 // Check if this bot account is limited
                 if (e.user.limitations && e.user.limitations.limited == true) {
                     logger("error", `Can't add friend ${res} with bot${i} because the bot account is limited.`);
@@ -99,7 +99,7 @@ module.exports.unfriend = {
             respond(commandHandler.data.lang.unfriendcmdsuccess);
             logger("info", `Removing friend ${steamID64} from all bot accounts...`);
 
-            Object.values(commandHandler.controller.bots).forEach((e, i) => {
+            commandHandler.controller.getBots().forEach((e, i) => {
                 setTimeout(() => {
                     e.user.removeFriend(new SteamID(steamID64));
                 }, 1000 * i);
@@ -114,7 +114,7 @@ module.exports.unfriend = {
                 if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
                 if (commandHandler.data.cachefile.ownerid.includes(res)) return respond(commandHandler.data.lang.idisownererror);
 
-                Object.values(commandHandler.controller.bots).forEach((e, i) => {
+                commandHandler.controller.getBots().forEach((e, i) => {
                     setTimeout(() => {
                         e.user.removeFriend(new SteamID(res));
                     }, 1000 * i); // Delay every iteration so that we don't make a ton of requests at once
@@ -160,15 +160,15 @@ module.exports.unfriendall = {
             respond(commandHandler.data.lang.unfriendallcmdstart);
             logger("info", "Starting to unfriend everyone...");
 
-            for (let i = 0; i < Object.keys(commandHandler.controller.bots).length; i++) {
-                for (let friend in Object.values(commandHandler.controller.bots)[i].user.myFriends) {
+            for (let i = 0; i < commandHandler.controller.getBots().length; i++) {
+                for (let friend in commandHandler.controller.getBots()[i].user.myFriends) {
                     try {
                         setTimeout(() => {
                             let friendSteamID = new SteamID(String(friend));
 
                             if (!commandHandler.data.cachefile.ownerid.includes(friend)) {
                                 logger("info", `Removing friend ${friendSteamID.getSteamID64()} from all bot accounts...`, false, false, logger.animation("loading"));
-                                Object.values(commandHandler.controller.bots)[i].user.removeFriend(friendSteamID);
+                                commandHandler.controller.getBots()[i].user.removeFriend(friendSteamID);
                             } else {
                                 logger("debug", `unfriendAll(): Friend ${friendSteamID.getSteamID64()} seems to be an owner, skipping...`, false, false, logger.animation("loading"));
                             }

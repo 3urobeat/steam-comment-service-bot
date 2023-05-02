@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 17:44:47
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 12:39:57
+ * Last Modified: 02.05.2023 23:41:07
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -30,16 +30,14 @@ DataManager.prototype.refreshCache = function() {
     // Refresh cache of bot account ids, check if they inflict with owner settings
     let tempArr = [];
 
-    Object.keys(this.controller.bots).forEach((e, i) => {
-        if (this.controller.bots[e].status != "online") return; // Ignore accounts that are offline
-
-        tempArr.push(new SteamID(String(Object.values(this.controller.bots)[i].user.steamID)).getSteamID64()); // Use Object.values(obj)[index] to check by index, not by botindex to accomodate for skipped accounts
+    this.controller.getBots().forEach((e, i) => { // Get all online accounts
+        tempArr.push(new SteamID(String(e.user.steamID)).getSteamID64());
 
         // Check if this bot account is listed as an owner id and display warning
         if (this.cachefile.ownerid.includes(tempArr[i])) logger("warn", `You provided an ownerid in the config that points to a bot account used by this bot! This is not allowed.\n       Please change id ${tempArr[i]} to point to your personal steam account!`, true);
 
         // Write tempArr to cachefile on last iteration
-        if (Object.keys(this.controller.bots).length == i + 1) {
+        if (this.controller.getBots().length == i + 1) {
             this.cachefile["botaccid"] = tempArr;
 
             // TODO: This must be run through steamidresolver beforehand or am I wrong?

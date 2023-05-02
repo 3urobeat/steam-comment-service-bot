@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 12:16:54
+ * Last Modified: 02.05.2023 21:37:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -38,7 +38,7 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
         // Add failed entry for all skipped iterations only if request was aborted
         if (activeReqEntry.status == "aborted") {
             for (let i = activeReqEntry.thisIteration; i < activeReqEntry.amount; i++) { // Iterate over all remaining comments by starting with thisIteration till numberOfComments
-                let thisbot = commandHandler.controller.bots[activeReqEntry.accounts[i % activeReqEntry.accounts.length]];
+                let thisbot = commandHandler.controller.getBots("*", true)[activeReqEntry.accounts[i % activeReqEntry.accounts.length]];
 
                 activeReqEntry.failed[`c${i + 1} b${thisbot.index} p${thisbot.loginData.proxyIndex}`] = "Skipped because comment process was aborted";
             }
@@ -97,14 +97,14 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
             description = "This IP has commented too often recently and has been blocked by Steam for a few minutes. Please wait a moment and then try again.";
 
             // Add 5 minutes of extra cooldown to all bot accounts that are also using this proxy by adding them to the accounts list of this request
-            activeReqEntry.accounts = activeReqEntry.accounts.concat(Object.keys(commandHandler.controller.bots).filter(e => commandHandler.controller.bots[e].loginData.proxyIndex == bot.loginData.proxyIndex && !activeReqEntry.accounts.includes(e))); // Append all accounts with the same proxy which aren't included yet
+            activeReqEntry.accounts = activeReqEntry.accounts.concat(Object.keys(commandHandler.controller.getBots(null, true)).filter(e => commandHandler.controller.getBots(null, true)[e].loginData.proxyIndex == bot.loginData.proxyIndex && !activeReqEntry.accounts.includes(e))); // Append all accounts with the same proxy which aren't included yet
             activeReqEntry.until += 300000; // Add 5 minutes of cooldown
 
             // Add failed obj entry for all iterations that would use this proxy
             logger("warn", "Skipping all other comments on this proxy as well because they will fail too!");
 
             for (let i = activeReqEntry.thisIteration + 1; i < activeReqEntry.amount; i++) { // Iterate over all remaining comments by starting with next iteration till numberOfComments
-                let thisbot = commandHandler.controller.bots[activeReqEntry.accounts[i % activeReqEntry.accounts.length]];
+                let thisbot = commandHandler.controller.getBots(null, true)[activeReqEntry.accounts[i % activeReqEntry.accounts.length]];
 
                 // Add to failed obj if proxies match
                 if (thisbot.loginData.proxyIndex == bot.loginData.proxyIndex) {

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 21.04.2023 21:15:54
+ * Last Modified: 02.05.2023 23:10:14
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -25,7 +25,7 @@ const Controller = require("../../controller/controller.js");
  * @param {Number} index The index of the bot account to be checked
  */
 Controller.prototype.checkLastcommentDB = function(index) {
-    let thisbot = Object.values(this.bots)[index].user;
+    let thisbot = this.getBots()[index].user;
 
     logger("debug", "Controller checkLastCommentDB(): Checking if all friends are in lastcomment.db...");
 
@@ -57,7 +57,7 @@ Controller.prototype.checkLastcommentDB = function(index) {
  */
 Controller.prototype.friendListCapacityCheck = function(index, callback) {
     try {
-        let thisbot = Object.values(this.bots)[index].user;
+        let thisbot = this.getBots()[index].user;
 
         thisbot.getSteamLevels([thisbot.steamID], (err, users) => { // Check steam level of botindex account with bot0
             if (!users) return; // Users was undefined one time (I hope this will (hopefully) suppress an error?)
@@ -134,7 +134,7 @@ Controller.prototype._lastcommentUnfriendCheck = function() {
         docs.forEach((e, i) => { // Take action for all results
             setTimeout(() => {
 
-                Object.values(this.bots).forEach((f, j) => {
+                this.getBots().forEach((f, j) => {
                     let thisbot = f.user;
 
                     if (thisbot.myFriends[e.id] == 3 && !this.data.cachefile.ownerid.includes(e.id)) { // Check if the targeted user is still friend

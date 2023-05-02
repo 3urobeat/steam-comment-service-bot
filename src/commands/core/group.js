@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 20:38:22
+ * Last Modified: 02.05.2023 21:03:47
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -94,7 +94,7 @@ module.exports.leaveGroup = {
             let argsSteamID = new SteamID(String(args[0]));
             if (!argsSteamID.isValid() || argsSteamID["type"] !== 7) return respond(commandHandler.data.lang.leavegroupcmdinvalidgroup);
 
-            Object.values(commandHandler.controller.bots).forEach((e, i) => {
+            commandHandler.controller.getBots().forEach((e, i) => {
                 setTimeout(() => {
                     if (e.user.myGroups[argsSteamID] === 3) e.community.leaveGroup(argsSteamID);
                 }, 1000 * i); // Delay every iteration so that we don't make a ton of requests at once
@@ -139,12 +139,12 @@ module.exports.leaveAllGroups = {
             respond(commandHandler.data.lang.leaveallgroupscmdstart);
             logger("info", "Starting to leave all groups...");
 
-            for (let i = 0; i < Object.keys(commandHandler.controller.bots).length; i++) {
-                for (let group in Object.values(commandHandler.controller.bots)[i].user.myGroups) {
+            for (let i = 0; i < commandHandler.controller.getBots().length; i++) {
+                for (let group in commandHandler.controller.getBots()[i].user.myGroups) {
                     try {
                         setTimeout(() => {
-                            if (Object.values(commandHandler.controller.bots)[i].user.myGroups[group] == 3) {
-                                if (group != commandHandler.data.cachefile.botsgroupid && group != commandHandler.data.cachefile.configgroup64id) Object.values(commandHandler.controller.bots)[i].community.leaveGroup(String(group));
+                            if (commandHandler.controller.getBots()[i].user.myGroups[group] == 3) {
+                                if (group != commandHandler.data.cachefile.botsgroupid && group != commandHandler.data.cachefile.configgroup64id) commandHandler.controller.getBots()[i].community.leaveGroup(String(group));
                             }
                         }, 1000 * i); // Delay every iteration so that we don't make a ton of requests at once
                     } catch (err) {

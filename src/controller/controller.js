@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 20:28:55
+ * Last Modified: 02.05.2023 21:11:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -267,11 +267,12 @@ Controller.prototype._readyEvent = function() {};
 Controller.prototype._statusUpdateEvent = function(bot, newStatus) {}; // eslint-disable-line
 
 /**
- * Retrieves all matching bot accounts and returns them as an array.
+ * Retrieves all matching bot accounts and returns them.
  * @param {(String|String[])} [statusFilter=online] String or Array of Strings including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'online' will be returned.
- * @returns {Array} An array containing all matching bot accounts, mapped to their accountName.
+ * @param {Boolean} mapToObject If true, an object will be returned where every bot object is mapped to their accountName.
+ * @returns {Array|Object} An array or object if `mapToObject == true` containing all matching bot accounts.
  */
-Controller.prototype.getBots = function(statusFilter) {}; // eslint-disable-line
+Controller.prototype.getBots = function(statusFilter, mapToObject) {}; // eslint-disable-line
 
 /**
  * Logs text to the terminal and appends it to the output.txt file.

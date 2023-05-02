@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 20:33:40
+ * Last Modified: 02.05.2023 20:41:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -43,7 +43,7 @@ module.exports.block = {
             if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
             if (commandHandler.data.cachefile.ownerid.includes(res)) return respond(commandHandler.data.lang.idisownererror);
 
-            Object.values(commandHandler.controller.bots).forEach((e, i) => {
+            commandHandler.controller.getBots().forEach((e, i) => {
                 e.user.blockUser(new SteamID(res), (err) => { if (err) logger("error", `[Bot ${i}] Error blocking user ${res}: ${err}`); });
             });
 
@@ -75,7 +75,7 @@ module.exports.unblock = {
         handleSteamIdResolving(args[0], SteamID.Type.INDIVIDUAL, (err, res) => {
             if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
 
-            Object.values(commandHandler.controller.bots).forEach((e, i) => {
+            commandHandler.controller.getBots().forEach((e, i) => {
                 e.user.unblockUser(new SteamID(res), (err) => { if (err) logger("error", `[Bot ${i}] Error unblocking user ${res}: ${err}`); });
             });
 

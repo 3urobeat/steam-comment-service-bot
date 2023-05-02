@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 20:38:33
+ * Last Modified: 02.05.2023 21:03:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -126,7 +126,7 @@ module.exports.settings = {
 
         if (args[0] == "playinggames") {
             logger("info", "Refreshing game status of all bot accounts...");
-            Object.values(commandHandler.controller.bots).forEach((e) => {
+            commandHandler.controller.getBots().forEach((e) => {
                 if (e.index == 0) e.user.gamesPlayed(config.playinggames); // Set game only for the main bot
                 if (e.index != 0 && config.childaccsplaygames) e.user.gamesPlayed(config.playinggames.slice(1, config.playinggames.length)); // Play game with child bots but remove the custom game
             });

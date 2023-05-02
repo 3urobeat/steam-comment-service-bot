@@ -4,7 +4,7 @@
  * Created Date: 09.04.2023 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 13:55:02
+ * Last Modified: 02.05.2023 21:34:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -33,8 +33,8 @@ module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOf
     let accountsNeeded;
 
     // Method 1: Use as many accounts as possible to maximize the spread (Default)
-    if (numberOfComments <= Object.keys(commandHandler.controller.bots).length) accountsNeeded = numberOfComments;
-        else accountsNeeded = Object.keys(commandHandler.controller.bots).length; // Cap accountsNeeded at amount of accounts because if numberOfComments is greater we will start at account 1 again
+    if (numberOfComments <= commandHandler.controller.getBots().length) accountsNeeded = numberOfComments;
+        else accountsNeeded = commandHandler.controller.getBots().length; // Cap accountsNeeded at amount of accounts because if numberOfComments is greater we will start at account 1 again
 
     // Method 2: Use as few accounts as possible to maximize the amount of parallel requests (Not implemented yet, probably coming in 2.12)
     // TODO
@@ -50,7 +50,7 @@ module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOf
 
     let whenAvailable; // We will save the until value of the account that the user has to wait for here
     let whenAvailableStr;
-    let allAccounts = [ ... Object.keys(commandHandler.controller.bots) ]; // Clone keys array (bot usernames) of bots object
+    let allAccounts = [ ... Object.keys(commandHandler.controller.getBots(null, true)) ]; // Clone keys array (bot usernames) of bots object
 
     // Loop over activeRequests and remove all active entries from allAccounts
     if (Object.keys(commandHandler.controller.activeRequests).length > 0) {
@@ -77,7 +77,7 @@ module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOf
     // Remove limited accounts from allAccounts array if desired
     if (!canBeLimited) {
         let previousLength = allAccounts.length;
-        allAccounts = allAccounts.filter(e => commandHandler.controller.bots[e].user.limitations && !commandHandler.controller.bots[e].user.limitations.limited);
+        allAccounts = allAccounts.filter(e => commandHandler.controller.getBots(null, true)[e].user.limitations && !commandHandler.controller.getBots(null, true)[e].user.limitations.limited);
 
         if (previousLength - allAccounts.length > 0) logger("info", `${previousLength - allAccounts.length} of ${previousLength} were removed from available accounts as they are limited and can't be used for this request!`);
     }
@@ -90,8 +90,8 @@ module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOf
     // Prioritize accounts the user is friend with
     if (receiverSteamID) {
         allAccounts = [
-            ...allAccounts.filter(e => commandHandler.controller.bots[e].user.myFriends[receiverSteamID] == 3), // Cool trick to get every acc with user as friend to the top
-            ...allAccounts.filter(e => commandHandler.controller.bots[e].user.myFriends[receiverSteamID] != 3)  // ...and every non-friend acc below
+            ...allAccounts.filter(e => commandHandler.controller.getBots(null, true)[e].user.myFriends[receiverSteamID] == 3), // Cool trick to get every acc with user as friend to the top
+            ...allAccounts.filter(e => commandHandler.controller.getBots(null, true)[e].user.myFriends[receiverSteamID] != 3)  // ...and every non-friend acc below
         ];
     }
 
@@ -101,7 +101,7 @@ module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOf
 
 
     // Filter all accounts needed for this request which must be added first
-    let accsToAdd = allAccounts.filter(e => commandHandler.controller.bots[e].user.myFriends[receiverSteamID] != 3 && commandHandler.controller.bots[e].user.limitations.limited);
+    let accsToAdd = allAccounts.filter(e => commandHandler.controller.getBots(null, true)[e].user.myFriends[receiverSteamID] != 3 && commandHandler.controller.getBots(null, true)[e].user.limitations.limited);
 
 
     // Log debug values

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 22.04.2023 19:26:06
+ * Last Modified: 02.05.2023 23:56:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -19,7 +19,6 @@
 
 
 const https   = require("https");
-const SteamID = require("steamid");
 
 const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
@@ -31,7 +30,7 @@ module.exports.help = {
 
     /**
      * The help command
-     *      * @param {CommandHandler} commandHandler The commandHandler object
+     * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {function(Object, Object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
@@ -44,17 +43,17 @@ module.exports.help = {
         let commentText;
 
         if (commandHandler.data.cachefile.ownerid.includes(steamID64)) {
-            if (Object.keys(commandHandler.controller.bots).length > 1 || commandHandler.data.config.maxOwnerComments) commentText = `'!comment (amount/"all") [profileid] [custom, quotes]' - ${commandHandler.data.lang.helpcommentowner1.replace("maxOwnerComments", commandHandler.data.config.maxOwnerComments)}`;
+            if (commandHandler.controller.getBots().length > 1 || commandHandler.data.config.maxOwnerComments) commentText = `'!comment (amount/"all") [profileid] [custom, quotes]' - ${commandHandler.data.lang.helpcommentowner1.replace("maxOwnerComments", commandHandler.data.config.maxOwnerComments)}`;
                 else commentText = `'!comment ("1") [profileid] [custom, quotes]' - ${commandHandler.data.lang.helpcommentowner2}`;
         } else {
-            if (Object.keys(commandHandler.controller.bots).length > 1 || config.maxComments) commentText = `'!comment (amount/"all")' - ${commandHandler.data.lang.helpcommentuser1.replace("maxComments", commandHandler.data.config.maxComments)}`;
+            if (commandHandler.controller.getBots().length > 1 || commandHandler.data.config.maxComments) commentText = `'!comment (amount/"all")' - ${commandHandler.data.lang.helpcommentuser1.replace("maxComments", commandHandler.data.config.maxComments)}`;
                 else commentText = `'!comment' - ${commandHandler.data.lang.helpcommentuser2}`;
         }
 
         // Add yourgroup text if one was set
         let yourgroupText;
 
-        if (config.yourgroup.length > 1) yourgroupText = commandHandler.data.lang.helpjoingroup;
+        if (commandHandler.data.config.yourgroup.length > 1) yourgroupText = commandHandler.data.lang.helpjoingroup;
 
         // Send message
         respond(`${commandHandler.data.datafile.mestr}'s Comment Bot | ${commandHandler.data.lang.helpcommandlist}\n
@@ -99,7 +98,7 @@ module.exports.info = {
                 >   ${commandHandler.data.datafile.mestr}'s Comment Bot [Version ${commandHandler.data.datafile.versionstr}] (More info: !about)
                 >   Uptime: ${Number(Math.round(((new Date() - commandHandler.controller.info.bootStartTimestamp) / 3600000)+"e"+2)+"e-"+2)} hours | Branch: ${commandHandler.data.datafile.branch}
                 >   'node.js' Version: ${process.version} | RAM Usage (RSS): ${Math.round(process.memoryUsage()["rss"] / 1024 / 1024 * 100) / 100} MB
-                >   Accounts: ${Object.keys(commandHandler.controller.bots).length} | maxComments/owner: ${commandHandler.data.config.maxComments}/${commandHandler.data.config.maxOwnerComments} | delay: ${commandHandler.data.config.commentdelay}
+                >   Accounts: ${commandHandler.controller.getBots().length} | maxComments/owner: ${commandHandler.data.config.maxComments}/${commandHandler.data.config.maxOwnerComments} | delay: ${commandHandler.data.config.commentdelay}
                 |
                 >   Your steam64ID: ${steamID64}
                 >   Your last comment request: ${userLastReq}

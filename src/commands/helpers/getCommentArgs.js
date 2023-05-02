@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 21:41:55
+ * Last Modified: 02.05.2023 21:05:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -113,7 +113,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respo
 
         /* --------- Check if user did not provide numberOfComments --------- */
         if (numberOfComments == 0) { // No numberOfComments given? Ask again if maxRequestAmount > 1 (numberOfComments default value at the top is 0)
-            if (Object.keys(commandHandler.controller.bots).length == 1 && maxRequestAmount == 1) {
+            if (commandHandler.controller.getBots().length == 1 && maxRequestAmount == 1) {
                 logger("debug", "CommandHandler getCommentArgs(): User didn't provide numberOfComments but maxRequestAmount is 1. Accepting request as numberOfComments = 1.");
 
                 numberOfComments = 1;     // If only one account is active, set 1 automatically
