@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 13:55:08
+ * Last Modified: 02.05.2023 20:28:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -265,6 +265,13 @@ Controller.prototype._readyEvent = function() {};
  * @param {String} newStatus The new status
  */
 Controller.prototype._statusUpdateEvent = function(bot, newStatus) {}; // eslint-disable-line
+
+/**
+ * Retrieves all matching bot accounts and returns them as an array.
+ * @param {(String|String[])} [statusFilter=online] String or Array of Strings including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'online' will be returned.
+ * @returns {Array} An array containing all matching bot accounts, mapped to their accountName.
+ */
+Controller.prototype.getBots = function(statusFilter) {}; // eslint-disable-line
 
 /**
  * Logs text to the terminal and appends it to the output.txt file.
