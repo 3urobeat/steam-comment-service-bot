@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 12:21:20
+ * Last Modified: 02.05.2023 13:49:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -45,7 +45,6 @@ Controller.prototype._preLogin = async function() {
     require("./events/ready.js");
     require("./events/statusUpdate.js");
     require("./helpers/friendlist.js");
-    require("./helpers/getAvailableAccounts.js");
 
 
     // Load commandHandler

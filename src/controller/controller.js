@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 01.05.2023 15:08:33
+ * Last Modified: 02.05.2023 13:55:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -265,15 +265,6 @@ Controller.prototype._readyEvent = function() {};
  * @param {String} newStatus The new status
  */
 Controller.prototype._statusUpdateEvent = function(bot, newStatus) {}; // eslint-disable-line
-
-/**
- * Finds all needed and currently available bot accounts for a comment request.
- * @param {Number} numberOfComments Number of requested comments
- * @param {Boolean} canBeLimited If the accounts are allowed to be limited
- * @param {String} receiverSteamID Optional: steamID64 of the receiving user. If set, accounts that are friend with the user will be prioritized and accsToAdd will be calculated.
- * @returns {Object} Object containing `accsNeeded` (Number), `availableAccounts` (Array of account names from bot object), `accsToAdd` (Array of account names from bot object which are limited and not friend) and `whenAvailable` (Timestamp representing how long to wait until accsNeeded amount of accounts will be available)
- */
-Controller.prototype.getAvailableAccountsForCommenting = function(numberOfComments, canBeLimited, receiverSteamID = null) {}; // eslint-disable-line
 
 /**
  * Logs text to the terminal and appends it to the output.txt file.

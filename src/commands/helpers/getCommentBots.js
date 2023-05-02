@@ -1,10 +1,10 @@
 /*
- * File: getAvailableAccounts.js
+ * File: getCommentBots.js
  * Project: steam-comment-service-bot
  * Created Date: 09.04.2023 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 27.04.2023 01:18:50
+ * Last Modified: 02.05.2023 13:55:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -15,58 +15,59 @@
  */
 
 
-const Controller = require("../controller");
-const { timeToString } = require("./misc.js");
+const CommandHandler   = require("../commandHandler.js"); // eslint-disable-line
+const { timeToString } = require("../../controller/helpers/misc.js");
 
 
 /**
  * Finds all needed and currently available bot accounts for a comment request.
+ * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Number} numberOfComments Number of requested comments
  * @param {Boolean} canBeLimited If the accounts are allowed to be limited
  * @param {String} receiverSteamID Optional: steamID64 of the receiving user. If set, accounts that are friend with the user will be prioritized and accsToAdd will be calculated.
  * @returns {Object} Object containing `accsNeeded` (Number), `availableAccounts` (Array of account names from bot object), `accsToAdd` (Array of account names from bot object which are limited and not friend) and `whenAvailable` (Timestamp representing how long to wait until accsNeeded amount of accounts will be available), `whenAvailableStr` (Timestamp formatted human-readable as time from now)
  */
-Controller.prototype.getAvailableAccountsForCommenting = function(numberOfComments, canBeLimited, receiverSteamID = null) {
+module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOfComments, canBeLimited, receiverSteamID = null) {
 
     // Calculate the amount of accounts needed for this request
     let accountsNeeded;
 
     // Method 1: Use as many accounts as possible to maximize the spread (Default)
-    if (numberOfComments <= Object.keys(this.bots).length) accountsNeeded = numberOfComments;
-        else accountsNeeded = Object.keys(this.bots).length; // Cap accountsNeeded at amount of accounts because if numberOfComments is greater we will start at account 1 again
+    if (numberOfComments <= Object.keys(commandHandler.controller.bots).length) accountsNeeded = numberOfComments;
+        else accountsNeeded = Object.keys(commandHandler.controller.bots).length; // Cap accountsNeeded at amount of accounts because if numberOfComments is greater we will start at account 1 again
 
     // Method 2: Use as few accounts as possible to maximize the amount of parallel requests (Not implemented yet, probably coming in 2.12)
     // TODO
 
 
     // Sort activeRequests by highest until value, decreasing, so that we can tell the user how long he/she has to wait if not enough accounts were found
-    let sortedvals = Object.keys(this.activeRequests).sort((a, b) => {
-        return this.activeRequests[b].until - this.activeRequests[a].until;
+    let sortedvals = Object.keys(commandHandler.controller.activeRequests).sort((a, b) => {
+        return commandHandler.controller.activeRequests[b].until - commandHandler.controller.activeRequests[a].until;
     });
 
-    if (sortedvals.length > 0) this.activeRequests = Object.assign(...sortedvals.map(k => ( { [k]: this.activeRequests[k] } ) )); // Map sortedvals back to object if array is not empty - credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
+    if (sortedvals.length > 0) commandHandler.controller.activeRequests = Object.assign(...sortedvals.map(k => ( { [k]: commandHandler.controller.activeRequests[k] } ) )); // Map sortedvals back to object if array is not empty - credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
 
 
     let whenAvailable; // We will save the until value of the account that the user has to wait for here
     let whenAvailableStr;
-    let allAccounts = [ ... Object.keys(this.bots) ]; // Clone keys array (bot usernames) of bots object
+    let allAccounts = [ ... Object.keys(commandHandler.controller.bots) ]; // Clone keys array (bot usernames) of bots object
 
     // Loop over activeRequests and remove all active entries from allAccounts
-    if (Object.keys(this.activeRequests).length > 0) {
-        Object.keys(this.activeRequests).forEach((e) => {
+    if (Object.keys(commandHandler.controller.activeRequests).length > 0) {
+        Object.keys(commandHandler.controller.activeRequests).forEach((e) => {
 
-            if (Date.now() < this.activeRequests[e].until + (this.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
-                this.activeRequests[e].accounts.forEach((f) => {   // Loop over every account used in this request
+            if (Date.now() < commandHandler.controller.activeRequests[e].until + (commandHandler.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
+                commandHandler.controller.activeRequests[e].accounts.forEach((f) => {   // Loop over every account used in this request
                     allAccounts.splice(allAccounts.indexOf(f), 1); // Remove that accountindex from the allAccounts array
                 });
 
                 // If this removal causes the user to need to wait, update whenAvailable
-                if (allAccounts.length - this.activeRequests[e].accounts.length < numberOfComments) {
-                    whenAvailable = this.activeRequests[e].until + (this.data.config.botaccountcooldown * 60000);
+                if (allAccounts.length - commandHandler.controller.activeRequests[e].accounts.length < numberOfComments) {
+                    whenAvailable = commandHandler.controller.activeRequests[e].until + (commandHandler.data.config.botaccountcooldown * 60000);
                     whenAvailableStr = timeToString(whenAvailable);
                 }
             } else {
-                delete this.activeRequests[e]; // Remove entry from object if it is finished to keep the object clean
+                delete commandHandler.controller.activeRequests[e]; // Remove entry from object if it is finished to keep the object clean
             }
 
         });
@@ -76,21 +77,21 @@ Controller.prototype.getAvailableAccountsForCommenting = function(numberOfCommen
     // Remove limited accounts from allAccounts array if desired
     if (!canBeLimited) {
         let previousLength = allAccounts.length;
-        allAccounts = allAccounts.filter(e => this.bots[e].user.limitations && !this.bots[e].user.limitations.limited);
+        allAccounts = allAccounts.filter(e => commandHandler.controller.bots[e].user.limitations && !commandHandler.controller.bots[e].user.limitations.limited);
 
         if (previousLength - allAccounts.length > 0) logger("info", `${previousLength - allAccounts.length} of ${previousLength} were removed from available accounts as they are limited and can't be used for this request!`);
     }
 
 
     // Randomize order if enabled in config
-    if (this.data.config.randomizeAccounts) allAccounts.sort(() => Math.random() - 0.5);
+    if (commandHandler.data.config.randomizeAccounts) allAccounts.sort(() => Math.random() - 0.5);
 
 
     // Prioritize accounts the user is friend with
     if (receiverSteamID) {
         allAccounts = [
-            ...allAccounts.filter(e => this.bots[e].user.myFriends[receiverSteamID] == 3), // Cool trick to get every acc with user as friend to the top
-            ...allAccounts.filter(e => this.bots[e].user.myFriends[receiverSteamID] != 3)  // ...and every non-friend acc below
+            ...allAccounts.filter(e => commandHandler.controller.bots[e].user.myFriends[receiverSteamID] == 3), // Cool trick to get every acc with user as friend to the top
+            ...allAccounts.filter(e => commandHandler.controller.bots[e].user.myFriends[receiverSteamID] != 3)  // ...and every non-friend acc below
         ];
     }
 
@@ -100,12 +101,12 @@ Controller.prototype.getAvailableAccountsForCommenting = function(numberOfCommen
 
 
     // Filter all accounts needed for this request which must be added first
-    let accsToAdd = allAccounts.filter(e => this.bots[e].user.myFriends[receiverSteamID] != 3 && this.bots[e].user.limitations.limited);
+    let accsToAdd = allAccounts.filter(e => commandHandler.controller.bots[e].user.myFriends[receiverSteamID] != 3 && commandHandler.controller.bots[e].user.limitations.limited);
 
 
     // Log debug values
-    if (allAccounts.length < accountsNeeded) logger("debug", `Controller getAvailableAccountsForCommenting(): Calculated ${accountsNeeded} accs needed for ${numberOfComments} comments but only ${allAccounts.length} are available. User needs to wait ${whenAvailableStr}...`);
-        else logger("debug", `Controller getAvailableAccountsForCommenting(): Calculated ${accountsNeeded} accs needed for ${numberOfComments} comments and ${allAccounts.length} are available: ${allAccounts}`);
+    if (allAccounts.length < accountsNeeded) logger("debug", `CommandHandler getAvailableBotsForCommenting(): Calculated ${accountsNeeded} accs needed for ${numberOfComments} comments but only ${allAccounts.length} are available. User needs to wait ${whenAvailableStr}...`);
+        else logger("debug", `CommandHandler getAvailableBotsForCommenting(): Calculated ${accountsNeeded} accs needed for ${numberOfComments} comments and ${allAccounts.length} are available: ${allAccounts}`);
 
     // Return values
     return {
