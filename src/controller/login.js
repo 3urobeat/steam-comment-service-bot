@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 23:53:33
+ * Last Modified: 03.05.2023 17:12:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -124,8 +124,6 @@ Controller.prototype.login = function() {
 
     logger("debug", `Controller login(): Found ${allAccounts.length} account(s) which aren't logged in and weren't skipped`);
 
-    // TODO: Idee: Status von allen accs hier zu waiting setzen? Dann kann jeder in queue pushen und alle die warten werden automatisch gefiltert
-    // Problem dass mehrere login prozesse gleichzeitig gestartet werden könnten existiert aber noch immer
 
     // Set activeLogin to true if allAccounts is not empty
     if (allAccounts.length == 0) return this.info.activeLogin = false;
@@ -184,7 +182,7 @@ Controller.prototype.login = function() {
                 // Populate this.main if we just logged in the first account
                 if (Object.keys(this.bots)[0] == k.accountName) this.main = thisbot;
 
-                logger("debug", `Controller login(): bot${i} changed status from offline to ${thisbot}! Continuing with next account...`);
+                logger("debug", `Controller login(): bot${i} changed status from offline to ${thisbot.status}! Continuing with next account...`);
 
                 // Check for last iteration, call again and emit ready event
                 if (i + 1 == allAccounts.length) {

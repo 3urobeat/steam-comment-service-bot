@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 13:25:46
+ * Last Modified: 02.05.2023 13:39:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -87,7 +87,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
             } else { // Got retries left or it is a relog...
 
-                logger("warn", `${err} while trying to log in bot${this.index}. Retrying in 5 seconds...`); // Log error as warning
+                logger("warn", `${err} while trying to log in bot${this.index}. Retrying in 5 seconds...`, false, false, null, true); // Log error as warning
 
                 // Invalidate token to get a new session if this error was caused by an invalid refreshToken
                 if (err.eresult == EResult.InvalidPassword || err == "Error: InvalidSignature") { // These are the most likely enums that will occur when an invalid token was used I guess (Checking via String here as it seems like there are EResults missing)

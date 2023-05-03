@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 23:41:43
+ * Last Modified: 03.05.2023 14:33:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -17,9 +17,7 @@
 
 const SteamSession = require("steam-session"); // eslint-disable-line
 
-const Bot        = require("../bot/bot.js"); // eslint-disable-line
-const Controller = require("../controller/controller.js");
-const loginfile  = require("../controller/login.js");
+const Bot = require("../bot/bot.js"); // eslint-disable-line
 
 
 /**
@@ -47,7 +45,7 @@ const SessionHandler = function(bot) {
     require("./helpers/tokenStorageHandler.js");
 
     // Run tokens database cleanup helper once for loginindex 0
-    // if (loginindex == 0) this._cleanTokenStorage(); // TODO: Not implemented yet
+    // if (this.bot.index == 0) this._cleanTokenStorage(); // TODO: Not implemented yet
 
 };
 
@@ -61,7 +59,7 @@ module.exports = SessionHandler;
  */
 SessionHandler.prototype.getToken = function() { // I'm not allowed to use arrow styled functions here... (https://stackoverflow.com/questions/59344601/javascript-nodejs-typeerror-cannot-set-property-validation-of-undefined)
     return new Promise((resolve) => {
-        logger("debug", `[${this.bot.logPrefix}] getToken(): Created new object for token request`);
+        logger("debug", `[${this.bot.logPrefix}] getToken(): Attempting to find token for '${this.bot.loginData.logOnOptions.accountName}' in tokens.db...`);
 
         // Save promise resolve function so any other function of this object can resolve the promise itself
         this.getTokenPromise = resolve;
