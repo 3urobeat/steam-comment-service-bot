@@ -4,7 +4,7 @@
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 01.05.2023 20:47:32
+ * Last Modified: 03.05.2023 17:09:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -25,28 +25,27 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
     let _this = this;
 
     function scanDatabase() {
-        logger("debug", "DataManager: detectExpiringTokens(): Scanning tokens.db for expiring tokens...");
+        logger("debug", "DataManager detectExpiringTokens(): Scanning tokens.db for expiring tokens...");
 
         let expiring = {};
         let expired  = {};
 
         _this.tokensDB.find({}, (err, docs) => { // Find all documents
-            docs.forEach((e, i) => { // Check every document
-
+            docs.forEach((e, i) => {             // Check every document
                 let tokenObj = _this.decodeJWT(e.token);
 
-                if (tokenObj) { // Only try to check acc if no error occurred (Code lookin funky cuz I can't use return here as the last iteration check would otherwise abort)
+                // Check acc if no error occurred (Code lookin funky cuz I can't use return here as the last iteration check would otherwise abort)
+                if (tokenObj) {
                     // Check if token expires in <= 7 days and add it to counter
                     if (tokenObj.exp * 1000 <= Date.now() + 604800000) {
-                        let vals  = Object.values(_this.logininfo);
-                        let index = vals.indexOf(vals.find(f => f[0] == e.accountName)); // Get index of the affected account
+                        let thisbot = _this.controller.getBots("*", true)[e.accountName];
 
-                        // If index is -1 then the account found in tokens.db is not currently being used and thus we can ignore it
-                        if (index >= 0) expiring[index] = _this.controller.bots[index]; // Push the bot object of the expiring account to our array
+                        // Only continue if a bot object and therefore corresponding credentials exists - Another nested check because we still can't use return here.
+                        if (thisbot) {
+                            expiring[e.accountName] = thisbot; // Push the bot object of the expiring account to our object
 
-                        // Check if token already expired and push to expired array as well to show separate warning message
-                        if (tokenObj.exp * 1000 <= Date.now()) {
-                            expired[index] = _this.controller.bots[index];
+                            // Check if token already expired and push to expired obj as well to show separate warning message
+                            if (tokenObj.exp * 1000 <= Date.now()) expired[e.accountName] = thisbot;
                         }
                     }
                 } else {
@@ -72,17 +71,13 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
                     _this.cachefile.ownerid.forEach((e, i) => {
                         setTimeout(() => {
                             // eslint-disable-next-line no-control-regex
-                            this.controller.main.user.chat.sendFriendMessage(e, msg.replace(/\x1B\[[0-9]+m/gm, "") + "!\nHead over to the terminal to refresh the token(s) now if you wish."); // Remove color codes from string
+                            _this.controller.main.user.chat.sendFriendMessage(e, msg.replace(/\x1B\[[0-9]+m/gm, "") + "!\nHead over to the terminal to refresh the token(s) now if you wish."); // Remove color codes from string
                         }, 1500 * i);
                     });
-
-                    // Block new comment requests from happening
-                    _this.controller.info.activeLogin = true;
 
                     // Check for active comment processes before asking for relog
                     _this._askForGetNewToken(expiring);
                 }
-
             });
         });
     }
@@ -96,7 +91,6 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
         scanDatabase();
         lastScanTime = Date.now(); // Update var tracking timestamp of last execution
     }, 21600000); // 6h in ms - Intentionally so low to prevent function from only running every 48h should interval get unprecise over time
-
 };
 
 
@@ -107,25 +101,28 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
 DataManager.prototype._askForGetNewToken = function(expiring) {
     let _this = this;
 
-    function askForRelog() {
+    function askForRelog() { // TODO: Add support for asking in steam chat
 
         // Ask for all accounts once
         logger.readInput(`\nWould you like to submit the Steam Guard Codes now to refresh the login tokens of ${Object.keys(expiring).length} accounts? [y/N] `, 90000, (input) => {
             if (input) {
                 if (input.toLowerCase() == "y") {
 
-                    // Invalidate tokens and call relogAccount for each account
-                    Object.keys(expiring).forEach((e, i) => {
-                        let loginindex = Number(e);
+                    // Invalidate all tokens and log off if still online
+                    Object.values(expiring).forEach((e, i) => {
+                        if (e.status == "online") e.user.logOff(); // Disconnected event won't trigger because activeLogin is already true
 
-                        // Invalidate existing token so the SessionHandler will do a credentials login to get a new token
-                        _this.controller.bots[loginindex].sessionHandler.invalidateTokenInStorage();
+                        _this.controller._statusUpdateEvent(e, "offline"); // Set status of this account to offline
 
-                        // Push account into relog queue without advancedconfig.relogTimeout, relogAccount.js will handle getting a new session etc.
-                        require("../../bot/helpers/relogAccount.js").run(loginindex, _this.logininfo[loginindex], expiring[i]); // TODO: Call from corresponding bot object
+                        e.sessionHandler.invalidateTokenInStorage(); // Invalidate token in storage
 
-                        // Note: activeLogin is set to false again by webSession if relogQueue is empty
+                        // Check for last iteration and trigger login
+                        if (i + 1 == Object.values(expiring).length) {
+                            _this.controller.info.activeLogin = false; // Quick hack so that login() won't ignore our request, this will be updated again instantly and was only false to block new comment requests
+                            _this.controller.login();
+                        }
                     });
+
                 } else {
                     logger("info", "Asking again in 24 hours...");
 
@@ -140,6 +137,9 @@ DataManager.prototype._askForGetNewToken = function(expiring) {
 
     }
 
+
+    // Block new comment requests from happening. This will also block the disconnected event from executing when we call logOff() in a sec
+    this.controller.info.activeLogin = true;
 
     // Check for an active comment process before asking user for relog
     logger("debug", "DataManager _askForGetNewToken(): Checking for active comment process...");
@@ -158,7 +158,7 @@ DataManager.prototype._askForGetNewToken = function(expiring) {
                 logger("info", "Waiting for an active comment process to finish...", false, true, logger.animation("waiting"));
 
                 setTimeout(() => { // Wait 2.5 sec and check again
-                    this._askForGetNewToken(expiring); // TODO: Is recursion really the best idea here?
+                    this._askForGetNewToken(expiring); // TODO: Is recursion really the best idea here? Edit: No! Should be possible with an interval but I'll wait till this is a helper function
                 }, 2500);
 
             } else { // If the obj is now empty then lets continue
