@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 21:11:38
+ * Last Modified: 03.05.2023 20:34:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -163,16 +163,14 @@ Controller.prototype._start = async function() {
             logger("info", `It looks like the last update failed so let's skip the updater for now and hope ${this.data.datafile.mestr} fixes the issue.\n       If you haven't reported the error yet please do so as I'm only then able to fix it!`, true);
 
             require("./login.js"); // Load helper
-            this._preLogin(); // Run one-time pre-login tasks
-            this.login(); // Start logging in
+            this._preLogin(); // Run one-time pre-login tasks, it will call login() when it's done
 
         } else {
 
             require("../updater/updater.js").run(false, null, false, (foundanddone2, updateFailed) => {
                 if (!foundanddone2) {
                     require("./login.js"); // Load helper
-                    this._preLogin(); // Run one-time pre-login tasks
-                    this.login(); // Start logging in
+                    this._preLogin(); // Run one-time pre-login tasks, it will call login() when it's done
                 } else {
                     this.restart(JSON.stringify({ skippedaccounts: this.info.skippedaccounts, updatefailed: updateFailed == true })); // Send request to parent process (checking updateFailed == true so that undefined will result in false instead of undefined)
                 }

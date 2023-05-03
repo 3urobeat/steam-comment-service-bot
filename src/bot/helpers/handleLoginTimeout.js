@@ -4,7 +4,7 @@
  * Created Date: 03.11.2022 12:27:46
  * Author: 3urobeat
  *
- * Last Modified: 03.05.2023 20:09:00
+ * Last Modified: 03.05.2023 20:21:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -61,10 +61,10 @@ Bot.prototype.handleLoginTimeout = function() {
         } else {
 
             // Force progress if account is stuck
-            logger("warn", `Detected timed out login attempt for bot${this.index}! Force progressing login attempt to avoid soft-locking the bot...`);
+            logger("warn", `Detected timed out login attempt for bot${this.index}! Force progressing login attempt to avoid soft-locking the bot...`, true);
 
             this.user.logOff(); // Call logOff() just to be sure
-            this.sessionHandler.session.cancelLoginAttempt(); // TODO: This might cause an error as idk if we are polling. Maybe use the timeout event of steam-session
+            if (this.sessionHandler.session) this.sessionHandler.session.cancelLoginAttempt(); // TODO: This might cause an error as idk if we are polling. Maybe use the timeout event of steam-session
 
             this._loginToSteam(); // Attempt another login as we still have attempts left
         }

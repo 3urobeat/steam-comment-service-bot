@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.03.2023 22:06:59
+ * Last Modified: 03.05.2023 20:26:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -30,7 +30,7 @@ DataManager.prototype.checkData = function() {
 
     return new Promise((resolve, reject) => {
 
-        logger("info", "Running datachecks...", false, true, logger.animation("loading"));
+        logger("info", "Running datachecks and displaying config recommendations...", false, true, logger.animation("loading"));
 
 
         // Display warning/notice if user is running in beta mode

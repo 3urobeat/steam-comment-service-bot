@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 22.04.2023 17:57:01
+ * Last Modified: 03.05.2023 20:28:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -64,7 +64,7 @@ CommandHandler.prototype._importCoreCommands = function() {
                 logger("error", `Error loading core command '${e}'! ${err.stack}`, true);
             }
 
-            if (i + 1 == files.length) logger("info", `Loaded ${this.commands.length} core commands`, false, true, logger.animation("loading"));
+            if (i + 1 == files.length) logger("info", `Successfully loaded ${this.commands.length} core commands!`, false, true, logger.animation("loading"));
         });
     });
 
