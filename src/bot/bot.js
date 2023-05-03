@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 13:30:37
+ * Last Modified: 03.05.2023 17:14:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -57,6 +57,7 @@ const Bot = function(controller, index) {
     require("./events/relationship.js");
     require("./events/webSession.js");
     require("./helpers/checkMsgBlock.js");
+    require("./helpers/handleLoginTimeout.js");
     require("./helpers/steamChatInteraction.js");
 
     // Create sessionHandler object for this account
@@ -106,6 +107,8 @@ Bot.prototype._loginToSteam = async function() {
     if (!this.loginData.proxy) logger("info", `[${this.logPrefix}] Trying to log in without proxy... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
         else logger("info", `[${this.logPrefix}] Trying to log in with proxy ${this.loginData.proxyIndex}... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
 
+    // Attach loginTimeout handler
+    this.handleLoginTimeout();
 
     // Call our steam-session helper to get a valid refresh token for us
     let refreshToken = await this.sessionHandler.getToken();

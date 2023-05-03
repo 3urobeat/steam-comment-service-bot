@@ -4,7 +4,7 @@
  * Created Date: 03.11.2022 12:27:46
  * Author: 3urobeat
  *
- * Last Modified: 27.04.2023 12:22:31
+ * Last Modified: 03.05.2023 20:09:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -15,80 +15,60 @@
  */
 
 
-const controller = require("../../controller/controller.js");
-const login      = require("../../controller/login.js");
+const Bot = require("../bot.js");
 
-
-// TODO!
 
 /**
- * Handles force progressing the relog queue should an account get stuck while trying to log in to prevent the bot from softlocking (see issue #139)
- * @param {Number} loginindex The loginindex of the calling account
- * @param {String} thisbot The thisbot string of the calling account
- * @param {Object} logOnOptions The steam-user logOnOptions object
- * @param {SteamUser} bot The bot instance of the calling account
+ * Handles aborting a login attempt should an account get stuck to prevent the bot from softlocking (see issue #139)
  */
-module.exports.handleLoginTimeout = (loginindex, thisbot, logOnOptions, bot) => {
+Bot.prototype.handleLoginTimeout = function() {
+
     // Ignore if login timeout handler is disabled in advancedconfig
-    if (advancedconfig.loginTimeout == 0) {
-        logger("debug", `handleLoginTimeout(): Ignoring timeout attach request for bot${loginindex} because loginTimeout is disabled in advancedconfig!`);
-        return;
-    }
+    if (this.data.advancedconfig.loginTimeout == 0) return logger("debug", `Bot handleLoginTimeout(): Ignoring timeout attach request for bot${this.index} because loginTimeout is disabled in advancedconfig!`);
+        else logger("debug", `Bot handleLoginTimeout(): Attached ${this.data.advancedconfig.loginTimeout / 1000} seconds timeout for bot${this.index}...`);
 
     let currentLogOnTry = this.loginData.logOnTries;
 
-    logger("debug", `handleLoginTimeout(): Attached ${advancedconfig.loginTimeout / 1000} seconds timeout for bot${loginindex}...`);
-
-    // Check if account is still in relogQueue with the same logOnTries value 60 seconds later and force progress
+    // Check if account is still offline with the same logOnTries value 60 seconds later and force progress
     setTimeout(() => {
 
         // Ignore timeout if account progressed since then
         let newLogOnTry = this.loginData.logOnTries;
-        let accInQueue  = controller.relogQueue.includes(loginindex);
 
-        if (currentLogOnTry != newLogOnTry || !accInQueue) {
-            logger("debug", `[${thisbot}] handleLoginTimeout(): Timeout for bot${loginindex} done, acc not stuck. old/new logOnTries: ${currentLogOnTry}/${newLogOnTry} - acc in relogQueue: ${accInQueue}`);
-            return;
-        }
+        if (currentLogOnTry != newLogOnTry || this.status != "offline") return logger("debug", `Bot handleLoginTimeout(): Timeout for bot${this.index} done, acc not stuck. old/new logOnTries: ${currentLogOnTry}/${newLogOnTry} - acc status: ${this.status}`);
 
         // Check if all logOnRetries are used up and skip account
-        if (this.loginData.logOnTries > advancedconfig.maxLogOnRetries) {
+        if (this.loginData.logOnTries > this.data.advancedconfig.maxLogOnRetries) {
             logger("", "", true);
-            logger("error", `Couldn't log in bot${loginindex} after ${this.loginData.logOnTries} attempt(s). Error: Login attempt timed out and all available logOnRetries were used.`, true);
+            logger("error", `Couldn't log in bot${this.index} after ${this.loginData.logOnTries} attempt(s). Error: Login attempt timed out and all available logOnRetries were used.`, true);
 
             // Add additional messages for specific errors to hopefully help the user diagnose the cause
             if (this.loginData.proxy != null) logger("", `        Is your proxy ${this.loginData.proxyIndex} offline or maybe blocked by Steam?`, true);
 
             // Abort execution if account is bot0
-            if (loginindex == 0) {
+            if (this.index == 0) {
                 logger("", "", true);
                 logger("error", "Aborting because the first bot account always needs to be logged in!\nPlease wait a moment and start the bot again.", true);
-                return process.send("stop()");
+                return this.controller.stop();
 
             } else { // Skip account if not bot0
 
                 logger("info", "Failed account is not bot0. Skipping account...", true);
-
-                controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
-
-                // Remove account from relogQueue if included so that the next account can try to relog itself
-                if (controller.relogQueue.includes(loginindex)) controller.relogQueue.splice(controller.relogQueue.indexOf(loginindex), 1);
-
-                // Remove account from botobject & communityobject so that it won't be used for anything anymore
-                if (controller.botobject[String(loginindex)])       delete controller.botobject[String(loginindex)];
-                if (controller.communityobject[String(loginindex)]) delete controller.communityobject[String(loginindex)];
+                this.controller._statusUpdateEvent(this, "skipped");
+                this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
             }
 
         } else {
 
             // Force progress if account is stuck
-            logger("warn", `Detected timed out login attempt for bot${loginindex}! Force progressing relog queue to avoid soft-locking the bot...`);
+            logger("warn", `Detected timed out login attempt for bot${this.index}! Force progressing login attempt to avoid soft-locking the bot...`);
 
-            bot.logOff(); // Call logOff() just to be sure
+            this.user.logOff(); // Call logOff() just to be sure
+            this.sessionHandler.session.cancelLoginAttempt(); // TODO: This might cause an error as idk if we are polling. Maybe use the timeout event of steam-session
 
-            require("../helpers/relogAccount.js").run(loginindex, thisbot, logOnOptions, bot, true); // Force relog with last param
+            this._loginToSteam(); // Attempt another login as we still have attempts left
         }
 
-    }, advancedconfig.loginTimeout);
+    }, this.data.advancedconfig.loginTimeout);
 
 };
