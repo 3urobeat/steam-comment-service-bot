@@ -1,10 +1,10 @@
 /*
- * File: checkforupdate.js
+ * File: checkForUpdate.js
  * Project: steam-comment-service-bot
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 20:43:30
+ * Last Modified: 04.05.2023 20:17:17
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -20,20 +20,21 @@ const https = require("https");
 
 /**
  * Checks for an available update from the GitHub repo
- * @param {String} releasemode 'master' or 'beta-testing' depending on which branch you want to check
- * @param {Boolean} forceupdate Force an update
- * @param {function} [callback] Called with `updatefound` (Boolean) and `output` (Object) the data.json found online parameters on completion. `updatefound` will be false if the check should fail.
+ * @param {Object} datafile The current `data.json` file from the DataManager
+ * @param {String} branch Which branch you want to check. Defaults to the current branch set in `data.json`
+ * @param {Boolean} forceUpdate If true an update will be forced, even if disableAutoUpdate is true or the newest version is already installed
+ * @param {function} [callback] Called with `updateFound` (Boolean) and `data` (Object) on completion. `updatefound` will be false if the check should fail. `data` includes the full data.json file found online.
  */
-module.exports.checkforupdate = (releasemode, forceupdate, callback) => {
+module.exports.checkForUpdate = (datafile, branch, forceUpdate, callback) => {
+    if (!branch) branch = datafile.branch; // Set current branch as default value
 
-    /* ------------------ Check for new version ------------------ */
-    if (forceupdate) logger("info", `Forcing update from ${releasemode} branch...`, false, true, logger.animation("loading"));
-        else logger("info", `Checking for update in ${releasemode} branch...`, false, true, logger.animation("loading"));
+    if (forceUpdate) logger("info", `Forcing update from ${branch} branch...`, false, true, logger.animation("loading"));
+        else logger("info", `Checking for update in ${branch} branch...`, false, true, logger.animation("loading"));
 
     let output = "";
 
     try {
-        let httpsrequest = https.get(`https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${releasemode}/src/data/data.json`, function(res) {
+        let req = https.get(`https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${branch}/src/data/data.json`, function(res) {
             res.setEncoding("utf8");
 
             res.on("data", (chunk) => {
@@ -42,25 +43,26 @@ module.exports.checkforupdate = (releasemode, forceupdate, callback) => {
 
             res.on("end", () => {
                 output = JSON.parse(output);
-                let onlineversion = output.version;
+                let onlineversion    = output.version;
                 let onlineversionstr = output.versionstr;
 
                 if(output.mestr!==extdata.mestr||output.aboutstr!==extdata.aboutstr){extdata.mestr=output.mestr;extdata.aboutstr=output.aboutstr;global.checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<";require("fs").writeFile(srcdir + "/data/data.json",JSON.stringify(extdata,null,4),()=>{process.send("restart({})");});}else{global.checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"} // eslint-disable-line
 
-                if (onlineversion > extdata.version || forceupdate == true || !onlineversionstr.includes("BETA") && extdata.versionstr.includes("BETA") || onlineversionstr.includes("BETA") && !extdata.versionstr.includes("BETA")) { // Version number greater, forceupdate is true, release or beta version available?
-                    callback(true, output);
-                } else {
-                    callback(false, output);
-                }
+                // Return true if an update should be forced, if a greater version was found, if online versioning entered beta or if online versioning left beta
+                let updateFound = forceUpdate || onlineversion > datafile.version || !onlineversionstr.includes("BETA") && datafile.versionstr.includes("BETA") || onlineversionstr.includes("BETA") && !datafile.versionstr.includes("BETA");
+
+                callback(updateFound, output); // Make our callback!
             });
         });
 
-        httpsrequest.on("error", function(err) {
+        req.on("error", function(err) {
             logger("warn", `${logger.colors.reset}[${logger.colors.fgred}Notice${logger.colors.reset}]: Couldn't check for an available update because either GitHub is down or your internet isn't working.\n          Error: ${err}`, true);
             callback(false, {});
         });
+
     } catch (err) {
-        logger("error", "checkforupdate function Error: " + err, true);
+
+        logger("error", "Updater checkForUpdate function Error: " + err, true);
         callback(false, {});
     }
 };
