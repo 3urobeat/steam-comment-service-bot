@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 21:37:22
+ * Last Modified: 05.05.2023 23:12:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -92,7 +92,7 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
 
 
     // Add description to errors to make it easier to understand for users. Add extra cooldown for certain errors
-    switch (error.toLowerCase()) {
+    switch (String(error).toLowerCase()) {
         case "error: http error 429":
             description = "This IP has commented too often recently and has been blocked by Steam for a few minutes. Please wait a moment and then try again.";
 
@@ -142,7 +142,7 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
 
     // Add proxy information if one was used for this account
     let proxiesDescription = "";
-    if (commandHandler.data.proxies.length > 1) proxiesDescription = ` using proxy ${this.loginData.proxyIndex}`;
+    if (commandHandler.data.proxies.length > 1) proxiesDescription = ` using proxy ${bot.loginData.proxyIndex}`;
 
 
     // Log error, add it to failed obj and continue with next iteration
