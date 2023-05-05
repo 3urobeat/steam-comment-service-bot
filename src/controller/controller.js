@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 12:41:51
+ * Last Modified: 05.05.2023 15:25:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -160,8 +160,10 @@ Controller.prototype._start = async function() {
 
 
     /* ------------ Run compatibility feature and updater or start logging in: ------------ */
+    let forceUpdate = false; // Provide forceUpdate var which is passed to updater which runCompatibility can overwrite
+
     let compatibility = await checkAndGetFile("./src/updater/compatibility.js", logger, false, false);
-    if (compatibility) await compatibility.runCompatibility(); // Don't bother running it if it couldn't be found and just hope the next update will fix it
+    if (compatibility) forceUpdate = await compatibility.runCompatibility(this); // Don't bother running it if it couldn't be found and just hope the next update will fix it
 
     // Attempt to load updater to activate the auto update checker. If this fails we are properly "fucked" as we can't repair ourselves
     let Updater = await checkAndGetFile("./src/updater/updater.js", logger, false, false);
@@ -184,7 +186,7 @@ Controller.prototype._start = async function() {
     } else {
 
         // Let the updater run and check for any available updates
-        let { updateFound } = await this.updater.run();
+        let { updateFound } = await this.updater.run(forceUpdate);
 
         // Continue if no update was found by starting to log in. If an update was found and installed the updater will restart the bot itself.
         if (!updateFound) {

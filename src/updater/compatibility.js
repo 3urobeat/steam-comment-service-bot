@@ -4,7 +4,7 @@
  * Created Date: 04.05.2023 20:26:42
  * Author: 3urobeat
  *
- * Last Modified: 04.05.2023 22:19:52
+ * Last Modified: 05.05.2023 15:01:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -23,7 +23,7 @@ const Controller = require("../controller/controller.js"); // eslint-disable-lin
 /**
  * Compatibility feature function to ensure automatic updating works. It gets the corresponding compatibility feature to this version and runs it if compatibilityfeaturedone in data.json is false.
  * @param {Controller} controller Reference to the controller object
- * @returns {Promise} Resolved when done.
+ * @returns {Promise} Resolves with `forceUpdate` (Boolean) when done. 'forceUpdate` must be passed to updater in controller.js!
  */
 module.exports.runCompatibility = async (controller) => {
     return new Promise((resolve) => {
@@ -55,7 +55,7 @@ module.exports.runCompatibility = async (controller) => {
             } else { // Continue startup like normal if no file was found for this version
 
                 logger("debug", `Updater runCompatibility(): No compatibility feature was found for ${controller.data.datafile.version} in a list of ${list.length} files...`);
-                resolve();
+                resolve(false);
             }
 
         })();
