@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 14:40:28
+ * Last Modified: 05.05.2023 23:41:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -106,8 +106,8 @@ const download = require("download"); // TODO: Does it make a difference if we r
                             if (newfiles.length == i + 1) {
                                 fs.rmSync(`./steam-comment-service-bot-${controller.data.datafile.branch}`, { recursive: true }); // Remove the remains of the download folder
 
-                                // Run custom update rules for a few files
-                                await require("./customUpdateRules.js").customUpdateRules(oldconfig, oldadvancedconfig, olddatafile);
+                                // Run custom update rules for a few files. Note: This will load the new file but call with old parameters. Sounds like a recipe for disaster
+                                await require("./customUpdateRules.js").customUpdateRules(null, oldconfig, oldadvancedconfig, olddatafile);
 
                                 // Make callback with no error message to let caller carry on
                                 resolve(null);

@@ -4,7 +4,7 @@
  * Created Date: 22.02.2022 17:39:21
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 14:18:44
+ * Last Modified: 05.05.2023 23:44:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -20,9 +20,14 @@ const fs = require("fs");
 
 /**
  * Applies custom update rules for a few files (gets called by downloadUpdate.js)
+ * @param {any} compatibilityfeaturedone Legacy param, is unused
+ * @param {Object} oldconfig The old config from before the update
+ * @param {Object} oldadvancedconfig The old advancedconfig from before the update
+ * @param {Object} olddatafile The old datafile from before the update
+ * @param {function} callback Legacy param, will be called if defined with no parameters
  * @returns {Promise} Resolves when we can proceed
  */
-module.exports.customUpdateRules = (oldconfig, oldadvancedconfig, oldextdata) => {
+module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadvancedconfig, olddatafile, callback) => {
     return new Promise((resolve) => {
 
         /* --------------------- config.json --------------------- */
@@ -100,9 +105,9 @@ module.exports.customUpdateRules = (oldconfig, oldadvancedconfig, oldextdata) =>
         // Transfer a few specific values to the new datafile
         logger("", `${logger.colors.fgyellow}Transferring changes to new data.json...${logger.colors.reset}`, true, false, logger.animation("loading"));
 
-        newextdata.urlrequestsecretkey = oldextdata.urlrequestsecretkey;
-        newextdata.timesloggedin       = oldextdata.timesloggedin;
-        newextdata.totallogintime      = oldextdata.totallogintime;
+        newextdata.urlrequestsecretkey = olddatafile.urlrequestsecretkey;
+        newextdata.timesloggedin       = olddatafile.timesloggedin;
+        newextdata.totallogintime      = olddatafile.totallogintime;
 
         // Write changes to file
         logger("", `${logger.colors.fgyellow}Writing new data to data.json...`, true, false, logger.animation("loading"));
@@ -115,6 +120,7 @@ module.exports.customUpdateRules = (oldconfig, oldadvancedconfig, oldextdata) =>
 
             // Resolve when the last write finished
             resolve();
+            if (callback) callback(); // Call the old callback function if one was passed to keep backwards compatibility
         });
 
     });
