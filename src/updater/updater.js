@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 15:28:14
+ * Last Modified: 05.05.2023 15:51:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -72,7 +72,7 @@ Updater.prototype.run = function(forceUpdate, respondModule) {
             let checkForUpdate = await checkAndGetFile("./src/updater/helpers/checkForUpdate.js", logger, false, false);
             if (!checkForUpdate) return resolve(false);
 
-            checkForUpdate.check(this.data.datafile, null, false, (updateFound, onlineData) => {
+            checkForUpdate.check(this.data.datafile, null, forceUpdate, (updateFound, onlineData) => {
 
                 // Check if no update was found and abort
                 if (!updateFound) {
@@ -111,7 +111,7 @@ Updater.prototype.run = function(forceUpdate, respondModule) {
                     let prepareUpdate = await checkAndGetFile("./src/updater/helpers/prepareUpdate.js", logger, false, false);
                     if (!prepareUpdate) return stopOnFatalError();
 
-                    await prepareUpdate.run();
+                    await prepareUpdate.run(_this.controller, respondModule);
 
 
                     // Get our createBackup helper and run it. It creates a backup of our src folder so we can recover should the update fail
@@ -131,7 +131,7 @@ Updater.prototype.run = function(forceUpdate, respondModule) {
 
 
                     // Start downloading & installing the update
-                    let err = await downloadUpdate.startDownload();
+                    let err = await downloadUpdate.startDownload(_this.controller);
 
                     // Check if an error occurred and restore the backup
                     if (err) {
