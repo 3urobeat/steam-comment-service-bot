@@ -4,7 +4,7 @@
  * Created Date: 27.03.2023 21:34:45
  * Author: 3urobeat
  *
- * Last Modified: 31.03.2023 21:43:48
+ * Last Modified: 06.05.2023 00:20:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -131,6 +131,9 @@ DataManager.prototype.processData = function() {
                             resolve();
                         }
                     }
+
+                    // Instantly bail out if the array is empty. DataCheck will abort the bot later on
+                    if (_this.config.ownerid.length == 0) finishedResponse(-1);
 
                     // Either convert to steamID64 or directly push e
                     _this.config.ownerid.forEach((e, i) => {
