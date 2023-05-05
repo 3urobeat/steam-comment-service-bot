@@ -1,6 +1,8 @@
 {
     "note": "This file contains nearly all messages the bot sends via the steam chat. If you want to modify messages, read here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/How-to-add-custom-messages",
 
+    "updaterautoupdatedisabled": "You have disabled the automatic updater. Would you like to update now?\nIf yes, please force an update using the command: !update true",
+
     "commentactiverelog": "The bot is currently waiting for the last requested comment to be finished in order to relog accounts.\nPlease wait a few minutes and try again.",
     "commentcmdowneronly": "The bot owner set this command to owners only.\nType !owner to get information who the owner is.\nType !about to get a link to the bot creator.",
     "commentcmdusageowner": "'!comment amount/\"all\" profileid' for X many or the max amount of comments (max maxRequestAmount). Provide a profile id to comment on a specific profile.",

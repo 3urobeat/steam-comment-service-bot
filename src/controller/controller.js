@@ -40,6 +40,12 @@ const Controller = function() {
      */
     this.pluginSystem = {};
 
+    /**
+     * The updater object
+     * @type {Updater}
+     */
+    this.updater = {};
+
     /* ------------ Store various stuff: ------------ */
     this.bots = {}; // Store references to all bot account objects here
 
@@ -152,31 +158,39 @@ Controller.prototype._start = async function() {
     await this.data.checkData().catch(() => this.stop()); // Terminate the bot if some critical check failed
 
 
-    /* ------------ Run updater or start logging in: ------------ */
-    let updater = await checkAndGetFile("./src/updater/updater.js", logger, false, false);
-    if (!updater) return;
+    /* ------------ Run compatibility feature and updater or start logging in: ------------ */
+    let compatibility = await checkAndGetFile("./src/updater/compatibility.js", logger, false, false);
+    if (compatibility) await compatibility.runCompatibility(); // Don't bother running it if it couldn't be found and just hope the next update will fix it
 
-    updater.compatibility(async () => { // Continue startup on any callback
+    // Attempt to load updater to activate the auto update checker. If this fails we are properly "fucked" as we can't repair ourselves
+    let Updater = await checkAndGetFile("./src/updater/updater.js", logger, false, false);
+    if (!Updater) {
+        logger("error", "Fatal Error: Failed to load updater! Please reinstall the bot manually. Aborting...");
+        this.stop();
+        return;
+    }
 
-        if (updateFailed) { // Skip checking for update if last update failed
-            logger("info", `It looks like the last update failed so let's skip the updater for now and hope ${this.data.datafile.mestr} fixes the issue.\n       If you haven't reported the error yet please do so as I'm only then able to fix it!`, true);
+    // Init a new updater object. This will start our auto update checker
+    this.updater = new Updater(this);
 
+    // Check if the last update failed and skip the updater for now
+    if (updateFailed) {
+        logger("info", `It looks like the last update failed! Skipping the updater for now and hoping ${this.data.datafile.mestr} fixes the issue soon.\n       Another attempt will be made in 6 hours or on the next restart.\n\n       If you haven't reported the error yet please do so as only then he will be able to fix it!`, true);
+
+        require("./login.js"); // Load login function
+        this._preLogin();      // Run one-time pre-login tasks, it will call login() when it's done
+
+    } else {
+
+        // Let the updater run and check for any available updates
+        let { updateFound } = await this.updater.run();
+
+        // Continue if no update was found by starting to log in. If an update was found and installed the updater will restart the bot itself.
+        if (!updateFound) {
             require("./login.js"); // Load helper
-            this._preLogin(); // Run one-time pre-login tasks, it will call login() when it's done
-
-        } else {
-
-            require("../updater/updater.js").run(false, null, false, (foundanddone2, updateFailed) => {
-                if (!foundanddone2) {
-                    require("./login.js"); // Load helper
-                    this._preLogin(); // Run one-time pre-login tasks, it will call login() when it's done
-                } else {
-                    this.restart(JSON.stringify({ skippedaccounts: this.info.skippedaccounts, updatefailed: updateFailed == true })); // Send request to parent process (checking updateFailed == true so that undefined will result in false instead of undefined)
-                }
-            });
+            this._preLogin();      // Run one-time pre-login tasks, it will call login() when it's done
         }
-
-    });
+    }
 };
 
 module.exports = Controller;
@@ -193,7 +207,7 @@ function restartdata(data) {
     if (data.oldconfig) oldconfig = data.oldconfig //eslint-disable-line
     if (data.logafterrestart) logafterrestart = data.logafterrestart; // We can't print now since the logger function isn't imported yet.
     if (data.skippedaccounts) skippedaccounts = data.skippedaccounts;
-    if (data.updatefailed) updateFailed = data.updatefailed;
+    if (data.updateFailed) updateFailed = data.updateFailed;
 }
 
 // Make a "fake" logger backup function to use when no npm packages were installed
