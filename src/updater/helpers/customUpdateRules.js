@@ -4,7 +4,7 @@
  * Created Date: 22.02.2022 17:39:21
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 23:44:10
+ * Last Modified: 05.05.2023 23:54:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -24,10 +24,10 @@ const fs = require("fs");
  * @param {Object} oldconfig The old config from before the update
  * @param {Object} oldadvancedconfig The old advancedconfig from before the update
  * @param {Object} olddatafile The old datafile from before the update
- * @param {function} callback Legacy param, will be called if defined with no parameters
+ * @param {function} callback Legacy param, is unused
  * @returns {Promise} Resolves when we can proceed
  */
-module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadvancedconfig, olddatafile, callback) => {
+module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadvancedconfig, olddatafile, callback) => { // eslint-disable-line
     return new Promise((resolve) => {
 
         /* --------------------- config.json --------------------- */
@@ -120,7 +120,6 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
 
             // Resolve when the last write finished
             resolve();
-            if (callback) callback(); // Call the old callback function if one was passed to keep backwards compatibility
         });
 
     });
