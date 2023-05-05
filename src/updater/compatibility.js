@@ -50,7 +50,7 @@ module.exports.runCompatibility = async (controller) => {
                 if (!file) return resolve();
 
                 logger("info", `Running compatibility feature ${match}...`, true);
-                file.run(resolve); // Call compatibilityfeature and pass callback so the caller of this function gets a response
+                file.run(controller, resolve); // Call compatibilityfeature and pass callback so the caller of this function gets a response
 
             } else { // Continue startup like normal if no file was found for this version
 
