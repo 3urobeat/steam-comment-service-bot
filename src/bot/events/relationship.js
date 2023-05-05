@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 01.04.2023 14:52:12
+ * Last Modified: 05.05.2023 15:15:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -30,7 +30,7 @@ Bot.prototype._attachSteamFriendRelationshipEvent = function() {
         if (relationship == 2) {
             let steamID64 = new SteamID(String(steamID)).getSteamID64();
 
-            if (!advancedconfig.acceptFriendRequests) return logger("info", `[${this.logPrefix}] Received friend request from ${steamID64} but acceptFriendRequests is turned off in advancedconfig.json`);
+            if (!this.data.advancedconfig.acceptFriendRequests) return logger("info", `[${this.logPrefix}] Received friend request from ${steamID64} but acceptFriendRequests is turned off in advancedconfig.json`);
 
             // Accept friend request
             this.user.addFriend(steamID);

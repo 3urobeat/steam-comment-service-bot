@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 14:30:07
+ * Last Modified: 05.05.2023 15:28:14
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -42,6 +42,9 @@ const Updater = function(controller) {
 
 };
 
+// Let our updater see the world
+module.exports = Updater;
+
 
 /**
  * Checks for any available update and installs it.
@@ -63,13 +66,13 @@ Updater.prototype.run = function(forceUpdate, respondModule) {
     return new Promise((resolve) => {
         (async () => { // Lets us use await insidea Promise without creating an antipattern
 
-            let checkAndGetFile = require("../starter.js");
+            let { checkAndGetFile } = require("../starter.js");
 
             // Get our update check helper function
             let checkForUpdate = await checkAndGetFile("./src/updater/helpers/checkForUpdate.js", logger, false, false);
             if (!checkForUpdate) return resolve(false);
 
-            checkForUpdate(this.data.datafile, null, false, (updateFound, onlineData) => {
+            checkForUpdate.check(this.data.datafile, null, false, (updateFound, onlineData) => {
 
                 // Check if no update was found and abort
                 if (!updateFound) {

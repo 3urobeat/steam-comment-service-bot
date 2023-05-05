@@ -150,6 +150,7 @@ Controller.prototype._start = async function() {
 
 
     /* ------------ Check imported data : ------------ */
+    global.extdata = this.data.datafile; // This needs to stay for backwards compatibility
 
     // Process imported owner & group ids and update cachefile
     await this.data.processData();

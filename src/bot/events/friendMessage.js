@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 22.04.2023 18:21:25
+ * Last Modified: 03.05.2023 21:50:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -24,13 +24,10 @@ const Bot = require("../bot.js");
  * Handles messages, cooldowns and executes commands.
  */
 Bot.prototype._attachSteamFriendMessageEvent = function() {
-    let _this = this;
 
     this.user.on("friendMessage", (steamID, message) => {
-
-        let resInfo    = { steamID64: steamID.getSteamID64() };                         // Object required for sendChatMessage(), our commandHandler respondModule implementation
-        let steamID64  = new SteamID(String(steamID)).getSteamID64();
-        let ownercheck = this.data.cachefile.ownerid.includes(steamID64);
+        let resInfo   = { steamID64: steamID.getSteamID64() };       // Object required for sendChatMessage(), our commandHandler respondModule implementation
+        let steamID64 = new SteamID(String(steamID)).getSteamID64();
 
 
         // Check if this event should be handled or if user is blocked
@@ -91,7 +88,6 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         let success = this.controller.commandHandler.runCommand(cont[0].toLowerCase(), args, steamID64, this.sendChatMessage, this, resInfo);
 
         if (!success) this.sendChatMessage(steamID, this.controller.data.lang.commandnotfound); // Send cmd not found msg if runCommand() returned false
-
     });
 
 };

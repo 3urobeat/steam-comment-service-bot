@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 03.05.2023 20:26:50
+ * Last Modified: 05.05.2023 14:37:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -51,7 +51,7 @@ DataManager.prototype.checkData = function() {
         if ((process.env.LOGNAME !== "tomg") || (os.hostname() !== "Toms-PC" && os.hostname() !== "Toms-Server" && os.hostname() !== "Toms-Thinkpad")) {
             let write = false;
 
-            if (this.config.owner.includes(extdata.mestr))         { this.config.owner = ""; write = true; }
+            if (this.config.owner.includes(this.datafile.mestr))   { this.config.owner = ""; write = true; }
             if (this.config.ownerid.includes("76561198260031749")) { this.config.ownerid.splice(this.config.ownerid.indexOf("76561198260031749"), 1); write = true; }
             if (this.config.ownerid.includes("3urobeat"))          { this.config.ownerid.splice(this.config.ownerid.indexOf("3urobeat"), 1); write = true; }
 

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.03.2023 22:01:54
+ * Last Modified: 05.05.2023 14:38:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -91,8 +91,8 @@ DataManager.prototype._importFromDisk = function() {
 
                             let restoreTimeout = 0; // Allow the following firststart check to delay the restore process so the user has time to read the info message
 
-                            // Display an informational message about what happened if extdata.firststart is true
-                            if (extdata && extdata.firststart) {
+                            // Display an informational message about what happened if datafile firststart is true
+                            if (_this.datafile && _this.datafile.firststart) {
                                 logger("", logger.colors.fgred + "\n--------------------------------------" + logger.colors.reset, true);
                                 logger("", `${logger.colors.fgcyan}Hey!${logger.colors.reset} It seems like this is your first start and you made a formatting mistake in your '${logger.colors.fgcyan}config.json${logger.colors.reset}' file. Because of this I'm sadly ${logger.colors.fgcyan}unable to load${logger.colors.reset} the file.`, true);
                                 logger("", `You can stop the bot now by pressing ${logger.colors.fgcyan}CTRL+C${logger.colors.reset} to fix the issue. Please make sure that you exactly follow the format of the provided 'config.json' when filling in your settings.`, true);

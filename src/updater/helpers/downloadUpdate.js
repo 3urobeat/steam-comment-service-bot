@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 14:21:09
+ * Last Modified: 05.05.2023 14:40:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -46,7 +46,7 @@ const download = require("download"); // TODO: Does it make a difference if we r
         });
 
 
-        // Save config settings and extdata values by cloning them into a new object
+        // Save config settings and datafile values by cloning them into a new object
         const oldconfig         = Object.assign(controller.data.config);
         const oldadvancedconfig = Object.assign(controller.data.advancedconfig);
         const olddatafile       = Object.assign(controller.data.datafile);

@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 09:37:57
  * Author: 3urobeat
  *
- * Last Modified: 20.03.2023 23:24:41
+ * Last Modified: 05.05.2023 14:36:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -30,7 +30,7 @@ module.exports.load = (sys) => { //eslint-disable-line
 
 
     // Example of pretending the first owner used the '!ping' command
-    let firstOwnerSteamID = new SteamID(cachefile.ownerid[0]); // Makes a steamID object of the first owner so we can pass it to the friendMessage event
+    //let firstOwnerSteamID = new SteamID(cachefile.ownerid[0]); // Makes a steamID object of the first owner so we can pass it to the friendMessage event
 
     //sys.botobject[0].emit("friendMessage", firstOwnerSteamID, "!ping"); // Pretend like the first owner send the bot the message "!ping" - Result: The bot will send you a response
 

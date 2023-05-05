@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 11:32:41
+ * Last Modified: 05.05.2023 15:15:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -50,7 +50,7 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry, part = 0) {
             logger("warn", `[${_this.logPrefix}] Error trying to send chat message of length ${thisPart.length} to ${resInfo.steamID64}! ${err}`);
 
             // Send the user a fallback message after 5 seconds just to indicate the bot is not down
-            //if (!retry) setTimeout(() => _this.sendChatMessage(resInfo.steamID64, "Sorry, it looks like Steam blocked my last message. Please try again in 30 seconds.", true), 5000);
+            // if (!retry) setTimeout(() => _this.sendChatMessage(resInfo.steamID64, "Sorry, it looks like Steam blocked my last message. Please try again in 30 seconds.", true), 5000);
 
             // Retry message in 10 seconds // TODO: Can I start typing to indicate the bot is not down?
             setTimeout(() => {

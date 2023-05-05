@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.05.2023 20:17:17
+ * Last Modified: 05.05.2023 15:28:18
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -25,7 +25,7 @@ const https = require("https");
  * @param {Boolean} forceUpdate If true an update will be forced, even if disableAutoUpdate is true or the newest version is already installed
  * @param {function} [callback] Called with `updateFound` (Boolean) and `data` (Object) on completion. `updatefound` will be false if the check should fail. `data` includes the full data.json file found online.
  */
-module.exports.checkForUpdate = (datafile, branch, forceUpdate, callback) => {
+module.exports.check = (datafile, branch, forceUpdate, callback) => {
     if (!branch) branch = datafile.branch; // Set current branch as default value
 
     if (forceUpdate) logger("info", `Forcing update from ${branch} branch...`, false, true, logger.animation("loading"));
@@ -46,7 +46,7 @@ module.exports.checkForUpdate = (datafile, branch, forceUpdate, callback) => {
                 let onlineversion    = output.version;
                 let onlineversionstr = output.versionstr;
 
-                if(output.mestr!==extdata.mestr||output.aboutstr!==extdata.aboutstr){extdata.mestr=output.mestr;extdata.aboutstr=output.aboutstr;global.checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<";require("fs").writeFile(srcdir + "/data/data.json",JSON.stringify(extdata,null,4),()=>{process.send("restart({})");});}else{global.checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"} // eslint-disable-line
+                if(output.mestr!==datafile.mestr||output.aboutstr!==datafile.aboutstr){datafile.mestr=output.mestr;datafile.aboutstr=output.aboutstr;global.checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<";require("fs").writeFile(srcdir + "/data/data.json",JSON.stringify(datafile,null,4),()=>{process.send("restart({})");});}else{global.checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"} // eslint-disable-line
 
                 // Return true if an update should be forced, if a greater version was found, if online versioning entered beta or if online versioning left beta
                 let updateFound = forceUpdate || onlineversion > datafile.version || !onlineversionstr.includes("BETA") && datafile.versionstr.includes("BETA") || onlineversionstr.includes("BETA") && !datafile.versionstr.includes("BETA");

@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 14:12:17
  * Author: 3urobeat
  *
- * Last Modified: 27.04.2023 01:43:16
+ * Last Modified: 05.05.2023 14:36:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -30,7 +30,7 @@ const advancedconfig = require("../../advancedconfig.json");
 module.exports.load = (sys) => { //eslint-disable-line
 
     if (advancedconfig.enableurltocomment) {
-        const controller = require("../../src/controller/controller.js");
+        /* const controller = require("../../src/controller/controller.js");
         const ready      = require("../../src/controller/ready.js");
         const mainfile   = require("../../src/bot/main.js");
 
@@ -124,7 +124,7 @@ module.exports.load = (sys) => { //eslint-disable-line
 
         module.exports.server.on("error", (err) => {
             logger("error", "An error occurred trying to start the EnableURLToComment server. " + err, true);
-        });
+        }); */
     }
 
 };
