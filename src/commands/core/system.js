@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.04.2023 11:29:49
+ * Last Modified: 05.05.2023 15:37:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -82,24 +82,15 @@ module.exports.update = {
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        if (args[0] == "true") {
+        // If the first argument is true then we shall force an update
+        let force = (args[0] == "true");
 
-            // TODO: Updater needs to be updated
-            require("../../updater/updater.js").run(true, steamID64, false, (foundAndDone) => { // We can ignore callback as the updater already responds to the user if a steamID is provided
-                if (foundAndDone) commandHandler.controller.restart(JSON.stringify({ skippedaccounts: commandHandler.controller.info.skippedaccounts })); // Send request to parent process
-            });
+        // Use the correct message depending on if force is true or false
+        if (force) respond(commandHandler.data.lang.updatecmdforce.replace("branchname", commandHandler.data.datafile.branch));
+            else respond(commandHandler.data.lang.updatecmdcheck.replace("branchname", commandHandler.data.datafile.branch));
 
-            respond(commandHandler.data.lang.updatecmdforce.replace("branchname", commandHandler.data.datafile.branch));
-
-        } else {
-
-            // TODO: Updater needs to be updated
-            require("../../updater/updater.js").run(false, steamID64, false, (foundAndDone) => { // We can ignore callback as the updater already responds to the user if a steamID is provided
-                if (foundAndDone) commandHandler.controller.restart(JSON.stringify({ skippedaccounts: commandHandler.controller.info.skippedaccounts })); // Send request to parent process
-            });
-
-            respond(commandHandler.data.lang.updatecmdcheck.replace("branchname", commandHandler.data.datafile.branch));
-        }
+        // Run the updater, pass force and our respond function which will allow the updater to text the user what's going on
+        commandHandler.controller.updater.run(force, respond);
     }
 };
 
