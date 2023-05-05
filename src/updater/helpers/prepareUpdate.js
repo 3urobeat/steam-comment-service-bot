@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 16:19:17
+ * Last Modified: 05.05.2023 16:27:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -34,7 +34,7 @@ module.exports.run = (controller, respondModule) => {
 
             /* eslint-disable no-inner-declarations */
             function initiateUpdate() { // Make initiating the update a function to simplify the activecomment check below
-                controller.relogAfterDisconnect = false; // Prevents disconnect event (which will be called by logOff) to relog accounts
+                controller.info.relogAfterDisconnect = false; // Prevents disconnect event (which will be called by logOff) to relog accounts
 
                 logger("info", "Logging off all bot accounts in 5 seconds...", false, true, logger.animation("waiting"));
 

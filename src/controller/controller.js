@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 15:25:58
+ * Last Modified: 05.05.2023 16:27:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -57,21 +57,16 @@ const Controller = function() {
 
     this.info = {
         bootStartTimestamp: Date.now(), // Save timestamp to be able to calculate startup time in ready event
-        lastLoginTimestamp: 0,  // Save timestamp of last login attempted by any account to calculate wait time for next account
+        lastLoginTimestamp: 0,          // Save timestamp of last login attempted by any account to calculate wait time for next account
         steamGuardInputTime: 0,
-        activeLogin: false, // Allows to block new comment requests when waiting for the last request to finish
-        readyAfter: 0, // Length of last startup in seconds
-        skippedaccounts: [], // Array of account names which have been skipped
+        activeLogin: false,             // Allows to block new comment requests when waiting for the last request to finish
+        relogAfterDisconnect: true,     // Allows to prevent accounts from relogging when calling bot.logOff()
+        readyAfter: 0,                  // Length of last startup in seconds
+        skippedaccounts: [],            // Array of account names which have been skipped
         commentCounter: 0
     };
 
     this.activeRequests = {}; // Stores active comment etc. requests
-
-    // TODO: Legacy stuff, filter out what is not needed
-    this.relogAfterDisconnect  = true;  // Allows to prevent accounts from relogging when calling bot.logOff()
-    this.failedcomments        = [];    // Array saving failedcomments so the user can access them via the !failedcomments command
-    this.lastcommentrequestmsg = [];    // Array saving the last comment cmd request to apply higher cooldown to the comment cmd usage compared to normal cmd usage cooldown
-
 };
 
 

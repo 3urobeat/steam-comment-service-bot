@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 13:39:59
+ * Last Modified: 05.05.2023 16:27:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -52,7 +52,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
             this.controller._statusUpdateEvent(this, "offline"); // Set status of this account to offline
 
             // Check if this is an intended logoff
-            if (this.controller.relogAfterDisconnect && !this.controller.info.skippedaccounts.includes(this.loginData.logOnOptions.accountName)) {
+            if (this.controller.info.relogAfterDisconnect && !this.controller.info.skippedaccounts.includes(this.loginData.logOnOptions.accountName)) {
                 logger("info", `${logger.colors.fggreen}[${this.logPrefix}] Initiating a relog in ${this.controller.data.advancedconfig.relogTimeout / 1000} seconds.`); // Announce relog
 
                 setTimeout(() => this.controller.login(), this.controller.data.advancedconfig.relogTimeout); // Relog after waiting relogTimeout ms
