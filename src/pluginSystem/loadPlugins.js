@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:46:09
  * Author: 3urobeat
  *
- * Last Modified: 21.03.2023 00:56:42
+ * Last Modified: 05.05.2023 17:10:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -60,7 +60,7 @@ PluginSystem.prototype._loadPlugins = function() {
 
             } catch (err) {
 
-                return logger("error", `Error loading plugin '${e}'! Error: ${err.stack}`, true);
+                return; // Logger("error", `Error loading plugin '${e}'! Error: ${err.stack}`, true); // TODO: Ignore for now, as plugins are not included in update set yet so this will trigger even after an successful update
             }
         });
     });
