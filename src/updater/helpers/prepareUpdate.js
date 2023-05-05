@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 13:19:30
+ * Last Modified: 05.05.2023 16:19:17
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -36,17 +36,17 @@ module.exports.run = (controller, respondModule) => {
             function initiateUpdate() { // Make initiating the update a function to simplify the activecomment check below
                 controller.relogAfterDisconnect = false; // Prevents disconnect event (which will be called by logOff) to relog accounts
 
-                logger("info", "Logging off all bot accounts in 2.5 seconds...", false, true, logger.animation("waiting"));
+                logger("info", "Logging off all bot accounts in 5 seconds...", false, true, logger.animation("waiting"));
 
                 setTimeout(() => {
-                    controller.getBots().every(e => e.user.logOff()); // Log off every account which is online
+                    controller.getBots().forEach(e => e.user.logOff()); // Log off every account which is online
 
                     // Start updating in 2.5 seconds to ensure every account had time to log off
                     setTimeout(() => {
                         botisloggedin = false;
                         resolve();
                     }, 2500);
-                }, 2500);
+                }, 5000);
             }
 
 
