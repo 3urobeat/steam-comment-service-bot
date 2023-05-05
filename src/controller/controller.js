@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 03.05.2023 20:34:27
+ * Last Modified: 05.05.2023 12:41:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -64,7 +64,6 @@ const Controller = function() {
     // TODO: Legacy stuff, filter out what is not needed
     this.relogAfterDisconnect  = true;  // Allows to prevent accounts from relogging when calling bot.logOff()
     this.failedcomments        = [];    // Array saving failedcomments so the user can access them via the !failedcomments command
-    this.activecommentprocess  = {};    // Object storing active comment processes so that a user can only request one process at a time, used accounts can only be used in one session, have a cooldown (not the user! that is handled by lastcomment) and the updater is blocked
     this.lastcommentrequestmsg = [];    // Array saving the last comment cmd request to apply higher cooldown to the comment cmd usage compared to normal cmd usage cooldown
 
 };

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 20:38:56
+ * Last Modified: 05.05.2023 12:39:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -73,7 +73,7 @@ module.exports.resetCooldown = {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
         if (commandHandler.data.advancedconfig.disableCommentCmd) return respond(commandHandler.data.lang.botmaintenance);
 
-        if (args[0] && args[0] == "global") { // Check if user wants to reset the global cooldown (will reset all until entries in activecommentprocess)
+        if (args[0] && args[0] == "global") { // Check if user wants to reset the global cooldown (will reset all until entries in activeRequests)
             if (commandHandler.data.config.botaccountcooldown == 0) return respond(commandHandler.data.lang.resetcooldowncmdcooldowndisabled); // Is the global cooldown enabled?
 
             Object.keys(commandHandler.controller.activeRequests).forEach((e) => {
