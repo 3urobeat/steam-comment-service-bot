@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 12:28:39
+ * Last Modified: 05.05.2023 16:44:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,34 +15,46 @@
  */
 
 
-// File to help starting application and making start.js more dynamic.
+// This file is called by start.js (which can't be updated).
+// This file can be updated but is not recommended as changes can't be applied cleanly without a manual restart.
 
-var cp;
-var logger;
-var forkedprocess;
-var childpid;
-var requestedKill;
+// It handles spawning and killing a child process which the bot runs in.
+// Please ignore the code quality, this file is designed to be pretty fail safe.
 
-var handleUnhandledRejection;
-var handleUncaughtException;
-var parentExitEvent;
 
+/* ---------------- First, import the core lib fs and define a few vars which will be used later ---------------- */
 const fs = require("fs");
 
+
+let cp;
+let logger;
+let forkedprocess;
+let childpid;
+let requestedKill;
+
+let handleUnhandledRejection;
+let handleUncaughtException;
+let parentExitEvent;
+
+
+// Set the current working directory path to a global var so the bot can use it later
 global.srcdir = __dirname;
 
 // Set timestamp checked in controller.js to 0 for the starter process (this one) to make sure the bot can never start here and only in the child process spawned by this.run()
 process.argv[3] = 0;
 
 
+/* -------- Now, provide functions for attaching/detaching event listeners to the parent and child process -------- */
+
 // Provide function to only once attach listeners to parent process
 function attachParentListeners(callback) {
-    var logafterrestart = [];
+    let logafterrestart = [];
 
-    /* ------------ Add unhandled rejection catches: ------------ */
+
+    /* ------------ Make a fake logger to use when the lib isn't loaded yet: ------------ */
     logger = (type, str) => { // Make a "fake" logger function in order to be able to log the error message when the user forgot to run 'npm install'
-        if (type.length > 1 && str.length > 1) var separator = "|"; // Make sure separator gets only shown if both arguments contain characters
-            else var separator = "";
+        let separator = "";
+        if (type.length > 1 && str.length > 1) separator = "|"; // Make sure separator gets only shown if both arguments contain characters
 
         logafterrestart.push(`${type} ${separator} ${str}`); // Push message to array that will be carried through restart
         console.log(`${type} ${separator} ${str}`);
@@ -51,6 +63,8 @@ function attachParentListeners(callback) {
     logger.animation            = () => {}; // Just to be sure that no error occurs when trying to call this function without the real logger being present
     logger.detachEventListeners = () => {};
 
+
+    /* ------------ Add unhandled rejection catches: ------------ */
     handleUnhandledRejection = (reason) => { // Should keep the bot at least from crashing
         logger("error", `Unhandled Rejection Error! Reason: ${reason.stack}`, true);
     };
@@ -87,7 +101,9 @@ function attachParentListeners(callback) {
                     }, 2000);
                 }
             });
+
         } else { // Logging this message but still trying to fix it would probably confuse the user
+
             logger("error", `Uncaught Exception Error! Reason: ${reason.stack}`, true);
             logger("", "", true);
             logger("warn", "Restarting bot in 5 seconds since the application can be in an unrecoverable state..."); // https://nodejs.org/dist/latest-v16.x/docs/api/process.html#process_warning_using_uncaughtexception_correctly
@@ -100,7 +116,8 @@ function attachParentListeners(callback) {
     };
 
     process.on("unhandledRejection", handleUnhandledRejection);
-    process.on("uncaughtException", handleUncaughtException);
+    process.on("uncaughtException",  handleUncaughtException);
+
 
     /* ------------ Add exit event listener and import logger: ------------ */
     // Attach exit event listener to display message in output & terminal when user stops the bot (before logger import so this runs before output-logger's exit event listener)
@@ -136,6 +153,8 @@ function attachParentListeners(callback) {
     callback();
 }
 
+
+// Provide function to detach parent process event listeners
 function detachParentListeners() {
     logger("info", "Detaching parent's event listeners...", false, true);
 
@@ -206,7 +225,7 @@ function attachChildListeners() {
 }
 
 
-/* ------------ Provide function to get file if it doesn't exist: ------------ */
+/* ------- Provide function to get file if it doesn't exist. Export it as it will be used later by the bot as well as a failsafe ------- */
 
 /**
  * Checks if the needed file exists and gets it if it doesn't
@@ -228,28 +247,29 @@ module.exports.checkAndGetFile = (file, logger, norequire, force) => {
         function getNewFile() {
 
             // Determine branch
-            var branch = "master"; // Default to master
+            let branch = "master"; // Default to master
 
             try {
-                branch = require("./data/data.json").branch; // Try to read from data.json (which will when user is coming from <2.11)
+                branch = require("./data/data.json").branch; // Try to read from data.json
             } catch (err) {
                 try {
-                    var otherdata = require("./data.json"); // Then try to get the other, "compatibility" data file to check if versionstr includes the word BETA
+                    let otherdata = require("./data.json"); // Then try to get the other, "compatibility" data file to check if versionstr includes the word BETA
 
                     if (otherdata.versionstr.includes("BETA")) branch = "beta-testing";
                 } catch (err) { } //eslint-disable-line
             }
 
 
-            var fileurl = `https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${branch}/${file.slice(2, file.length)}`; // Remove the dot at the beginning of the file string
+            // Construct URL for restoring a file from GitHub
+            let fileurl = `https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${branch}/${file.slice(2, file.length)}`; // Remove the dot at the beginning of the file string
 
             logger("info", "Pulling: " + fileurl, false, true);
 
             try {
-                var https = require("https");
-                var path  = require("path");
+                const https = require("https"); // Import two libs which will only be needed in this block
+                const path  = require("path");
 
-                var output = "";
+                let output = "";
 
                 // Create the underlying folder structure to avoid error when trying to write the downloaded file
                 fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -262,6 +282,7 @@ module.exports.checkAndGetFile = (file, logger, norequire, force) => {
                         output += chunk;
                     });
 
+                    // Write and test the file
                     res.on("end", () => {
                         fs.writeFile(file, output, (err) => {
                             if (err) {
@@ -314,7 +335,7 @@ module.exports.checkAndGetFile = (file, logger, norequire, force) => {
 /* ------------ Provide functions to start.js to start the bot: ------------ */
 
 /**
- * Run the application
+ * Run the application. This function is called by start.js
  */
 module.exports.run = () => {
     if (process.env.started) return; // Make sure this function can only run once to avoid possible bug and cause startup loop

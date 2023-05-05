@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 13:04:13
+ * Last Modified: 03.05.2023 17:14:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,141 +15,129 @@
  */
 
 
+const SteamUser      = require("steam-user");
+const SteamCommunity = require("steamcommunity");
+const request        = require("request"); // Yes I know, the library is deprecated but steamcommunity uses it as well so it is being used anyway
+
+const Controller     = require("../controller/controller.js"); // eslint-disable-line
+const SessionHandler = require("../sessions/sessionHandler.js");
+
 
 /**
- * Starts & Controls a bot account
- * @param {Object} logOnOptions The steam-user logOnOptions object
- * @param {Number} loginindex The index of this account in the logininfo object
+ * Constructor - Initializes an object which represents a user steam account
+ * @param {Controller} controller Reference to the controller object
+ * @param {Number} index The index of this account in the logininfo object
  */
-module.exports.run = (logOnOptions, loginindex) => {
-    var SteamUser       = require("steam-user");
-    var SteamCommunity  = require("steamcommunity");
-    var request         = require("request"); // Yes I know, the library is deprecated but steamcommunity uses it as well so it is being used anyway
+const Bot = function(controller, index) {
+    this.controller = controller;
+    this.data       = controller.data;
+    this.index      = index;
+    this.status     = "offline";
 
-    var login           = require("../controller/login.js");
-    var mainfile        = require("./main.js");
+    let proxyIndex = this.index % controller.data.proxies.length; // Spread all accounts equally with a simple modulo calculation
 
-
-    // Define the log message prefix of this account in order to
-    if (loginindex == 0) var thisbot = "Main";
-        else var thisbot = `Bot ${loginindex}`;
-
-
-    // Get proxy of this bot account
-    if (login.proxyShift >= login.proxies.length) login.proxyShift = 0; // Reset proxy counter if we used all proxies to start over again
-
-    var thisproxy = login.proxies[login.proxyShift]; // Define the proxy that will be used for this account
-
-    if (!login.additionalaccinfo[loginindex]) login.additionalaccinfo[loginindex] = {};
-    login.additionalaccinfo[loginindex].thisproxyindex = login.proxyShift; // Add the proxyindex that is used for this account to the additionalaccinfo obj
-    login.additionalaccinfo[loginindex].thisproxy = thisproxy;             // Add this proxy to the additionalaccinfo obj
-
-    login.proxyShift++; // Switch to next proxy
-
-    logger("debug", `[${thisbot}] Using proxy ${login.proxyShift} "${thisproxy}" to log in to Steam and SteamCommunity...`);
-
-    // Create bot & community instance
-    const bot       = new SteamUser({ autoRelogin: false, httpProxy: thisproxy, protocol: SteamUser.EConnectionProtocol.WebSocket }); // Forcing protocol for now: https://dev.doctormckay.com/topic/4187-disconnect-due-to-encryption-error-causes-relog-to-break-error-already-logged-on/?do=findComment&comment=10917
-    const community = new SteamCommunity({ request: request.defaults({ "proxy": thisproxy }) }); // Pass proxy to community library as well
-
-
-    // Attach debug log events if enabled in advancedconfig
-    if (advancedconfig.steamUserDebug) {
-        bot.on("debug", (msg) => {
-            logger("debug", `[${thisbot}] steam-user debug: ${msg}`);
-        });
-    }
-
-    if (advancedconfig.steamUserDebugVerbose) {
-        bot.on("debug-verbose", (msg) => {
-            logger("debug", `[${thisbot}] steam-user debug-verbose: ${msg}`);
-        });
-    }
-
-
-    // Run main.js if this is bot0
-    if (loginindex == 0) mainfile.run();
-
-
-    /* ------------ Login: ------------ */
-    login.additionalaccinfo[loginindex].logOnTries = 0;
-    if(global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<")process.send("stop()"); // eslint-disable-line
-
-    // Log in with this account when the previous account is done logging in
-    module.exports.logOnAccount = () => { // Make it a function in order to be able to retry a login from error.js
-        var loggedininterval = setInterval(async () => { // Set an interval to check if previous acc is logged on
-
-            if (login.accisloggedin || login.additionalaccinfo[loginindex].logOnTries > 0) { // Start attempt if previous account is logged on or if this call is a retry
-                clearInterval(loggedininterval); // Stop interval
-
-                login.accisloggedin = false; // Set to false again so the next account waits for us to log in
-
-                // Count this attempt
-                login.additionalaccinfo[loginindex].logOnTries++;
-
-                // Log login message for this account, with mentioning proxies or without
-                if (!thisproxy) logger("info", `[${thisbot}] Trying to log in without proxy... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
-                    else logger("info", `[${thisbot}] Trying to log in with proxy ${login.proxyShift - 1}... (Attempt ${login.additionalaccinfo[loginindex].logOnTries}/${advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
-
-                // Call our steam-session helper to get a valid refresh token for us
-                let sessionHandler = require("../sessions/sessionHandler.js");
-                let session = new sessionHandler(bot, thisbot, loginindex, logOnOptions);
-
-                let refreshToken = await session.getToken();
-                if (!refreshToken) return; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the bot itself
-
-                // Login with this account using the refreshToken we just obtained using steam-session
-                bot.logOn({ "refreshToken": refreshToken });
-            }
-        }, 250);
+    // Provide array for additional login related information
+    this.loginData = {
+        logOnOptions: Object.values(controller.data.logininfo)[index], // TODO: This could be an issue later when the index could change at runtime
+        logOnTries:   0,
+        proxyIndex:   proxyIndex,
+        proxy:        controller.data.proxies[proxyIndex]
     };
 
-    this.logOnAccount(); // Login now
+    // Define the log message prefix of this account in order to
+    if (index == 0) this.logPrefix = "Main";
+        else this.logPrefix = `Bot ${index}`;
 
 
-    /* ------------ Events: ------------ */
-    bot.on("error", (err) => { // Handle errors that were caused during logOn
-        require("./events/error.js").run(err, loginindex, thisbot, thisproxy, logOnOptions, bot);
-    });
+    // Load helper files
+    require("./events/disconnected.js");
+    require("./events/error.js");
+    require("./events/friendMessage.js");
+    require("./events/loggedOn.js");
+    require("./events/relationship.js");
+    require("./events/webSession.js");
+    require("./helpers/checkMsgBlock.js");
+    require("./helpers/handleLoginTimeout.js");
+    require("./helpers/steamChatInteraction.js");
 
-    bot.on("loggedOn", () => { // This account is now logged on
-        require("./events/loggedOn.js").run(loginindex, thisbot, bot, community);
-    });
+    // Create sessionHandler object for this account
+    this.sessionHandler = new SessionHandler(this);
 
-    bot.on("webSession", (sessionID, cookies) => { // Get websession (log in to chat)
-        require("./events/webSession.js").run(loginindex, thisbot, bot, community, cookies);
-    });
+    // Create user & community instance
+    logger("debug", `[${this.logPrefix}] Using proxy ${this.loginData.proxyIndex} "${this.loginData.proxy}" to log in to Steam and SteamCommunity...`);
 
-    // Accept Friend & Group requests/invites
-    bot.on("friendRelationship", (steamID, relationship) => {
-        require("./events/relationship.js").friendRelationship(loginindex, thisbot, bot, steamID, relationship);
-    });
+    this.user      = new SteamUser({ autoRelogin: false, httpProxy: this.loginData.proxy, protocol: SteamUser.EConnectionProtocol.WebSocket }); // Forcing protocol for now: https://dev.doctormckay.com/topic/4187-disconnect-due-to-encryption-error-causes-relog-to-break-error-already-logged-on/?do=findComment&comment=10917
+    this.community = new SteamCommunity({ request: request.defaults({ "proxy": this.loginData.proxy }) });                                      // Pass proxy to community library as well
 
-    bot.on("groupRelationship", (steamID, relationship) => {
-        require("./events/relationship.js").groupRelationship(thisbot, bot, steamID, relationship);
-    });
+    if (global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<") this.controller.stop(); // eslint-disable-line
 
 
-    /* ------------ Message interactions: ------------ */
-    bot.on("friendMessage", function(steamID, message) {
-        require("./events/friendMessage.js").run(loginindex, thisbot, bot, community, steamID, message);
-    });
+    // Attach all SteamUser event listeners we need
+    this._attachSteamDisconnectedEvent();
+    this._attachSteamErrorEvent();
+    this._attachSteamFriendMessageEvent();
+    this._attachSteamLoggedOnEvent();
+    this._attachSteamFriendRelationshipEvent();
+    this._attachSteamGroupRelationshipEvent();
+    this._attachSteamWebSessionEvent();
 
-    // Display message when connection was lost to Steam
-    bot.on("disconnected", (eresult, msg) => {
-        require("./events/disconnected.js").run(loginindex, thisbot, logOnOptions, bot, thisproxy, msg);
-    });
 
-    // Get new websession as sometimes the bot would relog after a lost connection but wouldn't get a websession. Read more about cookies & expiration: https://dev.doctormckay.com/topic/365-cookies/
-    var lastWebSessionRefresh = Date.now(); // Track when the last refresh was to avoid spamming webLogOn() on sessionExpired
+    // Get new websession as sometimes the this.user would relog after a lost connection but wouldn't get a websession. Read more about cookies & expiration: https://dev.doctormckay.com/topic/365-cookies/
+    let lastWebSessionRefresh = Date.now(); // Track when the last refresh was to avoid spamming webLogOn() on sessionExpired
 
-    community.on("sessionExpired", () => {
+    this.community.on("sessionExpired", () => {
         if (Date.now() - lastWebSessionRefresh < 15000) return; // Last refresh was 15 seconds ago so ignore this call
 
-        logger("info", `[${thisbot}] Session seems to be expired. Trying to get new websession...`);
+        logger("info", `[${this.logPrefix}] Session seems to be expired. Trying to get new websession...`);
         lastWebSessionRefresh = Date.now(); // Update time
-        bot.webLogOn();
+        this.user.webLogOn();
     });
 };
 
-// Code by: https://github.com/HerrEurobeat/
+
+/**
+ * Calls SteamUser logOn() for this account. This will either trigger the SteamUser loggedOn or error event.
+ */
+Bot.prototype._loginToSteam = async function() {
+
+    // Count this attempt
+    this.loginData.logOnTries++;
+
+    // Log login message for this account, with mentioning proxies or without
+    if (!this.loginData.proxy) logger("info", `[${this.logPrefix}] Trying to log in without proxy... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+        else logger("info", `[${this.logPrefix}] Trying to log in with proxy ${this.loginData.proxyIndex}... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+
+    // Attach loginTimeout handler
+    this.handleLoginTimeout();
+
+    // Call our steam-session helper to get a valid refresh token for us
+    let refreshToken = await this.sessionHandler.getToken();
+    if (!refreshToken) return; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the bot itself
+
+    // Login with this account using the refreshToken we just obtained using steam-session
+    this.user.logOn({ "refreshToken": refreshToken });
+
+};
+
+
+// Make bot accessible from outside
+module.exports = Bot;
+
+
+/* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
+
+/**
+ * Checks if user is blocked, has an active cooldown for spamming or isn't a friend
+ * @param {Object} steamID64 The steamID64 of the message sender
+ * @param {String} message The message string provided by steam-user friendMessage event
+ * @returns {Boolean} `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
+ */
+Bot.prototype.checkMsgBlock = function(steamID64, message) {}; // eslint-disable-line
+
+/**
+ * Send a message to a Steam user
+ * @param {Object} resInf Object containing information passed to command by friendMessage event
+ * @param {String} txt The text to send
+ * @param {Boolean} retry Internal: true if this message called itself again to send failure message
+ */
+Bot.prototype.sendChatMessage = function(resInf, txt, retry) {}; // eslint-disable-line

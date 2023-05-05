@@ -1,5 +1,7 @@
+# Ignore file changes locally: https://stackoverflow.com/a/11366713
+
 node_modules
 backup
 comment-service-bot.code-workspace
 output.txt
-plugins/test.js
+plugins/test

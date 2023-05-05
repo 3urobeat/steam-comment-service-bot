@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 16.10.2022 12:26:26
+ * Last Modified: 05.05.2023 15:15:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,93 +15,92 @@
  */
 
 
+const SteamID = require("steamid");
+
+const Bot = require("../bot.js");
+
 
 /**
  * Accepts a friend request, adds the user to the lastcomment.db database and invites him to your group
- * @param {Number} loginindex The loginindex of the calling account
- * @param {String} thisbot The thisbot string of the calling account
- * @param {SteamUser} bot The bot instance of the calling account
- * @param steamID The steamID object provided by the steam-user event
- * @param relationship The relationship enum provided by the steam-user event
  */
-module.exports.friendRelationship = (loginindex, thisbot, bot, steamID, relationship) => {
-    var SteamID = require("steamid");
+Bot.prototype._attachSteamFriendRelationshipEvent = function() {
 
-    var mainfile   = require("../main.js");
-    var controller = require("../../controller/controller.js");
+    this.user.on("friendRelationship", (steamID, relationship) => {
 
+        if (relationship == 2) {
+            let steamID64 = new SteamID(String(steamID)).getSteamID64();
 
-    if (relationship == 2) {
-        let steamID64 = new SteamID(String(steamID)).getSteamID64();
+            if (!this.data.advancedconfig.acceptFriendRequests) return logger("info", `[${this.logPrefix}] Received friend request from ${steamID64} but acceptFriendRequests is turned off in advancedconfig.json`);
 
-        if (!advancedconfig.acceptFriendRequests) return logger("info", `[${thisbot}] Received friend request from ${steamID64} but acceptFriendRequests is turned off in advancedconfig.json`);
-
-        // Accept friend request
-        bot.addFriend(steamID);
+            // Accept friend request
+            this.user.addFriend(steamID);
 
 
-        // Log message and send welcome message
-        logger("info", `[${thisbot}] Added User: ` + steamID64);
+            // Log message and send welcome message
+            logger("info", `[${this.logPrefix}] Added User: ` + steamID64);
 
-        if (loginindex == 0) {
-            controller.botobject[0].chat.sendFriendMessage(steamID, mainfile.lang.useradded);
+            if (this.index == 0) {
+                this.user.chat.sendFriendMessage(steamID, this.controller.data.lang.useradded);
+            }
+
+
+            // Add user to lastcomment database
+            let lastcommentobj = {
+                id: steamID64,
+                time: Date.now() - (this.controller.data.config.commentcooldown * 60000) // Subtract commentcooldown so that the user is able to use the command instantly
+            };
+
+            this.controller.data.lastCommentDB.remove({ id: steamID64 }, {}, (err) => { if (err) logger("error", "Error removing duplicate steamid from lastcomment.db on friendRelationship! Error: " + err); }); // Remove any old entries
+            this.controller.data.lastCommentDB.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err); });
+
+
+            // Invite user to yourgroup (and to my to make some stonks)
+            if (this.index == 0 && this.controller.data.cachefile.configgroup64id && Object.keys(this.user.myGroups).includes(this.controller.data.cachefile.configgroup64id)) {
+                this.user.inviteToGroup(steamID, new SteamID(this.controller.data.cachefile.configgroup64id)); // Invite the user to your group
+
+                if (this.controller.data.cachefile.configgroup64id != "103582791464712227") { // https://steamcommunity.com/groups/3urobeatGroup
+                    this.user.inviteToGroup(steamID, new SteamID("103582791464712227"));
+                }
+            }
+
+
+            // Check remaining friendlist space
+            this.controller.friendListCapacityCheck(this.index, (remaining) => {
+                if (remaining < 25) {
+                    logger("warn", `The friendlist space of bot${this.index} is running low! (${remaining} remaining)`);
+                }
+            });
         }
 
+    });
 
-        // Add user to lastcomment database
-        let lastcommentobj = {
-            id: steamID64,
-            time: Date.now() - (config.commentcooldown * 60000) // Subtract commentcooldown so that the user is able to use the command instantly
-        };
-
-        controller.lastcomment.remove({ id: steamID64 }, {}, (err) => { if (err) logger("error", "Error removing duplicate steamid from lastcomment.db on friendRelationship! Error: " + err); }); // Remove any old entries
-        controller.lastcomment.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err); });
-
-
-        // Invite user to yourgroup (and to my to make some stonks)
-        if (loginindex == 0 && cachefile.configgroup64id && Object.keys(bot.myGroups).includes(cachefile.configgroup64id)) {
-            bot.inviteToGroup(steamID, new SteamID(cachefile.configgroup64id)); // Invite the user to your group
-
-            if (cachefile.configgroup64id != "103582791464712227") { // https://steamcommunity.com/groups/3urobeatGroup
-                bot.inviteToGroup(steamID, new SteamID("103582791464712227"));
-            }
-        }
-
-
-        // Check remaining friendlist space
-        require("../../controller/helpers/friendlist.js").friendlistcapacitycheck(loginindex, (remaining) => {
-            if (remaining < 25) {
-                logger("warn", `The friendlist space of bot${loginindex} is running low! (${remaining} remaining)`);
-            }
-        });
-    }
 };
 
 
 
 /**
  * Accepts a group invite if acceptgroupinvites in the config is true
- * @param {String} thisbot The thisbot string of the calling account
- * @param {SteamUser} bot The bot instance of the calling account
- * @param steamID The steamID object provided by the steam-user event
- * @param relationship The relationship enum provided by the steam-user event
  */
-module.exports.groupRelationship = (thisbot, bot, steamID, relationship) => {
-    var SteamID = require("steamid");
+Bot.prototype._attachSteamGroupRelationshipEvent = function() {
 
-    if (relationship == 2) { // Ignore if relationship type is not "Invited"
-        let steamID64 = new SteamID(String(steamID)).getSteamID64();
+    this.user.on("groupRelationship", (steamID, relationship) => {
 
-        // Check if acceptgroupinvites is set to false and only allow botsgroup invite to be accepted
-        if (!config.acceptgroupinvites) {
-            if (config.yourgroup.length < 1 && config.botsgroup.length < 1) return;
-            if (steamID64 != cachefile.configgroup64id && steamID64 != cachefile.botsgroupid) return;
-            logger("info", "acceptgroupinvites is turned off but this is an invite to the group set as yourgroup or botsgroup. Accepting invite anyway...");
+        if (relationship == 2) { // Ignore if relationship type is not "Invited"
+            let steamID64 = new SteamID(String(steamID)).getSteamID64();
+
+            // Check if acceptgroupinvites is set to false and only allow botsgroup invite to be accepted
+            if (!this.controller.data.config.acceptgroupinvites) {
+                if (this.controller.data.config.yourgroup.length < 1 && this.controller.data.config.botsgroup.length < 1) return;
+                if (steamID64 != this.controller.data.cachefile.configgroup64id && steamID64 != this.controller.data.cachefile.botsgroupid) return;
+                logger("info", "acceptgroupinvites is turned off but this is an invite to the group set as yourgroup or botsgroup. Accepting invite anyway...");
+            }
+
+            this.user.respondToGroupInvite(steamID, true);
+
+            logger("info", `[${this.logPrefix}] Accepted group invite: ` + steamID64);
         }
 
-        bot.respondToGroupInvite(steamID, true);
+    });
 
-        logger("info", `[${thisbot}] Accepted group invite: ` + steamID64);
-    }
 };
 

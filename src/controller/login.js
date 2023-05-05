@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.10.2022 11:32:41
+ * Last Modified: 03.05.2023 20:34:19
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,37 +15,18 @@
  */
 
 
+const SteamTotp = require("steam-totp");
+
+const Controller = require("./controller.js");
+const Bot        = require("../bot/bot.js");
+const ascii      = require("../data/ascii.js");
+const misc       = require("./helpers/misc.js");
+
 
 /**
- * Returns steam guard input time from steamGuard.js back to login.js to subtract it from readyafter time
- * @param {Number} arg Adds this time in ms to the steamGuardInputTime
+ * Internal: Performs certain checks before logging in for the first time and then calls login()
  */
-module.exports.steamGuardInputTimeFunc = (arg) => { // Small function to return new value from bot.js
-    this.steamGuardInputTime += arg;
-};
-
-
-/**
-  * Prints an ASCII Art and starts to login all bot accounts
-  * @param {Object} logininfo The logininfo object
-  */
-module.exports.startlogin = (logininfo) => {
-    var SteamTotp  = require("steam-totp");
-
-    var controller = require("./controller.js");
-    var ascii      = require("../data/ascii.js");
-    var round      = require("./helpers/round.js");
-    var b          = require("../bot/bot.js");
-
-    module.exports.proxies = require("./helpers/dataimport.js").proxies();
-    if (!this.proxies) return; // Make sure ascii art isn't getting printed below error message
-
-    module.exports.steamGuardInputTime = 0;
-    module.exports.accisloggedin       = true; // Var to check if previous acc is logged on (in case steamGuard event gets fired) -> set to true for first account
-    module.exports.skippednow          = [];   // Array to track which accounts have been skipped
-    module.exports.additionalaccinfo   = {};   // Tracks additional account information that are bound to their loginindex
-    module.exports.proxyShift          = 0;
-
+Controller.prototype._preLogin = async function() {
 
     // Update global var
     botisloggedin = true;
@@ -60,76 +41,164 @@ module.exports.startlogin = (logininfo) => {
     logger("", "", true); // Put one line above everything that will come to make the output cleaner
 
 
+    // Load intern event handlers & helpers
+    require("./events/ready.js");
+    require("./events/statusUpdate.js");
+    require("./helpers/friendlist.js");
+    require("./helpers/getBots.js");
+
+
+    // Load commandHandler
+    let CommandHandler = require("../commands/commandHandler.js");
+
+    this.commandHandler = new CommandHandler(this);
+    this.commandHandler._importCoreCommands();
+
+
+    // Load pluginSystem
+    let PluginSystem = require("../pluginSystem/pluginSystem");
+
+    this.pluginSystem = new PluginSystem(this);
+
+
+    // Check if SteamCommunity is up
+    logger("info", "Checking if Steam is reachable...", false, true, logger.animation("loading"));
+
+    await misc.checkConnection("https://steamcommunity.com", true)
+        .then((res) => {
+            logger("info", `SteamCommunity is up! Status code: ${res.statusCode}`, false, true, logger.animation("loading"));
+        })
+        .catch((res) => {
+            // Check if the request itself failed and display a different message
+            if (!res.statusCode) logger("error", `SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n        ${res.statusMessage}\n\n        Aborting...\n`, true);
+                else logger("error", `Your internet is working but SteamCommunity seems to be down! Check: https://steamstat.us \n        ${res.statusMessage} (Status Code ${res.statusCode})\n\n        Aborting...\n`, true);
+
+            return this.stop(); // Stop the bot as there is nothing more we can do
+        });
+
+
+    /* ------------ Log comment related config settings: ------------ */
+    let maxCommentsOverall = this.data.config.maxOwnerComments; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
+    if (this.data.config.maxComments > this.data.config.maxOwnerComments) maxCommentsOverall = this.data.config.maxComments;
+    logger("info", `Comment settings: commentdelay: ${this.data.config.commentdelay} | botaccountcooldown: ${this.data.config.botaccountcooldown} | maxCommentsOverall: ${maxCommentsOverall} | randomizeAcc: ${this.data.config.randomizeAccounts}`, false, true, logger.animation("loading"));
+
+
     // Print whatsnew message if this is the first start with this version
-    if (extdata.firststart) logger("", `${logger.colors.reset}What's new: ${extdata.whatsnew}\n`, false, false, null, true); // Force print message now
+    if (this.data.datafile.firststart) logger("", `${logger.colors.reset}What's new: ${this.data.datafile.whatsnew}\n`, false, false, null, true); // Force print message now
 
 
     // Evaluate estimated wait time for login:
     logger("debug", "Evaluating estimated login time...");
+    let estimatedlogintime;
 
-    if (extdata.timesloggedin < 5) { // Only use "intelligent" evaluation method when the bot was started more than 5 times
-        var estimatedlogintime = ((advancedconfig.loginDelay * (Object.keys(logininfo).length - 1 - controller.skippedaccounts.length)) / 1000) + 5; // 5 seconds tolerance
-    } else {
-        var estimatedlogintime = ((extdata.totallogintime / extdata.timesloggedin) + (advancedconfig.loginDelay / 1000)) * (Object.keys(logininfo).length - controller.skippedaccounts.length);
-    }
+    // Only use "intelligent" evaluation method when the bot was started more than 5 times
+    if (this.data.datafile.timesloggedin < 5) estimatedlogintime = ((this.data.advancedconfig.loginDelay * (Object.keys(this.data.logininfo).length - 1 - this.info.skippedaccounts.length)) / 1000) + 5; // 5 seconds tolerance
+        else estimatedlogintime = ((this.data.datafile.totallogintime / this.data.datafile.timesloggedin) + (this.data.advancedconfig.loginDelay / 1000)) * (Object.keys(this.data.logininfo).length - this.info.skippedaccounts.length);
 
-    var estimatedlogintimeunit = "seconds";
-    if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "minutes"; }
-    if (estimatedlogintime > 60) { var estimatedlogintime = estimatedlogintime / 60; var estimatedlogintimeunit = "hours"; }                                                                                                                                                                                                                                                                          // 🥚!
+    let estimatedlogintimeunit = "seconds";
+    if (estimatedlogintime > 60) { estimatedlogintime = estimatedlogintime / 60; estimatedlogintimeunit = "minutes"; }
+    if (estimatedlogintime > 60) { estimatedlogintime = estimatedlogintime / 60; estimatedlogintimeunit = "hours"; }                                                                                                                                                                                                                                                                          // 🥚!
 
-    logger("info", `Logging in... Estimated wait time: ${round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`, false, false, logger.animation("loading"), true);
-    if(global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<")process.send("stop()"); // eslint-disable-line
+    logger("info", `Logging in... Estimated wait time: ${misc.round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`, false, false, logger.animation("loading"), true);
+    if (checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<") this.stop(); // eslint-disable-line
 
 
-    // Start starting bot.js for each account
-    logger("info", "Loading logininfo for each account...", false, true, logger.animation("loading"));
+    // Start logging in
+    this.login();
+};
 
-    Object.keys(logininfo).forEach((k, i) => { // Log all accounts in with the logindelay
+
+/**
+ * Attempts to log in all bot accounts which are currently offline one after another.
+ * Creates a new bot object for every new account and reuses existing one if possible
+ */
+Controller.prototype.login = function() {
+    if (this.info.activeLogin) return logger("debug", "Controller login(): Login requested but there is already a login process active. Ignoring...");
+        else logger("debug", "Controller login(): Login requested, checking for any accounts currently offline...");
+
+    // Get array of all account names
+    let allAccounts = Object.keys(this.data.logininfo);
+
+    // Filter accounts which were skipped
+    allAccounts = allAccounts.filter(e => !this.info.skippedaccounts.includes(e));
+
+    // Filter accounts which are not offline
+    allAccounts = allAccounts.filter(e => !this.bots[e] || this.bots[e].status == "offline"); // If no bot object exists yet the account must be offline
+
+    logger("debug", `Controller login(): Found ${allAccounts.length} account(s) which aren't logged in and weren't skipped`);
+
+
+    // Set activeLogin to true if allAccounts is not empty
+    if (allAccounts.length == 0) return this.info.activeLogin = false;
+        else this.info.activeLogin = true;
+
+    // Iterate over all accounts, use syncLoop() helper to make our job easier
+    misc.syncLoop(allAccounts.length, (loop, i) => {
+        let k = this.data.logininfo[allAccounts[i]]; // Get logininfo for this account name
+
+        // TODO: Check for connection loss timestamp when it is available and wait a bit before retrying a failed login. Maybe add reason why account was skipped to not reattempt steam guard login
+
+        // Calculate wait time
+        let waitTime = (this.info.lastLoginTimestamp + this.data.advancedconfig.loginDelay) - Date.now();
+        if (waitTime < 0) waitTime = 0; // Cap wait time to positive numbers
+
+        if (waitTime > 0) logger("info", `Waiting ${misc.round(waitTime / 1000, 2)} seconds... (advancedconfig loginDelay)`, false, true, logger.animation("waiting"));
+
+        // Wait before starting to log in
         setTimeout(() => {
-            var startnextinterval = setInterval(() => { // Run check every x ms
 
-                // Check if previous account is logged in
-                if (module.exports.accisloggedin == true && i == Object.keys(controller.botobject).length + this.skippednow.length || module.exports.accisloggedin == true && this.skippednow.includes(i - 1)) { // I is being counted from 0, length from 1 -> checks if last iteration is as long as botobject
-                    clearInterval(startnextinterval); // Stop checking
+            // Check if no bot object entry exists for this account and create one
+            if (!this.bots[k.accountName]) {
+                logger("info", `Creating new bot object for ${k.accountName}...`, false, true, logger.animation("loading"));
 
-                    // Start ready check on last iteration
-                    if (Object.keys(logininfo).length == i + 1) require("./ready.js").readyCheck(logininfo);
+                this.bots[k.accountName] = new Bot(this, i); // Create a new bot object for this account and store a reference to it
+            } else {
+                logger("debug", `Found existing bot object for ${k.accountName}! Reusing it...`, false, true, logger.animation("loading"));
+            }
 
-                    // If this iteration exists in the skippedaccounts array, automatically skip acc again
-                    if (controller.skippedaccounts.includes(i)) {
-                        logger("info", `[skippedaccounts] Automatically skipped ${k}!`, false, true);
-                        this.skippednow.push(i);
-                        return;
-                    }
+            let thisbot = this.bots[k.accountName];
 
-                    if (i > 0) logger("info", `Waiting ${advancedconfig.loginDelay / 1000} seconds... (advancedconfig loginDelay)`, false, true, logger.animation("waiting")); // First iteration doesn't need to wait duh
+            // Reset logOnTries (do this here to guarantee a bot object exists for this account)
+            thisbot.loginData.logOnTries = 0;
 
+            // Generate steamGuardCode with shared secret if one was provided
+            if (this.data.logininfo[k.accountName].sharedSecret) {
+                logger("debug", `Found shared_secret for bot${i}! Generating AuthCode and adding it to logOnOptions...`);
+                this.data.logininfo[k.accountName].steamGuardCode = SteamTotp.generateAuthCode(this.data.logininfo[k.accountName].sharedSecret);
+            }
 
-                    // Wait logindelay and then start bot.js with the account of this iteration
-                    setTimeout(() => {
-                        logger("info", `Starting bot.js for ${k}...`, false, true, logger.animation("loading"));
+            // Login!
+            thisbot._loginToSteam();
 
-                        // Define logOnOptions
-                        var logOnOptions = {
-                            accountName: logininfo[k][0],
-                            password: logininfo[k][1],
-                            machineName: `${extdata.mestr}'s Comment Bot`,       // For steam-user
-                            deviceFriendlyName: `${extdata.mestr}'s Comment Bot` // For steam-session
-                        };
+            // Check if this bot is not offline anymore, resolve this iteration and update lastLoginTimestamp
+            let accIsOnlineInterval = setInterval(() => {
+                if (thisbot.status == "offline") return;
 
-                        // If a shared secret was provided in the logininfo then add it to logOnOptions object
-                        if (logininfo[k][2] && logininfo[k][2] != "" && logininfo[k][2] != "shared_secret") {
-                            logger("debug", `Found shared_secret for ${k}! Generating AuthCode and adding it to logOnOptions...`);
-
-                            logOnOptions["steamGuardCode"] = SteamTotp.generateAuthCode(logininfo[k][2]);
-                            logOnOptions["steamGuardCodeForRelog"] = logininfo[k][2]; // Add raw shared_secret to obj as well to be able to access it more easily from relogAccount.js
-                        }
-
-                        b.run(logOnOptions, i); // Run bot.js with this account
-                    }, advancedconfig.loginDelay * Number(i > 0)); // Ignore delay for first account
+                // Keep waiting if we are on the last iteration and user object is not fully populated yet, this takes a few seconds after login. Make sure to check for limitations of last entry in array instead of this iteration to not break when the this last acc got skipped
+                if (i + 1 == Object.keys(this.data.logininfo).length && !Object.values(this.bots)[Object.values(this.bots).filter(e => e.status == "online").length - 1].user.limitations) { // Get index of the last acc marked as online. I know, this line really sucks readability-wise
+                    return logger("info", "Last account logged in, waiting for user object to populate...", false, true, logger.animation("waiting"));
                 }
+
+                clearInterval(accIsOnlineInterval);
+                this.info.lastLoginTimestamp = Date.now();
+
+                // Populate this.main if we just logged in the first account
+                if (Object.keys(this.bots)[0] == k.accountName) this.main = thisbot;
+
+                logger("debug", `Controller login(): bot${i} changed status from offline to ${thisbot.status}! Continuing with next account...`);
+
+                // Check for last iteration, call again and emit ready event
+                if (i + 1 == allAccounts.length) {
+                    logger("debug", "Controller login(): Finished logging in all accounts! Calling myself again to check for any new accounts...");
+                    this.info.activeLogin = false;
+                    this.login();
+                    if (this.info.readyAfter == 0) this._readyEvent(); // Only call ready event if this is the first start
+                }
+
+                // Continue with next iteration
+                loop.next();
             }, 250);
 
-        }, (advancedconfig.loginDelay * (i - this.skippednow.length)) * Number(i > 0)); // Wait loginDelay ms before checking if the next account is ready to be logged in if not first iteration. This should reduce load and ram usage as less intervals run at the same time (this gets more interesting when lots of accs are used)
+        }, waitTime);
     });
 };

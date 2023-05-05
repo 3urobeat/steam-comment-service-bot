@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 22:30:00
  * Author: 3urobeat
  *
- * Last Modified: 29.09.2021 18:08:01
+ * Last Modified: 05.05.2023 15:07:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,23 +15,24 @@
  */
 
 
-module.exports.run = (callback) => {
-    var fs = require("fs");
+const fs = require("fs");
 
 
-    config.globalcommentcooldown = config.globalcommentcooldown / 60000;
+// Compatibility feature for upgrading to 2.10.3
+module.exports.run = (controller, resolve) => {
+    controller.data.config.globalcommentcooldown = controller.data.config.globalcommentcooldown / 60000;
 
-    fs.writeFile("./config.json", JSON.stringify(config, null, 4), (err) => {
+    fs.writeFile("./config.json", JSON.stringify(controller.data.config, null, 4), (err) => {
         if (err) logger("error", "Error writing converted globalcommentcooldown to config. Please change globalcommentcooldown in the config to 10 yourself. Error: " + err, true);
     });
 
-    extdata.compatibilityfeaturedone = true;
+    controller.data.datafile.compatibilityfeaturedone = true;
 
-    fs.writeFile("./src/data.json", JSON.stringify(extdata, null, 4), (err) => {
+    fs.writeFile("./src/data.json", JSON.stringify(controller.data.datafile, null, 4), (err) => {
         if (err) logger("error", "Error in compatibilityfeature changing compatibilityfeaturedone to true! Please open 'data.json' in the 'src' folder and do this manually!\nOtherwise this will be retried on every startup. Error: " + err, true);
     });
 
-    callback(true);
+    resolve(false);
 };
 
 module.exports.info = {

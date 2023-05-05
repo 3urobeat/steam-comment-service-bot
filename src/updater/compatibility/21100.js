@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 22:30:00
  * Author: 3urobeat
  *
- * Last Modified: 29.09.2021 18:07:45
+ * Last Modified: 05.05.2023 15:09:49
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,26 +15,28 @@
  */
 
 
-var i = 0;
+const fs = require("fs");
 
-module.exports.run = (callback) => { //eslint-disable-line
-    var fs = require("fs");
+let i = 0;
 
+
+// Compatibility feature for upgrading to 2.11.0
+module.exports.run = (controller, resolve) => { //eslint-disable-line
     if (i == 1) return; // When automatically updating from 2.10.x to 2.11 the bot will be executed two times. In order to prevent this I added this really shitty check.
     i++;
 
     // Data.json
     try {
         if (fs.existsSync(srcdir + "/data.json")) {
-            var oldextdata = require("../../data.json");
+            let oldextdata = require("../../data.json");
 
             // Check if this file still contains the 3 values to transfer in order to ensure ./src/data/data.json doesn't loose this data
             if (Object.keys(oldextdata).includes("urlrequestsecretkey") && Object.keys(oldextdata).includes("timesloggedin") && Object.keys(oldextdata).includes("totallogintime")) {
-                extdata.urlrequestsecretkey = oldextdata.urlrequestsecretkey;
-                extdata.timesloggedin = oldextdata.timesloggedin;
-                extdata.totallogintime = oldextdata.totallogintime;
+                controller.data.datafile.urlrequestsecretkey = oldextdata.urlrequestsecretkey;
+                controller.data.datafile.timesloggedin       = oldextdata.timesloggedin;
+                controller.data.datafile.totallogintime      = oldextdata.totallogintime;
 
-                fs.writeFile(srcdir + "/data/data.json", JSON.stringify(extdata, null, 4), err => { // Write the changed file
+                fs.writeFile(srcdir + "/data/data.json", JSON.stringify(controller.data.datafile, null, 4), err => { // Write the changed file
                     if (err) {
                         logger("error", `error writing to data.json: ${err}`, true);
                     }
@@ -53,12 +55,7 @@ module.exports.run = (callback) => { //eslint-disable-line
 
     // Run updater again
     logger("info", "I will now update again. Please wait a moment...");
-
-    var controller = require("../../controller/controller.js");
-
-    require("../updater").run(true, null, true, (done) => {
-        if (done) process.send(`restart(${JSON.stringify({ skippedaccounts: controller.skippedaccounts })})`); // Send request to parent process
-    });
+    resolve(true); // Resolve and force update
 };
 
 module.exports.info = {

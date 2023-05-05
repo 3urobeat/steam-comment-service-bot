@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 22:30:00
  * Author: 3urobeat
  *
- * Last Modified: 29.09.2021 18:08:13
+ * Last Modified: 05.05.2023 15:06:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,10 +15,11 @@
  */
 
 
-module.exports.run = (callback) => { //eslint-disable-line
-    var fs = require("fs");
+const fs = require("fs");
 
-    var controller = require("../../controller/controller.js");
+
+// Compatibility feature for upgrading to 2.8.0
+module.exports.run = (controller, resolve) => { //eslint-disable-line
 
     if (fs.existsSync("./updater.js")) {
         logger("info", "Applying 2.8 compatibility changes...");
@@ -27,15 +28,11 @@ module.exports.run = (callback) => { //eslint-disable-line
             if (err) logger("error", "error deleting old updater.js: " + err, true);
 
             logger("info", "I will now update again. Please wait a moment...");
-            require("../updater").run(true, null, true, (done) => {
-                if (done) process.send(`restart(${JSON.stringify({ skippedaccounts: controller.skippedaccounts })})`); // Send request to parent process
-            });
+            resolve(true); // Resolve and force update
         });
     } else {
         logger("info", "I will now update again. Please wait a moment...");
-        require("../updater").run(true, null, true, (done) => {
-            if (done) process.send(`restart(${JSON.stringify({ skippedaccounts: controller.skippedaccounts })})`); // Send request to parent process
-        });
+        resolve(true); // Resolve and force update
     }
 };
 

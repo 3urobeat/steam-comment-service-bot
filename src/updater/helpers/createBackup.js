@@ -4,7 +4,7 @@
  * Created Date: 26.02.2022 16:54:03
  * Author: 3urobeat
  *
- * Last Modified: 26.02.2022 21:31:57
+ * Last Modified: 05.05.2023 13:24:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -18,48 +18,54 @@
 const fs   = require("fs");
 const path = require("path");
 
+
 /**
  * Makes a copy of the current bot installation before updating, to be able to restore in case the updater fails
+ * @returns {Promise} Resolves when we can proceed
  */
-module.exports.run = (callback) => {
-    logger("info", "Creating a backup of your current installation...", false, false, logger.animation("loading"));
+module.exports.run = () => {
+    return new Promise((resolve) => {
 
-    // Specify which files and folders we can ignore
-    const dontCopy = [".git", ".github", "node_modules", "backup"];
+        logger("info", "Creating a backup of your current installation...", false, false, logger.animation("loading"));
 
-    // This but slightly modified - thanks: https://stackoverflow.com/a/26038979/12934162
-    function copyFolderRecursiveSync(src, dest, firstCall) {
-        var files = [];
+        // Specify which files and folders we can ignore
+        const dontCopy = [".git", ".github", "node_modules", "backup"];
 
-        // Check if folder needs to be created
-        var targetFolder = path.join(dest, path.basename(src));
+        // This but slightly modified - Thanks: https://stackoverflow.com/a/26038979/12934162
+        function copyFolderRecursiveSync(src, dest, firstCall) {
+            let files = [];
 
-        if (!fs.existsSync(targetFolder)) fs.mkdirSync(targetFolder);
+            // Check if folder needs to be created
+            let targetFolder = path.join(dest, path.basename(src));
 
-        // Copy files or call function again if dir
-        if (fs.lstatSync(src).isDirectory()) {
-            files = fs.readdirSync(src);
+            if (!fs.existsSync(targetFolder)) fs.mkdirSync(targetFolder);
 
-            files.forEach((file) => {
-                if (dontCopy.includes(file)) return; // Ignore this file/folder if name is in dontCopy
-                var curSource = path.join(src, file);
+            // Copy files or call function again if dir
+            if (fs.lstatSync(src).isDirectory()) {
+                files = fs.readdirSync(src);
 
-                if (fs.lstatSync(curSource).isDirectory()) {
-                    copyFolderRecursiveSync(curSource, targetFolder, false);
-                } else {
-                    logger("debug", `Copying "${curSource}" to "${targetFolder}/${file}"...`, true);
+                files.forEach((file) => {
+                    if (dontCopy.includes(file)) return; // Ignore this file/folder if name is in dontCopy
+                    let curSource = path.join(src, file);
 
-                    fs.copyFileSync(curSource, targetFolder + "/" + file);
-                }
-            });
+                    if (fs.lstatSync(curSource).isDirectory()) {
+                        copyFolderRecursiveSync(curSource, targetFolder, false);
+                    } else {
+                        logger("debug", `Copying "${curSource}" to "${targetFolder}/${file}"...`, true);
+
+                        fs.copyFileSync(curSource, targetFolder + "/" + file);
+                    }
+                });
+            }
+
+            // Make callback when we are finished and in the top level
+            if (firstCall) {
+                logger("info", "Successfully created a backup!");
+                resolve();
+            }
         }
 
-        // Make callback when we are finished and in the top level
-        if (firstCall) {
-            logger("info", "Successfully created a backup!");
-            callback();
-        }
-    }
+        copyFolderRecursiveSync(".", "./backup", true);
 
-    copyFolderRecursiveSync(".", "./backup", true);
+    });
 };
