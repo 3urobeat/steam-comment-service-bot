@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.05.2023 10:38:30
+ * Last Modified: 06.05.2023 13:46:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -194,7 +194,10 @@ function comment(commandHandler, respond, receiverSteamID64) {
 
 
                     // Only send estimated wait time message for multiple comments
-                    if (activeReqEntry.amount > 1) respond(commandHandler.data.lang.commentprocessstarted.replace("numberOfComments", activeReqEntry.amount).replace("waittime", timeToString(activeReqEntry.until)));
+                    if (activeReqEntry.amount > 1) {
+                        let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amoung - 1 because the first comment is instant. Multiply by delay and add to current time to get timestamp when last comment was sent
+                        respond(commandHandler.data.lang.commentprocessstarted.replace("numberOfComments", activeReqEntry.amount).replace("waittime", waitTime));
+                    }
 
 
                     // Give requesting user cooldown
