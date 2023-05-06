@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 14:37:26
+ * Last Modified: 06.05.2023 11:11:17
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -114,6 +114,13 @@ DataManager.prototype.checkData = function() {
         if (this.advancedconfig.lastQuotesSize >= this.quotes) { // Force clear lastQuotes array if we have less or equal amount of quotes to choose from than lastQuotesSize to avoid infinite loop
             logger("warn", "lastQuoteSize in 'advancedconfig.json' is greater or equal than the amount of quotes found in 'quotes.txt'. I'm therefore unable to filter recently used quotes when choosing a new one!", true);
         }
+
+
+        // Check language for too long strings and display warning. This will of course not catch replacements that happen at runtime but it's better than nothing
+        Object.keys(this.lang).forEach((e) => {
+            let val = this.lang[e];
+            if (val.length > 500) logger("warn", `Your language string '${e}' is ${val.length} chars long! This will likely cause chat messages to get blocked by Steam. I'd recommend cutting it to less than 500 chars.`, true);
+        });
 
 
         global.checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<";
