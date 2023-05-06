@@ -4,7 +4,7 @@
  * Created Date: 22.03.2023 12:35:01
  * Author: 3urobeat
  *
- * Last Modified: 29.03.2023 12:47:09
+ * Last Modified: 06.05.2023 12:09:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -75,15 +75,16 @@ DataManager.prototype._restoreBackup = function(name, filepath, cacheentry, onli
 /**
  * Internal: Helper function to pull new file from GitHub
  */
-DataManager.prototype._pullNewFile = function(name, filepath, resolve) {
+DataManager.prototype._pullNewFile = async function(name, filepath, resolve) {
     logger("warn", "Backup seems to be broken/not available! Pulling file from GitHub...", true);
 
-    let file = this.checkAndGetFile(filepath, logger, true, true);
+    let file = await this.checkAndGetFile(filepath, logger, true, true);
     if (!file) return;
 
     // Only tell user to reconfigure config.json
     if (name == "config.json") logger("info", `Successfully pulled new ${name} from GitHub. Please configure it again!\n`, true);
         else logger("info", `Successfully pulled new ${name} from GitHub.\n`, true);
 
-    resolve(require(filepath));
+    // Hack the path together: Take the srcdir path as we otherwise would start here, go back a level and append the filepath. filepath needs to start at project root level so that checkAndGetFile() works so we need to work around it here.
+    resolve(require(`${srcdir}/../${filepath}`));
 };

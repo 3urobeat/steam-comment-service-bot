@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 14:38:24
+ * Last Modified: 06.05.2023 11:56:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -71,8 +71,8 @@ DataManager.prototype._importFromDisk = function() {
                             logger("warn", "'data.json' seems to have lost it's data/is corrupted. Trying to restore from backup...", true);
 
                             // Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
-                            if (_this.cache.datajson) _this._restoreBackup("data.json", srcdir + "/data/data.json", _this.cache.datajson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/data/data.json", resolve);
-                                else _this._pullNewFile("data.json", srcdir + "/data/data.json", resolve);
+                            if (_this.cachefile.datajson) _this._restoreBackup("data.json", srcdir + "/data/data.json", _this.cachefile.datajson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/data/data.json", resolve);
+                                else _this._pullNewFile("data.json", "./src/data/data.json", resolve);
                         }
                     }
                 });
@@ -107,8 +107,8 @@ DataManager.prototype._importFromDisk = function() {
                             // Wait restoreTimeout ms if set by firststart check from above
                             setTimeout(() => {
                                 // Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
-                                if (_this.cache.configjson) _this._restoreBackup("config.json", srcdir + "/../config.json", _this.cache.configjson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/config.json", resolve);
-                                    else _this._pullNewFile("config.json", srcdir + "/../config.json", resolve);
+                                if (_this.cachefile.configjson) _this._restoreBackup("config.json", srcdir + "/../config.json", _this.cachefile.configjson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/config.json", resolve);
+                                    else _this._pullNewFile("config.json", "./config.json", resolve);
                             }, restoreTimeout);
                         }
                     }
@@ -125,8 +125,8 @@ DataManager.prototype._importFromDisk = function() {
                             logger("warn", "advancedconfig.json seems to have lost it's data/is corrupted. Trying to restore from backup...", true);
 
                             // Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
-                            if (_this.cache.advancedconfigjson) _this._restoreBackup("advancedconfig.json", srcdir + "/../advancedconfig.json", _this.cache.advancedconfigjson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/advancedconfig.json", resolve);
-                                else _this._pullNewFile("advancedconfig.json", srcdir + "/../advancedconfig.json", resolve);
+                            if (_this.cachefile.advancedconfigjson) _this._restoreBackup("advancedconfig.json", srcdir + "/../advancedconfig.json", _this.cachefile.advancedconfigjson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/advancedconfig.json", resolve);
+                                else _this._pullNewFile("advancedconfig.json", "./advancedconfig.json", resolve);
                         }
                     }
                 });

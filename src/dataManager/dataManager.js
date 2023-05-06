@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 01.05.2023 20:45:34
+ * Last Modified: 06.05.2023 12:09:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -135,7 +135,7 @@ DataManager.prototype._restoreBackup = function(name, filepath, cacheentry, onli
 /**
  * Internal: Helper function to pull new file from GitHub
  */
-DataManager.prototype._pullNewFile = function(name, filepath, resolve) {}; // eslint-disable-line
+DataManager.prototype._pullNewFile = async function(name, filepath, resolve) {}; // eslint-disable-line
 
 
 // Export our freshly baked bread
