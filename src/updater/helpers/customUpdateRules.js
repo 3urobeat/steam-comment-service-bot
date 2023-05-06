@@ -4,7 +4,7 @@
  * Created Date: 22.02.2022 17:39:21
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 23:54:08
+ * Last Modified: 06.05.2023 12:43:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -102,12 +102,12 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
         delete require.cache[require.resolve(srcdir + "/data/data.json")]; // Delete cache
         let newextdata = require(srcdir + "/data/data.json");
 
-        // Transfer a few specific values to the new datafile
+        // Transfer a few specific values to the new datafile if they exist to avoid errors
         logger("", `${logger.colors.fgyellow}Transferring changes to new data.json...${logger.colors.reset}`, true, false, logger.animation("loading"));
 
-        newextdata.urlrequestsecretkey = olddatafile.urlrequestsecretkey;
-        newextdata.timesloggedin       = olddatafile.timesloggedin;
-        newextdata.totallogintime      = olddatafile.totallogintime;
+        if (olddatafile.urlrequestsecretkey) newextdata.urlrequestsecretkey = olddatafile.urlrequestsecretkey;
+        if (olddatafile.timesloggedin)       newextdata.timesloggedin       = olddatafile.timesloggedin;
+        if (olddatafile.totallogintime)      newextdata.totallogintime      = olddatafile.totallogintime;
 
         // Write changes to file
         logger("", `${logger.colors.fgyellow}Writing new data to data.json...`, true, false, logger.animation("loading"));
