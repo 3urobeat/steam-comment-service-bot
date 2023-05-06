@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 15:51:52
+ * Last Modified: 06.05.2023 09:52:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -33,7 +33,7 @@ const Updater = function(controller) {
     setInterval(() => {
         if (Date.now() < lastCheck + 21600000) return; // Skip iteration if last check is less than 6 hours ago
 
-        this.checkForUpdate(false, null, false, (done) => { // Check if there is an update available
+        this.run(false, null, false, (done) => { // Check if there is an update available
             lastCheck = Date.now(); // Update the last time we checked for an update
 
             if (done) controller.restart(JSON.stringify({ skippedaccounts: require("../controller/controller.js").skippedaccounts })); // Send request to parent process if the bot found and ran the update
