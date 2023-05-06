@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 16:44:52
+ * Last Modified: 06.05.2023 13:10:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -315,7 +315,8 @@ module.exports.checkAndGetFile = (file, logger, norequire, force) => {
             } else {
 
                 try {
-                    if (!file.includes("logger.js")) logger("debug", `checkAndGetFile(): file ${file} exists, force and norequire are false. Testing integrity by requiring...`); // Ignore message for logger.js as it won't use the real logger yet
+                    // Don't log debug msg for logger & handleErrors as they get loaded before the actual logger is loaded. This looks bad in the terminal, is kinda irrelevant and is logged even when logDebug is off
+                    if (!file.includes("logger.js") && !file.includes("handleErrors.js")) logger("debug", `checkAndGetFile(): file ${file} exists, force and norequire are false. Testing integrity by requiring...`); // Ignore message for logger.js as it won't use the real logger yet
 
                     let fileToLoad = require("." + file);
 

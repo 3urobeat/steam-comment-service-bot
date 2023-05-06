@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.05.2023 11:17:05
+ * Last Modified: 06.05.2023 13:14:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -104,7 +104,8 @@ Controller.prototype._start = async function() {
 
 
     /* ------------ Mark new execution in output: ------------ */
-    logger("", "\n\nBootup sequence started...", true, true);
+    logger("", "", true, true);                             // Log one newline separated so it only shows up in output.txt
+    logger("", "\nBootup sequence started...", true, true); // ...add the second newline here so it also shows up in stdout. The message itself gets cleared because remove is true.
     logger("", "---------------------------------------------------------", true, true);
 
 
