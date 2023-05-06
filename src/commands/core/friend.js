@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 20:46:16
+ * Last Modified: 06.05.2023 10:44:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -36,6 +36,8 @@ module.exports.addFriend = {
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+
+        if (commandHandler.controller.info.readyAfter == 0) return respond(commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet
 
         if (!args[0]) return respond(commandHandler.data.lang.invalidprofileid);
 
@@ -94,6 +96,8 @@ module.exports.unfriend = {
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
+        if (commandHandler.controller.info.readyAfter == 0) return respond(commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet
+
         // Unfriend message sender with all bot accounts if no id was provided
         if (!args[0]) {
             respond(commandHandler.data.lang.unfriendcmdsuccess);
@@ -143,6 +147,8 @@ module.exports.unfriendall = {
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+
+        if (commandHandler.controller.info.readyAfter == 0) return respond(commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet
 
         // TODO: This is bad. Rewrite using a message collector, maybe add one to steamChatInteraction helper
         var abortunfriendall; // eslint-disable-line no-var

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 20:41:37
+ * Last Modified: 06.05.2023 10:44:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -36,6 +36,8 @@ module.exports.block = {
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+
+        if (commandHandler.controller.info.readyAfter == 0) return respond(commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet
 
         if (!args[0]) return respond(commandHandler.data.lang.invalidprofileid);
 
@@ -69,6 +71,8 @@ module.exports.unblock = {
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+
+        if (commandHandler.controller.info.readyAfter == 0) return respond(commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet
 
         if (!args[0]) return respond(commandHandler.data.lang.invalidprofileid);
 

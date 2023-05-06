@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 12:39:48
+ * Last Modified: 06.05.2023 10:42:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -35,7 +35,8 @@ module.exports.abort = {
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
-        let respond   = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        if (commandHandler.controller.info.readyAfter == 0) return respond(commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet
 
         handleSteamIdResolving(args[0], null, (err, res) => {
             if (res) {
