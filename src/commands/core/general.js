@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 23:56:21
+ * Last Modified: 06.05.2023 12:33:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -56,7 +56,8 @@ module.exports.help = {
         if (commandHandler.data.config.yourgroup.length > 1) yourgroupText = commandHandler.data.lang.helpjoingroup;
 
         // Send message
-        respond(`${commandHandler.data.datafile.mestr}'s Comment Bot | ${commandHandler.data.lang.helpcommandlist}\n
+        respond(`
+            ${commandHandler.data.datafile.mestr}'s Comment Bot | ${commandHandler.data.lang.helpcommandlist}\n
             ${commentText}\n
             '!ping' - ${commandHandler.data.lang.helpping}
             '!info' - ${commandHandler.data.lang.helpinfo}
@@ -65,7 +66,8 @@ module.exports.help = {
             '!owner' - ${commandHandler.data.lang.helpowner}
             ${yourgroupText}
         
-            ${commandHandler.data.lang.helpreadothercmdshere} ' https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Commands-documentation '`);
+            ${commandHandler.data.lang.helpreadothercmdshere} ' https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Commands-documentation '
+        `.replace(/ {4}/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
     }
 };
 
@@ -94,7 +96,7 @@ module.exports.info = {
 
             /* eslint-disable no-irregular-whitespace */
             respond(`
-                -----------------------------------~~~~~------------------------------------ 
+                -----------------------------------~~~~~------------------------------------
                 >   ${commandHandler.data.datafile.mestr}'s Comment Bot [Version ${commandHandler.data.datafile.versionstr}] (More info: !about)
                 >   Uptime: ${Number(Math.round(((new Date() - commandHandler.controller.info.bootStartTimestamp) / 3600000)+"e"+2)+"e-"+2)} hours | Branch: ${commandHandler.data.datafile.branch}
                 >   'node.js' Version: ${process.version} | RAM Usage (RSS): ${Math.round(process.memoryUsage()["rss"] / 1024 / 1024 * 100) / 100} MB
@@ -105,7 +107,7 @@ module.exports.info = {
                 >   Last processed comment request: ${(new Date(lastReq)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)
                 >   I have commented ${commandHandler.controller.info.commentCounter} times since my last restart and completed request!
                 -----------------------------------~~~~~------------------------------------
-            `);
+            `.replace(/ {4}/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
             /* eslint-enable no-irregular-whitespace */
         });
     }
