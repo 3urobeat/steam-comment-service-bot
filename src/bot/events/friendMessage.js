@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 03.05.2023 21:50:24
+ * Last Modified: 06.05.2023 10:58:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -26,8 +26,8 @@ const Bot = require("../bot.js");
 Bot.prototype._attachSteamFriendMessageEvent = function() {
 
     this.user.on("friendMessage", (steamID, message) => {
-        let resInfo   = { steamID64: steamID.getSteamID64() };       // Object required for sendChatMessage(), our commandHandler respondModule implementation
         let steamID64 = new SteamID(String(steamID)).getSteamID64();
+        let resInfo   = { steamID64: steamID64 }; // Object required for sendChatMessage(), our commandHandler respondModule implementation
 
 
         // Check if this event should be handled or if user is blocked
@@ -44,10 +44,10 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         if (this.index !== 0) {
             switch(message.toLowerCase()) {
                 case "!about": // Please don't change this message as it gives credit to me; the person who put really much of his free time into this project. The bot will still refer to you - the operator of this instance.
-                    this.sendChatMessage(resInfo, this.controller.data.datafile.aboutstr);
+                    this.sendChatMessage(this, resInfo, this.controller.data.datafile.aboutstr);
                     break;
                 default:
-                    if (message.startsWith("!")) this.sendChatMessage(steamID64, `${this.controller.data.lang.childbotmessage}\nhttps://steamcommunity.com/profiles/${new SteamID(String(this.controller.main.user.steamID)).getSteamID64()}`);
+                    if (message.startsWith("!")) this.sendChatMessage(this, resInfo, `${this.controller.data.lang.childbotmessage}\nhttps://steamcommunity.com/profiles/${new SteamID(String(this.controller.main.user.steamID)).getSteamID64()}`);
                         else logger("debug", `[${this.logPrefix}] Chat message is not a command, ignoring message.`);
             }
 
@@ -74,7 +74,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
 
         // Handle non-prefixed messages
         if (!message.startsWith("!")) {
-            if (message.toLowerCase() == ":)") return this.sendChatMessage(steamID, ":))"); // Hehe
+            if (message.toLowerCase() == ":)") return this.sendChatMessage(this, resInfo, ":))"); // Hehe
 
             logger("debug", "Chat message is not a command, ignoring message.");
             return;
@@ -87,7 +87,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
 
         let success = this.controller.commandHandler.runCommand(cont[0].toLowerCase(), args, steamID64, this.sendChatMessage, this, resInfo);
 
-        if (!success) this.sendChatMessage(steamID, this.controller.data.lang.commandnotfound); // Send cmd not found msg if runCommand() returned false
+        if (!success) this.sendChatMessage(this, resInfo, this.controller.data.lang.commandnotfound); // Send cmd not found msg if runCommand() returned false
     });
 
 };

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 03.05.2023 17:14:51
+ * Last Modified: 06.05.2023 10:56:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -135,9 +135,11 @@ module.exports = Bot;
 Bot.prototype.checkMsgBlock = function(steamID64, message) {}; // eslint-disable-line
 
 /**
- * Send a message to a Steam user
- * @param {Object} resInf Object containing information passed to command by friendMessage event
+ * Our commandHandler respondModule implementation - Sends a message to a Steam user
+ * @param {Object} _this The Bot object context
+ * @param {Object} resInfo Object containing information passed to command by friendMessage event
  * @param {String} txt The text to send
  * @param {Boolean} retry Internal: true if this message called itself again to send failure message
+ * @param {Number} part Internal: Index of which part to send for messages larger than 750 chars
  */
-Bot.prototype.sendChatMessage = function(resInf, txt, retry) {}; // eslint-disable-line
+Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry, part = 0) {}; // eslint-disable-line
