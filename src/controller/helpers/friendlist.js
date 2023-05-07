@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 23:10:14
+ * Last Modified: 07.05.2023 20:58:42
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -18,21 +18,20 @@
 const SteamID = require("steamid");
 
 const Controller = require("../../controller/controller.js");
+const Bot        = require("../../bot/bot.js"); // eslint-disable-line
 
 
 /**
  * Check if all friends are in lastcomment database
- * @param {Number} index The index of the bot account to be checked
+ * @param {Bot} bot Bot object of the account to check
  */
-Controller.prototype.checkLastcommentDB = function(index) {
-    let thisbot = this.getBots()[index].user;
-
+Controller.prototype.checkLastcommentDB = function(bot) {
     logger("debug", "Controller checkLastCommentDB(): Checking if all friends are in lastcomment.db...");
 
     this.data.lastCommentDB.find({}, (err, docs) => {
-        Object.keys(thisbot.myFriends).forEach((e) => {
+        Object.keys(bot.user.myFriends).forEach((e) => {
 
-            if (thisbot.myFriends[e] == 3 && !docs.find(el => el.id == e)) {
+            if (bot.user.myFriends[e] == 3 && !docs.find(el => el.id == e)) {
                 logger("info", `Inserting user ${e} into lastcomment.db...`, false, true);
 
                 let obj = {
@@ -52,26 +51,24 @@ Controller.prototype.checkLastcommentDB = function(index) {
 
 /**
  * Checks the remaining space on the friendlist of a bot account, sends a warning message if it is less than 10 and force unfriends oldest lastcomment db user to always keep room for 1 friend.
- * @param {Number} index The index of the bot account to be checked
+ * @param {Bot} bot Bot object of the account to check
  * @param {function} [callback] Called with `remaining` (Number) on completion
  */
-Controller.prototype.friendListCapacityCheck = function(index, callback) {
+Controller.prototype.friendListCapacityCheck = function(bot, callback) {
     try {
-        let thisbot = this.getBots()[index].user;
-
-        thisbot.getSteamLevels([thisbot.steamID], (err, users) => { // Check steam level of botindex account with bot0
+        bot.user.getSteamLevels([bot.user.steamID], (err, users) => { // Check steam level of botindex account with bot0
             if (!users) return; // Users was undefined one time (I hope this will (hopefully) suppress an error?)
 
             let friendlistlimit = Object.values(users)[0] * 5 + 250; // Profile Level * 5 + 250
-            let friends         = Object.values(thisbot.myFriends);
+            let friends         = Object.values(bot.user.myFriends);
             let friendsamount   = friends.length - friends.filter(val => val == 0).length - friends.filter(val => val == 5).length; // Subtract friend enums 0 & 5
 
             let remaining = friendlistlimit - friendsamount;
 
-            logger("debug", `Controller friendListCapacityCheck(): bot${index} has ${friendsamount}/${friendlistlimit} friends`);
+            logger("debug", `Controller friendListCapacityCheck(): bot${bot.index} has ${friendsamount}/${friendlistlimit} friends`);
 
             if (remaining < 0) {
-                logger("error", `Failed to check friendlist space for bot${index}. Error: Remaining amount is negative - account has more friends than calculated limit?`);
+                logger("error", `Failed to check friendlist space for bot${bot.index}. Error: Remaining amount is negative - account has more friends than calculated limit?`);
                 callback(null); // Stop if number is negative somehow - maybe when bot profile is private?
 
             } else {
@@ -87,19 +84,19 @@ Controller.prototype.friendListCapacityCheck = function(index, callback) {
 
                         // Iterate over all docs until we find someone still on our friendlist that isn't an owner (since this func is called for each bot acc we don't need to iterate over the botobject)
                         docs.every((e, i) => { // Use every() so we can break with return false
-                            if (thisbot.myFriends[e.id] == 3 && !this.data.cachefile.ownerid.includes(e.id)) { // Check if friend and not owner
+                            if (bot.user.myFriends[e.id] == 3 && !this.data.cachefile.ownerid.includes(e.id)) { // Check if friend and not owner
                                 let steamID = new SteamID(e.id);
 
                                 // Unfriend user and send him/her a message // TODO: Maybe only do this from the main bot?
-                                thisbot.chat.sendFriendMessage(steamID, this.data.lang.userunfriend.replace("forceFriendlistSpaceTime", this.data.advancedconfig.forceFriendlistSpaceTime));
-                                thisbot.removeFriend(steamID);
+                                bot.user.chat.sendFriendMessage(steamID, this.data.lang.userunfriend.replace("forceFriendlistSpaceTime", this.data.advancedconfig.forceFriendlistSpaceTime));
+                                bot.user.removeFriend(steamID);
 
-                                logger("info", `[Bot ${index}] Force-Unfriended ${e.id} after being inactive for ${this.data.advancedconfig.forceFriendlistSpaceTime} days to keep 1 empty slot on the friendlist`);
+                                logger("info", `[Bot ${bot.index}] Force-Unfriended ${e.id} after being inactive for ${this.data.advancedconfig.forceFriendlistSpaceTime} days to keep 1 empty slot on the friendlist`);
                                 return false; // Stop loop as one friend slot should now be free
                             }
 
                             // Log warning if we are on the last iteration as when this code is executed no candidate was found
-                            if (i + 1 == docs.length) logger("warn", `[Bot ${index}] No user was found to unfriend in order to keep at least one friendlist slot empty! Consider lowering 'forceFriendlistSpaceTime' in advancedconfig.json`);
+                            if (i + 1 == docs.length) logger("warn", `[Bot ${bot.index}] No user was found to unfriend in order to keep at least one friendlist slot empty! Consider lowering 'forceFriendlistSpaceTime' in advancedconfig.json`);
 
                             return true; // Keep loop running
                         });
@@ -116,7 +113,7 @@ Controller.prototype.friendListCapacityCheck = function(index, callback) {
             }
         });
     } catch (err) {
-        logger("error", `Failed to check friendlist space for bot${index}. Error: ${err}`);
+        logger("error", `Failed to check friendlist space for bot${bot.index}. Error: ${err}`);
         callback(null);
     }
 };

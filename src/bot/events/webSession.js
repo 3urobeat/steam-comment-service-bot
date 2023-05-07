@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 01.05.2023 14:08:10
+ * Last Modified: 07.05.2023 20:55:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -38,7 +38,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
 
         // Run check if all friends are in lastcomment.db database for main bot account
-        if (this.index == 0) this.controller.checkLastcommentDB(this.index);
+        if (this.index == 0) this.controller.checkLastcommentDB(this);
 
 
         /* ------------ Accept offline friend and group invites/requests: ------------ */

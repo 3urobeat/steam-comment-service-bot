@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 15:15:28
+ * Last Modified: 07.05.2023 20:53:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -65,7 +65,7 @@ Bot.prototype._attachSteamFriendRelationshipEvent = function() {
 
 
             // Check remaining friendlist space
-            this.controller.friendListCapacityCheck(this.index, (remaining) => {
+            this.controller.friendListCapacityCheck(this, (remaining) => {
                 if (remaining < 25) {
                     logger("warn", `The friendlist space of bot${this.index} is running low! (${remaining} remaining)`);
                 }

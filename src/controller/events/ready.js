@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 06.05.2023 12:52:16
+ * Last Modified: 07.05.2023 20:54:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -131,7 +131,7 @@ Controller.prototype._readyEvent = function() {
 
     // Friendlist capacity check for all accounts
     this.getBots().forEach((e) => {
-        this.friendListCapacityCheck(e.index, (remaining) => {
+        this.friendListCapacityCheck(e, (remaining) => {
             if (remaining && remaining < 25) logger("warn", `The friendlist space of bot${e} is running low! (${remaining} remaining)`);
         });
     });

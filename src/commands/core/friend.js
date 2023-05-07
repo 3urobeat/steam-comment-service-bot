@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.05.2023 10:44:05
+ * Last Modified: 07.05.2023 20:54:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -56,23 +56,23 @@ module.exports.addFriend = {
             commandHandler.controller.getBots().forEach((e, i) => {
                 // Check if this bot account is limited
                 if (e.user.limitations && e.user.limitations.limited == true) {
-                    logger("error", `Can't add friend ${res} with bot${i} because the bot account is limited.`);
+                    logger("error", `Can't add friend ${res} with bot${e.index} because the bot account is limited.`);
                     return;
                 }
 
                 if (e.user.myFriends[res] != 3 && e.user.myFriends[res] != 1) { // Check if provided user is not friend and not blocked
                     setTimeout(() => {
                         e.user.addFriend(new SteamID(res), (err) => {
-                            if (err) logger("error", `Error adding ${res} with bot${i}: ${err}`);
-                                else logger("info", `Added ${res} with bot${i} as friend.`);
+                            if (err) logger("error", `Error adding ${res} with bot${e.index}: ${err}`);
+                                else logger("info", `Added ${res} with bot${e.index} as friend.`);
                         });
 
-                        commandHandler.controller.friendListCapacityCheck(i, (remaining) => { // Check remaining friendlist space
-                            if (remaining < 25) logger("warn", `The friendlist space of bot${i} is running low! (${remaining} remaining)`);
+                        commandHandler.controller.friendListCapacityCheck(e, (remaining) => { // Check remaining friendlist space
+                            if (remaining < 25) logger("warn", `The friendlist space of bot${e.index} is running low! (${remaining} remaining)`);
                         });
                     }, 5000 * i);
                 } else {
-                    logger("warn", `bot${i} is already friend with ${res} or the account was blocked/blocked you.`); // Somehow logs steamIDs in separate row?!
+                    logger("warn", `bot${e.index} is already friend with ${res} or the account was blocked/blocked you.`); // Somehow logs steamIDs in separate row?!
                 }
             });
         });
