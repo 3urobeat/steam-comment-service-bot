@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.05.2023 20:55:11
+ * Last Modified: 07.05.2023 21:36:18
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -49,29 +49,31 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
             if (this.user.myFriends[Object.keys(this.user.myFriends)[i]] == 2) {
 
                 if (this.controller.data.advancedconfig.acceptFriendRequests) {
+                    let thisfriend = Object.keys(this.user.myFriends)[i];
+
                     // Accept friend request
-                    this.user.addFriend(Object.keys(this.user.myFriends)[i]);
+                    this.user.addFriend(thisfriend);
 
                     // Log message and send welcome message
-                    logger("info", `[${this.logPrefix}] Added user while I was offline! User: ` + Object.keys(this.user.myFriends)[i]);
-                    if (this.index == 0) this.controller.main.user.chat.sendFriendMessage(String(Object.keys(this.user.myFriends)[i]), this.controller.data.lang.useradded);
+                    logger("info", `[${this.logPrefix}] Added user while I was offline! User: ` + thisfriend);
+                    if (this.index == 0) this.controller.main.user.chat.sendFriendMessage(String(thisfriend), this.controller.data.lang.useradded);
                         else logger("debug", "Not sending useradded message because this isn't the main this.user...");
 
                     // Add user to lastcomment database
                     let lastcommentobj = {
-                        id: Object.keys(this.user.myFriends)[i],
+                        id: thisfriend,
                         time: Date.now() - (this.controller.data.config.commentcooldown * 60000) // Subtract commentcooldown so that the user is able to use the command instantly
                     };
 
-                    this.controller.data.lastCommentDB.remove({ id: Object.keys(this.user.myFriends)[i] }, {}, (err) => { if (err) logger("error", "Error removing duplicate steamid from lastcomment.db on offline friend accept! Error: " + err); }); // Remove any old entries
+                    this.controller.data.lastCommentDB.remove({ id: thisfriend }, {}, (err) => { if (err) logger("error", "Error removing duplicate steamid from lastcomment.db on offline friend accept! Error: " + err); }); // Remove any old entries
                     this.controller.data.lastCommentDB.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err); });
 
                     // Invite user to yourgroup (and to my to make some stonks)
                     if (this.controller.data.cachefile.configgroup64id && Object.keys(this.user.myGroups).includes(this.controller.data.cachefile.configgroup64id)) {
-                        this.user.inviteToGroup(Object.keys(this.user.myFriends)[i], new SteamID(this.controller.data.cachefile.configgroup64id));
+                        this.user.inviteToGroup(thisfriend, new SteamID(this.controller.data.cachefile.configgroup64id));
 
                         if (this.controller.data.cachefile.configgroup64id !== "103582791464712227") { // https://steamcommunity.com/groups/3urobeatGroup
-                            this.user.inviteToGroup(Object.keys(this.user.myFriends)[i], new SteamID("103582791464712227"));
+                            this.user.inviteToGroup(thisfriend, new SteamID("103582791464712227"));
                         }
                     }
                 } else {
@@ -81,24 +83,25 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
             // Log info msg about ignored friend requests
             if (i + 1 == Object.keys(this.user.myFriends).length && ignoredFriendRequests > 0) {
-                logger("info", `Ignored ${ignoredFriendRequests} pending friend request(s) because acceptFriendRequests is turned off in this.controller.data.advancedconfig.json.`);
+                logger("info", `Ignored ${ignoredFriendRequests} pending friend request(s) because acceptFriendRequests is turned off in advancedconfig.json.`);
             }
         }
 
         // Groups:
         for (let i = 0; i < Object.keys(this.user.myGroups).length; i++) {
             if (this.user.myGroups[Object.keys(this.user.myGroups)[i]] == 2) {
+                let thisgroup = Object.keys(this.user.myGroups)[i];
 
                 // Check if acceptgroupinvites is set to false and only allow botsgroup invite to be accepted
                 if (!this.controller.data.config.acceptgroupinvites) {
                     if (this.controller.data.config.yourgroup.length < 1 && this.controller.data.config.botsgroup.length < 1) return;
-                    if (Object.keys(this.user.myGroups)[i] != this.controller.data.cachefile.configgroup64id && Object.keys(this.user.myGroups)[i] != this.controller.data.cachefile.botsgroupid) return;
+                    if (thisgroup != this.controller.data.cachefile.configgroup64id && thisgroup != this.controller.data.cachefile.botsgroupid) return;
                     logger("info", "acceptgroupinvites is turned off but this is an invite to the group set as yourgroup or botsgroup. Accepting invite anyway...");
                 }
 
                 // Accept invite and log message
-                this.user.respondToGroupInvite(Object.keys(this.user.myGroups)[i], true);
-                logger("info", `[${this.logPrefix}] Accepted group invite while I was offline: ` + Object.keys(this.user.myGroups)[i]);
+                this.user.respondToGroupInvite(thisgroup, true);
+                logger("info", `[${this.logPrefix}] Accepted group invite while I was offline: ` + thisgroup);
             }
         }
 
