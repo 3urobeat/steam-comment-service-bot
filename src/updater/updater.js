@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.05.2023 21:48:42
+ * Last Modified: 08.05.2023 12:11:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -47,10 +47,11 @@ module.exports = Updater;
 /**
  * Checks for any available update and installs it.
  * @param {Boolean} forceUpdate If true an update will be forced, even if disableAutoUpdate is true or the newest version is already installed
- * @param {function(string)} respondModule If defined, this function will be called with the result of the check. This allows to integrate checking for updates into commands or plugins
+ * @param {function(Object, string)} respondModule If defined, this function will be called with the result of the check. This allows to integrate checking for updates into commands or plugins. Passes resInfo and txt as parameters.
+ * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @returns {Promise} Promise that will be resolved with false when no update was found or with true when the update check or download was completed. Expect a restart when true was returned.
  */
-Updater.prototype.run = function(forceUpdate, respondModule) {
+Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
     let _this = this;
 
     // Shorthander to abort when a part of the updater is missing and couldn't be repaired
@@ -77,7 +78,7 @@ Updater.prototype.run = function(forceUpdate, respondModule) {
                     if (parseInt(process.argv[3]) + 10000 > Date.now()) logger("info", `No available update found. (online: ${onlineData.versionstr} | local: ${this.data.datafile.versionstr})`, false, true, logger.animation("loading")); // Only print message with animation if the start is more recent than 10 seconds
                         else logger("info", `No available update found. (online: ${onlineData.versionstr} | local: ${this.data.datafile.versionstr})`, false, true);
 
-                    if (respondModule) respondModule(`No available update found. (online: ${onlineData.versionstr} | local: ${this.data.datafile.versionstr})`);
+                    if (respondModule) respondModule(resInfo, `No available update found. (online: ${onlineData.versionstr} | local: ${this.data.datafile.versionstr})`);
 
                     resolve(false); // Let the caller know about the result
                     return;
@@ -93,11 +94,11 @@ Updater.prototype.run = function(forceUpdate, respondModule) {
 
                 // Call respondModule function if one was passed
                 if (respondModule) {
-                    respondModule(`Update available! Your version: ${this.data.datafile.versionstr} | New version: ${onlineData.versionstr}`);
-                    respondModule(`What's new: ${onlineData.whatsnew}`);
+                    respondModule(resInfo, `Update available! Your version: ${this.data.datafile.versionstr} | New version: ${onlineData.versionstr}`);
+                    respondModule(resInfo, `What's new: ${onlineData.whatsnew}`);
 
                     // Instruct user to force update if disableAutoUpdate is true and stop here
-                    if (this.data.advancedconfig.disableAutoUpdate && !forceUpdate) return respondModule(this.data.lang.updaterautoupdatedisabled);
+                    if (this.data.advancedconfig.disableAutoUpdate && !forceUpdate) return respondModule(resInfo, this.data.lang.updaterautoupdatedisabled);
                 }
 
 

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 16:27:58
+ * Last Modified: 08.05.2023 12:15:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -21,10 +21,11 @@ const Controller = require("../../controller/controller.js"); // eslint-disable-
 /**
  * Wait for active requests and log off all bot accounts
  * @param {Controller} controller Reference to the controller object
- * @param {function(string)} respondModule If defined, this function will be called with the result of the check. This allows to integrate checking for updates into commands or plugins
+ * @param {function(Object, string)} respondModule If defined, this function will be called with the result of the check. This allows to integrate checking for updates into commands or plugins. Passes resInfo and txt as parameters.
+ * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @returns {Promise} Resolves when we can proceed
  */
-module.exports.run = (controller, respondModule) => {
+module.exports.run = (controller, respondModule, resInfo) => {
     return new Promise((resolve) => {
 
         if (botisloggedin) { // If bot is already logged in we need to check for ongoing comment processes and log all bots out when finished
@@ -67,7 +68,7 @@ module.exports.run = (controller, respondModule) => {
                         } else { // If the obj is now empty then lets continue
 
                             logger("info", "Active comment process finished. Starting to log off all accounts...", false, true, logger.animation("loading"));
-                            if (respondModule) respondModule("/me Active comment process finished. Starting to log off all accounts...");
+                            if (respondModule) respondModule(resInfo, "/me Active comment process finished. Starting to log off all accounts...");
 
                             initiateUpdate();
                         }
@@ -79,14 +80,14 @@ module.exports.run = (controller, respondModule) => {
             // Check for active comment process. If obj not empty then first sort out all invalid/expired entries.
             if (Object.keys(controller.activeRequests).length > 0 && Object.values(controller.activeRequests).some(a => a["status"] == "active")) { // Only check object if it isn't empty and has at least one comment process with the status active
                 logger("info", "Waiting for an active comment process to finish...", false, true, logger.animation("waiting"));
-                if (respondModule) respondModule("/me Waiting for an active comment process to finish...");
+                if (respondModule) respondModule(resInfo, "/me Waiting for an active comment process to finish...");
 
                 filterACPobj(); // Note: The comment command has already been blocked by controller.js by setting activeLogin = true
 
             } else {
 
                 logger("info", "No active comment processes found. Starting to log off all accounts...", false, true, logger.animation("loading"));
-                if (respondModule) respondModule("/me No active comment processes found. Starting to log off all accounts...");
+                if (respondModule) respondModule(resInfo, "/me No active comment processes found. Starting to log off all accounts...");
 
                 initiateUpdate();
             }

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 15:37:09
+ * Last Modified: 08.05.2023 12:13:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -80,17 +80,17 @@ module.exports.update = {
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        let respond = ((modResInfo, txt) => respondModule(context, modResInfo, txt)); // Shorten each call. Updater takes resInfo as param and can modify it, so we need to pass the modified resInfo object here
 
         // If the first argument is true then we shall force an update
         let force = (args[0] == "true");
 
         // Use the correct message depending on if force is true or false
-        if (force) respond(commandHandler.data.lang.updatecmdforce.replace("branchname", commandHandler.data.datafile.branch));
-            else respond(commandHandler.data.lang.updatecmdcheck.replace("branchname", commandHandler.data.datafile.branch));
+        if (force) respond(resInfo, commandHandler.data.lang.updatecmdforce.replace("branchname", commandHandler.data.datafile.branch));
+            else respond(resInfo, commandHandler.data.lang.updatecmdcheck.replace("branchname", commandHandler.data.datafile.branch));
 
         // Run the updater, pass force and our respond function which will allow the updater to text the user what's going on
-        commandHandler.controller.updater.run(force, respond);
+        commandHandler.controller.updater.run(force, respond, resInfo);
     }
 };
 
