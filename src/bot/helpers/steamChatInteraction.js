@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 15:15:40
+ * Last Modified: 08.05.2023 12:32:47
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -33,8 +33,12 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry, part = 0) {
     if (!txt) return logger("warn", "sendChatMessage() was called without any message content! Ignoring call...");
     if (typeof txt !== "string") return logger("warn", "sendChatMessage() was called with txt that isn't a string! Ignoring call...");
 
-    // Get the correct part to send // TODO: This should handle line breaks better to avoid cutting links in half (for accsToAdd for example)
-    let thisPart = txt.slice(750 * part, 750 * (part + 1));
+    // Check if message should be sent without a prefix and set it to an empty string
+    if (!resInfo.prefix) resInfo.prefix = "";
+        else resInfo.prefix += " "; // Add whitespace between prefix and message content
+
+    // Get the correct part to send and add prefix infront // TODO: This should handle line breaks better to avoid cutting links in half (for accsToAdd for example)
+    let thisPart = resInfo.prefix + txt.slice(750 * part, 750 * (part + 1));
 
     // Log full message if in debug mode, otherwise log cut down version
     if (_this.controller.data.advancedconfig.printDebug) {

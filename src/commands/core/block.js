@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.05.2023 10:44:56
+ * Last Modified: 09.05.2023 15:30:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -37,19 +37,19 @@ module.exports.block = {
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        if (commandHandler.controller.info.readyAfter == 0) return respond(commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botmaintenance); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         if (!args[0]) return respond(commandHandler.data.lang.invalidprofileid);
 
         handleSteamIdResolving(args[0], SteamID.Type.INDIVIDUAL, (err, res) => {
             if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
-            if (commandHandler.data.cachefile.ownerid.includes(res)) return respond(commandHandler.data.lang.idisownererror);
+            if (commandHandler.data.cachefile.ownerid.includes(res)) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.idisownererror); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
             commandHandler.controller.getBots().forEach((e, i) => {
                 e.user.blockUser(new SteamID(res), (err) => { if (err) logger("error", `[Bot ${i}] Error blocking user ${res}: ${err}`); });
             });
 
-            respond(commandHandler.data.lang.blockcmdsuccess.replace("profileid", res));
+            respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.blockcmdsuccess.replace("profileid", res)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
             logger("info", `Blocked ${res} with all bot accounts.`);
         });
     }
@@ -72,7 +72,7 @@ module.exports.unblock = {
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        if (commandHandler.controller.info.readyAfter == 0) return respond(commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botmaintenance); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         if (!args[0]) return respond(commandHandler.data.lang.invalidprofileid);
 
@@ -83,7 +83,7 @@ module.exports.unblock = {
                 e.user.unblockUser(new SteamID(res), (err) => { if (err) logger("error", `[Bot ${i}] Error unblocking user ${res}: ${err}`); });
             });
 
-            respond(commandHandler.data.lang.unblockcmdsuccess.replace("profileid", res));
+            respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.unblockcmdsuccess.replace("profileid", res)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
             logger("info", `Unblocked ${res} with all bot accounts.`);
         });
     }

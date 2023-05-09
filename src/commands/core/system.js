@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 08.05.2023 12:13:50
+ * Last Modified: 09.05.2023 15:33:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -34,9 +34,7 @@ module.exports.restart = {
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-
-        respond(commandHandler.data.lang.restartcmdrestarting);
+        respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.restartcmdrestarting); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         commandHandler.controller.restart(JSON.stringify({ skippedaccounts: commandHandler.controller.info.skippedaccounts }));
     }
@@ -57,9 +55,7 @@ module.exports.stop = {
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-
-        respond(commandHandler.data.lang.stopcmdstopping);
+        respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.stopcmdstopping); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         commandHandler.controller.stop();
     }
@@ -86,8 +82,8 @@ module.exports.update = {
         let force = (args[0] == "true");
 
         // Use the correct message depending on if force is true or false
-        if (force) respond(resInfo, commandHandler.data.lang.updatecmdforce.replace("branchname", commandHandler.data.datafile.branch));
-            else respond(resInfo, commandHandler.data.lang.updatecmdcheck.replace("branchname", commandHandler.data.datafile.branch));
+        if (force) respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.updatecmdforce.replace("branchname", commandHandler.data.datafile.branch));
+            else respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.updatecmdcheck.replace("branchname", commandHandler.data.datafile.branch));
 
         // Run the updater, pass force and our respond function which will allow the updater to text the user what's going on
         commandHandler.controller.updater.run(force, respond, resInfo);
@@ -109,12 +105,10 @@ module.exports.output = {
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-
         fs.readFile("./output.txt", function (err, data) {
             if (err) logger("error", "error getting last 15 lines from output for log cmd: " + err);
 
-            respond("/pre These are the last 15 lines:\n\n" + data.toString().split("\n").slice(data.toString().split("\n").length - 15).join("\n"));
+            respondModule(context, { prefix: "/pre", ...resInfo }, "These are the last 15 lines:\n\n" + data.toString().split("\n").slice(data.toString().split("\n").length - 15).join("\n"));
         });
     }
 };
@@ -135,7 +129,7 @@ module.exports.eval = {
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        if (!commandHandler.data.advancedconfig.enableevalcmd) return respond(commandHandler.data.lang.evalcmdturnedoff);
+        if (!commandHandler.data.advancedconfig.enableevalcmd) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.evalcmdturnedoff); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         const clean = text => { // eslint-disable-line no-case-declarations
             if (typeof(text) === "string") return text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));

@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 14:12:17
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 14:36:41
+ * Last Modified: 09.05.2023 11:14:49
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -81,7 +81,7 @@ module.exports.load = (sys) => { //eslint-disable-line
 
 
             // Run the comment command
-            if (!ready.readyafter || controller.relogQueue.length > 0) return res.status(403).send(mainfile.lang.botnotready); // Check if bot is not fully started yet and block cmd usage to prevent errors
+            if (!ready.readyafter || controller.relogQueue.length > 0) return res.status(403).send(mainfile.lang.botnotready); //TODO: Add /me prefix // Check if bot is not fully started yet and block cmd usage to prevent errors
 
             var steamID = new SteamID(String(cachefile.ownerid[0])); // SteamID: Make the bot owner responsible for request
             var steam64id = steamID.getSteamID64();

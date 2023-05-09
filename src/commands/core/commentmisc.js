@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.05.2023 10:42:45
+ * Last Modified: 09.05.2023 15:33:47
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -36,7 +36,7 @@ module.exports.abort = {
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        if (commandHandler.controller.info.readyAfter == 0) return respond(commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botmaintenance); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         handleSteamIdResolving(args[0], null, (err, res) => {
             if (res) {
@@ -45,13 +45,13 @@ module.exports.abort = {
                 steamID64 = res; // If user provided an id as argument then use that instead of his/her id
             }
 
-            if (!commandHandler.controller.activeRequests[steamID64] || commandHandler.controller.activeRequests[steamID64].status != "active") return respond(commandHandler.data.lang.abortcmdnoprocess);
+            if (!commandHandler.controller.activeRequests[steamID64] || commandHandler.controller.activeRequests[steamID64].status != "active") return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.abortcmdnoprocess); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
             // Set new status for comment process
             commandHandler.controller.activeRequests[steamID64].status = "aborted";
 
             logger("info", `Aborting comment process for profile/group ${steamID64}...`);
-            respond(commandHandler.data.lang.abortcmdsuccess);
+            respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.abortcmdsuccess); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         });
     }
 };
@@ -72,7 +72,7 @@ module.exports.resetCooldown = {
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        if (commandHandler.data.advancedconfig.disableCommentCmd) return respond(commandHandler.data.lang.botmaintenance);
+        if (commandHandler.data.advancedconfig.disableCommentCmd) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botmaintenance); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         if (args[0] && args[0] == "global") { // Check if user wants to reset the global cooldown (will reset all until entries in activeRequests)
             if (commandHandler.data.config.botaccountcooldown == 0) return respond(commandHandler.data.lang.resetcooldowncmdcooldowndisabled); // Is the global cooldown enabled?
@@ -135,8 +135,8 @@ module.exports.failed = {
                 let messagestart = commandHandler.data.lang.failedcmdmsg.replace("steamID64", steamID64).replace("requesttime", requesttime);
 
                 // Limit length to 750 characters to ensure the message can be sent
-                if (failedcommentsstr.length >= 800) respond("/pre " + messagestart + "\nc = Comment, p = Proxy\n" + failedcommentsstr.slice(0, 800) + "... \n\n ..." + failedcommentsstr.slice(800, failedcommentsstr.length).split("\n").length + " entries hidden because message would be too long.");
-                    else respond("/pre " + messagestart + "\nc = Comment, p = Proxy\n" + failedcommentsstr);
+                if (failedcommentsstr.length >= 800) respondModule(context, { prefix: "/pre", ...resInfo }, messagestart + "\nc = Comment, p = Proxy\n" + failedcommentsstr.slice(0, 800) + "... \n\n ..." + failedcommentsstr.slice(800, failedcommentsstr.length).split("\n").length + " entries hidden because message would be too long.");
+                    else respondModule(context, { prefix: "/pre", ...resInfo }, messagestart + "\nc = Comment, p = Proxy\n" + failedcommentsstr); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
             });
         });
     }
