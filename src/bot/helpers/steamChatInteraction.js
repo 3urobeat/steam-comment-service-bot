@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 10.05.2023 17:47:46
+ * Last Modified: 10.05.2023 22:29:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -30,6 +30,7 @@ const Bot = require("../bot");
  * @param {Number} part Internal: Index of which part to send for messages larger than 750 chars
  */
 Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 0) {
+    if (!resInfo) return logger("warn", "sendChatMessage() was called without a resInfo object! Ignoring call...");
     if (!txt) return logger("warn", "sendChatMessage() was called without any message content! Ignoring call...");
     if (typeof txt !== "string") return logger("warn", "sendChatMessage() was called with txt that isn't a string! Ignoring call...");
 

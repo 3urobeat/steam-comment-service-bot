@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 08.05.2023 12:11:53
+ * Last Modified: 10.05.2023 22:39:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -110,7 +110,7 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
                     let prepareUpdate = await checkAndGetFile("./src/updater/helpers/prepareUpdate.js", logger, false, false);
                     if (!prepareUpdate) return stopOnFatalError();
 
-                    await prepareUpdate.run(_this.controller, respondModule);
+                    await prepareUpdate.run(_this.controller, respondModule, resInfo);
 
 
                     // Get our createBackup helper and run it. It creates a backup of our src folder so we can recover should the update fail
