@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 08.05.2023 12:32:47
+ * Last Modified: 10.05.2023 12:30:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -26,10 +26,10 @@ const Bot = require("../bot");
  * @param {Object} _this The Bot object context
  * @param {Object} resInfo Object containing information passed to command by friendMessage event
  * @param {String} txt The text to send
- * @param {Boolean} retry Internal: true if this message called itself again to send failure message
+ * @param {Number} retry Internal: Counter of retries for this part if sending failed
  * @param {Number} part Internal: Index of which part to send for messages larger than 750 chars
  */
-Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry, part = 0) {
+Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 0) {
     if (!txt) return logger("warn", "sendChatMessage() was called without any message content! Ignoring call...");
     if (typeof txt !== "string") return logger("warn", "sendChatMessage() was called with txt that isn't a string! Ignoring call...");
 
@@ -42,24 +42,26 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry, part = 0) {
 
     // Log full message if in debug mode, otherwise log cut down version
     if (_this.controller.data.advancedconfig.printDebug) {
-        logger("debug", `[${_this.logPrefix}] Sending message (${thisPart.length} chars) to ${resInfo.steamID64} (retry: ${retry == true}, part: ${part}): "${thisPart.replace(/\n/g, "\\n")}"`); // Intentionally checking for == true to prevent showing undefined
+        logger("debug", `[${_this.logPrefix}] Sending message (${thisPart.length} chars) to ${resInfo.steamID64} (retry: ${retry}, part: ${part}): "${thisPart.replace(/\n/g, "\\n")}"`);
     } else {
         if (thisPart.length >= 75) logger("info", `[${_this.logPrefix}] Sending message to ${resInfo.steamID64}: "${thisPart.slice(0, 75).replace(/\n/g, "\\n") + "..."}"`);
             else logger("info", `[${_this.logPrefix}] Sending message to ${resInfo.steamID64}: "${thisPart.replace(/\n/g, "\\n")}"`);
     }
 
     // Send part and call function again if this wasn't the last one
-    _this.user.chat.sendFriendMessage(resInfo.steamID64, thisPart, {}, (err) => {
+    this.user.chat.sendFriendMessage(resInfo.steamID64, thisPart, {}, (err) => {
         if (err) { // Check for error as some chat messages seem to not get send lately
             logger("warn", `[${_this.logPrefix}] Error trying to send chat message of length ${thisPart.length} to ${resInfo.steamID64}! ${err}`);
 
-            // Send the user a fallback message after 5 seconds just to indicate the bot is not down
-            // if (!retry) setTimeout(() => _this.sendChatMessage(resInfo.steamID64, "Sorry, it looks like Steam blocked my last message. Please try again in 30 seconds.", true), 5000);
+            // Start typing to indicate the bot is not down
+            _this.user.chat.sendFriendTyping(resInfo.steamID64);
 
-            // Retry message in 10 seconds // TODO: Can I start typing to indicate the bot is not down?
-            setTimeout(() => {
-                _this.sendChatMessage(_this, resInfo, txt, retry, part); // Send the same part again
-            }, 10000);
+            // Hard cap amount of attempts to send this message to 5
+            if (retry >= 5) return;
+            if (retry == 4) return setTimeout(() => _this.sendChatMessage(_this, resInfo, "Sorry, Steam seems to block my messages. Please try again in a few minutes.", retry + 1), 10000);
+
+            // Retry message in 10 seconds
+            setTimeout(() => _this.sendChatMessage(_this, resInfo, txt, retry + 1, part), 10000 * (retry + 1)); // Send the same part again and increase delay for subsequent fails
 
         } else {
 
