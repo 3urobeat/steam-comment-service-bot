@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 10.05.2023 12:30:55
+ * Last Modified: 10.05.2023 17:47:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -49,7 +49,7 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
     }
 
     // Send part and call function again if this wasn't the last one
-    this.user.chat.sendFriendMessage(resInfo.steamID64, thisPart, {}, (err) => {
+    _this.user.chat.sendFriendMessage(resInfo.steamID64, thisPart, {}, (err) => {
         if (err) { // Check for error as some chat messages seem to not get send lately
             logger("warn", `[${_this.logPrefix}] Error trying to send chat message of length ${thisPart.length} to ${resInfo.steamID64}! ${err}`);
 

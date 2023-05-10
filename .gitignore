@@ -1,4 +1,4 @@
-# Ignore file changes locally: https://stackoverflow.com/a/11366713
+# Ignore file changes locally: git update-index --assume-unchanged <file> & git update-index --no-assume-unchanged <file>  -  https://stackoverflow.com/a/11366713
 
 node_modules
 backup
