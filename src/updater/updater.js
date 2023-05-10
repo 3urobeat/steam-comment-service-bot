@@ -117,6 +117,7 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
                     let createBackup = await checkAndGetFile("./src/updater/helpers/createBackup.js", logger, false, false);
                     if (!createBackup) return stopOnFatalError();
 
+                    logger("", "", true); // Add separator to log as the actual updating process starts now
                     await createBackup.run();
 
 
@@ -148,7 +149,7 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
 
                     } else { // Update succeeded, update npm dependencies and restart
 
-                        logger("", `${logger.colors.fgyellow}Updating packages with npm...`, true, false, logger.animation("loading"));
+                        logger("", `${logger.colors.fgyellow}Updating packages with npm...${logger.colors.reset}`, true, false, logger.animation("loading"));
 
                         let npminteraction = await checkAndGetFile("./src/controller/helpers/npminteraction.js", logger, false, false);
 
@@ -165,6 +166,7 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
                             if (err) logger("error", "I failed trying to update the dependencies. Please check the log after other errors for more information.\nTrying to continue anyway...");
 
                             // If everything went to plan, resolve our promise and restart the bot!
+                            logger("", `${logger.colors.fgyellow}Done! Restarting...\n${logger.colors.reset}`, true);
                             resolve(true);
                             _this.controller.restart(JSON.stringify({ skippedaccounts: _this.controller.skippedaccounts, updateFailed: false }));
                         });

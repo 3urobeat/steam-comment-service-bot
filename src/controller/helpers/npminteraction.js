@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 20:41:32
+ * Last Modified: 10.05.2023 22:47:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -54,12 +54,11 @@ module.exports.reinstallAll = (logger, callback) => {
  * @param {function} [callback] Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
 module.exports.update = (callback) => {
-    logger("info", "Running 'npm install'...", false, false, logger.animation("loading"));
+    logger("debug", "npminteraction update(): Running 'npm install'...");
 
     exec("npm install", { cwd: srcdir + "/.." }, (err, stdout) => {
         if (err) return callback(err, null);
 
-        logger("info", "Successfully ran 'npm install'");
         // Logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
 
         callback(null, stdout);

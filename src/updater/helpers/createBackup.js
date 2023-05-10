@@ -4,7 +4,7 @@
  * Created Date: 26.02.2022 16:54:03
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 13:24:06
+ * Last Modified: 10.05.2023 21:35:19
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -26,7 +26,7 @@ const path = require("path");
 module.exports.run = () => {
     return new Promise((resolve) => {
 
-        logger("info", "Creating a backup of your current installation...", false, false, logger.animation("loading"));
+        logger("", `${logger.colors.fgyellow}Creating a backup of your current installation...${logger.colors.reset}`, true, false, logger.animation("loading"));
 
         // Specify which files and folders we can ignore
         const dontCopy = [".git", ".github", "node_modules", "backup"];
@@ -58,11 +58,8 @@ module.exports.run = () => {
                 });
             }
 
-            // Make callback when we are finished and in the top level
-            if (firstCall) {
-                logger("info", "Successfully created a backup!");
-                resolve();
-            }
+            // Resolve when we are finished and not in a depper recursion level
+            if (firstCall) resolve();
         }
 
         copyFolderRecursiveSync(".", "./backup", true);

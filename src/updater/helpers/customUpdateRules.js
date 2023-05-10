@@ -4,7 +4,7 @@
  * Created Date: 22.02.2022 17:39:21
  * Author: 3urobeat
  *
- * Last Modified: 06.05.2023 12:43:45
+ * Last Modified: 10.05.2023 22:44:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -31,14 +31,12 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
     return new Promise((resolve) => {
 
         /* --------------------- config.json --------------------- */
-        logger("", `${logger.colors.fgyellow}Clearing cache of config.json...`, true, false, logger.animation("loading"));
+        logger("", `${logger.colors.fgyellow}Transferring your changes to new config.json...`, true, false, logger.animation("loading"));
 
         delete require.cache[require.resolve(srcdir + "/../config.json")]; // Delete cache
         let newconfig = require(srcdir + "/../config.json");
 
         // Transfer every setting to the new config
-        logger("", `${logger.colors.fgyellow}Transferring your changes to new config.json...`, true, false, logger.animation("loading"));
-
         Object.keys(newconfig).forEach(e => {
             if (!Object.keys(oldconfig).includes(e)) return; // Config value seems to be new so don't bother trying to set it to something (which would probably be undefined anyway)
 
@@ -56,22 +54,18 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
             .replace(/""/g, '""');
 
         // Write changes to file
-        logger("", `${logger.colors.fgyellow}Writing new data to config.json...`, true, false, logger.animation("loading"));
-
         fs.writeFile(srcdir + "/../config.json", stringifiedconfig, (err) => { // Write the changed file
             if (err) logger("error", `customUpdateRules: Error writing changes to config.json: ${err}`, true);
         });
 
 
         /* --------------------- advancedconfig.json --------------------- */
-        logger("", `${logger.colors.fgyellow}Clearing cache of advancedconfig.json...`, true, false, logger.animation("loading"));
+        logger("", `${logger.colors.fgyellow}Transferring your changes to new advancedconfig.json...`, true, false, logger.animation("loading"));
 
         delete require.cache[require.resolve(srcdir + "/../advancedconfig.json")]; // Delete cache
         let newadvancedconfig = require(srcdir + "/../advancedconfig.json");
 
         // Transfer every setting to the new advancedconfig
-        logger("", `${logger.colors.fgyellow}Transferring your changes to new advancedconfig.json...`, true, false, logger.animation("loading"));
-
         Object.keys(newadvancedconfig).forEach(e => {
             if (!Object.keys(oldadvancedconfig).includes(e)) return; // Config value seems to be new so don't bother trying to set it to something (which would probably be undefined anyway)
 
@@ -89,29 +83,23 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
             .replace(/""/g, '""');
 
         // Write changes to file
-        logger("", `${logger.colors.fgyellow}Writing new data to advancedconfig.json...`, true, false, logger.animation("loading"));
-
         fs.writeFile(srcdir + "/../advancedconfig.json", stringifiedadvancedconfig, (err) => { // Write the changed file
             if (err) logger("error", `customUpdateRules: Error writing changes to advancedconfig.json: ${err}`, true);
         });
 
 
         /* --------------------- data.json --------------------- */
-        logger("", `${logger.colors.fgyellow}Clearing cache of data.json...`, true, false, logger.animation("loading"));
+        logger("", `${logger.colors.fgyellow}Transferring changes to new data.json...${logger.colors.reset}`, true, false, logger.animation("loading"));
 
         delete require.cache[require.resolve(srcdir + "/data/data.json")]; // Delete cache
         let newextdata = require(srcdir + "/data/data.json");
 
         // Transfer a few specific values to the new datafile if they exist to avoid errors
-        logger("", `${logger.colors.fgyellow}Transferring changes to new data.json...${logger.colors.reset}`, true, false, logger.animation("loading"));
-
         if (olddatafile.urlrequestsecretkey) newextdata.urlrequestsecretkey = olddatafile.urlrequestsecretkey;
         if (olddatafile.timesloggedin)       newextdata.timesloggedin       = olddatafile.timesloggedin;
         if (olddatafile.totallogintime)      newextdata.totallogintime      = olddatafile.totallogintime;
 
         // Write changes to file
-        logger("", `${logger.colors.fgyellow}Writing new data to data.json...`, true, false, logger.animation("loading"));
-
         fs.writeFile(srcdir + "/data/data.json", JSON.stringify(newextdata, null, 4), (err) => { // Write the changed file
             if (err) {
                 logger("error", `customUpdateRules: Error writing changes to data.json: ${err}`, true);

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 23:41:46
+ * Last Modified: 10.05.2023 22:47:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -26,8 +26,6 @@ const download = require("download"); // TODO: Does it make a difference if we r
  */
  module.exports.startDownload = (controller) => {
     return new Promise((resolve) => {
-        logger("", "Starting to download update...", true, false, logger.animation("loading"));
-
 
         // Start by defining which files we should keep
         const dontDelete = ["./src/data/cache.json", "./src/data/lastcomment.db", "./src/data/tokens.db", "./accounts.txt", "./customlang.json", "./logininfo.json", "./output.txt", "./proxies.txt", "./quotes.txt"];
@@ -53,7 +51,6 @@ const download = require("download"); // TODO: Does it make a difference if we r
 
 
         // Start downloading new files
-        logger("", "", true);
         logger("", `${logger.colors.fgyellow}Downloading new files...${logger.colors.reset}`, true, false, logger.animation("loading"));
 
         download(`https://github.com/HerrEurobeat/steam-comment-service-bot/archive/${controller.data.datafile.branch}.zip`, "./", { extract: true }).then(() => { // The download library makes downloading and extracting much easier
