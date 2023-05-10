@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 09.05.2023 11:14:29
+ * Last Modified: 10.05.2023 23:04:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -200,8 +200,9 @@ function comment(commandHandler, respond, receiverSteamID64) {
                     }
 
 
-                    // Give requesting user cooldown
-                    commandHandler.data.setUserCooldown(activeReqEntry.requestedby, activeReqEntry.until);
+                    // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
+                    if (commandHandler.data.config.commentcooldown == 0) commandHandler.data.setUserCooldown(activeReqEntry.requestedby, Date.now());
+                        else commandHandler.data.setUserCooldown(activeReqEntry.requestedby, activeReqEntry.until);
 
                 } else { // Stuff below should run for every iteration that is not the first one
 
