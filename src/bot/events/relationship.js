@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.05.2023 20:53:54
+ * Last Modified: 10.05.2023 12:49:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -39,9 +39,7 @@ Bot.prototype._attachSteamFriendRelationshipEvent = function() {
             // Log message and send welcome message
             logger("info", `[${this.logPrefix}] Added User: ` + steamID64);
 
-            if (this.index == 0) {
-                this.user.chat.sendFriendMessage(steamID, this.controller.data.lang.useradded);
-            }
+            if (this.index == 0) this.sendChatMessage(this, { steamID64: steamID64 }, this.controller.data.lang.useradded);
 
 
             // Add user to lastcomment database

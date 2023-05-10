@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 07.05.2023 20:54:54
+ * Last Modified: 10.05.2023 12:51:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -138,7 +138,7 @@ Controller.prototype._readyEvent = function() {
 
 
     // Message owners if firststart is true that the bot just updated itself
-    if (this.data.datafile.firststart) this.data.cachefile.ownerid.forEach(e => this.main.user.chat.sendFriendMessage(e, `I have updated myself to version ${this.data.datafile.versionstr}!\nWhat's new: ${this.data.datafile.whatsnew}`));
+    if (this.data.datafile.firststart) this.data.cachefile.ownerid.forEach(e => this.main.sendChatMessage(this.main, { steamID64: e }, `I have updated myself to version ${this.data.datafile.versionstr}!\nWhat's new: ${this.data.datafile.whatsnew}`));
 
 
     // Check for friends who haven't requested comments in config.unfriendtime days every 60 seconds and unfriend them if unfriendtime is > 0
