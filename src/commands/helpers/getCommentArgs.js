@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 21:05:27
+ * Last Modified: 10.05.2023 18:18:18
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -63,7 +63,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respo
                     logger("debug", `CommandHandler getCommentArgs(): User provided invalid request amount "${args[0]}". Stopping...`);
 
                     respond(commandHandler.data.lang.commentinvalidnumber.replace("commentcmdusage", commentcmdUsage));
-                    resolve(false);
+                    return resolve(false);
                 }
             }
 
@@ -71,7 +71,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respo
                 logger("debug", `CommandHandler getCommentArgs(): User requested ${args[0]} but is only allowed ${maxRequestAmount} comments. Stopping...`);
 
                 respond(commandHandler.data.lang.commentrequesttoohigh.replace("maxRequestAmount", maxRequestAmount).replace("commentcmdusage", commentcmdUsage));
-                resolve(false);
+                return resolve(false);
             }
 
             numberOfComments = args[0];
@@ -83,7 +83,10 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respo
                     let arg = args[1];
 
                     handleSteamIdResolving(arg, null, (err, res) => {
-                        if (err) respond(commandHandler.data.lang.commentinvalidid.replace("commentcmdusage", commentcmdUsage) + "\n\nError: " + err);
+                        if (err) {
+                            respond(commandHandler.data.lang.commentinvalidid.replace("commentcmdusage", commentcmdUsage) + "\n\nError: " + err);
+                            return resolve(false);
+                        }
 
                         profileID = res; // Will be null on err
 
@@ -95,6 +98,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respo
 
                     profileID = null;
                     respond(commandHandler.data.lang.commentprofileidowneronly);
+                    return resolve(false);
                 }
             } else {
                 logger("debug", "CommandHandler getCommentArgs(): No profileID parameter received, setting profileID to requesterSteamID64...");
@@ -122,7 +126,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respo
                 logger("debug", `CommandHandler getCommentArgs(): User didn't provide numberOfComments and maxRequestAmount is ${maxRequestAmount} (> 1). Rejecting request.`);
 
                 respond(commandHandler.data.lang.commentmissingnumberofcomments.replace("maxRequestAmount", maxRequestAmount).replace("commentcmdusage", commentcmdUsage));
-                resolve(false);
+                return resolve(false);
             }
         }
 
@@ -137,7 +141,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respo
 
                 // Return obj if profileID is not null, otherwise return false as an error has occurred, the user was informed and execution should be stopped
                 if (profileID) resolve({ maxRequestAmount, numberOfComments, profileID, idType, quotesArr });
-                    else resolve(false);
+                    else return resolve(false);
             }
         }, 250);
     });
