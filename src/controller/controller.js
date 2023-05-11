@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 11.05.2023 12:01:18
+ * Last Modified: 11.05.2023 12:30:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -78,12 +78,12 @@ Controller.prototype._start = async function() {
     let checkAndGetFile = require("../starter.js").checkAndGetFile; // Temp var to use checkAndGetFile() before it is referenced in DataManager
 
     /* ------------ Init error handler: ------------ */
-    if (!checkAndGetFile("./src/controller/helpers/handleErrors.js", logger, false, false)) return;
+    if (!await checkAndGetFile("./src/controller/helpers/handleErrors.js", logger, false, false)) return this.stop();
     this._handleErrors();
 
 
     /* ------------ Introduce logger function: ------------ */
-    if (!checkAndGetFile("./src/controller/helpers/logger.js", logger, false, false)) return;
+    if (!await checkAndGetFile("./src/controller/helpers/logger.js", logger, false, false)) return this.stop();
     logger = this.logger; // Update "fake" logger with "real" logger
 
     // Log held back messages from before this start
@@ -112,7 +112,7 @@ Controller.prototype._start = async function() {
     /* ------------ Check internet connection: ------------ */
     logger("info", "Checking if Steam is reachable...", false, true, logger.animation("loading"));
 
-    if (!checkAndGetFile("./src/controller/helpers/misc.js", logger, false, false)) return;
+    if (!await checkAndGetFile("./src/controller/helpers/misc.js", logger, false, false)) return this.stop();
     await require("./helpers/misc.js").checkConnection("https://steamcommunity.com", true)
         .then((res) => logger("info", `SteamCommunity is up! Status code: ${res.statusCode}`, false, true, logger.animation("loading")))
         .catch((res) => {

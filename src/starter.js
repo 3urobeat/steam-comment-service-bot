@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.05.2023 13:10:54
+ * Last Modified: 11.05.2023 12:35:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -233,6 +233,7 @@ function attachChildListeners() {
  * @param {function} logger Your current logger function
  * @param {Boolean} norequire If set to true the function will return the path instead of importing it
  * @param {Boolean} force If set to true the function will skip checking if the file exists and overwrite it.
+ * @returns {Promise} Resolves when file was successfully loaded
  */
 module.exports.checkAndGetFile = (file, logger, norequire, force) => {
     return new Promise((resolve) => {
@@ -295,10 +296,12 @@ module.exports.checkAndGetFile = (file, logger, norequire, force) => {
                                 else resolve(require("." + file));
                         });
                     });
+                }).on("error", (err) => {
+                    logger("error", `Fatal Error: File '${file}' is corrupted/missing and I can't restore it! Is your internet or GitHub down?\n                     ${err}`, true);
+                    resolve(undefined);
                 });
             } catch (err) {
-                logger("error", "checkAndGetFile() error pulling new file: " + err);
-
+                logger("error", `Fatal Error: File ${file} is corrupted/missing and I can't restore it!\n                     ${err}`, true);
                 resolve(undefined);
             }
         }
