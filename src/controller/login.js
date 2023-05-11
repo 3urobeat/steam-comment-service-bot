@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 03.05.2023 20:34:19
+ * Last Modified: 11.05.2023 11:47:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -59,22 +59,6 @@ Controller.prototype._preLogin = async function() {
     let PluginSystem = require("../pluginSystem/pluginSystem");
 
     this.pluginSystem = new PluginSystem(this);
-
-
-    // Check if SteamCommunity is up
-    logger("info", "Checking if Steam is reachable...", false, true, logger.animation("loading"));
-
-    await misc.checkConnection("https://steamcommunity.com", true)
-        .then((res) => {
-            logger("info", `SteamCommunity is up! Status code: ${res.statusCode}`, false, true, logger.animation("loading"));
-        })
-        .catch((res) => {
-            // Check if the request itself failed and display a different message
-            if (!res.statusCode) logger("error", `SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n        ${res.statusMessage}\n\n        Aborting...\n`, true);
-                else logger("error", `Your internet is working but SteamCommunity seems to be down! Check: https://steamstat.us \n        ${res.statusMessage} (Status Code ${res.statusCode})\n\n        Aborting...\n`, true);
-
-            return this.stop(); // Stop the bot as there is nothing more we can do
-        });
 
 
     /* ------------ Log comment related config settings: ------------ */

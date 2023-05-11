@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.05.2023 13:14:29
+ * Last Modified: 11.05.2023 12:01:18
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -107,6 +107,20 @@ Controller.prototype._start = async function() {
     logger("", "", true, true);                             // Log one newline separated so it only shows up in output.txt
     logger("", "\nBootup sequence started...", true, true); // ...add the second newline here so it also shows up in stdout. The message itself gets cleared because remove is true.
     logger("", "---------------------------------------------------------", true, true);
+
+
+    /* ------------ Check internet connection: ------------ */
+    logger("info", "Checking if Steam is reachable...", false, true, logger.animation("loading"));
+
+    if (!checkAndGetFile("./src/controller/helpers/misc.js", logger, false, false)) return;
+    await require("./helpers/misc.js").checkConnection("https://steamcommunity.com", true)
+        .then((res) => logger("info", `SteamCommunity is up! Status code: ${res.statusCode}`, false, true, logger.animation("loading")))
+        .catch((res) => {
+            if (!res.statusCode) logger("error", `SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n        ${res.statusMessage}\n\n        Aborting...\n`, true);
+                else logger("error", `Your internet is working but SteamCommunity seems to be down! Check: https://steamstat.us \n        ${res.statusMessage} (Status Code ${res.statusCode})\n\n        Aborting...\n`, true);
+
+            return this.stop(); // Stop the bot as there is nothing more we can do
+        });
 
 
     /* ------------ Init dataManager system and import: ------------ */
