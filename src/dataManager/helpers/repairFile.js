@@ -4,7 +4,7 @@
  * Created Date: 22.03.2023 12:35:01
  * Author: 3urobeat
  *
- * Last Modified: 06.05.2023 12:09:48
+ * Last Modified: 11.05.2023 12:41:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -79,7 +79,7 @@ DataManager.prototype._pullNewFile = async function(name, filepath, resolve) {
     logger("warn", "Backup seems to be broken/not available! Pulling file from GitHub...", true);
 
     let file = await this.checkAndGetFile(filepath, logger, true, true);
-    if (!file) return;
+    if (!file) return this.controller.stop(); // Stop bot if file can't be restored
 
     // Only tell user to reconfigure config.json
     if (name == "config.json") logger("info", `Successfully pulled new ${name} from GitHub. Please configure it again!\n`, true);
