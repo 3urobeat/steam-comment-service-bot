@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 09.05.2023 15:33:34
+ * Last Modified: 12.05.2023 19:48:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -108,7 +108,8 @@ module.exports.output = {
         fs.readFile("./output.txt", function (err, data) {
             if (err) logger("error", "error getting last 15 lines from output for log cmd: " + err);
 
-            respondModule(context, { prefix: "/pre", ...resInfo }, "These are the last 15 lines:\n\n" + data.toString().split("\n").slice(data.toString().split("\n").length - 15).join("\n"));
+            // Manually limit part length to 500 chars as addStr can cause many messages
+            respondModule(context, { prefix: "/pre", charLimit: 500, ...resInfo }, "These are the last 15 lines:\n\n" + data.toString().split("\n").slice(data.toString().split("\n").length - 15).join("\n"));
         });
     }
 };
@@ -151,7 +152,7 @@ module.exports.eval = {
             // Check for character limit and cut message
             let chatResult = clean(evaled);
 
-            if (chatResult.length >= 950) respond(`Code executed. Result:\n\n${chatResult.slice(0, 950)}.......\n\n\nResult too long for chat.`);
+            if (chatResult.length >= 750) respond(`Code executed. Result:\n\n${chatResult.slice(0, 715)}.......\n\n\nResult too long for chat.`);
                 else respond(`Code executed. Result:\n\n${clean(evaled)}`);
 
             logger("info", `${logger.colors.fgyellow}Eval result:${logger.colors.reset} \n${clean(evaled)}\n`, true);

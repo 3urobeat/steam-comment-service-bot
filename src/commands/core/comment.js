@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.05.2023 23:04:11
+ * Last Modified: 12.05.2023 19:46:14
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -95,7 +95,7 @@ module.exports.comment = {
 
             logger("info", `Found enough available accounts but user needs to add ${accsToAdd.length} limited accounts first before I'm able to comment.`);
 
-            respond(addStr);
+            respondModule(context, { charLimit: 500, ...resInfo }, addStr); // Manually limit part length to 500 chars as addStr can cause many messages
             return;
         }
 
