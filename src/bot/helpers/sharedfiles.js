@@ -4,7 +4,7 @@
  * Created Date: 12.05.2023 20:02:24
  * Author: 3urobeat
  *
- * Last Modified: 12.05.2023 21:12:11
+ * Last Modified: 12.05.2023 22:09:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -67,6 +67,48 @@ Bot.prototype.deleteSharedfileComment = function(userID, sid, cid, callback) {
         "form": {
             "gidcomment": cid,
             "count": 10,
+            "sessionid": this.community.getSessionID()
+        }
+    }, function(err, response, body) { // eslint-disable-line
+        if (!callback) {
+            return;
+        }
+
+        callback(null || err);
+    }, "steamcommunity");
+};
+
+/**
+ * Downvotes a sharedfile
+ * @param {String} sid ID of the sharedfile
+ * @param {function} [callback] Called with `err`, `null` on success, `Error` object on failure.
+ */
+Bot.prototype.voteDownSharedfile = function(sid, callback) {
+    this.community.httpRequestPost({
+        "uri": "https://steamcommunity.com/sharedfiles/votedown",
+        "form": {
+            "id": sid,
+            "sessionid": this.community.getSessionID()
+        }
+    }, function(err, response, body) { // eslint-disable-line
+        if (!callback) {
+            return;
+        }
+
+        callback(null || err);
+    }, "steamcommunity");
+};
+
+/**
+ * Upvotes a sharedfile
+ * @param {String} sid ID of the sharedfile
+ * @param {function} [callback] Called with `err`, `null` on success, `Error` object on failure.
+ */
+Bot.prototype.voteUpSharedfile = function(sid, callback) {
+    this.community.httpRequestPost({
+        "uri": "https://steamcommunity.com/sharedfiles/voteup",
+        "form": {
+            "id": sid,
             "sessionid": this.community.getSessionID()
         }
     }, function(err, response, body) { // eslint-disable-line
