@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 21:03:59
+ * Last Modified: 12.05.2023 13:53:14
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -42,32 +42,11 @@ module.exports.settings = {
             fs.readFile("./config.json", function(err, data) { // Use readFile to get an unprocessed object
                 if (err) return respond(commandHandler.data.lang.settingscmdfailedread + err);
 
-                // Since Steam keeps blocking this message because of its length but somehow not anymore when its formatted as code: Fuck you Steam, then I'm going to prepare 3 variants.
+                // Remove first and last character which are brackets and remove leading and trailing whitespaces from all lines
                 let currentsettingsarr = data.toString().slice(1, -1).split("\n").map(s => s.trim());
 
-
                 // Send as one message with code prefix
-                respond("/code " + commandHandler.data.lang.settingscmdcurrentsettings + "\n" + currentsettingsarr.join("\n")); // Remove first and last character which are brackets and remove leading and trailing whitespaces from all lines
-
-
-                // Send in two parts with code prefix
-                /* respond("/code " + commandHandler.data.lang.settingscmdcurrentsettings + "" + currentsettingsarr.slice(0, currentsettingsarr.length / 2).join("\n")) //remove first and last character which are brackets and remove leading and trailing whitespaces from all lines
-
-                setTimeout(() => {
-                    respond("/code " + currentsettingsarr.slice(currentsettingsarr.length / 2, currentsettingsarr.length).join("\n"))
-                }, 2000); */
-
-
-                // Send in three parts with code prefix
-                /* respond("/code " + commandHandler.data.lang.settingscmdcurrentsettings + "" + currentsettingsarr.slice(0, currentsettingsarr.length / 3).join("\n")) //remove first and last character which are brackets and remove leading and trailing whitespaces from all lines
-
-                setTimeout(() => {
-                    respond("/code " + currentsettingsarr.slice(currentsettingsarr.length / 3, currentsettingsarr.length - currentsettingsarr.length / 3).join("\n"))
-
-                    setTimeout(() => {
-                        respond("/code " + currentsettingsarr.slice(currentsettingsarr.length - currentsettingsarr.length / 3, currentsettingsarr.length).join("\n"))
-                    }, 2000);
-                }, 2000); */
+                respondModule(context, { prefix: "/code", ...resInfo }, commandHandler.data.lang.settingscmdcurrentsettings + "\n" + currentsettingsarr.join("\n")); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
             });
             return;
         }
