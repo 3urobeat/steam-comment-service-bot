@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 03.05.2023 20:28:45
+ * Last Modified: 12.05.2023 19:59:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -89,8 +89,11 @@ CommandHandler.prototype.runCommand = function(name, args, steamID64, respondMod
         return false;
     }
 
-    // Compare id of requesting user with owners array if command is owner only
-    if (thisCmd.ownersOnly && !this.data.cachefile.ownerid.includes(steamID64)) return respondModule(context, resInfo, this.data.lang.commandowneronly);
+    // If command is ownersOnly, check if user is included in owners array. If not, send error msg and return true to avoid caller sending a not found msg.
+    if (thisCmd.ownersOnly && !this.data.cachefile.ownerid.includes(steamID64)) {
+        respondModule(context, resInfo, this.data.lang.commandowneronly);
+        return true;
+    }
 
     // Run command if one was found
     thisCmd.run(this, args, steamID64, respondModule, context, resInfo);
