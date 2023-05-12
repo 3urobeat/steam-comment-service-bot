@@ -4,7 +4,7 @@
  * Created Date: 25.03.2023 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 25.04.2023 00:42:26
+ * Last Modified: 12.05.2023 13:23:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -92,7 +92,6 @@ module.exports.timeToString = (timestamp) => {
  * @returns {Promise} Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
  */
 module.exports.checkConnection = (url, throwTimeout) => {
-
     return new Promise((resolve, reject) => {
 
         // Start a 20 sec timeout to display an error when Steam can't be reached but also doesn't throw an error
@@ -116,5 +115,41 @@ module.exports.checkConnection = (url, throwTimeout) => {
         });
 
     });
+};
 
+
+/**
+ * Helper function which attempts to cut Strings intelligently and returns all parts. It will attempt to not cut words & links in half.
+ * It is used by the steamChatInteraction helper but can be used in plugins as well.
+ * @param {String} txt The string to cut
+ * @param {Number} limit Maximum length for each part. The function will attempt to cut txt into parts that don't exceed this amount.
+ * @param {Number} threshold Optional: Maximum amount that limit can be reduced to find the last space or line break. If no match is found within this limit a word will be cut. Default: 15% of total length
+ * @returns {Array} Returns all parts of the string in an array
+ */
+module.exports.cutStringsIntelligently = (txt, limit, threshold) => {
+    if (!threshold) threshold = txt.length * 0.15; // Set threshold to 15% of total length if undefined
+    if (txt.length <= limit) return [txt];         // Instantly return string as element 0 if it is already less than limit
+
+    let lastIndex = 0;
+    let result    = [];
+
+    // Iterate over string until lastIndex reaches length of input string
+    while (lastIndex < txt.length - 1) {
+        let cut = txt.slice(lastIndex, lastIndex + limit - 1); // Get the next part by cutting from lastIndex to limit
+
+        // Find the last occurrence of a space, newline or Windows newline.
+        let lastOccurrence = Math.max(...[" ", "\n", "\r"].map(e => cut.lastIndexOf(e)));
+
+        // Check if a last occurrence was found and is within threshold. If so, cut again, push to result and update lastIndex. If not, accept a word cut.
+        if (lastOccurrence >= 0 && (cut.length - lastOccurrence) < threshold) {
+            result.push(txt.slice(lastIndex, lastIndex + lastOccurrence).trim());
+            lastIndex += lastOccurrence;
+        } else {
+            result.push(cut.trim());
+            lastIndex += limit - 1;
+        }
+    }
+
+    // Return result
+    return result;
 };
