@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 10.05.2023 22:29:01
+ * Last Modified: 12.05.2023 13:40:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -20,6 +20,8 @@
 
 const Bot = require("../bot");
 
+const { cutStringsIntelligently } = require("../../controller/helpers/misc.js");
+
 
 /**
  * Our commandHandler respondModule implementation - Sends a message to a Steam user
@@ -27,7 +29,7 @@ const Bot = require("../bot");
  * @param {Object} resInfo Object containing information passed to command by friendMessage event
  * @param {String} txt The text to send
  * @param {Number} retry Internal: Counter of retries for this part if sending failed
- * @param {Number} part Internal: Index of which part to send for messages larger than 750 chars
+ * @param {Number} part Internal: Index of which part to send for messages larger than 500 chars
  */
 Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 0) {
     if (!resInfo) return logger("warn", "sendChatMessage() was called without a resInfo object! Ignoring call...");
@@ -38,8 +40,8 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
     if (!resInfo.prefix) resInfo.prefix = "";
         else resInfo.prefix += " "; // Add whitespace between prefix and message content
 
-    // Get the correct part to send and add prefix infront // TODO: This should handle line breaks better to avoid cutting links in half (for accsToAdd for example)
-    let thisPart = resInfo.prefix + txt.slice(750 * part, 750 * (part + 1));
+    // Get the correct part to send without breaking links and add prefix infront
+    let thisPart = resInfo.prefix + cutStringsIntelligently(txt, 500)[part];
 
     // Log full message if in debug mode, otherwise log cut down version
     if (_this.controller.data.advancedconfig.printDebug) {
@@ -67,8 +69,8 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
         } else {
 
             // Send next part if there is one left
-            if (750 * (part + 1) <= txt.length) {
-                logger("info", `Message is ${txt.length} chars long, sending next chunk of 750 chars to '${resInfo.steamID64}' in 7.5 seconds...`, false, false, logger.animation("waiting"));
+            if (500 * (part + 1) <= txt.length) {
+                logger("info", `Message is ${txt.length} chars long, sending next chunk of 500 chars to '${resInfo.steamID64}' in 7.5 seconds...`, false, false, logger.animation("waiting"));
                 setTimeout(() => _this.sendChatMessage(_this, resInfo, txt, retry, part + 1), 7500);
             } else {
                 if (part != 0) logger("debug", "Bot sendChatMessage(): All parts of the message have been sent"); // Only log debug for multi-part messages
