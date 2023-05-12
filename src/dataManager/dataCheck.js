@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.05.2023 11:38:58
+ * Last Modified: 12.05.2023 13:48:15
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -122,7 +122,7 @@ DataManager.prototype.checkData = function() {
         // Check language for too long strings and display warning. This will of course not catch replacements that happen at runtime but it's better than nothing
         Object.keys(this.lang).forEach((e) => {
             let val = this.lang[e];
-            if (val.length > 500) logWarn("warn", `Your language string '${e}' is ${val.length} chars long! This will likely cause chat messages to get blocked by Steam. I'd recommend cutting it to less than 500 chars.`, true);
+            if (val.length > 500) logWarn("warn", `Your language string '${e}' is ${val.length} chars long! I will need to cut in parts to send it in the Steam Chat! Please consider reducing it to less than 500 chars.`, true);
         });
 
 
