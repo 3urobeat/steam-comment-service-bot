@@ -4,7 +4,7 @@
  * Created Date: 12.05.2023 20:02:24
  * Author: 3urobeat
  *
- * Last Modified: 12.05.2023 22:09:22
+ * Last Modified: 12.05.2023 23:13:07
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -78,6 +78,7 @@ Bot.prototype.deleteSharedfileComment = function(userID, sid, cid, callback) {
     }, "steamcommunity");
 };
 
+
 /**
  * Downvotes a sharedfile
  * @param {String} sid ID of the sharedfile
@@ -99,6 +100,7 @@ Bot.prototype.voteDownSharedfile = function(sid, callback) {
     }, "steamcommunity");
 };
 
+
 /**
  * Upvotes a sharedfile
  * @param {String} sid ID of the sharedfile
@@ -109,6 +111,60 @@ Bot.prototype.voteUpSharedfile = function(sid, callback) {
         "uri": "https://steamcommunity.com/sharedfiles/voteup",
         "form": {
             "id": sid,
+            "sessionid": this.community.getSessionID()
+        }
+    }, function(err, response, body) { // eslint-disable-line
+        if (!callback) {
+            return;
+        }
+
+        callback(null || err);
+    }, "steamcommunity");
+};
+
+
+/**
+ * Subscribes to a sharedfile's comment section. Note: Checkbox on webpage does not update
+ * @param {SteamID | String} userID ID of the user associated to this sharedfile
+ * @param {String} sid ID of the sharedfileof
+ * @param {function} [callback] Called with `err`, `null` on success, `Error` object on failure.
+ */
+Bot.prototype.subscribeSharedfileComments = function(userID, sid, callback) {
+    if (typeof userID === "string") {
+        userID = new SteamID(userID);
+    }
+
+    this.community.httpRequestPost({
+        "uri": `https://steamcommunity.com/comment/PublishedFile_Public/subscribe/${userID.toString()}/${sid}/`,
+        "form": {
+            "count": 10,
+            "sessionid": this.community.getSessionID()
+        }
+    }, function(err, response, body) { // eslint-disable-line
+        if (!callback) {
+            return;
+        }
+
+        callback(null || err);
+    }, "steamcommunity");
+};
+
+
+/**
+ * Unsubscribes from a sharedfile's comment section. Note: Checkbox on webpage does not update
+ * @param {SteamID | String} userID ID of the user associated to this sharedfile
+ * @param {String} sid ID of the sharedfileof
+ * @param {function} [callback] Called with `err`, `null` on success, `Error` object on failure.
+ */
+Bot.prototype.unsubscribeSharedfileComments = function(userID, sid, callback) {
+    if (typeof userID === "string") {
+        userID = new SteamID(userID);
+    }
+
+    this.community.httpRequestPost({
+        "uri": `https://steamcommunity.com/comment/PublishedFile_Public/unsubscribe/${userID.toString()}/${sid}/`,
+        "form": {
+            "count": 10,
             "sessionid": this.community.getSessionID()
         }
     }, function(err, response, body) { // eslint-disable-line
