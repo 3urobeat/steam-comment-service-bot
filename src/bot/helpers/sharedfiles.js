@@ -4,7 +4,7 @@
  * Created Date: 12.05.2023 20:02:24
  * Author: 3urobeat
  *
- * Last Modified: 12.05.2023 23:13:07
+ * Last Modified: 12.05.2023 23:26:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -121,6 +121,52 @@ Bot.prototype.voteUpSharedfile = function(sid, callback) {
         callback(null || err);
     }, "steamcommunity");
 };
+
+
+/**
+ * Favorites a sharedfile
+ * @param {String} sid ID of the sharedfile
+ * @param {function} [callback] Called with `err`, `null` on success, `Error` object on failure.
+ */
+/* Bot.prototype.favoriteSharedfile = function(sid, callback) {
+    this.community.httpRequestPost({
+        "uri": "https://steamcommunity.com/sharedfiles/favorite",
+        "form": {
+            "id": sid,
+            "appid": "", // TODO: How to get appid the sharedfile is associated to?
+            "sessionid": this.community.getSessionID()
+        }
+    }, function(err, response, body) {
+        if (!callback) {
+            return;
+        }
+
+        callback(null || err);
+    }, "steamcommunity");
+}; */
+
+
+/**
+ * Unfavorites a sharedfile
+ * @param {String} sid - ID of the sharedfile
+ * @param {function} callback - Takes only an Error object/null as the first argument
+ */
+/* Bot.prototype.unfavoriteSharedfile = function(sid, callback) {
+    this.community.httpRequestPost({
+        "uri": "https://steamcommunity.com/sharedfiles/unfavorite",
+        "form": {
+            "id": sid,
+            "appid": "", // TODO: How to get appid the sharedfile is associated to?
+            "sessionid": this.community.getSessionID()
+        }
+    }, function(err, response, body) {
+        if (!callback) {
+            return;
+        }
+
+        callback(null || err);
+    }, "steamcommunity");
+}; */
 
 
 /**
