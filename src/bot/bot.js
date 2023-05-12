@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.05.2023 10:56:38
+ * Last Modified: 12.05.2023 21:02:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -58,6 +58,7 @@ const Bot = function(controller, index) {
     require("./events/webSession.js");
     require("./helpers/checkMsgBlock.js");
     require("./helpers/handleLoginTimeout.js");
+    require("./helpers/sharedfiles.js");
     require("./helpers/steamChatInteraction.js");
 
     // Create sessionHandler object for this account
