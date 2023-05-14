@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 09.05.2023 15:33:47
+ * Last Modified: 14.05.2023 22:44:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -134,9 +134,8 @@ module.exports.failed = {
 
                 let messagestart = commandHandler.data.lang.failedcmdmsg.replace("steamID64", steamID64).replace("requesttime", requesttime);
 
-                // Limit length to 750 characters to ensure the message can be sent
-                if (failedcommentsstr.length >= 800) respondModule(context, { prefix: "/pre", ...resInfo }, messagestart + "\nc = Comment, p = Proxy\n" + failedcommentsstr.slice(0, 800) + "... \n\n ..." + failedcommentsstr.slice(800, failedcommentsstr.length).split("\n").length + " entries hidden because message would be too long.");
-                    else respondModule(context, { prefix: "/pre", ...resInfo }, messagestart + "\nc = Comment, p = Proxy\n" + failedcommentsstr); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+                // Send message and limit to 500 chars as this call can cause many messages to be sent
+                respondModule(context, { prefix: "/pre", charLimit: 500, ...resInfo }, messagestart + "\nc = Comment, p = Proxy\n" + failedcommentsstr); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
             });
         });
     }
