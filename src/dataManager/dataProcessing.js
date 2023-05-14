@@ -4,7 +4,7 @@
  * Created Date: 27.03.2023 21:34:45
  * Author: 3urobeat
  *
- * Last Modified: 06.05.2023 00:20:32
+ * Last Modified: 14.05.2023 15:41:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -138,7 +138,7 @@ DataManager.prototype.processData = function() {
                     // Either convert to steamID64 or directly push e
                     _this.config.ownerid.forEach((e, i) => {
                         if (isNaN(e) || !new SteamID(String(e)).isValid()) {
-                            steamIdResolver.customUrlTosteamID64(String(e), (err, id) => {
+                            steamIdResolver.customUrlToSteamID64(String(e), (err, id) => {
                                 if (err) {
                                     logger("warn", `ownerid ${e} in your config does not seem to be valid! Error: ${err}`);
                                     tempArr[i] = null;

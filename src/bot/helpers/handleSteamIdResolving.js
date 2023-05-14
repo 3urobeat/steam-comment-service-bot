@@ -4,7 +4,7 @@
  * Created Date: 09.03.2022 12:58:17
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 20:32:29
+ * Last Modified: 14.05.2023 15:41:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -48,7 +48,7 @@ module.exports.handleSteamIdResolving = (str, profileIDType, callback) => {
         if (str.includes("steamcommunity.com/id/")) {
             logger("debug", "handleSteamIdResolving: User provided customURL profile link as profileID argument...");
 
-            steamIDResolver.customUrlTosteamID64(str, handleResponse);
+            steamIDResolver.customUrlToSteamID64(str, handleResponse);
 
         } else if (str.includes("steamcommunity.com/profiles/")) {
             logger("debug", "handleSteamIdResolving: User provided steamID64 profile link as profileID argument...");
@@ -67,7 +67,7 @@ module.exports.handleSteamIdResolving = (str, profileIDType, callback) => {
             if (profileIDType == SteamID.Type.INDIVIDUAL) {
                 logger("debug", "handleSteamIdResolving: User didn't provide a full url as profileID str. Expecting custom profile URL based on profileIDType...");
 
-                steamIDResolver.customUrlTosteamID64(str, handleResponse);
+                steamIDResolver.customUrlToSteamID64(str, handleResponse);
 
             } else if (profileIDType == SteamID.Type.CLAN) {
                 logger("debug", "handleSteamIdResolving: User didn't provide a full url as profileID str. Expecting custom group URL based on profileIDType...");
@@ -79,7 +79,7 @@ module.exports.handleSteamIdResolving = (str, profileIDType, callback) => {
                 // ProfileIDType is null, we need to try and figure out what might have been provided
                 logger("debug", "handleSteamIdResolving: profileIDType is null. Trying to figure out what has been provided...");
 
-                steamIDResolver.customUrlTosteamID64(str, (err, steamID64) => { // Check profile first, as it will probably be used more often
+                steamIDResolver.customUrlToSteamID64(str, (err, steamID64) => { // Check profile first, as it will probably be used more often
                     if (err) {
                         logger("debug", "handleSteamIdResolving: profile id check returned an error. Trying group id check...");
 

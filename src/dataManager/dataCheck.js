@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 12.05.2023 13:48:15
+ * Last Modified: 14.05.2023 15:41:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -151,7 +151,7 @@ DataManager.prototype.checkData = function() {
 
                 } else {
 
-                    steamIdResolver.customUrlTosteamID64(this.config.owner, (err, ownerResult) => {
+                    steamIdResolver.customUrlToSteamID64(this.config.owner, (err, ownerResult) => {
                         if (err == "The specified profile could not be found.") { // If the profile couldn't be found display specific message
                             return logWarn("warn", "You haven't set a correct owner link to your profile in the config!\n       Please add this to refer to yourself as the owner and operator of this bot.\n       Error: " + err, true);
                         } else {
