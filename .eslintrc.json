@@ -40,5 +40,6 @@
         "semi-style": ["error", "last"],
         "quotes": ["error", "double", { "avoidEscape": true }],
         "spaced-comment": "warn"
-    }
+    },
+    "ignorePatterns": ["src/steamcommunity-patches/*"]
 }
