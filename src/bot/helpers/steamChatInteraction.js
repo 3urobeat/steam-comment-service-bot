@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 12.05.2023 19:07:23
+ * Last Modified: 14.05.2023 21:44:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -26,7 +26,7 @@ const { cutStringsIntelligently } = require("../../controller/helpers/misc.js");
 /**
  * Our commandHandler respondModule implementation - Sends a message to a Steam user
  * @param {Object} _this The Bot object context
- * @param {Object} resInfo Object containing information passed to command by friendMessage event
+ * @param {Object} resInfo Object containing information passed to command by friendMessage event. Supported by this handler: prefix, charLimit, cutChars
  * @param {String} txt The text to send
  * @param {Number} retry Internal: Counter of retries for this part if sending failed
  * @param {Number} part Internal: Index of which part to send for messages larger than charLimit chars
@@ -40,12 +40,15 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
     let limit = 750;
     if (resInfo.charLimit) limit = resInfo.charLimit;
 
+    // Allow resInfo to overwrite cutStringsIntelligently's cutChars
+    let cutChars = resInfo.cutChars || null;
+
     // Check if message should be sent without a prefix and set it to an empty string
     if (!resInfo.prefix) resInfo.prefix = "";
         else resInfo.prefix += " "; // Add whitespace between prefix and message content
 
     // Get the correct part to send without breaking links and add prefix infront
-    let thisPart = resInfo.prefix + cutStringsIntelligently(txt, limit)[part];
+    let thisPart = resInfo.prefix + cutStringsIntelligently(txt, limit, cutChars)[part];
 
     // Log full message if in debug mode, otherwise log cut down version
     if (_this.controller.data.advancedconfig.printDebug) {
