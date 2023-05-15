@@ -1,10 +1,11 @@
-This folder holds patches I have made to the `node-steamcommunity` library by DoctorMcKay.  
-These changes are being applied at runtime when a `Bot` object is created.  
-  
+This folder holds patches I have made to libraries this project uses.
+These changes are being applied at runtime when the library is loaded.  
+
 &nbsp;
 
+## SteamCommunity by DoctorMcKay
 My fork containing all changes: https://github.com/HerrEurobeat/node-steamcommunity  
-The original library which you install via NPM: https://github.com/DoctorMcKay/node-steamcommunity  
+The original library which is installed: https://github.com/DoctorMcKay/node-steamcommunity  
 
 &nbsp;
 
