@@ -4,7 +4,7 @@
  * Created Date: 09.04.2023 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 02.05.2023 21:34:20
+ * Last Modified: 12.05.2023 13:29:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -57,7 +57,7 @@ module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOf
         Object.keys(commandHandler.controller.activeRequests).forEach((e) => {
 
             if (Date.now() < commandHandler.controller.activeRequests[e].until + (commandHandler.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
-                commandHandler.controller.activeRequests[e].accounts.forEach((f) => {   // Loop over every account used in this request
+                commandHandler.controller.activeRequests[e].accounts.forEach((f) => { // Loop over every account used in this request
                     allAccounts.splice(allAccounts.indexOf(f), 1); // Remove that accountindex from the allAccounts array
                 });
 
