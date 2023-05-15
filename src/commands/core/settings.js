@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 12.05.2023 13:53:14
+ * Last Modified: 15.05.2023 12:07:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -45,8 +45,8 @@ module.exports.settings = {
                 // Remove first and last character which are brackets and remove leading and trailing whitespaces from all lines
                 let currentsettingsarr = data.toString().slice(1, -1).split("\n").map(s => s.trim());
 
-                // Send as one message with code prefix
-                respondModule(context, { prefix: "/code", ...resInfo }, commandHandler.data.lang.settingscmdcurrentsettings + "\n" + currentsettingsarr.join("\n")); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+                // Send message with code prefix and only allow cuts at newlines
+                respondModule(context, { prefix: "/code", cutChars: ["\n"], ...resInfo }, commandHandler.data.lang.settingscmdcurrentsettings + "\n" + currentsettingsarr.join("\n")); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
             });
             return;
         }
