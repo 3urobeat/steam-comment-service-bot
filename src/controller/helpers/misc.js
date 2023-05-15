@@ -4,7 +4,7 @@
  * Created Date: 25.03.2023 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 12.05.2023 13:23:53
+ * Last Modified: 15.05.2023 11:59:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -123,10 +123,12 @@ module.exports.checkConnection = (url, throwTimeout) => {
  * It is used by the steamChatInteraction helper but can be used in plugins as well.
  * @param {String} txt The string to cut
  * @param {Number} limit Maximum length for each part. The function will attempt to cut txt into parts that don't exceed this amount.
+ * @param {Array} cutChars Optional: Custom chars to search after for cutting string in parts. Default: [" ", "\n", "\r"]
  * @param {Number} threshold Optional: Maximum amount that limit can be reduced to find the last space or line break. If no match is found within this limit a word will be cut. Default: 15% of total length
  * @returns {Array} Returns all parts of the string in an array
  */
-module.exports.cutStringsIntelligently = (txt, limit, threshold) => {
+module.exports.cutStringsIntelligently = (txt, limit, cutChars, threshold) => {
+    if (!cutChars)  cutChars  = [" ", "\n", "\r"]; // Set cutChars to space, newline or Windows newline if undefined
     if (!threshold) threshold = txt.length * 0.15; // Set threshold to 15% of total length if undefined
     if (txt.length <= limit) return [txt];         // Instantly return string as element 0 if it is already less than limit
 
@@ -135,13 +137,13 @@ module.exports.cutStringsIntelligently = (txt, limit, threshold) => {
 
     // Iterate over string until lastIndex reaches length of input string
     while (lastIndex < txt.length - 1) {
-        let cut = txt.slice(lastIndex, lastIndex + limit - 1); // Get the next part by cutting from lastIndex to limit
+        let cut = txt.slice(lastIndex, lastIndex + limit); // Get the next part by cutting from lastIndex to limit
 
-        // Find the last occurrence of a space, newline or Windows newline.
-        let lastOccurrence = Math.max(...[" ", "\n", "\r"].map(e => cut.lastIndexOf(e)));
+        // Find the last occurrence of all cutChars and find the most recent one using Math.max()
+        let lastOccurrence = Math.max(...cutChars.map(e => cut.lastIndexOf(e)));
 
-        // Check if a last occurrence was found and is within threshold. If so, cut again, push to result and update lastIndex. If not, accept a word cut.
-        if (lastOccurrence >= 0 && (cut.length - lastOccurrence) < threshold) {
+        // Check if cut maxes out limit, a last occurrence was found and is within threshold. If so, cut again, push to result and update lastIndex. If not, accept a word cut.
+        if (cut.length == limit && lastOccurrence >= 0 && (cut.length - lastOccurrence) < threshold) {
             result.push(txt.slice(lastIndex, lastIndex + lastOccurrence).trim());
             lastIndex += lastOccurrence;
         } else {
