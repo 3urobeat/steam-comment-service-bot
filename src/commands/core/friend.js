@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 15.05.2023 20:01:04
+ * Last Modified: 17.05.2023 13:16:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -41,7 +41,7 @@ module.exports.addFriend = {
 
         if (!args[0]) return respond(commandHandler.data.lang.invalidprofileid);
 
-        handleSteamIdResolving(args[0], SteamID.Type.INDIVIDUAL, (err, res) => {
+        handleSteamIdResolving(args[0], "profile", (err, res) => {
             if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
 
             // Check if first bot account is limited to be able to display error message instantly
@@ -114,7 +114,7 @@ module.exports.unfriend = {
             // Unfriending a specific user is owner only
             if (!commandHandler.data.cachefile.ownerid.includes(steamID64)) return respond(commandHandler.data.lang.commandowneronly);
 
-            handleSteamIdResolving(args[0], SteamID.Type.INDIVIDUAL, (err, res) => {
+            handleSteamIdResolving(args[0], "profile", (err, res) => {
                 if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
                 if (commandHandler.data.cachefile.ownerid.includes(res)) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.idisownererror); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 

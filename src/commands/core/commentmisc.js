@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 15.05.2023 20:00:58
+ * Last Modified: 17.05.2023 13:15:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -50,7 +50,7 @@ module.exports.abort = {
             // Set new status for comment process
             commandHandler.controller.activeRequests[steamID64].status = "aborted";
 
-            logger("info", `Aborting comment process for profile/group ${steamID64}...`);
+            logger("info", `Aborting comment process for ID ${steamID64}...`);
             respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.abortcmdsuccess); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         });
     }
@@ -85,7 +85,7 @@ module.exports.resetCooldown = {
 
         } else {
 
-            handleSteamIdResolving(args[0], SteamID.Type.INDIVIDUAL, (err, res) => {
+            handleSteamIdResolving(args[0], "profile", (err, res) => {
                 if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
                 if (res) steamID64 = res; // Change steamID64 to the provided id
 

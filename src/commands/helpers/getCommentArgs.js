@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 15.05.2023 20:00:24
+ * Last Modified: 17.05.2023 13:18:18
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -82,15 +82,14 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respo
                 if (commandHandler.data.cachefile.ownerid.includes(requesterSteamID64) || args[1] == requesterSteamID64) { // Check if user is a bot owner or if he provided his own profile id
                     let arg = args[1];
 
-                    handleSteamIdResolving(arg, null, (err, res) => {
+                    handleSteamIdResolving(arg, null, (err, res, type) => {
                         if (err) {
                             respond(commandHandler.data.lang.commentinvalidid.replace("commentcmdusage", commentcmdUsage) + "\n\nError: " + err);
                             return resolve(false);
                         }
 
                         profileID = res; // Will be null on err
-
-                        if (res) idType = new SteamID(res).type; // Only attempt to update type if id was resolved successfully
+                        idType = type;
                     });
 
                 } else {
