@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 14.05.2023 21:47:41
+ * Last Modified: 17.05.2023 20:40:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -69,7 +69,7 @@ module.exports.comment = {
         // Check if user is already receiving comments right now
         let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64];
 
-        if (activeReqEntry && activeReqEntry.status == "active" && activeReqEntry.type == "profileComment") return respond(commandHandler.data.lang.commentuseralreadyreceiving);
+        if (activeReqEntry && activeReqEntry.status == "active" && activeReqEntry.type == "profileComment") return respond(commandHandler.data.lang.commentuseralreadyreceiving); // TODO: Is it correct to only check for profileComment here?
 
 
         // Check if user has cooldown
@@ -78,8 +78,8 @@ module.exports.comment = {
         if (until > Date.now()) return respond(commandHandler.data.lang.commentuseroncooldown.replace("remainingcooldown", untilStr));
 
 
-        // Get all currently available bot accounts. Only allow limited accounts for profile comments by only passing true when idType is equal to INDIVIDUAL
-        let allowLimitedAccounts = (idType == SteamID.Type.INDIVIDUAL);
+        // Get all currently available bot accounts. Block limited accounts from being eligible from commenting in groups
+        let allowLimitedAccounts = (idType != "group");
         let { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = getAvailableBotsForCommenting(commandHandler, numberOfComments, allowLimitedAccounts, receiverSteamID64);
 
         if (availableAccounts.length - accsToAdd < accsNeeded && accsToAdd.length == 0 && !whenAvailableStr) { // Check if this bot has no suitable accounts for this request and there won't be any available at any point
@@ -108,10 +108,10 @@ module.exports.comment = {
         }
 
 
-        /* --------- Check if profile is private if idType is INDIVIDUAL ---------  */
+        // Prepare activeRequests entry
         let activeRequestsObj = {
             status: "active",
-            type: idType == SteamID.Type.INDIVIDUAL ? "profileComment" : "groupComment",
+            type: idType + "Comment", // Add "Comment" to the end of type to differentiate a comment process from other requests
             amount: numberOfComments,
             quotesArr: quotesArr,
             requestedby: requesterSteamID64,
@@ -123,7 +123,45 @@ module.exports.comment = {
             failed: {}
         };
 
-        if (idType == SteamID.Type.INDIVIDUAL) {
+
+        // Get the correct postComment function based on type
+        let postComment;
+        let commentArgs = {};
+
+        switch (activeRequestsObj.type) {
+            case "profileComment":
+                postComment = commandHandler.controller.main.community.postUserComment; // Context of the correct bot account is applied later
+                commentArgs = { receiverSteamID64: receiverSteamID64, quote: null };
+                break;
+            case "groupComment":
+                postComment = commandHandler.controller.main.community.postGroupComment; // Context of the correct bot account is applied later
+                commentArgs = { receiverSteamID64: receiverSteamID64, quote: null };
+                break;
+            case "sharedfileComment":
+                postComment = commandHandler.controller.main.community.postSharedfileComment; // Context of the correct bot account is applied later
+                commentArgs = { sharedfileOwnerId: null, sharedfileId: receiverSteamID64, quote: null };
+
+                // Get sharedfileOwnerId by scraping sharedfile DOM - Quick hack to await function that only supports callbacks
+                await (() => {
+                    return new Promise((resolve) => {
+                        commandHandler.controller.main.community.getSteamSharedfile(receiverSteamID64, (err, obj) => {
+                            if (err) {
+                                logger("error", "Couldn't get sharedfile even though it exists?! Aborting!\n" + err);
+                                respond("Error: Couldn't get sharedfile even though it exists?! Aborting!\n" + err);
+                                return;
+                            }
+
+                            commentArgs.sharedfileOwnerId = obj.owner.getSteamID64();
+                            resolve();
+                        });
+                    });
+                })();
+                break;
+        }
+
+
+        // Check if profile is private
+        if (idType == "profile") {
             commandHandler.controller.main.community.getSteamUser(new SteamID(receiverSteamID64), (err, user) => {
                 if (err) {
                     logger("warn", `[Main] Failed to check if ${steamID64} is private: ${err}\n       Trying to comment anyway and hoping no error occurs...`); // This can happen sometimes and most of the times commenting will still work
@@ -138,7 +176,7 @@ module.exports.comment = {
 
                 // Start commenting
                 logger("debug", "Made activeRequest entry for user, starting comment loop...");
-                comment(commandHandler, respond, receiverSteamID64);
+                comment(commandHandler, respond, postComment, commentArgs, receiverSteamID64);
             });
         } else {
             // Register this comment process in activeRequests
@@ -146,7 +184,7 @@ module.exports.comment = {
 
             // Start commenting
             logger("debug", "Made activeRequest entry for user, starting comment loop...");
-            comment(commandHandler, respond, receiverSteamID64);
+            comment(commandHandler, respond, postComment, commentArgs, receiverSteamID64);
         }
     }
 };
@@ -156,9 +194,11 @@ module.exports.comment = {
  * Internal: Do the actual commenting, activeRequests entry with all relevant information was processed by the comment command function above.
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {function(string)} respond Shortened respondModule call
+ * @param {function} postComment The correct postComment function for this idType. Context from the correct bot account is being applied later.
+ * @param {Object} commentArgs All arguments this postComment function needs, without callback. It will be applied and a callback added as last param. Include a key called "quote" to dynamically replace it with a random quote.
  * @param {String} receiverSteamID64 steamID64 of the profile to receive the comments
  */
-function comment(commandHandler, respond, receiverSteamID64) {
+function comment(commandHandler, respond, postComment, commentArgs, receiverSteamID64) {
     let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
 
     // Comment numberOfComments times using our syncLoop helper
@@ -176,17 +216,18 @@ function comment(commandHandler, respond, receiverSteamID64) {
 
 
             /* --------- Try to comment --------- */
-            let postComment = activeReqEntry.type == "profileComment" ? bot.community.postUserComment : bot.community.postGroupComment; // Get the correct comment function for this type
-            let quote       = await commandHandler.data.getQuote(activeReqEntry.quotesArr);                                             // Get a random quote to comment with
+            let quote = await commandHandler.data.getQuote(activeReqEntry.quotesArr); // Get a random quote to comment with
+            commentArgs["quote"] = quote; // Replace key "quote" in args obj
 
-            postComment.call(bot.community, receiverSteamID64, quote, (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment! SteamUser will break without this.
+            postComment.call(bot.community, ...Object.values(commentArgs), (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
+                //let error = ""
 
                 /* --------- Handle errors thrown by this comment attempt --------- */
                 if (error) logCommentError(error, commandHandler, bot, receiverSteamID64);
 
 
                 /* --------- No error, run this on every successful iteration --------- */
-                let whereStr = activeReqEntry.type == "profileComment" ? `on profile ${receiverSteamID64}` : `in group ${receiverSteamID64}`; // Shortcut to convey more precise information in the 4 log messages below
+                let whereStr = activeReqEntry.type == "profileComment" ? `on profile ${receiverSteamID64}` : `in ${activeReqEntry.type.replace("Comment", "")} ${receiverSteamID64}`; // Shortcut to convey more precise information in the 4 log messages below
 
                 if (activeReqEntry.thisIteration == 0) { // Stuff below should only run in first iteration
                     if (commandHandler.data.proxies.length > 1) logger("info", `${logger.colors.fggreen}[${bot.logPrefix}] ${activeReqEntry.amount} Comment(s) requested. Comment ${whereStr} with proxy ${bot.loginData.proxyIndex}: ${String(quote).split("\n")[0]}`);

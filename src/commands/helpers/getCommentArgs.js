@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 17.05.2023 15:59:39
+ * Last Modified: 17.05.2023 20:02:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -103,6 +103,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respo
                 logger("debug", "CommandHandler getCommentArgs(): No profileID parameter received, setting profileID to requesterSteamID64...");
 
                 profileID = requesterSteamID64;
+                idType = "profile";
             }
 
 

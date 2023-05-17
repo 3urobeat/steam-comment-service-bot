@@ -4,7 +4,7 @@
  * Created Date: 09.04.2023 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 12.05.2023 13:29:55
+ * Last Modified: 17.05.2023 20:47:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -24,10 +24,11 @@ const { timeToString } = require("../../controller/helpers/misc.js");
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Number} numberOfComments Number of requested comments
  * @param {Boolean} canBeLimited If the accounts are allowed to be limited
+ * @param {String} idType Type of the request. This can either be "profile", "group" or "sharedfile". This is used to determine if limited accs need to be added first.
  * @param {String} receiverSteamID Optional: steamID64 of the receiving user. If set, accounts that are friend with the user will be prioritized and accsToAdd will be calculated.
  * @returns {Object} Object containing `accsNeeded` (Number), `availableAccounts` (Array of account names from bot object), `accsToAdd` (Array of account names from bot object which are limited and not friend) and `whenAvailable` (Timestamp representing how long to wait until accsNeeded amount of accounts will be available), `whenAvailableStr` (Timestamp formatted human-readable as time from now)
  */
-module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOfComments, canBeLimited, receiverSteamID = null) {
+module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOfComments, canBeLimited, idType, receiverSteamID = null) {
 
     // Calculate the amount of accounts needed for this request
     let accountsNeeded;
@@ -50,7 +51,8 @@ module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOf
 
     let whenAvailable; // We will save the until value of the account that the user has to wait for here
     let whenAvailableStr;
-    let allAccounts = [ ... Object.keys(commandHandler.controller.getBots(null, true)) ]; // Clone keys array (bot usernames) of bots object
+    let allAccsOnline = commandHandler.controller.getBots(null, true);
+    let allAccounts = [ ... Object.keys(allAccsOnline) ]; // Clone keys array (bot usernames) of bots object
 
     // Loop over activeRequests and remove all active entries from allAccounts
     if (Object.keys(commandHandler.controller.activeRequests).length > 0) {
@@ -77,7 +79,7 @@ module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOf
     // Remove limited accounts from allAccounts array if desired
     if (!canBeLimited) {
         let previousLength = allAccounts.length;
-        allAccounts = allAccounts.filter(e => commandHandler.controller.getBots(null, true)[e].user.limitations && !commandHandler.controller.getBots(null, true)[e].user.limitations.limited);
+        allAccounts = allAccounts.filter(e => allAccsOnline[e].user.limitations && !allAccsOnline[e].user.limitations.limited);
 
         if (previousLength - allAccounts.length > 0) logger("info", `${previousLength - allAccounts.length} of ${previousLength} were removed from available accounts as they are limited and can't be used for this request!`);
     }
@@ -90,8 +92,8 @@ module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOf
     // Prioritize accounts the user is friend with
     if (receiverSteamID) {
         allAccounts = [
-            ...allAccounts.filter(e => commandHandler.controller.getBots(null, true)[e].user.myFriends[receiverSteamID] == 3), // Cool trick to get every acc with user as friend to the top
-            ...allAccounts.filter(e => commandHandler.controller.getBots(null, true)[e].user.myFriends[receiverSteamID] != 3)  // ...and every non-friend acc below
+            ...allAccounts.filter(e => allAccsOnline[e].user.myFriends[receiverSteamID] == 3), // Cool trick to get every acc with user as friend to the top
+            ...allAccounts.filter(e => allAccsOnline[e].user.myFriends[receiverSteamID] != 3)  // ...and every non-friend acc below
         ];
     }
 
@@ -100,8 +102,12 @@ module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOf
     if (allAccounts.length > accountsNeeded) allAccounts = allAccounts.slice(0, accountsNeeded);
 
 
-    // Filter all accounts needed for this request which must be added first
-    let accsToAdd = allAccounts.filter(e => commandHandler.controller.getBots(null, true)[e].user.myFriends[receiverSteamID] != 3 && commandHandler.controller.getBots(null, true)[e].user.limitations.limited);
+    // Filter all accounts needed for this request which must be added first if this is of type profile
+    let accsToAdd = [];
+
+    if (idType == "profile") {
+        accsToAdd = allAccounts.filter(e => allAccsOnline[e].user.myFriends[receiverSteamID] != 3 && allAccsOnline[e].user.limitations.limited);
+    }
 
 
     // Log debug values
