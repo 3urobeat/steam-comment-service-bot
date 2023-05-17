@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 17.05.2023 13:18:18
+ * Last Modified: 17.05.2023 15:59:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -37,7 +37,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respo
         let quotesArr        = commandHandler.data.quotes;
 
         let profileID;
-        let idType = SteamID.Type.INDIVIDUAL; // Set user as default because that makes sense (because it can only be a group when param was provided yk)
+        let idType = "profile"; // Set profile as default because that makes sense (because it can only be a group/sharedfile when param was provided yk)
 
 
         /* --------- Define command usage messages & maxRequestAmount for each user's privileges --------- */
@@ -89,7 +89,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respo
                         }
 
                         profileID = res; // Will be null on err
-                        idType = type;
+                        idType = type; // Update idType with what handleSteamIdResolving determined
                     });
 
                 } else {
