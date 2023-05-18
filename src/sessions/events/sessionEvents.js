@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:52:30
  * Author: 3urobeat
  *
- * Last Modified: 31.03.2023 12:12:48
+ * Last Modified: 18.05.2023 11:40:18
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -22,6 +22,14 @@ const SessionHandler = require("../sessionHandler.js");
  * Internal: Attaches listeners to all steam-session events we care about
  */
 SessionHandler.prototype._attachEvents = function() {
+
+    // Attach debug event if enabled in advancedconfig
+    if (this.controller.data.advancedconfig.steamSessionDebug) {
+        this.session.on("debug", (msg) => {
+            logger("debug", `[${this.bot.logPrefix}] steam-session debug: ${msg}`);
+        });
+    }
+
 
     this.session.on("authenticated", () => { // Success
         logger.stopReadInput("Login request accepted"); // Should the user have approved this login attempt via the mobile Steam Guard app, stop readInput() from handle2FA

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 15.05.2023 12:28:51
+ * Last Modified: 18.05.2023 11:29:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -50,6 +50,7 @@ const Bot = function(controller, index) {
 
 
     // Load helper files
+    require("./events/debug.js");
     require("./events/disconnected.js");
     require("./events/error.js");
     require("./events/friendMessage.js");
@@ -78,6 +79,7 @@ const Bot = function(controller, index) {
 
 
     // Attach all SteamUser event listeners we need
+    this._attachSteamDebugEvent();
     this._attachSteamDisconnectedEvent();
     this._attachSteamErrorEvent();
     this._attachSteamFriendMessageEvent();

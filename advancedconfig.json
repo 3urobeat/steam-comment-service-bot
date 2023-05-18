@@ -21,5 +21,6 @@
     "printDebug": false,
     "steamUserDebug": false,
     "steamUserDebugVerbose": false,
+    "steamSessionDebug": false,
     "logAnimationSpeed": 250
 }
