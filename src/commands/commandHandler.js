@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 12.05.2023 19:59:20
+ * Last Modified: 19.05.2023 11:42:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -69,6 +69,77 @@ CommandHandler.prototype._importCoreCommands = function() {
     });
 
 };
+
+
+// This JsDoc is a mess
+/**
+ * Registers a new command during runtime
+ * @param {Object} command The command object to register
+ * @param {[String]} command.names All names that should trigger this command
+ * @param {String} command.description Description of what this command does
+ * @param {Boolean} command.ownersOnly Set to true to only allow owners to use this command.
+ * @param {function(CommandHandler, Array, String, function(Object, Object, string), Object, Object)} command.run Function that will be executed when the command runs. Arguments: commandHandler, args, steamID64, respondModule, context, resInfo
+ * @returns true if the command was successfully registered, false otherwise
+ */
+CommandHandler.prototype.registerCommand = function(command) {
+
+    // Check for incomplete object
+    if (!command || !command.names || command.names.length == 0 || !command.run) {
+        logger("error", "CommandHandler registerCommand(): Cannot register command with incomplete content! Ignoring request...");
+        return false;
+    }
+
+    // Set defaults for description & ownersOnly if omitted
+    if (!command.description) command.description = "";
+    if (!command.ownersOnly)  command.ownersOnly  = false;
+
+    // Check for duplicate command name
+    let returnval = true; // Dirty hack to return false from nested function (the forEach() below)
+
+    command.names.forEach((e) => {
+        if (this.commands.find(f => f.names.includes(e))) {
+            logger("error", `CommandHandler registerCommand(): There is already a command registered with the name ${e}! Ignoring request...`);
+            returnval = false;
+        }
+    });
+
+    if (!returnval) return returnval; // Return if it was set to false
+
+    // Register command
+    this.commands.push(command);
+
+    logger("info", `CommandHandler registerCommand(): Successfully registered the command '${command.names[0]}'"!`, false, true);
+    return true;
+
+};
+
+
+/**
+ * The name of the command to unregister during runtime
+ * @param {String} commandName Name of the command to unregister
+ * @returns true if the command was successfully unregistered, false otherwise
+ */
+CommandHandler.prototype.unregisterCommand = function(commandName) {
+
+    // Iterate through all command objects in commands array and check if name is included in names array of each command.
+    let thisCmd = this.commands.find(e => e.names.includes(commandName));
+
+    if (!thisCmd) {
+        logger("warn", `CommandHandler runCommand(): Command '${commandName}' was not found!`);
+        return false;
+    }
+
+    // Remove command from commands array
+    let index = this.commands.indexOf(thisCmd);
+
+    this.commands.splice(index, index + 1);
+
+    logger("info", `CommandHandler unregisterCommand(): Successfully unregistered the command '${thisCmd.names[0]}'"!`, false, true);
+    return true;
+
+};
+
+
 /**
  * Finds a loaded command by name and runs it
  * @param {String} name The name of the command
