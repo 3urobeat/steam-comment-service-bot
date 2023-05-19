@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 09:37:57
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 14:36:25
+ * Last Modified: 19.05.2023 12:28:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -15,9 +15,10 @@
  */
 
 
-const PluginSystem = require("../../src/pluginSystem/pluginSystem.js"); // eslint-disable-line
+// Note: This plugin, with the name "template" will not be loaded on start.
+// To create your own command, copy this folder, rename it and edit the info object below! Have fun!
 
-const SteamID = require("steamid");
+const PluginSystem = require("../../src/pluginSystem/pluginSystem.js"); // eslint-disable-line
 
 
 /**
@@ -30,10 +31,21 @@ module.exports.load = (sys) => { //eslint-disable-line
 
 
     // Example of pretending the first owner used the '!ping' command
-    //let firstOwnerSteamID = new SteamID(cachefile.ownerid[0]); // Makes a steamID object of the first owner so we can pass it to the friendMessage event
+    let firstOwnerSteamID = sys.data.cachefile.ownerid[0]; // Get first ownerid from cache to make sure it was converted to a steamID64
 
-    //sys.botobject[0].emit("friendMessage", firstOwnerSteamID, "!ping"); // Pretend like the first owner send the bot the message "!ping" - Result: The bot will send you a response
+    //sys.commandHandler.runCommand("ping", [], firstOwnerSteamID, sys.main.sendChatMessage, sys.main, { steamID64: firstOwnerSteamID }); // TODO: sendChatMessage is undefined for some reason
 
+
+    // Example of adding a command that will respond with "Hello World!" on "hello" or "cool-alias"
+    sys.commandHandler.registerCommand({
+        names: ["hello", "cool-alias"],
+        description: "Responds with Hello World!",
+        ownersOnly: false,
+
+        run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+            respondModule(context, resInfo, "Hello world!");
+        }
+    });
 };
 
 
