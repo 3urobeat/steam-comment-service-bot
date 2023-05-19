@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 11.05.2023 12:30:25
+ * Last Modified: 19.05.2023 10:27:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -46,8 +46,54 @@ const Controller = function() {
      */
     this.updater = {};
 
-    /* ------------ Store various stuff: ------------ */
-    this.bots = {}; // Store references to all bot account objects here
+    // Stores references to all bot account objects mapped to their accountName
+    this.bots = {};
+
+    /**
+     * Collection of miscellaneous functions for easier access
+     */
+    this.misc = {
+        /**
+         * Implementation of a synchronous for loop in JS (Used as reference: https://whitfin.io/handling-synchronous-asynchronous-loops-javascriptnode-js/)
+         * @param {Number} iterations The amount of iterations
+         * @param {Function} func The function to run each iteration (Params: loop, index)
+         * @param {Function} exit This function will be called when the loop is finished
+         */
+        syncLoop: (iterations, func, exit) => {}, // eslint-disable-line
+
+        /**
+         * Rounds a number with x decimals
+         * @param {Number} value Number to round
+         * @param {Number} decimals Amount of decimals
+         * @returns {Number} Rounded number
+         */
+        round: (value, decimals) => {}, // eslint-disable-line
+
+        /**
+         * Converts a timestamp to a human-readable until from now format. Does not care about past/future.
+         * @returns {String} "x seconds/minutes/hours/days"
+         */
+        timeToString: () => {}, // eslint-disable-line
+
+        /**
+         * Pings an URL to check if the service and this internet connection is working
+         * @param {String} url The URL of the service to check
+         * @param {Boolean} throwTimeout If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
+         * @returns {Promise} Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
+         */
+        checkConnection: (url, throwTimeout) => {}, // eslint-disable-line
+
+        /**
+         * Helper function which attempts to cut Strings intelligently and returns all parts. It will attempt to not cut words & links in half.
+         * It is used by the steamChatInteraction helper but can be used in plugins as well.
+         * @param {String} txt The string to cut
+         * @param {Number} limit Maximum length for each part. The function will attempt to cut txt into parts that don't exceed this amount.
+         * @param {Array} cutChars Optional: Custom chars to search after for cutting string in parts. Default: [" ", "\n", "\r"]
+         * @param {Number} threshold Optional: Maximum amount that limit can be reduced to find the last space or line break. If no match is found within this limit a word will be cut. Default: 15% of total length
+         * @returns {Array} Returns all parts of the string in an array
+         */
+        cutStringsIntelligently: (txt, limit, cutChars, threshold) => {} // eslint-disable-line
+    };
 
     /**
      * The main bot account
@@ -113,7 +159,9 @@ Controller.prototype._start = async function() {
     logger("info", "Checking if Steam is reachable...", false, true, logger.animation("loading"));
 
     if (!await checkAndGetFile("./src/controller/helpers/misc.js", logger, false, false)) return this.stop();
-    await require("./helpers/misc.js").checkConnection("https://steamcommunity.com", true)
+    this.misc = await require("./helpers/misc.js");
+
+    this.misc.checkConnection("https://steamcommunity.com", true)
         .then((res) => logger("info", `SteamCommunity is up! Status code: ${res.statusCode}`, false, true, logger.animation("loading")))
         .catch((res) => {
             if (!res.statusCode) logger("error", `SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n        ${res.statusMessage}\n\n        Aborting...\n`, true);
