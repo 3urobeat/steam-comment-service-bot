@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 18.05.2023 11:29:06
+ * Last Modified: 18.05.2023 12:21:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -38,10 +38,11 @@ const Bot = function(controller, index) {
 
     // Provide array for additional login related information
     this.loginData = {
-        logOnOptions: Object.values(controller.data.logininfo)[index], // TODO: This could be an issue later when the index could change at runtime
-        logOnTries:   0,
-        proxyIndex:   proxyIndex,
-        proxy:        controller.data.proxies[proxyIndex]
+        logOnOptions:  Object.values(controller.data.logininfo)[index], // TODO: This could be an issue later when the index could change at runtime
+        logOnTries:    0,
+        waitingFor2FA: false, // Set by sessionHandler's handle2FA helper to prevent handleLoginTimeout from triggering
+        proxyIndex:    proxyIndex,
+        proxy:         controller.data.proxies[proxyIndex]
     };
 
     // Define the log message prefix of this account in order to

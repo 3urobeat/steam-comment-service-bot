@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:59:31
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 20:41:39
+ * Last Modified: 18.05.2023 12:22:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -27,6 +27,8 @@ const SessionHandler = require("../sessionHandler.js");
 SessionHandler.prototype._handle2FA = function(res) {
 
     logger("debug", `[${this.bot.logPrefix}] getRefreshToken(): Received startWithCredentials() actionRequired response. Type: ${res.validActions[0].type} | Detail: ${res.validActions[0].detail}`);
+
+    this.bot.loginData.waitingFor2FA = true; // Prevent handleLoginTimeout from triggring while waiting
 
     // Check if user enabled skipSteamGuard and skip asking for 2FA if this is not the main account
     if (this.controller.data.config.skipSteamGuard) {

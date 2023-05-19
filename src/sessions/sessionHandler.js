@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 03.05.2023 14:33:58
+ * Last Modified: 19.05.2023 09:54:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -102,6 +102,8 @@ SessionHandler.prototype._resolvePromise = function(token) {
         // Save most recent valid token to tokens.db
         this._saveTokenToStorage(token);
     }
+
+    this.bot.loginData.waitingFor2FA = false; // Allow handleLoginTimeout to work again
 
     this.getTokenPromise(token);
 };

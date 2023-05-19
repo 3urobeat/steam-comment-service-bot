@@ -4,7 +4,7 @@
  * Created Date: 03.11.2022 12:27:46
  * Author: 3urobeat
  *
- * Last Modified: 03.05.2023 20:21:55
+ * Last Modified: 19.05.2023 09:58:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -31,6 +31,9 @@ Bot.prototype.handleLoginTimeout = function() {
 
     // Check if account is still offline with the same logOnTries value 60 seconds later and force progress
     setTimeout(() => {
+
+        // Ignore timeout if sessionHandler is waiting for user action
+        if (this.loginData.waitingFor2FA) return setTimeout(() => this.handleLoginTimeout(), 5000);
 
         // Ignore timeout if account progressed since then
         let newLogOnTry = this.loginData.logOnTries;
