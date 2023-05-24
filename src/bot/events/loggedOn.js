@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 01.04.2023 14:04:04
+ * Last Modified: 24.05.2023 21:31:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -30,11 +30,6 @@ Bot.prototype._attachSteamLoggedOnEvent = function() {
         this.user.setPersona(1); // Set online status
 
         logger("debug", `[${this.logPrefix}] Public IP of this account: ${this.user.publicIP}`);
-
-
-        // Set playinggames for main account and child account
-        if (this.index == 0) this.user.gamesPlayed(this.controller.data.config.playinggames);
-        if (this.index != 0) this.user.gamesPlayed(this.controller.data.config.childaccplayinggames);
 
     });
 

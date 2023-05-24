@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 18.05.2023 12:21:37
+ * Last Modified: 24.05.2023 21:36:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -56,6 +56,7 @@ const Bot = function(controller, index) {
     require("./events/error.js");
     require("./events/friendMessage.js");
     require("./events/loggedOn.js");
+    require("./events/ownershipCached.js");
     require("./events/relationship.js");
     require("./events/webSession.js");
     require("./helpers/checkMsgBlock.js");
@@ -68,8 +69,9 @@ const Bot = function(controller, index) {
     // Create user & community instance
     logger("debug", `[${this.logPrefix}] Using proxy ${this.loginData.proxyIndex} "${this.loginData.proxy}" to log in to Steam and SteamCommunity...`);
 
-    this.user      = new SteamUser({ autoRelogin: false, httpProxy: this.loginData.proxy, protocol: SteamUser.EConnectionProtocol.WebSocket }); // Forcing protocol for now: https://dev.doctormckay.com/topic/4187-disconnect-due-to-encryption-error-causes-relog-to-break-error-already-logged-on/?do=findComment&comment=10917
-    this.community = new SteamCommunity({ request: request.defaults({ "proxy": this.loginData.proxy }) });                                      // Pass proxy to community library as well
+    // Enable picsCache to get info about which games this account owns and force protocol for now: https://dev.doctormckay.com/topic/4187-disconnect-due-to-encryption-error-causes-relog-to-break-error-already-logged-on/?do=findComment&comment=10917
+    this.user      = new SteamUser({ autoRelogin: false, enablePicsCache: true, httpProxy: this.loginData.proxy, protocol: SteamUser.EConnectionProtocol.WebSocket });
+    this.community = new SteamCommunity({ request: request.defaults({ "proxy": this.loginData.proxy }) }); // Pass proxy to community library as well
 
     // Load my SteamCommunity patches
     require("../libraryPatches/CSteamSharedfile.js");
@@ -85,6 +87,7 @@ const Bot = function(controller, index) {
     this._attachSteamErrorEvent();
     this._attachSteamFriendMessageEvent();
     this._attachSteamLoggedOnEvent();
+    this._attachSteamOwnershipCachedEvent();
     this._attachSteamFriendRelationshipEvent();
     this._attachSteamGroupRelationshipEvent();
     this._attachSteamWebSessionEvent();
