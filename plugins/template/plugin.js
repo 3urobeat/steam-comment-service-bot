@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 09:37:57
  * Author: 3urobeat
  *
- * Last Modified: 19.05.2023 12:28:25
+ * Last Modified: 25.05.2023 13:06:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 // Note: This plugin, with the name "template" will not be loaded on start.
 // To create your own command, copy this folder, rename it and edit the info object below! Have fun!
 
@@ -22,22 +21,39 @@ const PluginSystem = require("../../src/pluginSystem/pluginSystem.js"); // eslin
 
 
 /**
- * This function will be called by the plugin loader after updating but before logging in. Initialize your plugin here.
+ * Constructor - Creates a new object for this plugin
  * @param {PluginSystem} sys Your connector to the application
  */
-module.exports.load = (sys) => { //eslint-disable-line
+const Plugin = function(sys) {
+    this.info = Plugin.info;
 
-    logger("info", "Hello World!"); // Log something for example
+    // Store references to commonly used properties
+    this.sys            = sys;
+    this.controller     = sys.controller;
+    this.data           = sys.controller.data;
+    this.commandHandler = sys.commandHandler;
+};
+
+// Include some information about your plugin here. This is exported directly so the plugin loader can read it before creating a new object.
+Plugin.info = {
+    name: "template",
+    version: "1.0",
+    author: "3urobeat"
+};
+
+// Export everything in this file to make it accessible to the plugin loader
+module.exports = Plugin;
 
 
-    // Example of pretending the first owner used the '!ping' command
-    let firstOwnerSteamID = sys.data.cachefile.ownerid[0]; // Get first ownerid from cache to make sure it was converted to a steamID64
+/**
+ * This function will be called by the plugin loader after updating but before logging in. Initialize your plugin here.
+ */
+Plugin.prototype.load = function() {
 
-    //sys.commandHandler.runCommand("ping", [], firstOwnerSteamID, sys.main.sendChatMessage, sys.main, { steamID64: firstOwnerSteamID }); // TODO: sendChatMessage is undefined for some reason
-
+    logger("info", "Hello World!"); // Log something for example. This will be logged instantly but only appear after ready because of the readyafterlogs system.
 
     // Example of adding a command that will respond with "Hello World!" on "hello" or "cool-alias"
-    sys.commandHandler.registerCommand({
+    this.commandHandler.registerCommand({
         names: ["hello", "cool-alias"],
         description: "Responds with Hello World!",
         ownersOnly: false,
@@ -46,21 +62,29 @@ module.exports.load = (sys) => { //eslint-disable-line
             respondModule(context, resInfo, "Hello world!");
         }
     });
+
 };
 
 
 /**
- * Include some information about your plugin here
+ * This function will be called when the bot is ready (aka all accounts were logged in).
  */
-module.exports.info = {
-    name: "template",
-    version: "1.0",
-    author: "3urobeat"
+Plugin.prototype.ready = function() {
+
+    logger("info", "I am the plugin and we seem to be ready!");
+
+    // Example of pretending the first owner used the '!ping' command
+    let firstOwnerSteamID = this.data.cachefile.ownerid[0]; // Get first ownerid from cache to make sure it was converted to a steamID64
+
+    this.commandHandler.runCommand("ping", [], firstOwnerSteamID, this.controller.main.sendChatMessage, this.controller.main, { steamID64: firstOwnerSteamID });
+    // Note: This does seem to throw a RateLimitExceeded error which even a large delay doesn't fix. The retry works however. Idk, I think Steam might be at fault. // TODO: or is this a context related problem?
+
 };
 
 
 
-// JSDoc for a few things to make them easier to use for you
+
+// JSDoc for global logger function to make using it easier for you
 /**
  * Log something to the output
  * @param {String} type Type of your log message. Valid types: `info`, `warn`, `error` or `debug`

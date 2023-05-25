@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:46:09
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 17:10:37
+ * Last Modified: 25.05.2023 12:20:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -36,32 +36,33 @@ PluginSystem.prototype._loadPlugins = function() {
 
         // Iterate over all folders in this dir
         files.forEach((e) => {
-            let thisPlugin;
 
             // Try to load plugin
             try {
                 // Load the plugin file
-                thisPlugin = require(`../../plugins/${e}/plugin.js`);
+                let thisPlugin = require(`../../plugins/${e}/plugin.js`);
 
                 // Ignore template plugin
                 if (thisPlugin.info.name == "template") return;
 
-
-                // Call the plugin's load function
-                logger("info", `Loading plugin ${thisPlugin.info.name} v${thisPlugin.info.version} by ${thisPlugin.info.author}...`, false, true, logger.animation("loading"));
-
-                thisPlugin.load(this); // Call the exported load function and pass a reference to the pluginSystem
-
-
-                // Check if plugin with same name was already found and print error msg, otherwise add plugin to obj
+                // Check if plugin with same name was already found and print error msg
                 if (Object.keys(this.pluginList).includes(thisPlugin.info.name)) return logger("warn", `Duplicate plugin with the name ${thisPlugin.info.name} found! Ignoring this plugin...`, true);
 
+                // Create new plugin object, add reference to plugin list and call load function
+                thisPlugin = new thisPlugin(this);
                 this.pluginList[thisPlugin.info.name] = thisPlugin;
+
+                logger("info", `Loading plugin ${thisPlugin.info.name} v${thisPlugin.info.version} by ${thisPlugin.info.author}...`, false, true, logger.animation("loading"));
+                thisPlugin.load();
+
+                // Attach any event functions the plugin might have exported
+                if (thisPlugin.ready) this.controller.events.on("ready", () => thisPlugin.ready.call(thisPlugin)); // Use call() to apply context which gets replaced with EventEmitter
 
             } catch (err) {
 
                 return; // Logger("error", `Error loading plugin '${e}'! Error: ${err.stack}`, true); // TODO: Ignore for now, as plugins are not included in update set yet so this will trigger even after an successful update
             }
+
         });
     });
 };
