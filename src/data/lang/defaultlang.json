@@ -104,6 +104,7 @@
     "unblockcmdsuccess": "Unblocked profileid with all bot accounts.",
     "restartcmdrestarting": "Restarting...",
     "stopcmdstopping": "Stopping...",
+    "reloadcmdreloaded": "Reloaded all commands and plugins.",
     "updatecmdforce": "Forcing an update from the branchname branch...",
     "updatecmdcheck": "Checking for an update in the branchname branch...",
 

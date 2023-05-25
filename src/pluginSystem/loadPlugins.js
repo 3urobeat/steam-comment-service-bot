@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:46:09
  * Author: 3urobeat
  *
- * Last Modified: 25.05.2023 12:20:27
+ * Last Modified: 25.05.2023 19:15:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -24,8 +24,6 @@ const PluginSystem = require("./pluginSystem.js");
  * Internal: Loads all plugins in /plugins dir and exports them as PluginSystem.pluginList object
  */
 PluginSystem.prototype._loadPlugins = function() {
-    this.pluginList = {};
-
     logger("info", "PluginSystem: Loading all plugins in /plugins directory...", false, true, logger.animation("loading"));
 
     fs.readdir("./plugins", (err, files) => {

@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 25.05.2023 12:30:25
+ * Last Modified: 25.05.2023 20:11:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -26,6 +26,9 @@ const CommandHandler = require("../commands/commandHandler.js"); // eslint-disab
 const PluginSystem = function(controller) {
     this.controller = controller;
 
+    // References to all plugin objects
+    this.pluginList = {};
+
     /**
      * @type {CommandHandler}
      */
@@ -36,6 +39,34 @@ const PluginSystem = function(controller) {
 
     // Load all plugins now
     this._loadPlugins();
+};
+
+
+/**
+ * Reloads all plugins and calls ready event after ~2.5 seconds.
+ */
+PluginSystem.prototype.reloadPlugins = function() {
+
+    // Delete all plugin objects. (I'm not sure if this is necessary or if clearing the pluginList obj will garbage collect them)
+    Object.keys(this.pluginList).forEach(e => {
+        delete this.pluginList[e];
+    });
+
+    // Delete cache so requiring plugins again will load new changes
+    Object.keys(require.cache).forEach((key) => {
+        if (key.includes("/plugins/")) delete require.cache[key];
+    });
+
+    this.pluginList = {};
+
+    setTimeout(() => this._loadPlugins(), 500);
+
+    // Call ready event for every plugin which has one, 2.5 seconds after loading
+    setTimeout(() => {
+        Object.values(this.pluginList).forEach(e => {
+            if (e.ready) e.ready();
+        });
+    }, 3000);
 };
 
 

@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 19.05.2023 11:42:27
+ * Last Modified: 25.05.2023 19:44:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -171,6 +171,24 @@ CommandHandler.prototype.runCommand = function(name, args, steamID64, respondMod
 
     // Return true if command was found
     return true;
+
+};
+
+
+/**
+ * Reloads all core commands. Does NOT reload commands registered at runtime. Please consider reloading the pluginSystem as well.
+ */
+CommandHandler.prototype.reloadCommands = function() {
+
+    this.commands = [];
+
+    // Delete cache so requiring commands again will load new changes
+    Object.keys(require.cache).forEach((key) => {
+        if (key.includes("src/commands/core")) delete require.cache[key];
+    });
+
+    // Load core commands again after a moment
+    setTimeout(() => this._importCoreCommands(), 500);
 
 };
 

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 15.05.2023 12:06:00
+ * Last Modified: 25.05.2023 20:00:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -58,6 +58,34 @@ module.exports.stop = {
         respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.stopcmdstopping); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         commandHandler.controller.stop();
+    }
+};
+
+
+module.exports.reload = {
+    names: ["reload"],
+    description: "Reloads all commands and plugins without needing to restart. Please only use it for testing, this isn't clean.",
+    ownersOnly: true,
+
+    /**
+     * The reload command
+     * @param {CommandHandler} commandHandler The commandHandler object
+     * @param {Array} args Array of arguments that will be passed to the command
+     * @param {function(Object, Object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     */
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+
+        // Reload commandHandler
+        commandHandler.reloadCommands();
+
+        // Reload pluginSystem
+        commandHandler.controller.pluginSystem.reloadPlugins();
+
+        // Send response message
+        respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.reloadcmdreloaded); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+
     }
 };
 
