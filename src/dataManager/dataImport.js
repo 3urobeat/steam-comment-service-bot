@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.05.2023 11:56:55
+ * Last Modified: 24.05.2023 21:01:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -217,7 +217,7 @@ DataManager.prototype._importFromDisk = function() {
 
                         if (_this.advancedconfig.useLocalIP) proxies.unshift(null); // Add no proxy (local ip) if useLocalIP is true
 
-                        // check if no proxies were found (can only be the case when useLocalIP is false)
+                        // Check if no proxies were found (can only be the case when useLocalIP is false)
                         if (proxies.length == 0) {
                             logger("", "", true);
                             logger("error", "useLocalIP is turned off in advancedconfig.json but I couldn't find any proxies in proxies.txt!\n        Aborting as I don't have at least one IP to log in with!", true);
