@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.05.2023 22:47:54
+ * Last Modified: 25.05.2023 14:26:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -28,7 +28,10 @@ const download = require("download"); // TODO: Does it make a difference if we r
     return new Promise((resolve) => {
 
         // Start by defining which files we should keep
-        const dontDelete = ["./src/data/cache.json", "./src/data/lastcomment.db", "./src/data/tokens.db", "./accounts.txt", "./customlang.json", "./logininfo.json", "./output.txt", "./proxies.txt", "./quotes.txt"];
+        const dontDelete = [
+            "./src/data/cache.json", "./src/data/lastcomment.db", "./src/data/tokens.db", "./output.txt", // Data stuff
+            "./accounts.txt", "./customlang.json", "./logininfo.json", "./proxies.txt", "./quotes.txt"    // User config stuff
+        ];
 
         // Process dontDelete array to include parent folders of each entry
         dontDelete.forEach((e) => {
@@ -74,14 +77,20 @@ const download = require("download"); // TODO: Does it make a difference if we r
 
                 let files = scandir("."); // Scan the directory of this installation
 
+                // Define core plugins to replace them but not any user plugins
+                let corePlugins = ["./plugins/template", "./plugins/webserver"];
 
-                // Delete old files except files and folders in dontDelete
+                // Delete old files
                 logger("", `${logger.colors.fgyellow}Deleting old files...${logger.colors.reset}`, true, false, logger.animation("loading"));
 
                 files.forEach((e, i) => {
 
-                    // Remove old files except dontDelete, the freshly downloaded files and the node_modules folder
-                    if (fs.existsSync(e) && !dontDelete.includes(e) && !e.includes(`./steam-comment-service-bot-${controller.data.datafile.branch}`) && !e.includes("./node_modules") && !e.includes("./backup") && !e.includes("./plugins")) {
+                    // Remove old files except dontDelete, the freshly downloaded files, the node_modules, backup & .git folders and any non-core plugins
+                    if (fs.existsSync(e) && !dontDelete.includes(e)
+                        && !e.includes(`./steam-comment-service-bot-${controller.data.datafile.branch}`)
+                        && !e.includes("./node_modules") && !e.includes("./backup") && !e.includes("./.git")
+                        && (!e.includes("./plugins") || corePlugins.some(f => e.includes(f)))) {
+
                         fs.rmSync(e, { recursive: true });
                     }
 
