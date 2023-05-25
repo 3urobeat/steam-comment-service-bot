@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 14.05.2023 21:44:38
+ * Last Modified: 25.05.2023 18:35:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -78,6 +78,10 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
             // Send next part if there is one left
             if (limit * (part + 1) <= txt.length) {
                 logger("info", `Message is ${txt.length} chars long, sending next chunk of ${limit} chars to '${resInfo.steamID64}' in 7.5 seconds...`, false, false, logger.animation("waiting"));
+
+                // Start typing to indicate there is more coming
+                _this.user.chat.sendFriendTyping(resInfo.steamID64);
+
                 setTimeout(() => _this.sendChatMessage(_this, resInfo, txt, retry, part + 1), 7500);
             } else {
                 if (part != 0) logger("debug", "Bot sendChatMessage(): All parts of the message have been sent"); // Only log debug for multi-part messages
