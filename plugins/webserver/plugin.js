@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 14:12:17
  * Author: 3urobeat
  *
- * Last Modified: 09.05.2023 11:14:49
+ * Last Modified: 26.05.2023 23:32:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -15,133 +15,151 @@
  */
 
 
-const PluginSystem   = require("../../src/pluginSystem/pluginSystem.js"); // eslint-disable-line
-const SteamID        = require("steamid"); //eslint-disable-line
-const fs             = require("fs");
-const express        = require("express");
+const PluginSystem = require("../../src/pluginSystem/pluginSystem.js"); // eslint-disable-line
 
-const advancedconfig = require("../../advancedconfig.json");
+const fs      = require("fs");
+const express = require("express");
+const SteamID = require("steamid");
+
+const enabled = true; // TODO: Needs a proper config/info.json system with enable, version, and dependencies keys. More keys can be added by the plugin dev, for example a secretkey in this case.
+
+
+/**
+ * Constructor - Creates a new object for this plugin
+ * @param {PluginSystem} sys Your connector to the application
+ */
+const Plugin = function(sys) {
+    this.info = Plugin.info;
+
+    // Store references to commonly used properties
+    this.sys            = sys;
+    this.controller     = sys.controller;
+    this.data           = sys.controller.data;
+    this.commandHandler = sys.commandHandler;
+};
+
+// Include some information about your plugin here. This is exported directly so the plugin loader can read it before creating a new object.
+Plugin.info = {
+    name: "webserver",
+    version: "1.0",
+    author: "3urobeat"
+};
+
+// Export everything in this file to make it accessible to the plugin loader
+module.exports = Plugin;
 
 
 /**
  * This function will be called by the plugin loader after updating but before logging in. Initialize your plugin here.
- * @param {PluginSystem} sys Your connector to the application
  */
-module.exports.load = (sys) => { //eslint-disable-line
+Plugin.prototype.load = function() {
+    if (!enabled) return;
 
-    if (advancedconfig.enableurltocomment) {
-        /* const controller = require("../../src/controller/controller.js");
-        const ready      = require("../../src/controller/ready.js");
-        const mainfile   = require("../../src/bot/main.js");
+    this.app = express();
 
-        const app        = express();
+    // Generate urlrequestsecretkey if it is not created already
+    if (this.data.datafile.urlrequestsecretkey == "") {
+        this.data.datafile.urlrequestsecretkey = Math.random().toString(36).slice(-10); // Credit: https://stackoverflow.com/a/9719815/12934162
+        logger("info", "Generated a secret key for comment requests via url. You can find the key in the 'data.json' file, located in the 'src' folder.", true);
 
-
-        // Generate urlrequestsecretkey if it is not created already
-        if (extdata.urlrequestsecretkey == "") {
-            extdata.urlrequestsecretkey = Math.random().toString(36).slice(-10); // Credit: https://stackoverflow.com/a/9719815/12934162
-            logger("info", "Generated a secret key for comment requests via url. You can find the key in the 'data.json' file, located in the 'src' folder.", true);
-
-            fs.writeFile(srcdir + "/data/data.json", JSON.stringify(extdata, null, 4), (err) => {
-                if (err) logger("error", "error writing created urlrequestsecretkey to data.json: " + err);
-            });
-        }
-
-
-        // Listen for visitors
-        app.get("/", (req, res) => {
-            res.status(200).send(`<title>Comment Bot Web Request</title><b>${extdata.mestr}'s Comment Bot | Comment Web Request</b></br>Please use /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.</br></br>Visit /output to see the complete output.txt in your browser!</b></br></br>https://github.com/HerrEurobeat/steam-comment-service-bot`);
+        fs.writeFile(srcdir + "/data/data.json", JSON.stringify(this.data.datafile, null, 4), (err) => { // TODO: Replace with writeToFs function when supported by DataManger
+            if (err) logger("error", "error writing created urlrequestsecretkey to data.json: " + err);
         });
-
-        app.get("/comment", (req, res) => {
-            // Get IP of visitor
-            let ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress).replace("::ffff:", "");
-
-            if (req.query.n == undefined) {
-                logger("info", `Web Request by ${ip} denied. Reason: numberofcomments (n) is not specified.`);
-                return res.status(400).send("You have to provide an amount of comments.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.");
-            }
-
-            if (req.query.id == undefined) {
-                logger("info", `Web Request by ${ip} denied. Reason: Steam profileid (id) is not specified.`);
-                return res.status(400).send("You have to provide a profile id where I should comment.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.");
-            }
-
-            if (req.query.key == undefined || req.query.key != extdata.urlrequestsecretkey) {
-                logger("warn", `Web Request by ${ip} denied. Reason: Invalid secret key.`); // I think it is fair to output this message with a warn type
-                return res.status(403).send("Your secret key is not defined or invalid. Request denied.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.");
-            }
-
-            if (isNaN(cachefile.ownerid[0]) || new SteamID(String(cachefile.ownerid[0])).isValid() == false) {
-                logger("warn", `Web Request by ${ip} denied. Reason: Config's first ownerid is invalid.`);
-                return res.status(403).send("You can't use the web request feature unless you provided a valid ownerid in your config!");
-            }
-
-            logger("info", `Web Comment Request from ${ip} accepted. Amount: ${req.query.n} | Profile: ${req.query.id}`);
-
-
-            // Run the comment command
-            if (!ready.readyafter || controller.relogQueue.length > 0) return res.status(403).send(mainfile.lang.botnotready); //TODO: Add /me prefix // Check if bot is not fully started yet and block cmd usage to prevent errors
-
-            var steamID = new SteamID(String(cachefile.ownerid[0])); // SteamID: Make the bot owner responsible for request
-            var steam64id = steamID.getSteamID64();
-
-            controller.lastcomment.findOne({ id: steam64id }, (err, lastcommentdoc) => {
-                if (!lastcommentdoc) logger("error", "User is missing from database?? How is this possible?! Error maybe: " + err);
-
-                try { // Catch any unhandled error to be able to remove user from activecommentprocess array
-                    require("../../src/bot/commands/comment.js").run(null, steamID, [req.query.n, req.query.id], mainfile.lang, res, lastcommentdoc);
-                } catch (err) {
-                    res.status(500).send("Error while processing comment request: " + err.stack);
-                    logger("error", "Error while processing comment request: " + err.stack);
-                    return;
-                }
-            });
-        });
-
-        app.get("/output", (req, res) => { // Show output
-            // Get IP of visitor
-            let ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress).replace("::ffff:", "");
-
-            logger("info", `[Web Request] ${ip} requested to see the output!`);
-
-            fs.readFile(srcdir + "/../output.txt", (err, data) => {
-                if(err) logger("error", "urltocomment: error reading output.txt: " + err);
-
-                res.write(String(data));
-                res.status(200);
-                res.end();
-            });
-        });
-
-        app.use((req, res) => { // Show idk page thanks
-            res.status(404).send("404: Page not Found.</br>Please use /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.");
-        });
-
-        module.exports.server = app.listen(3034, () => {
-            logger("info", "EnableURLToComment is on: Server is listening on port 3034.\n       Visit it on: localhost:3034\n", true);
-        });
-
-        module.exports.server.on("error", (err) => {
-            logger("error", "An error occurred trying to start the EnableURLToComment server. " + err, true);
-        }); */
     }
 
 };
 
 
 /**
- * Include some information about your plugin here
+ * This function will be called when the bot is ready (aka all accounts were logged in).
  */
-module.exports.info = {
-    name: "webserver",
-    version: "1.0",
-    author: "3urobeat"
+Plugin.prototype.ready = function() {
+
+    /**
+     * Our commandHandler respondModule implementation - Sends a response to the webpage visitor.
+     * This is limited to one response, so we won't be able to send the finished message for example but this is not really needed I guess.
+     * @param {Object} _this The Plugin object context
+     * @param {Object} resInfo Object containing information passed to the command. Supported by this handler: res
+     * @param {String} txt The text to send
+     */
+    function respondModule(_this, resInfo, txt) {
+        if (resInfo.res.headersSent) return; // If we already sent a response with this header then ignore request to avoid an error
+
+        resInfo.res.status(200).send(txt);
+    }
+
+
+    // Listen for visitors
+    this.app.get("/", (req, res) => {
+        res.status(200).send(`<title>Comment Bot Web Request</title><b>${this.data.datafile.mestr}'s Comment Bot | Comment Web Request</b></br>Please use /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.</br></br>Visit /output to see the complete output.txt in your browser!</b></br></br>https://github.com/HerrEurobeat/steam-comment-service-bot`);
+    });
+
+    this.app.get("/comment", (req, res) => {
+        let ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress).replace("::ffff:", ""); // Get IP of visitor
+
+        // Get provided parameters
+        let amount       = req.query.n;
+        let receivingID  = req.query.id;
+        let requestingID = this.data.cachefile.ownerid[0]; // SteamID: Make the bot owner responsible for request
+
+
+        // Check provided parameters
+        if (!amount) {
+            logger("info", `Web Request by ${ip} denied. Reason: numberofcomments (n) is not specified.`);
+            return res.status(400).send("You have to provide an amount of comments.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.");
+        }
+
+        if (!receivingID) {
+            logger("info", `Web Request by ${ip} denied. Reason: Steam profileid (id) is not specified.`);
+            return res.status(400).send("You have to provide a profile id where I should comment.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.");
+        }
+
+        if (!req.query.key || req.query.key != this.data.datafile.urlrequestsecretkey) {
+            logger("warn", `Web Request by ${ip} denied. Reason: Invalid secret key.`); // I think it is fair to output this message with a warn type
+            return res.status(403).send("Your secret key is not defined or invalid. Request denied.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.");
+        }
+
+        logger("info", `Web Comment Request from ${ip} accepted. Amount: ${amount} | Profile: ${receivingID}`);
+
+
+        // Run the comment command
+        this.commandHandler.runCommand("comment", [ amount, receivingID ], requestingID, respondModule, this, { res: res });
+    });
+
+    this.app.get("/output", (req, res) => { // Show output
+        // Get IP of visitor
+        let ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress).replace("::ffff:", "");
+
+        logger("info", `[Web Request] ${ip} requested to see the output!`);
+
+        fs.readFile(srcdir + "/../output.txt", (err, data) => {
+            if(err) logger("error", "urltocomment: error reading output.txt: " + err);
+
+            res.write(String(data));
+            res.status(200);
+            res.end();
+        });
+    });
+
+    this.app.use((req, res) => { // Show idk page thanks
+        res.status(404).send("404: Page not Found.</br>Please use /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.");
+    });
+
+
+    // Start webserver and handle error
+    this.app.listen(3034, () => {
+        logger("info", "Webserver is enabled: Server is listening on port 3034.\n       Visit it in your browser: http://localhost:3034\n", true);
+    });
+
+    this.app.on("error", (err) => {
+        logger("error", "Webserver plugin: An error occurred trying to start the webserver! " + err, true);
+    });
 };
 
 
 
-// JSDoc for a few things to make them easier to use for you
+
+// JSDoc for global logger function to make using it easier for you
 /**
  * Log something to the output
  * @param {String} type Type of your log message. Valid types: `info`, `warn`, `error` or `debug`
@@ -151,4 +169,4 @@ module.exports.info = {
  * @param {Array} animation Call `logger.animation("animation-name")` in this parameter to get pre-defined animations. Valid animation-name's: loading, waiting, bounce, progress, arrows, bouncearrows
  * @returns {String} The full formatted message which will be logged
  */
-var logger = global.logger;
+const logger = global.logger;
