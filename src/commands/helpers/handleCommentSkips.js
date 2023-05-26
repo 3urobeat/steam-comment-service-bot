@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 23:12:35
+ * Last Modified: 26.05.2023 14:45:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -170,3 +170,47 @@ function sortFailedCommentsObject(failedObj) {
 
     return failedObj;
 }
+
+
+/**
+ * Groups same error messages together, counts amount, lists affected bots and converts it to a String.
+ * @param {Object} obj failedcomments object that should be converted
+ * @returns {String} String that looks like this: `amount`x - `indices`\n`error message`
+ */
+module.exports.failedCommentsObjToString = (obj) => {
+    // Count amount of each string
+    let grouped = {};
+
+    Object.keys(obj).forEach((e) => {
+        let err = obj[e];
+
+        // Check if entry for this err msg already exists and increment amount
+        if (Object.keys(grouped).includes(err)) {
+            grouped[err].amount++; // Increment amount
+            grouped[err].bots += ", " + e; // Add request key (comment index, bot index & proxy index)
+
+        } else { // ...or add new entry
+
+            grouped[err] = {
+                amount: 1,
+                bots: e
+            };
+        }
+
+    });
+
+    // Sort object descending
+    let sortedArr = Object.values(grouped).sort((a, b) => {
+        return b.amount - a.amount;
+    });
+
+    // Construct return string
+    let str = "";
+
+    sortedArr.forEach((e) => {
+        str += `${e.amount}x - ${e.bots}\n${Object.keys(grouped)[Object.values(grouped).indexOf(e)]}\n\n`;
+    });
+
+    // Return string and remove trailing newline
+    return str.trim();
+};
