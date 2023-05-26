@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 25.05.2023 20:00:53
+ * Last Modified: 26.05.2023 23:55:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -21,7 +21,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 
 module.exports.restart = {
-    names: ["rs", "restart"],
+    names: ["restart", "rs"],
     description: "",
     ownersOnly: true,
 
@@ -63,7 +63,7 @@ module.exports.stop = {
 
 
 module.exports.reload = {
-    names: ["reload"],
+    names: ["reload", "rl"],
     description: "Reloads all commands and plugins without needing to restart. Please only use it for testing, this isn't clean.",
     ownersOnly: true,
 
