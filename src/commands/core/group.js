@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 09.05.2023 15:14:04
+ * Last Modified: 26.05.2023 23:41:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -70,7 +70,7 @@ module.exports.leaveGroup = {
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botmaintenance); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         if (isNaN(args[0]) && !String(args[0]).startsWith("https://steamcommunity.com/groups/")) return respond(commandHandler.data.lang.leavegroupcmdinvalidgroup);
 
@@ -125,7 +125,7 @@ module.exports.leaveAllGroups = {
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botmaintenance); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         // TODO: This is bad. Rewrite using a message collector, maybe add one to steamChatInteraction helper
         var abortleaveallgroups; // eslint-disable-line no-var

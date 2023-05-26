@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.05.2023 14:45:35
+ * Last Modified: 26.05.2023 23:41:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -37,7 +37,7 @@ module.exports.abort = {
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botmaintenance); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         handleSteamIdResolving(args[0], null, (err, res) => {
             if (res) {

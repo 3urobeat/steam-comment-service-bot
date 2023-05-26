@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 17.05.2023 13:16:50
+ * Last Modified: 26.05.2023 23:41:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -37,7 +37,7 @@ module.exports.addFriend = {
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botmaintenance); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         if (!args[0]) return respond(commandHandler.data.lang.invalidprofileid);
 
@@ -96,7 +96,7 @@ module.exports.unfriend = {
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botmaintenance); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         // Unfriend message sender with all bot accounts if no id was provided
         if (!args[0]) {
@@ -148,7 +148,7 @@ module.exports.unfriendall = {
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botmaintenance); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         // TODO: This is bad. Rewrite using a message collector, maybe add one to steamChatInteraction helper
         var abortunfriendall; // eslint-disable-line no-var

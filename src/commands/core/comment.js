@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 17.05.2023 20:40:29
+ * Last Modified: 26.05.2023 23:07:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -46,7 +46,7 @@ module.exports.comment = {
 
 
         /* --------- Check for disabled comment cmd or if update is queued --------- */
-        if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botmaintenance); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready);    // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         if (commandHandler.data.advancedconfig.disableCommentCmd)       return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botmaintenance); // Bot is set to maintenance mode - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         if (commandHandler.controller.info.activeLogin)                 return respond(commandHandler.data.lang.commentactiverelog);  // Bot is waiting for relog
         if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(commandHandler.data.lang.commentcmdowneronly); // Comment command is restricted to owners only
