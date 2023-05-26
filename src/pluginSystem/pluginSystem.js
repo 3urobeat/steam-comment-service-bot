@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 25.05.2023 20:11:54
+ * Last Modified: 27.05.2023 00:24:15
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -49,6 +49,8 @@ PluginSystem.prototype.reloadPlugins = function() {
 
     // Delete all plugin objects. (I'm not sure if this is necessary or if clearing the pluginList obj will garbage collect them)
     Object.keys(this.pluginList).forEach(e => {
+        this.pluginList[e].unload();
+
         delete this.pluginList[e];
     });
 

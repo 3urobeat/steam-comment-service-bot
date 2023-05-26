@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 09:37:57
  * Author: 3urobeat
  *
- * Last Modified: 25.05.2023 13:06:31
+ * Last Modified: 27.05.2023 00:19:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -49,7 +49,6 @@ module.exports = Plugin;
  * This function will be called by the plugin loader after updating but before logging in. Initialize your plugin here.
  */
 Plugin.prototype.load = function() {
-
     logger("info", "Hello World!"); // Log something for example. This will be logged instantly but only appear after ready because of the readyafterlogs system.
 
     // Example of adding a command that will respond with "Hello World!" on "hello" or "cool-alias"
@@ -62,7 +61,14 @@ Plugin.prototype.load = function() {
             respondModule(context, resInfo, "Hello world!");
         }
     });
+};
 
+
+/**
+ * This function will be called when the plugin gets reloaded (not on bot stop). It allows you to destroy any objects so the next load won't throw any errors.
+ */
+Plugin.prototype.unload = function() {
+    logger("info", "Bye World!");
 };
 
 

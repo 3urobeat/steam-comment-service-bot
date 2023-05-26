@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 14:12:17
  * Author: 3urobeat
  *
- * Last Modified: 26.05.2023 23:32:27
+ * Last Modified: 27.05.2023 00:27:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -36,6 +36,9 @@ const Plugin = function(sys) {
     this.controller     = sys.controller;
     this.data           = sys.controller.data;
     this.commandHandler = sys.commandHandler;
+
+    this.app;
+    this.server;
 };
 
 // Include some information about your plugin here. This is exported directly so the plugin loader can read it before creating a new object.
@@ -71,9 +74,20 @@ Plugin.prototype.load = function() {
 
 
 /**
+ * This function will be called when the plugin gets reloaded (not on bot stop). It allows you to destroy any objects so the next load won't throw any errors.
+ */
+Plugin.prototype.unload = function() {
+    logger("info", "Webserver plugin: Closing running webserver...");
+
+    this.server.close();
+};
+
+
+/**
  * This function will be called when the bot is ready (aka all accounts were logged in).
  */
 Plugin.prototype.ready = function() {
+    if (!enabled) return;
 
     /**
      * Our commandHandler respondModule implementation - Sends a response to the webpage visitor.
@@ -147,11 +161,11 @@ Plugin.prototype.ready = function() {
 
 
     // Start webserver and handle error
-    this.app.listen(3034, () => {
+    this.server = this.app.listen(3034, () => {
         logger("info", "Webserver is enabled: Server is listening on port 3034.\n       Visit it in your browser: http://localhost:3034\n", true);
     });
 
-    this.app.on("error", (err) => {
+    this.server.on("error", (err) => {
         logger("error", "Webserver plugin: An error occurred trying to start the webserver! " + err, true);
     });
 };
