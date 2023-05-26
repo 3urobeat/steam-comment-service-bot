@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 14.05.2023 15:41:57
+ * Last Modified: 26.05.2023 14:44:18
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -97,7 +97,7 @@ DataManager.prototype.checkData = function() {
             this.config.maxOwnerComments = 1;
         }
         if (this.config.commentdelay <= 500) {
-            logWarn("warn", `${logger.colors.fgred}Your commentdelay is set to a way too low value!\n        Using a commentdelay of 500ms or less will result in an instant cooldown from Steam and therefore a failed comment request.\n       Automatically setting it to the default value of 15 seconds...`, true);
+            logWarn("warn", `${logger.colors.fgred}Your commentdelay is set to a way too low value!\n       Using a commentdelay of 500ms or less will result in an instant cooldown from Steam and therefore a failed comment request.\n       Automatically setting it to the default value of 15 seconds...`, true);
             this.config.commentdelay = 15000;
         }
         if (this.config.commentdelay / (maxCommentsOverall / 2) < 1250) {

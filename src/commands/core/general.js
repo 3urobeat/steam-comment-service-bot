@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.05.2023 12:33:02
+ * Last Modified: 25.05.2023 20:13:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -181,5 +181,40 @@ module.exports.owner = {
         if (commandHandler.data.config.owner.length < 1) return respond(commandHandler.data.lang.ownercmdnolink);
 
         respond(commandHandler.data.lang.ownercmdmsg + "\n" + commandHandler.data.config.owner);
+    }
+};
+
+
+// Test Command for debugging
+module.exports.test = {
+    names: ["test"],
+    description: "",
+    ownersOnly: true,
+
+    run: async (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+
+        // Do not remove, these are handleSteamIdResolving test cases. Might be useful to include later in steamid-resolving lib test suite
+        let { handleSteamIdResolving } = require(srcdir + "/controller/helpers/handleSteamIdResolving.js");
+
+        // With type param
+        handleSteamIdResolving("3urobeat", "profile", console.log);
+        handleSteamIdResolving("3urobeatGroup", "group", console.log);
+        handleSteamIdResolving("2966606880", "sharedfile", console.log);
+
+        // Link matching
+        handleSteamIdResolving("https://steamcommunity.com/id/3urobeat", null, console.log);
+        handleSteamIdResolving("https://steamcommunity.com/profiles/76561198260031749", null, console.log);
+        handleSteamIdResolving("https://steamcommunity.com/groups/3urobeatGroup", null, console.log);
+        handleSteamIdResolving("https://steamcommunity.com/sharedfiles/filedetails/?id=2966606880", null, console.log);
+
+        // We don't know, let helper figure it out
+        handleSteamIdResolving("3urobeat", null, console.log);
+        handleSteamIdResolving("3urobeatGroup", null, console.log);
+        handleSteamIdResolving("2966606880", null, console.log);
+
+        // We already provide the correct id
+        handleSteamIdResolving("76561198260031749", null, console.log);
+        handleSteamIdResolving("103582791464712227", null, console.log);
     }
 };
