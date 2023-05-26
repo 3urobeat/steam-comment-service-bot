@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 24.05.2023 21:36:10
+ * Last Modified: 26.05.2023 16:10:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -33,6 +33,8 @@ const Bot = function(controller, index) {
     this.data       = controller.data;
     this.index      = index;
     this.status     = "offline";
+
+    this.friendMessageBlock = []; // SteamID64's to ignore in the friendMessage event handler. This is used by readChatMessage() to prevent duplicate responses.
 
     let proxyIndex = this.index % controller.data.proxies.length; // Spread all accounts equally with a simple modulo calculation
 
@@ -154,3 +156,11 @@ Bot.prototype.checkMsgBlock = function(steamID64, message) {}; // eslint-disable
  * @param {Number} part Internal: Index of which part to send for messages larger than 750 chars
  */
 Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry, part = 0) {}; // eslint-disable-line
+
+/**
+ * Waits for a Steam Chat message from this user to this account and resolves their message content. The "normal" friendMessage event handler will be blocked for this user.
+ * @param {String} steamID64 The steamID64 of the user to read a message from
+ * @param {Number} timeout Time in ms after which the Promise will be resolved if user does not respond. Pass 0 to disable (not recommended)
+ * @returns {Promise} Resolved with `String` on response or `null` on timeout.
+ */
+Bot.prototype.readChatMessage = function(steamID64, timeout) {}; // eslint-disable-line

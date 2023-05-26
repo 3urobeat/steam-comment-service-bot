@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 25.05.2023 18:35:29
+ * Last Modified: 26.05.2023 18:53:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -17,6 +17,8 @@
 
 // Steam Chat interaction helper which is implemented by the main bot account. It gets called by commands to respond to the user
 
+
+const SteamID = require("steamid");
 
 const Bot = require("../bot");
 
@@ -86,6 +88,63 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
             } else {
                 if (part != 0) logger("debug", "Bot sendChatMessage(): All parts of the message have been sent"); // Only log debug for multi-part messages
             }
+        }
+    });
+};
+
+
+/**
+ * Waits for a Steam Chat message from this user to this account and resolves their message content. The "normal" friendMessage event handler will be blocked for this user.
+ * @param {String} steamID64 The steamID64 of the user to read a message from
+ * @param {Number} timeout Time in ms after which the Promise will be resolved if user does not respond. Pass 0 to disable (not recommended)
+ * @returns {Promise} Resolved with `String` on response or `null` on timeout.
+ */
+Bot.prototype.readChatMessage = function(steamID64, timeout) {
+    return new Promise((resolve) => {
+        let noResponseTimeout;
+
+        logger("debug", `Bot readChatMessage(): Attaching event listener for ${steamID64} with timeout of ${timeout}ms`);
+
+        // Check for duplicate request and block "normal" friendMessage event handler
+        if (this.friendMessageBlock.includes(steamID64)) {
+            logger("warn", "Duplicate readChatMessage() request! Ignoring call as another instance is already waiting for a response...");
+            return resolve(null);
+        }
+
+        this.friendMessageBlock.push(steamID64);
+
+        // Provide function to handle event
+        let handleEvent = (steamID, message) => { // ES6 function to keep previous context
+            let msgSteamID64 = new SteamID(String(steamID)).getSteamID64();
+
+            if (msgSteamID64 != steamID64) return; // Ignore if not from our user
+
+            logger("debug", `Bot readChatMessage(): Response from user ${steamID64}: ${message}`);
+            resolve(message); // Resolve with message content
+
+            // Clean up!
+            this.friendMessageBlock = this.friendMessageBlock.filter(e => e !== steamID64);
+            this.user.removeListener("friendMessage", handleEvent);
+            if (timeout > 0) clearTimeout(noResponseTimeout);
+        };
+
+        // Attach a friendMessage event handler for this steamID64
+        this.user.addListener("friendMessage", handleEvent);
+
+        // Attach a timeout handler
+        if (timeout > 0) {
+            noResponseTimeout = setTimeout(() => {
+                logger("debug", `Bot readChatMessage(): No response from ${steamID64} in ${timeout}ms. Timing out...`);
+
+                // Resolve with null
+                resolve(null);
+
+                // Clean up!
+                this.friendMessageBlock = this.friendMessageBlock.filter(e => e !== steamID64);
+                this.user.removeListener("friendMessage", handleEvent);
+                if (timeout > 0) clearTimeout(noResponseTimeout);
+
+            }, timeout);
         }
     });
 };
