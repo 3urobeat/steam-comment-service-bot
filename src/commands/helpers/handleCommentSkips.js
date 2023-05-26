@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 26.05.2023 14:45:46
+ * Last Modified: 26.05.2023 15:08:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -94,7 +94,7 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
     // Add description to errors to make it easier to understand for users. Add extra cooldown for certain errors
     switch (String(error).toLowerCase()) {
         case "error: http error 429":
-            description = "This IP has commented too often recently and has been blocked by Steam for a few minutes. Please wait a moment and then try again.";
+            description = "This IP has commented too often recently. Please wait a few minutes and try again.";
 
             // Add 5 minutes of extra cooldown to all bot accounts that are also using this proxy by adding them to the accounts list of this request
             activeReqEntry.accounts = activeReqEntry.accounts.concat(Object.keys(commandHandler.controller.getBots(null, true)).filter(e => commandHandler.controller.getBots(null, true)[e].loginData.proxyIndex == bot.loginData.proxyIndex && !activeReqEntry.accounts.includes(e))); // Append all accounts with the same proxy which aren't included yet
@@ -113,30 +113,30 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
             }
             break;
         case "error: http error 502":
-            description = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us";
+            description = "The Steam servers seem to have a problem. Check the status here: https://steamstat.us";
             break;
         case "error: http error 504":
-            description = "The steam servers are slow atm/are down. Check Steam's status here: https://steamstat.us";
+            description = "The Steam servers seem to have a problem. Check the status here: https://steamstat.us";
             break;
         case "error: you've been posting too frequently, and can't make another post right now":
-            description = "This account has commented too often recently and has been blocked by Steam for a few minutes. Please wait a moment and then try again.";
+            description = "This account has commented too often recently. Please wait a few minutes and try again.";
 
             activeReqEntry.until += 300000; // Add 5 minutes of cooldown
             break;
         case "error: there was a problem posting your comment. please try again":
-            description = "Unknown reason - please wait a minute and try again.";
+            description = "Unknown reason. Please wait a few minutes and try again.";
             break;
         case "error: the settings on this account do not allow you to add comments":
-            description = "The profile's comment section is private, the account doesn't meet steams regulations or has a cooldown. Try again later and maybe add bot account as friend.";
+            description = "Cooldown, private profile or bot account does not meet Steam's regulations. Try again later and add bot account as friend, if not done already.";
             break;
         case "error: to post this comment, your account must have steam guard enabled":
-            description = "The account trying to comment doesn't seem to have steam guard enabled.";
+            description = "The bot account does not have Steam Guard enabled!";
             break;
         case "error: socket hang up":
-            description = "The steam servers seem to have a problem/are down. Check Steam's status here: https://steamstat.us";
+            description = "The Steam servers seem to have a problem. Check the status here: https://steamstat.us";
             break;
         default:
-            description = "Please wait a moment and try again!";
+            description = "Please wait a few minutes and try again!";
     }
 
 
