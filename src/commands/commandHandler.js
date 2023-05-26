@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 25.05.2023 19:44:44
+ * Last Modified: 26.05.2023 23:51:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -184,7 +184,7 @@ CommandHandler.prototype.reloadCommands = function() {
 
     // Delete cache so requiring commands again will load new changes
     Object.keys(require.cache).forEach((key) => {
-        if (key.includes("src/commands/core")) delete require.cache[key];
+        if (key.includes("src/commands/core") || key.includes("src/commands/helpers")) delete require.cache[key];
     });
 
     // Load core commands again after a moment
