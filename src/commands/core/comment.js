@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.05.2023 23:07:33
+ * Last Modified: 27.05.2023 00:06:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -80,7 +80,7 @@ module.exports.comment = {
 
         // Get all currently available bot accounts. Block limited accounts from being eligible from commenting in groups
         let allowLimitedAccounts = (idType != "group");
-        let { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = getAvailableBotsForCommenting(commandHandler, numberOfComments, allowLimitedAccounts, receiverSteamID64);
+        let { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = getAvailableBotsForCommenting(commandHandler, numberOfComments, allowLimitedAccounts, idType, receiverSteamID64);
 
         if (availableAccounts.length - accsToAdd < accsNeeded && accsToAdd.length == 0 && !whenAvailableStr) { // Check if this bot has no suitable accounts for this request and there won't be any available at any point
             if (!allowLimitedAccounts) respond(commandHandler.data.lang.commentnounlimitedaccs); // Send less generic message for requests which require unlimited accounts
