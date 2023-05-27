@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 09:37:57
  * Author: 3urobeat
  *
- * Last Modified: 27.05.2023 00:19:00
+ * Last Modified: 27.05.2023 12:34:15
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -32,13 +32,6 @@ const Plugin = function(sys) {
     this.controller     = sys.controller;
     this.data           = sys.controller.data;
     this.commandHandler = sys.commandHandler;
-};
-
-// Include some information about your plugin here. This is exported directly so the plugin loader can read it before creating a new object.
-Plugin.info = {
-    name: "template",
-    version: "1.0",
-    author: "3urobeat"
 };
 
 // Export everything in this file to make it accessible to the plugin loader

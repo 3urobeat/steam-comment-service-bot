@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 14:12:17
  * Author: 3urobeat
  *
- * Last Modified: 27.05.2023 00:27:22
+ * Last Modified: 27.05.2023 16:28:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -19,7 +19,6 @@ const PluginSystem = require("../../src/pluginSystem/pluginSystem.js"); // eslin
 
 const fs      = require("fs");
 const express = require("express");
-const SteamID = require("steamid");
 
 const enabled = true; // TODO: Needs a proper config/info.json system with enable, version, and dependencies keys. More keys can be added by the plugin dev, for example a secretkey in this case.
 
@@ -39,13 +38,6 @@ const Plugin = function(sys) {
 
     this.app;
     this.server;
-};
-
-// Include some information about your plugin here. This is exported directly so the plugin loader can read it before creating a new object.
-Plugin.info = {
-    name: "webserver",
-    version: "1.0",
-    author: "3urobeat"
 };
 
 // Export everything in this file to make it accessible to the plugin loader
