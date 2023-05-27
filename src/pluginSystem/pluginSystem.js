@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 27.05.2023 00:24:15
+ * Last Modified: 27.05.2023 11:45:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -36,10 +36,11 @@ const PluginSystem = function(controller) {
 
     // Load helper files
     require("./loadPlugins.js");
-
-    // Load all plugins now
-    this._loadPlugins();
+    require("./pluginCheck.js");
 };
+
+// The plugin system loads all plugins and provides functions for plugins to hook into
+module.exports = PluginSystem;
 
 
 /**
@@ -72,5 +73,16 @@ PluginSystem.prototype.reloadPlugins = function() {
 };
 
 
-// The plugin system loads all plugins and provides functions for plugins to hook into
-module.exports = PluginSystem;
+/* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
+
+/**
+ * Internal: Loads all plugins in /plugins dir and exports them as PluginSystem.pluginList object
+ */
+PluginSystem.prototype._loadPlugins = function() {};
+
+/**
+ * Internal: Checks a plugin, displays relevant warnings and decides whether the plugin is allowed to be loaded
+ * @param {Object} thisPlugin Plugin file object returned by require()
+ * @returns {Promise} Resolved with `true` (can be loaded) or `false` (must not be loaded) on completion
+ */
+PluginSystem.prototype._checkPlugin = function(thisPlugin) {}; // eslint-disable-line
