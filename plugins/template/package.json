@@ -1,0 +1,12 @@
+{
+    "name": "template",
+    "version": "1.0",
+    "description": "This is a template plugin to help you create your own.",
+    "dependencies": {},
+    "author": "3urobeat",
+    "license": "GPL-3.0",
+
+    "pluginConfig": {
+        "enabled": false
+    }
+}

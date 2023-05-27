@@ -4,7 +4,7 @@
  * Created Date: 27.05.2023 00:31:57
  * Author: 3urobeat
  *
- * Last Modified: 27.05.2023 17:03:54
+ * Last Modified: 27.05.2023 18:09:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -22,7 +22,7 @@ const PluginSystem = require("./pluginSystem");
  * Internal: Checks a plugin, displays relevant warnings and decides whether the plugin is allowed to be loaded
  * @param {String} folderName Name of the plugin folder. This is used to reference the plugin when thisPluginConf is undefined
  * @param {Object} thisPlugin Plugin file object returned by require()
- * @param {Object} thisPluginConf Config.json object of this plugin
+ * @param {Object} thisPluginConf package.json object of this plugin
  * @returns {Promise} Resolved with `true` (can be loaded) or `false` (must not be loaded) on completion
  */
 PluginSystem.prototype._checkPlugin = function(folderName, thisPlugin, thisPluginConf) {

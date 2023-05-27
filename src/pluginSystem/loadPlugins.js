@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:46:09
  * Author: 3urobeat
  *
- * Last Modified: 27.05.2023 16:19:44
+ * Last Modified: 27.05.2023 18:24:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -37,13 +37,13 @@ PluginSystem.prototype._loadPlugins = function() {
             // Iterate over all folders in this dir
             files.forEach(async (e, i) => {
                 if (fs.existsSync(`./plugins/${e}/plugin.js`)) { // Welcome to stupid indentation world, I hope you like your stay
-                    if (fs.existsSync(`./plugins/${e}/config.json`)) {
+                    if (fs.existsSync(`./plugins/${e}/package.json`)) {
 
                         // Try to load plugin
                         try {
                             // Load the plugin files
                             let thisPlugin     = require(`../../plugins/${e}/plugin.js`);
-                            let thisPluginConf = require(`../../plugins/${e}/config.json`);
+                            let thisPluginConf = require(`../../plugins/${e}/package.json`);
 
                             // Run checks for this plugin
                             let canBeLoaded = await this._checkPlugin(e, thisPlugin, thisPluginConf);
@@ -68,7 +68,7 @@ PluginSystem.prototype._loadPlugins = function() {
                         }
 
                     } else {
-                        logger("error", `Plugin ${e} does not have an configuration file called 'config.json'! Skipping plugin...`);
+                        logger("error", `Plugin ${e} does not have an configuration file called 'package.json'! Skipping plugin...`);
                     }
                 } else {
                     logger("error", `Plugin ${e} does not have an entry file called 'plugin.js'! Skipping plugin...`);
