@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 10.05.2023 12:51:54
+ * Last Modified: 27.05.2023 11:09:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -114,7 +114,7 @@ Controller.prototype._readyEvent = function() {
 
 
     // Log amount of warnings displayed by dataCheck and remind the user to take a look
-    if (this.info.dataCheckWarnings > 0) logger("warn", `The bot started with ${this.info.dataCheckWarnings} warning(s)! Please scroll up and read the warnings displayed during startup!\n`, true);
+    if (this.info.startupWarnings > 0) logger("warn", `The bot started with ${this.info.startupWarnings} warning(s)! Please scroll up and read the warnings displayed during startup!\n`, true);
 
 
     // Please star my repo :)

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.05.2023 14:44:18
+ * Last Modified: 27.05.2023 11:34:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -31,12 +31,12 @@ DataManager.prototype.checkData = function() {
         logger("info", "Running datachecks and displaying config recommendations...", false, true, logger.animation("loading"));
 
         // Shorthander for checks below to log warning and count it. Must be an ES6 function to not create a new context for 'this.' to work!
-        let logWarn = ((a, b, c) => { logger(a, b, c); this.controller.info.dataCheckWarnings++; }); // I originally wanted to use iArguments instead of hardcoding a, b, c but that didn't work out easily so I digress
+        let logWarn = ((a, b, c) => { logger(a, b, c); this.controller.info.startupWarnings++; }); // I originally wanted to use iArguments instead of hardcoding a, b, c but that didn't work out easily so I digress
 
-        this.controller.info.dataCheckWarnings = 0; // Reset value to start fresh if this module should be integrated into a plugin or something like that
+        this.controller.info.startupWarnings = 0; // Reset value to start fresh if this module should be integrated into a plugin or something like that
 
 
-        // Display warning/notice if user is running in beta mode. Don't count this to dataCheckWarnings
+        // Display warning/notice if user is running in beta mode. Don't count this to startupWarnings
         if (this.datafile.branch == "beta-testing") {
             logger("", "", true, true); // Add one empty line that only appears in output.txt
             logger("", `${logger.colors.reset}[${logger.colors.fgred}Notice${logger.colors.reset}] Your updater and bot is running in beta mode. These versions are often unfinished and can be unstable.\n         If you would like to switch, open data.json and change 'beta-testing' to 'master'.\n         If you find an error or bug please report it: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose\n`, true);
