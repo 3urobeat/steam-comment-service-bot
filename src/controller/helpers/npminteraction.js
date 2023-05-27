@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.05.2023 22:47:13
+ * Last Modified: 27.05.2023 18:28:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -50,13 +50,23 @@ module.exports.reinstallAll = (logger, callback) => {
 
 
 /**
- * Updates all installed packages to versions listed in package.json
+ * Updates all installed packages to versions listed in package.json from the project root directory.
  * @param {function} [callback] Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
 module.exports.update = (callback) => {
-    logger("debug", "npminteraction update(): Running 'npm install'...");
+    module.exports.updateFromPath(srcdir + "/..", callback);
+};
 
-    exec("npm install", { cwd: srcdir + "/.." }, (err, stdout) => {
+
+/**
+ * Updates all installed packages to versions listed in package.json
+ * @param {String} path Custom path to read package.json from and install packages to
+ * @param {function} [callback] Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
+ */
+module.exports.updateFromPath = (path, callback) => {
+    logger("debug", `npminteraction update(): Running 'npm install' in '${path}'...`);
+
+    exec("npm install", { cwd: path }, (err, stdout) => {
         if (err) return callback(err, null);
 
         // Logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
