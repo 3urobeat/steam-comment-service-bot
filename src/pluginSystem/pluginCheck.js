@@ -4,7 +4,7 @@
  * Created Date: 27.05.2023 00:31:57
  * Author: 3urobeat
  *
- * Last Modified: 27.05.2023 18:09:52
+ * Last Modified: 27.05.2023 19:14:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -29,13 +29,6 @@ PluginSystem.prototype._checkPlugin = function(folderName, thisPlugin, thisPlugi
     return new Promise((resolve) => {
         logger("info", `Running checks for plugin folder '${folderName}'...`, false, true, logger.animation("loading"));
 
-
-        // Check if the plugin has no information in config file
-        if (!thisPluginConf || !thisPluginConf.name || !thisPluginConf.version || !thisPluginConf.author) {
-            logger("error", `Plugin in folder '${folderName}' is missing information in its config file! Make sure that name, version and author are populated.`);
-            return resolve(false);
-        }
-
         // Check if plugin with same name was already found and print error msg
         if (Object.keys(this.pluginList).includes(thisPluginConf.name)) {
             logger("error", `Duplicate plugin with the name ${thisPluginConf.name} found!`);
@@ -50,9 +43,6 @@ PluginSystem.prototype._checkPlugin = function(folderName, thisPlugin, thisPlugi
 
         // Display warning if plugin has no unload function
         if (!thisPlugin.prototype.unload) logger("warn", `Plugin ${thisPluginConf.name} v${thisPluginConf.version} does not have an unload function! This may prevent the reloading function from working properly.`);
-
-        // Ignore template plugin
-        if (thisPluginConf.name == "template") return resolve(false); // TODO: Remove when enable/disable in config is implemented
 
 
         // Resolve true if no check above aborted

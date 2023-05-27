@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:46:09
  * Author: 3urobeat
  *
- * Last Modified: 27.05.2023 18:24:44
+ * Last Modified: 27.05.2023 20:00:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -17,7 +17,9 @@
 
 const fs = require("fs");
 
-const PluginSystem = require("./pluginSystem.js");
+const PluginSystem   = require("./pluginSystem.js");
+const { syncLoop }   = require("../controller/helpers/misc.js");
+const npmInteraction = require("../controller/helpers/npminteraction.js");
 
 
 /**
@@ -34,50 +36,80 @@ PluginSystem.prototype._loadPlugins = function() {
             if (err)               return logger("error", "Error while reading plugins dir: " + err, true);
             if (files.length == 0) return logger("info", "No plugins in ./plugins found!", false, true, logger.animation("loading"));
 
-            // Iterate over all folders in this dir
-            files.forEach(async (e, i) => {
-                if (fs.existsSync(`./plugins/${e}/plugin.js`)) { // Welcome to stupid indentation world, I hope you like your stay
-                    if (fs.existsSync(`./plugins/${e}/package.json`)) {
+            // Iterate over all folders in this dir.
+            syncLoop(files.length, (loop, i) => {
+                setTimeout(() => { // TODO: SyncLoop ONLY works inside this timeout. Idk why but this is a small price to pay for functionality right now
+                    let e = files[i];
 
-                        // Try to load plugin
-                        try {
-                            // Load the plugin files
-                            let thisPlugin     = require(`../../plugins/${e}/plugin.js`);
-                            let thisPluginConf = require(`../../plugins/${e}/package.json`);
+                    // Check if entry file or info files are missing and instantly abort
+                    if (!fs.existsSync(`./plugins/${e}/plugin.js`)) {
+                        logger("error", `Plugin ${e} does not have an entry file called 'plugin.js'! Skipping plugin...`);
+                        return loop.next();
+                    }
+
+                    if (!fs.existsSync(`./plugins/${e}/package.json`)) {
+                        logger("error", `Plugin ${e} does not have an configuration file called 'package.json'! Skipping plugin...`);
+                        return loop.next();
+                    }
+
+                    // Try to load plugin
+                    try {
+                        // Load the plugin files
+                        let thisPluginConf = require(`../../plugins/${e}/package.json`);
+
+                        // Check if the plugin has no information in config file
+                        if (!thisPluginConf || !thisPluginConf.name || !thisPluginConf.version || !thisPluginConf.author || thisPluginConf.pluginConfig.enabled == undefined) {
+                            logger("error", `Plugin in folder '${e}' is missing information in its package.json file! Make sure that name, version, author and pluginConfig.enabled are populated.`);
+                            return loop.next();
+                        }
+
+                        // Skip all checks after determining config is intact if plugin is disabled
+                        if (!thisPluginConf.pluginConfig.enabled) {
+                            logger("debug", `Plugin '${thisPluginConf.name}' is disabled. Skipping plugin...`);
+                            return loop.next();
+                        }
+
+                        // Call 'npm install' for this plugin before loading to make sure every desired version is installed. This takes a moment but idk if there is a better way.
+                        logger("info", `Installing dependencies for ${thisPluginConf.name}...`, false, true, logger.animation("loading"));
+
+                        npmInteraction.updateFromPath(`${srcdir}/../plugins/${e}`, async (err) => {
+                            if (err) {
+                                logger("error", `Failed to install dependencies for plugin ${thisPluginConf.name}! Skipping plugin...\n${err}`);
+                                return loop.next();
+                            }
+
+                            // Load plugin after installing dependencies
+                            let thisPlugin = require(`../../plugins/${e}/plugin.js`);
 
                             // Run checks for this plugin
                             let canBeLoaded = await this._checkPlugin(e, thisPlugin, thisPluginConf);
-
-                            if (canBeLoaded) {
-                                // Create new plugin object, add reference to plugin list and call load function
-                                thisPlugin = new thisPlugin(this);
-                                this.pluginList[thisPluginConf.name] = thisPlugin;
-
-                                logger("info", `Loading plugin ${thisPluginConf.name} v${thisPluginConf.version} by ${thisPluginConf.author}...`, false, true, logger.animation("loading"));
-                                thisPlugin.load();
-
-                                // Attach any event functions the plugin might have exported
-                                if (thisPlugin.ready) this.controller.events.on("ready", () => thisPlugin.ready.call(thisPlugin)); // Use call() to apply context which gets replaced with EventEmitter
-
-                            } else {
-
+                            if (!canBeLoaded) {
                                 logger("error", `Plugin ${thisPluginConf.name} failed critical checks. Skipping plugin...`);
+                                return loop.next();
                             }
-                        } catch (err) {
-                            logger("error", `Error loading plugin '${e}'! Error: ${err.stack}`, true);
-                        }
 
-                    } else {
-                        logger("error", `Plugin ${e} does not have an configuration file called 'package.json'! Skipping plugin...`);
+                            // Create new plugin object, add reference to plugin list and call load function
+                            thisPlugin = new thisPlugin(this);
+                            this.pluginList[thisPluginConf.name] = thisPlugin;
+
+                            logger("info", `Loading plugin ${thisPluginConf.name} v${thisPluginConf.version} by ${thisPluginConf.author}...`, false, true, logger.animation("loading"));
+                            thisPlugin.load();
+
+                            // Attach any event functions the plugin might have exported
+                            if (thisPlugin.ready) this.controller.events.on("ready", () => thisPlugin.ready.call(thisPlugin)); // Use call() to apply context which gets replaced with EventEmitter
+
+                            loop.next();
+                        });
+
+                    } catch (err) {
+                        logger("error", `Error loading plugin '${e}'! Error: ${err.stack}`, true);
+                        return loop.next();
                     }
-                } else {
-                    logger("error", `Plugin ${e} does not have an entry file called 'plugin.js'! Skipping plugin...`);
-                }
-
-                // Resolve promise if we are on the last iteration
-                if (i + 1 == files.length) resolve();
-
+                }, 50);
+            }, () => { // Function that will run on exit, aka the last iteration
+                resolve();
             });
+
         });
     });
 };
