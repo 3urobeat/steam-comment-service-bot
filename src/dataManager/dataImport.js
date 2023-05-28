@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 24.05.2023 21:01:54
+ * Last Modified: 28.05.2023 20:36:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -259,8 +259,21 @@ DataManager.prototype._importFromDisk = function() {
 
             function loadLanguage() {
                 return new Promise((resolve) => {
-                    let lang = require(srcdir + "/data/lang/defaultlang.json");
+                    try {
+                        resolve(require(srcdir + "/data/lang/defaultlang.json"));
+                    } catch (err) {
+                        if (err) { // Corrupted!
+                            logger("", "", true, true);
 
+                            // Pull the file directly from GitHub.
+                            _this._pullNewFile("defaultlang.json", "./src/data/lang/defaultlang.json", resolve);
+                        }
+                    }
+                });
+            }
+
+            function loadCustomLang() {
+                return new Promise((resolve) => {
                     // Check before trying to import if the user even created the file
                     if (fs.existsSync(srcdir + "/../customlang.json")) {
                         let customlang;
@@ -272,13 +285,13 @@ DataManager.prototype._importFromDisk = function() {
                         } catch (err) {
                             logger("error", "It seems like you made a mistake (probably Syntax) in your customlang.json! I will not use any custom message.\nError: " + err);
 
-                            resolve(lang);
+                            resolve(_this.lang); // Resolve with default lang object
                         }
 
                         // Overwrite values in lang object with values from customlang
                         Object.keys(customlang).forEach((e, i) => {
                             if (e != "" && e != "note") {
-                                lang[e] = customlang[e]; // Overwrite each defaultlang key with a corresponding customlang key if one is set
+                                _this.lang[e] = customlang[e]; // Overwrite each defaultlang key with a corresponding customlang key if one is set
 
                                 customlangkeys++;
                             }
@@ -287,13 +300,14 @@ DataManager.prototype._importFromDisk = function() {
                                 if (customlangkeys > 0) logger("info", `${customlangkeys} customlang key imported!`, false, true, logger.animation("loading"));
                                     else logger("info", "No customlang keys found.", false, true, logger.animation("loading"));
 
-                                resolve(lang);
+                                resolve(_this.lang); // Resolve lang object with our new keys
                             }
                         });
-                    } else {
-                        logger("info", "No customlang.json file found...", false, true, logger.animation("loading"));
 
-                        resolve(lang);
+                    } else {
+
+                        logger("info", "No customlang.json file found...", false, true, logger.animation("loading"));
+                        resolve(_this.lang); // Resolve with default lang object
                     }
                 });
             }
@@ -310,6 +324,7 @@ DataManager.prototype._importFromDisk = function() {
             this.proxies        = await loadProxies();
             this.quotes         = await loadQuotes();
             this.lang           = await loadLanguage();
+            this.lang           = await loadCustomLang();
 
             this.lastCommentDB  = new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); // Autoload
             this.tokensDB       = new nedb({ filename: srcdir + "/data/tokens.db",      autoload: true });
