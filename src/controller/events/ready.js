@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 27.05.2023 11:09:56
+ * Last Modified: 28.05.2023 13:30:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -57,8 +57,10 @@ Controller.prototype._readyEvent = function() {
         if (e.user.limitations && e.user.limitations.limited) { // Check if limitations obj is populated before accessing limited just to be sure. The ready event should not have been called if limitations is not populated but better safe than sorry
             limitedaccs++;
         } else {
-            logger("debug", `Controller limitedCheck(): Failed to check if bot${e.index} is limited, showing it as unlimited...`);
-            failedtocheck++;
+            if (!e.user.limitations || e.user.limitations.limited != false) {
+                logger("debug", `Controller limitedCheck(): Failed to check if bot${e.index} is limited, showing it as unlimited...`);
+                failedtocheck++;
+            }
         }
 
         // Check for last iteration
