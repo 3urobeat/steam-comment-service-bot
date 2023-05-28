@@ -225,6 +225,8 @@ CSteamSharedfile.prototype.unsubscribe = function(callback) {
  * @param {function} callback - Takes only an Error object/null as the first argument
  */
 CSteamSharedfile.prototype.voteDown = function(callback) {
+	if (this.isDownvoted) callback(new Error("Already downvoted, cannot downvote again"));
+
 	this._community.voteDownSharedfile(this.id, callback);
 };
 
@@ -233,5 +235,7 @@ CSteamSharedfile.prototype.voteDown = function(callback) {
  * @param {function} callback - Takes only an Error object/null as the first argument
  */
 CSteamSharedfile.prototype.voteUp = function(callback) {
+	if (this.isUpvoted) callback(new Error("Already upvoted, cannot upvote again"));
+
 	this._community.voteUpSharedfile(this.id, callback);
 };
