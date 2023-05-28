@@ -4,7 +4,7 @@
  * Created Date: 22.03.2023 12:35:01
  * Author: 3urobeat
  *
- * Last Modified: 11.05.2023 12:41:21
+ * Last Modified: 28.05.2023 20:48:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -74,8 +74,12 @@ DataManager.prototype._restoreBackup = function(name, filepath, cacheentry, onli
 
 /**
  * Internal: Helper function to pull new file from GitHub
+ * @param {String} name Name of the file
+ * @param {String} filepath Full path, starting from project root with './'
+ * @param {function} resolve Your promise to resolve when file was pulled
+ * @param {Boolean} noRequire Optional: Set to true if resolve() should not be called with require(file) as param
  */
-DataManager.prototype._pullNewFile = async function(name, filepath, resolve) {
+DataManager.prototype._pullNewFile = async function(name, filepath, resolve, noRequire) {
     logger("warn", "Backup seems to be broken/not available! Pulling file from GitHub...", true);
 
     let file = await this.checkAndGetFile(filepath, logger, true, true);
@@ -86,5 +90,6 @@ DataManager.prototype._pullNewFile = async function(name, filepath, resolve) {
         else logger("info", `Successfully pulled new ${name} from GitHub.\n`, true);
 
     // Hack the path together: Take the srcdir path as we otherwise would start here, go back a level and append the filepath. filepath needs to start at project root level so that checkAndGetFile() works so we need to work around it here.
-    resolve(require(`${srcdir}/../${filepath}`));
+    if (noRequire) resolve();
+        else resolve(require(`${srcdir}/../${filepath}`));
 };
