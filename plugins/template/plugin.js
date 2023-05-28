@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 09:37:57
  * Author: 3urobeat
  *
- * Last Modified: 27.05.2023 12:34:15
+ * Last Modified: 28.05.2023 15:50:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -16,6 +16,9 @@
 
 // Note: This plugin, with the name "template" will not be loaded on start.
 // To create your own command, copy this folder, rename it and edit the info object below! Have fun!
+
+
+const logger = require("output-logger");
 
 const PluginSystem = require("../../src/pluginSystem/pluginSystem.js"); // eslint-disable-line
 
@@ -79,18 +82,3 @@ Plugin.prototype.ready = function() {
     // Note: This does seem to throw a RateLimitExceeded error which even a large delay doesn't fix. The retry works however. Idk, I think Steam might be at fault. // TODO: or is this a context related problem?
 
 };
-
-
-
-
-// JSDoc for global logger function to make using it easier for you
-/**
- * Log something to the output
- * @param {String} type Type of your log message. Valid types: `info`, `warn`, `error` or `debug`
- * @param {String} message The message to log
- * @param {Boolean} nodate Set to true to hide date and time
- * @param {Boolean} remove Set to true if the next log message should overwrite this one
- * @param {Array} animation Call `logger.animation("animation-name")` in this parameter to get pre-defined animations. Valid animation-name's: loading, waiting, bounce, progress, arrows, bouncearrows
- * @returns {String} The full formatted message which will be logged
- */
-const logger = global.logger;

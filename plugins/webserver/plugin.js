@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 14:12:17
  * Author: 3urobeat
  *
- * Last Modified: 27.05.2023 16:28:11
+ * Last Modified: 28.05.2023 15:51:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -19,8 +19,7 @@ const PluginSystem = require("../../src/pluginSystem/pluginSystem.js"); // eslin
 
 const fs      = require("fs");
 const express = require("express");
-
-const enabled = true; // TODO: Needs a proper config/info.json system with enable, version, and dependencies keys. More keys can be added by the plugin dev, for example a secretkey in this case.
+const logger  = require("output-logger");
 
 
 /**
@@ -48,8 +47,6 @@ module.exports = Plugin;
  * This function will be called by the plugin loader after updating but before logging in. Initialize your plugin here.
  */
 Plugin.prototype.load = function() {
-    if (!enabled) return;
-
     this.app = express();
 
     // Generate urlrequestsecretkey if it is not created already
@@ -79,7 +76,6 @@ Plugin.prototype.unload = function() {
  * This function will be called when the bot is ready (aka all accounts were logged in).
  */
 Plugin.prototype.ready = function() {
-    if (!enabled) return;
 
     /**
      * Our commandHandler respondModule implementation - Sends a response to the webpage visitor.
@@ -160,19 +156,5 @@ Plugin.prototype.ready = function() {
     this.server.on("error", (err) => {
         logger("error", "Webserver plugin: An error occurred trying to start the webserver! " + err, true);
     });
+
 };
-
-
-
-
-// JSDoc for global logger function to make using it easier for you
-/**
- * Log something to the output
- * @param {String} type Type of your log message. Valid types: `info`, `warn`, `error` or `debug`
- * @param {String} message The message to log
- * @param {Boolean} nodate Set to true to hide date and time
- * @param {Boolean} remove Set to true if the next log message should overwrite this one
- * @param {Array} animation Call `logger.animation("animation-name")` in this parameter to get pre-defined animations. Valid animation-name's: loading, waiting, bounce, progress, arrows, bouncearrows
- * @returns {String} The full formatted message which will be logged
- */
-const logger = global.logger;
