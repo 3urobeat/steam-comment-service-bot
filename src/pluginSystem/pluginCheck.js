@@ -4,7 +4,7 @@
  * Created Date: 27.05.2023 00:31:57
  * Author: 3urobeat
  *
- * Last Modified: 27.05.2023 19:14:35
+ * Last Modified: 28.05.2023 11:12:42
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -27,7 +27,7 @@ const PluginSystem = require("./pluginSystem");
  */
 PluginSystem.prototype._checkPlugin = function(folderName, thisPlugin, thisPluginConf) {
     return new Promise((resolve) => {
-        logger("info", `Running checks for plugin folder '${folderName}'...`, false, true, logger.animation("loading"));
+        logger("info", `PluginSystem: Running checks for plugin folder '${folderName}'...`, false, true, logger.animation("loading"));
 
         // Check if plugin with same name was already found and print error msg
         if (Object.keys(this.pluginList).includes(thisPluginConf.name)) {

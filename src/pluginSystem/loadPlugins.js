@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:46:09
  * Author: 3urobeat
  *
- * Last Modified: 27.05.2023 20:00:06
+ * Last Modified: 28.05.2023 11:13:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -41,6 +41,9 @@ PluginSystem.prototype._loadPlugins = function() {
                 setTimeout(() => { // TODO: SyncLoop ONLY works inside this timeout. Idk why but this is a small price to pay for functionality right now
                     let e = files[i];
 
+                    // Check if not a folder
+                    if (!fs.statSync(`./plugins/${e}`).isDirectory()) return loop.next();
+
                     // Check if entry file or info files are missing and instantly abort
                     if (!fs.existsSync(`./plugins/${e}/plugin.js`)) {
                         logger("error", `Plugin ${e} does not have an entry file called 'plugin.js'! Skipping plugin...`);
@@ -70,7 +73,7 @@ PluginSystem.prototype._loadPlugins = function() {
                         }
 
                         // Call 'npm install' for this plugin before loading to make sure every desired version is installed. This takes a moment but idk if there is a better way.
-                        logger("info", `Installing dependencies for ${thisPluginConf.name}...`, false, true, logger.animation("loading"));
+                        logger("info", `PluginSystem: Installing dependencies for ${thisPluginConf.name}...`, false, true, logger.animation("loading"));
 
                         npmInteraction.updateFromPath(`${srcdir}/../plugins/${e}`, async (err) => {
                             if (err) {
@@ -92,7 +95,7 @@ PluginSystem.prototype._loadPlugins = function() {
                             thisPlugin = new thisPlugin(this);
                             this.pluginList[thisPluginConf.name] = thisPlugin;
 
-                            logger("info", `Loading plugin ${thisPluginConf.name} v${thisPluginConf.version} by ${thisPluginConf.author}...`, false, true, logger.animation("loading"));
+                            logger("info", `PluginSystem: Loading plugin ${thisPluginConf.name} v${thisPluginConf.version} by ${thisPluginConf.author}...`, false, true, logger.animation("loading"));
                             thisPlugin.load();
 
                             // Attach any event functions the plugin might have exported
