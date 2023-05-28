@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:46:09
  * Author: 3urobeat
  *
- * Last Modified: 28.05.2023 11:13:13
+ * Last Modified: 28.05.2023 15:46:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -44,12 +44,7 @@ PluginSystem.prototype._loadPlugins = function() {
                     // Check if not a folder
                     if (!fs.statSync(`./plugins/${e}`).isDirectory()) return loop.next();
 
-                    // Check if entry file or info files are missing and instantly abort
-                    if (!fs.existsSync(`./plugins/${e}/plugin.js`)) {
-                        logger("error", `Plugin ${e} does not have an entry file called 'plugin.js'! Skipping plugin...`);
-                        return loop.next();
-                    }
-
+                    // Check if info file is missing and instantly abort
                     if (!fs.existsSync(`./plugins/${e}/package.json`)) {
                         logger("error", `Plugin ${e} does not have an configuration file called 'package.json'! Skipping plugin...`);
                         return loop.next();
@@ -78,6 +73,12 @@ PluginSystem.prototype._loadPlugins = function() {
                         npmInteraction.updateFromPath(`${srcdir}/../plugins/${e}`, async (err) => {
                             if (err) {
                                 logger("error", `Failed to install dependencies for plugin ${thisPluginConf.name}! Skipping plugin...\n${err}`);
+                                return loop.next();
+                            }
+
+                            // Check if plugin entry file is missing and abort
+                            if (!fs.existsSync(`./plugins/${e}/plugin.js`)) {
+                                logger("error", `Plugin ${e} does not have an entry file called 'plugin.js'! Skipping plugin...`);
                                 return loop.next();
                             }
 
