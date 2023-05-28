@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 09:37:57
  * Author: 3urobeat
  *
- * Last Modified: 28.05.2023 15:50:25
+ * Last Modified: 28.05.2023 16:03:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -80,5 +80,20 @@ Plugin.prototype.ready = function() {
 
     this.commandHandler.runCommand("ping", [], firstOwnerSteamID, this.controller.main.sendChatMessage, this.controller.main, { steamID64: firstOwnerSteamID });
     // Note: This does seem to throw a RateLimitExceeded error which even a large delay doesn't fix. The retry works however. Idk, I think Steam might be at fault. // TODO: or is this a context related problem?
+
+};
+
+
+const Bot = require("../../src/bot/bot.js");
+
+/**
+ * Called when a bot account changes it status. This can be "offline", "error", "skipped" or "online"
+ * @param {Bot} bot The bot object that changed status
+ * @param {String} oldStatus The old status it had
+ * @param {String} newStatus The new status it now has
+ */
+Plugin.prototype.statusUpdate = function(bot, oldStatus, newStatus) {
+
+    logger("info", `Template Plugin: Bot with index ${bot.index} changed status from ${oldStatus} to ${newStatus}!`);
 
 };

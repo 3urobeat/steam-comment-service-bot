@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:46:09
  * Author: 3urobeat
  *
- * Last Modified: 28.05.2023 15:46:36
+ * Last Modified: 28.05.2023 16:01:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -99,8 +99,9 @@ PluginSystem.prototype._loadPlugins = function() {
                             logger("info", `PluginSystem: Loading plugin ${thisPluginConf.name} v${thisPluginConf.version} by ${thisPluginConf.author}...`, false, true, logger.animation("loading"));
                             thisPlugin.load();
 
-                            // Attach any event functions the plugin might have exported
-                            if (thisPlugin.ready) this.controller.events.on("ready", () => thisPlugin.ready.call(thisPlugin)); // Use call() to apply context which gets replaced with EventEmitter
+                            // Attach any event functions the plugin might have exported. Use call() to apply context which gets replaced with EventEmitter
+                            if (thisPlugin.ready) this.controller.events.on("ready", () => thisPlugin.ready.call(thisPlugin));
+                            if (thisPlugin.statusUpdate) this.controller.events.on("statusUpdate", (a, b, c) => thisPlugin.statusUpdate.call(thisPlugin, a, b, c));
 
                             loop.next();
                         });
