@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 06.05.2023 12:09:01
+ * Last Modified: 29.05.2023 15:50:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -14,29 +14,87 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const starter = require("../starter.js"); // Load starter to access checkAndGetFile()
+
 const fs = require("fs");
+const { default: Nedb } = require("@seald-io/nedb"); // eslint-disable-line
+
+const Controller = require("../controller/controller.js"); // eslint-disable-line
+
 
 /**
  * Constructor - The dataManager system imports, checks, handles errors and provides a file updating service for all configuration files
- * @param {Object} controller Reference to the controller object
+ * @param {Controller} controller Reference to the controller object
  */
 const DataManager = function (controller) {
     this.controller = controller;
-    this.checkAndGetFile = starter.checkAndGetFile; // Reference checkAndGetFile() already defined in starter to use it more easily
+    this.checkAndGetFile = controller.checkAndGetFile;
 
-    // Register dataImport vars to let the IntelliSense know
-    this.cachefile = {};
+    /**
+     * Stores all `data.json` values.
+     * Read only - Do NOT MODIFY anything in this file!
+     * @type {{ version: string, versionstr: string, branch: string, filetostart: string, filetostarturl: string, mestr: string, aboutstr: string, firststart: boolean, compatibilityfeaturedone: boolean, whatsnew: string, urlrequestsecretkey: string, timesloggedin: number, totallogintime: number }}
+     */
     this.datafile = {};
+
+    /**
+     * Stores all `config.json` settings.
+     * @type {Object.<string, any>}
+     */
     this.config = {};
+
+    /**
+     * Stores all `advancedconfig.json` settings.
+     * @type {Object.<string, any>}
+     */
     this.advancedconfig = {};
-    this.logininfo = {};
-    this.proxies = [];
-    this.quotes = [];
+
+    /**
+     * Stores all language strings used for responding to a user.
+     * All default strings have already been replaced with corresponding matches from `customlang.json`.
+     * @type {Object.<string, string>}
+     */
     this.lang = {};
+
+    /**
+     * Stores all quotes used for commenting provided via the `quotes.txt` file.
+     * @type {Array<String>}
+     */
+    this.quotes = [];
+
+    /**
+     * Stores all proxies provided via the `proxies.txt` file.
+     * @type {Array<String>}
+     */
+    this.proxies = [];
+
+    /**
+     * Stores IDs from config files converted at runtime and backups for all config & data files.
+     * @type {{ ownerid: Array<String>, botsgroup: string, botsgroupid: string, configgroup: string, configgroup64id: string, ownerlinkid: string, botaccid: Array<String>, configjson: {}, advancedconfigjson: {}, datajson: {} }}
+     */
+    this.cachefile = {};
+
+    /**
+     * Stores the login information for every bot account provided via the `logininfo.json` or `accounts.txt` files.
+     * @type {Object.<string, { accountName: string, password: string, sharedSecret: string, steamGuardCode: null, machineName: string, deviceFriendlyName: string }>}
+     */
+    this.logininfo = {};
+
+    /**
+     * Database which stores the timestamp of the last comment request of every user. This is used to enforce `config.unfriendTime`.
+     * Document structure: { id: String, time: Number }
+     * @type {Nedb}
+     */
     this.lastCommentDB = {};
+
+    /**
+     * Database which stores the refreshTokens for all bot accounts.
+     * Document structure: { accountName: String, token: String }
+     * @type {Nedb}
+     */
     this.tokensDB = {};
 
+
+    // Dynamically load all helper files
     const loadHelpersFromFolder = (folder) => {
         fs.readdirSync(folder).forEach((file) => {
             if (!file.endsWith(".js")) return;
@@ -47,6 +105,7 @@ const DataManager = function (controller) {
             }
         });
     };
+
     loadHelpersFromFolder("./src/dataManager");
     loadHelpersFromFolder("./src/dataManager/helpers");
 };
