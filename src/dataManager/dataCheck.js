@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.05.2023 11:34:40
+ * Last Modified: 29.05.2023 17:05:47
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -24,7 +24,7 @@ const DataManager = require("./dataManager.js");
 
 /**
  * Checks currently loaded data for validity and logs some recommendations for a few settings.
- * @returns {Promise} Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
+ * @returns {Promise.<void>} Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
  */
 DataManager.prototype.checkData = function() {
     return new Promise((resolve, reject) => {

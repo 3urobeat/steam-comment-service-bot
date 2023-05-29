@@ -31,7 +31,7 @@ declare class Bot {
      * @param timeout - Time in ms after which the Promise will be resolved if user does not respond. Pass 0 to disable (not recommended)
      * @returns Resolved with `String` on response or `null` on timeout.
      */
-    readChatMessage(steamID64: string, timeout: number): Promise;
+    readChatMessage(steamID64: string, timeout: number): Promise<string | null>;
     /**
      * Handles the SteamUser debug events if enabled in advancedconfig
      */
@@ -94,7 +94,7 @@ declare class Bot {
      * @param timeout - Time in ms after which the Promise will be resolved if user does not respond. Pass 0 to disable (not recommended)
      * @returns Resolved with `String` on response or `null` on timeout.
      */
-    readChatMessage(steamID64: string, timeout: number): Promise;
+    readChatMessage(steamID64: string, timeout: number): Promise<string | null>;
 }
 
 /**
@@ -398,7 +398,7 @@ declare function timeToString(): string;
  * @param throwTimeout - If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
  * @returns Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
  */
-declare function checkConnection(url: string, throwTimeout: boolean): Promise;
+declare function checkConnection(url: string, throwTimeout: boolean): Promise<{ statusMessage: string; statusCode: number | null; }>;
 
 /**
  * Helper function which attempts to cut Strings intelligently and returns all parts. It will attempt to not cut words & links in half.
@@ -441,12 +441,16 @@ declare class DataManager {
      * Checks currently loaded data for validity and logs some recommendations for a few settings.
      * @returns Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
      */
-    checkData(): Promise;
+    checkData(): Promise<void>;
     /**
      * Internal: Loads all config & data files from disk and handles potential errors
      * @returns Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importFromDisk(): Promise;
+    _importFromDisk(): Promise<void>;
+    /**
+     * Reference to the controller object
+     */
+    controller: Controller;
     /**
      * Stores all `data.json` values.
      * Read only - Do NOT MODIFY anything in this file!
@@ -503,7 +507,7 @@ declare class DataManager {
      * Checks currently loaded data for validity and logs some recommendations for a few settings.
      * @returns Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
      */
-    checkData(): Promise;
+    checkData(): Promise<void>;
     /**
      * Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
      */
@@ -512,19 +516,19 @@ declare class DataManager {
      * Internal: Loads all config & data files from disk and handles potential errors
      * @returns Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importFromDisk(): Promise;
+    _importFromDisk(): Promise<void>;
     /**
      * Gets a random quote
      * @param quotesArr - Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
      * @returns Resolves with `quote` (String)
      */
-    getQuote(quotesArr: any[]): Promise;
+    getQuote(quotesArr: any[]): Promise<string>;
     /**
      * Checks if a user ID is currently on cooldown and formats human readable lastRequestStr and untilStr strings.
      * @param id - ID of the user to look up
      * @returns Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as String), `untilStr` (Wait until as String). If id wasn't found, `null` will be returned.
      */
-    getUserCooldown(id: string): Promise;
+    getUserCooldown(id: string): Promise<{ lastRequest: number; until: number; lastRequestStr: string; untilStr: string; } | null>;
     /**
      * Updates or inserts timestamp of a user
      * @param id - ID of the user to update
@@ -545,7 +549,7 @@ declare class DataManager {
      * @param steamID64 - Search for a specific user
      * @returns Called with the greatest timestamp (Number) found
      */
-    getLastCommentRequest(steamID64: string): Promise;
+    getLastCommentRequest(steamID64: string): Promise<number>;
     /**
      * Decodes a JsonWebToken - https://stackoverflow.com/a/38552302
      * @param token - The token to decode
@@ -578,13 +582,13 @@ declare class DataManager {
      * @param quotesArr - Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
      * @returns Resolves with `quote` (String)
      */
-    getQuote(quotesArr: any[]): Promise;
+    getQuote(quotesArr: any[]): Promise<string>;
     /**
      * Checks if a user ID is currently on cooldown and formats human readable lastRequestStr and untilStr strings.
      * @param id - ID of the user to look up
      * @returns Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as String), `untilStr` (Wait until as String). If id wasn't found, `null` will be returned.
      */
-    getUserCooldown(id: string): Promise;
+    getUserCooldown(id: string): Promise<{ lastRequest: number; until: number; lastRequestStr: string; untilStr: string; } | null>;
     /**
      * Updates or inserts timestamp of a user
      * @param id - ID of the user to update
@@ -605,7 +609,7 @@ declare class DataManager {
      * @param steamID64 - Search for a specific user
      * @returns Called with the greatest timestamp (Number) found
      */
-    getLastCommentRequest(steamID64: string): Promise;
+    getLastCommentRequest(steamID64: string): Promise<number>;
     /**
      * Decodes a JsonWebToken - https://stackoverflow.com/a/38552302
      * @param token - The token to decode
@@ -690,7 +694,7 @@ declare class PluginSystem {
      * Internal: Loads all plugins in /plugins dir and exports them as PluginSystem.pluginList object
      * @returns Resolves when all plugins have been loaded
      */
-    _loadPlugins(): Promise;
+    _loadPlugins(): Promise<void>;
     /**
      * Internal: Checks a plugin, displays relevant warnings and decides whether the plugin is allowed to be loaded
      * @param folderName - Name of the plugin folder. This is used to reference the plugin when thisPluginConf is undefined
@@ -698,7 +702,11 @@ declare class PluginSystem {
      * @param thisPluginConf - package.json object of this plugin
      * @returns Resolved with `true` (can be loaded) or `false` (must not be loaded) on completion
      */
-    _checkPlugin(folderName: string, thisPlugin: any, thisPluginConf: any): Promise;
+    _checkPlugin(folderName: string, thisPlugin: any, thisPluginConf: any): Promise<boolean>;
+    /**
+     * Reference to the controller object
+     */
+    controller: Controller;
     /**
      * References to all plugin objects
      */
@@ -714,7 +722,7 @@ declare class PluginSystem {
      * Internal: Loads all plugins in /plugins dir and exports them as PluginSystem.pluginList object
      * @returns Resolves when all plugins have been loaded
      */
-    _loadPlugins(): Promise;
+    _loadPlugins(): Promise<void>;
     /**
      * Internal: Checks a plugin, displays relevant warnings and decides whether the plugin is allowed to be loaded
      * @param folderName - Name of the plugin folder. This is used to reference the plugin when thisPluginConf is undefined
@@ -722,7 +730,7 @@ declare class PluginSystem {
      * @param thisPluginConf - package.json object of this plugin
      * @returns Resolved with `true` (can be loaded) or `false` (must not be loaded) on completion
      */
-    _checkPlugin(folderName: string, thisPlugin: any, thisPluginConf: any): Promise;
+    _checkPlugin(folderName: string, thisPlugin: any, thisPluginConf: any): Promise<boolean>;
 }
 
 /**
@@ -771,7 +779,7 @@ declare class SessionHandler {
      * Handles getting a refresh token for steam-user to auth with
      * @returns `refreshToken` on success or `null` on failure
      */
-    getToken(): Promise;
+    getToken(): Promise<string | null>;
     /**
      * Internal - Handles resolving the getToken() promise and skipping the account if necessary
      * @param token - The token to resolve with or null when account should be skipped
@@ -814,7 +822,7 @@ declare class SessionHandler {
  * @param force - If set to true the function will skip checking if the file exists and overwrite it.
  * @returns Resolves when file was successfully loaded
  */
-declare function checkAndGetFile(file: string, logger: (...params: any[]) => any, norequire: boolean, force: boolean): Promise;
+declare function checkAndGetFile(file: string, logger: (...params: any[]) => any, norequire: boolean, force: boolean): Promise<undefined | string | object>;
 
 /**
  * Run the application. This function is called by start.js
@@ -832,7 +840,7 @@ declare function restart(args: any): void;
  * @param controller - Reference to the controller object
  * @returns Resolves with `forceUpdate` (Boolean) when done. 'forceUpdate` must be passed to updater in controller.js!
  */
-declare function runCompatibility(controller: Controller): Promise;
+declare function runCompatibility(controller: Controller): Promise<void | null>;
 
 /**
  * Checks for an available update from the GitHub repo
@@ -857,14 +865,14 @@ declare function run(): void;
  * @param callback - Legacy param, is unused
  * @returns Resolves when we can proceed
  */
-declare function customUpdateRules(compatibilityfeaturedone: any, oldconfig: any, oldadvancedconfig: any, olddatafile: any, callback: (...params: any[]) => any): Promise;
+declare function customUpdateRules(compatibilityfeaturedone: any, oldconfig: any, oldadvancedconfig: any, olddatafile: any, callback: (...params: any[]) => any): Promise<void>;
 
 /**
  * Downloads all files from the repository and installs them
  * @param controller - Reference to the controller object
- * @returns Resolves when we can proceed
+ * @returns Resolves when we can proceed. Null on success, err on failure.
  */
-declare function startDownload(controller: Controller): Promise;
+declare function startDownload(controller: Controller): Promise<null | any>;
 
 /**
  * Run the application. This function is called by start.js
@@ -889,6 +897,6 @@ declare class Updater {
      * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      * @returns Promise that will be resolved with false when no update was found or with true when the update check or download was completed. Expect a restart when true was returned.
      */
-    run(forceUpdate: boolean, respondModule: (...params: any[]) => any, resInfo: any): Promise;
+    run(forceUpdate: boolean, respondModule: (...params: any[]) => any, resInfo: any): Promise<boolean>;
 }
 

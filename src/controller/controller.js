@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 16:24:11
+ * Last Modified: 29.05.2023 16:48:23
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -58,7 +58,7 @@ const Controller = function() {
          * Pings an URL to check if the service and this internet connection is working
          * @param {String} url The URL of the service to check
          * @param {Boolean} throwTimeout If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
-         * @returns {Promise} Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
+         * @returns {Promise.<{ statusMessage: string, statusCode: number|null }>} Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
          */
         checkConnection: (url, throwTimeout) => {}, // eslint-disable-line
 

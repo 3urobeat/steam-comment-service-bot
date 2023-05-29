@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 16:32:39
+ * Last Modified: 29.05.2023 17:14:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -90,13 +90,13 @@ PluginSystem.prototype.reloadPlugins = function() {
 
 /**
  * Internal: Loads all plugins in /plugins dir and exports them as PluginSystem.pluginList object
- * @returns {Promise} Resolves when all plugins have been loaded
+ * @returns {Promise.<void>} Resolves when all plugins have been loaded
  */
 PluginSystem.prototype._loadPlugins = function() {};
 
 /**
  * Internal: Checks a plugin, displays relevant warnings and decides whether the plugin is allowed to be loaded
  * @param {Object} thisPlugin Plugin file object returned by require()
- * @returns {Promise} Resolved with `true` (can be loaded) or `false` (must not be loaded) on completion
+ * @returns {Promise.<boolean>} Resolved with `true` (can be loaded) or `false` (must not be loaded) on completion
  */
 PluginSystem.prototype._checkPlugin = function(thisPlugin) {}; // eslint-disable-line

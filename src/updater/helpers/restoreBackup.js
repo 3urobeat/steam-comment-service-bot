@@ -4,7 +4,7 @@
  * Created Date: 26.02.2022 20:16:44
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 14:30:22
+ * Last Modified: 29.05.2023 17:23:14
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -21,7 +21,7 @@ const path = require("path");
 
 /**
  * Tries to restore a previously made backup
- * @returns {Promise} Resolves when we can proceed
+ * @returns {Promise.<void>} Resolves when we can proceed
  */
 module.exports.run = () => {
     return new Promise((resolve) => {

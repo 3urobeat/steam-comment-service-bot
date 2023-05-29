@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:46:09
  * Author: 3urobeat
  *
- * Last Modified: 28.05.2023 16:01:06
+ * Last Modified: 29.05.2023 17:14:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -24,7 +24,7 @@ const npmInteraction = require("../controller/helpers/npminteraction.js");
 
 /**
  * Internal: Loads all plugins in /plugins dir and exports them as PluginSystem.pluginList object
- * @returns {Promise} Resolves when all plugins have been loaded
+ * @returns {Promise.<void>} Resolves when all plugins have been loaded
  */
 PluginSystem.prototype._loadPlugins = function() {
     return new Promise((resolve) => {

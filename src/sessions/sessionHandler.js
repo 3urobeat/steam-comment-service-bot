@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 16:32:48
+ * Last Modified: 29.05.2023 17:15:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -56,7 +56,7 @@ module.exports = SessionHandler;
 
 /**
  * Handles getting a refresh token for steam-user to auth with
- * @returns {Promise} `refreshToken` on success or `null` on failure
+ * @returns {Promise.<string|null>} `refreshToken` on success or `null` on failure
  */
 SessionHandler.prototype.getToken = function() { // I'm not allowed to use arrow styled functions here... (https://stackoverflow.com/questions/59344601/javascript-nodejs-typeerror-cannot-set-property-validation-of-undefined)
     return new Promise((resolve) => {

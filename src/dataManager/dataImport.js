@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 28.05.2023 20:57:50
+ * Last Modified: 29.05.2023 17:06:19
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -23,7 +23,7 @@ const DataManager = require("./dataManager.js");
 
 /**
  * Internal: Loads all config & data files from disk and handles potential errors
- * @returns {Promise} Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ * @returns {Promise.<void>} Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importFromDisk = function() {
     let _this = this; // Make this accessible within the functions below

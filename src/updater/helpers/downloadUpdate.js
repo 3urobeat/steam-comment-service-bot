@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 14:37:45
+ * Last Modified: 29.05.2023 17:22:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -22,7 +22,7 @@ const download = require("download"); // TODO: Does it make a difference if we r
 /**
  * Downloads all files from the repository and installs them
  * @param {Controller} controller Reference to the controller object
- * @returns {Promise} Resolves when we can proceed
+ * @returns {Promise.<null|any>} Resolves when we can proceed. Null on success, err on failure.
  */
 module.exports.startDownload = (controller) => {
     return new Promise((resolve) => {

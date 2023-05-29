@@ -4,7 +4,7 @@
  * Created Date: 24.03.2023 18:58:55
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 15:03:59
+ * Last Modified: 29.05.2023 17:14:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -21,7 +21,7 @@ const DataManager = require("../dataManager.js");
 /**
  * Retrieves the last processed comment request of anyone or a specific steamID64 from the lastcomment database
  * @param {String} steamID64 Search for a specific user
- * @returns {Promise} Called with the greatest timestamp (Number) found
+ * @returns {Promise.<number>} Called with the greatest timestamp (Number) found
  */
 DataManager.prototype.getLastCommentRequest = function(steamID64 = null) {
 

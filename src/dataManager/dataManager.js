@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 16:24:22
+ * Last Modified: 29.05.2023 17:13:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -115,7 +115,7 @@ const DataManager = function (controller) {
 
 /**
  * Checks currently loaded data for validity and logs some recommendations for a few settings.
- * @returns {Promise} Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
+ * @returns {Promise.<void>} Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
  */
 DataManager.prototype.checkData = function () {};
 
@@ -126,21 +126,21 @@ DataManager.prototype.processData = async function () {};
 
 /**
  * Internal: Loads all config & data files from disk and handles potential errors
- * @returns {Promise} Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ * @returns {Promise.<void>} Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importFromDisk = function () {};
 
 /**
  * Gets a random quote
  * @param {Array} quotesArr Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
- * @returns {Promise} Resolves with `quote` (String)
+ * @returns {Promise.<string>} Resolves with `quote` (String)
  */
 DataManager.prototype.getQuote = function (quotesArr = null) {}; // eslint-disable-line
 
 /**
  * Checks if a user ID is currently on cooldown and formats human readable lastRequestStr and untilStr strings.
  * @param {String} id ID of the user to look up
- * @returns {Promise} Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as String), `untilStr` (Wait until as String). If id wasn't found, `null` will be returned.
+ * @returns {Promise.<{ lastRequest: number, until: number, lastRequestStr: string, untilStr: string }|null>} Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as String), `untilStr` (Wait until as String). If id wasn't found, `null` will be returned.
  */
 DataManager.prototype.getUserCooldown = function (id) {}; // eslint-disable-line
 
@@ -165,7 +165,7 @@ DataManager.prototype._askForGetNewToken = function (expiring) {}; // eslint-dis
 /**
  * Retrieves the last processed comment request of anyone or a specific steamID64 from the lastcomment database
  * @param {String} steamID64 Search for a specific user
- * @returns {Promise} Called with the greatest timestamp (Number) found
+ * @returns {Promise.<number>} Called with the greatest timestamp (Number) found
  */
 DataManager.prototype.getLastCommentRequest = function (steamID64 = null) {}; // eslint-disable-line
 

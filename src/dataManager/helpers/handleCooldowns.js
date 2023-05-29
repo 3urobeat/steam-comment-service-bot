@@ -4,7 +4,7 @@
  * Created Date: 13.04.2023 17:58:23
  * Author: 3urobeat
  *
- * Last Modified: 25.04.2023 00:42:06
+ * Last Modified: 29.05.2023 17:13:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -21,7 +21,7 @@ const DataManager = require("../dataManager");
 /**
  * Checks if a user ID is currently on cooldown and formats human readable lastRequestStr and untilStr strings.
  * @param {String} id ID of the user to look up
- * @returns {Promise} Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as String), `untilStr` (Wait until as String). If id wasn't found, `null` will be returned.
+ * @returns {Promise.<{ lastRequest: number, until: number, lastRequestStr: string, untilStr: string }|null>} Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as String), `untilStr` (Wait until as String). If id wasn't found, `null` will be returned.
  */
 DataManager.prototype.getUserCooldown = function(id) {
     return new Promise((resolve) => {

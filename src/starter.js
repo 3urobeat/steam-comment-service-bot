@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 11.05.2023 12:35:29
+ * Last Modified: 29.05.2023 16:41:15
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -222,7 +222,7 @@ function attachChildListeners() {
  * @param {function} logger Your current logger function
  * @param {Boolean} norequire If set to true the function will return the path instead of importing it
  * @param {Boolean} force If set to true the function will skip checking if the file exists and overwrite it.
- * @returns {Promise} Resolves when file was successfully loaded
+ * @returns {Promise.<undefined|string|object>} Resolves when file was successfully loaded
  */
 module.exports.checkAndGetFile = (file, logger, norequire = false, force = false) => {
     return new Promise((resolve) => {

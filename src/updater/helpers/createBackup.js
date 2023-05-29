@@ -4,7 +4,7 @@
  * Created Date: 26.02.2022 16:54:03
  * Author: 3urobeat
  *
- * Last Modified: 10.05.2023 21:35:19
+ * Last Modified: 29.05.2023 17:21:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -21,7 +21,7 @@ const path = require("path");
 
 /**
  * Makes a copy of the current bot installation before updating, to be able to restore in case the updater fails
- * @returns {Promise} Resolves when we can proceed
+ * @returns {Promise.<void>} Resolves when we can proceed
  */
 module.exports.run = () => {
     return new Promise((resolve) => {
