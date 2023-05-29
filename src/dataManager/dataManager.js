@@ -129,22 +129,12 @@ DataManager.prototype.refreshCache = function () {};
  * @param {String} onlinelink Link to the raw file in the GitHub repository
  * @param {Function} resolve Function to resolve the caller's promise
  */
-DataManager.prototype._restoreBackup = function (
-    name,
-    filepath,
-    cacheentry,
-    onlinelink,
-    resolve
-) {}; // eslint-disable-line
+DataManager.prototype._restoreBackup = function (name, filepath, cacheentry, onlinelink, resolve) {}; // eslint-disable-line
 
 /**
  * Internal: Helper function to pull new file from GitHub
  */
-DataManager.prototype._pullNewFile = async function (
-    name,
-    filepath,
-    resolve
-) {}; // eslint-disable-line
+DataManager.prototype._pullNewFile = async function (name, filepath, resolve) {}; // eslint-disable-line
 
 // Export our freshly baked bread
 module.exports = DataManager;
