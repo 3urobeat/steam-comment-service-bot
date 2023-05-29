@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 13:17:51
+ * Last Modified: 29.05.2023 15:12:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -26,7 +26,19 @@ const CommandHandler = require("../commands/commandHandler.js"); // eslint-disab
 const PluginSystem = function(controller) {
     this.controller = controller;
 
-    // References to all plugin objects
+    /**
+     * @typedef Plugin Documentation of the Plugin structure for IntelliSense support
+     * @type {object}
+     * @property {function} load Called on Plugin load
+     * @property {function} unload Called on Plugin unload
+     * @property {function} ready Controller ready event
+     * @property {function} statusUpdate Controller statusUpdate event
+     */
+
+    /**
+     * References to all plugin objects
+     * @type {Object.<string, Plugin>}
+     */
     this.pluginList = {};
 
     /**
