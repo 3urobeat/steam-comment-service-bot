@@ -4,7 +4,7 @@
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 10.05.2023 12:58:55
+ * Last Modified: 29.05.2023 17:55:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -99,7 +99,8 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
  * @param {Object} expiring Object of botobject entries to ask user for
  */
 DataManager.prototype._askForGetNewToken = function(expiring) {
-    let _this = this;
+    let EStatus = require("../../bot/EStatus.js"); // Import not at top scope as this can be undefined because this helper file gets loaded before updater ran
+    let _this   = this;
 
     function askForRelog() { // TODO: Add support for asking in steam chat
 
@@ -110,9 +111,9 @@ DataManager.prototype._askForGetNewToken = function(expiring) {
 
                     // Invalidate all tokens and log off if still online
                     Object.values(expiring).forEach((e, i) => {
-                        if (e.status == "online") e.user.logOff(); // Disconnected event won't trigger because activeLogin is already true
+                        if (e.status == EStatus.ONLINE) e.user.logOff(); // Disconnected event won't trigger because activeLogin is already true
 
-                        _this.controller._statusUpdateEvent(e, "offline"); // Set status of this account to offline
+                        _this.controller._statusUpdateEvent(e, EStatus.OFFLINE); // Set status of this account to offline
 
                         e.sessionHandler.invalidateTokenInStorage(); // Invalidate token in storage
 

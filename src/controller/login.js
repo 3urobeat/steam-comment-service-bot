@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 13:47:01
+ * Last Modified: 29.05.2023 17:55:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -79,7 +79,7 @@ Controller.prototype.login = function(firstLogin) {
     allAccounts = allAccounts.filter(e => !this.info.skippedaccounts.includes(e));
 
     // Filter accounts which are not offline
-    allAccounts = allAccounts.filter(e => !this.bots[e] || this.bots[e].status == "offline"); // If no bot object exists yet the account must be offline
+    allAccounts = allAccounts.filter(e => !this.bots[e] || this.bots[e].status == Bot.EStatus.OFFLINE); // If no bot object exists yet the account must be offline
 
     logger("debug", `Controller login(): Found ${allAccounts.length} account(s) which aren't logged in and weren't skipped`);
 
@@ -128,10 +128,10 @@ Controller.prototype.login = function(firstLogin) {
 
             // Check if this bot is not offline anymore, resolve this iteration and update lastLoginTimestamp
             let accIsOnlineInterval = setInterval(() => {
-                if (thisbot.status == "offline") return;
+                if (thisbot.status == Bot.EStatus.OFFLINE) return;
 
                 // Keep waiting if we are on the last iteration and user object is not fully populated yet, this takes a few seconds after login. Make sure to check for limitations of last entry in array instead of this iteration to not break when the this last acc got skipped
-                if (i + 1 == Object.keys(this.data.logininfo).length && !Object.values(this.bots)[Object.values(this.bots).filter(e => e.status == "online").length - 1].user.limitations) { // Get index of the last acc marked as online. I know, this line really sucks readability-wise
+                if (i + 1 == Object.keys(this.data.logininfo).length && !Object.values(this.bots)[Object.values(this.bots).filter(e => e.status == Bot.EStatus.ONLINE).length - 1].user.limitations) { // Get index of the last acc marked as online. I know, this line really sucks readability-wise
                     return logger("info", "Last account logged in, waiting for user object to populate...", true, true, logger.animation("waiting"));
                 }
 

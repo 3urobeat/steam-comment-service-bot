@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:29:18
+ * Last Modified: 29.05.2023 17:45:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -19,6 +19,7 @@ const SteamUser      = require("steam-user");
 const SteamCommunity = require("steamcommunity");
 const request        = require("request"); // Yes I know, the library is deprecated but steamcommunity uses it as well so it is being used anyway
 
+const EStatus        = require("./EStatus.js");
 const Controller     = require("../controller/controller.js"); // eslint-disable-line
 const SessionHandler = require("../sessions/sessionHandler.js");
 
@@ -33,9 +34,14 @@ const Bot = function(controller, index) {
     this.controller = controller;
     this.data       = controller.data;
     this.index      = index;
-    this.status     = "offline";
 
     this.friendMessageBlock = []; // SteamID64's to ignore in the friendMessage event handler. This is used by readChatMessage() to prevent duplicate responses.
+
+    /**
+     * Status of this bot account
+     * @type {EStatus}
+     */
+    this.status = EStatus.OFFLINE;
 
     let proxyIndex = this.index % controller.data.proxies.length; // Spread all accounts equally with a simple modulo calculation
 
@@ -107,6 +113,13 @@ const Bot = function(controller, index) {
         this.user.webLogOn();
     });
 };
+
+
+/**
+ * Status which a bot object can have
+ * @enum {EStatus}
+ */
+Bot.EStatus = EStatus;
 
 
 /**

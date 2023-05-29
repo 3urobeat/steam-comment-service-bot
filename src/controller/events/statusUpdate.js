@@ -4,7 +4,7 @@
  * Created Date: 30.03.2023 21:05:13
  * Author: 3urobeat
  *
- * Last Modified: 28.05.2023 16:07:52
+ * Last Modified: 29.05.2023 18:03:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -15,14 +15,14 @@
  */
 
 
-const Bot        = require("../../bot/bot.js"); // eslint-disable-line
+const Bot        = require("../../bot/bot.js");     // eslint-disable-line
 const Controller = require("../controller");
 
 
 /**
  * Runs internal statusUpdate event code and emits statusUpdate event for plugins
  * @param {Bot} bot Bot instance
- * @param {String} newStatus The new status
+ * @param {Bot.EStatus} newStatus The new status
  */
 Controller.prototype._statusUpdateEvent = function(bot, newStatus) {
     let oldStatus = bot.status;
@@ -31,7 +31,7 @@ Controller.prototype._statusUpdateEvent = function(bot, newStatus) {
     bot.status = newStatus;
 
     // Log debug message
-    logger("debug", `Controller statusUpdateEvent: bot${bot.index} changed status from ${oldStatus} to ${newStatus}`);
+    logger("debug", `Controller statusUpdateEvent: bot${bot.index} changed status from ${Bot.EStatus[oldStatus]} to ${Bot.EStatus[newStatus]}`);
 
     // Emit event
     this.events.emit("statusUpdate", bot, oldStatus, newStatus);

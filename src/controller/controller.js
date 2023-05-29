@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 16:48:23
+ * Last Modified: 29.05.2023 17:47:49
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -373,7 +373,7 @@ Controller.prototype._readyEvent = function() {};
 /**
  * Runs internal statusUpdate event code and emits statusUpdate event for plugins
  * @param {Bot} bot Bot instance
- * @param {String} newStatus The new status
+ * @param {Bot.EStatus} newStatus The new status
  */
 Controller.prototype._statusUpdateEvent = function(bot, newStatus) {}; // eslint-disable-line
 

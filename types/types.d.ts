@@ -6,6 +6,30 @@
 declare class Bot {
     constructor(controller: Controller, index: number);
     /**
+     * Reference to the controller object
+     */
+    controller: Controller;
+    /**
+     * Reference to the controller object
+     */
+    data: DataManager;
+    /**
+     * Login index of this bot account
+     */
+    index: number;
+    /**
+     * Status of this bot account
+     */
+    status: EStatus;
+    /**
+     * SteamID64's to ignore in the friendMessage event handler. This is used by readChatMessage() to prevent duplicate responses.
+     */
+    friendMessageBlock: string[];
+    /**
+     * Additional login related information for this bot account
+     */
+    loginData: any;
+    /**
      * Calls SteamUser logOn() for this account. This will either trigger the SteamUser loggedOn or error event.
      */
     _loginToSteam(): void;
@@ -95,6 +119,14 @@ declare class Bot {
      * @returns Resolved with `String` on response or `null` on timeout.
      */
     readChatMessage(steamID64: string, timeout: number): Promise<string | null>;
+}
+
+declare namespace Bot {
+    /**
+     * Status which a bot object can have
+     */
+    enum EStatus {
+    }
 }
 
 /**
@@ -279,7 +311,7 @@ declare class Controller {
      * @param bot - Bot instance
      * @param newStatus - The new status
      */
-    _statusUpdateEvent(bot: Bot, newStatus: string): void;
+    _statusUpdateEvent(bot: Bot, newStatus: Bot.EStatus): void;
     /**
      * Retrieves all matching bot accounts and returns them.
      * @param [statusFilter = online] - String or Array of Strings including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'online' will be returned.
@@ -305,7 +337,7 @@ declare class Controller {
      * @param bot - Bot instance
      * @param newStatus - The new status
      */
-    _statusUpdateEvent(bot: Bot, newStatus: string): void;
+    _statusUpdateEvent(bot: Bot, newStatus: Bot.EStatus): void;
     /**
      * Check if all friends are in lastcomment database
      * @param bot - Bot object of the account to check

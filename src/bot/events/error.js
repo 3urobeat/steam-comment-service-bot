@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 16:27:55
+ * Last Modified: 29.05.2023 17:54:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -41,15 +41,15 @@ Bot.prototype._attachSteamErrorEvent = function() {
                 this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
 
                 // Set status to error so it won't be used for anything anymore
-                this.controller._statusUpdateEvent(this, "error");
+                this.controller._statusUpdateEvent(this, Bot.EStatus.ERROR);
             }
             return;
         }
 
         // Check if this is a connection loss and not a login error (because disconnects are thrown here when SteamUser's autoRelogin is false)
-        if (this.status == "online") { // It must be a fresh connection loss if status has not changed yet
+        if (this.status == Bot.EStatus.ONLINE) { // It must be a fresh connection loss if status has not changed yet
             logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam. Reason: ${err}`);
-            this.controller._statusUpdateEvent(this, "offline"); // Set status of this account to offline
+            this.controller._statusUpdateEvent(this, Bot.EStatus.OFFLINE); // Set status of this account to offline
 
             // Check if this is an intended logoff
             if (this.controller.info.relogAfterDisconnect && !this.controller.info.skippedaccounts.includes(this.loginData.logOnOptions.accountName)) {
@@ -81,7 +81,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
                 } else { // Skip account if not bot0
 
                     logger("info", "Failed account is not bot0. Skipping account...", true);
-                    this.controller._statusUpdateEvent(this, "skipped");
+                    this.controller._statusUpdateEvent(this, Bot.EStatus.SKIPPED);
                     this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
                 }
 

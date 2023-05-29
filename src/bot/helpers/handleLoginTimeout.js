@@ -4,7 +4,7 @@
  * Created Date: 03.11.2022 12:27:46
  * Author: 3urobeat
  *
- * Last Modified: 19.05.2023 09:58:31
+ * Last Modified: 29.05.2023 17:56:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -38,7 +38,7 @@ Bot.prototype.handleLoginTimeout = function() {
         // Ignore timeout if account progressed since then
         let newLogOnTry = this.loginData.logOnTries;
 
-        if (currentLogOnTry != newLogOnTry || this.status != "offline") return logger("debug", `Bot handleLoginTimeout(): Timeout for bot${this.index} done, acc not stuck. old/new logOnTries: ${currentLogOnTry}/${newLogOnTry} - acc status: ${this.status}`);
+        if (currentLogOnTry != newLogOnTry || this.status != Bot.EStatus.OFFLINE) return logger("debug", `Bot handleLoginTimeout(): Timeout for bot${this.index} done, acc not stuck. old/new logOnTries: ${currentLogOnTry}/${newLogOnTry} - acc status: ${this.status}`);
 
         // Check if all logOnRetries are used up and skip account
         if (this.loginData.logOnTries > this.data.advancedconfig.maxLogOnRetries) {
@@ -57,7 +57,7 @@ Bot.prototype.handleLoginTimeout = function() {
             } else { // Skip account if not bot0
 
                 logger("info", "Failed account is not bot0. Skipping account...", true);
-                this.controller._statusUpdateEvent(this, "skipped");
+                this.controller._statusUpdateEvent(this, Bot.EStatus.SKIPPED);
                 this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
             }
 

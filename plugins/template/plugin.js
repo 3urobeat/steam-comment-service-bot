@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 09:37:57
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 16:23:46
+ * Last Modified: 29.05.2023 18:04:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -88,13 +88,14 @@ Plugin.prototype.ready = function() {
 const Bot = require("../../src/bot/bot.js"); // eslint-disable-line
 
 /**
- * Called when a bot account changes it status. This can be "offline", "error", "skipped" or "online"
+ * Called when a bot account changes it status
  * @param {Bot} bot The bot object that changed status
- * @param {String} oldStatus The old status it had
- * @param {String} newStatus The new status it now has
+ * @param {Bot.EStatus} oldStatus The old status it had
+ * @param {Bot.EStatus} newStatus The new status it now has
  */
 Plugin.prototype.statusUpdate = function(bot, oldStatus, newStatus) {
 
-    logger("info", `Template Plugin: Bot with index ${bot.index} changed status from ${oldStatus} to ${newStatus}!`);
+    // Use EStatus[] to log name of status instead of index. This makes it easier to read.
+    logger("info", `Template Plugin: Bot with index ${bot.index} changed status from ${Bot.EStatus[oldStatus]} to ${Bot.EStatus[newStatus]}!`);
 
 };

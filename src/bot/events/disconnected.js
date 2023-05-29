@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 16:27:50
+ * Last Modified: 29.05.2023 17:45:47
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -26,11 +26,11 @@ Bot.prototype._attachSteamDisconnectedEvent = function() {
     // Display message when connection was lost to Steam
     this.user.on("disconnected", (eresult, msg) => {
 
-        if (this.status == "offline" && this.controller.info.activeLogin) return; // Ignore if account is already marked as offline and a login process is active
+        if (this.status == Bot.EStatus.OFFLINE && this.controller.info.activeLogin) return; // Ignore if account is already marked as offline and a login process is active
 
         logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam. Message: ${msg} | Check: https://steamstat.us`);
 
-        this.controller._statusUpdateEvent(this, "offline"); // Set status of this account to offline
+        this.controller._statusUpdateEvent(this, Bot.EStatus.OFFLINE); // Set status of this account to offline
 
         // Don't relog if account is in skippedaccounts array or if relogAfterDisconnect is false
         if (!this.controller.info.skippedaccounts.includes(this.loginData.logOnOptions.accountName) && this.controller.info.relogAfterDisconnect) {

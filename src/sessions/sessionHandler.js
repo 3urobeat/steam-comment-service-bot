@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:15:08
+ * Last Modified: 29.05.2023 17:54:17
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -94,7 +94,7 @@ SessionHandler.prototype._resolvePromise = function(token) {
         } else {
             logger("info", `[${this.bot.logPrefix}] Skipping account '${this.logOnOptions.accountName}'...`, true);
 
-            this.controller._statusUpdateEvent(this.bot, "skipped");
+            this.controller._statusUpdateEvent(this.bot, Bot.EStatus.SKIPPED);
             this.controller.info.skippedaccounts.push(this.bot.loginData.logOnOptions.accountName);
 
             // Don't call cancelLoginAttempt() as this would result in an error because we aren't polling yet (https://github.com/DoctorMcKay/node-steam-session#polling)
