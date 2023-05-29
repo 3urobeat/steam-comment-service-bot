@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.05.2023 22:39:43
+ * Last Modified: 29.05.2023 16:32:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -20,6 +20,7 @@ const Controller = require("../controller/controller.js"); // eslint-disable-lin
 
 /**
  * Constructor - Initializes the updater which periodically checks for new versions available on GitHub, downloads them and handles backups.
+ * @class
  * @param {Controller} controller Reference to the controller object
  */
 const Updater = function(controller) {

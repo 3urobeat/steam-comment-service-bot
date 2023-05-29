@@ -3,13 +3,145 @@
  * @param controller - Reference to the controller object
  * @param index - The index of this account in the logininfo object
  */
-declare function Bot(controller: Controller, index: number): void;
+declare class Bot {
+    constructor(controller: Controller, index: number);
+    /**
+     * Calls SteamUser logOn() for this account. This will either trigger the SteamUser loggedOn or error event.
+     */
+    _loginToSteam(): void;
+    /**
+     * Checks if user is blocked, has an active cooldown for spamming or isn't a friend
+     * @param steamID64 - The steamID64 of the message sender
+     * @param message - The message string provided by steam-user friendMessage event
+     * @returns `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
+     */
+    checkMsgBlock(steamID64: any, message: string): boolean;
+    /**
+     * Our commandHandler respondModule implementation - Sends a message to a Steam user
+     * @param _this - The Bot object context
+     * @param resInfo - Object containing information passed to command by friendMessage event
+     * @param txt - The text to send
+     * @param retry - Internal: true if this message called itself again to send failure message
+     * @param part - Internal: Index of which part to send for messages larger than 750 chars
+     */
+    sendChatMessage(_this: any, resInfo: any, txt: string, retry: boolean, part: number): void;
+    /**
+     * Waits for a Steam Chat message from this user to this account and resolves their message content. The "normal" friendMessage event handler will be blocked for this user.
+     * @param steamID64 - The steamID64 of the user to read a message from
+     * @param timeout - Time in ms after which the Promise will be resolved if user does not respond. Pass 0 to disable (not recommended)
+     * @returns Resolved with `String` on response or `null` on timeout.
+     */
+    readChatMessage(steamID64: string, timeout: number): Promise;
+    /**
+     * Handles the SteamUser debug events if enabled in advancedconfig
+     */
+    _attachSteamDebugEvent(): void;
+    /**
+     * Handles the SteamUser disconnect event and tries to relog the account
+     */
+    _attachSteamDisconnectedEvent(): void;
+    /**
+     * Handles the SteamUser error event
+     */
+    _attachSteamErrorEvent(): void;
+    /**
+     * Handles messages, cooldowns and executes commands.
+     */
+    _attachSteamFriendMessageEvent(): void;
+    /**
+     * Do some stuff when account is logged in
+     */
+    _attachSteamLoggedOnEvent(): void;
+    /**
+     * Handles the SteamUser ownershipCached event and tries to redeem licenses for games the account is missing
+     */
+    _attachSteamOwnershipCachedEvent(): void;
+    /**
+     * Accepts a friend request, adds the user to the lastcomment.db database and invites him to your group
+     */
+    _attachSteamFriendRelationshipEvent(): void;
+    /**
+     * Accepts a group invite if acceptgroupinvites in the config is true
+     */
+    _attachSteamGroupRelationshipEvent(): void;
+    /**
+     * Handles setting cookies and accepting offline friend & group invites
+     */
+    _attachSteamWebSessionEvent(): void;
+    /**
+     * Checks if user is blocked, has an active cooldown for spamming or isn't a friend
+     * @param steamID64 - The steamID64 of the message sender
+     * @param message - The message string provided by steam-user friendMessage event
+     * @returns `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
+     */
+    checkMsgBlock(steamID64: any, message: string): boolean;
+    /**
+     * Handles aborting a login attempt should an account get stuck to prevent the bot from softlocking (see issue #139)
+     */
+    handleLoginTimeout(): void;
+    /**
+     * Our commandHandler respondModule implementation - Sends a message to a Steam user
+     * @param _this - The Bot object context
+     * @param resInfo - Object containing information passed to command by friendMessage event
+     * @param txt - The text to send
+     * @param retry - Internal: true if this message called itself again to send failure message
+     * @param part - Internal: Index of which part to send for messages larger than 750 chars
+     */
+    sendChatMessage(_this: any, resInfo: any, txt: string, retry: boolean, part: number): void;
+    /**
+     * Waits for a Steam Chat message from this user to this account and resolves their message content. The "normal" friendMessage event handler will be blocked for this user.
+     * @param steamID64 - The steamID64 of the user to read a message from
+     * @param timeout - Time in ms after which the Promise will be resolved if user does not respond. Pass 0 to disable (not recommended)
+     * @returns Resolved with `String` on response or `null` on timeout.
+     */
+    readChatMessage(steamID64: string, timeout: number): Promise;
+}
 
 /**
  * Constructor - Initializes the commandHandler which allows you to integrate core commands into your plugin or add new commands from your plugin.
  * @param controller - Reference to the current controller object
  */
-declare function CommandHandler(controller: Controller): void;
+declare class CommandHandler {
+    constructor(controller: Controller);
+    /**
+     * Internal: Imports core commands on startup
+     */
+    _importCoreCommands(): void;
+    /**
+     * Registers a new command during runtime
+     * @param command - The command object to register
+     * @param command.description - Description of what this command does
+     * @param command.ownersOnly - Set to true to only allow owners to use this command.
+     * @param command.run - Function that will be executed when the command runs. Arguments: commandHandler, args, steamID64, respondModule, context, resInfo
+     * @returns true if the command was successfully registered, false otherwise
+     */
+    registerCommand(command: {
+        description: string;
+        ownersOnly: boolean;
+        run: (...params: any[]) => any;
+    }): any;
+    /**
+     * The name of the command to unregister during runtime
+     * @param commandName - Name of the command to unregister
+     * @returns true if the command was successfully unregistered, false otherwise
+     */
+    unregisterCommand(commandName: string): any;
+    /**
+     * Finds a loaded command by name and runs it
+     * @param name - The name of the command
+     * @param args - Array of arguments that will be passed to the command
+     * @param steamID64 - SteamID64 of the requesting user which is used to check for ownerOnly and will be passed to the command
+     * @param respondModule - Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param context - The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @returns `true` if command was found, `false` if not
+     */
+    runCommand(name: string, args: any[], steamID64: number, respondModule: (...params: any[]) => any, context: any, resInfo: any): any;
+    /**
+     * Reloads all core commands. Does NOT reload commands registered at runtime. Please consider reloading the pluginSystem as well.
+     */
+    reloadCommands(): void;
+}
 
 /**
  * Internal: Do the actual commenting, activeRequests entry with all relevant information was processed by the comment command function above.
@@ -88,12 +220,142 @@ declare function failedCommentsObjToString(obj: any): string;
 /**
  * Constructor - Initializes the controller and starts all bot accounts
  */
-declare function Controller(): void;
-
-/**
- * Collection of miscellaneous functions for easier access
- */
-declare var misc: any;
+declare class Controller {
+    constructor();
+    /**
+     * Collection of miscellaneous functions for easier access
+     */
+    misc: any;
+    /**
+     * Internal: Inits the DataManager system, runs the updater and starts all bot accounts
+     */
+    _start(): void;
+    /**
+     * Internal: Loads all parts of the application to get IntelliSense support after the updater ran and calls login() when done.
+     */
+    _preLogin(): void;
+    /**
+     * The updater object
+     */
+    updater: Updater;
+    /**
+     * Stores references to all bot account objects mapped to their accountName
+     */
+    bots: {
+        [key: string]: Bot;
+    };
+    /**
+     * The main bot account
+     */
+    main: Bot;
+    /**
+     * The commandHandler object
+     */
+    commandHandler: CommandHandler;
+    /**
+     * The pluginSystem handler
+     */
+    pluginSystem: PluginSystem;
+    /**
+     * Restarts the whole application
+     * @param data - Stringified restartdata object that will be kept through restarts
+     */
+    restart(data: string): void;
+    /**
+     * Stops the whole application
+     */
+    stop(): void;
+    /**
+     * Attempts to log in all bot accounts which are currently offline one after another
+     * Creates a new bot object for every new account and reuses existing one if possible
+     */
+    login(): void;
+    /**
+     * Runs internal ready event code and emits ready event for plugins
+     */
+    _readyEvent(): void;
+    /**
+     * Runs internal statusUpdate event code and emits statusUpdate event for plugins
+     * @param bot - Bot instance
+     * @param newStatus - The new status
+     */
+    _statusUpdateEvent(bot: Bot, newStatus: string): void;
+    /**
+     * Retrieves all matching bot accounts and returns them.
+     * @param [statusFilter = online] - String or Array of Strings including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'online' will be returned.
+     * @param mapToObject - If true, an object will be returned where every bot object is mapped to their accountName.
+     * @returns An array or object if `mapToObject == true` containing all matching bot accounts.
+     */
+    getBots(statusFilter?: string | String[], mapToObject: boolean): any[] | any;
+    /**
+     * Logs text to the terminal and appends it to the output.txt file.
+     * @param type - String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
+     * @param str - The text to log into the terminal
+     * @param nodate - Setting to true will hide date and time in the message
+     * @param remove - Setting to true will remove this message with the next one
+     * @param printNow - Ignores the readyafterlogs check and force prints the message now
+     */
+    logger(type: string, str: string, nodate: boolean, remove: boolean, printNow: boolean): void;
+    /**
+     * Runs internal ready event code and emits ready event for plugins
+     */
+    _readyEvent(): void;
+    /**
+     * Runs internal statusUpdate event code and emits statusUpdate event for plugins
+     * @param bot - Bot instance
+     * @param newStatus - The new status
+     */
+    _statusUpdateEvent(bot: Bot, newStatus: string): void;
+    /**
+     * Check if all friends are in lastcomment database
+     * @param bot - Bot object of the account to check
+     */
+    checkLastcommentDB(bot: Bot): void;
+    /**
+     * Checks the remaining space on the friendlist of a bot account, sends a warning message if it is less than 10 and force unfriends oldest lastcomment db user to always keep room for 1 friend.
+     * @param bot - Bot object of the account to check
+     * @param [callback] - Called with `remaining` (Number) on completion
+     */
+    friendListCapacityCheck(bot: Bot, callback?: (...params: any[]) => any): void;
+    /**
+     * Check for friends who haven't requested comments in config.unfriendtime days and unfriend them
+     */
+    _lastcommentUnfriendCheck(): void;
+    /**
+     * Retrieves all matching bot accounts and returns them.
+     * @param [statusFilter = online] - String or Array of Strings including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'online' will be returned.
+     * @param mapToObject - If true, an object will be returned where every bot object is mapped to their accountName.
+     * @returns An array or object if `mapToObject == true` containing all matching bot accounts.
+     */
+    getBots(statusFilter?: string | String[], mapToObject: boolean): any[] | any;
+    /**
+     * Internal: Handles process's unhandledRejection & uncaughtException error events.
+     * Should a NPM related error be detected it attempts to reinstall all packages using our npminteraction helper function
+     */
+    _handleErrors(): void;
+    /**
+     * Logs text to the terminal and appends it to the output.txt file.
+     * @param type - String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
+     * @param str - The text to log into the terminal
+     * @param nodate - Setting to true will hide date and time in the message
+     * @param remove - Setting to true will remove this message with the next one
+     * @param printNow - Ignores the readyafterlogs check and force prints the message now
+     */
+    logger(type: string, str: string, nodate: boolean, remove: boolean, printNow: boolean): void;
+    /**
+     * Call this function after loading advancedconfig.json to set previously inaccessible options
+     */
+    _loggerOptionsUpdateAfterConfigLoad(): void;
+    /**
+     * Logs all held back messages from logAfterReady array
+     */
+    _loggerLogAfterReady(): void;
+    /**
+     * Attempts to log in all bot accounts which are currently offline one after another
+     * Creates a new bot object for every new account and reuses existing one if possible
+     */
+    login(): void;
+}
 
 /**
  * Process data that should be kept over restarts
@@ -173,75 +435,295 @@ declare function updateFromPath(path: string, callback?: (...params: any[]) => a
  * Constructor - The dataManager system imports, checks, handles errors and provides a file updating service for all configuration files
  * @param controller - Reference to the controller object
  */
-declare function DataManager(controller: Controller): void;
+declare class DataManager {
+    constructor(controller: Controller);
+    /**
+     * Checks currently loaded data for validity and logs some recommendations for a few settings.
+     * @returns Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
+     */
+    checkData(): Promise;
+    /**
+     * Internal: Loads all config & data files from disk and handles potential errors
+     * @returns Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importFromDisk(): Promise;
+    /**
+     * Stores all `data.json` values.
+     * Read only - Do NOT MODIFY anything in this file!
+     */
+    datafile: any;
+    /**
+     * Stores all `config.json` settings.
+     */
+    config: {
+        [key: string]: any;
+    };
+    /**
+     * Stores all `advancedconfig.json` settings.
+     */
+    advancedconfig: {
+        [key: string]: any;
+    };
+    /**
+     * Stores all language strings used for responding to a user.
+     * All default strings have already been replaced with corresponding matches from `customlang.json`.
+     */
+    lang: {
+        [key: string]: string;
+    };
+    /**
+     * Stores all quotes used for commenting provided via the `quotes.txt` file.
+     */
+    quotes: String[];
+    /**
+     * Stores all proxies provided via the `proxies.txt` file.
+     */
+    proxies: String[];
+    /**
+     * Stores IDs from config files converted at runtime and backups for all config & data files.
+     */
+    cachefile: any;
+    /**
+     * Stores the login information for every bot account provided via the `logininfo.json` or `accounts.txt` files.
+     */
+    logininfo: {
+        [key: string]: { accountName: string; password: string; sharedSecret: string; steamGuardCode: null; machineName: string; deviceFriendlyName: string; };
+    };
+    /**
+     * Database which stores the timestamp of the last comment request of every user. This is used to enforce `config.unfriendTime`.
+     * Document structure: { id: String, time: Number }
+     */
+    lastCommentDB: Nedb;
+    /**
+     * Database which stores the refreshTokens for all bot accounts.
+     * Document structure: { accountName: String, token: String }
+     */
+    tokensDB: Nedb;
+    /**
+     * Checks currently loaded data for validity and logs some recommendations for a few settings.
+     * @returns Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
+     */
+    checkData(): Promise;
+    /**
+     * Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
+     */
+    processData(): void;
+    /**
+     * Internal: Loads all config & data files from disk and handles potential errors
+     * @returns Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importFromDisk(): Promise;
+    /**
+     * Gets a random quote
+     * @param quotesArr - Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
+     * @returns Resolves with `quote` (String)
+     */
+    getQuote(quotesArr: any[]): Promise;
+    /**
+     * Checks if a user ID is currently on cooldown and formats human readable lastRequestStr and untilStr strings.
+     * @param id - ID of the user to look up
+     * @returns Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as String), `untilStr` (Wait until as String). If id wasn't found, `null` will be returned.
+     */
+    getUserCooldown(id: string): Promise;
+    /**
+     * Updates or inserts timestamp of a user
+     * @param id - ID of the user to update
+     * @param timestamp - Unix timestamp of the last interaction the user received
+     */
+    setUserCooldown(id: string, timestamp: number): void;
+    /**
+     * Internal: Checks tokens.db every 24 hours for refreshToken expiration in <=7 days, logs warning and sends botowner a Steam msg
+     */
+    _startExpiringTokensCheckInterval(): void;
+    /**
+     * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active comment process was found and relogs them
+     * @param expiring - Object of botobject entries to ask user for
+     */
+    _askForGetNewToken(expiring: any): void;
+    /**
+     * Retrieves the last processed comment request of anyone or a specific steamID64 from the lastcomment database
+     * @param steamID64 - Search for a specific user
+     * @returns Called with the greatest timestamp (Number) found
+     */
+    getLastCommentRequest(steamID64: string): Promise;
+    /**
+     * Decodes a JsonWebToken - https://stackoverflow.com/a/38552302
+     * @param token - The token to decode
+     * @returns JWT object on success, `null` on failure
+     */
+    decodeJWT(token: string): any;
+    /**
+     * Refreshes Backups in cache.json with new data
+     */
+    refreshCache(): void;
+    /**
+     * Internal: Helper function to try and restore backup of corrupted file from cache.json
+     * @param name - Name of the file
+     * @param filepath - Absolute path of the file on the disk
+     * @param cacheentry - Backup-Object of the file in cache.json
+     * @param onlinelink - Link to the raw file in the GitHub repository
+     * @param resolve - Function to resolve the caller's promise
+     */
+    _restoreBackup(name: string, filepath: string, cacheentry: any, onlinelink: string, resolve: (...params: any[]) => any): void;
+    /**
+     * Internal: Helper function to pull new file from GitHub
+     */
+    _pullNewFile(): void;
+    /**
+     * Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
+     */
+    processData(): void;
+    /**
+     * Gets a random quote
+     * @param quotesArr - Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
+     * @returns Resolves with `quote` (String)
+     */
+    getQuote(quotesArr: any[]): Promise;
+    /**
+     * Checks if a user ID is currently on cooldown and formats human readable lastRequestStr and untilStr strings.
+     * @param id - ID of the user to look up
+     * @returns Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as String), `untilStr` (Wait until as String). If id wasn't found, `null` will be returned.
+     */
+    getUserCooldown(id: string): Promise;
+    /**
+     * Updates or inserts timestamp of a user
+     * @param id - ID of the user to update
+     * @param timestamp - Unix timestamp of the last interaction the user received
+     */
+    setUserCooldown(id: string, timestamp: number): void;
+    /**
+     * Internal: Checks tokens.db every 24 hours for refreshToken expiration in <=7 days, logs warning and sends botowner a Steam msg
+     */
+    _startExpiringTokensCheckInterval(): void;
+    /**
+     * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active comment process was found and relogs them
+     * @param expiring - Object of botobject entries to ask user for
+     */
+    _askForGetNewToken(expiring: any): void;
+    /**
+     * Retrieves the last processed comment request of anyone or a specific steamID64 from the lastcomment database
+     * @param steamID64 - Search for a specific user
+     * @returns Called with the greatest timestamp (Number) found
+     */
+    getLastCommentRequest(steamID64: string): Promise;
+    /**
+     * Decodes a JsonWebToken - https://stackoverflow.com/a/38552302
+     * @param token - The token to decode
+     * @returns JWT object on success, `null` on failure
+     */
+    decodeJWT(token: string): any;
+    /**
+     * Refreshes Backups in cache.json with new data
+     */
+    refreshCache(): void;
+    /**
+     * Internal: Helper function to try and restore backup of corrupted file from cache.json
+     * @param name - Name of the file
+     * @param filepath - Absolute path of the file on the disk
+     * @param cacheentry - Backup-Object of the file in cache.json
+     * @param onlinelink - Link to the raw file in the GitHub repository
+     * @param resolve - Function to resolve the caller's promise
+     */
+    _restoreBackup(name: string, filepath: string, cacheentry: any, onlinelink: string, resolve: (...params: any[]) => any): void;
+    /**
+     * Internal: Helper function to pull new file from GitHub
+     */
+    _pullNewFile(): void;
+}
 
 /**
- * Stores all `data.json` values.
- * Read only - Do NOT MODIFY anything in this file!
+ * Constructor - Creates a new Sharedfile object
  */
-declare var datafile: any;
-
-/**
- * Stores all `config.json` settings.
- */
-declare var config: {
-    [key: string]: any;
-};
-
-/**
- * Stores all `advancedconfig.json` settings.
- */
-declare var advancedconfig: {
-    [key: string]: any;
-};
-
-/**
- * Stores all language strings used for responding to a user.
- * All default strings have already been replaced with corresponding matches from `customlang.json`.
- */
-declare var lang: {
-    [key: string]: string;
-};
-
-/**
- * Stores all quotes used for commenting provided via the `quotes.txt` file.
- */
-declare var quotes: String[];
-
-/**
- * Stores all proxies provided via the `proxies.txt` file.
- */
-declare var proxies: String[];
-
-/**
- * Stores IDs from config files converted at runtime and backups for all config & data files.
- */
-declare var cachefile: any;
-
-/**
- * Stores the login information for every bot account provided via the `logininfo.json` or `accounts.txt` files.
- */
-declare var logininfo: {
-    [key: string]: { accountName: string; password: string; sharedSecret: string; steamGuardCode: null; machineName: string; deviceFriendlyName: string; };
-};
-
-/**
- * Database which stores the timestamp of the last comment request of every user. This is used to enforce `config.unfriendTime`.
- * Document structure: { id: String, time: Number }
- */
-declare var lastCommentDB: Nedb;
-
-/**
- * Database which stores the refreshTokens for all bot accounts.
- * Document structure: { accountName: String, token: String }
- */
-declare var tokensDB: Nedb;
+declare class CSteamSharedfile {
+    constructor(community: SteamCommunity, data: any);
+    /**
+     * Deletes a comment from this sharedfile's comment section
+     * @param cid - ID of the comment to delete
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    deleteComment(cid: string, callback: (...params: any[]) => any): void;
+    /**
+     * Favorites this sharedfile
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    favorite(callback: (...params: any[]) => any): void;
+    /**
+     * Posts a comment to this sharedfile
+     * @param message - Content of the comment to post
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    comment(message: string, callback: (...params: any[]) => any): void;
+    /**
+     * Subscribes to this sharedfile's comment section. Note: Checkbox on webpage does not update
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    subscribe(callback: (...params: any[]) => any): void;
+    /**
+     * Unfavorites this sharedfile
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    unfavorite(callback: (...params: any[]) => any): void;
+    /**
+     * Unsubscribes from this sharedfile's comment section. Note: Checkbox on webpage does not update
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    unsubscribe(callback: (...params: any[]) => any): void;
+    /**
+     * Downvotes this sharedfile
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    voteDown(callback: (...params: any[]) => any): void;
+    /**
+     * Upvotes this sharedfile
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    voteUp(callback: (...params: any[]) => any): void;
+}
 
 /**
  * Constructor - The plugin system loads all plugins and provides functions for plugins to hook into
  * @param controller - Reference to the controller object
  */
-declare function PluginSystem(controller: Controller): void;
+declare class PluginSystem {
+    constructor(controller: Controller);
+    /**
+     * Internal: Loads all plugins in /plugins dir and exports them as PluginSystem.pluginList object
+     * @returns Resolves when all plugins have been loaded
+     */
+    _loadPlugins(): Promise;
+    /**
+     * Internal: Checks a plugin, displays relevant warnings and decides whether the plugin is allowed to be loaded
+     * @param folderName - Name of the plugin folder. This is used to reference the plugin when thisPluginConf is undefined
+     * @param thisPlugin - Plugin file object returned by require()
+     * @param thisPluginConf - package.json object of this plugin
+     * @returns Resolved with `true` (can be loaded) or `false` (must not be loaded) on completion
+     */
+    _checkPlugin(folderName: string, thisPlugin: any, thisPluginConf: any): Promise;
+    /**
+     * References to all plugin objects
+     */
+    pluginList: {
+        [key: string]: Plugin;
+    };
+    commandHandler: CommandHandler;
+    /**
+     * Reloads all plugins and calls ready event after ~2.5 seconds.
+     */
+    reloadPlugins(): void;
+    /**
+     * Internal: Loads all plugins in /plugins dir and exports them as PluginSystem.pluginList object
+     * @returns Resolves when all plugins have been loaded
+     */
+    _loadPlugins(): Promise;
+    /**
+     * Internal: Checks a plugin, displays relevant warnings and decides whether the plugin is allowed to be loaded
+     * @param folderName - Name of the plugin folder. This is used to reference the plugin when thisPluginConf is undefined
+     * @param thisPlugin - Plugin file object returned by require()
+     * @param thisPluginConf - package.json object of this plugin
+     * @returns Resolved with `true` (can be loaded) or `false` (must not be loaded) on completion
+     */
+    _checkPlugin(folderName: string, thisPlugin: any, thisPluginConf: any): Promise;
+}
 
 /**
  * @property load - Called on Plugin load
@@ -257,19 +739,72 @@ declare type Plugin = {
 };
 
 /**
- * References to all plugin objects
- */
-declare var pluginList: {
-    [key: string]: Plugin;
-};
-
-declare var commandHandler: CommandHandler;
-
-/**
  * Constructor - Object oriented approach for handling session for one account
  * @param bot - The bot object of this account
  */
-declare function SessionHandler(bot: Bot): void;
+declare class SessionHandler {
+    constructor(bot: Bot);
+    /**
+     * Internal: Attaches listeners to all steam-session events we care about
+     */
+    _attachEvents(): void;
+    /**
+     * Internal - Handles submitting 2FA code
+     * @param res - Response object from startWithCredentials() promise
+     */
+    _handle2FA(res: any): void;
+    /**
+     * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
+     * @param [callback] - Called with `refreshToken` (String) on success or `null` on failure
+     */
+    _getTokenFromStorage(callback?: (...params: any[]) => any): void;
+    /**
+     * Internal - Saves a new token for this account to tokens.db
+     * @param token - The refreshToken to store
+     */
+    _saveTokenToStorage(token: string): void;
+    /**
+     * Remove the token of this account from tokens.db. Intended to be called from the steam-user login error event when an invalid token was used so the next login attempt will create a new one.
+     */
+    invalidateTokenInStorage(): void;
+    /**
+     * Handles getting a refresh token for steam-user to auth with
+     * @returns `refreshToken` on success or `null` on failure
+     */
+    getToken(): Promise;
+    /**
+     * Internal - Handles resolving the getToken() promise and skipping the account if necessary
+     * @param token - The token to resolve with or null when account should be skipped
+     */
+    _resolvePromise(token: string): void;
+    /**
+     * Internal - Attempts to log into account with credentials
+     */
+    _attemptCredentialsLogin(): void;
+    /**
+     * Internal: Attaches listeners to all steam-session events we care about
+     */
+    _attachEvents(): void;
+    /**
+     * Internal - Handles submitting 2FA code
+     * @param res - Response object from startWithCredentials() promise
+     */
+    _handle2FA(res: any): void;
+    /**
+     * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
+     * @param [callback] - Called with `refreshToken` (String) on success or `null` on failure
+     */
+    _getTokenFromStorage(callback?: (...params: any[]) => any): void;
+    /**
+     * Internal - Saves a new token for this account to tokens.db
+     * @param token - The refreshToken to store
+     */
+    _saveTokenToStorage(token: string): void;
+    /**
+     * Remove the token of this account from tokens.db. Intended to be called from the steam-user login error event when an invalid token was used so the next login attempt will create a new one.
+     */
+    invalidateTokenInStorage(): void;
+}
 
 /**
  * Checks if the needed file exists and gets it if it doesn't
@@ -345,5 +880,15 @@ declare function run(): void;
  * Constructor - Initializes the updater which periodically checks for new versions available on GitHub, downloads them and handles backups.
  * @param controller - Reference to the controller object
  */
-declare function Updater(controller: Controller): void;
+declare class Updater {
+    constructor(controller: Controller);
+    /**
+     * Checks for any available update and installs it.
+     * @param forceUpdate - If true an update will be forced, even if disableAutoUpdate is true or the newest version is already installed
+     * @param respondModule - If defined, this function will be called with the result of the check. This allows to integrate checking for updates into commands or plugins. Passes resInfo and txt as parameters.
+     * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @returns Promise that will be resolved with false when no update was found or with true when the update check or download was completed. Expect a restart when true was returned.
+     */
+    run(forceUpdate: boolean, respondModule: (...params: any[]) => any, resInfo: any): Promise;
+}
 

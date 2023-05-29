@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 16:09:31
+ * Last Modified: 29.05.2023 16:24:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -20,7 +20,7 @@ const { EventEmitter } = require("events");
 
 /**
  * Constructor - Initializes the controller and starts all bot accounts
- * @extends EventEmitter
+ * @class
  */
 const Controller = function() {
     this.srcdir = srcdir; // Let users see the global var srcdir more easily

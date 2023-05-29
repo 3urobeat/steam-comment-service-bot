@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 09:37:57
  * Author: 3urobeat
  *
- * Last Modified: 28.05.2023 16:03:25
+ * Last Modified: 29.05.2023 16:23:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -25,6 +25,7 @@ const PluginSystem = require("../../src/pluginSystem/pluginSystem.js"); // eslin
 
 /**
  * Constructor - Creates a new object for this plugin
+ * @class
  * @param {PluginSystem} sys Your connector to the application
  */
 const Plugin = function(sys) {
@@ -84,7 +85,7 @@ Plugin.prototype.ready = function() {
 };
 
 
-const Bot = require("../../src/bot/bot.js");
+const Bot = require("../../src/bot/bot.js"); // eslint-disable-line
 
 /**
  * Called when a bot account changes it status. This can be "offline", "error", "skipped" or "online"

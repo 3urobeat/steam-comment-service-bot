@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 25.05.2023 10:04:01
+ * Last Modified: 29.05.2023 16:32:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -22,6 +22,7 @@ const Bot = require("../bot/bot.js"); // eslint-disable-line
 
 /**
  * Constructor - Object oriented approach for handling session for one account
+ * @class
  * @param {Bot} bot The bot object of this account
  */
 const SessionHandler = function(bot) {

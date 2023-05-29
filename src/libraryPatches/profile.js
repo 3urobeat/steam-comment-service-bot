@@ -9,6 +9,11 @@ SteamCommunity.PrivacyState = {
 	"Public": 3
 };
 
+/**
+ * Don't look at me, I'm just a placeholder
+ * @param {*} settings 
+ * @param {*} callback 
+ */
 SteamCommunity.prototype.editProfile = function(settings, callback) {
 	var self = this;
 	this._myProfile('edit/info', null, function(err, response, body) {

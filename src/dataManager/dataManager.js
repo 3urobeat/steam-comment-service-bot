@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 16:06:21
+ * Last Modified: 29.05.2023 16:24:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -23,6 +23,7 @@ const Controller = require("../controller/controller.js"); // eslint-disable-lin
 
 /**
  * Constructor - The dataManager system imports, checks, handles errors and provides a file updating service for all configuration files
+ * @class
  * @param {Controller} controller Reference to the controller object
  */
 const DataManager = function (controller) {

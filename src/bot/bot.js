@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.05.2023 16:10:45
+ * Last Modified: 29.05.2023 16:22:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -25,6 +25,7 @@ const SessionHandler = require("../sessions/sessionHandler.js");
 
 /**
  * Constructor - Initializes an object which represents a user steam account
+ * @class
  * @param {Controller} controller Reference to the controller object
  * @param {Number} index The index of this account in the logininfo object
  */

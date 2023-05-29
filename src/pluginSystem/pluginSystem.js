@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 15:12:10
+ * Last Modified: 29.05.2023 16:32:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -21,6 +21,7 @@ const CommandHandler = require("../commands/commandHandler.js"); // eslint-disab
 
 /**
  * Constructor - The plugin system loads all plugins and provides functions for plugins to hook into
+ * @class
  * @param {Controller} controller Reference to the controller object
  */
 const PluginSystem = function(controller) {

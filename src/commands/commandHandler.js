@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 28.05.2023 11:11:42
+ * Last Modified: 29.05.2023 16:23:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -22,6 +22,7 @@ const Controller = require("../controller/controller.js"); // eslint-disable-lin
 
 /**
  * Constructor - Initializes the commandHandler which allows you to integrate core commands into your plugin or add new commands from your plugin.
+ * @class
  * @param {Controller} controller Reference to the current controller object
  */
 const CommandHandler = function(controller) {

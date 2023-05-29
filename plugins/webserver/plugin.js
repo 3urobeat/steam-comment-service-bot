@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 14:12:17
  * Author: 3urobeat
  *
- * Last Modified: 28.05.2023 15:51:16
+ * Last Modified: 29.05.2023 16:23:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -24,6 +24,7 @@ const logger  = require("output-logger");
 
 /**
  * Constructor - Creates a new object for this plugin
+ * @class
  * @param {PluginSystem} sys Your connector to the application
  */
 const Plugin = function(sys) {
