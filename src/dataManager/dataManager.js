@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 15:50:26
+ * Last Modified: 29.05.2023 16:06:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -96,13 +96,13 @@ const DataManager = function (controller) {
 
     // Dynamically load all helper files
     const loadHelpersFromFolder = (folder) => {
-        fs.readdirSync(folder).forEach((file) => {
+        fs.readdirSync(folder).forEach(async (file) => {
             if (!file.endsWith(".js")) return;
-            const path = `./src/dataManager/${file}`;
-            const getFile = this.checkAndGetFile(path, controller.logger);
-            if (!getFile) {
-                logger("err", `Error! DataManager: Failed to load '${file}'!`);
-            }
+
+            const path = `${folder}/${file}`;
+            const getFile = await this.checkAndGetFile(path, controller.logger);
+
+            if (!getFile) logger("err", `Error! DataManager: Failed to load '${file}'!`);
         });
     };
 
