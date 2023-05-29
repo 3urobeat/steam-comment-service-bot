@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 25.05.2023 14:26:34
+ * Last Modified: 29.05.2023 14:37:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -24,7 +24,7 @@ const download = require("download"); // TODO: Does it make a difference if we r
  * @param {Controller} controller Reference to the controller object
  * @returns {Promise} Resolves when we can proceed
  */
- module.exports.startDownload = (controller) => {
+module.exports.startDownload = (controller) => {
     return new Promise((resolve) => {
 
         // Start by defining which files we should keep

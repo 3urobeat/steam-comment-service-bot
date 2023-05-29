@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.05.2023 23:41:35
+ * Last Modified: 29.05.2023 13:53:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
-const SteamID = require("steamid");
 
 const CommandHandler                = require("../commandHandler.js"); // eslint-disable-line
 const { handleSteamIdResolving }    = require("../../controller/helpers/handleSteamIdResolving.js");

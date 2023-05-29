@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 27.05.2023 11:45:08
+ * Last Modified: 29.05.2023 13:17:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -77,6 +77,7 @@ PluginSystem.prototype.reloadPlugins = function() {
 
 /**
  * Internal: Loads all plugins in /plugins dir and exports them as PluginSystem.pluginList object
+ * @returns {Promise} Resolves when all plugins have been loaded
  */
 PluginSystem.prototype._loadPlugins = function() {};
 

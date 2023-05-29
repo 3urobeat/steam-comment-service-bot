@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 17.05.2023 20:02:33
+ * Last Modified: 28.05.2023 12:19:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
-const SteamID = require("steamid"); // eslint-disable-line
 
 const CommandHandler             = require("../commandHandler.js"); // eslint-disable-line
 const { handleSteamIdResolving } = require("../../controller/helpers/handleSteamIdResolving.js");
@@ -137,7 +135,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respo
                 clearInterval(profileIDDefinedInterval);
 
                 // Log debug values
-                logger("debug", `CommandHandler getCommentArgs() success. maxRequestAmount: ${maxRequestAmount} | numberOfComments: ${numberOfComments} | profileID: ${profileID} | quotesArr.length: ${quotesArr.length}`);
+                logger("debug", `CommandHandler getCommentArgs() success. maxRequestAmount: ${maxRequestAmount} | numberOfComments: ${numberOfComments} | ID: ${profileID} | idType: ${idType} | quotesArr.length: ${quotesArr.length}`);
 
                 // Return obj if profileID is not null, otherwise return false as an error has occurred, the user was informed and execution should be stopped
                 if (profileID) resolve({ maxRequestAmount, numberOfComments, profileID, idType, quotesArr });
