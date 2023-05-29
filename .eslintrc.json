@@ -29,6 +29,7 @@
         "capitalized-comments": ["warn", "always", { "ignoreConsecutiveComments": true }],
         "comma-spacing": ["warn", { "before": false, "after": true }],
         "func-call-spacing": ["error", "never"],
+        "indent": ["error", 4, { "ignoredNodes": ["IfStatement"], "SwitchCase": 1 }], // TODO: This also ignores if statements with wrong indentation but I couldn't get it to only ignore else in if-else one-liner
         "no-tabs": "error",
         "no-trailing-spaces": "error",
         "no-extra-semi": "error",
