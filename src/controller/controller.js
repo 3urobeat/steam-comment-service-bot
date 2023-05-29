@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 15:56:40
+ * Last Modified: 29.05.2023 16:09:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -254,7 +254,7 @@ Controller.prototype._preLogin = async function() {
 
 
     // Check bot.js for errors and load it explicitly again to get IntelliSense support
-    await this.checkAndGetFile("./src/bot/bot.js", logger, false, false);
+    if (!await this.checkAndGetFile("./src/bot/bot.js", logger, false, false)) return this.stop();
     let Bot = require("../bot/bot.js"); // eslint-disable-line
 
     /**
@@ -358,11 +358,6 @@ Controller.prototype.restart = function(data) { process.send(`restart(${data})`)
  * Stops the whole application
  */
 Controller.prototype.stop = function() { process.send("stop()"); };
-
-/**
- * Internal: Performs certain checks before logging in for the first time and then calls login()
- */
-Controller.prototype._preLogin = async function() {};
 
 /**
  * Attempts to log in all bot accounts which are currently offline one after another
