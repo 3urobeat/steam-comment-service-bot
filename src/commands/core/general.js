@@ -203,7 +203,7 @@ module.exports.test = {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // Do not remove, these are handleSteamIdResolving test cases. Might be useful to include later in steamid-resolving lib test suite
-        let { handleSteamIdResolving } = require(srcdir + "/controller/helpers/handleSteamIdResolving.js");
+        let handleSteamIdResolving = commandHandler.controller.handleSteamIdResolving;
 
         // With type param
         handleSteamIdResolving("3urobeat", "profile", console.log);

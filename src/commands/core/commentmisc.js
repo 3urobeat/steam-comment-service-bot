@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 13:53:50
+ * Last Modified: 29.05.2023 18:55:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -16,7 +16,6 @@
 
 
 const CommandHandler                = require("../commandHandler.js"); // eslint-disable-line
-const { handleSteamIdResolving }    = require("../../controller/helpers/handleSteamIdResolving.js");
 const { failedCommentsObjToString } = require("../helpers/handleCommentSkips.js");
 
 
@@ -37,7 +36,7 @@ module.exports.abort = {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
-        handleSteamIdResolving(args[0], null, (err, res) => {
+        commandHandler.controller.handleSteamIdResolving(args[0], null, (err, res) => {
             if (res) {
                 if (!commandHandler.data.cachefile.ownerid.includes(steamID64)) return respond(commandHandler.data.lang.commandowneronly);
 
@@ -84,7 +83,7 @@ module.exports.resetCooldown = {
 
         } else {
 
-            handleSteamIdResolving(args[0], "profile", (err, res) => {
+            commandHandler.controller.handleSteamIdResolving(args[0], "profile", (err, res) => {
                 if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
                 if (res) steamID64 = res; // Change steamID64 to the provided id
 
@@ -116,7 +115,7 @@ module.exports.failed = {
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        handleSteamIdResolving(args[0], null, (err, res) => {
+        commandHandler.controller.handleSteamIdResolving(args[0], null, (err, res) => {
             if (res) {
                 if (!commandHandler.data.cachefile.ownerid.includes(steamID64)) return respond(commandHandler.data.lang.commandowneronly);
 

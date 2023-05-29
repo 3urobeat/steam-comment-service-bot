@@ -241,6 +241,7 @@ Controller.prototype._preLogin = async function() {
     require("./events/statusUpdate.js");
     require("./helpers/friendlist.js");
     require("./helpers/getBots.js");
+    require("./helpers/handleSteamIdResolving.js");
 
 
     // Update Updater IntelliSense without modifying what _start() has already set. Integrity has already been checked
@@ -409,6 +410,14 @@ Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObje
  * Should a NPM related error be detected it attempts to reinstall all packages using our npminteraction helper function
  */
 Controller.prototype._handleErrors = function() {} // eslint-disable-line
+
+/**
+ * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation
+ * @param {String} str The profileID argument provided by the user
+ * @param {String} expectedIdType The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
+ * @param {function} [callback] Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
+ */
+Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) => {} // eslint-disable-line
 
 /**
  * Logs text to the terminal and appends it to the output.txt file.

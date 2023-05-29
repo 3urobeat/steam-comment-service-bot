@@ -4,7 +4,7 @@
  * Created Date: 09.03.2022 12:58:17
  * Author: 3urobeat
  *
- * Last Modified: 17.05.2023 13:40:22
+ * Last Modified: 29.05.2023 18:51:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -18,6 +18,9 @@
 const SteamID         = require("steamid");
 const steamIDResolver = require("steamid-resolver");
 
+const Controller = require("../controller.js");
+
+
 // Note: I tried extending the SteamID Type enum to support sharedfiles but that didn't work out because of TypeScript reasons.
 // I'm therefore taking Strings instead of SteamID.Type values for types now.
 
@@ -27,7 +30,7 @@ const steamIDResolver = require("steamid-resolver");
  * @param {String} expectedIdType The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
  * @param {function} [callback] Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
  */
-module.exports.handleSteamIdResolving = (str, expectedIdType, callback) => {
+Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) => {
 
     // Instantly callback nothing if nothing was provided
     if (!str) return callback(null, null);

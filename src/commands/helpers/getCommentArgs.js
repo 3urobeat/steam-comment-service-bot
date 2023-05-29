@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 28.05.2023 12:19:08
+ * Last Modified: 29.05.2023 18:52:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -15,8 +15,7 @@
  */
 
 
-const CommandHandler             = require("../commandHandler.js"); // eslint-disable-line
-const { handleSteamIdResolving } = require("../../controller/helpers/handleSteamIdResolving.js");
+const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 
 /**
@@ -80,7 +79,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respo
                 if (commandHandler.data.cachefile.ownerid.includes(requesterSteamID64) || args[1] == requesterSteamID64) { // Check if user is a bot owner or if he provided his own profile id
                     let arg = args[1];
 
-                    handleSteamIdResolving(arg, null, (err, res, type) => {
+                    commandHandler.controller.handleSteamIdResolving(arg, null, (err, res, type) => {
                         if (err) {
                             respond(commandHandler.data.lang.commentinvalidid.replace("commentcmdusage", commentcmdUsage) + "\n\nError: " + err);
                             return resolve(false);
