@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.05.2023 11:09:56
+ * Last Modified: 29.05.2023 15:56:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -27,27 +27,6 @@ const Controller = function() {
 
     // Create eventEmitter
     this.events = new EventEmitter();
-
-    /**
-     * The commandHandler object
-     * @type {CommandHandler}
-     */
-    this.commandHandler = {};
-
-    /**
-     * The pluginSystem handler
-     * @type {PluginSystem}
-     */
-    this.pluginSystem = {};
-
-    /**
-     * The updater object
-     * @type {Updater}
-     */
-    this.updater = {};
-
-    // Stores references to all bot account objects mapped to their accountName
-    this.bots = {};
 
     /**
      * Collection of miscellaneous functions for easier access
@@ -95,11 +74,6 @@ const Controller = function() {
         cutStringsIntelligently: (txt, limit, cutChars, threshold) => {} // eslint-disable-line
     };
 
-    /**
-     * The main bot account
-     * @type {Bot}
-     */
-    this.main = {}; // Store short-hand reference to the main acc (populated later)
 
     this.info = {
         bootStartTimestamp: Date.now(), // Save timestamp to be able to calculate startup time in ready event
@@ -122,6 +96,7 @@ const Controller = function() {
  */
 Controller.prototype._start = async function() {
     let checkAndGetFile = require("../starter.js").checkAndGetFile; // Temp var to use checkAndGetFile() before it is referenced in DataManager
+    this.checkAndGetFile = checkAndGetFile;
 
     /* ------------ Init error handler: ------------ */
     if (!await checkAndGetFile("./src/controller/helpers/handleErrors.js", logger, false, false)) return this.stop();
@@ -254,6 +229,74 @@ Controller.prototype._start = async function() {
         }
     }
 };
+
+
+/**
+ * Internal: Loads all parts of the application to get IntelliSense support after the updater ran and calls login() when done.
+ */
+Controller.prototype._preLogin = async function() {
+
+    // Load Controller event handlers & helpers
+    require("./events/ready.js");
+    require("./events/statusUpdate.js");
+    require("./helpers/friendlist.js");
+    require("./helpers/getBots.js");
+
+
+    // Update Updater IntelliSense without modifying what _start() has already set. Integrity has already been checked
+    let Updater = require("../updater/updater.js"); // eslint-disable-line
+
+    /**
+     * The updater object
+     * @type {Updater}
+     */
+    this.updater;
+
+
+    // Check bot.js for errors and load it explicitly again to get IntelliSense support
+    await this.checkAndGetFile("./src/bot/bot.js", logger, false, false);
+    let Bot = require("../bot/bot.js"); // eslint-disable-line
+
+    /**
+     * Stores references to all bot account objects mapped to their accountName
+     * @type {Object.<string, Bot>}
+     */
+    this.bots = {};
+
+    /**
+     * The main bot account
+     * @type {Bot}
+     */
+    this.main = {}; // Store short-hand reference to the main acc (populated later)
+
+
+    // Load commandHandler
+    let CommandHandler = require("../commands/commandHandler.js");
+
+    /**
+     * The commandHandler object
+     * @type {CommandHandler}
+     */
+    this.commandHandler = new CommandHandler(this);
+    this.commandHandler._importCoreCommands();
+
+
+    // Load pluginSystem
+    let PluginSystem = require("../pluginSystem/pluginSystem.js");
+
+    /**
+     * The pluginSystem handler
+     * @type {PluginSystem}
+     */
+    this.pluginSystem = new PluginSystem(this);
+    await this.pluginSystem._loadPlugins(); // Load all plugins now
+
+
+    // Start logging in
+    this.login(true);
+
+};
+
 
 module.exports = Controller;
 

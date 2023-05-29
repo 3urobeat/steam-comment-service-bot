@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.05.2023 12:34:48
+ * Last Modified: 29.05.2023 13:47:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -24,80 +24,51 @@ const misc       = require("./helpers/misc.js");
 
 
 /**
- * Internal: Performs certain checks before logging in for the first time and then calls login()
- */
-Controller.prototype._preLogin = async function() {
-
-    // Update global var
-    botisloggedin = true;
-
-
-    // Print ASCII art
-    logger("", "", true);
-    if (Math.floor(Math.random() * 100) <= 2) logger("", ascii.hellothereascii + "\n", true); // 2% chance
-        else if (Math.floor(Math.random() * 100) <= 5) logger("", ascii.binaryascii + "\n", true); // 5% chance
-        else logger("", ascii.ascii[Math.floor(Math.random() * ascii.ascii.length)] + "\n", true);
-
-    logger("", "", true); // Put one line above everything that will come to make the output cleaner
-
-
-    // Load intern event handlers & helpers
-    require("./events/ready.js");
-    require("./events/statusUpdate.js");
-    require("./helpers/friendlist.js");
-    require("./helpers/getBots.js");
-
-
-    // Load commandHandler
-    let CommandHandler = require("../commands/commandHandler.js");
-
-    this.commandHandler = new CommandHandler(this);
-    this.commandHandler._importCoreCommands();
-
-
-    // Load pluginSystem
-    let PluginSystem = require("../pluginSystem/pluginSystem.js");
-
-    this.pluginSystem = new PluginSystem(this);
-    await this.pluginSystem._loadPlugins(); // Load all plugins now
-
-
-    /* ------------ Log comment related config settings: ------------ */
-    let maxCommentsOverall = this.data.config.maxOwnerComments; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
-    if (this.data.config.maxComments > this.data.config.maxOwnerComments) maxCommentsOverall = this.data.config.maxComments;
-    logger("info", `Comment settings: commentdelay: ${this.data.config.commentdelay} | botaccountcooldown: ${this.data.config.botaccountcooldown} | maxCommentsOverall: ${maxCommentsOverall} | randomizeAcc: ${this.data.config.randomizeAccounts}`, false, true, logger.animation("loading"));
-
-
-    // Print whatsnew message if this is the first start with this version
-    if (this.data.datafile.firststart) logger("", `${logger.colors.reset}What's new: ${this.data.datafile.whatsnew}\n`, false, false, null, true); // Force print message now
-
-
-    // Evaluate estimated wait time for login:
-    logger("debug", "Evaluating estimated login time...");
-    let estimatedlogintime;
-
-    // Only use "intelligent" evaluation method when the bot was started more than 5 times
-    if (this.data.datafile.timesloggedin < 5) estimatedlogintime = ((this.data.advancedconfig.loginDelay * (Object.keys(this.data.logininfo).length - 1 - this.info.skippedaccounts.length)) / 1000) + 5; // 5 seconds tolerance
-        else estimatedlogintime = ((this.data.datafile.totallogintime / this.data.datafile.timesloggedin) + (this.data.advancedconfig.loginDelay / 1000)) * (Object.keys(this.data.logininfo).length - this.info.skippedaccounts.length);
-
-    let estimatedlogintimeunit = "seconds";
-    if (estimatedlogintime > 60) { estimatedlogintime = estimatedlogintime / 60; estimatedlogintimeunit = "minutes"; }
-    if (estimatedlogintime > 60) { estimatedlogintime = estimatedlogintime / 60; estimatedlogintimeunit = "hours"; }                                                                                                                                                                                                                                                                          // 🥚!
-
-    logger("info", `Logging in... Estimated wait time: ${misc.round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`, false, false, logger.animation("loading"), true);
-    if (checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<") this.stop(); // eslint-disable-line
-
-
-    // Start logging in
-    this.login();
-};
-
-
-/**
  * Attempts to log in all bot accounts which are currently offline one after another.
  * Creates a new bot object for every new account and reuses existing one if possible
+ * @param {Boolean} firstLogin Is set to true by controller if this is the first login to display more information
  */
-Controller.prototype.login = function() {
+Controller.prototype.login = function(firstLogin) {
+
+    if (firstLogin) {
+        // Update global var
+        botisloggedin = true;
+
+        // Print ASCII art
+        logger("", "", true);
+        if (Math.floor(Math.random() * 100) <= 2) logger("", ascii.hellothereascii + "\n", true); // 2% chance
+            else if (Math.floor(Math.random() * 100) <= 5) logger("", ascii.binaryascii + "\n", true); // 5% chance
+            else logger("", ascii.ascii[Math.floor(Math.random() * ascii.ascii.length)] + "\n", true);
+
+        logger("", "", true); // Put one line above everything that will come to make the output cleaner
+
+        /* ------------ Log comment related config settings: ------------ */
+        let maxCommentsOverall = this.data.config.maxOwnerComments; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
+        if (this.data.config.maxComments > this.data.config.maxOwnerComments) maxCommentsOverall = this.data.config.maxComments;
+        logger("info", `Comment settings: commentdelay: ${this.data.config.commentdelay} | botaccountcooldown: ${this.data.config.botaccountcooldown} | maxCommentsOverall: ${maxCommentsOverall} | randomizeAcc: ${this.data.config.randomizeAccounts}`, false, true, logger.animation("loading"));
+
+
+        // Print whatsnew message if this is the first start with this version
+        if (this.data.datafile.firststart) logger("", `${logger.colors.reset}What's new: ${this.data.datafile.whatsnew}\n`, false, false, null, true); // Force print message now
+
+
+        // Evaluate estimated wait time for login:
+        logger("debug", "Evaluating estimated login time...");
+        let estimatedlogintime;
+
+        // Only use "intelligent" evaluation method when the bot was started more than 5 times
+        if (this.data.datafile.timesloggedin < 5) estimatedlogintime = ((this.data.advancedconfig.loginDelay * (Object.keys(this.data.logininfo).length - 1 - this.info.skippedaccounts.length)) / 1000) + 5; // 5 seconds tolerance
+            else estimatedlogintime = ((this.data.datafile.totallogintime / this.data.datafile.timesloggedin) + (this.data.advancedconfig.loginDelay / 1000)) * (Object.keys(this.data.logininfo).length - this.info.skippedaccounts.length);
+
+        let estimatedlogintimeunit = "seconds";
+        if (estimatedlogintime > 60) { estimatedlogintime = estimatedlogintime / 60; estimatedlogintimeunit = "minutes"; }
+        if (estimatedlogintime > 60) { estimatedlogintime = estimatedlogintime / 60; estimatedlogintimeunit = "hours"; }                                                                                                                                                                                                                                                                          // 🥚!
+
+        logger("info", `Logging in... Estimated wait time: ${misc.round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`, false, false, logger.animation("loading"), true);
+        if (checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<") this.stop(); // eslint-disable-line
+    }
+
+
     if (this.info.activeLogin) return logger("debug", "Controller login(): Login requested but there is already a login process active. Ignoring...");
         else logger("debug", "Controller login(): Login requested, checking for any accounts currently offline...");
 
@@ -186,4 +157,5 @@ Controller.prototype.login = function() {
 
         }, waitTime);
     });
+
 };
