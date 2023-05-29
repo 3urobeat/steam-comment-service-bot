@@ -22,33 +22,33 @@ const fs = require("fs");
  * @param {Object} controller Reference to the controller object
  */
 const DataManager = function (controller) {
-  this.controller = controller;
-  this.checkAndGetFile = starter.checkAndGetFile; // Reference checkAndGetFile() already defined in starter to use it more easily
+    this.controller = controller;
+    this.checkAndGetFile = starter.checkAndGetFile; // Reference checkAndGetFile() already defined in starter to use it more easily
 
-  // Register dataImport vars to let the IntelliSense know
-  this.cachefile = {};
-  this.datafile = {};
-  this.config = {};
-  this.advancedconfig = {};
-  this.logininfo = {};
-  this.proxies = [];
-  this.quotes = [];
-  this.lang = {};
-  this.lastCommentDB = {};
-  this.tokensDB = {};
+    // Register dataImport vars to let the IntelliSense know
+    this.cachefile = {};
+    this.datafile = {};
+    this.config = {};
+    this.advancedconfig = {};
+    this.logininfo = {};
+    this.proxies = [];
+    this.quotes = [];
+    this.lang = {};
+    this.lastCommentDB = {};
+    this.tokensDB = {};
 
-  const loadHelpersFromFolder = (folder) => {
-    fs.readdirSync(folder).forEach((file) => {
-      if (!file.endsWith(".js")) return;
-      const path = `./src/dataManager/${file}`;
-      const getFile = this.checkAndGetFile(path, controller.logger);
-      if (!getFile) {
-        logger("err", `Error! DataManager: Failed to load '${file}'!`);
-      }
-    });
-  };
-  loadHelpersFromFolder("./src/dataManager");
-  loadHelpersFromFolder("./src/dataManager/helpers");
+    const loadHelpersFromFolder = (folder) => {
+        fs.readdirSync(folder).forEach((file) => {
+            if (!file.endsWith(".js")) return;
+            const path = `./src/dataManager/${file}`;
+            const getFile = this.checkAndGetFile(path, controller.logger);
+            if (!getFile) {
+                logger("err", `Error! DataManager: Failed to load '${file}'!`);
+            }
+        });
+    };
+    loadHelpersFromFolder("./src/dataManager");
+    loadHelpersFromFolder("./src/dataManager/helpers");
 };
 
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
@@ -130,20 +130,20 @@ DataManager.prototype.refreshCache = function () {};
  * @param {Function} resolve Function to resolve the caller's promise
  */
 DataManager.prototype._restoreBackup = function (
-  name,
-  filepath,
-  cacheentry,
-  onlinelink,
-  resolve
+    name,
+    filepath,
+    cacheentry,
+    onlinelink,
+    resolve
 ) {}; // eslint-disable-line
 
 /**
  * Internal: Helper function to pull new file from GitHub
  */
 DataManager.prototype._pullNewFile = async function (
-  name,
-  filepath,
-  resolve
+    name,
+    filepath,
+    resolve
 ) {}; // eslint-disable-line
 
 // Export our freshly baked bread
