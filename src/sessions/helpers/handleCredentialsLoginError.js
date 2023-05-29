@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 13:22:39
  * Author: 3urobeat
  *
- * Last Modified: 26.03.2023 18:38:53
+ * Last Modified: 29.05.2023 19:07:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -19,7 +19,10 @@ const { EResult } = require("steam-session");
 const SessionHandler = require("../sessionHandler.js");
 
 
-// Helper function to make handling login errors easier
+/**
+ * Helper function to make handling login errors easier
+ * @param {*} err Error thrown by startWithCredentials()
+ */
 SessionHandler.prototype._handleCredentialsLoginError = function(err) {
 
     // Define a few enums on which we won't bother to relog

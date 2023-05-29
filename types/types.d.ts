@@ -298,36 +298,11 @@ declare class Controller {
      */
     stop(): void;
     /**
-     * Attempts to log in all bot accounts which are currently offline one after another
+     * Attempts to log in all bot accounts which are currently offline one after another.
      * Creates a new bot object for every new account and reuses existing one if possible
+     * @param firstLogin - Is set to true by controller if this is the first login to display more information
      */
-    login(): void;
-    /**
-     * Runs internal ready event code and emits ready event for plugins
-     */
-    _readyEvent(): void;
-    /**
-     * Runs internal statusUpdate event code and emits statusUpdate event for plugins
-     * @param bot - Bot instance
-     * @param newStatus - The new status
-     */
-    _statusUpdateEvent(bot: Bot, newStatus: Bot.EStatus): void;
-    /**
-     * Retrieves all matching bot accounts and returns them.
-     * @param [statusFilter = online] - String or Array of Strings including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'online' will be returned.
-     * @param mapToObject - If true, an object will be returned where every bot object is mapped to their accountName.
-     * @returns An array or object if `mapToObject == true` containing all matching bot accounts.
-     */
-    getBots(statusFilter?: string | String[], mapToObject: boolean): any[] | any;
-    /**
-     * Logs text to the terminal and appends it to the output.txt file.
-     * @param type - String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
-     * @param str - The text to log into the terminal
-     * @param nodate - Setting to true will hide date and time in the message
-     * @param remove - Setting to true will remove this message with the next one
-     * @param printNow - Ignores the readyafterlogs check and force prints the message now
-     */
-    logger(type: string, str: string, nodate: boolean, remove: boolean, printNow: boolean): void;
+    login(firstLogin: boolean): void;
     /**
      * Runs internal ready event code and emits ready event for plugins
      */
@@ -355,16 +330,23 @@ declare class Controller {
     _lastcommentUnfriendCheck(): void;
     /**
      * Retrieves all matching bot accounts and returns them.
-     * @param [statusFilter = online] - String or Array of Strings including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'online' will be returned.
-     * @param mapToObject - If true, an object will be returned where every bot object is mapped to their accountName.
+     * @param [statusFilter = EStatus.ONLINE] - Optional: EStatus or Array of EStatus's including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'EStatus.ONLINE' will be returned.
+     * @param mapToObject - Optional: If true, an object will be returned where every bot object is mapped to their accountName.
      * @returns An array or object if `mapToObject == true` containing all matching bot accounts.
      */
-    getBots(statusFilter?: string | String[], mapToObject: boolean): any[] | any;
+    getBots(statusFilter?: EStatus | EStatus[] | string, mapToObject: boolean): any[] | any;
     /**
      * Internal: Handles process's unhandledRejection & uncaughtException error events.
      * Should a NPM related error be detected it attempts to reinstall all packages using our npminteraction helper function
      */
     _handleErrors(): void;
+    /**
+     * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation
+     * @param str - The profileID argument provided by the user
+     * @param expectedIdType - The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
+     * @param [callback] - Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
+     */
+    handleSteamIdResolving(str: string, expectedIdType: string, callback?: (...params: any[]) => any): void;
     /**
      * Logs text to the terminal and appends it to the output.txt file.
      * @param type - String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
@@ -375,32 +357,86 @@ declare class Controller {
      */
     logger(type: string, str: string, nodate: boolean, remove: boolean, printNow: boolean): void;
     /**
-     * Call this function after loading advancedconfig.json to set previously inaccessible options
+     * Internal: Call this function after loading advancedconfig.json to set previously inaccessible options
      */
     _loggerOptionsUpdateAfterConfigLoad(): void;
     /**
-     * Logs all held back messages from logAfterReady array
+     * Internal: Logs all held back messages from logAfterReady array
      */
     _loggerLogAfterReady(): void;
     /**
-     * Attempts to log in all bot accounts which are currently offline one after another
-     * Creates a new bot object for every new account and reuses existing one if possible
+     * Runs internal ready event code and emits ready event for plugins
      */
-    login(): void;
+    _readyEvent(): void;
+    /**
+     * Runs internal statusUpdate event code and emits statusUpdate event for plugins
+     * @param bot - Bot instance
+     * @param newStatus - The new status
+     */
+    _statusUpdateEvent(bot: Bot, newStatus: Bot.EStatus): void;
+    /**
+     * Check if all friends are in lastcomment database
+     * @param bot - Bot object of the account to check
+     */
+    checkLastcommentDB(bot: Bot): void;
+    /**
+     * Checks the remaining space on the friendlist of a bot account, sends a warning message if it is less than 10 and force unfriends oldest lastcomment db user to always keep room for 1 friend.
+     * @param bot - Bot object of the account to check
+     * @param [callback] - Called with `remaining` (Number) on completion
+     */
+    friendListCapacityCheck(bot: Bot, callback?: (...params: any[]) => any): void;
+    /**
+     * Check for friends who haven't requested comments in config.unfriendtime days and unfriend them
+     */
+    _lastcommentUnfriendCheck(): void;
+    /**
+     * Retrieves all matching bot accounts and returns them.
+     * @param [statusFilter = EStatus.ONLINE] - Optional: EStatus or Array of EStatus's including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'EStatus.ONLINE' will be returned.
+     * @param mapToObject - Optional: If true, an object will be returned where every bot object is mapped to their accountName.
+     * @returns An array or object if `mapToObject == true` containing all matching bot accounts.
+     */
+    getBots(statusFilter?: EStatus | EStatus[] | string, mapToObject: boolean): any[] | any;
+    /**
+     * Internal: Handles process's unhandledRejection & uncaughtException error events.
+     * Should a NPM related error be detected it attempts to reinstall all packages using our npminteraction helper function
+     */
+    _handleErrors(): void;
+    /**
+     * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation
+     * @param str - The profileID argument provided by the user
+     * @param expectedIdType - The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
+     * @param [callback] - Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
+     */
+    handleSteamIdResolving(str: string, expectedIdType: string, callback?: (...params: any[]) => any): void;
+    /**
+     * Logs text to the terminal and appends it to the output.txt file.
+     * @param type - String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
+     * @param str - The text to log into the terminal
+     * @param nodate - Setting to true will hide date and time in the message
+     * @param remove - Setting to true will remove this message with the next one
+     * @param printNow - Ignores the readyafterlogs check and force prints the message now
+     */
+    logger(type: string, str: string, nodate: boolean, remove: boolean, printNow: boolean): void;
+    /**
+     * Internal: Call this function after loading advancedconfig.json to set previously inaccessible options
+     */
+    _loggerOptionsUpdateAfterConfigLoad(): void;
+    /**
+     * Internal: Logs all held back messages from logAfterReady array
+     */
+    _loggerLogAfterReady(): void;
+    /**
+     * Attempts to log in all bot accounts which are currently offline one after another.
+     * Creates a new bot object for every new account and reuses existing one if possible
+     * @param firstLogin - Is set to true by controller if this is the first login to display more information
+     */
+    login(firstLogin: boolean): void;
 }
 
 /**
  * Process data that should be kept over restarts
  */
 declare function restartdata(): void;
-
-/**
- * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation
- * @param str - The profileID argument provided by the user
- * @param expectedIdType - The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
- * @param [callback] - Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
- */
-declare function handleSteamIdResolving(str: string, expectedIdType: string, callback?: (...params: any[]) => any): void;
 
 /**
  * Implementation of a synchronous for loop in JS (Used as reference: https://whitfin.io/handling-synchronous-asynchronous-loops-javascriptnode-js/)
@@ -789,10 +825,24 @@ declare class SessionHandler {
      */
     _attachEvents(): void;
     /**
-     * Internal - Handles submitting 2FA code
+     * Internal: Handles submitting 2FA code
      * @param res - Response object from startWithCredentials() promise
      */
     _handle2FA(res: any): void;
+    /**
+     * Internal: Helper function to get 2FA code from user and passing it to accept function or skipping account if desired
+     */
+    _get2FAUserInput(): void;
+    /**
+     * Internal: Helper function to make accepting and re-requesting invalid steam guard codes easier
+     * @param code - Input from user
+     */
+    _acceptSteamGuardCode(code: string): void;
+    /**
+     * Helper function to make handling login errors easier
+     * @param err - Error thrown by startWithCredentials()
+     */
+    _handleCredentialsLoginError(err: any): void;
     /**
      * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
      * @param [callback] - Called with `refreshToken` (String) on success or `null` on failure
@@ -826,10 +876,24 @@ declare class SessionHandler {
      */
     _attachEvents(): void;
     /**
-     * Internal - Handles submitting 2FA code
+     * Internal: Handles submitting 2FA code
      * @param res - Response object from startWithCredentials() promise
      */
     _handle2FA(res: any): void;
+    /**
+     * Internal: Helper function to get 2FA code from user and passing it to accept function or skipping account if desired
+     */
+    _get2FAUserInput(): void;
+    /**
+     * Internal: Helper function to make accepting and re-requesting invalid steam guard codes easier
+     * @param code - Input from user
+     */
+    _acceptSteamGuardCode(code: string): void;
+    /**
+     * Helper function to make handling login errors easier
+     * @param err - Error thrown by startWithCredentials()
+     */
+    _handleCredentialsLoginError(err: any): void;
     /**
      * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
      * @param [callback] - Called with `refreshToken` (String) on success or `null` on failure

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 01.04.2023 14:56:50
+ * Last Modified: 29.05.2023 18:57:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -72,7 +72,7 @@ global.logger = Controller.prototype.logger;
 
 
 /**
- * Call this function after loading advancedconfig.json to set previously inaccessible options
+ * Internal: Call this function after loading advancedconfig.json to set previously inaccessible options
  */
 Controller.prototype._loggerOptionsUpdateAfterConfigLoad = function(advancedconfig) {
     logger.options({
@@ -83,7 +83,7 @@ Controller.prototype._loggerOptionsUpdateAfterConfigLoad = function(advancedconf
 
 
 /**
- * Logs all held back messages from logAfterReady array
+ * Internal: Logs all held back messages from logAfterReady array
  */
 Controller.prototype._loggerLogAfterReady = function() {
     botIsReady = true;

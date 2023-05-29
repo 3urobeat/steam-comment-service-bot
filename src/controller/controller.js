@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:47:49
+ * Last Modified: 29.05.2023 18:57:18
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -360,10 +360,11 @@ Controller.prototype.restart = function(data) { process.send(`restart(${data})`)
 Controller.prototype.stop = function() { process.send("stop()"); };
 
 /**
- * Attempts to log in all bot accounts which are currently offline one after another
+ * Attempts to log in all bot accounts which are currently offline one after another.
  * Creates a new bot object for every new account and reuses existing one if possible
+ * @param {Boolean} firstLogin Is set to true by controller if this is the first login to display more information
  */
-Controller.prototype.login = function() {};
+Controller.prototype.login = function(firstLogin) {}; // eslint-disable-line
 
 /**
  * Runs internal ready event code and emits ready event for plugins
@@ -378,12 +379,36 @@ Controller.prototype._readyEvent = function() {};
 Controller.prototype._statusUpdateEvent = function(bot, newStatus) {}; // eslint-disable-line
 
 /**
+ * Check if all friends are in lastcomment database
+ * @param {Bot} bot Bot object of the account to check
+ */
+Controller.prototype.checkLastcommentDB = function(bot) {}; // eslint-disable-line
+
+/**
+ * Checks the remaining space on the friendlist of a bot account, sends a warning message if it is less than 10 and force unfriends oldest lastcomment db user to always keep room for 1 friend.
+ * @param {Bot} bot Bot object of the account to check
+ * @param {function} [callback] Called with `remaining` (Number) on completion
+ */
+Controller.prototype.friendListCapacityCheck = function(bot, callback) {}; // eslint-disable-line
+
+/**
+ * Check for friends who haven't requested comments in config.unfriendtime days and unfriend them
+ */
+Controller.prototype._lastcommentUnfriendCheck = function() {} // eslint-disable-line
+
+/**
  * Retrieves all matching bot accounts and returns them.
- * @param {(String|String[])} [statusFilter=online] String or Array of Strings including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'online' will be returned.
- * @param {Boolean} mapToObject If true, an object will be returned where every bot object is mapped to their accountName.
+ * @param {(EStatus|EStatus[]|string)} [statusFilter=EStatus.ONLINE] Optional: EStatus or Array of EStatus's including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'EStatus.ONLINE' will be returned.
+ * @param {Boolean} mapToObject Optional: If true, an object will be returned where every bot object is mapped to their accountName.
  * @returns {Array|Object} An array or object if `mapToObject == true` containing all matching bot accounts.
  */
-Controller.prototype.getBots = function(statusFilter, mapToObject) {}; // eslint-disable-line
+Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObject = false) {}; // eslint-disable-line
+
+/**
+ * Internal: Handles process's unhandledRejection & uncaughtException error events.
+ * Should a NPM related error be detected it attempts to reinstall all packages using our npminteraction helper function
+ */
+Controller.prototype._handleErrors = function() {} // eslint-disable-line
 
 /**
  * Logs text to the terminal and appends it to the output.txt file.
@@ -394,3 +419,13 @@ Controller.prototype.getBots = function(statusFilter, mapToObject) {}; // eslint
  * @param {Boolean} printNow Ignores the readyafterlogs check and force prints the message now
  */
 Controller.prototype.logger = function(type, str, nodate, remove, animation, printNow) {}; // eslint-disable-line
+
+/**
+ * Internal: Call this function after loading advancedconfig.json to set previously inaccessible options
+ */
+Controller.prototype._loggerOptionsUpdateAfterConfigLoad = function(advancedconfig) {}; // eslint-disable-line
+
+/**
+ * Internal: Logs all held back messages from logAfterReady array
+ */
+Controller.prototype._loggerLogAfterReady = function() {}; // eslint-disable-line

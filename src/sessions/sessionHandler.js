@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:54:17
+ * Last Modified: 29.05.2023 19:08:42
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -141,18 +141,26 @@ SessionHandler.prototype._attemptCredentialsLogin = function() {
 SessionHandler.prototype._attachEvents = function() {};
 
 /**
- * Internal - Handles submitting 2FA code
+ * Internal: Handles submitting 2FA code
  * @param {Object} res Response object from startWithCredentials() promise
  */
 SessionHandler.prototype._handle2FA = function(res) {}; // eslint-disable-line
 
-// Helper function to get 2FA code from user and passing it to accept function or skipping account if desired
+/**
+ * Internal: Helper function to get 2FA code from user and passing it to accept function or skipping account if desired
+ */
 SessionHandler.prototype._get2FAUserInput = function() {};
 
-// Helper function to make accepting and re-requesting invalid steam guard codes easier
+/**
+ * Internal: Helper function to make accepting and re-requesting invalid steam guard codes easier
+ * @param {String} code Input from user
+ */
 SessionHandler.prototype._acceptSteamGuardCode = function(code) {}; // eslint-disable-line
 
-// Helper function to make handling login errors easier
+/**
+ * Helper function to make handling login errors easier
+ * @param {*} err Error thrown by startWithCredentials()
+ */
 SessionHandler.prototype._handleCredentialsLoginError = function(err) {}; // eslint-disable-line
 
 /**
@@ -168,6 +176,6 @@ SessionHandler.prototype._getTokenFromStorage = function(callback) {}; // eslint
 SessionHandler.prototype._saveTokenToStorage = function(token) {}; // eslint-disable-line
 
 /**
- * External - Removes the token of this account from tokens.db. Intended to be called from the steam-user login error event when an invalid token was used so the next login attempt will create a new one.
+ * Remove the token of this account from tokens.db. Intended to be called from the steam-user login error event when an invalid token was used so the next login attempt will create a new one.
  */
 SessionHandler.prototype.invalidateTokenInStorage = function() {};
