@@ -27,7 +27,13 @@ const Controller = require("../controller/controller.js"); // eslint-disable-lin
  * @param {Controller} controller Reference to the controller object
  */
 const DataManager = function (controller) {
+
+    /**
+     * Reference to the controller object
+     * @type {Controller}
+     */
     this.controller = controller;
+
     this.checkAndGetFile = controller.checkAndGetFile;
 
     /**
@@ -109,6 +115,7 @@ const DataManager = function (controller) {
 
     loadHelpersFromFolder("./src/dataManager");
     loadHelpersFromFolder("./src/dataManager/helpers");
+
 };
 
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */

@@ -25,6 +25,11 @@ const CommandHandler = require("../commands/commandHandler.js"); // eslint-disab
  * @param {Controller} controller Reference to the controller object
  */
 const PluginSystem = function(controller) {
+
+    /**
+     * Reference to the controller object
+     * @type {Controller}
+     */
     this.controller = controller;
 
     /**

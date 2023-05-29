@@ -31,11 +31,24 @@ const SessionHandler = require("../sessions/sessionHandler.js");
  * @param {Number} index The index of this account in the logininfo object
  */
 const Bot = function(controller, index) {
-    this.controller = controller;
-    this.data       = controller.data;
-    this.index      = index;
 
-    this.friendMessageBlock = []; // SteamID64's to ignore in the friendMessage event handler. This is used by readChatMessage() to prevent duplicate responses.
+    /**
+     * Reference to the controller object
+     * @type {Controller}
+     */
+    this.controller = controller;
+
+    /**
+     * Reference to the controller object
+     * @type {DataManager}
+     */
+    this.data = controller.data;
+
+    /**
+     * Login index of this bot account
+     * @type {Number}
+     */
+    this.index = index;
 
     /**
      * Status of this bot account
@@ -43,9 +56,17 @@ const Bot = function(controller, index) {
      */
     this.status = EStatus.OFFLINE;
 
+    /**
+     * SteamID64's to ignore in the friendMessage event handler. This is used by readChatMessage() to prevent duplicate responses.
+     * @type {Array.<string>}
+     */
+    this.friendMessageBlock = [];
+
     let proxyIndex = this.index % controller.data.proxies.length; // Spread all accounts equally with a simple modulo calculation
 
-    // Provide array for additional login related information
+    /**
+     * Additional login related information for this bot account
+     */
     this.loginData = {
         logOnOptions:  Object.values(controller.data.logininfo)[index], // TODO: This could be an issue later when the index could change at runtime
         logOnTries:    0,
