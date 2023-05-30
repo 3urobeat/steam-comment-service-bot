@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 14:12:17
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 16:23:37
+ * Last Modified: 30.05.2023 15:06:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -15,11 +15,12 @@
  */
 
 
-const PluginSystem = require("../../src/pluginSystem/pluginSystem.js"); // eslint-disable-line
-
 const fs      = require("fs");
 const express = require("express");
 const logger  = require("output-logger");
+
+const PluginSystem  = require("../../src/pluginSystem/pluginSystem.js"); // eslint-disable-line
+const pluginPackage = require("./package.json"); // eslint-disable-line
 
 
 /**
@@ -28,7 +29,6 @@ const logger  = require("output-logger");
  * @param {PluginSystem} sys Your connector to the application
  */
 const Plugin = function(sys) {
-    this.info = Plugin.info;
 
     // Store references to commonly used properties
     this.sys            = sys;
@@ -38,6 +38,7 @@ const Plugin = function(sys) {
 
     this.app;
     this.server;
+
 };
 
 // Export everything in this file to make it accessible to the plugin loader

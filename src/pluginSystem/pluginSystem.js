@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 19:00:50
+ * Last Modified: 30.05.2023 14:56:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -17,6 +17,7 @@
 
 const Controller     = require("../controller/controller.js"); // eslint-disable-line
 const CommandHandler = require("../commands/commandHandler.js"); // eslint-disable-line
+const Bot            = require("../../src/bot/bot.js"); // eslint-disable-line
 
 
 /**
@@ -38,7 +39,7 @@ const PluginSystem = function(controller) {
      * @property {function} load Called on Plugin load
      * @property {function} unload Called on Plugin unload
      * @property {function} ready Controller ready event
-     * @property {function} statusUpdate Controller statusUpdate event
+     * @property {function(Bot, Bot.EStatus, Bot.EStatus)} statusUpdate Controller statusUpdate event
      */
 
     /**
