@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:21:02
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 16:10:01
+ * Last Modified: 31.05.2023 16:45:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -24,9 +24,10 @@ const { timeToString } = require("../../controller/helpers/misc.js");
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {number|"all"} amount Amount of votes requested or "all" to get the max available amount
  * @param {string} id The sharedfile id to vote on
+ * @param {string} voteType "upvote" or "downvote", depending on which request this is
  * @returns {Promise.<{ amount: number, availableAccounts: array<string>, whenAvailable: number, whenAvailableStr: string }>} Promise with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
-module.exports.getAvailableBotsForVoting = (commandHandler, amount, id) => {
+module.exports.getAvailableBotsForVoting = (commandHandler, amount, id, voteType) => {
     return new Promise((resolve) => {
         (async () => { // Lets us use await inside a Promise without creating an antipattern
 
@@ -43,11 +44,11 @@ module.exports.getAvailableBotsForVoting = (commandHandler, amount, id) => {
             if (previousLengthLimited - allAccounts.length > 0) logger("info", `${previousLengthLimited - allAccounts.length} of ${previousLengthLimited} bot accounts were removed from available accounts as they are limited and can't be used for this request!`);
 
 
-            // Remove bot accounts from allAccounts which have already voted on this id
+            // Remove bot accounts from allAccounts which have already voted on this id with this voteType
             let previousLengthVoted = allAccounts.length;
-            let alreadyVoted        = await commandHandler.data.ratingHistoryDB.findAsync({ id: id }, {});
+            let alreadyVoted        = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: voteType }, {});
 
-            alreadyVoted.forEach((e) => allAccounts.splice(allAccounts.indexOf(e), 1));
+            alreadyVoted.forEach((e) => allAccounts.splice(allAccounts.indexOf(e.accountName), 1));
 
             if (previousLengthVoted - allAccounts.length > 0) logger("info", `${previousLengthVoted - allAccounts.length} of ${previousLengthVoted} bot accounts were removed from available accounts because we know that they have already voted on this item!`);
 
