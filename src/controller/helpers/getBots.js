@@ -4,7 +4,7 @@
  * Created Date: 02.05.2023 13:46:21
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 18:15:01
+ * Last Modified: 31.05.2023 15:59:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -25,7 +25,8 @@ const EStatus    = require("../../bot/EStatus.js");
  * @param {Boolean} mapToObject Optional: If true, an object will be returned where every bot object is mapped to their accountName.
  * @returns {Array|Object} An array or object if `mapToObject == true` containing all matching bot accounts.
  */
-Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObject = false) {
+Controller.prototype.getBots = function(statusFilter, mapToObject) {
+    if (!statusFilter) statusFilter = EStatus.ONLINE;
 
     let accs = Object.values(this.bots); // Mark all bots as candidates
 
@@ -33,7 +34,7 @@ Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObje
     if (statusFilter != "*")         accs = accs.filter(e => statusFilter == e.status);        // Filter after one specified status
 
     // Map values back to an accountName as key object if mapToObject == true
-    if (mapToObject) accs = Object.assign(...accs.map(k => ( { [k.loginData.logOnOptions.accountName]: k } ) ));
+    if (mapToObject && accs.length > 0) accs = Object.assign(...accs.map(k => ( { [k.loginData.logOnOptions.accountName]: k } ) ));
 
     // Return result
     return accs;
