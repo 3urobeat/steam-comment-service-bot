@@ -4,7 +4,7 @@
  * Created Date: 09.04.2023 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 17.05.2023 20:47:08
+ * Last Modified: 31.05.2023 14:27:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -26,7 +26,7 @@ const { timeToString } = require("../../controller/helpers/misc.js");
  * @param {Boolean} canBeLimited If the accounts are allowed to be limited
  * @param {String} idType Type of the request. This can either be "profile", "group" or "sharedfile". This is used to determine if limited accs need to be added first.
  * @param {String} receiverSteamID Optional: steamID64 of the receiving user. If set, accounts that are friend with the user will be prioritized and accsToAdd will be calculated.
- * @returns {Object} Object containing `accsNeeded` (Number), `availableAccounts` (Array of account names from bot object), `accsToAdd` (Array of account names from bot object which are limited and not friend) and `whenAvailable` (Timestamp representing how long to wait until accsNeeded amount of accounts will be available), `whenAvailableStr` (Timestamp formatted human-readable as time from now)
+ * @returns {{ accsNeeded: number, availableAccounts: array.<string>, accsToAdd: array.<string>, whenAvailable: number, whenAvailableStr: string }} `availableAccounts` contains all account names from bot object, `accsToAdd` account names which are limited and not friend, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
 module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOfComments, canBeLimited, idType, receiverSteamID = null) {
 

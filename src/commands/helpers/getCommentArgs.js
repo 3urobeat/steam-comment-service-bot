@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 18:52:40
+ * Last Modified: 31.05.2023 14:32:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -24,7 +24,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
  * @param {Array} args The command arguments
  * @param {String} requesterSteamID64 The steamID64 of the requesting user
  * @param {Function} respond The function to send messages to the requesting user
- * @returns {Object} maxRequestAmount, commentcmdUsage, numberOfComments, profileID, idType, customQuotesArr
+ * @returns {{ maxRequestAmount: number, commentcmdUsage: string, numberOfComments: number, profileID: string, idType: string, quotesArr: array<string> }}
  */
 module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respond) => {
     return new Promise((resolve) => {
