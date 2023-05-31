@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 16:44:05
+ * Last Modified: 31.05.2023 19:47:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -87,7 +87,7 @@ const DataManager = function (controller) {
     this.logininfo = {};
 
     /**
-     * Database which stores the timestamp of the last comment request of every user. This is used to enforce `config.unfriendTime`.
+     * Database which stores the timestamp of the last request of every user. This is used to enforce `config.unfriendTime`.
      * Document structure: { id: String, time: Number }
      * @type {Nedb}
      */
@@ -171,13 +171,13 @@ DataManager.prototype.setUserCooldown = function (id, timestamp) {}; // eslint-d
 DataManager.prototype._startExpiringTokensCheckInterval = () => {};
 
 /**
- * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active comment process was found and relogs them
+ * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active request was found and relogs them
  * @param {Object} expiring Object of botobject entries to ask user for
  */
 DataManager.prototype._askForGetNewToken = function (expiring) {}; // eslint-disable-line
 
 /**
- * Retrieves the last processed comment request of anyone or a specific steamID64 from the lastcomment database
+ * Retrieves the last processed request of anyone or a specific steamID64 from the lastcomment database
  * @param {String} steamID64 Search for a specific user
  * @returns {Promise.<number>} Called with the greatest timestamp (Number) found
  */

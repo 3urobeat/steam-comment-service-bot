@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 18:57:18
+ * Last Modified: 31.05.2023 19:40:15
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -79,15 +79,15 @@ const Controller = function() {
         bootStartTimestamp: Date.now(), // Save timestamp to be able to calculate startup time in ready event
         lastLoginTimestamp: 0,          // Save timestamp of last login attempted by any account to calculate wait time for next account
         steamGuardInputTime: 0,         // Tracks time spent waiting for user steamGuardCode input to subtract from startup time
-        startupWarnings: 0,           // Counts amount of warnings displayed by dataCheck during startup to display amount in ready event
-        activeLogin: false,             // Allows to block new comment requests when waiting for the last request to finish
+        startupWarnings: 0,             // Counts amount of warnings displayed by dataCheck during startup to display amount in ready event
+        activeLogin: false,             // Allows to block new requests when waiting for the last request to finish
         relogAfterDisconnect: true,     // Allows to prevent accounts from relogging when calling bot.logOff()
         readyAfter: 0,                  // Length of last startup in seconds
         skippedaccounts: [],            // Array of account names which have been skipped
         commentCounter: 0               // Tracks total amount of comments to display in info command
     };
 
-    this.activeRequests = {}; // Stores active comment etc. requests
+    this.activeRequests = {}; // Stores active comment, vote etc. requests
 };
 
 

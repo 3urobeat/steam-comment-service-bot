@@ -191,9 +191,8 @@ declare function comment(commandHandler: CommandHandler, respond: (...params: an
  * @param args - The command arguments
  * @param requesterSteamID64 - The steamID64 of the requesting user
  * @param respond - The function to send messages to the requesting user
- * @returns maxRequestAmount, commentcmdUsage, numberOfComments, profileID, idType, customQuotesArr
  */
-declare function getCommentArgs(commandHandler: CommandHandler, args: any[], requesterSteamID64: string, respond: (...params: any[]) => any): any;
+declare function getCommentArgs(commandHandler: CommandHandler, args: any[], requesterSteamID64: string, respond: (...params: any[]) => any): Promise<{ maxRequestAmount: number; commentcmdUsage: string; numberOfComments: number; profileID: string; idType: string; quotesArr: string[]; }>;
 
 /**
  * Finds all needed and currently available bot accounts for a comment request.
@@ -202,19 +201,28 @@ declare function getCommentArgs(commandHandler: CommandHandler, args: any[], req
  * @param canBeLimited - If the accounts are allowed to be limited
  * @param idType - Type of the request. This can either be "profile", "group" or "sharedfile". This is used to determine if limited accs need to be added first.
  * @param receiverSteamID - Optional: steamID64 of the receiving user. If set, accounts that are friend with the user will be prioritized and accsToAdd will be calculated.
- * @returns Object containing `accsNeeded` (Number), `availableAccounts` (Array of account names from bot object), `accsToAdd` (Array of account names from bot object which are limited and not friend) and `whenAvailable` (Timestamp representing how long to wait until accsNeeded amount of accounts will be available), `whenAvailableStr` (Timestamp formatted human-readable as time from now)
+ * @returns `availableAccounts` contains all account names from bot object, `accsToAdd` account names which are limited and not friend, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
 declare function getAvailableBotsForCommenting(commandHandler: CommandHandler, numberOfComments: number, canBeLimited: boolean, idType: string, receiverSteamID: string): any;
 
 /**
- * Retrieves arguments from a comment request. If request is invalid (for example too many comments requested) an error message will be sent
+ * Retrieves arguments from a vote request. If request is invalid, an error message will be sent
  * @param commandHandler - The commandHandler object
  * @param args - The command arguments
- * @param requesterSteamID64 - The steamID64 of the requesting user
  * @param respond - The function to send messages to the requesting user
- * @returns maxRequestAmount, commentcmdUsage, numberOfComments, profileID, idType, customQuotesArr
+ * @returns If the user provided a specific amount, amount will be a number. If user provided "all" or "max", it will be returned as an unmodified string for getVoteBots.js to handle
  */
-declare function getVoteArgs(commandHandler: CommandHandler, args: any[], requesterSteamID64: string, respond: (...params: any[]) => any): any;
+declare function getVoteArgs(commandHandler: CommandHandler, args: any[], respond: (...params: any[]) => any): Promise<{ amount: number | string; id: string; }>;
+
+/**
+ * Finds all needed and currently available bot accounts for a vote request.
+ * @param commandHandler - The commandHandler object
+ * @param amount - Amount of votes requested or "all" to get the max available amount
+ * @param id - The sharedfile id to vote on
+ * @param voteType - "upvote" or "downvote", depending on which request this is
+ * @returns Promise with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
+ */
+declare function getAvailableBotsForVoting(commandHandler: CommandHandler, amount: number | "all", id: string, voteType: string): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
 
 /**
  * Checks if the following comment process iteration should be skipped
@@ -229,7 +237,7 @@ declare function handleIterationSkip(commandHandler: CommandHandler, loop: any, 
 
 /**
  * Adds a description to comment errors and applies additional cooldowns for certain errors
- * @param error - The error string returned by steam-user
+ * @param error - The error string returned by steamcommunity
  * @param commandHandler - The commandHandler object
  * @param bot - Bot object of the account posting this comment
  * @param receiverSteamID64 - steamID64 of the receiving user/group
@@ -248,6 +256,21 @@ declare function sortFailedCommentsObject(failedObj: any): void;
  * @returns String that looks like this: `amount`x - `indices`\n`error message`
  */
 declare function failedCommentsObjToString(obj: any): string;
+
+/**
+ * Logs vote errors
+ * @param error - The error string returned by steam-community
+ * @param commandHandler - The commandHandler object
+ * @param bot - Bot object of the account making this request
+ * @param id - ID of the sharedfile that receives the votes
+ */
+declare function logVoteError(error: string, commandHandler: CommandHandler, bot: Bot, id: string): void;
+
+/**
+ * Helper function to sort failed object by comment number so that it is easier to read
+ * @param failedObj - Current state of failed object
+ */
+declare function sortFailedCommentsObject(failedObj: any): void;
 
 /**
  * Constructor - Initializes the controller and starts all bot accounts
@@ -562,10 +585,15 @@ declare class DataManager {
         [key: string]: { accountName: string; password: string; sharedSecret: string; steamGuardCode: null; machineName: string; deviceFriendlyName: string; };
     };
     /**
-     * Database which stores the timestamp of the last comment request of every user. This is used to enforce `config.unfriendTime`.
+     * Database which stores the timestamp of the last request of every user. This is used to enforce `config.unfriendTime`.
      * Document structure: { id: String, time: Number }
      */
     lastCommentDB: Nedb;
+    /**
+     * Database which stores information about which bot accounts have already voted on which sharedfiles. This allows us to filter without pinging Steam for every account on every request.
+     * Document structure: { id: String, accountName: String, type: String, time: Number }
+     */
+    ratingHistoryDB: Nedb;
     /**
      * Database which stores the refreshTokens for all bot accounts.
      * Document structure: { accountName: String, token: String }
@@ -608,12 +636,12 @@ declare class DataManager {
      */
     _startExpiringTokensCheckInterval(): void;
     /**
-     * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active comment process was found and relogs them
+     * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active request was found and relogs them
      * @param expiring - Object of botobject entries to ask user for
      */
     _askForGetNewToken(expiring: any): void;
     /**
-     * Retrieves the last processed comment request of anyone or a specific steamID64 from the lastcomment database
+     * Retrieves the last processed request of anyone or a specific steamID64 from the lastcomment database
      * @param steamID64 - Search for a specific user
      * @returns Called with the greatest timestamp (Number) found
      */
@@ -668,12 +696,12 @@ declare class DataManager {
      */
     _startExpiringTokensCheckInterval(): void;
     /**
-     * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active comment process was found and relogs them
+     * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active request was found and relogs them
      * @param expiring - Object of botobject entries to ask user for
      */
     _askForGetNewToken(expiring: any): void;
     /**
-     * Retrieves the last processed comment request of anyone or a specific steamID64 from the lastcomment database
+     * Retrieves the last processed request of anyone or a specific steamID64 from the lastcomment database
      * @param steamID64 - Search for a specific user
      * @returns Called with the greatest timestamp (Number) found
      */

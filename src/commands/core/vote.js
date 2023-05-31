@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 19:25:33
+ * Last Modified: 31.05.2023 19:38:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -101,7 +101,7 @@ module.exports.upvote = {
                 accounts: availableAccounts,
                 thisIteration: -1, // Set to -1 so that first iteration will increase it to 0
                 retryAttempt: 0,
-                until: Date.now() + ((amount - 1) * commandHandler.data.config.commentdelay), // Calculate estimated wait time (first comment is instant -> remove 1 from numberOfComments)
+                until: Date.now() + ((amount - 1) * commandHandler.data.config.commentdelay), // Calculate estimated wait time (first vote is instant -> remove 1 from numberOfComments)
                 failed: {}
             };
 

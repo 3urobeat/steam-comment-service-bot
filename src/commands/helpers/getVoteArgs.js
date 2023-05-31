@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:18:49
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 16:09:52
+ * Last Modified: 31.05.2023 19:39:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -19,7 +19,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 
 /**
- * Retrieves arguments from a comment request. If request is invalid (for example too many comments requested) an error message will be sent
+ * Retrieves arguments from a vote request. If request is invalid, an error message will be sent
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Array} args The command arguments
  * @param {Function} respond The function to send messages to the requesting user

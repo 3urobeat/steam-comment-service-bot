@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 26.05.2023 15:11:15
+ * Last Modified: 31.05.2023 16:58:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -81,7 +81,7 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
 
 /**
  * Adds a description to comment errors and applies additional cooldowns for certain errors
- * @param {String} error The error string returned by steam-user
+ * @param {String} error The error string returned by steamcommunity
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Bot} bot Bot object of the account posting this comment
  * @param {String} receiverSteamID64 steamID64 of the receiving user/group

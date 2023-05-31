@@ -4,7 +4,7 @@
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:55:39
+ * Last Modified: 31.05.2023 19:46:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -75,7 +75,7 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
                         }, 1500 * i);
                     });
 
-                    // Check for active comment processes before asking for relog
+                    // Check for active requests before asking for relog
                     _this._askForGetNewToken(expiring);
                 }
             });
@@ -95,7 +95,7 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
 
 
 /**
- * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active comment process was found and relogs them
+ * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active request was found and relogs them
  * @param {Object} expiring Object of botobject entries to ask user for
  */
 DataManager.prototype._askForGetNewToken = function(expiring) {
@@ -119,7 +119,7 @@ DataManager.prototype._askForGetNewToken = function(expiring) {
 
                         // Check for last iteration and trigger login
                         if (i + 1 == Object.values(expiring).length) {
-                            _this.controller.info.activeLogin = false; // Quick hack so that login() won't ignore our request, this will be updated again instantly and was only false to block new comment requests
+                            _this.controller.info.activeLogin = false; // Quick hack so that login() won't ignore our request, this will be updated again instantly and was only false to block new requests
                             _this.controller.login();
                         }
                     });
@@ -127,22 +127,22 @@ DataManager.prototype._askForGetNewToken = function(expiring) {
                 } else {
                     logger("info", "Asking again in 24 hours...");
 
-                    _this.controller.info.activeLogin = false; // Allow comment requests again
+                    _this.controller.info.activeLogin = false; // Allow requests again
                 }
             } else {
                 logger("info", "Stopped waiting because you didn't respond in 1.5 minutes. Asking again in 24 hours...");
 
-                _this.controller.info.activeLogin = false; // Allow comment requests again
+                _this.controller.info.activeLogin = false; // Allow requests again
             }
         });
 
     }
 
 
-    // Block new comment requests from happening. This will also block the disconnected event from executing when we call logOff() in a sec
+    // Block new requests from happening. This will also block the disconnected event from executing when we call logOff() in a sec
     this.controller.info.activeLogin = true;
 
-    // Check for an active comment process before asking user for relog
+    // Check for an active request before asking user for relog
     logger("debug", "DataManager _askForGetNewToken(): Checking for active requests...");
 
     let objlength = Object.keys(this.controller.activeRequests).length; // Save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering
@@ -156,7 +156,7 @@ DataManager.prototype._askForGetNewToken = function(expiring) {
 
         if (i == objlength - 1) {
             if (Object.keys(this.controller.activeRequests).length > 0) { // Check if obj is still not empty and recursively call this function again
-                logger("info", "Waiting for an active comment process to finish...", false, true, logger.animation("waiting"));
+                logger("info", "Waiting for an active request to finish...", false, true, logger.animation("waiting"));
 
                 setTimeout(() => { // Wait 2.5 sec and check again
                     this._askForGetNewToken(expiring); // TODO: Is recursion really the best idea here? Edit: No! Should be possible with an interval but I'll wait till this is a helper function

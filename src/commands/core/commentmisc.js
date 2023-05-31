@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 15:14:18
+ * Last Modified: 31.05.2023 19:37:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -46,10 +46,10 @@ module.exports.abort = {
 
             if (!commandHandler.controller.activeRequests[steamID64] || commandHandler.controller.activeRequests[steamID64].status != "active") return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.abortcmdnoprocess); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
-            // Set new status for comment process
+            // Set new status for this request
             commandHandler.controller.activeRequests[steamID64].status = "aborted";
 
-            logger("info", `Aborting comment process for ID ${steamID64}...`);
+            logger("info", `Aborting active process for ID ${steamID64}...`);
             respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.abortcmdsuccess); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         });
     }

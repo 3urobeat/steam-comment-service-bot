@@ -4,7 +4,7 @@
  * Created Date: 31.05.2023 16:57:21
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 19:25:41
+ * Last Modified: 31.05.2023 19:39:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -19,7 +19,7 @@
  * Logs vote errors
  * @param {String} error The error string returned by steam-community
  * @param {CommandHandler} commandHandler The commandHandler object
- * @param {Bot} bot Bot object of the account posting this comment
+ * @param {Bot} bot Bot object of the account making this request
  * @param {String} id ID of the sharedfile that receives the votes
  */
 module.exports.logVoteError = (error, commandHandler, bot, id) => {
@@ -42,7 +42,7 @@ module.exports.logVoteError = (error, commandHandler, bot, id) => {
 
 
 /**
- * Helper function to sort failed object by comment number so that it is easier to read
+ * Helper function to sort failed object by number so that it is easier to read
  * @param {Object} failedObj Current state of failed object
  */
 function sortFailedCommentsObject(failedObj) {

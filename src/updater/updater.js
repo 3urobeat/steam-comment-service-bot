@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:16:06
+ * Last Modified: 31.05.2023 19:45:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -105,7 +105,7 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
 
                 // Make initiating the update a function to simplify the permission check below
                 async function initiateUpdate() {
-                    _this.controller.info.activeLogin = true; // Block new comment requests by setting active login to true
+                    _this.controller.info.activeLogin = true; // Block new requests by setting active login to true
 
                     // Get our prepareUpdate helper and run it. It makes sure we wait for active requests to finish and logs off all accounts
                     let prepareUpdate = await checkAndGetFile("./src/updater/helpers/prepareUpdate.js", logger, false, false);

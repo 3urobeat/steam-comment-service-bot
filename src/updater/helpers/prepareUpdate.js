@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:23:06
+ * Last Modified: 31.05.2023 19:44:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -29,13 +29,13 @@ module.exports.run = (controller, respondModule, resInfo) => {
     return new Promise((resolve) => {
         if (resInfo) resInfo.prefix = "/me"; // All respondModule calls in this function use the "/me" prefix
 
-        if (botisloggedin) { // If bot is already logged in we need to check for ongoing comment processes and log all bots out when finished
+        if (botisloggedin) { // If bot is already logged in we need to check for ongoing requests and log all bots out when finished
             logger("", "", true);
-            logger("info", "Bot is logged in. Checking for active comment process...", false, true, logger.animation("loading"));
+            logger("info", "Bot is logged in. Checking for active requests...", false, true, logger.animation("loading"));
 
 
             /* eslint-disable no-inner-declarations */
-            function initiateUpdate() { // Make initiating the update a function to simplify the activecomment check below
+            function initiateUpdate() { // Make initiating the update a function to simplify the activerequest check below
                 controller.info.relogAfterDisconnect = false; // Prevents disconnect event (which will be called by logOff) to relog accounts
 
                 logger("info", "Logging off all bot accounts in 5 seconds...", false, true, logger.animation("waiting"));
@@ -68,8 +68,8 @@ module.exports.run = (controller, respondModule, resInfo) => {
 
                         } else { // If the obj is now empty then lets continue
 
-                            logger("info", "Active comment process finished. Starting to log off all accounts...", false, true, logger.animation("loading"));
-                            if (respondModule) respondModule(resInfo, "Active comment process finished. Starting to log off all accounts...");
+                            logger("info", "Active request finished. Starting to log off all accounts...", false, true, logger.animation("loading"));
+                            if (respondModule) respondModule(resInfo, "Active request finished. Starting to log off all accounts...");
 
                             initiateUpdate();
                         }
@@ -78,17 +78,17 @@ module.exports.run = (controller, respondModule, resInfo) => {
             }
 
 
-            // Check for active comment process. If obj not empty then first sort out all invalid/expired entries.
-            if (Object.keys(controller.activeRequests).length > 0 && Object.values(controller.activeRequests).some(a => a["status"] == "active")) { // Only check object if it isn't empty and has at least one comment process with the status active
-                logger("info", "Waiting for an active comment process to finish...", false, true, logger.animation("waiting"));
-                if (respondModule) respondModule(resInfo, "Waiting for an active comment process to finish...");
+            // Check for active request process. If obj not empty then first sort out all invalid/expired entries.
+            if (Object.keys(controller.activeRequests).length > 0 && Object.values(controller.activeRequests).some(a => a["status"] == "active")) { // Only check object if it isn't empty and has at least one request with the status active
+                logger("info", "Waiting for an active request to finish...", false, true, logger.animation("waiting"));
+                if (respondModule) respondModule(resInfo, "Waiting for an active request to finish...");
 
-                filterACPobj(); // Note: The comment command has already been blocked by controller.js by setting activeLogin = true
+                filterACPobj(); // Note: All request commands have already been blocked by controller.js by setting activeLogin = true
 
             } else {
 
-                logger("info", "No active comment processes found. Starting to log off all accounts...", false, true, logger.animation("loading"));
-                if (respondModule) respondModule(resInfo, "No active comment processes found. Starting to log off all accounts...");
+                logger("info", "No active request found. Starting to log off all accounts...", false, true, logger.animation("loading"));
+                if (respondModule) respondModule(resInfo, "No active request found. Starting to log off all accounts...");
 
                 initiateUpdate();
             }

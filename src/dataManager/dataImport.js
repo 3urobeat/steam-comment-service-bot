@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 10:59:35
+ * Last Modified: 31.05.2023 14:03:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -29,7 +29,7 @@ DataManager.prototype._importFromDisk = function() {
     let _this = this; // Make this accessible within the functions below
 
     return new Promise((resolve) => {
-        (async () => { // Lets us use await insidea Promise without creating an antipattern
+        (async () => { // Lets us use await inside a Promise without creating an antipattern
 
             function loadCache() {
                 return new Promise((resolve) => {

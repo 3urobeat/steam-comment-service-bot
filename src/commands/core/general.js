@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 15:15:40
+ * Last Modified: 31.05.2023 19:37:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -105,8 +105,8 @@ module.exports.info = {
                 >   Accounts: ${commandHandler.controller.getBots().length} | maxComments/owner: ${commandHandler.data.config.maxComments}/${commandHandler.data.config.maxOwnerComments} | delay: ${commandHandler.data.config.commentdelay}
                 |
                 >   Your steam64ID: ${steamID64}
-                >   Your last comment request: ${userLastReq}
-                >   Last processed comment request: ${(new Date(lastReq)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)
+                >   Your last request: ${userLastReq}
+                >   Last processed request: ${(new Date(lastReq)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)
                 >   I have commented ${commandHandler.controller.info.commentCounter} times since my last restart and completed request!
                 -----------------------------------~~~~~------------------------------------
             `.replace(/ {4}/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
