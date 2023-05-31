@@ -1,9 +1,9 @@
 {
-    "note": "This file contains nearly all messages the bot sends via the steam chat. If you want to modify messages, read here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/How-to-add-custom-messages",
+    "note": "This file contains nearly all messages the bot sends to users. If you want to modify messages, read here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/How-to-add-custom-messages",
 
     "updaterautoupdatedisabled": "You have disabled the automatic updater. Would you like to update now?\nIf yes, please force an update using the command: !update true",
 
-    "commentactiverelog": "The bot is currently waiting for the last requested comment to be finished in order to relog accounts.\nPlease wait a few minutes and try again.",
+    "commentactiverelog": "The bot is currently waiting for the last active requests to be finished in order to relog accounts.\nPlease wait a few minutes and try again.",
     "commentcmdowneronly": "The bot owner set this command to owners only.\nType !owner to get information who the owner is.\nType !about to get a link to the bot creator.",
     "commentcmdusageowner": "'!comment amount/\"all\" profileid' for X many or the max amount of comments (max maxRequestAmount). Provide a profile id to comment on a specific profile.",
     "commentcmdusageowner2": "'!comment 1 profileid'. Provide a profile id to comment on a specific profile.",
@@ -31,13 +31,24 @@
     "commentretrying": "failedamount/numberOfComments comments have failed. I'm going to retry the failed comments in untilStr. (Attempt thisattempt/maxattempt)",
     "commentsuccess2": "All comments have been sent. Failed: failedamount/numberOfComments\nIf you are a nice person then please comment on my profile too!",
 
+    "voteinvalidnumber": "This does not seem to be a valid number!\n\nCommand usage: votecmdusage",
+    "voteinvalidid": "This does not seem to be a valid sharedfileID!\nPlease make sure that you either provide a full link: https://steamcommunity.com/sharedfiles/filedetails/?id=2980913451 ...or just the ID: 2980913451 ...which points to an existing screenshot, artwork or guide.\n\nCommand usage: votecmdusage",
+    "votealreadyreceiving": "This ID is already receiving votes right now. Please wait for the active request to finish.",
+    "votenoaccounts": "Sorry but there are no unlimited accounts available which haven't voted on this item yet.",
+    "voterequestless": "There are currently only availablenow bot accounts available which have not yet voted on this item.",
+    "votenotenoughavailableaccs": "Sorry but there are currently not enough accounts available which haven't voted on this item yet. Please wait waittime and try again or only request availablenow votes now.",
+    "voteerrloadingitem": "Sorry but an error occurred while loading the sharedfile you have provided:",
+    "voteprocessstarted": "Estimated wait time for numberOfVotes votes: waittime.",
+    "voteaborted": "Your active vote process was manually aborted by either yourself or an owner.\nsuccessAmount/numberOfVotes votes have been sent successfully.",
+    "votesuccess": "All votes have been sent. Failed: failedamount/numberOfVotes",
+    
     "useradded": "Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more commands or !about for more information!",
     "userunfriend": "You have been unfriended for being inactive for forceFriendlistSpaceTime days as the friendlist was running low on space.\nIf you need me again, feel free to add me again!",
     "userforceunfriend": "You have been unfriended for being inactive for unfriendtime days.\nIf you need me again, feel free to add me again!",
     "userspamblock": "You have been blocked for 90 seconds for spamming.",
     "usernotfriend": "Please add me before using a command!",
     "botnotready": "The bot is not completely started yet. Please wait a moment before using a command.",
-    "botmaintenance": "The comment command is currently unavailable for maintenance. Please wait a bit.",
+    "botmaintenance": "A few commands are currently unavailable because the bot is in maintenance mode. Please try again later.",
     "commandowneronly": "This command is only available for the botowner.\nIf you are the botowner, make sure you added your ownerid to the config.json.",
     "invalidprofileid": "This does not seem to be a valid steamID64, profile or group link or you provided the wrong steamID type for this command!\nA profile steamID64 must look like this: 76561198260031749\n...or a group steamID64 like this: 103582791464712227",
 
