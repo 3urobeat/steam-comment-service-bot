@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 16:23:53
+ * Last Modified: 31.05.2023 15:17:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -79,7 +79,7 @@ CommandHandler.prototype._importCoreCommands = function() {
  * @param {[String]} command.names All names that should trigger this command
  * @param {String} command.description Description of what this command does
  * @param {Boolean} command.ownersOnly Set to true to only allow owners to use this command.
- * @param {function(CommandHandler, Array, String, function(Object, Object, string), Object, Object)} command.run Function that will be executed when the command runs. Arguments: commandHandler, args, steamID64, respondModule, context, resInfo
+ * @param {function(CommandHandler, Array, String, function(object, object, string), Object, Object)} command.run Function that will be executed when the command runs. Arguments: commandHandler, args, steamID64, respondModule, context, resInfo
  * @returns true if the command was successfully registered, false otherwise
  */
 CommandHandler.prototype.registerCommand = function(command) {
@@ -146,7 +146,7 @@ CommandHandler.prototype.unregisterCommand = function(commandName) {
  * @param {String} name The name of the command
  * @param {Array} args Array of arguments that will be passed to the command
  * @param {Number} steamID64 SteamID64 of the requesting user which is used to check for ownerOnly and will be passed to the command
- * @param {function(Object, Object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+ * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
  * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
  * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @returns `true` if command was found, `false` if not
