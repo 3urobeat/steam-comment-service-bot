@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:13:59
+ * Last Modified: 31.05.2023 11:04:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -92,6 +92,13 @@ const DataManager = function (controller) {
      * @type {Nedb}
      */
     this.lastCommentDB = {};
+
+    /**
+     * Database which stores information about which bot accounts have already voted on which sharedfiles. This allows us to filter without pinging Steam for every account on every request.
+     * Document structure: { id: String, accountName: String, time: Number }
+     * @type {Nedb}
+     */
+    this.ratingHistoryDB = {};
 
     /**
      * Database which stores the refreshTokens for all bot accounts.

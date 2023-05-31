@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:06:19
+ * Last Modified: 31.05.2023 10:59:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -333,8 +333,9 @@ DataManager.prototype._importFromDisk = function() {
             this.lang           = await loadLanguage();
             this.lang           = await loadCustomLang();
 
-            this.lastCommentDB  = new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); // Autoload
-            this.tokensDB       = new nedb({ filename: srcdir + "/data/tokens.db",      autoload: true });
+            this.lastCommentDB   = new nedb({ filename: srcdir + "/data/lastcomment.db",   autoload: true }); // Autoload
+            this.ratingHistoryDB = new nedb({ filename: srcdir + "/data/ratingHistory.db", autoload: true });
+            this.tokensDB        = new nedb({ filename: srcdir + "/data/tokens.db",        autoload: true });
 
 
             // Check tokens.db every 24 hours for expired tokens to allow users to refresh them beforehand
