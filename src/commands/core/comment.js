@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 15:14:23
+ * Last Modified: 01.06.2023 18:26:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -70,7 +70,7 @@ module.exports.comment = {
         // Check if user is already receiving comments right now
         let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64];
 
-        if (activeReqEntry && activeReqEntry.status == "active" && activeReqEntry.type == "profileComment") return respond(commandHandler.data.lang.commentuseralreadyreceiving); // TODO: Is it correct to only check for profileComment here?
+        if (activeReqEntry && activeReqEntry.status == "active") return respond(commandHandler.data.lang.commentuseralreadyreceiving);
 
 
         // Check if user has cooldown
@@ -83,7 +83,7 @@ module.exports.comment = {
         let allowLimitedAccounts = (idType != "group");
         let { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = getAvailableBotsForCommenting(commandHandler, numberOfComments, allowLimitedAccounts, idType, receiverSteamID64);
 
-        if (availableAccounts.length - accsToAdd < accsNeeded && accsToAdd.length == 0 && !whenAvailableStr) { // Check if this bot has no suitable accounts for this request and there won't be any available at any point
+        if (availableAccounts.length == 0 && !whenAvailableStr) { // Check if this bot has no suitable accounts for this request and there won't be any available at any point
             if (!allowLimitedAccounts) respond(commandHandler.data.lang.commentnounlimitedaccs); // Send less generic message for requests which require unlimited accounts
                 else respond(commandHandler.data.lang.commentnoaccounts);
 
@@ -237,7 +237,8 @@ function comment(commandHandler, respond, postComment, commentArgs, receiverStea
 
                     // Only send estimated wait time message for multiple comments
                     if (activeReqEntry.amount > 1) {
-                        let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amoung - 1 because the first comment is instant. Multiply by delay and add to current time to get timestamp when last comment was sent
+                        let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amount - 1 because the first comment is instant. Multiply by delay and add to current time to get timestamp when last comment was sent
+
                         respond(commandHandler.data.lang.commentprocessstarted.replace("numberOfComments", activeReqEntry.amount).replace("waittime", waitTime));
                     }
 
@@ -324,7 +325,7 @@ function comment(commandHandler, respond, postComment, commentArgs, receiverStea
             else logger("debug", "retryComments: retryFailedComments is disabled. Sending finished message...");
 
 
-        /* ------------- Send finished message for each status -------------  */
+        /* ------------- Send finished message for corresponding status -------------  */
         if (activeReqEntry.status == "aborted") {
 
             respond(commandHandler.data.lang.commentaborted.replace("successAmount", activeReqEntry.amount - activeReqEntry.amountBeforeRetry - Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount - activeReqEntry.amountBeforeRetry));
