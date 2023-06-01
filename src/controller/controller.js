@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 19:40:15
+ * Last Modified: 01.06.2023 20:28:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -214,18 +214,16 @@ Controller.prototype._start = async function() {
     if (updateFailed) {
         logger("info", `It looks like the last update failed! Skipping the updater for now and hoping ${this.data.datafile.mestr} fixes the issue soon.\n       Another attempt will be made in 6 hours or on the next restart.\n\n       If you haven't reported the error yet please do so as only then he will be able to fix it!`, true);
 
-        require("./login.js"); // Load login function
-        this._preLogin();      // Run one-time pre-login tasks, it will call login() when it's done
+        this._preLogin(); // Run one-time pre-login tasks, it will call login() when it's done
 
     } else {
 
         // Let the updater run and check for any available updates
         let { updateFound } = await this.updater.run(forceUpdate);
 
-        // Continue if no update was found by starting to log in. If an update was found and installed the updater will restart the bot itself.
+        // Continue if no update was found. If an update was found and installed the updater will restart the bot itself.
         if (!updateFound) {
-            require("./login.js"); // Load helper
-            this._preLogin();      // Run one-time pre-login tasks, it will call login() when it's done
+            this._preLogin(); // Run one-time pre-login tasks, it will call login() when it's done
         }
     }
 };
@@ -235,14 +233,6 @@ Controller.prototype._start = async function() {
  * Internal: Loads all parts of the application to get IntelliSense support after the updater ran and calls login() when done.
  */
 Controller.prototype._preLogin = async function() {
-
-    // Load Controller event handlers & helpers
-    require("./events/ready.js");
-    require("./events/statusUpdate.js");
-    require("./helpers/friendlist.js");
-    require("./helpers/getBots.js");
-    require("./helpers/handleSteamIdResolving.js");
-
 
     // Update Updater IntelliSense without modifying what _start() has already set. Integrity has already been checked
     let Updater = require("../updater/updater.js"); // eslint-disable-line
@@ -269,6 +259,15 @@ Controller.prototype._preLogin = async function() {
      * @type {Bot}
      */
     this.main = {}; // Store short-hand reference to the main acc (populated later)
+
+
+    // Load Controller event handlers & helpers. This must happen after bot.js has been verified
+    require("./events/ready.js");
+    require("./events/statusUpdate.js");
+    require("./helpers/friendlist.js");
+    require("./helpers/getBots.js");
+    require("./helpers/handleSteamIdResolving.js");
+    require("./login.js");
 
 
     // Load commandHandler
