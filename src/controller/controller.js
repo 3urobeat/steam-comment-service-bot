@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 01.06.2023 20:28:48
+ * Last Modified: 01.06.2023 20:51:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -342,7 +342,8 @@ if (parseInt(process.argv[3]) + 2500 > Date.now()) { // Check if this process ju
 
     // Start the bot
     let controller = new Controller();
-    controller._start();
+
+    setTimeout(() => controller._start(), 50); // Wann hear something stupid? The error catch in handleErrors.js does not work without this delay. Why? Because the empty function for JsDoc below overwrites the real one. Even though the real one is loaded after the fake one.
 }
 
 
