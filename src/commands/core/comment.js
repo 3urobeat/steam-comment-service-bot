@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 01.06.2023 18:26:28
+ * Last Modified: 01.06.2023 19:25:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -49,8 +49,8 @@ module.exports.comment = {
         /* --------- Check for disabled comment cmd or if update is queued --------- */
         if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready);    // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         if (commandHandler.data.advancedconfig.disableCommentCmd)       return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botmaintenance); // Bot is set to maintenance mode - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
-        if (commandHandler.controller.info.activeLogin)                 return respond(commandHandler.data.lang.commentactiverelog);  // Bot is waiting for relog
-        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(commandHandler.data.lang.commentcmdowneronly); // Comment command is restricted to owners only
+        if (commandHandler.controller.info.activeLogin)                 return respond(commandHandler.data.lang.activerelog);         // Bot is waiting for relog
+        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(commandHandler.data.lang.commandowneronly); // Comment command is restricted to owners only
 
 
         /* --------- Calculate maxRequestAmount and get arguments from comment request --------- */
@@ -70,13 +70,13 @@ module.exports.comment = {
         // Check if user is already receiving comments right now
         let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64];
 
-        if (activeReqEntry && activeReqEntry.status == "active") return respond(commandHandler.data.lang.commentuseralreadyreceiving);
+        if (activeReqEntry && activeReqEntry.status == "active") return respond(commandHandler.data.lang.idalreadyreceiving);
 
 
         // Check if user has cooldown
         let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterSteamID64);
 
-        if (until > Date.now()) return respond(commandHandler.data.lang.commentuseroncooldown.replace("remainingcooldown", untilStr));
+        if (until > Date.now()) return respond(commandHandler.data.lang.idoncooldown.replace("remainingcooldown", untilStr));
 
 
         // Get all currently available bot accounts. Block limited accounts from being eligible from commenting in groups
@@ -265,11 +265,11 @@ function comment(commandHandler, respond, postComment, commentArgs, receiverStea
 
     }, () => { // Function that will run on exit, aka the last iteration: Respond to the user
 
-        // Handle singular comments with a different message
+        // Handle singular comments separately
         if (activeReqEntry.amount == 1) {
             // Check if an error occurred
             if (Object.keys(activeReqEntry.failed).length > 0) respond(`${commandHandler.data.lang.commenterroroccurred}\n${Object.values(activeReqEntry.failed)[0]}`); // TODO: Do I want to handle retryComments for singular comments?
-                else respond(commandHandler.data.lang.commentsuccess1);
+                else respond(commandHandler.data.lang.commentsuccess);
 
             // Instantly set status of this request to cooldown
             activeReqEntry.status = "cooldown";
@@ -295,7 +295,7 @@ function comment(commandHandler, respond, postComment, commentArgs, receiverStea
             setTimeout(() => {
                 // Check if comment process was aborted, send finished message and avoid increasing cooldown etc.
                 if (!activeReqEntry || activeReqEntry.status == "aborted") {
-                    respond(commandHandler.data.lang.commentaborted.replace("successAmount", "0").replace("numberOfComments", Object.keys(activeReqEntry.failed).length));
+                    respond(commandHandler.data.lang.requestaborted.replace("successAmount", "0").replace("totalAmount", Object.keys(activeReqEntry.failed).length));
                     logger("info", `Comment process for ${receiverSteamID64} was aborted while waiting for retry attempt ${activeReqEntry.retryAttempt}. Stopping...`);
                     return;
                 }
@@ -328,7 +328,7 @@ function comment(commandHandler, respond, postComment, commentArgs, receiverStea
         /* ------------- Send finished message for corresponding status -------------  */
         if (activeReqEntry.status == "aborted") {
 
-            respond(commandHandler.data.lang.commentaborted.replace("successAmount", activeReqEntry.amount - activeReqEntry.amountBeforeRetry - Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount - activeReqEntry.amountBeforeRetry));
+            respond(commandHandler.data.lang.requestaborted.replace("successAmount", activeReqEntry.amount - activeReqEntry.amountBeforeRetry - Object.keys(activeReqEntry.failed).length).replace("totalAmount", activeReqEntry.amount - activeReqEntry.amountBeforeRetry));
 
         } else if (activeReqEntry.status == "error") {
 
@@ -345,7 +345,7 @@ function comment(commandHandler, respond, postComment, commentArgs, receiverStea
             }
 
             // Send finished message
-            respond(`${commandHandler.data.lang.commentsuccess2.replace("failedamount", Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount - activeReqEntry.amountBeforeRetry)}\n${failedcmdreference}`); // Only send if not a webrequest
+            respond(`${commandHandler.data.lang.commentsuccess.replace("failedamount", Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount - activeReqEntry.amountBeforeRetry)}\n${failedcmdreference}`); // Only send if not a webrequest
 
             // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
             activeReqEntry.status = "cooldown";

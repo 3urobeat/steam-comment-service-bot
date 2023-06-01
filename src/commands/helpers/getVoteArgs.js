@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:18:49
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 19:39:01
+ * Last Modified: 01.06.2023 18:56:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -37,7 +37,7 @@ module.exports.getVoteArgs = (commandHandler, args, respond) => {
             let amount = args[0] == "all" ? args[0] : Number(args[0]); // If user provides "all" then keep it as is and update it later to how many accounts are available, otherwise convert it to a number
 
             if (args.length == 0 || (amount != "all" && isNaN(amount)) || amount == 0) {
-                respond(commandHandler.data.lang.voteinvalidnumber.replace("votecmdusage", voteCmdUsage)); // An empty string will become a 0
+                respond(commandHandler.data.lang.invalidnumber.replace("cmdusage", voteCmdUsage)); // An empty string will become a 0
                 return resolve({});
             }
 

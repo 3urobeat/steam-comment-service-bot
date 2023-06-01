@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 19:38:26
+ * Last Modified: 01.06.2023 19:26:14
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -46,8 +46,8 @@ module.exports.upvote = {
         /* --------- Check for disabled cmd or if update is queued --------- */
         if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready);    // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         if (commandHandler.data.advancedconfig.disableCommentCmd)       return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botmaintenance); // Bot is set to maintenance mode - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
-        if (commandHandler.controller.info.activeLogin)                 return respond(commandHandler.data.lang.commentactiverelog);  // Bot is waiting for relog
-        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(commandHandler.data.lang.commentcmdowneronly); // Command is restricted to owners only
+        if (commandHandler.controller.info.activeLogin)                 return respond(commandHandler.data.lang.activerelog);         // Bot is waiting for relog
+        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(commandHandler.data.lang.commandowneronly); // Command is restricted to owners only
 
 
         // Check and get arguments from user
@@ -59,20 +59,20 @@ module.exports.upvote = {
         // Check if this id is already receiving votes right now
         let idReq = commandHandler.controller.activeRequests[id];
 
-        if (idReq && idReq.status == "active") return respond(commandHandler.data.lang.votealreadyreceiving); // Note: No need to check for user as that is supposed to be handled by a cooldown
+        if (idReq && idReq.status == "active") return respond(commandHandler.data.lang.idalreadyreceiving); // Note: No need to check for user as that is supposed to be handled by a cooldown
 
 
         // Check if user has cooldown
         let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterSteamID64);
 
-        if (until > Date.now()) return respond(commandHandler.data.lang.commentuseroncooldown.replace("remainingcooldown", untilStr));
+        if (until > Date.now()) return respond(commandHandler.data.lang.idoncooldown.replace("remainingcooldown", untilStr));
 
 
         // Get all available bot accounts
         let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForVoting(commandHandler, amountRaw, id, "upvote");
 
-        if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point
-            if (availableAccounts.length == 0) respond(commandHandler.data.lang.votenoaccounts);
+        if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point.
+            if (availableAccounts.length == 0) respond(commandHandler.data.lang.votenoaccounts);         // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
                 else respond(commandHandler.data.lang.voterequestless.replace("availablenow", availableAccounts.length));
 
             return;
@@ -177,7 +177,7 @@ module.exports.upvote = {
                 /* ------------- Send finished message for corresponding status -------------  */
                 if (activeReqEntry.status == "aborted") {
 
-                    respond(commandHandler.data.lang.voteaborted.replace("successAmount", activeReqEntry.amount - Object.keys(activeReqEntry.failed).length).replace("numberOfVotes", activeReqEntry.amount));
+                    respond(commandHandler.data.lang.requestaborted.replace("successAmount", activeReqEntry.amount - Object.keys(activeReqEntry.failed).length).replace("totalAmount", activeReqEntry.amount));
 
                 } else {
 

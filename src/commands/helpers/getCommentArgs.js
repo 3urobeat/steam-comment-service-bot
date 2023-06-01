@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 15:29:01
+ * Last Modified: 01.06.2023 18:56:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -59,7 +59,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respo
                 } else {
                     logger("debug", `CommandHandler getCommentArgs(): User provided invalid request amount "${args[0]}". Stopping...`);
 
-                    respond(commandHandler.data.lang.commentinvalidnumber.replace("commentcmdusage", commentcmdUsage));
+                    respond(commandHandler.data.lang.invalidnumber.replace("cmdusage", commentcmdUsage));
                     return resolve(false);
                 }
             }
