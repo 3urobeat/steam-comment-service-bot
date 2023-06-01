@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:21:02
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 16:45:09
+ * Last Modified: 01.06.2023 20:08:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -48,7 +48,9 @@ module.exports.getAvailableBotsForVoting = (commandHandler, amount, id, voteType
             let previousLengthVoted = allAccounts.length;
             let alreadyVoted        = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: voteType }, {});
 
-            alreadyVoted.forEach((e) => allAccounts.splice(allAccounts.indexOf(e.accountName), 1));
+            alreadyVoted.forEach((e) => {
+                if (allAccounts.indexOf(e.accountName) != -1) allAccounts.splice(allAccounts.indexOf(e.accountName), 1);
+            });
 
             if (previousLengthVoted - allAccounts.length > 0) logger("info", `${previousLengthVoted - allAccounts.length} of ${previousLengthVoted} bot accounts were removed from available accounts because we know that they have already voted on this item!`);
 
