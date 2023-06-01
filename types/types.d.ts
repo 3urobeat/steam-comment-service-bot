@@ -209,10 +209,11 @@ declare function getAvailableBotsForCommenting(commandHandler: CommandHandler, n
  * Retrieves arguments from a vote request. If request is invalid, an error message will be sent
  * @param commandHandler - The commandHandler object
  * @param args - The command arguments
+ * @param cmd - Either "upvote" or "downvote", depending on which command is calling this function
  * @param respond - The function to send messages to the requesting user
  * @returns If the user provided a specific amount, amount will be a number. If user provided "all" or "max", it will be returned as an unmodified string for getVoteBots.js to handle
  */
-declare function getVoteArgs(commandHandler: CommandHandler, args: any[], respond: (...params: any[]) => any): Promise<{ amount: number | string; id: string; }>;
+declare function getVoteArgs(commandHandler: CommandHandler, args: any[], cmd: string, respond: (...params: any[]) => any): Promise<{ amount: number | string; id: string; }>;
 
 /**
  * Finds all needed and currently available bot accounts for a vote request.

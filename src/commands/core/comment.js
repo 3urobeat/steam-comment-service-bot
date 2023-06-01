@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 01.06.2023 19:25:45
+ * Last Modified: 01.06.2023 19:54:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -345,7 +345,7 @@ function comment(commandHandler, respond, postComment, commentArgs, receiverStea
             }
 
             // Send finished message
-            respond(`${commandHandler.data.lang.commentsuccess.replace("failedamount", Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount - activeReqEntry.amountBeforeRetry)}\n${failedcmdreference}`); // Only send if not a webrequest
+            respond(`${commandHandler.data.lang.commentsuccess.replace("failedamount", Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount - activeReqEntry.amountBeforeRetry)}\n${failedcmdreference}`);
 
             // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
             activeReqEntry.status = "cooldown";

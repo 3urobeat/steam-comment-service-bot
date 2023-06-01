@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:53:37
  * Author: 3urobeat
  *
- * Last Modified: 27.04.2023 12:11:30
+ * Last Modified: 01.06.2023 20:50:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -67,5 +67,3 @@ Controller.prototype._handleErrors = function() {
     });
 
 };
-
-module.exports = Controller;
