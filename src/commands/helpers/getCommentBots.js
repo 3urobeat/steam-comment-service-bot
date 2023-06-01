@@ -4,7 +4,7 @@
  * Created Date: 09.04.2023 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 14:27:20
+ * Last Modified: 01.06.2023 18:16:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -54,9 +54,20 @@ module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOf
     let allAccsOnline = commandHandler.controller.getBots(null, true);
     let allAccounts = [ ... Object.keys(allAccsOnline) ]; // Clone keys array (bot usernames) of bots object
 
+
+    // Remove limited accounts from allAccounts array if desired
+    if (!canBeLimited) {
+        let previousLength = allAccounts.length;
+        allAccounts = allAccounts.filter(e => allAccsOnline[e].user.limitations && !allAccsOnline[e].user.limitations.limited);
+
+        if (previousLength - allAccounts.length > 0) logger("info", `${previousLength - allAccounts.length} of ${previousLength} bot accounts were removed from available accounts as they are limited and can't be used for this request!`);
+    }
+
+
     // Loop over activeRequests and remove all active entries from allAccounts
-    if (Object.keys(commandHandler.controller.activeRequests).length > 0) {
+    if (allAccounts.length > 0 && Object.keys(commandHandler.controller.activeRequests).length > 0) {
         Object.keys(commandHandler.controller.activeRequests).forEach((e) => {
+            if (!commandHandler.controller.activeRequests[e].type.includes("Comment")) return; // Ignore entry if not of this type
 
             if (Date.now() < commandHandler.controller.activeRequests[e].until + (commandHandler.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
                 commandHandler.controller.activeRequests[e].accounts.forEach((f) => { // Loop over every account used in this request
@@ -71,17 +82,7 @@ module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOf
             } else {
                 delete commandHandler.controller.activeRequests[e]; // Remove entry from object if it is finished to keep the object clean
             }
-
         });
-    }
-
-
-    // Remove limited accounts from allAccounts array if desired
-    if (!canBeLimited) {
-        let previousLength = allAccounts.length;
-        allAccounts = allAccounts.filter(e => allAccsOnline[e].user.limitations && !allAccsOnline[e].user.limitations.limited);
-
-        if (previousLength - allAccounts.length > 0) logger("info", `${previousLength - allAccounts.length} of ${previousLength} were removed from available accounts as they are limited and can't be used for this request!`);
     }
 
 
@@ -111,7 +112,7 @@ module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOf
 
 
     // Log debug values
-    if (allAccounts.length < accountsNeeded) logger("debug", `CommandHandler getAvailableBotsForCommenting(): Calculated ${accountsNeeded} accs needed for ${numberOfComments} comments but only ${allAccounts.length} are available. User needs to wait ${whenAvailableStr}...`);
+    if (allAccounts.length < accountsNeeded) logger("debug", `CommandHandler getAvailableBotsForCommenting(): Calculated ${accountsNeeded} accs needed for ${numberOfComments} comments but only ${allAccounts.length} are available. If accs will become available, the user needs to wait: ${whenAvailableStr || "/"}`);
         else logger("debug", `CommandHandler getAvailableBotsForCommenting(): Calculated ${accountsNeeded} accs needed for ${numberOfComments} comments and ${allAccounts.length} are available: ${allAccounts}`);
 
     // Return values
