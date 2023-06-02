@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:46:32
+ * Last Modified: 02.06.2023 12:18:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -43,7 +43,8 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
         /* ------------ Accept offline friend and group invites/requests: ------------ */
         // Friends:
-        let ignoredFriendRequests = 0;
+        let processedFriendRequests = 0;
+        let ignoredFriendRequests   = 0;
 
         for (let i = 0; i < Object.keys(this.user.myFriends).length; i++) { // Credit: https://dev.doctormckay.com/topic/1694-accept-friend-request-sent-in-offline/
             if (this.user.myFriends[Object.keys(this.user.myFriends)[i]] == 2) {
@@ -53,11 +54,16 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
                     // Accept friend request
                     this.user.addFriend(thisfriend);
+                    processedFriendRequests++;
 
-                    // Log message and send welcome message
+                    // Log message and send welcome message. Delay msg to avoid AccessDenied and RateLimitExceeded errors
                     logger("info", `[${this.logPrefix}] Added user while I was offline! User: ` + thisfriend);
-                    if (this.index == 0) this.sendChatMessage(this, { steamID64: String(thisfriend) }, this.controller.data.lang.useradded);
-                        else logger("debug", "Not sending useradded message because this isn't the main this.user...");
+
+                    setTimeout(() => {
+                        if (this.index == 0) this.sendChatMessage(this, { steamID64: String(thisfriend) }, this.controller.data.lang.useradded);
+                            else logger("debug", "Not sending useradded message because this isn't the main user...");
+                    }, 1000 * processedFriendRequests);
+
 
                     // Add user to lastcomment database
                     let lastcommentobj = {
@@ -79,6 +85,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
                 } else {
                     ignoredFriendRequests++;
                 }
+
             }
 
             // Log info msg about ignored friend requests
