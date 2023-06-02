@@ -30,6 +30,12 @@
     "votenotenoughavailableaccs": "Sorry but there are currently not enough accounts available which haven't voted on this item yet. Please wait waittime and try again or only request availablenow votes now.",
     "voteprocessstarted": "Estimated wait time for numberOfVotes votes: waittime.",
     "votesuccess": "All votes have been sent. Failed: failedamount/numberOfVotes",
+
+    "favoritenoaccounts": "Sorry but there are no accounts available which haven't favorized this item yet.",
+    "favoriterequestless": "There are currently only availablenow bot accounts available for this request.",
+    "favoritenotenoughavailableaccs": "Sorry but there are currently not enough accounts available for this request. Please wait waittime and try again or only request availablenow now.",
+    "favoriteprocessstarted": "Estimated wait time for numberOfFavs un-/favorites: waittime.",
+    "favoritesuccess": "All un-/favorites have been sent. Failed: failedamount/numberOfFavs",
     
     "useradded": "Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more commands or !about for more information!",
     "userunfriend": "You have been unfriended for being inactive for forceFriendlistSpaceTime days as the friendlist was running low on space.\nIf you need me again, feel free to add me again!",
