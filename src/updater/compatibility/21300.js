@@ -4,7 +4,7 @@
  * Created Date: 02.06.2023 12:20:00
  * Author: 3urobeat
  *
- * Last Modified: 02.06.2023 12:56:55
+ * Last Modified: 02.06.2023 15:54:19
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -26,13 +26,27 @@ module.exports.run = (controller, resolve) => {
     if (fs.existsSync("./plugins/webserver.js")) fs.unlinkSync("./plugins/webserver.js");
 
 
+    // Enable new webserver plugin if old one was enabled
+    if (controller.data.advancedconfig.enableurltocomment) {
+        try {
+            let plugin = require(srcdir + "/../plugins/webserver/package.json");
+            plugin.pluginConfig.enabled = true;
+
+            fs.writeFileSync(srcdir + "/../plugins/webserver/package.json", JSON.stringify(plugin, null, 4));
+        } catch (err) {
+            logger("warn", "Compatibility feature 2.13: Failed to enable new webserver plugin. Error: " + err);
+        }
+    }
+
+
     // Add all commands that were previously affected by maintenance mode to restrictAdditionalCommandsToOwners if user had it enabled
     if (controller.data.advancedconfig.disableCommentCmd) {
         controller.data.advancedconfig.restrictAdditionalCommandsToOwners.push("comment", "resetcooldown", "upvote", "downvote");
     }
 
 
-    // Remove removed disableCommentCmd setting and write both changes to file
+    // Remove removed disableCommentCmd & enableurltocomment settings and write changes to file
+    delete controller.data.advancedconfig.enableurltocomment;
     delete controller.data.advancedconfig.disableCommentCmd;
 
     let stringifiedAdvancedconfig = JSON.stringify(controller.data.advancedconfig, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162

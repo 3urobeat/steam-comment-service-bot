@@ -17,7 +17,6 @@
     "retryFailedCommentsAttempts": 1,
     "lastQuotesSize": 5,
     "enableevalcmd": false,
-    "enableurltocomment": false,
     "printDebug": false,
     "steamUserDebug": false,
     "steamUserDebugVerbose": false,
