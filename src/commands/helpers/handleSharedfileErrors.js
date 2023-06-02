@@ -1,10 +1,10 @@
 /*
- * File: handleVoteErrors.js
+ * File: handleSharedfileErrors.js
  * Project: steam-comment-service-bot
  * Created Date: 31.05.2023 16:57:21
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 19:39:30
+ * Last Modified: 02.06.2023 14:28:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -32,6 +32,32 @@ module.exports.logVoteError = (error, commandHandler, bot, id) => {
 
     // Log error, add it to failed obj and continue with next iteration
     logger("error", `[${bot.logPrefix}] Error while voting ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id}${proxiesDescription}: ${error}`);
+
+    activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = `${error}`;
+
+
+    // Sort failed object to make it easier to read
+    activeReqEntry.failed = sortFailedCommentsObject(activeReqEntry.failed);
+};
+
+
+/**
+ * Logs favorite errors
+ * @param {String} error The error string returned by steam-community
+ * @param {CommandHandler} commandHandler The commandHandler object
+ * @param {Bot} bot Bot object of the account making this request
+ * @param {String} id ID of the sharedfile that receives the favorites
+ */
+module.exports.logFavoriteError = (error, commandHandler, bot, id) => {
+    let activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
+
+    // Add proxy information if one was used for this account
+    let proxiesDescription = "";
+    if (commandHandler.data.proxies.length > 1) proxiesDescription = ` using proxy ${bot.loginData.proxyIndex}`;
+
+
+    // Log error, add it to failed obj and continue with next iteration
+    logger("error", `[${bot.logPrefix}] Error while un-/favorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id}${proxiesDescription}: ${error}`);
 
     activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = `${error}`;
 

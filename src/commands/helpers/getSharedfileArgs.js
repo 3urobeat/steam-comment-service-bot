@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:18:49
  * Author: 3urobeat
  *
- * Last Modified: 02.06.2023 14:06:56
+ * Last Modified: 02.06.2023 14:15:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -48,7 +48,7 @@ module.exports.getSharedfileArgs = (commandHandler, args, cmd, respond) => {
 
                 // Send error if item could not be found
                 if (err || !id) {
-                    respond(commandHandler.data.lang.invalidsharedfileid.replace("votecmdusage", voteCmdUsage));
+                    respond(commandHandler.data.lang.invalidsharedfileid.replace("cmdusage", voteCmdUsage));
                     return resolve({});
                 }
 

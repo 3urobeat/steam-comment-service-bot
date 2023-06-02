@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 02.06.2023 13:32:14
+ * Last Modified: 02.06.2023 14:46:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -19,7 +19,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 const { getSharedfileArgs }         = require("../helpers/getSharedfileArgs.js");
 const { getAvailableBotsForVoting } = require("../helpers/getVoteBots.js");
 const { syncLoop, timeToString }    = require("../../controller/helpers/misc.js");
-const { logVoteError }              = require("../helpers/handleVoteErrors.js");
+const { logVoteError }              = require("../helpers/handleSharedfileErrors.js");
 
 
 module.exports.upvote = {
@@ -55,7 +55,7 @@ module.exports.upvote = {
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
 
-        // Check if this id is already receiving votes right now
+        // Check if this id is already receiving something right now
         let idReq = commandHandler.controller.activeRequests[id];
 
         if (idReq && idReq.status == "active") return respond(commandHandler.data.lang.idalreadyreceiving); // Note: No need to check for user as that is supposed to be handled by a cooldown
@@ -86,7 +86,7 @@ module.exports.upvote = {
         // Get the sharedfile
         commandHandler.controller.main.community.getSteamSharedfile(id, (err, sharedfile) => {
             if (err) {
-                respond(commandHandler.data.lang.voteerrloadingitem + err);
+                respond(commandHandler.data.lang.errloadingsharedfile + err);
                 return;
             }
 
@@ -234,7 +234,7 @@ module.exports.downvote = {
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
 
-        // Check if this id is already receiving votes right now
+        // Check if this id is already receiving something right now
         let idReq = commandHandler.controller.activeRequests[id];
 
         if (idReq && idReq.status == "active") return respond(commandHandler.data.lang.idalreadyreceiving); // Note: No need to check for user as that is supposed to be handled by a cooldown
@@ -265,7 +265,7 @@ module.exports.downvote = {
         // Get the sharedfile
         commandHandler.controller.main.community.getSteamSharedfile(id, (err, sharedfile) => {
             if (err) {
-                respond(commandHandler.data.lang.voteerrloadingitem + err);
+                respond(commandHandler.data.lang.errloadingsharedfile + err);
                 return;
             }
 
