@@ -206,14 +206,24 @@ declare function getCommentArgs(commandHandler: CommandHandler, args: any[], req
 declare function getAvailableBotsForCommenting(commandHandler: CommandHandler, numberOfComments: number, canBeLimited: boolean, idType: string, receiverSteamID: string): any;
 
 /**
+ * Finds all needed and currently available bot accounts for a favorite request.
+ * @param commandHandler - The commandHandler object
+ * @param amount - Amount of favs requested or "all" to get the max available amount
+ * @param id - The sharedfile id to favorize
+ * @param favType - Either "favorite" or "unfavorite", depending on which request this is
+ * @returns Promise with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
+ */
+declare function getAvailableBotsForFavorizing(commandHandler: CommandHandler, amount: number | "all", id: string, favType: string): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
+
+/**
  * Retrieves arguments from a vote request. If request is invalid, an error message will be sent
  * @param commandHandler - The commandHandler object
  * @param args - The command arguments
- * @param cmd - Either "upvote" or "downvote", depending on which command is calling this function
+ * @param cmd - Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function
  * @param respond - The function to send messages to the requesting user
  * @returns If the user provided a specific amount, amount will be a number. If user provided "all" or "max", it will be returned as an unmodified string for getVoteBots.js to handle
  */
-declare function getVoteArgs(commandHandler: CommandHandler, args: any[], cmd: string, respond: (...params: any[]) => any): Promise<{ amount: number | string; id: string; }>;
+declare function getSharedfileArgs(commandHandler: CommandHandler, args: any[], cmd: string, respond: (...params: any[]) => any): Promise<{ amount: number | string; id: string; }>;
 
 /**
  * Finds all needed and currently available bot accounts for a vote request.
@@ -266,6 +276,15 @@ declare function failedCommentsObjToString(obj: any): string;
  * @param id - ID of the sharedfile that receives the votes
  */
 declare function logVoteError(error: string, commandHandler: CommandHandler, bot: Bot, id: string): void;
+
+/**
+ * Logs favorite errors
+ * @param error - The error string returned by steam-community
+ * @param commandHandler - The commandHandler object
+ * @param bot - Bot object of the account making this request
+ * @param id - ID of the sharedfile that receives the favorites
+ */
+declare function logFavoriteError(error: string, commandHandler: CommandHandler, bot: Bot, id: string): void;
 
 /**
  * Helper function to sort failed object by comment number so that it is easier to read
