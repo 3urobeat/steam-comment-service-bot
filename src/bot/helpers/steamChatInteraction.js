@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 16:41:58
+ * Last Modified: 02.06.2023 11:44:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -18,7 +18,8 @@
 // Steam Chat interaction helper which is implemented by the main bot account. It gets called by commands to respond to the user
 
 
-const SteamID = require("steamid");
+const SteamUser = require("steam-user");
+const SteamID   = require("steamid");
 
 const Bot = require("../bot");
 
@@ -38,6 +39,8 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
     if (!txt) return logger("warn", "sendChatMessage() was called without any message content! Ignoring call...");
     if (typeof txt !== "string") return logger("warn", "sendChatMessage() was called with txt that isn't a string! Ignoring call...");
 
+    let steamID64 = resInfo.steamID64;
+
     // Allow resInfo to overwrite char limit of 750 chars
     let limit = 750;
     if (resInfo.charLimit) limit = resInfo.charLimit;
@@ -54,19 +57,25 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
 
     // Log full message if in debug mode, otherwise log cut down version
     if (_this.controller.data.advancedconfig.printDebug) {
-        logger("debug", `[${_this.logPrefix}] Sending message (${thisPart.length} chars) to ${resInfo.steamID64} (retry: ${retry}, part: ${part}): "${thisPart.replace(/\n/g, "\\n")}"`);
+        logger("debug", `[${_this.logPrefix}] Sending message (${thisPart.length} chars) to ${steamID64} (retry: ${retry}, part: ${part}): "${thisPart.replace(/\n/g, "\\n")}"`);
     } else {
-        if (thisPart.length >= 75) logger("info", `[${_this.logPrefix}] Sending message to ${resInfo.steamID64}: "${thisPart.slice(0, 75).replace(/\n/g, "\\n") + "..."}"`);
-            else logger("info", `[${_this.logPrefix}] Sending message to ${resInfo.steamID64}: "${thisPart.replace(/\n/g, "\\n")}"`);
+        if (thisPart.length >= 75) logger("info", `[${_this.logPrefix}] Sending message to ${steamID64}: "${thisPart.slice(0, 75).replace(/\n/g, "\\n") + "..."}"`);
+            else logger("info", `[${_this.logPrefix}] Sending message to ${steamID64}: "${thisPart.replace(/\n/g, "\\n")}"`);
     }
 
     // Send part and call function again if this wasn't the last one
-    _this.user.chat.sendFriendMessage(resInfo.steamID64, thisPart, {}, (err) => {
+    _this.user.chat.sendFriendMessage(steamID64, thisPart, {}, (err) => {
         if (err) { // Check for error as some chat messages seem to not get send lately
-            logger("warn", `[${_this.logPrefix}] Error trying to send chat message of length ${thisPart.length} to ${resInfo.steamID64}! ${err}`);
+            logger("warn", `[${_this.logPrefix}] Error trying to send chat message of length ${thisPart.length} to ${steamID64}! ${err}`);
+
+            // Check for AccessDenied error and abort retries if this was caused by the recipient not being a friend
+            if (String(err).toLowerCase() == "error: accessdenied" && (!_this.user.myFriends[steamID64] || _this.user.myFriends[steamID64] != SteamUser.EFriendRelationship.Friend)) {
+                logger("info", `[${_this.logPrefix}] AccessDenied error caused by non-friend detected. Ignoring msg retries to '${steamID64}' as they will always fail unless they add this bot account: https://steamcommunity.com/profiles/${_this.controller.data.cachefile.botaccid[_this.index]}`);
+                return;
+            }
 
             // Start typing to indicate the bot is not down
-            _this.user.chat.sendFriendTyping(resInfo.steamID64);
+            _this.user.chat.sendFriendTyping(steamID64);
 
             // Hard cap amount of attempts to send this message to 5
             if (retry >= 5) return;
@@ -79,10 +88,10 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
 
             // Send next part if there is one left
             if (limit * (part + 1) <= txt.length) {
-                logger("info", `Message is ${txt.length} chars long, sending next chunk of ${limit} chars to '${resInfo.steamID64}' in 7.5 seconds...`, false, false, logger.animation("waiting"));
+                logger("info", `Message is ${txt.length} chars long, sending next chunk of ${limit} chars to '${steamID64}' in 7.5 seconds...`, false, false, logger.animation("waiting"));
 
                 // Start typing to indicate there is more coming
-                _this.user.chat.sendFriendTyping(resInfo.steamID64);
+                _this.user.chat.sendFriendTyping(steamID64);
 
                 setTimeout(() => _this.sendChatMessage(_this, resInfo, txt, retry, part + 1), 7500);
             } else {
