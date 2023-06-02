@@ -1,10 +1,10 @@
 /*
- * File: getVoteArgs.js
+ * File: getSharedfileArgs.js
  * Project: steam-comment-service-bot
  * Created Date: 28.05.2023 12:18:49
  * Author: 3urobeat
  *
- * Last Modified: 01.06.2023 19:48:41
+ * Last Modified: 02.06.2023 14:06:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -22,11 +22,11 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
  * Retrieves arguments from a vote request. If request is invalid, an error message will be sent
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Array} args The command arguments
- * @param {String} cmd Either "upvote" or "downvote", depending on which command is calling this function
+ * @param {String} cmd Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function
  * @param {Function} respond The function to send messages to the requesting user
  * @returns {Promise.<{ amount: number|string, id: string }>} If the user provided a specific amount, amount will be a number. If user provided "all" or "max", it will be returned as an unmodified string for getVoteBots.js to handle
  */
-module.exports.getVoteArgs = (commandHandler, args, cmd, respond) => {
+module.exports.getSharedfileArgs = (commandHandler, args, cmd, respond) => {
     return new Promise((resolve) => {
         (async () => { // Lets us use await inside a Promise without creating an antipattern
 
@@ -48,12 +48,12 @@ module.exports.getVoteArgs = (commandHandler, args, cmd, respond) => {
 
                 // Send error if item could not be found
                 if (err || !id) {
-                    respond(commandHandler.data.lang.voteinvalidid.replace("votecmdusage", voteCmdUsage));
+                    respond(commandHandler.data.lang.invalidsharedfileid.replace("votecmdusage", voteCmdUsage));
                     return resolve({});
                 }
 
                 // ...otherwise resolve
-                logger("debug", `CommandHandler getVoteArgs() success. amount: ${amount} | id: ${id}`);
+                logger("debug", `CommandHandler getSharedfileArgs() success. amount: ${amount} | id: ${id}`);
 
                 resolve({
                     "amountRaw": amount,

@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 02.06.2023 12:46:50
+ * Last Modified: 02.06.2023 13:32:14
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -16,7 +16,7 @@
 
 
 const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
-const { getVoteArgs }               = require("../helpers/getVoteArgs.js");
+const { getSharedfileArgs }         = require("../helpers/getSharedfileArgs.js");
 const { getAvailableBotsForVoting } = require("../helpers/getVoteBots.js");
 const { syncLoop, timeToString }    = require("../../controller/helpers/misc.js");
 const { logVoteError }              = require("../helpers/handleVoteErrors.js");
@@ -50,7 +50,7 @@ module.exports.upvote = {
 
 
         // Check and get arguments from user
-        let { amountRaw, id } = await getVoteArgs(commandHandler, args, "upvote", respond);
+        let { amountRaw, id } = await getSharedfileArgs(commandHandler, args, "upvote", respond);
 
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
@@ -229,7 +229,7 @@ module.exports.downvote = {
 
 
         // Check and get arguments from user
-        let { amountRaw, id } = await getVoteArgs(commandHandler, args, "downvote", respond);
+        let { amountRaw, id } = await getSharedfileArgs(commandHandler, args, "downvote", respond);
 
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
