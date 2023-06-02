@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 28.05.2023 13:30:40
+ * Last Modified: 02.06.2023 11:34:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -15,7 +15,8 @@
  */
 
 
-const fs = require("fs");
+const fs        = require("fs");
+const SteamUser = require("steam-user");
 
 const Controller = require("../controller");
 const { round }  = require("../helpers/misc.js");
@@ -115,10 +116,6 @@ Controller.prototype._readyEvent = function() {
     if (this.info.skippedaccounts.length > 0) logger("info", `Skipped Accounts: ${this.info.skippedaccounts.length}/${Object.keys(this.data.logininfo).length}\n`, true);
 
 
-    // Log amount of warnings displayed by dataCheck and remind the user to take a look
-    if (this.info.startupWarnings > 0) logger("warn", `The bot started with ${this.info.startupWarnings} warning(s)! Please scroll up and read the warnings displayed during startup!\n`, true);
-
-
     // Please star my repo :)
     if (this.data.datafile.firststart) logger("", "If you like my work please consider giving my repository a star! It helps me alot and I'd really appreciate it!\nhttps://github.com/HerrEurobeat/steam-comment-service-bot\n", true);
 
@@ -131,6 +128,19 @@ Controller.prototype._readyEvent = function() {
     this.data.refreshCache();
 
 
+    // Check if an owner is not friend with the main bot account
+    let nonFriendOwners = this.data.cachefile.ownerid.filter(e => !this.main.user.myFriends[e] || this.main.user.myFriends[e] != SteamUser.EFriendRelationship.Friend); // Get all ownerids that either aren't even in the myFriends obj or are with code != 3
+
+    if (nonFriendOwners.length > 0) {
+        logger("warn", `The owner(s) '${nonFriendOwners.map((e, i) => this.data.config.ownerid[i]).join(", ")}' are not friend with the main bot account!\n       Please send the main account a friend request now: https://steamcommunity.com/profiles/${this.data.cachefile.botaccid[0]}\n`, true);
+        this.info.startupWarnings++;
+    }
+
+
+    // Log amount of warnings displayed by dataCheck and remind the user to take a look
+    if (this.info.startupWarnings > 0) logger("warn", `The bot started with ${this.info.startupWarnings} warning(s)! Please scroll up and read the warnings displayed during startup!\n`, true);
+
+
     // Friendlist capacity check for all accounts
     this.getBots().forEach((e) => {
         this.friendListCapacityCheck(e, (remaining) => {
@@ -139,8 +149,12 @@ Controller.prototype._readyEvent = function() {
     });
 
 
-    // Message owners if firststart is true that the bot just updated itself
-    if (this.data.datafile.firststart) this.data.cachefile.ownerid.forEach(e => this.main.sendChatMessage(this.main, { steamID64: e }, `I have updated myself to version ${this.data.datafile.versionstr}!\nWhat's new: ${this.data.datafile.whatsnew}`));
+    // Message all owners that are friends if firststart is true that the bot just updated itself
+    if (this.data.datafile.firststart) {
+        this.data.cachefile.ownerid.forEach((e) => {
+            if (!nonFriendOwners.includes(e)) this.main.sendChatMessage(this.main, { steamID64: e }, `I have updated myself to version ${this.data.datafile.versionstr}!\nWhat's new: ${this.data.datafile.whatsnew}`);
+        });
+    }
 
 
     // Check for friends who haven't requested comments in config.unfriendtime days every 60 seconds and unfriend them if unfriendtime is > 0
