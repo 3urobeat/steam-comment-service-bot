@@ -4,7 +4,7 @@
  * Created Date: 02.06.2023 14:07:27
  * Author: 3urobeat
  *
- * Last Modified: 02.06.2023 14:18:00
+ * Last Modified: 02.06.2023 15:34:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -38,13 +38,19 @@ module.exports.getAvailableBotsForFavorizing = (commandHandler, amount, id, favT
             let allAccounts = [ ... Object.keys(allAccsOnline) ]; // Clone keys array (bot usernames) of bots object
 
 
-            // Remove bot accounts from allAccounts which have already favorized this id
+            // Remove bot accounts from allAccounts which have already favorized this id, or only allow them for type unfavorite
             let previousLengthFavorized = allAccounts.length;
-            let alreadyFavorized        = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: favType }, {});
+            let alreadyFavorized        = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: "favorite" }, {});
 
-            alreadyFavorized.forEach((e) => {
-                if (allAccounts.indexOf(e.accountName) != -1) allAccounts.splice(allAccounts.indexOf(e.accountName), 1);
-            });
+            if (favType == "favorite") {
+                alreadyFavorized.forEach((e) => {
+                    if (allAccounts.indexOf(e.accountName) != -1) allAccounts.splice(allAccounts.indexOf(e.accountName), 1); // Remove all accounts that already favorized
+                });
+            } else {
+                allAccounts.forEach((e) => {
+                    if (!alreadyFavorized.some(e => e.accountName)) allAccounts.splice(allAccounts.indexOf(e), 1); // Remove all accounts that have not favorized
+                });
+            }
 
             if (previousLengthFavorized - allAccounts.length > 0) logger("info", `${previousLengthFavorized - allAccounts.length} of ${previousLengthFavorized} bot accounts were removed from available accounts because we know that they have already favorized this item!`);
 
