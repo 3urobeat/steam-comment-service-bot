@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 15:17:52
+ * Last Modified: 02.06.2023 12:56:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -72,7 +72,6 @@ CommandHandler.prototype._importCoreCommands = function() {
 };
 
 
-// This JsDoc is a mess
 /**
  * Registers a new command during runtime
  * @param {Object} command The command object to register
@@ -159,6 +158,12 @@ CommandHandler.prototype.runCommand = function(name, args, steamID64, respondMod
     if (!thisCmd) {
         logger("warn", `CommandHandler runCommand(): Command '${name}' was not found!`);
         return false;
+    }
+
+    // Set command to ownersOnly if one of its aliases is inlcuded in restrictAdditionalCommandsToOwners
+    if (this.controller.data.advancedconfig.restrictAdditionalCommandsToOwners.some(e => thisCmd.names.includes(e))) {
+        logger("info", `CommandHandler runCommand(): Command '${name}' is included in 'restrictAdditionalCommandsToOwners' and has been restricted to owners.`);
+        thisCmd.ownersOnly = true;
     }
 
     // If command is ownersOnly, check if user is included in owners array. If not, send error msg and return true to avoid caller sending a not found msg.

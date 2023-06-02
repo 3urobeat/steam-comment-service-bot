@@ -11,7 +11,7 @@
     "forceFriendlistSpaceTime": 4,
     "setPrimaryGroup": false,
     "commandCooldown": 12000,
-    "disableCommentCmd": false,
+    "restrictAdditionalCommandsToOwners": [],
     "retryFailedComments": false,
     "retryFailedCommentsDelay": 300000,
     "retryFailedCommentsAttempts": 1,

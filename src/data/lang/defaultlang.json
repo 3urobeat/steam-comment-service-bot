@@ -40,7 +40,6 @@
     "userspamblock": "You have been blocked for 90 seconds for spamming.",
     "usernotfriend": "Please add me before using a command!",
     "botnotready": "The bot is not completely started yet. Please wait a moment before using a command.",
-    "botmaintenance": "A few commands are currently unavailable because the bot is in maintenance mode. Please try again later.",
     "commandnotfound": "I don't know that command. Type !help for more info.",
     "commandowneronly": "This command is only available for owners.\nIf you are the botowner, make sure you added your ownerid to the config.json.",
 
