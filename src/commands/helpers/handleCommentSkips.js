@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 16:58:59
+ * Last Modified: 03.06.2023 11:06:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -32,7 +32,7 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
     let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
 
     // Check if comment process was aborted or activeReqEntry was deleted and stop loop
-    if (!activeReqEntry || activeReqEntry.status == "aborted") {
+    if (!activeReqEntry || !activeReqEntry.failed || activeReqEntry.status == "aborted") {
         logger("debug", "CommandHandler handleIterationSkip(): Request was aborted or deleted, breaking comment loop...");
 
         // Add failed entry for all skipped iterations only if request was aborted
