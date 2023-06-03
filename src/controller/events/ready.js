@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 02.06.2023 11:34:50
+ * Last Modified: 03.06.2023 19:50:17
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -180,8 +180,15 @@ Controller.prototype._readyEvent = function() {
     });
 
 
+    // Set progress bar to 100% if one is active
+    if (logger.getProgressBar()) logger.increaseProgressBar((100 / Object.keys(this.data.logininfo).length) / 3);
+
+
     // Print startup complete message and erase it after 5 sec
     setTimeout(() => {
+        // Remove progress bar
+        logger.removeProgressBar();
+
         logger("info", "Startup complete!", false, true, ["✅"]);
 
         setTimeout(() => {

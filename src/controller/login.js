@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:55:26
+ * Last Modified: 03.06.2023 11:19:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -33,6 +33,9 @@ Controller.prototype.login = function(firstLogin) {
     if (firstLogin) {
         // Update global var
         botisloggedin = true;
+
+        // Create a new progress bar for some ✨ fancy log shenanigans ✨
+        logger.setProgressBar(0);
 
         // Print ASCII art
         logger("", "", true);

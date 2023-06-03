@@ -4,7 +4,7 @@
  * Created Date: 24.05.2023 21:28:07
  * Author: 3urobeat
  *
- * Last Modified: 24.05.2023 21:45:29
+ * Last Modified: 03.06.2023 19:50:23
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -57,6 +57,10 @@ Bot.prototype._attachSteamOwnershipCachedEvent = function() {
             if (this.index == 0) this.user.gamesPlayed(this.controller.data.config.playinggames);
             if (this.index != 0) this.user.gamesPlayed(this.controller.data.config.childaccplayinggames);
         }
+
+
+        // Increase progress bar if one is active
+        if (logger.getProgressBar()) logger.increaseProgressBar((100 / Object.keys(this.data.logininfo).length) / 3);
     });
 
 };

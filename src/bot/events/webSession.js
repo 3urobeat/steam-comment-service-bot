@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.06.2023 12:18:02
+ * Last Modified: 03.06.2023 19:50:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -133,6 +133,10 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
                 if (err) logger("err", `[${this.logPrefix}] Error setting primary group: ${err}`, true);
             });
         }
+
+
+        // Increase progress bar if one is active
+        if (logger.getProgressBar()) logger.increaseProgressBar((100 / Object.keys(this.data.logininfo).length) / 3);
 
     });
 

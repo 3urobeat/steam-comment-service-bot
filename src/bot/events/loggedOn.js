@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 24.05.2023 21:31:29
+ * Last Modified: 03.06.2023 19:50:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -30,6 +30,10 @@ Bot.prototype._attachSteamLoggedOnEvent = function() {
         this.user.setPersona(1); // Set online status
 
         logger("debug", `[${this.logPrefix}] Public IP of this account: ${this.user.publicIP}`);
+
+
+        // Increase progress bar if one is active
+        if (logger.getProgressBar()) logger.increaseProgressBar((100 / Object.keys(this.data.logininfo).length) / 3);
 
     });
 
