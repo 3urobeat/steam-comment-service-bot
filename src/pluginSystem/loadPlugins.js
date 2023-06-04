@@ -4,7 +4,7 @@
  * Created Date: 04.06.2023 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 04.06.2023 17:15:20
+ * Last Modified: 04.06.2023 17:21:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -61,7 +61,15 @@ PluginSystem.prototype._loadPlugins = function () {
     const plugins = Object.entries(packageJson.dependencies).filter(([key, value]) => PLUGIN_REGEX.test(key)); // eslint-disable-line
     const initiatedPlugins = plugins.map(([plugin]) => loadPlugin.bind(this)(plugin)); // Initalize each plugin
 
-    for (const { pluginName, pluginInstance } of initiatedPlugins) {
+    for (const { pluginName, pluginInstance, pluginJson } of initiatedPlugins) {
+        if (!pluginInstance) {
+            logger("warn", `Skipping plugin '${pluginName}'...`, false, false, null, true); // Force print now
+            continue;
+        }
+
+        logger("info", `PluginSystem: Loading plugin '${pluginName}' v${pluginJson.version} by ${pluginJson.author}...`, false, true, logger.animation("loading"));
+
+        // Add plugin reference to pluginList and call load function
         this.pluginList[pluginName] = pluginInstance;
         pluginInstance.load();
 
