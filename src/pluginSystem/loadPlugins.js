@@ -25,15 +25,19 @@ function loadPlugin(pluginName) {
 }
 
 PluginSystem.prototype._loadPlugins = async function () {
-    const plugins = Object.entries(packageJson.dependencies).filter(([key, value]) => PLUGIN_REGEX.test(key)); //get all plugins with the matching regex
-    const initiatedPlugins = plugins.map(([plugin]) => loadPlugin.bind(this)(plugin)); //initalize each plugin
+
+    // Get all plugins with the matching regex
+    const plugins = Object.entries(packageJson.dependencies).filter(([key, value]) => PLUGIN_REGEX.test(key)); // eslint-disable-line
+    const initiatedPlugins = plugins.map(([plugin]) => loadPlugin.bind(this)(plugin)); // Initalize each plugin
 
     for (const { pluginName, pluginInstance } of initiatedPlugins) {
         this.pluginList[pluginName] = pluginInstance;
         pluginInstance.load();
-        Object.entries(PLUGIN_EVENTS).forEach(([eventName, event]) => {
-            //Call the exposed functions if they exist
+
+        // Call the exposed event functions if they exist
+        Object.entries(PLUGIN_EVENTS).forEach(([eventName, event]) => { // eslint-disable-line
             this.controller.events.on(event, (...args) => pluginInstance[event]?.call(pluginInstance, ...args));
         });
     }
+
 };
