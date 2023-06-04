@@ -13,7 +13,7 @@ function loadPlugin(pluginName) {
     const importedPlugin = require(pluginName);
 
     if (!(typeof importedPlugin === "function")) {
-        logger("error", `Plugin ${plugin} is not a function`);
+        logger("error", `Plugin ${pluginName} is not a function`);
     }
 
     try {
