@@ -51,13 +51,13 @@ module.exports = Plugin;
 Plugin.prototype.load = function() {
     this.app = express();
 
-    // Generate urlrequestsecretkey if it is not created already
-    if (this.data.datafile.urlrequestsecretkey == "") {
-        this.data.datafile.urlrequestsecretkey = Math.random().toString(36).slice(-10); // Credit: https://stackoverflow.com/a/9719815/12934162
-        logger("info", "Generated a secret key for comment requests via url. You can find the key in the 'data.json' file, located in the 'src' folder.", true);
+    // Generate requestKey if it is not created already
+    if (!pluginPackage.pluginConfig.requestKey) {
+        pluginPackage.pluginConfig.requestKey = Math.random().toString(36).slice(-10); // Credit: https://stackoverflow.com/a/9719815/12934162
+        logger("info", "Webserver plugin: Generated a new secret key for comment requests via url. You can find the key in the 'package.json' file of this plugin.");
 
-        fs.writeFile(srcdir + "/data/data.json", JSON.stringify(this.data.datafile, null, 4), (err) => { // TODO: Replace with writeToFs function when supported by DataManger
-            if (err) logger("error", "error writing created urlrequestsecretkey to data.json: " + err);
+        fs.writeFile("./plugins/webserver/package.json", JSON.stringify(pluginPackage, null, 4), (err) => { // TODO: Replace with writeToFs function when supported by DataManger
+            if (err) logger("error", "Webserver plugin: Error writing created requestKey to package.json: " + err);
         });
     }
 
@@ -109,21 +109,21 @@ Plugin.prototype.ready = function() {
 
         // Check provided parameters
         if (!amount) {
-            logger("info", `Web Request by ${ip} denied. Reason: numberofcomments (n) is not specified.`);
+            logger("info", `Webserver plugin: Request by ${ip} denied. Reason: numberofcomments (n) is not specified.`);
             return res.status(400).send("You have to provide an amount of comments.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.");
         }
 
         if (!receivingID) {
-            logger("info", `Web Request by ${ip} denied. Reason: Steam profileid (id) is not specified.`);
+            logger("info", `Webserver plugin: Request by ${ip} denied. Reason: Steam profileid (id) is not specified.`);
             return res.status(400).send("You have to provide a profile id where I should comment.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.");
         }
 
-        if (!req.query.key || req.query.key != this.data.datafile.urlrequestsecretkey) {
-            logger("warn", `Web Request by ${ip} denied. Reason: Invalid secret key.`); // I think it is fair to output this message with a warn type
+        if (!req.query.key || req.query.key != pluginPackage.pluginConfig.requestKey) {
+            logger("warn", `Webserver plugin: Request by ${ip} denied. Reason: Invalid secret key.`); // I think it is fair to output this message with a warn type
             return res.status(403).send("Your secret key is not defined or invalid. Request denied.</br>If you forgot your secret key you can see it in your 'data.json' file in the 'src' folder.</br>Usage: /comment?n=123&id=123&key=123 to request n comments on id profile with your secret key.");
         }
 
-        logger("info", `Web Comment Request from ${ip} accepted. Amount: ${amount} | Profile: ${receivingID}`);
+        logger("info", `Webserver plugin: Comment Request from ${ip} accepted. Amount: ${amount} | Profile: ${receivingID}`);
 
 
         // Run the comment command
@@ -134,7 +134,7 @@ Plugin.prototype.ready = function() {
         // Get IP of visitor
         let ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress).replace("::ffff:", "");
 
-        logger("info", `[Web Request] ${ip} requested to see the output!`);
+        logger("info", `Webserver plugin: ${ip} requested to see the output!`);
 
         fs.readFile(srcdir + "/../output.txt", (err, data) => {
             if(err) logger("error", "urltocomment: error reading output.txt: " + err);

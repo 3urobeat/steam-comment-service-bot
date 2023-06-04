@@ -9,6 +9,7 @@
     "license": "GPL-3.0",
 
     "pluginConfig": {
-        "enabled": false
+        "enabled": false,
+        "requestKey": ""
     }
 }
