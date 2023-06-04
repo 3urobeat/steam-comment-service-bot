@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2023 12:27:03
+ * Last Modified: 04.06.2023 16:13:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -290,7 +290,7 @@ Controller.prototype._preLogin = async function() {
      * @type {PluginSystem}
      */
     this.pluginSystem = new PluginSystem(this);
-    await this.pluginSystem._loadPlugins(); // Load all plugins now
+    this.pluginSystem._loadPlugins(); // Load all plugins now
 
 
     // Start logging in
