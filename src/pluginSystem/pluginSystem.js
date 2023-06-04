@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 30.05.2023 14:56:36
+ * Last Modified: 04.06.2023 12:11:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -40,6 +40,7 @@ const PluginSystem = function(controller) {
      * @property {function} unload Called on Plugin unload
      * @property {function} ready Controller ready event
      * @property {function(Bot, Bot.EStatus, Bot.EStatus)} statusUpdate Controller statusUpdate event
+     * @property {function(Bot, function(string))} steamGuardInput Controller steamGuardInput event
      */
 
     /**

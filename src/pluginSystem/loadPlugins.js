@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:46:09
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:14:28
+ * Last Modified: 04.06.2023 12:12:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -102,6 +102,7 @@ PluginSystem.prototype._loadPlugins = function() {
                             // Attach any event functions the plugin might have exported. Use call() to apply context which gets replaced with EventEmitter
                             if (thisPlugin.ready) this.controller.events.on("ready", () => thisPlugin.ready.call(thisPlugin));
                             if (thisPlugin.statusUpdate) this.controller.events.on("statusUpdate", (a, b, c) => thisPlugin.statusUpdate.call(thisPlugin, a, b, c));
+                            if (thisPlugin.steamGuardInput) this.controller.events.on("steamGuardInput", (a, b) => thisPlugin.steamGuardInput.call(thisPlugin, a, b));
 
                             loop.next();
                         });

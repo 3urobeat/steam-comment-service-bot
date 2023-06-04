@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.06.2023 11:23:02
+ * Last Modified: 04.06.2023 12:27:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -264,6 +264,7 @@ Controller.prototype._preLogin = async function() {
     // Load Controller event handlers & helpers. This must happen after bot.js has been verified
     require("./events/ready.js");
     require("./events/statusUpdate.js");
+    require("./events/steamGuardInput.js");
     require("./helpers/friendlist.js");
     require("./helpers/getBots.js");
     require("./helpers/handleSteamIdResolving.js");
@@ -378,6 +379,13 @@ Controller.prototype._readyEvent = function() {};
  * @param {Bot.EStatus} newStatus The new status
  */
 Controller.prototype._statusUpdateEvent = function(bot, newStatus) {}; // eslint-disable-line
+
+/**
+ * Emits steamGuardInput event for bot & plugins
+ * @param {Bot} bot Bot instance of the affected account
+ * @param {function(string)} submitCode Function to submit a code. Pass an empty string to skip the account.
+ */
+Controller.prototype._steamGuardInputEvent = function(bot, submitCode) {}; // eslint-disable-line
 
 /**
  * Check if all friends are in lastcomment database

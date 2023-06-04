@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:59:31
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 19:02:58
+ * Last Modified: 04.06.2023 12:34:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -120,6 +120,12 @@ SessionHandler.prototype._get2FAUserInput = function() {
         }
 
         this.controller.info.steamGuardInputTime += Date.now() - steamGuardInputStart; // Measure time and subtract it from readyafter time
+    });
+
+    // Emit steamGuardInput event from our controller so that plugins can handle this event too
+    this.controller._steamGuardInputEvent(this.bot, (code) => {
+        logger("info", `Received code '${code}' from a plugin or the Steam Chat! Resolving...`, false, true);
+        logger.stopReadInput(code);
     });
 };
 

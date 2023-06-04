@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 09:37:57
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2023 09:40:38
+ * Last Modified: 04.06.2023 12:36:19
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -98,5 +98,25 @@ Plugin.prototype.statusUpdate = function(bot, oldStatus, newStatus) {
 
     // Use EStatus[] to log name of status instead of index. This makes it easier to read.
     logger("info", `Template Plugin: Bot with index ${bot.index} changed status from ${Bot.EStatus[oldStatus]} to ${Bot.EStatus[newStatus]}!`);
+
+};
+
+
+/**
+ * Called when a Steam Guard Code is requested for a bot account
+ * @param {Bot} bot The bot object of the affected account
+ * @param {function(string)} submitCode Function to submit a code. Pass an empty string to skip the account.
+ */
+Plugin.prototype.steamGuardInput = function(bot, submitCode) { // eslint-disable-line
+
+    logger("info", `Template Plugin: Bot with index ${bot.index} requested a Steam Guard Code!`, false, false, null, true); // Force log this message now with the last parameter
+
+    // ...we could now somehow get user input (for example through a web interface if you are working on one)
+
+    // Submit a code like this:
+    // submitCode("DFMPJ");
+
+    // ...or skip the account like this:
+    // submitCode("");
 
 };
