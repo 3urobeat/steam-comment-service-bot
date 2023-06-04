@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 02.06.2023 14:46:29
+ * Last Modified: 04.06.2023 10:42:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -50,7 +50,7 @@ module.exports.upvote = {
 
 
         // Check and get arguments from user
-        let { amountRaw, id } = await getSharedfileArgs(commandHandler, args, "upvote", respond);
+        let { amountRaw, id } = await getSharedfileArgs(commandHandler, args, "upvote", resInfo, respond);
 
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
@@ -184,7 +184,7 @@ module.exports.upvote = {
                     let failedcmdreference = "";
 
                     if (Object.keys(commandHandler.controller.activeRequests[id].failed).length > 0) {
-                        failedcmdreference = "\nTo get detailed information why which request failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems";
+                        failedcmdreference = `\nTo get detailed information why which request failed please type '${resInfo.cmdprefix}failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems`;
                     }
 
                     // Send finished message
@@ -229,7 +229,7 @@ module.exports.downvote = {
 
 
         // Check and get arguments from user
-        let { amountRaw, id } = await getSharedfileArgs(commandHandler, args, "downvote", respond);
+        let { amountRaw, id } = await getSharedfileArgs(commandHandler, args, "downvote", resInfo, respond);
 
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
@@ -363,7 +363,7 @@ module.exports.downvote = {
                     let failedcmdreference = "";
 
                     if (Object.keys(commandHandler.controller.activeRequests[id].failed).length > 0) {
-                        failedcmdreference = "\nTo get detailed information why which request failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems";
+                        failedcmdreference = `\nTo get detailed information why which request failed please type '${resInfo.cmdprefix}failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems`;
                     }
 
                     // Send finished message

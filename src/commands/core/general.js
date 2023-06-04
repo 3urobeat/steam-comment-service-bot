@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 19:37:33
+ * Last Modified: 04.06.2023 10:41:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -44,27 +44,27 @@ module.exports.help = {
         let commentText;
 
         if (commandHandler.data.cachefile.ownerid.includes(steamID64)) {
-            if (commandHandler.controller.getBots().length > 1 || commandHandler.data.config.maxOwnerComments) commentText = `'!comment (amount/"all") [profileid] [custom, quotes]' - ${commandHandler.data.lang.helpcommentowner1.replace("maxOwnerComments", commandHandler.data.config.maxOwnerComments)}`;
-                else commentText = `'!comment ("1") [profileid] [custom, quotes]' - ${commandHandler.data.lang.helpcommentowner2}`;
+            if (commandHandler.controller.getBots().length > 1 || commandHandler.data.config.maxOwnerComments) commentText = `'${resInfo.cmdprefix}comment (amount/"all") [profileid] [custom, quotes]' - ${commandHandler.data.lang.helpcommentowner1.replace("maxOwnerComments", commandHandler.data.config.maxOwnerComments)}`;
+                else commentText = `'${resInfo.cmdprefix}comment ("1") [profileid] [custom, quotes]' - ${commandHandler.data.lang.helpcommentowner2}`;
         } else {
-            if (commandHandler.controller.getBots().length > 1 || commandHandler.data.config.maxComments) commentText = `'!comment (amount/"all")' - ${commandHandler.data.lang.helpcommentuser1.replace("maxComments", commandHandler.data.config.maxComments)}`;
-                else commentText = `'!comment' - ${commandHandler.data.lang.helpcommentuser2}`;
+            if (commandHandler.controller.getBots().length > 1 || commandHandler.data.config.maxComments) commentText = `'${resInfo.cmdprefix}comment (amount/"all")' - ${commandHandler.data.lang.helpcommentuser1.replace("maxComments", commandHandler.data.config.maxComments)}`;
+                else commentText = `'${resInfo.cmdprefix}comment' - ${commandHandler.data.lang.helpcommentuser2}`;
         }
 
         // Add yourgroup text if one was set
         let yourgroupText;
 
-        if (commandHandler.data.config.yourgroup.length > 1) yourgroupText = commandHandler.data.lang.helpjoingroup;
+        if (commandHandler.data.config.yourgroup.length > 1) yourgroupText = commandHandler.data.lang.helpjoingroup.replace(/cmdprefix/g, resInfo.cmdprefix);
 
         // Send message
         respond(`
             ${commandHandler.data.datafile.mestr}'s Comment Bot | ${commandHandler.data.lang.helpcommandlist}\n
             ${commentText}\n
-            '!ping' - ${commandHandler.data.lang.helpping}
-            '!info' - ${commandHandler.data.lang.helpinfo}
-            '!abort' - ${commandHandler.data.lang.helpabort}
-            '!about' - ${commandHandler.data.lang.helpabout}
-            '!owner' - ${commandHandler.data.lang.helpowner}
+            '${resInfo.cmdprefix}ping' - ${commandHandler.data.lang.helpping}
+            '${resInfo.cmdprefix}info' - ${commandHandler.data.lang.helpinfo}
+            '${resInfo.cmdprefix}abort' - ${commandHandler.data.lang.helpabort}
+            '${resInfo.cmdprefix}about' - ${commandHandler.data.lang.helpabout}
+            '${resInfo.cmdprefix}owner' - ${commandHandler.data.lang.helpowner}
             ${yourgroupText}
         
             ${commandHandler.data.lang.helpreadothercmdshere} ' https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Commands-documentation '
@@ -99,7 +99,7 @@ module.exports.info = {
             /* eslint-disable no-irregular-whitespace */
             respond(`
                 -----------------------------------~~~~~------------------------------------
-                >   ${commandHandler.data.datafile.mestr}'s Comment Bot [Version ${commandHandler.data.datafile.versionstr}] (More info: !about)
+                >   ${commandHandler.data.datafile.mestr}'s Comment Bot [Version ${commandHandler.data.datafile.versionstr}] (More info: ${resInfo.cmdprefix}about)
                 >   Uptime: ${Number(Math.round(((new Date() - commandHandler.controller.info.bootStartTimestamp) / 3600000)+"e"+2)+"e-"+2)} hours | Branch: ${commandHandler.data.datafile.branch}
                 >   'node.js' Version: ${process.version} | RAM Usage (RSS): ${Math.round(process.memoryUsage()["rss"] / 1024 / 1024 * 100) / 100} MB
                 >   Accounts: ${commandHandler.controller.getBots().length} | maxComments/owner: ${commandHandler.data.config.maxComments}/${commandHandler.data.config.maxOwnerComments} | delay: ${commandHandler.data.config.commentdelay}
@@ -185,7 +185,7 @@ module.exports.owner = {
         // Check if no owner link is set
         if (commandHandler.data.config.owner.length < 1) return respond(commandHandler.data.lang.ownercmdnolink);
 
-        respond(commandHandler.data.lang.ownercmdmsg + "\n" + commandHandler.data.config.owner);
+        respond(commandHandler.data.lang.ownercmdmsg.replace(/cmdprefix/g, resInfo.cmdprefix) + "\n" + commandHandler.data.config.owner);
     }
 };
 

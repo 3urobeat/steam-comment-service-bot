@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 15:14:55
+ * Last Modified: 04.06.2023 10:31:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -161,7 +161,7 @@ module.exports.unfriendall = {
         }
 
         abortunfriendall = false;
-        respond(commandHandler.data.lang.unfriendallcmdpending);
+        respond(commandHandler.data.lang.unfriendallcmdpending.replace(/cmdprefix/g, resInfo.cmdprefix));
 
         setTimeout(() => {
             if (abortunfriendall) return logger("info", "unfriendall process was aborted.");

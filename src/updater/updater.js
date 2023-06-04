@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 19:45:26
+ * Last Modified: 04.06.2023 10:33:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -99,7 +99,7 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
                     respondModule(resInfo, `What's new: ${onlineData.whatsnew}`);
 
                     // Instruct user to force update if disableAutoUpdate is true and stop here
-                    if (this.data.advancedconfig.disableAutoUpdate && !forceUpdate) return respondModule(resInfo, this.data.lang.updaterautoupdatedisabled);
+                    if (this.data.advancedconfig.disableAutoUpdate && !forceUpdate) return respondModule(resInfo, this.data.lang.updaterautoupdatedisabled.replace(/cmdprefix/g, resInfo.cmdprefix));
                 }
 
 

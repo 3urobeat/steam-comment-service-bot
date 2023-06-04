@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 02.06.2023 12:56:36
+ * Last Modified: 04.06.2023 10:07:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -147,7 +147,7 @@ CommandHandler.prototype.unregisterCommand = function(commandName) {
  * @param {Number} steamID64 SteamID64 of the requesting user which is used to check for ownerOnly and will be passed to the command
  * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
  * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
- * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+ * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Please also include a "cmdprefix" key & value pair if your command handler uses a prefix other than "!".
  * @returns `true` if command was found, `false` if not
  */
 CommandHandler.prototype.runCommand = function(name, args, steamID64, respondModule, context, resInfo) {
@@ -171,6 +171,9 @@ CommandHandler.prototype.runCommand = function(name, args, steamID64, respondMod
         respondModule(context, resInfo, this.data.lang.commandowneronly);
         return true;
     }
+
+    // Add default prefix to resInfo object if none was provided
+    if (!resInfo || !resInfo.cmdprefix) resInfo["cmdprefix"] = "!";
 
     // Run command if one was found
     thisCmd.run(this, args, steamID64, respondModule, context, resInfo);

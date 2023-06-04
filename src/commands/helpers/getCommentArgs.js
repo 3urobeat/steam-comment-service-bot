@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 01.06.2023 18:56:09
+ * Last Modified: 04.06.2023 10:21:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -23,10 +23,11 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Array} args The command arguments
  * @param {String} requesterSteamID64 The steamID64 of the requesting user
+ * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @param {Function} respond The function to send messages to the requesting user
  * @returns {Promise.<{ maxRequestAmount: number, commentcmdUsage: string, numberOfComments: number, profileID: string, idType: string, quotesArr: array<string> }>}
  */
-module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respond) => {
+module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, resInfo, respond) => {
     return new Promise((resolve) => {
 
         let maxRequestAmount = commandHandler.data.config.maxComments; // Set to default value and if the requesting user is an owner it gets changed below
@@ -43,11 +44,11 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, respo
         if (commandHandler.data.cachefile.ownerid.includes(requesterSteamID64)) {
             maxRequestAmount = commandHandler.data.config.maxOwnerComments;
 
-            if (maxRequestAmount > 1) commentcmdUsage = commandHandler.data.lang.commentcmdusageowner.replace("maxRequestAmount", maxRequestAmount);
-                else commentcmdUsage = commandHandler.data.lang.commentcmdusageowner2;
+            if (maxRequestAmount > 1) commentcmdUsage = commandHandler.data.lang.commentcmdusageowner.replace(/cmdprefix/g, resInfo.cmdprefix).replace("maxRequestAmount", maxRequestAmount);
+                else commentcmdUsage = commandHandler.data.lang.commentcmdusageowner2.replace(/cmdprefix/g, resInfo.cmdprefix);
         } else {
-            if (maxRequestAmount > 1) commentcmdUsage = commandHandler.data.lang.commentcmdusage.replace("maxRequestAmount", maxRequestAmount);
-                else commentcmdUsage = commandHandler.data.lang.commentcmdusage2;
+            if (maxRequestAmount > 1) commentcmdUsage = commandHandler.data.lang.commentcmdusage.replace(/cmdprefix/g, resInfo.cmdprefix).replace("maxRequestAmount", maxRequestAmount);
+                else commentcmdUsage = commandHandler.data.lang.commentcmdusage2.replace(/cmdprefix/g, resInfo.cmdprefix);
         }
 
 

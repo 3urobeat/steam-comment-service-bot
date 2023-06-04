@@ -1,25 +1,25 @@
 {
     "note": "This file contains nearly all messages the bot sends to users. If you want to modify messages, read here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/How-to-add-custom-messages",
 
-    "updaterautoupdatedisabled": "You have disabled the automatic updater. Would you like to update now?\nIf yes, please force an update using the command: !update true",
+    "updaterautoupdatedisabled": "You have disabled the automatic updater. Would you like to update now?\nIf yes, please force an update using the command: cmdprefixupdate true",
 
-    "commentcmdusageowner": "'!comment amount/\"all\" id' to request amount many comments (or the max possible amount).\nProvide a profile, group or sharedfile (screenshot, artwork or guide) ID if you'd like to comment somewhere else instead of on your profile.",
-    "commentcmdusageowner2": "'!comment 1 id'. Provide a profile, group or sharedfile (screenshot, artwork or guide) ID if you'd like to comment somewhere else instead of on your profile.",
-    "commentcmdusage": "'!comment amount/\"all\"' to request amount many comments (or the max possible amount) on your profile.",
-    "commentcmdusage2": "'!comment' to request a comment on your profile!",
+    "commentcmdusageowner": "'cmdprefixcomment amount/\"all\" id' to request amount many comments (or the max possible amount).\nProvide a profile, group or sharedfile (screenshot, artwork or guide) ID if you'd like to comment somewhere else instead of on your profile.",
+    "commentcmdusageowner2": "'cmdprefixcomment 1 id'. Provide a profile, group or sharedfile (screenshot, artwork or guide) ID if you'd like to comment somewhere else instead of on your profile.",
+    "commentcmdusage": "'cmdprefixcomment amount/\"all\"' to request amount many comments (or the max possible amount) on your profile.",
+    "commentcmdusage2": "'cmdprefixcomment' to request a comment on your profile!",
     "commentrequesttoohigh": "You can request max. maxRequestAmount comments.\nCommand usage: commentcmdusage",
     "commentinvalidid": "This does not seem to be a valid profile, group or sharedfile (screenshot, artwork or guide) ID!\nPlease make sure that you either provide a full link, only the vanity or only the ID, pointing to an existing profile, group or sharedfile.\n\nCommand usage: commentcmdusage",
     "commentprofileidowneronly": "Specifying a ID is only allowed for bot owners.\nIf you are a bot owner, please make sure that you have added your ID to the ownerid setting in the config.json.",
     "commentmissingnumberofcomments": "Please specify how many comments out of maxRequestAmount you would like to request.\nCommand usage: commentcmdusage",
     "commentzeroavailableaccs": "Sorry but there are currently not enough accounts available to fulfill your request. Please wait waittime and try again!",
     "commentnotenoughavailableaccs": "Sorry but there are currently not enough accounts available to fulfill your request. Please wait waittime and try again or only request availablenow comments now.",
-    "commentnoaccounts": "Sorry but there are no accounts to fulfill this request. Please contact the bot administrator of this instance.\nUse the !owner command to get information about who runs this instance.",
-    "commentnounlimitedaccs": "Sorry but there are no unlimited accounts which are needed to fulfill this request. Please contact the bot administrator of this instance.\nUse the !owner command to get information about who runs this instance.",
+    "commentnoaccounts": "Sorry but there are no accounts to fulfill this request. Please contact the bot administrator of this instance.\nUse the cmdprefixowner command to get information about who runs this instance.",
+    "commentnounlimitedaccs": "Sorry but there are no unlimited accounts which are needed to fulfill this request. Please contact the bot administrator of this instance.\nUse the cmdprefixowner command to get information about who runs this instance.",
     "commentaddbotaccounts": "Please add these accounts and then request again: (limited accounts)",
     "commentuserprofileprivate": "Your/the receiving profile seems to be private. Please edit the privacy settings to allow comments and try again!",
     "commenterroroccurred": "Oops, an error occurred! I sadly wasn't able to comment.",
     "commentprocessstarted": "Estimated wait time for numberOfComments comments: waittime.",
-    "commentfailedcmdreference": "To get detailed information why which comment failed please type '!failed'. You can read what probably caused your error here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems",
+    "commentfailedcmdreference": "To get detailed information why which comment failed please type 'cmdprefixfailed'. You can read what probably caused your error here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems",
     
     "comment429stop": "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error. Please try again later. Failed: failedamount/numberOfComments",
     "commentretrying": "failedamount/numberOfComments comments have failed. I'm going to retry the failed comments in untilStr. (Attempt thisattempt/maxattempt)",
@@ -37,14 +37,14 @@
     "favoriteprocessstarted": "Estimated wait time for numberOfFavs un-/favorites: waittime.",
     "favoritesuccess": "All un-/favorites have been sent. Failed: failedamount/numberOfFavs",
     
-    "useradded": "Hello there! Thanks for adding me!\nRequest a free comment with !comment\nType !help for more commands or !about for more information!",
+    "useradded": "Hello there! Thanks for adding me!\nRequest a free comment with cmdprefixcomment\nType cmdprefixhelp for more commands or cmdprefixabout for more information!",
     "userunfriend": "You have been unfriended for being inactive for forceFriendlistSpaceTime days as the friendlist was running low on space.\nIf you need me again, feel free to add me again!",
     "userforceunfriend": "You have been unfriended for being inactive for unfriendtime days.\nIf you need me again, feel free to add me again!",
 
     "userspamblock": "You have been blocked for 90 seconds for spamming.",
     "usernotfriend": "Please add me before using a command!",
     "botnotready": "The bot is not completely started yet. Please wait a moment before using a command.",
-    "commandnotfound": "I don't know that command. Type !help for more info.",
+    "commandnotfound": "I don't know that command. Type cmdprefixhelp for more info.",
     "commandowneronly": "This command is only available for owners.\nIf you are the botowner, make sure you added your ownerid to the config.json.",
 
     "invalidnumber": "This does not seem to be a valid number!\n\nCommand usage: cmdusage",
@@ -73,12 +73,12 @@
     "helpabort": "Abort your own requested comment process.",
     "helpabout": "Returns information about this bot, including a link to GitHub.",
     "helpowner": "Get a link to the profile of the operator/host of this bot instance.",
-    "helpjoingroup": "Join my '!group'!",
+    "helpjoingroup": "Join my 'cmdprefixgroup'!",
     "helpreadothercmdshere": "To keep this message short please read all other commands here:",
 
     "pingcmdmessage": "Pong! 🏓\nTime to steamcommunity.com/ping response: pingtimems",
     "ownercmdnolink": "The operator of this bot didn't include a link to him/herself.)",
-    "ownercmdmsg": "Check out my owner's profile: (for more information about the bot type !about)",
+    "ownercmdmsg": "Check out my owner's profile: (for more information about the bot type cmdprefixabout)",
     "groupcmdnolink": "The botowner of this instance hasn't provided any group or the group doesn't exist.",
     "groupcmdinvitesent": "I sent you an invite! Thanks for joining!",
     "groupcmdinvitelink": "Join my group here: ",
@@ -95,7 +95,7 @@
     "settingscmdkeynotfound": "I can't find this key in the config.",
     "settingscmdsamevalue": "The requested key is already value.",
     "settingscmdvaluetoobig": "Your new value is too big. (32-bit integer limit)\nPlease choose a smaller value.",
-    "settingscmdvaluechanged": "targetkey has been changed from oldvalue to newvalue.\nPlease remember that certain values might need a restart to take effect. You can do that by typing !restart.",
+    "settingscmdvaluechanged": "targetkey has been changed from oldvalue to newvalue.\nPlease remember that certain values might need a restart to take effect. You can do that by typing cmdprefixrestart.",
 
     "failedcmdnothingfound": "I can't remember any failed comments on your/that profile.\nIf you requested comments for another profile or for a group then please provide the id as argument!",
     "failedcmdmsg": "Your last request for 'steamID64' from 'requesttime' (GMT time) had these errors:",
@@ -110,7 +110,7 @@
     "unfriendidcmdsuccess": "Removed friend profileid from all bot accounts.",
 
     "unfriendallcmdabort": "Aborting unfriendall process if one is active...",
-    "unfriendallcmdpending": "Unfriending all people (except owners) with all bot accounts in 30 seconds...\nType '!unfriendall abort' to abort/stop the process.",
+    "unfriendallcmdpending": "Unfriending all people (except owners) with all bot accounts in 30 seconds...\nType 'cmdprefixunfriendall abort' to abort/stop the process.",
     "unfriendallcmdstart": "Starting to unfriend everyone...",
 
     "leavegroupcmdinvalidgroup": "This is not a valid group id or group url! \nA groupid must look like this: '103582791464712227' \n...or a group url like this: 'https://steamcommunity.com/groups/3urobeatGroup'",
@@ -119,7 +119,7 @@
     "leavegroupcmdsuccess": "Left group 'profileid' with all bot accounts.",
 
     "leaveallgroupscmdabort": "Aborting leaveallgroups process if one is active...",
-    "leaveallgroupscmdpending": "Leaving all groups (except yourgroup and botsgroup) with all bot accounts in 15 seconds...\nType '!leaveallgroups abort' to abort/stop the process.",
+    "leaveallgroupscmdpending": "Leaving all groups (except yourgroup and botsgroup) with all bot accounts in 15 seconds...\nType 'cmdprefixleaveallgroups abort' to abort/stop the process.",
     "leaveallgroupscmdstart": "Starting to leave all groups...",
 
     "blockcmdsuccess": "Blocked profileid with all bot accounts.",
@@ -128,5 +128,5 @@
     "evalcmdturnedoff": "The eval command has been turned off!",
     "evalcmdlogininfoblock": "Your code includes 'logininfo'. In order to protect passwords this is not allowed.",
 
-    "childbotmessage": "This is one account running in a bot cluster.\nPlease add the main bot and send him a !help message.\nIf you want to check out what this is about, type: !about"
+    "childbotmessage": "This is one account running in a bot cluster.\nPlease add the main bot and send him a cmdprefixhelp message.\nIf you want to check out what this is about, type: cmdprefixabout"
 }

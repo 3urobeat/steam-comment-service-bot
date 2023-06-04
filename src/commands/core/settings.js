@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 15:16:33
+ * Last Modified: 04.06.2023 10:31:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -101,7 +101,7 @@ module.exports.settings = {
             return respond(commandHandler.data.lang.settingscmdvaluetoobig); // Just using the check from controller.js
         }
 
-        respond(commandHandler.data.lang.settingscmdvaluechanged.replace("targetkey", args[0]).replace("oldvalue", keyvalue).replace("newvalue", args[1]));
+        respond(commandHandler.data.lang.settingscmdvaluechanged.replace("targetkey", args[0]).replace("oldvalue", keyvalue).replace("newvalue", args[1]).replace(/cmdprefix/g, resInfo.cmdprefix));
         logger("info", `${args[0]} has been changed from ${keyvalue} to ${args[1]}.`);
 
         if (args[0] == "playinggames") {

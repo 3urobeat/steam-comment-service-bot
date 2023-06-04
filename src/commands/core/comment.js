@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.06.2023 12:46:13
+ * Last Modified: 04.06.2023 10:39:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -53,7 +53,7 @@ module.exports.comment = {
 
 
         /* --------- Calculate maxRequestAmount and get arguments from comment request --------- */
-        let { maxRequestAmount, numberOfComments, profileID, idType, quotesArr } = await getCommentArgs(commandHandler, args, requesterSteamID64, respond);
+        let { maxRequestAmount, numberOfComments, profileID, idType, quotesArr } = await getCommentArgs(commandHandler, args, requesterSteamID64, resInfo, respond);
 
         if (!maxRequestAmount && !numberOfComments && !quotesArr) return; // Looks like the helper aborted the request
 
@@ -83,8 +83,8 @@ module.exports.comment = {
         let { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = getAvailableBotsForCommenting(commandHandler, numberOfComments, allowLimitedAccounts, idType, receiverSteamID64);
 
         if (availableAccounts.length == 0 && !whenAvailableStr) { // Check if this bot has no suitable accounts for this request and there won't be any available at any point
-            if (!allowLimitedAccounts) respond(commandHandler.data.lang.commentnounlimitedaccs); // Send less generic message for requests which require unlimited accounts
-                else respond(commandHandler.data.lang.commentnoaccounts);
+            if (!allowLimitedAccounts) respond(commandHandler.data.lang.commentnounlimitedaccs.replace(/cmdprefix/g, resInfo.cmdprefix)); // Send less generic message for requests which require unlimited accounts
+                else respond(commandHandler.data.lang.commentnoaccounts.replace(/cmdprefix/g, resInfo.cmdprefix));
 
             return;
         }
@@ -176,7 +176,7 @@ module.exports.comment = {
 
                 // Start commenting
                 logger("debug", "Made activeRequest entry for user, starting comment loop...");
-                comment(commandHandler, respond, postComment, commentArgs, receiverSteamID64);
+                comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64);
             });
         } else {
             // Register this comment process in activeRequests
@@ -184,7 +184,7 @@ module.exports.comment = {
 
             // Start commenting
             logger("debug", "Made activeRequest entry for user, starting comment loop...");
-            comment(commandHandler, respond, postComment, commentArgs, receiverSteamID64);
+            comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64);
         }
     }
 };
@@ -193,12 +193,13 @@ module.exports.comment = {
 /**
  * Internal: Do the actual commenting, activeRequests entry with all relevant information was processed by the comment command function above.
  * @param {CommandHandler} commandHandler The commandHandler object
+ * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @param {function(string)} respond Shortened respondModule call
  * @param {function} postComment The correct postComment function for this idType. Context from the correct bot account is being applied later.
  * @param {Object} commentArgs All arguments this postComment function needs, without callback. It will be applied and a callback added as last param. Include a key called "quote" to dynamically replace it with a random quote.
  * @param {String} receiverSteamID64 steamID64 of the profile to receive the comments
  */
-function comment(commandHandler, respond, postComment, commentArgs, receiverSteamID64) {
+function comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64) {
     let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
 
     // Comment numberOfComments times using our syncLoop helper
@@ -331,7 +332,7 @@ function comment(commandHandler, respond, postComment, commentArgs, receiverStea
 
         } else if (activeReqEntry.status == "error") {
 
-            respond(`${commandHandler.data.lang.comment429stop.replace("failedamount", Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount - activeReqEntry.amountBeforeRetry)}\n\n${commandHandler.data.lang.commentfailedcmdreference}`); // Add !failed cmd reference to message
+            respond(`${commandHandler.data.lang.comment429stop.replace("failedamount", Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount - activeReqEntry.amountBeforeRetry)}\n\n${commandHandler.data.lang.commentfailedcmdreference.replace(/cmdprefix/g, resInfo.cmdprefix)}`); // Add !failed cmd reference to message
             logger("warn", "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error!");
 
         } else {
@@ -340,7 +341,7 @@ function comment(commandHandler, respond, postComment, commentArgs, receiverStea
             let failedcmdreference = "";
 
             if (Object.keys(commandHandler.controller.activeRequests[receiverSteamID64].failed).length > 0) {
-                failedcmdreference = "\nTo get detailed information why which comment failed please type '!failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems";
+                failedcmdreference = `\nTo get detailed information why which comment failed please type '${resInfo.cmdprefix}failed'. You can read why your error was probably caused here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems`;
             }
 
             // Send finished message
