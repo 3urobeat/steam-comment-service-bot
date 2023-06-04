@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 03.06.2023 19:50:17
+ * Last Modified: 04.06.2023 09:36:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -120,10 +120,6 @@ Controller.prototype._readyEvent = function() {
     if (this.data.datafile.firststart) logger("", "If you like my work please consider giving my repository a star! It helps me alot and I'd really appreciate it!\nhttps://github.com/HerrEurobeat/steam-comment-service-bot\n", true);
 
 
-    // Log extra messages that were suppressed during login
-    this._loggerLogAfterReady();
-
-
     // Refresh backups in cache.json
     this.data.refreshCache();
 
@@ -139,6 +135,10 @@ Controller.prototype._readyEvent = function() {
 
     // Log amount of warnings displayed by dataCheck and remind the user to take a look
     if (this.info.startupWarnings > 0) logger("warn", `The bot started with ${this.info.startupWarnings} warning(s)! Please scroll up and read the warnings displayed during startup!\n`, true);
+
+
+    // Log extra messages that were suppressed during login
+    this._loggerLogAfterReady();
 
 
     // Friendlist capacity check for all accounts

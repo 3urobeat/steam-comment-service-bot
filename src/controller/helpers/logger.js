@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 18:57:06
+ * Last Modified: 04.06.2023 09:37:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -93,6 +93,8 @@ Controller.prototype._loggerLogAfterReady = function() {
     logger("debug", `Controller logger: Logging ${logAfterReady.length} suppressed log messages...`);
 
     logAfterReady.forEach(e => { logger(e[0], e[1], e[2], e[3], e[4], e[5]); }); // Log suppressed logs
+
+    logger("", "", true); // Log a newline to separate held back messages from other ready messages
 
     // Clear content and prevent new entries
     logAfterReady = [];

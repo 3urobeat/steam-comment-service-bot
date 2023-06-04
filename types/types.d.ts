@@ -165,7 +165,7 @@ declare class CommandHandler {
      * @param steamID64 - SteamID64 of the requesting user which is used to check for ownerOnly and will be passed to the command
      * @param respondModule - Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param context - The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Please also include a "cmdprefix" key & value pair if your command handler uses a prefix other than "!".
      * @returns `true` if command was found, `false` if not
      */
     runCommand(name: string, args: any[], steamID64: number, respondModule: (...params: any[]) => any, context: any, resInfo: any): any;
@@ -178,21 +178,23 @@ declare class CommandHandler {
 /**
  * Internal: Do the actual commenting, activeRequests entry with all relevant information was processed by the comment command function above.
  * @param commandHandler - The commandHandler object
+ * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @param respond - Shortened respondModule call
  * @param postComment - The correct postComment function for this idType. Context from the correct bot account is being applied later.
  * @param commentArgs - All arguments this postComment function needs, without callback. It will be applied and a callback added as last param. Include a key called "quote" to dynamically replace it with a random quote.
  * @param receiverSteamID64 - steamID64 of the profile to receive the comments
  */
-declare function comment(commandHandler: CommandHandler, respond: (...params: any[]) => any, postComment: (...params: any[]) => any, commentArgs: any, receiverSteamID64: string): void;
+declare function comment(commandHandler: CommandHandler, resInfo: any, respond: (...params: any[]) => any, postComment: (...params: any[]) => any, commentArgs: any, receiverSteamID64: string): void;
 
 /**
  * Retrieves arguments from a comment request. If request is invalid (for example too many comments requested) an error message will be sent
  * @param commandHandler - The commandHandler object
  * @param args - The command arguments
  * @param requesterSteamID64 - The steamID64 of the requesting user
+ * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @param respond - The function to send messages to the requesting user
  */
-declare function getCommentArgs(commandHandler: CommandHandler, args: any[], requesterSteamID64: string, respond: (...params: any[]) => any): Promise<{ maxRequestAmount: number; commentcmdUsage: string; numberOfComments: number; profileID: string; idType: string; quotesArr: string[]; }>;
+declare function getCommentArgs(commandHandler: CommandHandler, args: any[], requesterSteamID64: string, resInfo: any, respond: (...params: any[]) => any): Promise<{ maxRequestAmount: number; commentcmdUsage: string; numberOfComments: number; profileID: string; idType: string; quotesArr: string[]; }>;
 
 /**
  * Finds all needed and currently available bot accounts for a comment request.
@@ -220,10 +222,11 @@ declare function getAvailableBotsForFavorizing(commandHandler: CommandHandler, a
  * @param commandHandler - The commandHandler object
  * @param args - The command arguments
  * @param cmd - Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function
+ * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @param respond - The function to send messages to the requesting user
  * @returns If the user provided a specific amount, amount will be a number. If user provided "all" or "max", it will be returned as an unmodified string for getVoteBots.js to handle
  */
-declare function getSharedfileArgs(commandHandler: CommandHandler, args: any[], cmd: string, respond: (...params: any[]) => any): Promise<{ amount: number | string; id: string; }>;
+declare function getSharedfileArgs(commandHandler: CommandHandler, args: any[], cmd: string, resInfo: any, respond: (...params: any[]) => any): Promise<{ amount: number | string; id: string; }>;
 
 /**
  * Finds all needed and currently available bot accounts for a vote request.
@@ -357,6 +360,12 @@ declare class Controller {
      */
     _statusUpdateEvent(bot: Bot, newStatus: Bot.EStatus): void;
     /**
+     * Emits steamGuardInput event for bot & plugins
+     * @param bot - Bot instance of the affected account
+     * @param submitCode - Function to submit a code. Pass an empty string to skip the account.
+     */
+    _steamGuardInputEvent(bot: Bot, submitCode: (...params: any[]) => any): void;
+    /**
      * Check if all friends are in lastcomment database
      * @param bot - Bot object of the account to check
      */
@@ -417,6 +426,12 @@ declare class Controller {
      * @param newStatus - The new status
      */
     _statusUpdateEvent(bot: Bot, newStatus: Bot.EStatus): void;
+    /**
+     * Emits steamGuardInput event for bot & plugins
+     * @param bot - Bot instance of the affected account
+     * @param submitCode - Function to submit a code. Pass an empty string to skip the account.
+     */
+    _steamGuardInputEvent(bot: Bot, submitCode: (...params: any[]) => any): void;
     /**
      * Check if all friends are in lastcomment database
      * @param bot - Bot object of the account to check
@@ -801,24 +816,64 @@ declare class CSteamSharedfile {
 }
 
 /**
+ * @property load - Called on Plugin load
+ * @property unload - Called on Plugin unload
+ * @property ready - Controller ready event
+ * @property statusUpdate - Controller statusUpdate event
+ * @property steamGuardInput - Controller steamGuardInput event
+ */
+declare type Plugin = {
+    load: (...params: any[]) => any;
+    unload: (...params: any[]) => any;
+    ready: (...params: any[]) => any;
+    statusUpdate: (...params: any[]) => any;
+    steamGuardInput: (...params: any[]) => any;
+};
+
+/**
  * Constructor - The plugin system loads all plugins and provides functions for plugins to hook into
  * @param controller - Reference to the controller object
  */
 declare class PluginSystem {
     constructor(controller: Controller);
     /**
-     * Internal: Loads all plugins in /plugins dir and exports them as PluginSystem.pluginList object
-     * @returns Resolves when all plugins have been loaded
+     * Gets the path holding all data of a plugin. If no folder exists yet, one will be created
+     * @param pluginName - Name of your plugin
+     * @returns Path to the folder containing your plugin data
      */
-    _loadPlugins(): Promise<void>;
+    getPluginDataPath(pluginName: string): string;
     /**
-     * Internal: Checks a plugin, displays relevant warnings and decides whether the plugin is allowed to be loaded
-     * @param folderName - Name of the plugin folder. This is used to reference the plugin when thisPluginConf is undefined
-     * @param thisPlugin - Plugin file object returned by require()
-     * @param thisPluginConf - package.json object of this plugin
-     * @returns Resolved with `true` (can be loaded) or `false` (must not be loaded) on completion
+     * Loads a file from your plugin data folder. The data will remain unprocessed. Use `loadPluginConfig()` instead if you want to load your plugin config.
+     * @param pluginName - Name of your plugin
+     * @param filename - Name of the file to load
+     * @returns Resolves with data on success, rejects otherwise with an error
      */
-    _checkPlugin(folderName: string, thisPlugin: any, thisPluginConf: any): Promise<boolean>;
+    loadPluginData(pluginName: string, filename: string): Promise<any>;
+    /**
+     * Writes a file to your plugin data folder. The data will remain unprocessed. Use `writePluginConfig()` instead if you want to write your plugin config.
+     * @param pluginName - Name of your plugin
+     * @param filename - Name of the file to load
+     * @param data - The data to write
+     * @returns Resolves on success, rejects otherwise with an error
+     */
+    writePluginData(pluginName: string, filename: string, data: string): Promise<void>;
+    /**
+     * Loads your plugin config from the filesystem or creates a new one based on the default config provided by your plugin. The JSON data will be processed to an object.
+     * @param pluginName - Name of your plugin
+     * @returns Resolves with your plugin config processed from JSON to an object. If the config failed to load, the promise will be rejected with an error.
+     */
+    loadPluginConfig(pluginName: string): Promise<object>;
+    /**
+     * Writes your plugin config changes to the filesystem. The object data will be processed to JSON.
+     * @param pluginName - Name of your plugin
+     * @param pluginConfig - Config object of your plugin
+     * @returns Resolves on success, rejects otherwise with an error
+     */
+    writePluginConfig(pluginName: string, pluginConfig: any): Promise<void>;
+    /**
+     * Internal: Loads all plugin npm packages and populates pluginList
+     */
+    _loadPlugins(): void;
     /**
      * Reference to the controller object
      */
@@ -835,10 +890,9 @@ declare class PluginSystem {
      */
     reloadPlugins(): void;
     /**
-     * Internal: Loads all plugins in /plugins dir and exports them as PluginSystem.pluginList object
-     * @returns Resolves when all plugins have been loaded
+     * Internal: Loads all plugin npm packages and populates pluginList
      */
-    _loadPlugins(): Promise<void>;
+    _loadPlugins(): void;
     /**
      * Internal: Checks a plugin, displays relevant warnings and decides whether the plugin is allowed to be loaded
      * @param folderName - Name of the plugin folder. This is used to reference the plugin when thisPluginConf is undefined
@@ -847,20 +901,41 @@ declare class PluginSystem {
      * @returns Resolved with `true` (can be loaded) or `false` (must not be loaded) on completion
      */
     _checkPlugin(folderName: string, thisPlugin: any, thisPluginConf: any): Promise<boolean>;
+    /**
+     * Gets the path holding all data of a plugin. If no folder exists yet, one will be created
+     * @param pluginName - Name of your plugin
+     * @returns Path to the folder containing your plugin data
+     */
+    getPluginDataPath(pluginName: string): string;
+    /**
+     * Loads a file from your plugin data folder. The data will remain unprocessed. Use `loadPluginConfig()` instead if you want to load your plugin config.
+     * @param pluginName - Name of your plugin
+     * @param filename - Name of the file to load
+     * @returns Resolves with data on success, rejects otherwise with an error
+     */
+    loadPluginData(pluginName: string, filename: string): Promise<any>;
+    /**
+     * Writes a file to your plugin data folder. The data will remain unprocessed. Use `writePluginConfig()` instead if you want to write your plugin config.
+     * @param pluginName - Name of your plugin
+     * @param filename - Name of the file to load
+     * @param data - The data to write
+     * @returns Resolves on success, rejects otherwise with an error
+     */
+    writePluginData(pluginName: string, filename: string, data: string): Promise<void>;
+    /**
+     * Loads your plugin config from the filesystem or creates a new one based on the default config provided by your plugin. The JSON data will be processed to an object.
+     * @param pluginName - Name of your plugin
+     * @returns Resolves with your plugin config processed from JSON to an object. If the config failed to load, the promise will be rejected with an error.
+     */
+    loadPluginConfig(pluginName: string): Promise<object>;
+    /**
+     * Writes your plugin config changes to the filesystem. The object data will be processed to JSON.
+     * @param pluginName - Name of your plugin
+     * @param pluginConfig - Config object of your plugin
+     * @returns Resolves on success, rejects otherwise with an error
+     */
+    writePluginConfig(pluginName: string, pluginConfig: any): Promise<void>;
 }
-
-/**
- * @property load - Called on Plugin load
- * @property unload - Called on Plugin unload
- * @property ready - Controller ready event
- * @property statusUpdate - Controller statusUpdate event
- */
-declare type Plugin = {
-    load: (...params: any[]) => any;
-    unload: (...params: any[]) => any;
-    ready: (...params: any[]) => any;
-    statusUpdate: (...params: any[]) => any;
-};
 
 /**
  * Constructor - Object oriented approach for handling session for one account
