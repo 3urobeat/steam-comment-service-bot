@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:22:40
+ * Last Modified: 04.06.2023 19:53:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -77,19 +77,16 @@ module.exports.startDownload = (controller) => {
 
                 let files = scandir("."); // Scan the directory of this installation
 
-                // Define core plugins to replace them but not any user plugins
-                let corePlugins = ["./plugins/template", "./plugins/webserver"];
-
                 // Delete old files
                 logger("", `${logger.colors.fgyellow}Deleting old files...${logger.colors.reset}`, true, false, logger.animation("loading"));
 
                 files.forEach((e, i) => {
 
-                    // Remove old files except dontDelete, the freshly downloaded files, the node_modules, backup & .git folders and any non-core plugins
+                    // Remove old files except dontDelete, the freshly downloaded files, the node_modules, backup, plugin data and .git folders
                     if (fs.existsSync(e) && !dontDelete.includes(e)
                         && !e.includes(`./steam-comment-service-bot-${controller.data.datafile.branch}`)
                         && !e.includes("./node_modules") && !e.includes("./backup") && !e.includes("./.git")
-                        && (!e.includes("./plugins") || corePlugins.some(f => e.includes(f)))) {
+                        && !e.includes("./plugins")) {
 
                         fs.rmSync(e, { recursive: true });
                     }
