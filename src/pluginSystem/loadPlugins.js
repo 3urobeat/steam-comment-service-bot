@@ -4,7 +4,7 @@
  * Created Date: 04.06.2023 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 04.06.2023 16:13:39
+ * Last Modified: 04.06.2023 17:15:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -26,18 +26,28 @@ const PLUGIN_EVENTS = {
     steamGuardInput: "steamGuardInput",
 };
 
+
 function loadPlugin(pluginName) {
-    const importedPlugin = require(pluginName);
-
-    if (!(typeof importedPlugin === "function")) {
-        logger("error", `Plugin ${pluginName} is not a function`);
-    }
-
     try {
+        // Load plugin and pluginJson
+        const importedPlugin = require(pluginName);
+        const pluginJson     = require(`${srcdir}/../node_modules/${pluginName}/package.json`);
+
+        // Check if plugin is missing required functions
+        if (!(typeof importedPlugin === "function") || !importedPlugin.prototype || !importedPlugin.prototype.load) {
+            logger("error", `Plugin '${pluginName}' is missing a constructor, load function or the object isn't being exported!`);
+            return {};
+        }
+
+        // Display warning if the function is missing a unload function
+        if (!importedPlugin.prototype.unload) logger("warn", `Plugin '${pluginName}' does not have an unload function! This may prevent the reloading function from working properly.`);
+
+        // Create new plugin object
         const pluginInstance = new importedPlugin(this);
-        return { pluginName, pluginInstance };
+
+        return { pluginName, pluginInstance, pluginJson };
     } catch (e) {
-        logger("error", `Plugin ${pluginName} could not be instantiated`);
+        logger("error", `Plugin '${pluginName}' could not be instantiated: ${e.stack}`);
     }
 }
 
