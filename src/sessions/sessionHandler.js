@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 19:08:42
+ * Last Modified: 04.06.2023 20:10:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -17,7 +17,8 @@
 
 const SteamSession = require("steam-session"); // eslint-disable-line
 
-const Bot = require("../bot/bot.js"); // eslint-disable-line
+const Bot     = require("../bot/bot.js"); // eslint-disable-line
+const EStatus = require("../bot/EStatus.js");
 
 
 /**
@@ -94,7 +95,7 @@ SessionHandler.prototype._resolvePromise = function(token) {
         } else {
             logger("info", `[${this.bot.logPrefix}] Skipping account '${this.logOnOptions.accountName}'...`, true);
 
-            this.controller._statusUpdateEvent(this.bot, Bot.EStatus.SKIPPED);
+            this.controller._statusUpdateEvent(this.bot, EStatus.SKIPPED);
             this.controller.info.skippedaccounts.push(this.bot.loginData.logOnOptions.accountName);
 
             // Don't call cancelLoginAttempt() as this would result in an error because we aren't polling yet (https://github.com/DoctorMcKay/node-steam-session#polling)
