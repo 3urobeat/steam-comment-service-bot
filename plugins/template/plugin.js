@@ -4,7 +4,7 @@
  * Created Date: 25.02.2022 09:37:57
  * Author: 3urobeat
  *
- * Last Modified: 30.05.2023 15:07:01
+ * Last Modified: 04.06.2023 09:40:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -18,7 +18,7 @@
 // To create your own command, copy this folder, rename it and edit the info object below! Have fun!
 
 
-const logger = require("output-logger");
+let logger = require("output-logger");
 
 const PluginSystem  = require("../../src/pluginSystem/pluginSystem.js"); // eslint-disable-line
 const pluginPackage = require("./package.json"); // eslint-disable-line
@@ -30,13 +30,13 @@ const pluginPackage = require("./package.json"); // eslint-disable-line
  * @param {PluginSystem} sys Your connector to the application
  */
 const Plugin = function(sys) {
+    logger = sys.controller.logger; // Overwrites logger function from lib with our modified one. Import above remains to keep IntelliSense support
 
     // Store references to commonly used properties
     this.sys            = sys;
     this.controller     = sys.controller;
     this.data           = sys.controller.data;
     this.commandHandler = sys.commandHandler;
-
 };
 
 // Export everything in this file to make it accessible to the plugin loader
