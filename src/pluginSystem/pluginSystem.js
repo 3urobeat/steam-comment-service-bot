@@ -14,19 +14,16 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
-const Controller     = require("../controller/controller.js"); // eslint-disable-line
+const Controller = require("../controller/controller.js"); // eslint-disable-line
 const CommandHandler = require("../commands/commandHandler.js"); // eslint-disable-line
-const Bot            = require("../../src/bot/bot.js"); // eslint-disable-line
-
+const Bot = require("../../src/bot/bot.js"); // eslint-disable-line
 
 /**
  * Constructor - The plugin system loads all plugins and provides functions for plugins to hook into
  * @class
  * @param {Controller} controller Reference to the controller object
  */
-const PluginSystem = function(controller) {
-
+const PluginSystem = function (controller) {
     /**
      * Reference to the controller object
      * @type {Controller}
@@ -62,14 +59,12 @@ const PluginSystem = function(controller) {
 // The plugin system loads all plugins and provides functions for plugins to hook into
 module.exports = PluginSystem;
 
-
 /**
  * Reloads all plugins and calls ready event after ~2.5 seconds.
  */
-PluginSystem.prototype.reloadPlugins = function() {
-
+PluginSystem.prototype.reloadPlugins = function () {
     // Delete all plugin objects. (I'm not sure if this is necessary or if clearing the pluginList obj will garbage collect them)
-    Object.keys(this.pluginList).forEach(e => {
+    Object.keys(this.pluginList).forEach((e) => {
         this.pluginList[e].unload();
 
         delete this.pluginList[e];
@@ -81,17 +76,15 @@ PluginSystem.prototype.reloadPlugins = function() {
     });
 
     this.pluginList = {};
-
     setTimeout(() => this._loadPlugins(), 500);
 
     // Call ready event for every plugin which has one, 2.5 seconds after loading
     setTimeout(() => {
-        Object.values(this.pluginList).forEach(e => {
+        Object.values(this.pluginList).forEach((e) => {
             if (e.ready) e.ready();
         });
     }, 3000);
 };
-
 
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
 
@@ -99,7 +92,7 @@ PluginSystem.prototype.reloadPlugins = function() {
  * Internal: Loads all plugins in /plugins dir and exports them as PluginSystem.pluginList object
  * @returns {Promise.<void>} Resolves when all plugins have been loaded
  */
-PluginSystem.prototype._loadPlugins = function() {};
+PluginSystem.prototype._loadPlugins = function () {};
 
 /**
  * Internal: Checks a plugin, displays relevant warnings and decides whether the plugin is allowed to be loaded
@@ -108,4 +101,4 @@ PluginSystem.prototype._loadPlugins = function() {};
  * @param {Object} thisPluginConf package.json object of this plugin
  * @returns {Promise.<boolean>} Resolved with `true` (can be loaded) or `false` (must not be loaded) on completion
  */
-PluginSystem.prototype._checkPlugin = function(folderName, thisPlugin, thisPluginConf) {}; // eslint-disable-line
+PluginSystem.prototype._checkPlugin = function (folderName, thisPlugin, thisPluginConf) {}; // eslint-disable-line

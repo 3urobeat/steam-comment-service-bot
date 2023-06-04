@@ -1,121 +1,39 @@
-/*
- * File: loadPlugins.js
- * Project: steam-comment-service-bot
- * Created Date: 19.03.2023 13:46:09
- * Author: 3urobeat
- *
- * Last Modified: 04.06.2023 12:12:02
- * Modified By: 3urobeat
- *
- * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
+const PluginSystem = require("./pluginSystem.js");
 
+const PLUGIN_REGEX = /^steam-comment-bot-/;
+const packageJson = require("../../package.json");
 
-const fs = require("fs");
+const PLUGIN_EVENTS = {
+    READY: "ready",
+    STATUS_UPDATE: "statusUpdate",
+    steamGuardInput: "steamGuardInput",
+};
 
-const PluginSystem   = require("./pluginSystem.js");
-const { syncLoop }   = require("../controller/helpers/misc.js");
-const npmInteraction = require("../controller/helpers/npminteraction.js");
+function loadPlugin(pluginName) {
+    const importedPlugin = require(pluginName);
 
+    if (!(typeof importedPlugin === "function")) {
+        logger("error", `Plugin ${plugin} is not a function`);
+    }
 
-/**
- * Internal: Loads all plugins in /plugins dir and exports them as PluginSystem.pluginList object
- * @returns {Promise.<void>} Resolves when all plugins have been loaded
- */
-PluginSystem.prototype._loadPlugins = function() {
-    return new Promise((resolve) => {
-        logger("info", "PluginSystem: Loading all plugins in /plugins directory...", false, true, logger.animation("loading"));
+    try {
+        const pluginInstance = new importedPlugin(this);
+        return { pluginName, pluginInstance };
+    } catch (e) {
+        logger("error", `Plugin ${pluginName} could not be instantiated`);
+    }
+}
 
-        fs.readdir("./plugins", (err, files) => {
+PluginSystem.prototype._loadPlugins = async function () {
+    const plugins = Object.entries(packageJson.dependencies).filter(([key, value]) => PLUGIN_REGEX.test(key)); //get all plugins with the matching regex
+    const initiatedPlugins = plugins.map(([plugin]) => loadPlugin.bind(this)(plugin)); //initalize each plugin
 
-            // Stop now on error or if nothing was found
-            if (err)               return logger("error", "Error while reading plugins dir: " + err, true);
-            if (files.length == 0) return logger("info", "No plugins in ./plugins found!", false, true, logger.animation("loading"));
-
-            // Iterate over all folders in this dir.
-            syncLoop(files.length, (loop, i) => {
-                setTimeout(() => { // TODO: SyncLoop ONLY works inside this timeout. Idk why but this is a small price to pay for functionality right now
-                    let e = files[i];
-
-                    // Check if not a folder
-                    if (!fs.statSync(`./plugins/${e}`).isDirectory()) return loop.next();
-
-                    // Check if info file is missing and instantly abort
-                    if (!fs.existsSync(`./plugins/${e}/package.json`)) {
-                        logger("error", `Plugin ${e} does not have an configuration file called 'package.json'! Skipping plugin...`);
-                        return loop.next();
-                    }
-
-                    // Try to load plugin
-                    try {
-                        // Load the plugin files
-                        let thisPluginConf = require(`../../plugins/${e}/package.json`);
-
-                        // Check if the plugin has no information in config file
-                        if (!thisPluginConf || !thisPluginConf.name || !thisPluginConf.version || !thisPluginConf.author || thisPluginConf.pluginConfig.enabled == undefined) {
-                            logger("error", `Plugin in folder '${e}' is missing information in its package.json file! Make sure that name, version, author and pluginConfig.enabled are populated.`);
-                            return loop.next();
-                        }
-
-                        // Skip all checks after determining config is intact if plugin is disabled
-                        if (!thisPluginConf.pluginConfig.enabled) {
-                            logger("debug", `Plugin '${thisPluginConf.name}' is disabled. Skipping plugin...`);
-                            return loop.next();
-                        }
-
-                        // Call 'npm install' for this plugin before loading to make sure every desired version is installed. This takes a moment but idk if there is a better way.
-                        logger("info", `PluginSystem: Installing dependencies for ${thisPluginConf.name}...`, false, true, logger.animation("loading"));
-
-                        npmInteraction.updateFromPath(`${srcdir}/../plugins/${e}`, async (err) => {
-                            if (err) {
-                                logger("error", `Failed to install dependencies for plugin ${thisPluginConf.name}! Skipping plugin...\n${err}`);
-                                return loop.next();
-                            }
-
-                            // Check if plugin entry file is missing and abort
-                            if (!fs.existsSync(`./plugins/${e}/plugin.js`)) {
-                                logger("error", `Plugin ${e} does not have an entry file called 'plugin.js'! Skipping plugin...`);
-                                return loop.next();
-                            }
-
-                            // Load plugin after installing dependencies
-                            let thisPlugin = require(`../../plugins/${e}/plugin.js`);
-
-                            // Run checks for this plugin
-                            let canBeLoaded = await this._checkPlugin(e, thisPlugin, thisPluginConf);
-                            if (!canBeLoaded) {
-                                logger("error", `Plugin ${thisPluginConf.name} failed critical checks. Skipping plugin...`);
-                                return loop.next();
-                            }
-
-                            // Create new plugin object, add reference to plugin list and call load function
-                            thisPlugin = new thisPlugin(this);
-                            this.pluginList[thisPluginConf.name] = thisPlugin;
-
-                            logger("info", `PluginSystem: Loading plugin ${thisPluginConf.name} v${thisPluginConf.version} by ${thisPluginConf.author}...`, false, true, logger.animation("loading"));
-                            thisPlugin.load();
-
-                            // Attach any event functions the plugin might have exported. Use call() to apply context which gets replaced with EventEmitter
-                            if (thisPlugin.ready) this.controller.events.on("ready", () => thisPlugin.ready.call(thisPlugin));
-                            if (thisPlugin.statusUpdate) this.controller.events.on("statusUpdate", (a, b, c) => thisPlugin.statusUpdate.call(thisPlugin, a, b, c));
-                            if (thisPlugin.steamGuardInput) this.controller.events.on("steamGuardInput", (a, b) => thisPlugin.steamGuardInput.call(thisPlugin, a, b));
-
-                            loop.next();
-                        });
-
-                    } catch (err) {
-                        logger("error", `Error loading plugin '${e}'! Error: ${err.stack}`, true);
-                        return loop.next();
-                    }
-                }, 50);
-            }, () => { // Function that will run on exit, aka the last iteration
-                resolve();
-            });
-
+    for (const { pluginName, pluginInstance } of initiatedPlugins) {
+        this.pluginList[pluginName] = pluginInstance;
+        pluginInstance.load();
+        Object.entries(PLUGIN_EVENTS).forEach(([eventName, event]) => {
+            //Call the exposed functions if they exist
+            this.controller.events.on(event, (...args) => pluginInstance[event]?.call(pluginInstance, ...args));
         });
-    });
+    }
 };
