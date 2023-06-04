@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2023 12:11:29
+ * Last Modified: 04.06.2023 16:13:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -89,8 +89,7 @@ PluginSystem.prototype.reloadPlugins = function () {
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
 
 /**
- * Internal: Loads all plugins in /plugins dir and exports them as PluginSystem.pluginList object
- * @returns {Promise.<void>} Resolves when all plugins have been loaded
+ * Internal: Loads all plugin npm packages and populates pluginList
  */
 PluginSystem.prototype._loadPlugins = function () {};
 

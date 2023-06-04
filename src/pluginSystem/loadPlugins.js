@@ -4,7 +4,7 @@
  * Created Date: 04.06.2023 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 04.06.2023 16:00:04
+ * Last Modified: 04.06.2023 16:13:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -41,7 +41,11 @@ function loadPlugin(pluginName) {
     }
 }
 
-PluginSystem.prototype._loadPlugins = async function () {
+
+/**
+ * Internal: Loads all plugin npm packages and populates pluginList
+ */
+PluginSystem.prototype._loadPlugins = function () {
 
     // Get all plugins with the matching regex
     const plugins = Object.entries(packageJson.dependencies).filter(([key, value]) => PLUGIN_REGEX.test(key)); // eslint-disable-line
