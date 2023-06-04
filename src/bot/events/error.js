@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.06.2023 11:48:09
+ * Last Modified: 04.06.2023 11:51:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -90,8 +90,10 @@ Bot.prototype._attachSteamErrorEvent = function() {
                 logger("warn", `${err} while trying to log in bot${this.index}. Retrying in 5 seconds...`, false, false, null, true); // Log error as warning
 
                 // Invalidate token to get a new session if this error was caused by an invalid refreshToken
-                if (err.eresult == EResult.InvalidPassword || err == "Error: InvalidSignature") { // These are the most likely enums that will occur when an invalid token was used I guess (Checking via String here as it seems like there are EResults missing)
+                if (err.eresult == EResult.InvalidPassword || err.eresult == EResult.AccessDenied || err == "Error: InvalidSignature") { // These are the most likely enums that will occur when an invalid token was used I guess (Checking via String here as it seems like there are EResults missing)
                     logger("debug", "Token login error: Calling SessionHandler's _invalidateTokenInStorage() function to get a new session when retrying this login attempt");
+
+                    if (err.eresult == EResult.AccessDenied) logger("warn", `[${this.logPrefix}] Detected an AccessDenied login error! This is usually caused by an invalid login token. Deleting login token, please re-submit your Steam Guard code.`, false, false, null, true); // Force print this message now
 
                     this.sessionHandler.invalidateTokenInStorage();
                 }
