@@ -1,14 +1,14 @@
 ---
 name: Help wanted/Question
-about: If you have an error that probably isn't a bug.
+about: I have a question or need help
 title: ''
-labels: question
+labels: Question
 assignees: ''
 
 ---
 
-**Error/Element that doesn't work**
-Please include the full error you get or if you get none, describe precisely what happened.
+**Question or issue you are experiencing**
+Please explain your question here. If you've got an error or something else related, then please include it here as well.
 
 **Additional information**
 Please add any other information here if you have some.

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 18.03.2023 19:20:59
+ * Last Modified: 04.06.2023 10:33:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,194 +15,190 @@
  */
 
 
-const fs = require("fs");
+const Controller = require("../controller/controller.js"); // eslint-disable-line
 
 
-/* ------------ Check for update function: ------------ */
 /**
- * Checks for an available update and installs it.
- * @param {Boolean} forceupdate If it should force an update even if user is on newest version or only update when a new version is found
- * @param {String} responseSteamID A steamID if the user requested an update via the Steam chat to send responses
- * @param {Boolean} compatibilityfeaturedone Only works with forceupdate! Changes compatibilityfeaturedone in data.json to true
- * @param {function} [callback] Called with `foundanddone` (Boolean) on completion. If `true` you should restart the bot and if `false` you can carry on.
+ * Constructor - Initializes the updater which periodically checks for new versions available on GitHub, downloads them and handles backups.
+ * @class
+ * @param {Controller} controller Reference to the controller object
  */
-module.exports.run = async (forceupdate, responseSteamID, compatibilityfeaturedone, foundanddone) => {
-    var starter    = require("../starter.js");
-    let controller = require("../controller/controller.js");
+const Updater = function(controller) {
 
-    var releasemode             = extdata.branch;
+    this.controller = controller;
+    this.data       = controller.data;
+
+    // Register update checker
+    let lastCheck = Date.now();
+
+    setInterval(() => {
+        if (Date.now() < lastCheck + 21600000) return; // Skip iteration if last check is less than 6 hours ago
+
+        this.run(); // Run the updater
+
+        lastCheck = Date.now(); // Update the last time we checked for an update
+    }, 300000); // 5 min in ms
+
+};
+
+// Let our updater see the world
+module.exports = Updater;
 
 
-    let file = await starter.checkAndGetFile("./src/updater/helpers/checkforupdate.js", logger, false, false);
-    if (!file) return;
+/**
+ * Checks for any available update and installs it.
+ * @param {Boolean} forceUpdate If true an update will be forced, even if disableAutoUpdate is true or the newest version is already installed
+ * @param {function(Object, string)} respondModule If defined, this function will be called with the result of the check. This allows to integrate checking for updates into commands or plugins. Passes resInfo and txt as parameters.
+ * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+ * @returns {Promise.<boolean>} Promise that will be resolved with false when no update was found or with true when the update check or download was completed. Expect a restart when true was returned.
+ */
+Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
+    let _this = this;
 
-    file.checkforupdate(releasemode, forceupdate, (ready, chunk) => {
-        if (ready) { // Update found or forceupdate is true
-
-            // log result of the check
-            logger("", "", true);
-            logger("", `${logger.colors.fggreen}Update available!${logger.colors.reset} Your version: ${logger.colors.fgred}${extdata.versionstr}${logger.colors.reset} | New version: ${logger.colors.fggreen}${chunk.versionstr}`, true);
-            logger("", "", true);
-            logger("", `${logger.colors.underscore}What's new:${logger.colors.reset} ${chunk.whatsnew}\n`, true);
+    // Shorthander to abort when a part of the updater is missing and couldn't be repaired
+    function stopOnFatalError() {
+        logger("error", "Fatal Error: Failed to load updater! Please reinstall the bot manually. Aborting...");
+        _this.stop();
+    }
 
 
-            // Respond to the user if he/she requested an update via the Steam chat (ignore if forceupdate to avoid some duplicate messages spam stuff)
-            if (responseSteamID && !forceupdate) {
-                controller.botobject[0].chat.sendFriendMessage(responseSteamID, `Update available! Your version: ${extdata.versionstr} | New version: ${chunk.versionstr}`);
-                controller.botobject[0].chat.sendFriendMessage(responseSteamID, `What's new: ${chunk.whatsnew}`);
+    // Return a new promise so the caller can wait for our result and start checking for an available update
+    return new Promise((resolve) => {
+        (async () => { // Lets us use await insidea Promise without creating an antipattern
 
-                // Instruct user to force update if disableAutoUpdate is true and stop here
-                if (advancedconfig.disableAutoUpdate && !forceupdate) {
-                    controller.botobject[0].chat.sendFriendMessage(responseSteamID, "You have disabled the automatic updater. Would you like to update now?\nIf yes, please force an update using the command: !update true");
+            let { checkAndGetFile } = require("../starter.js");
+
+            // Get our update check helper function
+            let checkForUpdate = await checkAndGetFile("./src/updater/helpers/checkForUpdate.js", logger, false, false);
+            if (!checkForUpdate) return resolve(false);
+
+            checkForUpdate.check(this.data.datafile, null, forceUpdate, (updateFound, onlineData) => {
+
+                // Check if no update was found and abort
+                if (!updateFound) {
+                    if (parseInt(process.argv[3]) + 10000 > Date.now()) logger("info", `No available update found. (online: ${onlineData.versionstr} | local: ${this.data.datafile.versionstr})`, false, true, logger.animation("loading")); // Only print message with animation if the start is more recent than 10 seconds
+                        else logger("info", `No available update found. (online: ${onlineData.versionstr} | local: ${this.data.datafile.versionstr})`, false, true);
+
+                    if (respondModule) respondModule(resInfo, `No available update found. (online: ${onlineData.versionstr} | local: ${this.data.datafile.versionstr})`);
+
+                    resolve(false); // Let the caller know about the result
                     return;
                 }
-            }
 
 
-            /* eslint-disable no-inner-declarations */
-            async function initiateUpdate() { // Make initiating the update a function to simplify the permission check below
-                controller.activeRelog = true; // Block new comment requests by setting active relog to true
+                // Carry on if an update is available, first log our result
+                logger("", "", true);
+                logger("", `${logger.colors.fggreen}Update available!${logger.colors.reset} Your version: ${logger.colors.fgred}${this.data.datafile.versionstr}${logger.colors.reset} | New version: ${logger.colors.fggreen}${onlineData.versionstr}`, true);
+                logger("", "", true);
+                logger("", `${logger.colors.underscore}What's new:${logger.colors.reset} ${onlineData.whatsnew}\n`, true);
 
-                let file2 = await starter.checkAndGetFile("./src/updater/helpers/prepareupdate.js", logger, false, false); // Prepare update (like waiting for active comment processes to finish, logging off accounts, etc.)
-                if (!file2) return;
 
-                file2.run(responseSteamID, async () => {
-                    let file3 = await starter.checkAndGetFile("./src/updater/helpers/createBackup.js", logger, false, false); // Create a backup of the current installation
-                    if (!file3) return;
+                // Call respondModule function if one was passed
+                if (respondModule) {
+                    respondModule(resInfo, `Update available! Your version: ${this.data.datafile.versionstr} | New version: ${onlineData.versionstr}`);
+                    respondModule(resInfo, `What's new: ${onlineData.whatsnew}`);
 
-                    file3.run(async () => {
-                        let file4 = await starter.checkAndGetFile("./src/updater/helpers/downloadupdate.js", logger, false, false);
-                        if (!file4) return;
+                    // Instruct user to force update if disableAutoUpdate is true and stop here
+                    if (this.data.advancedconfig.disableAutoUpdate && !forceUpdate) return respondModule(resInfo, this.data.lang.updaterautoupdatedisabled.replace(/cmdprefix/g, resInfo.cmdprefix));
+                }
 
-                        let file5 = await starter.checkAndGetFile("./src/updater/helpers/restoreBackup.js", logger, false, false); // Already load restoreBackup into memory
-                        if (!file5) return;
 
-                        file4.downloadupdate(releasemode, compatibilityfeaturedone, async (err) => { // Start downloading the update
-                            if (err) {
-                                logger("error", "I failed trying to download & install the update! Please contact the bot developer with the following error here: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose", true);
-                                logger("error", err.stack, true);
+                // Make initiating the update a function to simplify the permission check below
+                async function initiateUpdate() {
+                    _this.controller.info.activeLogin = true; // Block new requests by setting active login to true
 
-                                logger("info", "Since I probably won't be able to continue from here, I'll try to restore from a backup if one exists.\n       I'll try to update again the next time you start the bot or in 6 hours should the auto updater be enabled.\n       If this issue keeps happening please think about setting disableAutoUpdate in advancedconfig.json to true.", true);
-                                file5.run(() => { // Try to restore backup
-                                    foundanddone(true, true, global.checkm8);
-                                });
+                    // Get our prepareUpdate helper and run it. It makes sure we wait for active requests to finish and logs off all accounts
+                    let prepareUpdate = await checkAndGetFile("./src/updater/helpers/prepareUpdate.js", logger, false, false);
+                    if (!prepareUpdate) return stopOnFatalError();
 
-                            } else {
-                                logger("", `${logger.colors.fgyellow}Updating packages with npm...`, true, false, logger.animation("loading"));
+                    await prepareUpdate.run(_this.controller, respondModule, resInfo);
 
-                                let file6 = await starter.checkAndGetFile("./src/controller/helpers/npminteraction.js", logger, false, false);
-                                if (!file6) return;
 
-                                file6.update((err) => {
-                                    if (err) logger("error", "I failed trying to update the dependencies. Please check the log after other errors for more information.\nTrying to continue anyway...");
+                    // Get our createBackup helper and run it. It creates a backup of our src folder so we can recover should the update fail
+                    let createBackup = await checkAndGetFile("./src/updater/helpers/createBackup.js", logger, false, false);
+                    if (!createBackup) return stopOnFatalError();
 
-                                    foundanddone(true); // Finished updating!
-                                });
-                            }
+                    logger("", "", true); // Add separator to log as the actual updating process starts now
+                    await createBackup.run();
+
+
+                    // Get our downloadUpdate helper but don't run it yet. It does what it says on the tin.
+                    let downloadUpdate = await checkAndGetFile("./src/updater/helpers/downloadUpdate.js", logger, false, false);
+                    if (!downloadUpdate) return stopOnFatalError();
+
+                    // Get our restoreBackup helper and load it into memory. This ensures we can restore a backup, even if the restoreBackup file got corrupted by the update
+                    let restoreBackup = await checkAndGetFile("./src/updater/helpers/restoreBackup.js", logger, false, false);
+                    if (!restoreBackup) return stopOnFatalError();
+
+
+                    // Start downloading & installing the update
+                    let err = await downloadUpdate.startDownload(_this.controller);
+
+                    // Check if an error occurred and restore the backup
+                    if (err) {
+                        logger("error", "I failed trying to download & install the update! Please contact the bot developer with the following error here: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose", true);
+                        logger("error", err.stack, true);
+
+                        // Try to restore backup
+                        logger("info", "Since I probably won't be able to continue from here, I'll try to restore from a backup if one exists.\n       I'll try to update again the next time you start the bot or in 6 hours should the auto updater be enabled.\n       If this issue keeps happening please think about setting disableAutoUpdate in advancedconfig.json to true.", true);
+
+                        await restoreBackup.run();
+
+                        // Restart and indicate that the update failed
+                        resolve(true);
+                        _this.controller.restart(JSON.stringify({ skippedaccounts: _this.controller.skippedaccounts, updateFailed: true }));
+
+                    } else { // Update succeeded, update npm dependencies and restart
+
+                        logger("", `${logger.colors.fgyellow}Updating packages with npm...${logger.colors.reset}`, true, false, logger.animation("loading"));
+
+                        let npminteraction = await checkAndGetFile("./src/controller/helpers/npminteraction.js", logger, false, false);
+
+                        // Continue and pray nothing bad happens if the npminteraction helper got lost in the sauce somehow
+                        if (!npminteraction) {
+                            logger("error", "I failed trying to update the dependencies. Please check the log after other errors for more information.\nTrying to continue anyway...");
+                            _this.controller.restart(JSON.stringify({ skippedaccounts: _this.controller.skippedaccounts, updateFailed: false }));
+                            resolve(true); // Finished updating!
+                            return;
+                        }
+
+                        // Update the dependencies if the helper was loaded successfully but don't freak out about any errors
+                        npminteraction.update((err) => {
+                            if (err) logger("error", "I failed trying to update the dependencies. Please check the log after other errors for more information.\nTrying to continue anyway...");
+
+                            // If everything went to plan, resolve our promise and restart the bot!
+                            logger("", `${logger.colors.fgyellow}Done! Restarting...\n${logger.colors.reset}`, true);
+                            resolve(true);
+                            _this.controller.restart(JSON.stringify({ skippedaccounts: _this.controller.skippedaccounts, updateFailed: false }));
                         });
-                    });
-                });
-            }
+                    }
+                }
 
 
-            /* ------------------ Check for permission to update ------------------ */
-            if (!advancedconfig.disableAutoUpdate || forceupdate) { // Check if the user has disabled the automatic updater or an update was forced
-                initiateUpdate();
-
-            } else { // User has it disabled, ask for confirmation
-
-                if (botisloggedin == false) { // Only ask on start, otherwise this will annoy the user
+                // Check if we should ask the user before starting to update
+                if (this.data.advancedconfig.disableAutoUpdate && !forceUpdate) {
+                    if (botisloggedin) return resolve(false); // Only ask on start, otherwise this will annoy the user
 
                     // Get user choice from terminal input
                     logger.readInput(`You have disabled the automatic updater.\n${logger.colors.brfgyellow}Would you like to update now?${logger.colors.reset} [y/n] `, 7500, (text) => {
-
                         if (!text) { // User didn't respond in 7.5 seconds
                             process.stdout.write(`${logger.colors.fgred}X${logger.colors.reset}\n`); // Write a X behind the y/n question
+
                             logger("info", `${logger.colors.brfgyellow}Stopping updater since you didn't reply in 7.5 seconds...\n\n`, true, false);
-                            foundanddone(false);
+                            resolve(false);
 
-                        } else {
-                            var response = text.toString().trim();
+                        } else { // User did respond, check content of response
 
-                            if (response == "y") initiateUpdate();
-                                else foundanddone(false);
+                            if (text.toString().trim() != "y") return resolve(false); // Abort on any answer that isn't yes
+
+                            initiateUpdate();
                         }
                     });
+                } else {
+                    initiateUpdate();
                 }
-            }
+            });
 
-        } else { // No update found
-
-            // log result and send message back to user if update was requested via chat
-            if (parseInt(process.argv[3]) + 10000 > Date.now()) logger("info", `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`, false, true, logger.animation("loading")); // Only print message with animation if the start is more recent than 10 seconds
-                else logger("info", `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`, false, true);
-
-            if (responseSteamID) require("../controller/controller.js").botobject[0].chat.sendFriendMessage(responseSteamID, `No available update found. (online: ${chunk.versionstr} | local: ${extdata.versionstr})`);
-
-            foundanddone(false); // Make callback to let caller carry on
-        }
-
-        // Update the last time we checked for an update
-        lastupdatecheckinterval = Date.now() + 21600000; // 6 hours in ms
+        })();
     });
 };
-
-
-/* ------------ Compatibility feature function to ensure automatic updating works: ------------ */
-/**
- * Gets the corresponding compatibility feature to this version and runs it if compatibilityfeaturedone in data.json is false
- * @param {function} [callback] Called with `foundanddone` (Boolean) on completion. If `true` you should restart the bot and if `false` you can carry on.
- */
-module.exports.compatibility = async (callback) => {
-
-    // Check if compatibilityfeature was already run
-    if (extdata.compatibilityfeaturedone) {
-        logger("debug", "compatibility(): Skipping compatibility check as it already ran previously...");
-        callback(false);
-        return;
-    }
-
-
-    // List all files in compatibility directory
-    let list = fs.readdirSync("./src/updater/compatibility");
-
-    // Try to find this version in list
-    let match = list.find(e => e == extdata.version.replace(/b[0-9]+/g, "") + ".js"); // Remove beta build from version so it still matches on every beta build | Old check used this regex pattern: str.match(/21200b[0-9]+/g)
-
-
-    // If we found a match test its integrity and execute it
-    if (match) {
-        let file = await require("../starter.js").checkAndGetFile(`./src/updater/compatibility/${match}`, logger, false, false); // Check integrity
-        if (!file) return;
-
-        logger("info", `Running compatibility feature ${match}...`, true);
-        file.run(callback); // Call compatibilityfeature and pass callback so the caller of this function gets a response
-
-    } else { // Continue startup like normal if no file was found for this version
-
-        logger("debug", `compatibility(): No compatibility feature was found for ${extdata.version} in a list of ${list.length} files...`);
-        callback(false);
-    }
-
-};
-
-
-/* ------------ Register update checker: ------------ */
-var lastupdatecheckinterval = Date.now();
-if (updatecheckinterval) clearInterval(updatecheckinterval); // This check should never run but I added it just to be sure
-
-var updatecheckinterval = setInterval(() => {
-    if (Date.now() > lastupdatecheckinterval) {
-        fs.readFile("./output.txt", function (err, data) {
-            if (err) logger("error", "error checking output for update notice: " + err);
-
-            if (!data.toString().split("\n").slice(data.toString().split("\n").length - 21).join("\n").includes("Update available!")) { // Check last 20 lines of output.txt for update notice
-                logger("debug", "updatecheckinterval(): 6 hours passed, calling update checker...");
-
-                module.exports.run(false, null, false, (done) => { // Check if there is an update available
-                    if (done) process.send(`restart(${JSON.stringify({ skippedaccounts: require("../controller/controller.js").skippedaccounts })})`); // Send request to parent process if the bot found and ran the update
-                });
-            }
-        });
-    }
-}, 300000); // 5 min in ms

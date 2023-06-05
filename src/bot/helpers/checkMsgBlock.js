@@ -4,7 +4,7 @@
  * Created Date: 20.03.2023 12:46:47
  * Author: 3urobeat
  *
- * Last Modified: 20.03.2023 13:15:33
+ * Last Modified: 08.05.2023 14:01:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -15,52 +15,46 @@
  */
 
 
-const SteamID = require("steamid");
+const Bot = require("../bot.js");
 
 const lastmessage = {}; // Tracks the last cmd usage of a normal command to apply cooldown if the user spams
 
 
 /**
  * Checks if user is blocked, has an active cooldown for spamming or isn't a friend
- * @param {String} thisbot The thisbot string of the calling account
- * @param {SteamUser} bot The bot instance of the calling account
- * @param {Object} steamID The steamID object from steam-user
+ * @param {Object} steamID64 The steamID64 of the message sender
  * @param {String} message The message string provided by steam-user friendMessage event
- * @param {Object} lang The language object
- * @param {Function} chatmsg The chatmsg function
  * @returns {Boolean} `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
  */
-module.exports.checkMsgBlock = (thisbot, bot, steamID, message, lang, chatmsg) => {
-    let steam64id = new SteamID(String(steamID)).getSteamID64();
-
+Bot.prototype.checkMsgBlock = function(steamID64, message) {
 
     // Check if user is blocked and ignore message
-    if (bot.myFriends[steam64id] == 1 || bot.myFriends[steam64id] == 6) {
-        logger("debug", `[${thisbot}] Blocked user '${steam64id}' sent message: ${message}`); // Ignore messages from blocked users but log a debug message
+    if (this.user.myFriends[steamID64] == 1 || this.user.myFriends[steamID64] == 6) {
+        logger("debug", `[${this.logPrefix}] Blocked user '${steamID64}' sent message: ${message}`); // Ignore messages from blocked users but log a debug message
         return true;
     }
 
 
     // Spam "protection" because spamming the bot is bad!
-    if (!lastmessage[steam64id] || lastmessage[steam64id][0] + advancedconfig.commandCooldown < Date.now()) lastmessage[steam64id] = [Date.now(), 0]; // Add user to array or Reset time
-    if (lastmessage[steam64id] && lastmessage[steam64id][0] + advancedconfig.commandCooldown > Date.now() && lastmessage[steam64id][1] > 5) return true; // Just don't respond
+    if (!lastmessage[steamID64] || lastmessage[steamID64][0] + this.controller.data.advancedconfig.commandCooldown < Date.now()) lastmessage[steamID64] = [Date.now(), 0]; // Add user to array or Reset time
+    if (lastmessage[steamID64] && lastmessage[steamID64][0] + this.controller.data.advancedconfig.commandCooldown > Date.now() && lastmessage[steamID64][1] > 5) return true; // Just don't respond
 
-    if (lastmessage[steam64id] && lastmessage[steam64id][0] + advancedconfig.commandCooldown > Date.now() && lastmessage[steam64id][1] > 4) { // Inform the user about the cooldown
-        chatmsg(steamID, lang.userspamblock);
-        logger("info", `${steam64id} has been blocked for 90 seconds for spamming.`);
+    if (lastmessage[steamID64] && lastmessage[steamID64][0] + this.controller.data.advancedconfig.commandCooldown > Date.now() && lastmessage[steamID64][1] > 4) { // Inform the user about the cooldown
+        this.sendChatMessage({ steamID: steamID64, prefix: "/me" }, this.controller.data.lang.userspamblock);
+        logger("info", `${steamID64} has been blocked for 90 seconds for spamming.`);
 
-        lastmessage[steam64id][0] += 90000;
-        lastmessage[steam64id][1]++;
+        lastmessage[steamID64][0] += 90000;
+        lastmessage[steamID64][1]++;
 
         return true;
     }
 
-    if (!cachefile.ownerid.includes(steam64id)) lastmessage[steam64id][1]++; // Push new message to array if user isn't an owner
+    if (!this.controller.data.cachefile.ownerid.includes(steamID64)) lastmessage[steamID64][1]++; // Push new message to array if user isn't an owner
 
 
     // Deny non-friends the use of any command
-    if (bot.myFriends[steam64id] != 3) {
-        chatmsg(steamID, lang.usernotfriend);
+    if (this.user.myFriends[steamID64] != 3) {
+        this.sendChatMessage({ steamID: steamID64, prefix: "/me" }, this.controller.data.lang.usernotfriend);
         return true;
     }
 

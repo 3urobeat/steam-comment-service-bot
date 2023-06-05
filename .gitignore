@@ -1,5 +1,8 @@
+# Ignore file changes locally: git update-index --assume-unchanged <file> & git update-index --no-assume-unchanged <file>  -  https://stackoverflow.com/a/11366713
+
 node_modules
 backup
 comment-service-bot.code-workspace
 output.txt
-plugins/test.js
+plugins/*
+!plugins/steam-comment-bot-webserver*.tgz

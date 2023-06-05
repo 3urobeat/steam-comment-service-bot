@@ -11,15 +11,15 @@
     "forceFriendlistSpaceTime": 4,
     "setPrimaryGroup": false,
     "commandCooldown": 12000,
-    "disableCommentCmd": false,
+    "restrictAdditionalCommandsToOwners": [],
     "retryFailedComments": false,
     "retryFailedCommentsDelay": 300000,
     "retryFailedCommentsAttempts": 1,
     "lastQuotesSize": 5,
     "enableevalcmd": false,
-    "enableurltocomment": false,
     "printDebug": false,
     "steamUserDebug": false,
     "steamUserDebugVerbose": false,
+    "steamSessionDebug": false,
     "logAnimationSpeed": 250
 }

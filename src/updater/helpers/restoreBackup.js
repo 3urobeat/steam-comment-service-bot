@@ -4,7 +4,7 @@
  * Created Date: 26.02.2022 20:16:44
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2022 14:50:35
+ * Last Modified: 29.05.2023 17:23:14
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -18,56 +18,62 @@
 const fs   = require("fs");
 const path = require("path");
 
+
 /**
  * Tries to restore a previously made backup
+ * @returns {Promise.<void>} Resolves when we can proceed
  */
-module.exports.run = (callback) => {
+module.exports.run = () => {
+    return new Promise((resolve) => {
 
-    if (fs.existsSync("./backup")) {
-        logger("info", "Found a backup folder, trying to restore your latest backup...", false, false, logger.animation("loading"));
+        if (fs.existsSync("./backup")) {
+            logger("info", "Found a backup folder, trying to restore your latest backup...", false, false, logger.animation("loading"));
 
-        // Specify which files and folders we can ignore
-        const dontCopy = ["backup"];
+            // Specify which files and folders we can ignore
+            const dontCopy = ["backup"];
 
-        // This but slightly modified - thanks: https://stackoverflow.com/a/26038979/12934162
-        function copyFolderRecursiveSync(src, dest, firstCall) { // eslint-disable-line no-inner-declarations
-            var files = [];
+            // This but slightly modified - Thanks: https://stackoverflow.com/a/26038979/12934162
+            function copyFolderRecursiveSync(src, dest, firstCall) { // eslint-disable-line no-inner-declarations
+                let files = [];
 
-            // Check if folder needs to be created
-            var targetFolder = path.join(dest, path.basename(src));
+                // Check if folder needs to be created
+                let targetFolder = path.join(dest, path.basename(src));
 
-            if (!fs.existsSync(targetFolder)) fs.mkdirSync(targetFolder);
+                if (!fs.existsSync(targetFolder)) fs.mkdirSync(targetFolder);
 
-            // Copy files or call function again if dir
-            if (fs.lstatSync(src).isDirectory()) {
-                files = fs.readdirSync(src);
+                // Copy files or call function again if dir
+                if (fs.lstatSync(src).isDirectory()) {
+                    files = fs.readdirSync(src);
 
-                files.forEach((file) => {
-                    if (dontCopy.includes(file)) return; // Ignore this file/folder if name is in dontCopy
-                    var curSource = path.join(src, file);
+                    files.forEach((file) => {
+                        if (dontCopy.includes(file)) return; // Ignore this file/folder if name is in dontCopy
+                        let curSource = path.join(src, file);
 
-                    if (fs.lstatSync(curSource).isDirectory()) {
-                        copyFolderRecursiveSync(curSource, targetFolder, false);
-                    } else {
-                        let tempStr = (targetFolder + "/" + file).replace("backup/", "");
-                        logger("debug", `Copying "${curSource}" to "${tempStr}"...`, true);
+                        if (fs.lstatSync(curSource).isDirectory()) {
+                            copyFolderRecursiveSync(curSource, targetFolder, false);
+                        } else {
+                            let tempStr = (targetFolder + "/" + file).replace("backup/", "");
+                            logger("debug", `Copying "${curSource}" to "${tempStr}"...`, true);
 
-                        fs.copyFileSync(curSource, (targetFolder + "/" + file).replace("backup/", ""));
-                    }
-                });
+                            fs.copyFileSync(curSource, (targetFolder + "/" + file).replace("backup/", ""));
+                        }
+                    });
+                }
+
+                // Make callback when we are finished and in the top level
+                if (firstCall) {
+                    logger("info", "Successfully restored a backup!");
+                    resolve();
+                }
             }
 
-            // Make callback when we are finished and in the top level
-            if (firstCall) {
-                logger("info", "Successfully restored a backup!");
-                callback();
-            }
+            copyFolderRecursiveSync("./backup", ".", true);
+
+        } else {
+
+            logger("error", "Unfortunately I was unable to find a backup. I don't know how to proceed from here so you sadly have to redownload the bot yourself: https://github.com/HerrEurobeat/steam-comment-service-bot\n        Please report this issue with all errors so that I'm able to fix this: https://github.com/HerrEurobeat/steam-comment-service-bot/issues\n        Exiting...", true);
+            process.send("stop()");
         }
 
-        copyFolderRecursiveSync("./backup", ".", true);
-    } else {
-        logger("error", "Unfortunately I was unable to find a backup. I don't know how to proceed from here so you sadly have to redownload the bot yourself: https://github.com/HerrEurobeat/steam-comment-service-bot\n        Please report this issue with all errors so that I'm able to fix this: https://github.com/HerrEurobeat/steam-comment-service-bot/issues\n        Exiting...", true);
-        process.send("stop()");
-    }
-
+    });
 };

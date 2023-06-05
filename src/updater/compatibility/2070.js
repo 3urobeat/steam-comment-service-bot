@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 22:30:00
  * Author: 3urobeat
  *
- * Last Modified: 29.09.2021 18:08:25
+ * Last Modified: 05.05.2023 15:05:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,36 +15,38 @@
  */
 
 
-module.exports.run = (callback) => { //eslint-disable-line
-    if (config.botsgroupid != "") {
-        var fs = require("fs");
-        var https = require("https");
-        var xml2js = require("xml2js");
+const fs = require("fs");
+
+
+// Compatibility feature for upgrading to 2.7.0
+module.exports.run = (controller, resolve) => { //eslint-disable-line
+    if (controller.data.config.botsgroupid != "") {
+        const https  = require("https");
+        const xml2js = require("xml2js");
 
 
         logger("info", "Applying 2.7 compatibility changes...");
-        Object.keys(config).push("botsgroup"); // Add new key
+        Object.keys(controller.data.config).push("botsgroup"); // Add new key
 
         try {
-            var output = "";
+            let output = "";
 
-            https.get(`https://steamcommunity.com/gid/${config.botsgroupid}/memberslistxml/?xml=1`, function(res) { // Get group64id from code to simplify config
+            https.get(`https://steamcommunity.com/gid/${controller.data.config.botsgroupid}/memberslistxml/?xml=1`, function(res) { // Get group64id from code to simplify config
                 res.on("data", function (chunk) {
-                    output += chunk; });
+                    output += chunk;
+                });
 
                 res.on("end", () => {
                     new xml2js.Parser().parseString(output, function(err, result) {
                         if (err) logger("error", "error parsing botsgroupid xml: " + err);
-                        config.botsgroup = `https://steamcommunity.com/groups/${result.memberList.groupDetails.groupURL}`; // Assign old value to new key
+                        controller.data.config.botsgroup = `https://steamcommunity.com/groups/${result.memberList.groupDetails.groupURL}`; // Assign old value to new key
 
                         fs.writeFile("./config.json", JSON.stringify(output, null, 4), (err) => {
                             if (err) logger("error", "error writing botsgroupid to botsgroup: " + err, true);
                         });
 
                         logger("info", "I will now update again. Please wait a moment..."); // Force update so that config gets cleaned up
-                        require("../updater").run(true, null, true, (done) => {
-                            if (done) process.send(`restart(${JSON.stringify({ skippedaccounts: controller.skippedaccounts })})`); // Send request to parent process
-                        });
+                        resolve(true); // Resolve and force update
                     });
                 });
             });
@@ -54,11 +56,7 @@ module.exports.run = (callback) => { //eslint-disable-line
     } else {
         logger("info", "I will now update again. Please wait a moment...");
 
-        var controller = require("../../controller/controller.js");
-
-        require("../updater").run(true, null, true, (done) => {
-            if (done) process.send(`restart(${JSON.stringify({ skippedaccounts: controller.skippedaccounts })})`); // Send request to parent process
-        });
+        resolve(true); // Resolve and force update
     }
 };
 

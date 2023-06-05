@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 22:30:00
  * Author: 3urobeat
  *
- * Last Modified: 29.09.2021 18:08:29
+ * Last Modified: 05.05.2023 15:14:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,11 +15,12 @@
  */
 
 
-module.exports.run = (callback) => { //eslint-disable-line
+const fs = require("fs");
+
+
+// Compatibility feature for upgrading to 2.6.0
+module.exports.run = (controller, resolve) => { //eslint-disable-line
     try {
-        var fs = require("fs");
-
-
         logger("info", "Applying 2.6 compatibility changes...", false, true);
         fs.mkdirSync("./src");
 
@@ -33,23 +34,22 @@ module.exports.run = (callback) => { //eslint-disable-line
             if (err) logger("error", "error moving lastcomment.json: " + err, true);
         });
 
-        var logininfo = require("../logininfo.json");
 
-        if (Object.keys(logininfo)[0] == "bot1") { // Check if first bot is 1 (old) and not 0
-            Object.keys(logininfo).forEach((e, i) => {
-                Object.defineProperty(logininfo, `bot${i}`, // Credit: https://stackoverflow.com/a/14592469
-                    Object.getOwnPropertyDescriptor(logininfo, e));
-                delete logininfo[e];
+        if (Object.keys(controller.data.logininfo)[0] == "bot1") { // Check if first bot is 1 (old) and not 0
+            Object.keys(controller.data.logininfo).forEach((e, i) => {
+                Object.defineProperty(controller.data.logininfo, `bot${i}`, // Credit: https://stackoverflow.com/a/14592469
+                    Object.getOwnPropertyDescriptor(controller.data.logininfo, e));
+                delete controller.data.logininfo[e];
             });
 
-            fs.writeFile("./logininfo.json", JSON.stringify(logininfo, null, 4), (err) => {
+            fs.writeFile("./logininfo.json", JSON.stringify(controller.data.logininfo, null, 4), (err) => {
                 if (err) logger("error", "error writing changes to logininfo.json: " + err, true);
             });
         }
 
-        if (config.globalcommentcooldown == 5000) { // Check if the user uses default settings and raise 5 to 10 sec
-            config.globalcommentcooldown = 10000;
-            fs.writeFile("./config.json", JSON.stringify(config, null, 4), (err) => {
+        if (controller.data.config.globalcommentcooldown == 5000) { // Check if the user uses default settings and raise 5 to 10 sec
+            controller.data.config.globalcommentcooldown = 10000;
+            fs.writeFile("./config.json", JSON.stringify(controller.data.config, null, 4), (err) => {
                 if (err) logger("error", "error changing default globalcommentcooldown value: " + err, true);
             });
         }
@@ -57,14 +57,10 @@ module.exports.run = (callback) => { //eslint-disable-line
         setTimeout(() => {
             logger("info", "I will now update again. Please wait a moment...");
 
-            var controller = require("../../controller/controller.js");
-
-            require("../updater").run(true, null, true, (done) => {
-                if (done) process.send(`restart(${JSON.stringify({ skippedaccounts: controller.skippedaccounts })})`); // Send request to parent process
-            }); // Force to update again to get files from new structure
+            resolve(true); // Resolve and force update
         }, 1000);
     } catch(err) {
-        logger("", `\n\n\x1b[31m*------------------------------------------*\x1b[0m\nI have problems updating your bot to the new filesystem.\nPlease restart the bot. If you still encounter issues:\n\nPlease either download and setup the bot manually again (https://github.com/HerrEurobeat/steam-comment-service-bot/)\nor open an issue (https://github.com/HerrEurobeat/steam-comment-service-bot/issues) and include the errors\n(*only* if you have no GitHub account message ${extdata.mestr}#0975 on Discord).\n\x1b[31m*------------------------------------------*\x1b[0m\n\nError: \n${err}\n`, true);
+        logger("", `\n\n\x1b[31m*------------------------------------------*\x1b[0m\nI have problems updating your bot to the new filesystem.\nPlease restart the bot. If you still encounter issues:\n\nPlease either download and setup the bot manually again (https://github.com/HerrEurobeat/steam-comment-service-bot/)\nor open an issue (https://github.com/HerrEurobeat/steam-comment-service-bot/issues) and include the errors\n(*only* if you have no GitHub account message ${controller.data.datafile.mestr}#0975 on Discord).\n\x1b[31m*------------------------------------------*\x1b[0m\n\nError: \n${err}\n`, true);
     }
 };
 

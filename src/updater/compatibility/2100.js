@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 22:30:00
  * Author: 3urobeat
  *
- * Last Modified: 29.09.2021 18:08:07
+ * Last Modified: 05.05.2023 15:06:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -15,9 +15,11 @@
  */
 
 
-module.exports.run = (callback) => { //eslint-disable-line
-    var fs = require("fs");
+const fs = require("fs");
 
+
+// Compatibility feature for upgrading to 2.10.0
+module.exports.run = (controller, resolve) => { //eslint-disable-line
     logger("info", "Applying 2.10 compatibility changes...");
 
     if (fs.existsSync("./src/lastcomment.json")) {
@@ -42,12 +44,7 @@ module.exports.run = (callback) => { //eslint-disable-line
     }
 
     logger("info", "I will now update again. Please wait a moment...");
-
-    var controller = require("../../controller/controller.js");
-
-    require("../updater").run(true, null, true, (done) => {
-        if (done) process.send(`restart(${JSON.stringify({ skippedaccounts: controller.skippedaccounts })})`); // Send request to parent process
-    });
+    resolve(true); // Resolve and force update
 };
 
 module.exports.info = {
