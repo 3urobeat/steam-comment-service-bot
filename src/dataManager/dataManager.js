@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 19:47:43
+ * Last Modified: 04.06.2023 22:36:14
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -39,7 +39,7 @@ const DataManager = function (controller) {
     /**
      * Stores all `data.json` values.
      * Read only - Do NOT MODIFY anything in this file!
-     * @type {{ version: string, versionstr: string, branch: string, filetostart: string, filetostarturl: string, mestr: string, aboutstr: string, firststart: boolean, compatibilityfeaturedone: boolean, whatsnew: string, urlrequestsecretkey: string, timesloggedin: number, totallogintime: number }}
+     * @type {{ version: string, versionstr: string, branch: string, filetostart: string, filetostarturl: string, mestr: string, aboutstr: string, firststart: boolean, compatibilityfeaturedone: boolean, whatsnew: string, timesloggedin: number, totallogintime: number }}
      */
     this.datafile = {};
 

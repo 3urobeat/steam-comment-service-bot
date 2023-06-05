@@ -4,7 +4,7 @@
  * Created Date: 22.02.2022 17:39:21
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:21:46
+ * Last Modified: 04.06.2023 22:36:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -95,7 +95,6 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
         let newextdata = require(srcdir + "/data/data.json");
 
         // Transfer a few specific values to the new datafile if they exist to avoid errors
-        if (olddatafile.urlrequestsecretkey) newextdata.urlrequestsecretkey = olddatafile.urlrequestsecretkey;
         if (olddatafile.timesloggedin)       newextdata.timesloggedin       = olddatafile.timesloggedin;
         if (olddatafile.totallogintime)      newextdata.totallogintime      = olddatafile.totallogintime;
 
