@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.06.2023 12:41:30
+ * Last Modified: 05.06.2023 14:16:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -168,7 +168,7 @@ module.exports.sessions = {
 
             Object.keys(commandHandler.controller.activeRequests).forEach((e, i) => {
                 if (Date.now() < commandHandler.controller.activeRequests[e].until + (commandHandler.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
-                    str += `- Status: ${commandHandler.controller.activeRequests[e].status} | ${commandHandler.controller.activeRequests[e].amount} comments with ${commandHandler.controller.activeRequests[e].accounts.length} accounts by ${commandHandler.controller.activeRequests[e].requestedby} for ${commandHandler.controller.activeRequests[e].type} ${Object.keys(commandHandler.controller.activeRequests)[i]}\n`;
+                    str += `- Status: ${commandHandler.controller.activeRequests[e].status} | ${commandHandler.controller.activeRequests[e].amount} iterations with ${commandHandler.controller.activeRequests[e].accounts.length} accounts by ${commandHandler.controller.activeRequests[e].requestedby} for ${commandHandler.controller.activeRequests[e].type} ${Object.keys(commandHandler.controller.activeRequests)[i]}\n`;
                 } else {
                     delete commandHandler.controller.activeRequests[e]; // Remove entry from object if it is finished to keep the object clean
                 }
@@ -211,7 +211,7 @@ module.exports.mySessions = {
 
             Object.keys(commandHandler.controller.activeRequests).forEach((e, i) => {
                 if (Date.now() < commandHandler.controller.activeRequests[e].until + (commandHandler.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
-                    if (commandHandler.controller.activeRequests[e].requestedby == steamID64) str += `- Status: ${commandHandler.controller.activeRequests[e].status} | ${commandHandler.controller.activeRequests[e].amount} comments with ${commandHandler.controller.activeRequests[e].accounts.length} accounts by ${commandHandler.controller.activeRequests[e].requestedby} for ${commandHandler.controller.activeRequests[e].type} ${Object.keys(commandHandler.controller.activeRequests)[i]}`;
+                    if (commandHandler.controller.activeRequests[e].requestedby == steamID64) str += `- Status: ${commandHandler.controller.activeRequests[e].status} | ${commandHandler.controller.activeRequests[e].amount} iterations with ${commandHandler.controller.activeRequests[e].accounts.length} accounts by ${commandHandler.controller.activeRequests[e].requestedby} for ${commandHandler.controller.activeRequests[e].type} ${Object.keys(commandHandler.controller.activeRequests)[i]}`;
                 } else {
                     delete commandHandler.controller.activeRequests[e]; // Remove entry from object if it is finished to keep the object clean
                 }
