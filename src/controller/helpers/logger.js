@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2023 09:37:35
+ * Last Modified: 06.06.2023 14:30:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -46,7 +46,7 @@ let botIsReady = false;
 Controller.prototype.logger = function(type, str, nodate, remove, animation, printNow) {
 
     // Push string to _logAfterReady if bot is still starting (Note: We cannot use "this." here as context is missing when global var is called)
-    if (!nodate && !remove && !printNow // Log instant if msg should have no date, it will be removed or printNow is forced
+    if (typeof str == "string" && !nodate && !remove && !printNow // Log instant if msg should have no date, it will be removed or printNow is forced
         && !botIsReady                  // Log instant if bot is already started, var gets updated by _loggerLogAfterReady
         && !type.toLowerCase().includes("err") // Log errors instantly
         && type.toLowerCase() != "debug"       // Log debug messages immediately
