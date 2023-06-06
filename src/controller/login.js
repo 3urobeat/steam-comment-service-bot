@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 03.06.2023 11:19:22
+ * Last Modified: 06.06.2023 14:34:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -110,7 +110,7 @@ Controller.prototype.login = function(firstLogin) {
             if (!this.bots[k.accountName]) {
                 logger("info", `Creating new bot object for ${k.accountName}...`, false, true, logger.animation("loading"));
 
-                this.bots[k.accountName] = new Bot(this, i); // Create a new bot object for this account and store a reference to it
+                this.bots[k.accountName] = new Bot(this, Object.keys(this.data.logininfo).indexOf(k.accountName)); // Create a new bot object for this account and store a reference to it
             } else {
                 logger("debug", `Found existing bot object for ${k.accountName}! Reusing it...`, false, true, logger.animation("loading"));
             }
@@ -122,7 +122,7 @@ Controller.prototype.login = function(firstLogin) {
 
             // Generate steamGuardCode with shared secret if one was provided
             if (this.data.logininfo[k.accountName].sharedSecret) {
-                logger("debug", `Found shared_secret for bot${i}! Generating AuthCode and adding it to logOnOptions...`);
+                logger("debug", `Found shared_secret for bot${this.bots[k.accountName].index}! Generating AuthCode and adding it to logOnOptions...`);
                 this.data.logininfo[k.accountName].steamGuardCode = SteamTotp.generateAuthCode(this.data.logininfo[k.accountName].sharedSecret);
             }
 
@@ -144,7 +144,7 @@ Controller.prototype.login = function(firstLogin) {
                 // Populate this.main if we just logged in the first account
                 if (Object.keys(this.bots)[0] == k.accountName) this.main = thisbot;
 
-                logger("debug", `Controller login(): bot${i} changed status from offline to ${thisbot.status}! Continuing with next account...`);
+                logger("debug", `Controller login(): bot${this.bots[k.accountName].index} changed status from offline to ${thisbot.status}! Continuing with next account...`);
 
                 // Check for last iteration, call again and emit ready event
                 if (i + 1 == allAccounts.length) {
