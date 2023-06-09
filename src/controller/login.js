@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.06.2023 14:34:43
+ * Last Modified: 09.06.2023 00:24:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -39,9 +39,9 @@ Controller.prototype.login = function(firstLogin) {
 
         // Print ASCII art
         logger("", "", true);
-        if (Math.floor(Math.random() * 100) <= 2) logger("", ascii.hellothereascii + "\n", true); // 2% chance
-            else if (Math.floor(Math.random() * 100) <= 5) logger("", ascii.binaryascii + "\n", true); // 5% chance
-            else logger("", ascii.ascii[Math.floor(Math.random() * ascii.ascii.length)] + "\n", true);
+        if (Math.floor(Math.random() * 100) <= 2) logger("", ascii.hellothereascii + "\n", true, false, null, false, true); // 2% chance
+            else if (Math.floor(Math.random() * 100) <= 5) logger("", ascii.binaryascii + "\n", true, false, null, false, true); // 5% chance
+            else logger("", ascii.ascii[Math.floor(Math.random() * ascii.ascii.length)] + "\n", true, false, null, false, true); // Last param makes sure to cut the width
 
         logger("", "", true); // Put one line above everything that will come to make the output cleaner
 

@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2023 09:36:27
+ * Last Modified: 09.06.2023 00:26:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -29,8 +29,8 @@ Controller.prototype._readyEvent = function() {
 
     // Start logging the ready message block
     logger("", " ", true);
-    logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
-    logger("", `${logger.colors.brfgmagenta}>${logger.colors.reset} ${logger.colors.brfgcyan}steam-comment-service-bot${logger.colors.reset} version ${logger.colors.brfgcyan}${this.data.datafile.versionstr}${logger.colors.reset} by ${this.data.datafile.mestr}`, true);
+    logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true, false, null, false, true);
+    logger("", `${logger.colors.brfgmagenta}>${logger.colors.reset} ${logger.colors.brfgcyan}steam-comment-service-bot${logger.colors.reset} version ${logger.colors.brfgcyan}${this.data.datafile.versionstr}${logger.colors.reset} by ${this.data.datafile.mestr}`, true, false, null, false, true);
 
 
     // Calculate what the max amount of comments per account is and log it
@@ -41,12 +41,12 @@ Controller.prototype._readyEvent = function() {
     if (maxCommentsOverall > 3) repeatedCommentsStr = `${logger.colors.underscore}${logger.colors.fgred}${round(maxCommentsOverall / this.getBots().length, 2)}`;
         else repeatedCommentsStr = round(maxCommentsOverall / this.getBots().length, 2);
 
-    logger("", `${logger.colors.brfgblue}>${logger.colors.reset} ${this.getBots().length} total account(s) | ${repeatedCommentsStr} comments per account allowed`, true);
+    logger("", `${logger.colors.brfgblue}>${logger.colors.reset} ${this.getBots().length} total account(s) | ${repeatedCommentsStr} comments per account allowed`, true, false, null, false, true);
 
 
     // Display amount of proxies if any were used
     if (this.data.proxies.length > 1) { // 'null' will always be in the array (your own ip)
-        logger("", `${logger.colors.fgcyan}>${logger.colors.reset} Using ${this.data.proxies.length} proxies | ${round(this.getBots().length / this.data.proxies.length, 2)} account(s) per proxy`, true);
+        logger("", `${logger.colors.fgcyan}>${logger.colors.reset} Using ${this.data.proxies.length} proxies | ${round(this.getBots().length / this.data.proxies.length, 2)} account(s) per proxy`, true, false, null, false, true);
     }
 
 
@@ -69,24 +69,24 @@ Controller.prototype._readyEvent = function() {
             let failedtocheckmsg = "";
             if (failedtocheck > 0) failedtocheckmsg = `(Couldn't check ${failedtocheck} account(s))`;
 
-            logger("", `${logger.colors.brfggreen}>${logger.colors.reset} ${limitedaccs}/${this.getBots().length} account(s) are ${logger.colors.fgred}limited${logger.colors.reset} ${failedtocheckmsg}`, true);
+            logger("", `${logger.colors.brfggreen}>${logger.colors.reset} ${limitedaccs}/${this.getBots().length} account(s) are ${logger.colors.fgred}limited${logger.colors.reset} ${failedtocheckmsg}`, true, false, null, false, true);
         }
     });
 
 
     // Log warning message if automatic updater is turned off
-    if (this.data.advancedconfig.disableAutoUpdate) logger("", `${logger.colors.bgred}${logger.colors.fgblack}>${logger.colors.reset} Automatic updating is ${logger.colors.underscore}${logger.colors.fgred}turned off${logger.colors.reset}!`, true);
+    if (this.data.advancedconfig.disableAutoUpdate) logger("", `${logger.colors.bgred}${logger.colors.fgblack}>${logger.colors.reset} Automatic updating is ${logger.colors.underscore}${logger.colors.fgred}turned off${logger.colors.reset}!`, true, false, null, false, true);
 
 
     // Log amount of loaded plugins
-    if (Object.keys(this.pluginSystem.pluginList).length > 0) logger("", `${logger.colors.fgblack}>${logger.colors.reset} Successfully loaded ${Object.keys(this.pluginSystem.pluginList).length} plugins!`, true);
+    if (Object.keys(this.pluginSystem.pluginList).length > 0) logger("", `${logger.colors.fgblack}>${logger.colors.reset} Successfully loaded ${Object.keys(this.pluginSystem.pluginList).length} plugins!`, true, false, null, false, true);
 
 
     // Log which games the main and child bots are playing
     let playinggames = "";
     if (this.data.config.playinggames[1]) playinggames = `(${this.data.config.playinggames.slice(1, this.data.config.playinggames.length)})`;
 
-    logger("", `${logger.colors.brfgyellow}>${logger.colors.reset} Playing status: ${logger.colors.fggreen}${this.data.config.playinggames[0]}${logger.colors.reset} ${playinggames}`, true);
+    logger("", `${logger.colors.brfgyellow}>${logger.colors.reset} Playing status: ${logger.colors.fggreen}${this.data.config.playinggames[0]}${logger.colors.reset} ${playinggames}`, true, false, null, false, true);
 
 
     // Calculate time the bot took to start
@@ -98,13 +98,13 @@ Controller.prototype._readyEvent = function() {
     if (readyAfter > 60) { readyAfter = readyAfter / 60; readyAfterUnit = "minutes"; }
     if (readyAfter > 60) { readyAfter = readyAfter / 60; readyAfterUnit = "hours"; }
 
-    logger("", `${logger.colors.brfgred}>${logger.colors.reset} Ready after ${round(readyAfter, 2)} ${readyAfterUnit}!`, true);
+    logger("", `${logger.colors.brfgred}>${logger.colors.reset} Ready after ${round(readyAfter, 2)} ${readyAfterUnit}!`, true, false, null, false, true);
     this.data.datafile.timesloggedin++;
     this.data.datafile.totallogintime += this.info.readyAfter / this.getBots("*").length; // Get rough logintime of only one account
 
 
     // Finished logging ready message
-    logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
+    logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true, false, null, false, true);
     logger("", " ", true);
 
 
