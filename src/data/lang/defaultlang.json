@@ -49,6 +49,7 @@
 
     "invalidnumber": "This does not seem to be a valid number!\n\nCommand usage: cmdusage",
     "invalidprofileid": "This does not seem to be a valid ID or link or you provided the wrong ID type for this command!\nPlease make sure that you either provide a full link, only the vanity or only the ID, pointing to an existing profile, group or sharedfile.",
+    "invalidgroupid": "This is not a valid group id or group url! \nA groupid must look like this: '103582791464712227' \n...or a group url like this: 'https://steamcommunity.com/groups/3urobeatGroup'",
     "invalidsharedfileid": "This does not seem to be a valid sharedfileID!\nPlease make sure that you either provide a full link: https://steamcommunity.com/sharedfiles/filedetails/?id=2980913451 ...or just the ID: 2980913451 ...which points to an existing screenshot, artwork or guide.\n\nCommand usage: cmdusage",
     "errloadingsharedfile": "Sorry but an error occurred while loading the sharedfile you have provided:",
     "idisownererror": "You are not allowed to provide the ID of an owner!",
@@ -117,6 +118,8 @@
     "leavegroupcmdnotfound": "I was unable to find a group with the URL you specified!",
     "leavegroupcmderror": "Couldn't get leavegroup information. Either Steam is down or your internet isn't working.\nError: ",
     "leavegroupcmdsuccess": "Left group 'profileid' with all bot accounts.",
+    "joingroupcmdsuccess": "Joining group 'groupid' with all bot accounts...",
+
 
     "leaveallgroupscmdabort": "Aborting leaveallgroups process if one is active...",
     "leaveallgroupscmdpending": "Leaving all groups (except yourgroup and botsgroup) with all bot accounts in 15 seconds...\nType 'cmdprefixleaveallgroups abort' to abort/stop the process.",

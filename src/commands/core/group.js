@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2023 10:31:45
+ * Last Modified: 12.06.2023 15:50:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -51,6 +51,43 @@ module.exports.group = {
         }
 
         respond(commandHandler.data.lang.groupcmdinvitelink + commandHandler.data.config.yourgroup); // Seems like no id has been saved but an url. Send the user the url
+    }
+};
+
+
+module.exports.joinGroup = {
+    names: ["joingroup"],
+    description: "Joins a Steam Group with all bot accounts",
+    ownersOnly: true,
+
+    /**
+     * The joinGroup command
+     * @param {CommandHandler} commandHandler The commandHandler object
+     * @param {Array} args Array of arguments that will be passed to the command
+     * @param {string} steamID64 Steam ID of the user that executed this command
+     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     */
+    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+
+        if (isNaN(args[0]) && !String(args[0]).startsWith("https://steamcommunity.com/groups/")) return respond(commandHandler.data.lang.invalidgroupid);
+
+        commandHandler.controller.handleSteamIdResolving(args[0], "group", (err, id) => {
+            if (err) return respond(commandHandler.data.lang.invalidgroupid + "\n\nError: " + err);
+
+            commandHandler.controller.getBots().forEach((e, i) => {
+                setTimeout(() => {
+                    if (e.user.myGroups[id] !== 3) e.community.joinGroup(new SteamID(id));
+                }, 1000 * i); // Delay every iteration so that we don't make a ton of requests at once
+            });
+
+            respond(commandHandler.data.lang.joingroupcmdsuccess.replace("groupid", id));
+            logger("info", `Joining group '${id}' with all bot accounts...`);
+        });
     }
 };
 
