@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 08.06.2023 13:27:52
+ * Last Modified: 21.06.2023 20:04:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -41,6 +41,7 @@ let botIsReady = false;
  * @param {String} str The text to log into the terminal
  * @param {Boolean} nodate Setting to true will hide date and time in the message
  * @param {Boolean} remove Setting to true will remove this message with the next one
+ * @param {array.<string>} animation Array containing animation frames as elements
  * @param {Boolean} printNow Ignores the readyafterlogs check and force prints the message now
  * @param {Boolean} cutToWidth Cuts the string to the width of the terminal
  */
