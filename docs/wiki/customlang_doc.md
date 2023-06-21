@@ -1,4 +1,6 @@
 # How to customize chat messages sent by the bot
+[⬅️ Go back to wiki home](./)
+
 This page will instruct you on how to modify the messages the bot will send to a user.  
 This includes nearly all messages and isn't difficult!  
 

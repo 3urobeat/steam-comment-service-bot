@@ -17,6 +17,6 @@
 - Added unfriend function after a period of time
 - Added timestamp to logger
 - Added update checker
-- Added a botgroup inviter function.
+- Added a botgroup inviter function
 
 Commit: [4370c5c](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/4370c5c)

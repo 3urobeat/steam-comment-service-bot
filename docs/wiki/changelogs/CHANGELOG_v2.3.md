@@ -19,6 +19,6 @@
 - Added option to disable message logging in the config
 - Added notice if config owner values are not setup
 - Removed myself from config if the bot is not running on my pc
-- Fixed a few other bugs and changed a few minor things.
+- Fixed a few other bugs and changed a few minor things
 
 Commit: [7cd1deb](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/7cd1deb)

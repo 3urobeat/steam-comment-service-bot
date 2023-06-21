@@ -1,4 +1,6 @@
 # Integrating into your own application
+[⬅️ Go back to wiki home](./)
+
 If you would like to integrate the comment command into your own application or you just don't want to deal with the Steam Chat then that is no problem! This can easily be done by pinging an URL.  
 
 Note: The current webserver will be replaced with a better one in version 2.14, featuring a full fledged frontend.

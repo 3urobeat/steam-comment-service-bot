@@ -1,4 +1,6 @@
 # Errors, FAQ & Common problems
+[⬅️ Go back to wiki home](./)
+
 This is a documentation of all bot errors and all steam errors I know and is therefore always under construction. 🚧  
 You can search for your error on this page by pressing `CTRL+F` in your browser.  
 If you can't find your error and need help, please open a new [issue.](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose)  

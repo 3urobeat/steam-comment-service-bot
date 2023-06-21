@@ -1,4 +1,6 @@
 # Advanced Config Documentation
+[⬅️ Go back to wiki home](./)
+
 This is the full documentation to customize your `advancedconfig.json`.  
   
 **Note:** These settings are meant for advanced users. Everything important is located in the `config.json` file and you probably don't need to change anything here.  

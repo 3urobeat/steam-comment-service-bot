@@ -1,4 +1,6 @@
-# Commands documentation  
+# Commands documentation
+[⬅️ Go back to wiki home](./)
+
 This is the full documentation of all commands. Most commands have aliases but some might be missing in this list.
 [Try them out!](https://steamcommunity.com/id/3urobeatscommentbot/)  
 

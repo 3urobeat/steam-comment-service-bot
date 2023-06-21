@@ -1,4 +1,6 @@
 # Steam Limitations
+[⬅️ Go back to wiki home](./)
+
 Steam sadly has some strict restrictions for commenting.  
 You can read all of them here: [Steam Support](https://support.steampowered.com/kb_article.php?ref=3330-IAGK-7663)  
 

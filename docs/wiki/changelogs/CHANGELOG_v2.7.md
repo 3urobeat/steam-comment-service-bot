@@ -67,6 +67,6 @@ Commit: [8adc902](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 <a id="2.7.3"></a>
 
 ## **2020-07-21, Version 2.7.3**, [removed on July 24, 2020] 
-- Updated start.js to prepare for future 2.8 update.
+- Updated start.js to prepare for future 2.8 update
 
 Commit: [e945938](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/e945938)

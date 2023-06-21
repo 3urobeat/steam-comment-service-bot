@@ -22,7 +22,7 @@
 - Added message to owners on successful update
 - Added other checks to provide easier error descriptions etc and to make the bot more robust
 - Fixed [#57](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/57)
-- Minor other changes.
+- Minor other changes
 
 Commit: [5ddef2a](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/5ddef2a)
 

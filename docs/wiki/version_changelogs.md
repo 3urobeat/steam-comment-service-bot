@@ -1,4 +1,6 @@
 # Version Changelogs
+[⬅️ Go back to wiki home](./)
+
 This is a list of links to the changelogs of all versions.  
 Each changelog contains a date, all changes made and a link to the commit.  
 
