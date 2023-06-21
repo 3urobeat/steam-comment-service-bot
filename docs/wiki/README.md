@@ -13,6 +13,7 @@ Setup instructions, documentation for all commands, configuration files, and err
 - [Errors, FAQ & Common problems](./errors_doc.md)
 - [Steam limitations](./steam_limitations.md)
 - [Integrating into your own application](./integrating_into_your_app.md)
+- [Creating plugins](./creating_plugins.md)
 - [Version Changelogs](./version_changelogs.md)
 
 &nbsp;
