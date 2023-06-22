@@ -12,8 +12,8 @@
         "request": "^2.88.2",
         "steam-comment-bot-webserver": "file:plugins/steam-comment-bot-webserver-1.0.0.tgz",
         "steam-session": "^1.2.3",
-        "steam-user": "^4.28.5",
-        "steamcommunity": "^3.44.3",
+        "steam-user": "^4.28.6",
+        "steamcommunity": "^3.45.3",
         "steamid": "^2.0.0",
         "steamid-resolver": "^1.3.3"
     },
