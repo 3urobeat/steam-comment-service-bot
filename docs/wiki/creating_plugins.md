@@ -7,6 +7,9 @@ They allow you to intercept events from the bots, run commands, edit or supply d
 This guide will explain you the basics to get started and go through the template plugin!  
 I'm expecting you already have some experience programming and have worked with JavaScript, as well as NPM packages and Git.  
 
+You do not need to read this quite long article. Feel free to [set up](#getting-started) and just start playing around with parts of the bot using your code editor's IntelliSense.  
+You should definitely take a look at the developer documentation though, it explains everything every module does and the functions exposed by it.  
+
 &nbsp;
 
 ## Table Of Contents
@@ -61,14 +64,17 @@ You can of course add more files and folders as you like and load them from the 
 Let's take a look at what the template plugin does:  
 Your plugin file `plugin.js` must expose a constructor and load function, just like the template does.  
 
+**Constructor:**  
 The template constructor stores references to the pluginSystem 'sys', the controller (which is the central part of the bot, "controlling" everything), the dataManager 'data' (which imports, checks and stores all config files) and the commandHandler (which loads, stores and runs all commands).  
 This makes using those interesting parts from your plugin easier and is probably a good idea to keep. You **need** the 'sys' reference, otherwise your plugin won't be able to communicate with the bot, making it pretty much useless.  
 Please also keep the `logger` overwrite. It makes sure that the log hold-back functionality during login is working.  
 
+**Load function:**  
 The load function is being called when the plugin is loaded. This happens right before the bot starts logging in accounts or right after the '!reload' command was used.  
 It makes sense to load your plugin config file from your plugin config folder, just like the template does.  
 We are also registering a super cool command here with the names '!hello' and '!cool-alias'. If someone executes it, it will respond with 'Hello World!'. Registering commands and responding to the user is further explained below.  
 
+**Event functions:**  
 The template plugin also exposes a 'ready', 'statusUpdate', 'steamGuardInput' function.  
 These are functions that will be called by the plugin system when the bot emits those events.  
 
