@@ -9,6 +9,20 @@ I'm expecting you already have some experience programming and have worked with 
 
 &nbsp;
 
+## Table Of Contents
+- [Getting started](#getting-started)
+- [The filestructure](#filestructure)
+- [Exposed functions and events](#functions)
+- [Logging messages](#logging)
+- [Plugin System Interface](#pluginsystem)
+- [Command System](#commandhandler)
+- [Packing and installing your plugin using npm](#npm)
+- [Additional information](#additional-info)
+
+&nbsp;
+
+<a id="getting-started"></a>
+
 ## **Getting started**
 First, fork my [plugin template repository](https://github.com/HerrEurobeat/steam-comment-bot-template-plugin).  
 You can do this easily through the GitHub web interface.  
@@ -29,6 +43,8 @@ If your plugin folder is right beside the bot folder, the default path should al
 
 &nbsp;
 
+<a id="filestructure"></a>
+
 ## **The filestructure**
 Each plugin consists of three important files.  
 - `plugin.js` - The entry file of your plugin. This one will be loaded by the bot and contains all the functions exposed by your plugin. It must contain an exposed constructor and load function.
@@ -38,6 +54,8 @@ Each plugin consists of three important files.
 You can of course add more files and folders as you like and load them from the `plugin.js` file.  
 
 &nbsp;
+
+<a id="functions"></a>
 
 ## **Exposed functions and events**
 Let's take a look at what the template plugin does:  
@@ -59,6 +77,8 @@ The statusUpdate event function is called when any bot account changes their sta
 The steamGuardInput event function is called when any bot account is currently being logged in, but a Steam Guard Code is requested. The bot has a built in handler that will request code input from the terminal on this event.  
 
 &nbsp;
+
+<a id="logging"></a>
 
 ## **Logging messages**
 I'm using my own [logging library](https://github.com/HerrEurobeat/output-logger) to log everything to the terminal and the `output.txt` file. It is easy to use, do not be afraid of this wall of text ^^  
@@ -82,20 +102,28 @@ The bot has a logger hold-back functionality which holds back every log message 
 
 &nbsp;
 
+<a id="pluginsystem"></a>
+
 ## **Plugin System Interface**
 To be added
 
 &nbsp;
+
+<a id="commandhandler"></a>
 
 ## **Command System**
 To be added
 
 &nbsp;
 
+<a id="npm"></a>
+
 ## **Packing and installing your plugin using npm**
 To be added
 
 &nbsp;
+
+<a id="additional-info"></a>
 
 ## **Additional information**
 **Debug Mode:**  
