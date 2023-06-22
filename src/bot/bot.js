@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:45:25
+ * Last Modified: 22.06.2023 22:56:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -99,8 +99,8 @@ const Bot = function(controller, index) {
     // Create user & community instance
     logger("debug", `[${this.logPrefix}] Using proxy ${this.loginData.proxyIndex} "${this.loginData.proxy}" to log in to Steam and SteamCommunity...`);
 
-    // Enable picsCache to get info about which games this account owns and force protocol for now: https://dev.doctormckay.com/topic/4187-disconnect-due-to-encryption-error-causes-relog-to-break-error-already-logged-on/?do=findComment&comment=10917
-    this.user      = new SteamUser({ autoRelogin: false, enablePicsCache: true, httpProxy: this.loginData.proxy, protocol: SteamUser.EConnectionProtocol.WebSocket });
+    // Enable picsCache to get info about which games this account owns (but disable list updating as we clear cache after login) and force protocol for now: https://dev.doctormckay.com/topic/4187-disconnect-due-to-encryption-error-causes-relog-to-break-error-already-logged-on/?do=findComment&comment=10917
+    this.user      = new SteamUser({ autoRelogin: false, enablePicsCache: true, changelistUpdateInterval: 0, httpProxy: this.loginData.proxy, protocol: SteamUser.EConnectionProtocol.WebSocket });
     this.community = new SteamCommunity({ request: request.defaults({ "proxy": this.loginData.proxy }) }); // Pass proxy to community library as well
 
     // Load my SteamCommunity patches
