@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 22.06.2023 20:43:47
+ * Last Modified: 22.06.2023 21:31:23
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -337,7 +337,7 @@ module.exports.run = () => {
         let file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false); // We can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
         if (!file) return;
 
-        forkedprocess = cp.fork("./src/controller/controller.js", [__dirname, Date.now()], { execArgv: ["--max-old-space-size=4096"] }); // Create new process and provide srcdir and timestamp as argv parameters
+        forkedprocess = cp.fork("./src/controller/controller.js", [__dirname, Date.now()], { execArgv: ["--max-old-space-size=2048", "--optimize-for-size", "--gc_interval=100"] }); // Create new process and provide srcdir and timestamp as argv parameters
         childpid = forkedprocess.pid;
 
         attachChildListeners();
@@ -362,7 +362,7 @@ module.exports.restart = async (args) => {
             let file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false); // We can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
             if (!file) return;
 
-            forkedprocess = cp.fork("./src/controller/controller.js", [__dirname, Date.now(), JSON.stringify(args)], { execArgv: ["--max-old-space-size=4096"] }); // Create new process and provide srcdir, timestamp and restartargs as argv parameters
+            forkedprocess = cp.fork("./src/controller/controller.js", [__dirname, Date.now(), JSON.stringify(args)], { execArgv: ["--max-old-space-size=2048", "--optimize-for-size", "--gc_interval=100"] }); // Create new process and provide srcdir, timestamp and restartargs as argv parameters
             childpid = forkedprocess.pid;
 
             attachChildListeners();
