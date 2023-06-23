@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 22.06.2023 21:31:23
+ * Last Modified: 23.06.2023 16:50:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -38,6 +38,9 @@ global.srcdir = __dirname;
 
 // Set timestamp checked in controller.js to 0 for the starter process (this one) to make sure the bot can never start here and only in the child process spawned by this.run()
 process.argv[3] = 0;
+
+// Exec Arguments passed to the child process. Add --inspect here to enable the node.js debugger
+const execArgs = [ "--max-old-space-size=2048", "--optimize-for-size", "--gc_interval=100" ];
 
 /* -------- Now, provide functions for attaching/detaching event listeners to the parent and child process -------- */
 
@@ -337,7 +340,7 @@ module.exports.run = () => {
         let file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false); // We can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
         if (!file) return;
 
-        forkedprocess = cp.fork("./src/controller/controller.js", [__dirname, Date.now()], { execArgv: ["--max-old-space-size=2048", "--optimize-for-size", "--gc_interval=100"] }); // Create new process and provide srcdir and timestamp as argv parameters
+        forkedprocess = cp.fork("./src/controller/controller.js", [__dirname, Date.now()], { execArgv: execArgs }); // Create new process and provide srcdir and timestamp as argv parameters
         childpid = forkedprocess.pid;
 
         attachChildListeners();
@@ -362,7 +365,7 @@ module.exports.restart = async (args) => {
             let file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false); // We can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
             if (!file) return;
 
-            forkedprocess = cp.fork("./src/controller/controller.js", [__dirname, Date.now(), JSON.stringify(args)], { execArgv: ["--max-old-space-size=2048", "--optimize-for-size", "--gc_interval=100"] }); // Create new process and provide srcdir, timestamp and restartargs as argv parameters
+            forkedprocess = cp.fork("./src/controller/controller.js", [__dirname, Date.now(), JSON.stringify(args)], { execArgv: execArgs }); // Create new process and provide srcdir, timestamp and restartargs as argv parameters
             childpid = forkedprocess.pid;
 
             attachChildListeners();
