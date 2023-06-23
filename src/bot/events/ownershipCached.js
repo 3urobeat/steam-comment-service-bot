@@ -4,7 +4,7 @@
  * Created Date: 24.05.2023 21:28:07
  * Author: 3urobeat
  *
- * Last Modified: 22.06.2023 22:58:35
+ * Last Modified: 23.06.2023 18:01:42
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -63,6 +63,7 @@ Bot.prototype._attachSteamOwnershipCachedEvent = function() {
         setTimeout(() => {
             logger("debug", `[${this.logPrefix}] Clearing picsCache for this account...`);
             this.user.picsCache.apps = {};
+            this.user.picsCache.packages = {};
         }, 2500);
 
 
