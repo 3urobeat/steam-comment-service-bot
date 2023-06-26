@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 02.06.2023 11:44:52
+ * Last Modified: 26.06.2023 19:16:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -28,7 +28,7 @@ const { cutStringsIntelligently } = require("../../controller/helpers/misc.js");
 
 /**
  * Our commandHandler respondModule implementation - Sends a message to a Steam user
- * @param {Object} _this The Bot object context
+ * @param {Bot} _this The Bot object context
  * @param {Object} resInfo Object containing information passed to command by friendMessage event. Supported by this handler: prefix, charLimit, cutChars
  * @param {String} txt The text to send
  * @param {Number} retry Internal: Counter of retries for this part if sending failed
@@ -67,6 +67,12 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
     _this.user.chat.sendFriendMessage(steamID64, thisPart, {}, (err) => {
         if (err) { // Check for error as some chat messages seem to not get send lately
             logger("warn", `[${_this.logPrefix}] Error trying to send chat message of length ${thisPart.length} to ${steamID64}! ${err}`);
+
+            // Don't bother if account is offline
+            if (_this.status == Bot.EStatus.OFFLINE) {
+                logger("info", `[${_this.logPrefix}] Ignoring msg retries to '${steamID64}' as they will always fail because this bot is offline!`);
+                return;
+            }
 
             // Check for AccessDenied error and abort retries if this was caused by the recipient not being a friend
             if (String(err).toLowerCase() == "error: accessdenied" && (!_this.user.myFriends[steamID64] || _this.user.myFriends[steamID64] != SteamUser.EFriendRelationship.Friend)) {
