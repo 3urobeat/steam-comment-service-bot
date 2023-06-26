@@ -141,7 +141,13 @@ From there, every other module of the bot is accessible. Worth noting:
 <a id="commandhandler"></a>
 
 ## **Command System**
-To be added
+The CommandHandler allows you to register and run commands.  
+Commands are the core functionalities that allow you to request comments, retrieve information and manage the bot.  
+Any command you register will instantly be available to all message handlers.  
+
+By default the bot has built-in Steam Chat message handling.  
+You can implement your own message handler as well, allowing you to integrate all registered commands into other platforms.  
+Take a look at the developer documentation (TODO) for more information about how to write a custom message handler.  
 
 &nbsp;
 
