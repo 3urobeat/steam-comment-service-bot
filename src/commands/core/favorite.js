@@ -4,7 +4,7 @@
  * Created Date: 02.06.2023 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2023 10:40:56
+ * Last Modified: 26.06.2023 15:23:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -84,7 +84,7 @@ module.exports.favorite = {
 
 
         // Get the sharedfile
-        commandHandler.controller.main.community.getSteamSharedfile(id, (err, sharedfile) => {
+        commandHandler.controller.main.community.getSteamSharedFile(id, (err, sharedfile) => {
             if (err) {
                 respond(commandHandler.data.lang.errloadingsharedfile + err);
                 return;
@@ -117,7 +117,7 @@ module.exports.favorite = {
                     // TODO: Error handling that skips iterations?
 
                     /* --------- Try to favorite --------- */
-                    bot.community.favoriteSharedfile(sharedfile.id, sharedfile.appID, (error) => {
+                    bot.community.favoriteSharedFile(sharedfile.id, sharedfile.appID, (error) => {
 
                         /* --------- Handle errors thrown by this favorite attempt or update ratingHistory db --------- */
                         if (error) {
@@ -258,7 +258,7 @@ module.exports.unfavorite = {
 
 
         // Get the sharedfile
-        commandHandler.controller.main.community.getSteamSharedfile(id, (err, sharedfile) => {
+        commandHandler.controller.main.community.getSteamSharedFile(id, (err, sharedfile) => {
             if (err) {
                 respond(commandHandler.data.lang.errloadingsharedfile + err);
                 return;
@@ -291,7 +291,7 @@ module.exports.unfavorite = {
                     // TODO: Error handling that skips iterations?
 
                     /* --------- Try to unfavorite --------- */
-                    bot.community.unfavoriteSharedfile(sharedfile.id, sharedfile.appID, (error) => {
+                    bot.community.unfavoriteSharedFile(sharedfile.id, sharedfile.appID, (error) => {
 
                         /* --------- Handle errors thrown by this unfavorite attempt or update ratingHistory db --------- */
                         if (error) {

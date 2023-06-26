@@ -4,7 +4,7 @@
  * Created Date: 24.05.2023 21:28:07
  * Author: 3urobeat
  *
- * Last Modified: 03.06.2023 19:50:23
+ * Last Modified: 26.06.2023 16:52:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -57,6 +57,13 @@ Bot.prototype._attachSteamOwnershipCachedEvent = function() {
             if (this.index == 0) this.user.gamesPlayed(this.controller.data.config.playinggames);
             if (this.index != 0) this.user.gamesPlayed(this.controller.data.config.childaccplayinggames);
         }
+
+
+        // Clear picsCache to save memory as we don't need it anymore. Give the Garbage Collector a few seconds to pick it up
+        setTimeout(() => {
+            logger("debug", `[${this.logPrefix}] Clearing picsCache for this account...`);
+            this.user.clearPicsCache();
+        }, 2500);
 
 
         // Increase progress bar if one is active

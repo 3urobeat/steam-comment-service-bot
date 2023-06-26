@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2023 10:42:32
+ * Last Modified: 26.06.2023 15:19:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -84,7 +84,7 @@ module.exports.upvote = {
 
 
         // Get the sharedfile
-        commandHandler.controller.main.community.getSteamSharedfile(id, (err, sharedfile) => {
+        commandHandler.controller.main.community.getSteamSharedFile(id, (err, sharedfile) => {
             if (err) {
                 respond(commandHandler.data.lang.errloadingsharedfile + err);
                 return;
@@ -117,7 +117,7 @@ module.exports.upvote = {
                     // TODO: Error handling that skips iterations?
 
                     /* --------- Try to vote --------- */
-                    bot.community.voteUpSharedfile(sharedfile.id, (error) => {
+                    bot.community.voteUpSharedFile(sharedfile.id, (error) => {
 
                         /* --------- Handle errors thrown by this vote attempt or update ratingHistory db --------- */
                         if (error) {
@@ -263,7 +263,7 @@ module.exports.downvote = {
 
 
         // Get the sharedfile
-        commandHandler.controller.main.community.getSteamSharedfile(id, (err, sharedfile) => {
+        commandHandler.controller.main.community.getSteamSharedFile(id, (err, sharedfile) => {
             if (err) {
                 respond(commandHandler.data.lang.errloadingsharedfile + err);
                 return;
@@ -296,7 +296,7 @@ module.exports.downvote = {
                     // TODO: Error handling that skips iterations?
 
                     /* --------- Try to vote --------- */
-                    bot.community.voteDownSharedfile(sharedfile.id, (error) => {
+                    bot.community.voteDownSharedFile(sharedfile.id, (error) => {
 
                         /* --------- Handle errors thrown by this vote attempt or update ratingHistory db --------- */
                         if (error) {

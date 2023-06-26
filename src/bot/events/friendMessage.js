@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2023 10:36:30
+ * Last Modified: 26.06.2023 16:47:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -25,7 +25,10 @@ const Bot = require("../bot.js");
  */
 Bot.prototype._attachSteamFriendMessageEvent = function() {
 
-    this.user.on("friendMessage", (steamID, message) => {
+    this.user.chat.on("friendMessage", (msg) => {
+        let message = msg.message;
+        let steamID = msg.steamid_friend;
+
         let steamID64 = new SteamID(String(steamID)).getSteamID64();
         let resInfo   = { steamID64: steamID64, cmdprefix: "!" }; // Object required for sendChatMessage(), our commandHandler respondModule implementation
 

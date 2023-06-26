@@ -4,7 +4,7 @@
  * Created Date: 03.11.2022 12:27:46
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:56:12
+ * Last Modified: 26.06.2023 19:07:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -69,7 +69,7 @@ Bot.prototype.handleLoginTimeout = function() {
             this.user.logOff(); // Call logOff() just to be sure
             if (this.sessionHandler.session) this.sessionHandler.session.cancelLoginAttempt(); // TODO: This might cause an error as idk if we are polling. Maybe use the timeout event of steam-session
 
-            this._loginToSteam(); // Attempt another login as we still have attempts left
+            setTimeout(() => this._loginToSteam(), 2500); // Attempt another login as we still have attempts left. Delay it a bit to avoid any "Already logged on" errors
         }
 
     }, this.data.advancedconfig.loginTimeout);

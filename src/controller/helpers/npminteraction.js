@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.05.2023 18:28:48
+ * Last Modified: 22.06.2023 21:03:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -38,7 +38,7 @@ module.exports.reinstallAll = (logger, callback) => {
 
         logger("info", "Running 'npm install'...");
 
-        exec("npm install", { cwd: srcdir + "/.." }, (err, stdout) => {
+        exec("npm install --production", { cwd: srcdir + "/.." }, (err, stdout) => {
             if (err) return callback(err, null);
 
             logger("info", "Successfully ran 'npm install'");
@@ -66,7 +66,7 @@ module.exports.update = (callback) => {
 module.exports.updateFromPath = (path, callback) => {
     logger("debug", `npminteraction update(): Running 'npm install' in '${path}'...`);
 
-    exec("npm install", { cwd: path }, (err, stdout) => {
+    exec("npm install --production", { cwd: path }, (err, stdout) => {
         if (err) return callback(err, null);
 
         // Logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)

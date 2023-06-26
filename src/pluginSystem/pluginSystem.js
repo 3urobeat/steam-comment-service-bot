@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2023 19:23:41
+ * Last Modified: 06.06.2023 12:28:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -76,7 +76,7 @@ PluginSystem.prototype.reloadPlugins = function () {
 
     // Delete cache so requiring plugins again will load new changes
     Object.keys(require.cache).forEach((key) => {
-        if (key.includes("/plugins/")) delete require.cache[key];
+        if (key.includes("node_modules/steam-comment-bot-") || key.includes("/plugins/")) delete require.cache[key];
     });
 
     this.pluginList = {};

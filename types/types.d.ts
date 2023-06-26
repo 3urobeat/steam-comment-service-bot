@@ -767,55 +767,6 @@ declare class DataManager {
 }
 
 /**
- * Constructor - Creates a new Sharedfile object
- */
-declare class CSteamSharedfile {
-    constructor(community: SteamCommunity, data: any);
-    /**
-     * Deletes a comment from this sharedfile's comment section
-     * @param cid - ID of the comment to delete
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    deleteComment(cid: string, callback: (...params: any[]) => any): void;
-    /**
-     * Favorites this sharedfile
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    favorite(callback: (...params: any[]) => any): void;
-    /**
-     * Posts a comment to this sharedfile
-     * @param message - Content of the comment to post
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    comment(message: string, callback: (...params: any[]) => any): void;
-    /**
-     * Subscribes to this sharedfile's comment section. Note: Checkbox on webpage does not update
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    subscribe(callback: (...params: any[]) => any): void;
-    /**
-     * Unfavorites this sharedfile
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    unfavorite(callback: (...params: any[]) => any): void;
-    /**
-     * Unsubscribes from this sharedfile's comment section. Note: Checkbox on webpage does not update
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    unsubscribe(callback: (...params: any[]) => any): void;
-    /**
-     * Downvotes this sharedfile
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    voteDown(callback: (...params: any[]) => any): void;
-    /**
-     * Upvotes this sharedfile
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    voteUp(callback: (...params: any[]) => any): void;
-}
-
-/**
  * @property load - Called on Plugin load
  * @property unload - Called on Plugin unload
  * @property ready - Controller ready event

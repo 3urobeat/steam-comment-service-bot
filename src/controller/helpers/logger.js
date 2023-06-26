@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2023 09:37:35
+ * Last Modified: 21.06.2023 20:04:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -24,7 +24,7 @@ const Controller = require("../controller.js");
 logger.options({
     required_from_childprocess: true, // eslint-disable-line camelcase
     msgstructure: `[${logger.Const.ANIMATION}] [${logger.Const.DATE} | ${logger.Const.TYPE}] ${logger.Const.MESSAGE}`,
-    paramstructure: [logger.Const.TYPE, logger.Const.MESSAGE, "nodate", "remove", logger.Const.ANIMATION, "customTimestamp"],
+    paramstructure: [logger.Const.TYPE, logger.Const.MESSAGE, "nodate", "remove", logger.Const.ANIMATION, "cutToWidth", "customTimestamp"],
     outputfile: srcdir + "/../output.txt"
 });
 
@@ -41,24 +41,26 @@ let botIsReady = false;
  * @param {String} str The text to log into the terminal
  * @param {Boolean} nodate Setting to true will hide date and time in the message
  * @param {Boolean} remove Setting to true will remove this message with the next one
+ * @param {array.<string>} animation Array containing animation frames as elements
  * @param {Boolean} printNow Ignores the readyafterlogs check and force prints the message now
+ * @param {Boolean} cutToWidth Cuts the string to the width of the terminal
  */
-Controller.prototype.logger = function(type, str, nodate, remove, animation, printNow) {
+Controller.prototype.logger = function(type, str, nodate, remove, animation, printNow, cutToWidth) {
 
     // Push string to _logAfterReady if bot is still starting (Note: We cannot use "this." here as context is missing when global var is called)
-    if (!nodate && !remove && !printNow // Log instant if msg should have no date, it will be removed or printNow is forced
+    if (typeof str == "string" && !nodate && !remove && !printNow // Log instant if msg should have no date, it will be removed or printNow is forced
         && !botIsReady                  // Log instant if bot is already started, var gets updated by _loggerLogAfterReady
         && !type.toLowerCase().includes("err") // Log errors instantly
         && type.toLowerCase() != "debug"       // Log debug messages immediately
         && !str.toLowerCase().includes("error")) { // Log instantly if message contains Error
 
-        logAfterReady.push([ type, str, nodate, remove, animation, Date.now() ]); // Push all arguments this function got to the array, including a customTimestamp
+        logAfterReady.push([ type, str, nodate, remove, animation, cutToWidth, Date.now() ]); // Push all arguments this function got to the array, including a customTimestamp
 
         logger("debug", `Controller logger: Pushing "${str}${logger.colors.reset}" to logAfterReady array...`);
 
     } else {
 
-        logger(type, str, nodate, remove, animation);
+        logger(type, str, nodate, remove, animation, cutToWidth);
 
     }
 
