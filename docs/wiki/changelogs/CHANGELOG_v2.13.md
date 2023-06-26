@@ -6,6 +6,7 @@
 **Current**  
 - [2.13.0](#2.13.0)
 - [2.13.1](#2.13.1)
+- [2.13.2](#2.13.2)
   
 &nbsp;
 
@@ -301,5 +302,16 @@ Commit: [3fa6a50](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - Updated library patches as [my sharedfiles PR to the SteamCommunity library got accepted](https://github.com/DoctorMcKay/node-steamcommunity/pull/306)
 - Updated usage of deprecated friendMessage event
 - Updated dependencies
+
+Commit: [c5a0131](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/c5a0131)
+
+&nbsp;
+
+<a id="2.13.2"></a>
+
+## **2023-06-26, Version 2.13.2, (hotfix)**
+
+**Fixes:**
+- Fixed links as command parameters being recognized as invalid, caused by embed junk inside the received message
 
 Commit: [](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/)
