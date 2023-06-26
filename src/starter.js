@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 23.06.2023 16:50:57
+ * Last Modified: 26.06.2023 17:40:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -40,7 +40,7 @@ global.srcdir = __dirname;
 process.argv[3] = 0;
 
 // Exec Arguments passed to the child process. Add --inspect here to enable the node.js debugger
-const execArgs = [ "--max-old-space-size=2048", "--optimize-for-size", "--gc_interval=100" ];
+const execArgs = [ "--max-old-space-size=2048", "--optimize-for-size" ];
 
 /* -------- Now, provide functions for attaching/detaching event listeners to the parent and child process -------- */
 
