@@ -18,6 +18,7 @@ You should definitely take a look at the developer documentation though, it expl
 - [Exposed functions and events](#functions)
 - [Logging messages](#logging)
 - [Plugin System Interface](#pluginsystem)
+- [Controller](#controller)
 - [Command System](#commandhandler)
 - [Packing and installing your plugin using npm](#npm)
 - [Additional information](#additional-info)
@@ -111,7 +112,29 @@ The bot has a logger hold-back functionality which holds back every log message 
 <a id="pluginsystem"></a>
 
 ## **Plugin System Interface**
-To be added
+As mentioned above, your constructor gets a reference to the Plugin System as the first parameter.  
+The Plugin System is responsible for loading, checking and calling plugin functions, as well as providing you functions to write to and read from your plugin data folder.  
+It also stores references to the controller, giving you access to every part of the bot.  
+
+The Plugin System is probably the most important part for you when developing a plugin.  
+Check it out using your IntelliSense and take a look at the developer documentation (TODO).  
+
+&nbsp;
+
+<a id="controller"></a>
+
+## **Controller**
+The Controller is the most important part of the application itself.  
+It is responsible for loading all modules on start, storing references to them, logging in all bot accounts and handling any issues.  
+
+You can access it from your plugin through the Plugin System: `sys.controller`  
+From there, every other module of the bot is accessible. Worth noting:  
+- Functions to restart/stop the application, resolving steamIDs, getting bot accounts, etc.
+- `sys.controller.data` - The DataManager object which contains every loaded datafile (e.g. logininfo, config, quotes, proxies, etc.)
+- `sys.controller.bots` - Object which holds references to all Bot objects, mapped to their account names. Access any bot account that is in use right now from there. I recommend using the `getBots()` function instead of accessing this object directly.
+- `sys.controller.commandHandler` - The CommandHandler object, read more [below](#commandhandler).
+
+...and much more. Check it out using your code editor's IntelliSense.
 
 &nbsp;
 
