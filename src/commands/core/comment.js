@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2023 10:39:56
+ * Last Modified: 26.06.2023 15:06:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -138,13 +138,13 @@ module.exports.comment = {
                 commentArgs = { receiverSteamID64: receiverSteamID64, quote: null };
                 break;
             case "sharedfileComment":
-                postComment = commandHandler.controller.main.community.postSharedfileComment; // Context of the correct bot account is applied later
+                postComment = commandHandler.controller.main.community.postSharedFileComment; // Context of the correct bot account is applied later
                 commentArgs = { sharedfileOwnerId: null, sharedfileId: receiverSteamID64, quote: null };
 
                 // Get sharedfileOwnerId by scraping sharedfile DOM - Quick hack to await function that only supports callbacks
                 await (() => {
                     return new Promise((resolve) => {
-                        commandHandler.controller.main.community.getSteamSharedfile(receiverSteamID64, (err, obj) => {
+                        commandHandler.controller.main.community.getSteamSharedFile(receiverSteamID64, (err, obj) => {
                             if (err) {
                                 logger("error", "Couldn't get sharedfile even though it exists?! Aborting!\n" + err);
                                 respond("Error: Couldn't get sharedfile even though it exists?! Aborting!\n" + err);

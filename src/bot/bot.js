@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 22.06.2023 22:56:40
+ * Last Modified: 26.06.2023 15:25:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -103,8 +103,7 @@ const Bot = function(controller, index) {
     this.user      = new SteamUser({ autoRelogin: false, enablePicsCache: true, changelistUpdateInterval: 0, httpProxy: this.loginData.proxy, protocol: SteamUser.EConnectionProtocol.WebSocket });
     this.community = new SteamCommunity({ request: request.defaults({ "proxy": this.loginData.proxy }) }); // Pass proxy to community library as well
 
-    // Load my SteamCommunity patches
-    require("../libraryPatches/CSteamSharedfile.js");
+    // Load my library patches
     require("../libraryPatches/profile.js");
     require("../libraryPatches/sharedfiles.js");
 
