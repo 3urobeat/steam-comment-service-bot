@@ -12,4 +12,15 @@ The original library which is installed: https://github.com/DoctorMcKay/node-ste
 These are the patches being applied:  
 - Re-enable primaryGroup profile setting: [#287](https://github.com/DoctorMcKay/node-steamcommunity/pull/287) & [#307](https://github.com/DoctorMcKay/node-steamcommunity/pull/307)  
 - Add full sharedfiles support: [#306](https://github.com/DoctorMcKay/node-steamcommunity/pull/306) (PR has been merged, only voteUp & voteDown are being loaded here now)
--  Fix resolving vanity returning error: [#314](https://github.com/DoctorMcKay/node-steamcommunity/pull/314)
+- Fix resolving vanity returning error: [#314](https://github.com/DoctorMcKay/node-steamcommunity/pull/314)
+
+&nbsp;
+
+## SteamUser by DoctorMcKay
+My fork containing all changes: https://github.com/HerrEurobeat/node-steam-user  
+The original library which is installed: https://github.com/DoctorMcKay/node-steam-user  
+
+&nbsp;
+
+These are the patches being applied:  
+- Add clearPicsCache function to reduce memory usage and store job types: [#444](https://github.com/DoctorMcKay/node-steam-user/pull/444)

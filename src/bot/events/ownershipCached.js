@@ -4,7 +4,7 @@
  * Created Date: 24.05.2023 21:28:07
  * Author: 3urobeat
  *
- * Last Modified: 23.06.2023 18:01:42
+ * Last Modified: 26.06.2023 16:52:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -62,8 +62,7 @@ Bot.prototype._attachSteamOwnershipCachedEvent = function() {
         // Clear picsCache to save memory as we don't need it anymore. Give the Garbage Collector a few seconds to pick it up
         setTimeout(() => {
             logger("debug", `[${this.logPrefix}] Clearing picsCache for this account...`);
-            this.user.picsCache.apps = {};
-            this.user.picsCache.packages = {};
+            this.user.clearPicsCache();
         }, 2500);
 
 
