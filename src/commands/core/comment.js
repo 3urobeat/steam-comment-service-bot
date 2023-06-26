@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.06.2023 15:06:16
+ * Last Modified: 26.06.2023 18:04:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -269,7 +269,7 @@ function comment(commandHandler, resInfo, respond, postComment, commentArgs, rec
         if (activeReqEntry.amount == 1) {
             // Check if an error occurred
             if (Object.keys(activeReqEntry.failed).length > 0) respond(`${commandHandler.data.lang.commenterroroccurred}\n${Object.values(activeReqEntry.failed)[0]}`); // TODO: Do I want to handle retryComments for singular comments?
-                else respond(commandHandler.data.lang.commentsuccess);
+                else respond(commandHandler.data.lang.commentsuccess.replace("failedamount", "0").replace("numberOfComments", "1"));
 
             // Instantly set status of this request to cooldown
             activeReqEntry.status = "cooldown";
