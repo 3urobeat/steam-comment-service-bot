@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.06.2023 16:47:43
+ * Last Modified: 26.06.2023 23:30:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -26,7 +26,7 @@ const Bot = require("../bot.js");
 Bot.prototype._attachSteamFriendMessageEvent = function() {
 
     this.user.chat.on("friendMessage", (msg) => {
-        let message = msg.message;
+        let message = msg.message_no_bbcode;
         let steamID = msg.steamid_friend;
 
         let steamID64 = new SteamID(String(steamID)).getSteamID64();
