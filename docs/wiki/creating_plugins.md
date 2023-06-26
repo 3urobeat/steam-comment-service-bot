@@ -148,7 +148,30 @@ To be added
 <a id="npm"></a>
 
 ## **Packing and installing your plugin using npm**
-To be added
+If you have a version that you would like to **pack locally**, follow these steps:
+- Open the `package.json` file of your plugin and give it a proper version. NPM packages use [semantic versioning](https://semver.org/). In short, this means:
+  - The version number is split into three parts: MAJOR.MINOR.PATCH
+  - Increment MAJOR if you make breaking changes, e.g. user interaction is required to update your package
+  - Increment MINOR if you add new functionality that is backwards compatible, e.g. no direct user interaction is required to update
+  - Increment PATCH if you made bugfixes or other small changes which also do not require user interaction
+  - If you do not have a full release finished yet, e.g. a beta version, start with the version number `0.1.0`. Your first full release `1.0.0` is appropiate when the core functionality has been finished and no major bugs are to be expected
+- Open a command line/terminal window in your plugin project folder and run `npm pack`. On success a new `.tgz` archive appeared in your folder.
+- Copy the package archive to your steam-comment-service-bot folder, open a new terminal there and run `npm install ./the-archive-name.tgz`
+
+On restart (or by running the command `!reload`) you should see your plugin get loaded!  
+The bot will automatically create a new data folder for your plugin in the `plugins` folder. It will already contain the default config you shipped with your plugin.
+
+&nbsp;
+
+If you have a finished version of your plugin that you would like to **publish to NPM**, follow these steps:
+- If this is your first time, create an [NPM account](https://www.npmjs.com/signup), open a command line/terminal in your plugin project folder and run `npm login`. (I assume you have npm installed alongside node)
+- Once that is done, give your plugin a proper version number in `package.json`. NPM packages use semantic versioning which is explained above.
+- Run `npm publish` in the command line/terminal window from step 1.
+- If everything goes well, your package should now be accessible to anyone. Check it out by searching for it [on the npm webpage](https://www.npmjs.com/)!
+
+To install and use your plugin anyone can now run the command `npm install steam-comment-bot-your-plugin-name` in their steam-comment-service-bot folder.  
+On restart (or by running the command `!reload`) you should see your plugin get loaded!  
+The bot will automatically create a new data folder for your plugin in the `plugins` folder. It will already contain the default config you shipped with your plugin.
 
 &nbsp;
 
@@ -162,8 +185,18 @@ Feel free to include 'debug' log calls in your plugin as well!
 
 &nbsp;
 
-**NPM setup for development:**  
-To be added
+**More efficient NPM setup for development:**  
+To improve your plugin development experience it is recommended to link your project and the bot using npm.  
+This will allow you to test changes without needing to pack or publish the plugin.  
+
+To do this, follow these steps:  
+- Open a command line/terminal window in the folder of your plugin project
+- Run the command `npm link`. On Linux you might have to precede the command with `sudo` (or doas, or whatever you are using).  
+  This will make the package available locally to all projects
+- Open a terminal window in the folder of your bot installation. Run the command `npm link name-of-your-package`
+
+On restart (or by running the command `!reload`) you should see your plugin get loaded!  
+If you make changes in your plugin project you now only need to run the `!reload` command to test them.
 
 &nbsp;
 
