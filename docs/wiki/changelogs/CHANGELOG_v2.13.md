@@ -5,6 +5,7 @@
 
 **Current**  
 - [2.13.0](#2.13.0)
+- [2.13.1](#2.13.1)
   
 &nbsp;
 
@@ -260,3 +261,45 @@ This update is the largest yet and took ~2.5 months with many full days.
 Check out the full PR [here](https://github.com/HerrEurobeat/steam-comment-service-bot/pull/176).
 
 Commit: [3fa6a50](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/3fa6a50)
+
+&nbsp;
+
+<a id="2.13.1"></a>
+
+## **2023-06-26, Version 2.13.1**
+**Changes of note (TL;DR):**  
+- Greatly reduced memory consumption by clearing picsCache after using it once on ready
+- Greatly reduced size of node_modules folder
+- Fixed tons of logger issues
+- Added a !joingroup command
+
+&nbsp;
+
+**Additions:**
+- Added a !joingroup command
+- Added support for adding new bot accounts at runtime to login()
+- Added a wiki page for creating plugins
+- Added library patches for my [steam-user clearPicsCache() PR](https://github.com/DoctorMcKay/node-steam-user/pull/444) and [steamcommunity vanity resolving fix PR](https://github.com/DoctorMcKay/node-steamcommunity/pull/314)
+
+**Fixes:**
+- Fixed tons of logger issues and improved its memory consumption
+- Fixed cache of plugins not being cleared correctly when running !reload
+- Fixed msg hold back check throwing error when logging non-string
+- Fixed bot sending unprocessed response when requesting only 1 comment
+- (Hopefully) fixed any "Already logged on" errors when login times out while waiting for `loggedOn` event
+- Fixed Steam Chat send message handler retrying failed messages for bot accounts that are offline
+
+**Changes:**
+- Greatly reduced the child process's memory consumption by clearing picsCache after using it once
+- Increased the memory limit of the child process to 2 GB and enabled the Garbage Collector's `optimize-for-size` option
+- Greatly reduced the size of the `node_modules` folder by using the npm `--production` flag when automatically installing dependencies
+- Shipping disabled webserver config for new users now
+- ASCII Art and login summary on ready event are now being cut to the current terminal width
+- Reworked !leavegroup command to use handleSteamIdResolving helper
+- Moved the Wiki from GitHub to the git repository
+- Reworked and improved wiki pages, especially the changelogs
+- Updated library patches as [my sharedfiles PR to the SteamCommunity library got accepted](https://github.com/DoctorMcKay/node-steamcommunity/pull/306)
+- Updated usage of deprecated friendMessage event
+- Updated dependencies
+
+Commit: [](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/)

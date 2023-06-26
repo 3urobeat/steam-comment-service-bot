@@ -1,14 +1,14 @@
 {
-    "version": "21300",
-    "versionstr": "2.13.0",
-    "branch": "beta-testing",
+    "version": "21301",
+    "versionstr": "2.13.1",
+    "branch": "master",
     "filetostart": "./src/starter.js",
-    "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/starter.js",
+    "filetostarturl": "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/starter.js",
     "mestr": "3urobeat",
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/HerrEurobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://paypal.me/3urobeat",
     "firststart": true,
     "compatibilityfeaturedone": false,
-    "whatsnew": "Added new cmds for voting & favorizing sharedfiles! Added comment support on sharedfiles! Added new plugin and command system. Reworked the whole codebase. Greatly improved chat msg handling, fixed lots of bugs and much much more. Read the full release notes on GitHub!",
+    "whatsnew": "Greatly reduced RAM usage, node_modules size, fixed tons of logger issues, added a !joingroup command and fixed a few more bugs.",
     "timesloggedin": 0,
     "totallogintime": 0
 }
