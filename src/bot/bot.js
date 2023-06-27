@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.06.2023 17:14:42
+ * Last Modified: 27.06.2023 22:35:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -86,7 +86,6 @@ const Bot = function(controller, index) {
     require("./events/error.js");
     require("./events/friendMessage.js");
     require("./events/loggedOn.js");
-    require("./events/ownershipCached.js");
     require("./events/relationship.js");
     require("./events/webSession.js");
     require("./helpers/checkMsgBlock.js");
@@ -99,16 +98,14 @@ const Bot = function(controller, index) {
     // Create user & community instance
     logger("debug", `[${this.logPrefix}] Using proxy ${this.loginData.proxyIndex} "${this.loginData.proxy}" to log in to Steam and SteamCommunity...`);
 
-    // Enable picsCache to get info about which games this account owns (but disable list updating as we clear cache after login) and force protocol for now: https://dev.doctormckay.com/topic/4187-disconnect-due-to-encryption-error-causes-relog-to-break-error-already-logged-on/?do=findComment&comment=10917
-    this.user      = new SteamUser({ autoRelogin: false, enablePicsCache: true, changelistUpdateInterval: 0, httpProxy: this.loginData.proxy, protocol: SteamUser.EConnectionProtocol.WebSocket });
+    // Force protocol for now: https://dev.doctormckay.com/topic/4187-disconnect-due-to-encryption-error-causes-relog-to-break-error-already-logged-on/?do=findComment&comment=10917
+    this.user      = new SteamUser({ autoRelogin: false, httpProxy: this.loginData.proxy, protocol: SteamUser.EConnectionProtocol.WebSocket });
     this.community = new SteamCommunity({ request: request.defaults({ "proxy": this.loginData.proxy }) }); // Pass proxy to community library as well
 
     // Load my library patches
     require("../libraryPatches/profile.js");
     require("../libraryPatches/sharedfiles.js");
     require("../libraryPatches/helpers.js");
-    require("../libraryPatches/apps.js");
-    require("../libraryPatches/03-messages.js");
 
     if (global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<") this.controller.stop(); // eslint-disable-line
 
@@ -119,7 +116,6 @@ const Bot = function(controller, index) {
     this._attachSteamErrorEvent();
     this._attachSteamFriendMessageEvent();
     this._attachSteamLoggedOnEvent();
-    this._attachSteamOwnershipCachedEvent();
     this._attachSteamFriendRelationshipEvent();
     this._attachSteamGroupRelationshipEvent();
     this._attachSteamWebSessionEvent();
