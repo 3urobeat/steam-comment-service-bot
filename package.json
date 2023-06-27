@@ -11,9 +11,9 @@
         "output-logger": "^2.3.7",
         "request": "^2.88.2",
         "steam-comment-bot-webserver": "file:plugins/steam-comment-bot-webserver-1.0.0.tgz",
-        "steam-session": "^1.2.3",
+        "steam-session": "^1.2.4",
         "steam-user": "^4.28.7",
-        "steamcommunity": "^3.46.0",
+        "steamcommunity": "^3.46.1",
         "steamid": "^2.0.0",
         "steamid-resolver": "^1.3.3"
     },

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.06.2023 17:14:42
+ * Last Modified: 27.06.2023 09:47:42
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -106,7 +106,6 @@ const Bot = function(controller, index) {
     // Load my library patches
     require("../libraryPatches/profile.js");
     require("../libraryPatches/sharedfiles.js");
-    require("../libraryPatches/helpers.js");
     require("../libraryPatches/apps.js");
     require("../libraryPatches/03-messages.js");
 
