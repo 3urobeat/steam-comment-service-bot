@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2023 10:19:57
+ * Last Modified: 27.06.2023 12:55:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -26,6 +26,10 @@ const Bot = require("../bot.js");
 Bot.prototype._attachSteamWebSessionEvent = function() {
 
     this.user.on("webSession", (sessionID, cookies) => { // Get websession (log in to chat)
+
+        // Increase progress bar if one is active
+        if (logger.getProgressBar()) logger.increaseProgressBar((100 / Object.keys(this.data.logininfo).length) / 3);
+
 
         // Set cookies (otherwise the bot is unable to comment)
         this.community.setCookies(cookies);
@@ -134,6 +138,55 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
             });
         }
 
+
+        /* ------------ Check for missing game licenses and start playing: ------------ */
+        let startPlaying = () => { if (this.index == 0) this.user.gamesPlayed(this.controller.data.config.playinggames); else this.user.gamesPlayed(this.controller.data.config.childaccplayinggames); };
+        let data = this.controller.data;
+
+        let options = {
+            includePlayedFreeGames: true,
+            filterAppids: this.index == 0 ? data.config.playinggames.filter(e => !isNaN(e)) : data.config.childaccplayinggames.filter(e => !isNaN(e)), // We only need to check for these appIDs. Filter custom game string
+            includeFreeSub: false
+        };
+
+        // Only request owned apps if we are supposed to idle something
+        if (options.filterAppids.length > 0) {
+            this.user.getUserOwnedApps(data.cachefile.botaccid[this.index], options, (err, res) => {
+                if (err) {
+                    logger("error", `[${this.logPrefix}] Failed to get owned apps! Attempting to play set appIDs anyways...`);
+
+                    // Set playinggames for main account and child account
+                    startPlaying();
+                    return;
+                }
+
+                // Check if we are missing a license
+                let missingLicenses = this.data.config.playinggames.filter(e => !isNaN(e) && res.apps.filter(f => f.appid == e).length == 0);
+
+                // Redeem missing licenses or start playing if none are missing. Event will get triggered again on change.
+                if (missingLicenses.length > 0) {
+                    logger("info", `[${this.logPrefix}] Requesting ${missingLicenses.length} missing license(s) before starting to play games set in config...`, false, true, logger.animation("loading"));
+
+                    this.user.requestFreeLicense(missingLicenses, (err) => {
+                        if (err) {
+                            logger("error", `[${this.logPrefix}] Failed to request missing licenses! Starting to play anyways...`);
+                            startPlaying();
+                        } else {
+                            logger("info", `[${this.logPrefix}] Successfully requested ${missingLicenses.length} missing game license(s)!`);
+                            setTimeout(() => startPlaying(), 2500);
+                        }
+                    });
+                } else {
+                    logger("debug", `[${this.logPrefix}] Bot webSession: ${options.filterAppids.length} appIDs are set, user is missing 0 of them. Starting to play...`);
+                    startPlaying();
+                }
+            });
+
+        } else { // ...check for custom game which was filtered above
+
+            logger("debug", `[${this.logPrefix}] Bot webSession: No appIDs are set, starting to play custom game if one is set...`);
+            startPlaying();
+        }
 
         // Increase progress bar if one is active
         if (logger.getProgressBar()) logger.increaseProgressBar((100 / Object.keys(this.data.logininfo).length) / 3);
