@@ -26,4 +26,6 @@ The original library which is installed: https://github.com/DoctorMcKay/node-ste
 &nbsp;
 
 These are the patches being applied:  
+
+These patches have been applied in the past:  
 - Add clearPicsCache function to reduce memory usage and store job types: [#444](https://github.com/DoctorMcKay/node-steam-user/pull/444)
