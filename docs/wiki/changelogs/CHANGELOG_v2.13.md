@@ -7,6 +7,7 @@
 - [2.13.0](#2.13.0)
 - [2.13.1](#2.13.1)
 - [2.13.2](#2.13.2)
+- [2.13.3](#2.13.3)
   
 &nbsp;
 
@@ -313,5 +314,24 @@ Commit: [c5a0131](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 
 **Fixes:**
 - Fixed links as command parameters being recognized as invalid, caused by embed junk inside the received message
+
+Commit: [0ffe0fa](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/0ffe0fa)
+
+&nbsp;
+
+<a id="2.13.3"></a>
+
+## **2023-06-27, Version 2.13.3**
+**Additions:**
+- Added library patch for [my SteamCommunity PR](https://github.com/DoctorMcKay/node-steamcommunity/pull/315) to fix resolving private profile of sharedfile owner returning an error
+
+**Fixes:**
+- Fixed commenting on sharedfiles associated to private profiles, see above
+
+**Changes:**
+- Reworked getting missing app licenses to reduce memory consumption. This also fixes a small memory leak.
+- Removed now unused clearPicsCache() library patch
+- Removed vanity resolving fix library patch as [my PR to the SteamCommunity library got merged](https://github.com/DoctorMcKay/node-steamcommunity/pull/314)
+- Updated dependencies
 
 Commit: [](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/)
