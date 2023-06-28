@@ -4,7 +4,7 @@
  * Created Date: 25.03.2023 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 16:47:44
+ * Last Modified: 28.06.2023 23:38:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -38,10 +38,13 @@ module.exports.syncLoop = (iterations, func, exit) => {
                 } else {
                     this.break();
                 }1;
-            },
+        },
         break: function () { // Break loop and call exit function
             done = true;
             if (exit) exit();
+        },
+        index: function() {
+            return currentIndex - 1;
         }
     };
 
