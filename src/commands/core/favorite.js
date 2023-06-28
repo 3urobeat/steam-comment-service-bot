@@ -4,7 +4,7 @@
  * Created Date: 02.06.2023 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 26.06.2023 15:23:05
+ * Last Modified: 29.06.2023 00:11:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -19,7 +19,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 const { getSharedfileArgs }             = require("../helpers/getSharedfileArgs.js");
 const { getAvailableBotsForFavorizing } = require("../helpers/getFavoriteBots.js");
 const { syncLoop, timeToString }        = require("../../controller/helpers/misc.js");
-const { logFavoriteError }              = require("../helpers/handleSharedfileErrors.js");
+const { handleFavoriteIterationSkip, logFavoriteError } = require("../helpers/handleSharedfileErrors.js");
 
 
 module.exports.favorite = {
@@ -114,7 +114,7 @@ module.exports.favorite = {
                     let bot = commandHandler.controller.bots[availableAccounts[i]];
                     activeReqEntry.thisIteration++;
 
-                    // TODO: Error handling that skips iterations?
+                    if (!handleFavoriteIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
                     /* --------- Try to favorite --------- */
                     bot.community.favoriteSharedFile(sharedfile.id, sharedfile.appID, (error) => {
@@ -288,7 +288,7 @@ module.exports.unfavorite = {
                     let bot = commandHandler.controller.bots[availableAccounts[i]];
                     activeReqEntry.thisIteration++;
 
-                    // TODO: Error handling that skips iterations?
+                    if (!handleFavoriteIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
                     /* --------- Try to unfavorite --------- */
                     bot.community.unfavoriteSharedFile(sharedfile.id, sharedfile.appID, (error) => {

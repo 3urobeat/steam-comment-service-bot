@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.06.2023 18:04:58
+ * Last Modified: 29.06.2023 00:15:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -208,7 +208,7 @@ function comment(commandHandler, resInfo, respond, postComment, commentArgs, rec
         setTimeout(async () => {
 
             /* --------- Get the correct account for this iteration and update iteration in activeRequests obj --------- */
-            let bot = commandHandler.controller.getBots(null, true)[activeReqEntry.accounts[i % activeReqEntry.accounts.length]]; // Iteration modulo amount of accounts gives us index of account to use inside the accounts array. This returns the bot account name which we can lookup in the bots object.
+            let bot = commandHandler.controller.getBots("*", true)[activeReqEntry.accounts[i % activeReqEntry.accounts.length]]; // Iteration modulo amount of accounts gives us index of account to use inside the accounts array. This returns the bot account name which we can lookup in the bots object.
             activeReqEntry.thisIteration++;
 
 
@@ -221,7 +221,6 @@ function comment(commandHandler, resInfo, respond, postComment, commentArgs, rec
             commentArgs["quote"] = quote; // Replace key "quote" in args obj
 
             postComment.call(bot.community, ...Object.values(commentArgs), (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
-                //let error = ""
 
                 /* --------- Handle errors thrown by this comment attempt --------- */
                 if (error) logCommentError(error, commandHandler, bot, receiverSteamID64);

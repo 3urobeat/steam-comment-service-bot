@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 26.06.2023 15:19:28
+ * Last Modified: 29.06.2023 00:15:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -19,7 +19,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 const { getSharedfileArgs }         = require("../helpers/getSharedfileArgs.js");
 const { getAvailableBotsForVoting } = require("../helpers/getVoteBots.js");
 const { syncLoop, timeToString }    = require("../../controller/helpers/misc.js");
-const { logVoteError }              = require("../helpers/handleSharedfileErrors.js");
+const { handleVoteIterationSkip, logVoteError } = require("../helpers/handleSharedfileErrors.js");
 
 
 module.exports.upvote = {
@@ -114,7 +114,7 @@ module.exports.upvote = {
                     let bot = commandHandler.controller.bots[availableAccounts[i]];
                     activeReqEntry.thisIteration++;
 
-                    // TODO: Error handling that skips iterations?
+                    if (!handleVoteIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
                     /* --------- Try to vote --------- */
                     bot.community.voteUpSharedFile(sharedfile.id, (error) => {
@@ -293,7 +293,7 @@ module.exports.downvote = {
                     let bot = commandHandler.controller.bots[availableAccounts[i]];
                     activeReqEntry.thisIteration++;
 
-                    // TODO: Error handling that skips iterations?
+                    if (!handleVoteIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
                     /* --------- Try to vote --------- */
                     bot.community.voteDownSharedFile(sharedfile.id, (error) => {
