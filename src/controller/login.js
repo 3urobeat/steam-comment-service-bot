@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 09.06.2023 00:24:39
+ * Last Modified: 28.06.2023 18:35:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -134,8 +134,10 @@ Controller.prototype.login = function(firstLogin) {
                 if (thisbot.status == Bot.EStatus.OFFLINE) return;
 
                 // Keep waiting if we are on the last iteration and user object is not fully populated yet, this takes a few seconds after login. Make sure to check for limitations of last entry in array instead of this iteration to not break when the this last acc got skipped
-                if (i + 1 == Object.keys(this.data.logininfo).length && !Object.values(this.bots)[Object.values(this.bots).filter(e => e.status == Bot.EStatus.ONLINE).length - 1].user.limitations) { // Get index of the last acc marked as online. I know, this line really sucks readability-wise
-                    return logger("info", "Last account logged in, waiting for user object to populate...", true, true, logger.animation("waiting"));
+                let lastBot = Object.values(this.bots)[Object.values(this.bots).filter(e => e.status == Bot.EStatus.ONLINE).length - 1]; // Get index of the last acc marked as online. I know, this line really sucks readability-wise
+
+                if (i + 1 == Object.keys(this.data.logininfo).length && !lastBot.user.limitations) {
+                    return logger("info", `Last account logged in, waiting for user object of Bot ${lastBot.index} to populate...`, true, true, logger.animation("waiting"));
                 }
 
                 clearInterval(accIsOnlineInterval);
@@ -144,7 +146,7 @@ Controller.prototype.login = function(firstLogin) {
                 // Populate this.main if we just logged in the first account
                 if (Object.keys(this.bots)[0] == k.accountName) this.main = thisbot;
 
-                logger("debug", `Controller login(): bot${this.bots[k.accountName].index} changed status from offline to ${thisbot.status}! Continuing with next account...`);
+                logger("debug", `Controller login(): bot${this.bots[k.accountName].index} changed status from OFFLINE to ${Bot.EStatus[thisbot.status]}! Continuing with next account...`);
 
                 // Check for last iteration, call again and emit ready event
                 if (i + 1 == allAccounts.length) {
