@@ -4,7 +4,7 @@
  * Created Date: 02.06.2023 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 00:11:08
+ * Last Modified: 29.06.2023 15:51:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -107,6 +107,23 @@ module.exports.favorite = {
             let activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
 
 
+            // Log request start and give user cooldown on the first iteration
+            if (activeReqEntry.thisIteration == -1) {
+                logger("info", `${logger.colors.fggreen}[${commandHandler.controller.main.logPrefix}] ${activeReqEntry.amount} Favorite(s) requested. Starting to favorize ${id}...`);
+
+                // Only send estimated wait time message for multiple favorites
+                if (activeReqEntry.amount > 1) {
+                    let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amount - 1 because the first fav is instant. Multiply by delay and add to current time to get timestamp when last fav was sent
+
+                    respond(commandHandler.data.lang.favoriteprocessstarted.replace("numberOfFavs", activeReqEntry.amount).replace("waittime", waitTime));
+                }
+
+                // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
+                if (commandHandler.data.config.commentcooldown == 0) commandHandler.data.setUserCooldown(activeReqEntry.requestedby, Date.now());
+                    else commandHandler.data.setUserCooldown(activeReqEntry.requestedby, activeReqEntry.until);
+            }
+
+
             // Start voting with all available accounts
             syncLoop(amount, (loop, i) => {
                 setTimeout(() => {
@@ -119,7 +136,7 @@ module.exports.favorite = {
                     /* --------- Try to favorite --------- */
                     bot.community.favoriteSharedFile(sharedfile.id, sharedfile.appID, (error) => {
 
-                        /* --------- Handle errors thrown by this favorite attempt or update ratingHistory db --------- */
+                        /* --------- Handle errors thrown by this favorite attempt or update ratingHistory db and log success message --------- */
                         if (error) {
                             logFavoriteError(error, commandHandler, bot, sharedfile.id);
 
@@ -129,35 +146,11 @@ module.exports.favorite = {
                             commandHandler.data.ratingHistoryDB.insert({ id: id, accountName: activeReqEntry.accounts[i], type: "favorite", time: Date.now() }, (err) => {
                                 if (err) logger("warn", `Failed to insert 'favorite' entry for '${activeReqEntry.accounts[i]}' on '${id}' into ratingHistory database! Error: ` + err);
                             });
+
+                            // Log success message
+                            if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Favorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id} with proxy ${bot.loginData.proxyIndex}...`);
+                                else logger("info", `[${bot.logPrefix}] Favorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id}...`);
                         }
-
-
-                        /* --------- No error, run this on every successful iteration --------- */
-                        if (activeReqEntry.thisIteration == 0) { // Stuff below should only run in first iteration
-                            if (commandHandler.data.proxies.length > 1) logger("info", `${logger.colors.fggreen}[${bot.logPrefix}] ${activeReqEntry.amount} Favorite(s) requested. Favorizing ${id} with proxy ${bot.loginData.proxyIndex}...`);
-                                else logger("info", `${logger.colors.fggreen}[${bot.logPrefix}] ${activeReqEntry.amount} Favorite(s) requested. Favorizing ${id}...`);
-
-
-                            // Only send estimated wait time message for multiple favorites
-                            if (activeReqEntry.amount > 1) {
-                                let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amount - 1 because the first fav is instant. Multiply by delay and add to current time to get timestamp when last fav was sent
-
-                                respond(commandHandler.data.lang.favoriteprocessstarted.replace("numberOfFavs", activeReqEntry.amount).replace("waittime", waitTime));
-                            }
-
-
-                            // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
-                            if (commandHandler.data.config.commentcooldown == 0) commandHandler.data.setUserCooldown(activeReqEntry.requestedby, Date.now());
-                                else commandHandler.data.setUserCooldown(activeReqEntry.requestedby, activeReqEntry.until);
-
-                        } else { // Stuff below should run for every iteration that is not the first one
-
-                            if (!error) {
-                                if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Favorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id} with proxy ${bot.loginData.proxyIndex}...`);
-                                    else logger("info", `[${bot.logPrefix}] Favorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id}...`);
-                            }
-                        }
-
 
                         // Continue with the next iteration
                         loop.next();
@@ -281,6 +274,23 @@ module.exports.unfavorite = {
             let activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
 
 
+            // Log request start and give user cooldown on the first iteration
+            if (activeReqEntry.thisIteration == -1) {
+                logger("info", `${logger.colors.fggreen}[${commandHandler.controller.main.logPrefix}] ${activeReqEntry.amount} Unfavorite(s) requested. Starting to unfavorize ${id}...`);
+
+                // Only send estimated wait time message for multiple favorites
+                if (activeReqEntry.amount > 1) {
+                    let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amount - 1 because the first fav is instant. Multiply by delay and add to current time to get timestamp when last fav was sent
+
+                    respond(commandHandler.data.lang.favoriteprocessstarted.replace("numberOfFavs", activeReqEntry.amount).replace("waittime", waitTime));
+                }
+
+                // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
+                if (commandHandler.data.config.commentcooldown == 0) commandHandler.data.setUserCooldown(activeReqEntry.requestedby, Date.now());
+                    else commandHandler.data.setUserCooldown(activeReqEntry.requestedby, activeReqEntry.until);
+            }
+
+
             // Start voting with all available accounts
             syncLoop(amount, (loop, i) => {
                 setTimeout(() => {
@@ -293,7 +303,7 @@ module.exports.unfavorite = {
                     /* --------- Try to unfavorite --------- */
                     bot.community.unfavoriteSharedFile(sharedfile.id, sharedfile.appID, (error) => {
 
-                        /* --------- Handle errors thrown by this unfavorite attempt or update ratingHistory db --------- */
+                        /* --------- Handle errors thrown by this unfavorite attempt or update ratingHistory db and log success message --------- */
                         if (error) {
                             logFavoriteError(error, commandHandler, bot, sharedfile.id);
 
@@ -303,35 +313,11 @@ module.exports.unfavorite = {
                             commandHandler.data.ratingHistoryDB.remove({ id: id, accountName: activeReqEntry.accounts[i], type: "favorite" }, (err) => {
                                 if (err) logger("warn", `Failed to remove 'favorite' entry for '${activeReqEntry.accounts[i]}' on '${id}' from ratingHistory database! Error: ` + err);
                             });
+
+                            // Log success message
+                            if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Unfavorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id} with proxy ${bot.loginData.proxyIndex}...`);
+                                else logger("info", `[${bot.logPrefix}] Unfavorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id}...`);
                         }
-
-
-                        /* --------- No error, run this on every successful iteration --------- */
-                        if (activeReqEntry.thisIteration == 0) { // Stuff below should only run in first iteration
-                            if (commandHandler.data.proxies.length > 1) logger("info", `${logger.colors.fggreen}[${bot.logPrefix}] ${activeReqEntry.amount} Unfavorite(s) requested. Unfavorizing ${id} with proxy ${bot.loginData.proxyIndex}...`);
-                                else logger("info", `${logger.colors.fggreen}[${bot.logPrefix}] ${activeReqEntry.amount} Unfavorite(s) requested. Unfavorizing ${id}...`);
-
-
-                            // Only send estimated wait time message for multiple favorites
-                            if (activeReqEntry.amount > 1) {
-                                let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amount - 1 because the first fav is instant. Multiply by delay and add to current time to get timestamp when last fav was sent
-
-                                respond(commandHandler.data.lang.favoriteprocessstarted.replace("numberOfFavs", activeReqEntry.amount).replace("waittime", waitTime));
-                            }
-
-
-                            // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
-                            if (commandHandler.data.config.commentcooldown == 0) commandHandler.data.setUserCooldown(activeReqEntry.requestedby, Date.now());
-                                else commandHandler.data.setUserCooldown(activeReqEntry.requestedby, activeReqEntry.until);
-
-                        } else { // Stuff below should run for every iteration that is not the first one
-
-                            if (!error) {
-                                if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Unfavorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id} with proxy ${bot.loginData.proxyIndex}...`);
-                                    else logger("info", `[${bot.logPrefix}] Unfavorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id}...`);
-                            }
-                        }
-
 
                         // Continue with the next iteration
                         loop.next();

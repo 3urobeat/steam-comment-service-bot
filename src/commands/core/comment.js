@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 00:15:09
+ * Last Modified: 29.06.2023 15:52:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -202,6 +202,26 @@ module.exports.comment = {
 function comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64) {
     let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
 
+
+    // Log request start and give user cooldown on the first iteration
+    let whereStr = activeReqEntry.type == "profileComment" ? `on profile ${receiverSteamID64}` : `in ${activeReqEntry.type.replace("Comment", "")} ${receiverSteamID64}`; // Shortcut to convey more precise information in the 4 log messages below
+
+    if (activeReqEntry.thisIteration == -1) {
+        logger("info", `${logger.colors.fggreen}[${commandHandler.controller.main.logPrefix}] ${activeReqEntry.amount} Comment(s) requested. Starting to comment ${whereStr}...`);
+
+        // Only send estimated wait time message for multiple comments
+        if (activeReqEntry.amount > 1) {
+            let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amount - 1 because the first comment is instant. Multiply by delay and add to current time to get timestamp when last comment was sent
+
+            respond(commandHandler.data.lang.commentprocessstarted.replace("numberOfComments", activeReqEntry.amount).replace("waittime", waitTime));
+        }
+
+        // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
+        if (commandHandler.data.config.commentcooldown == 0) commandHandler.data.setUserCooldown(activeReqEntry.requestedby, Date.now());
+            else commandHandler.data.setUserCooldown(activeReqEntry.requestedby, activeReqEntry.until);
+    }
+
+
     // Comment numberOfComments times using our syncLoop helper
     syncLoop(activeReqEntry.amount - (activeReqEntry.thisIteration + 1), (loop, i) => { // eslint-disable-line no-unused-vars
 
@@ -222,38 +242,13 @@ function comment(commandHandler, resInfo, respond, postComment, commentArgs, rec
 
             postComment.call(bot.community, ...Object.values(commentArgs), (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
 
-                /* --------- Handle errors thrown by this comment attempt --------- */
-                if (error) logCommentError(error, commandHandler, bot, receiverSteamID64);
-
-
-                /* --------- No error, run this on every successful iteration --------- */
-                let whereStr = activeReqEntry.type == "profileComment" ? `on profile ${receiverSteamID64}` : `in ${activeReqEntry.type.replace("Comment", "")} ${receiverSteamID64}`; // Shortcut to convey more precise information in the 4 log messages below
-
-                if (activeReqEntry.thisIteration == 0) { // Stuff below should only run in first iteration
-                    if (commandHandler.data.proxies.length > 1) logger("info", `${logger.colors.fggreen}[${bot.logPrefix}] ${activeReqEntry.amount} Comment(s) requested. Comment ${whereStr} with proxy ${bot.loginData.proxyIndex}: ${String(quote).split("\n")[0]}`);
-                        else logger("info", `${logger.colors.fggreen}[${bot.logPrefix}] ${activeReqEntry.amount} Comment(s) requested. Comment ${whereStr}: ${String(quote).split("\n")[0]}`); // Splitting \n to only get first line of multi line comments
-
-
-                    // Only send estimated wait time message for multiple comments
-                    if (activeReqEntry.amount > 1) {
-                        let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amount - 1 because the first comment is instant. Multiply by delay and add to current time to get timestamp when last comment was sent
-
-                        respond(commandHandler.data.lang.commentprocessstarted.replace("numberOfComments", activeReqEntry.amount).replace("waittime", waitTime));
-                    }
-
-
-                    // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
-                    if (commandHandler.data.config.commentcooldown == 0) commandHandler.data.setUserCooldown(activeReqEntry.requestedby, Date.now());
-                        else commandHandler.data.setUserCooldown(activeReqEntry.requestedby, activeReqEntry.until);
-
-                } else { // Stuff below should run for every iteration that is not the first one
-
-                    if (!error) {
-                        if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${whereStr} with proxy ${bot.loginData.proxyIndex}: ${String(quote).split("\n")[0]}`);
-                            else logger("info", `[${bot.logPrefix}] Comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${whereStr}: ${String(quote).split("\n")[0]}`); // Splitting \n to only get first line of multi line comments
-                    }
+                /* --------- Handle errors thrown by this comment attempt or log success message --------- */
+                if (error) {
+                    logCommentError(error, commandHandler, bot, receiverSteamID64);
+                } else {
+                    if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${whereStr} with proxy ${bot.loginData.proxyIndex}: ${String(quote).split("\n")[0]}`);
+                        else logger("info", `[${bot.logPrefix}] Comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${whereStr}: ${String(quote).split("\n")[0]}`); // Splitting \n to only get first line of multi line comments
                 }
-
 
                 // Continue with the next iteration
                 loop.next();
