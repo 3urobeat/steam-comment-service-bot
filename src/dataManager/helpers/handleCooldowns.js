@@ -4,7 +4,7 @@
  * Created Date: 13.04.2023 17:58:23
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:13:11
+ * Last Modified: 29.06.2023 12:48:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -26,8 +26,18 @@ const DataManager = require("../dataManager");
 DataManager.prototype.getUserCooldown = function(id) {
     return new Promise((resolve) => {
 
+        let obj = {
+            "lastRequest": 0,
+            "until": 0,
+            "lastRequestStr": "",
+            "untilStr": ""
+        };
+
         this.lastCommentDB.findOne({ id: id }, (err, doc) => {
-            if (!doc) return resolve(null); // Check if no entry was found and BAIL THE FUCK OUT
+            if (!doc) { // Check if no entry was found and BAIL THE FUCK OUT
+                logger("warn", `User '${id}' has no lastComment database entry! Permitting request and hoping an entry will be inserted afterwards.\n                             If this warning appears multiple times for the same user you need to take action. Need help? https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose`);
+                return resolve(obj);
+            }
 
             // Format lastRequestStr
             let lastReq = Math.abs((Date.now() - doc.time) / 1000);
@@ -65,12 +75,12 @@ DataManager.prototype.getUserCooldown = function(id) {
 
             until = Number(Math.round(until+"e"+2)+"e-"+2); // Limit until value to two decimals
 
-            resolve({
-                "lastRequest": doc.time,
-                "until": doc.time + (this.config.commentcooldown * 60000),
-                "lastRequestStr": `${lastReq} ${lastReqUnit}`,
-                "untilStr": `${until} ${untilUnit}`
-            });
+            obj.lastRequest    = doc.time;
+            obj.until          = doc.time + (this.config.commentcooldown * 60000);
+            obj.lastRequestStr = `${lastReq} ${lastReqUnit}`;
+            obj.untilStr       = `${until} ${untilUnit}`;
+
+            resolve(obj);
         });
 
     });
