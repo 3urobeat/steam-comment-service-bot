@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.06.2023 14:16:03
+ * Last Modified: 29.06.2023 13:33:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -117,9 +117,9 @@ module.exports.failed = {
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        commandHandler.controller.handleSteamIdResolving(args[0], null, (err, res) => {
+        commandHandler.controller.handleSteamIdResolving(args[0], null, (err, res, idType) => {
             if (res) {
-                if (!commandHandler.data.cachefile.ownerid.includes(steamID64)) return respond(commandHandler.data.lang.commandowneronly);
+                if (!commandHandler.data.cachefile.ownerid.includes(steamID64) && idType == "profile") return respond(commandHandler.data.lang.commandowneronly); // Only disallow for idType profile as user must provide id for group & sharedfile requests
 
                 steamID64 = res; // If user provided an id as argument then use that instead of his/her id
             }
