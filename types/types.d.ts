@@ -41,6 +41,10 @@ declare class Bot {
      */
     checkMsgBlock(steamID64: any, message: string): boolean;
     /**
+     * Handles aborting a login attempt should an account get stuck to prevent the bot from softlocking (see issue #139)
+     */
+    handleLoginTimeout(): void;
+    /**
      * Handles checking for missing game licenses, requests them and then starts playing
      */
     handleMissingGameLicenses(): void;

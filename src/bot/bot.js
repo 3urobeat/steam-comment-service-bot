@@ -182,6 +182,11 @@ module.exports = Bot;
 Bot.prototype.checkMsgBlock = function(steamID64, message) {}; // eslint-disable-line
 
 /**
+ * Handles aborting a login attempt should an account get stuck to prevent the bot from softlocking (see issue #139)
+ */
+Bot.prototype.handleLoginTimeout = function() {};
+
+/**
  * Handles checking for missing game licenses, requests them and then starts playing
  */
 Bot.prototype.handleMissingGameLicenses = function() {};
