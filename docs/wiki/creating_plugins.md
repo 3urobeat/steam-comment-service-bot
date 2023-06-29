@@ -44,6 +44,7 @@ Populate description, author and version as well. The plugin will be packed into
 Open the entry file `plugin.js` and edit the PluginSystem import file path at the top.  
 It should point to your `steam-comment-service-bot` installation. This makes sure your code editor's IntelliSense will work.  
 If your plugin folder is right beside the bot folder, the default path should already be correct.  
+**Important:** This path will cause errors when the plugin is being loaded. Uncomment the import before packing & publishing your plugin.
 
 &nbsp;
 

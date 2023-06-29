@@ -5,13 +5,16 @@
 	<p></p>
 </div>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<div align="center">
+
 [![YouTube](https://img.shields.io/badge/YouTube-Tutorial-red)](https://youtu.be/8J78rC9Z28U)
 [![nodejs](https://img.shields.io/badge/node.js-v14-brightgreen)](https://nodejs.org/)
 [![Star](https://img.shields.io/badge/-Give%20this%20repo%20a%20star!-yellow)](https://github.com/HerrEurobeat/steam-comment-service-bot)
 [![Steam Group](https://img.shields.io/badge/Steam%20Group-Join!-blue)](https://steamcommunity.com/groups/3urobeatGroup)
 [![Donate](https://img.shields.io/badge/donate-%241-orange)](https://paypal.me/3urobeat)
 <p align="center">Click on a badge to learn more.</p>
+
+</div>
 
 <p align="center">
   <a href="#introduction">Introduction</a> •

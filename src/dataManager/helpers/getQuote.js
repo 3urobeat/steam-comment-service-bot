@@ -4,7 +4,7 @@
  * Created Date: 02.03.2022 16:21:11
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:07:28
+ * Last Modified: 29.06.2023 15:37:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -57,7 +57,7 @@ DataManager.prototype.getQuote = function(quotesArr = null) {
                 if (quotesArr.length > this.advancedconfig.lastQuotesSize) lastQuotes.push(selection);
 
                 // Resolve promise
-                logger("debug", "getQuote(): Found quote: " + selection);
+                // logger("debug", "getQuote(): Found quote: " + selection);
                 resolve(selection);
             }
 
