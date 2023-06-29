@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.06.2023 22:35:43
+ * Last Modified: 29.06.2023 21:37:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -90,6 +90,7 @@ const Bot = function(controller, index) {
     require("./events/webSession.js");
     require("./helpers/checkMsgBlock.js");
     require("./helpers/handleLoginTimeout.js");
+    require("./helpers/handleMissingGameLicenses.js");
     require("./helpers/steamChatInteraction.js");
 
     // Create sessionHandler object for this account
@@ -179,6 +180,11 @@ module.exports = Bot;
  * @returns {Boolean} `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
  */
 Bot.prototype.checkMsgBlock = function(steamID64, message) {}; // eslint-disable-line
+
+/**
+ * Handles checking for missing game licenses, requests them and then starts playing
+ */
+Bot.prototype.handleMissingGameLicenses = function() {};
 
 /**
  * Our commandHandler respondModule implementation - Sends a message to a Steam user
