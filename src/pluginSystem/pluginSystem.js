@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 13:19:45
+ * Last Modified: 29.06.2023 16:13:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
@@ -134,6 +134,14 @@ PluginSystem.prototype.loadPluginData = function (pluginName, filename) {}; // e
  * @returns {Promise.<void>} Resolves on success, rejects otherwise with an error
  */
 PluginSystem.prototype.writePluginData = function (pluginName, filename, data) {}; // eslint-disable-line
+
+/**
+ * Deletes a file in your plugin data folder if it exists.
+ * @param {string} pluginName Name of your plugin
+ * @param {string} filename Name of the file to load
+ * @returns {Promise.<void>} Resolves on success, rejects otherwise with an error
+ */
+PluginSystem.prototype.deletePluginData = function (pluginName, filename) {}; // eslint-disable-line
 
 /**
  * Loads your plugin config from the filesystem or creates a new one based on the default config provided by your plugin. The JSON data will be processed to an object.

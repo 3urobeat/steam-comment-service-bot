@@ -77,10 +77,6 @@ declare class Bot {
      */
     _attachSteamLoggedOnEvent(): void;
     /**
-     * Handles the SteamUser ownershipCached event and tries to redeem licenses for games the account is missing
-     */
-    _attachSteamOwnershipCachedEvent(): void;
-    /**
      * Accepts a friend request, adds the user to the lastcomment.db database and invites him to your group
      */
     _attachSteamFriendRelationshipEvent(): void;
@@ -270,6 +266,26 @@ declare function sortFailedCommentsObject(failedObj: any): void;
  * @returns String that looks like this: `amount`x - `indices`\n`error message`
  */
 declare function failedCommentsObjToString(obj: any): string;
+
+/**
+ * Checks if the following vote process iteration should be skipped
+ * @param commandHandler - The commandHandler object
+ * @param loop - Object returned by misc.js syncLoop() helper
+ * @param bot - Bot object of the account making this request
+ * @param id - ID of the sharedfile that receives the votes
+ * @returns true if iteration should continue, false if iteration should be skipped using return
+ */
+declare function handleVoteIterationSkip(commandHandler: CommandHandler, loop: any, bot: Bot, id: string): any;
+
+/**
+ * Checks if the following favorite process iteration should be skipped
+ * @param commandHandler - The commandHandler object
+ * @param loop - Object returned by misc.js syncLoop() helper
+ * @param bot - Bot object of the account making this request
+ * @param id - ID of the sharedfile that receives the votes
+ * @returns true if iteration should continue, false if iteration should be skipped using return
+ */
+declare function handleFavoriteIterationSkip(commandHandler: CommandHandler, loop: any, bot: Bot, id: string): any;
 
 /**
  * Logs vote errors
@@ -809,6 +825,13 @@ declare class PluginSystem {
      */
     writePluginData(pluginName: string, filename: string, data: string): Promise<void>;
     /**
+     * Deletes a file in your plugin data folder if it exists.
+     * @param pluginName - Name of your plugin
+     * @param filename - Name of the file to load
+     * @returns Resolves on success, rejects otherwise with an error
+     */
+    deletePluginData(pluginName: string, filename: string): Promise<void>;
+    /**
      * Loads your plugin config from the filesystem or creates a new one based on the default config provided by your plugin. The JSON data will be processed to an object.
      * @param pluginName - Name of your plugin
      * @returns Resolves with your plugin config processed from JSON to an object. If the config failed to load, the promise will be rejected with an error.
@@ -873,6 +896,13 @@ declare class PluginSystem {
      * @returns Resolves on success, rejects otherwise with an error
      */
     writePluginData(pluginName: string, filename: string, data: string): Promise<void>;
+    /**
+     * Deletes a file in your plugin data folder if it exists.
+     * @param pluginName - Name of your plugin
+     * @param filename - Name of the file to load
+     * @returns Resolves on success, rejects otherwise with an error
+     */
+    deletePluginData(pluginName: string, filename: string): Promise<void>;
     /**
      * Loads your plugin config from the filesystem or creates a new one based on the default config provided by your plugin. The JSON data will be processed to an object.
      * @param pluginName - Name of your plugin
