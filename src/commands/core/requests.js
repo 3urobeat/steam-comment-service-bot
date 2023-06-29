@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 13:46:55
+ * Last Modified: 29.06.2023 13:54:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -132,21 +132,19 @@ module.exports.failed = {
                 steamID64 = res; // If user provided an id as argument then use that instead of their id
             }
 
-            commandHandler.controller.data.lastCommentDB.findOne({ id: steamID64 }, (err, doc) => {
-                if (!commandHandler.controller.activeRequests[steamID64] || Object.keys(commandHandler.controller.activeRequests[steamID64].failed).length < 1) return respond(commandHandler.data.lang.failedcmdnothingfound);
+            if (!commandHandler.controller.activeRequests[steamID64] || Object.keys(commandHandler.controller.activeRequests[steamID64].failed).length < 1) return respond(commandHandler.data.lang.failedcmdnothingfound);
 
-                // Get timestamp of request
-                let requestTime = new Date(doc.time).toISOString().replace(/T/, " ").replace(/\..+/, "");
+            // Get timestamp of request
+            let requestTime = new Date(commandHandler.controller.activeRequests[steamID64].until).toISOString().replace(/T/, " ").replace(/\..+/, "");
 
-                // Group errors and convert them to string using helper function
-                let failedcommentsstr = failedCommentsObjToString(commandHandler.controller.activeRequests[steamID64].failed);
+            // Group errors and convert them to string using helper function
+            let failedcommentsstr = failedCommentsObjToString(commandHandler.controller.activeRequests[steamID64].failed);
 
-                // Get start of message from lang file and add data
-                let messagestart = commandHandler.data.lang.failedcmdmsg.replace("steamID64", steamID64).replace("requesttime", requestTime);
+            // Get start of message from lang file and add data
+            let messagestart = commandHandler.data.lang.failedcmdmsg.replace("steamID64", steamID64).replace("requesttime", requestTime);
 
-                // Send message and limit to 500 chars as this call can cause many messages to be sent
-                respondModule(context, { prefix: "/pre", charLimit: 500, ...resInfo }, messagestart + "\nc = Comment, b = Bot, p = Proxy\n\n" + failedcommentsstr); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
-            });
+            // Send message and limit to 500 chars as this call can cause many messages to be sent
+            respondModule(context, { prefix: "/pre", charLimit: 500, ...resInfo }, messagestart + "\nc = Comment, b = Bot, p = Proxy\n\n" + failedcommentsstr); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         });
     }
 };
