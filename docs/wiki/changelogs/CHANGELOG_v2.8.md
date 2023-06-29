@@ -19,7 +19,7 @@
 - Moved updater.js to src folder
 - Fixed a lot of bugs, made things a bit more user-friendly and made other more minor changes
 
-Commit: [091d7bd](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/091d7bd)
+Commit: [091d7bd](https://github.com/3urobeat/steam-comment-service-bot/commit/091d7bd)
 
 &nbsp;
 
@@ -35,4 +35,4 @@ Commit: [091d7bd](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - A private profile check error won't stop the comment process anymore
 - Fixed wrong proxy number when logging in with proxy x message
 
-Commit: [3125654](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/3125654)
+Commit: [3125654](https://github.com/3urobeat/steam-comment-service-bot/commit/3125654)

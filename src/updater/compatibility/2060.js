@@ -4,10 +4,10 @@
  * Created Date: 10.07.2021 22:30:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 15:14:30
+ * Last Modified: 29.06.2023 22:35:03
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
+ * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -60,7 +60,7 @@ module.exports.run = (controller, resolve) => { //eslint-disable-line
             resolve(true); // Resolve and force update
         }, 1000);
     } catch(err) {
-        logger("", `\n\n\x1b[31m*------------------------------------------*\x1b[0m\nI have problems updating your bot to the new filesystem.\nPlease restart the bot. If you still encounter issues:\n\nPlease either download and setup the bot manually again (https://github.com/HerrEurobeat/steam-comment-service-bot/)\nor open an issue (https://github.com/HerrEurobeat/steam-comment-service-bot/issues) and include the errors\n(*only* if you have no GitHub account message ${controller.data.datafile.mestr}#0975 on Discord).\n\x1b[31m*------------------------------------------*\x1b[0m\n\nError: \n${err}\n`, true);
+        logger("", `\n\n\x1b[31m*------------------------------------------*\x1b[0m\nI have problems updating your bot to the new filesystem.\nPlease restart the bot. If you still encounter issues:\n\nPlease either download and setup the bot manually again (https://github.com/3urobeat/steam-comment-service-bot/)\nor open an issue (https://github.com/3urobeat/steam-comment-service-bot/issues) and include the errors\n(*only* if you have no GitHub account message ${controller.data.datafile.mestr}#0975 on Discord).\n\x1b[31m*------------------------------------------*\x1b[0m\n\nError: \n${err}\n`, true);
     }
 };
 

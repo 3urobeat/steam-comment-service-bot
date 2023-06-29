@@ -28,7 +28,7 @@
 - Added more default quotes
 - Many many more behind the scene changes (check out beta-testing branch commits for way more detail!)
 
-Commit: [6b89f8c](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/6b89f8c)
+Commit: [6b89f8c](https://github.com/3urobeat/steam-comment-service-bot/commit/6b89f8c)
 
 &nbsp;
 
@@ -40,7 +40,7 @@ Commit: [6b89f8c](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - Fixed comment limited & not friend check
 - Fixed auto skipSteamGuard
 
-Commit: [7b28378](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/7b28378)
+Commit: [7b28378](https://github.com/3urobeat/steam-comment-service-bot/commit/7b28378)
 
 &nbsp;
 
@@ -50,9 +50,9 @@ Commit: [7b28378](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - New !addfriend command
 - Added cache.json file to reduce steam group64id requests
 - Fixed group invite crash
-- Fixed clearLine issues ([#48](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/48))
+- Fixed clearLine issues ([#48](https://github.com/3urobeat/steam-comment-service-bot/issues/48))
 - Fixed beta-testing not updating to new beta versions when on release version
-- Fixed limited checker issues ([#49](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/49))
+- Fixed limited checker issues ([#49](https://github.com/3urobeat/steam-comment-service-bot/issues/49))
 - Added error handling when logging in
 - Removed status setting in config
 - Added childaccsplaygames in config
@@ -60,7 +60,7 @@ Commit: [7b28378](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - Added more ascii arts
 - Minor other changes
 
-Commit: [8adc902](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/8adc902)
+Commit: [8adc902](https://github.com/3urobeat/steam-comment-service-bot/commit/8adc902)
 
 &nbsp;
 
@@ -69,4 +69,4 @@ Commit: [8adc902](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 ## **2020-07-21, Version 2.7.3**, [removed on July 24, 2020] 
 - Updated start.js to prepare for future 2.8 update
 
-Commit: [e945938](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/e945938)
+Commit: [e945938](https://github.com/3urobeat/steam-comment-service-bot/commit/e945938)

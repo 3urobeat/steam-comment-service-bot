@@ -15,4 +15,4 @@
 - Added a two files filesystem
 - Added support to control multiple accounts with one bot
 
-Commit: [c103965](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/c103965)
+Commit: [c103965](https://github.com/3urobeat/steam-comment-service-bot/commit/c103965)

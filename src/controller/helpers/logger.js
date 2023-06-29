@@ -4,10 +4,10 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 21.06.2023 20:04:53
+ * Last Modified: 29.06.2023 22:35:03
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
+ * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -20,7 +20,7 @@ const logger = require("output-logger"); // Look Mom, it's my own library!
 const Controller = require("../controller.js");
 
 
-// Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)  (animation speed and printDebug will be changed later in controller.js after advancedconfig import)
+// Configure my logging library (https://github.com/3urobeat/output-logger#options-1)  (animation speed and printDebug will be changed later in controller.js after advancedconfig import)
 logger.options({
     required_from_childprocess: true, // eslint-disable-line camelcase
     msgstructure: `[${logger.Const.ANIMATION}] [${logger.Const.DATE} | ${logger.Const.TYPE}] ${logger.Const.MESSAGE}`,
