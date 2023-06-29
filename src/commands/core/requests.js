@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 13:33:02
+ * Last Modified: 29.06.2023 13:46:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
@@ -39,9 +39,13 @@ module.exports.abort = {
 
         commandHandler.controller.handleSteamIdResolving(args[0], null, (err, res) => {
             if (res) {
-                if (!commandHandler.data.cachefile.ownerid.includes(steamID64)) return respond(commandHandler.data.lang.commandowneronly);
+                let activeReqEntry = commandHandler.controller.activeRequests[res];
 
-                steamID64 = res; // If user provided an id as argument then use that instead of his/her id
+                // Refuse if user is not an owner and the request is not from them
+                if (!commandHandler.data.cachefile.ownerid.includes(steamID64) && (activeReqEntry && activeReqEntry.requestedby != steamID64)) return respond(commandHandler.data.lang.commandowneronly);
+                    else logger("debug", "CommandHandler abort cmd: Non-owner provided ID as parameter but is requester of that request. Permitting abort...");
+
+                steamID64 = res; // If user provided an id as argument then use that instead of their id
             }
 
             if (!commandHandler.controller.activeRequests[steamID64] || commandHandler.controller.activeRequests[steamID64].status != "active") return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.abortcmdnoprocess); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
@@ -117,11 +121,15 @@ module.exports.failed = {
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        commandHandler.controller.handleSteamIdResolving(args[0], null, (err, res, idType) => {
+        commandHandler.controller.handleSteamIdResolving(args[0], null, (err, res) => {
             if (res) {
-                if (!commandHandler.data.cachefile.ownerid.includes(steamID64) && idType == "profile") return respond(commandHandler.data.lang.commandowneronly); // Only disallow for idType profile as user must provide id for group & sharedfile requests
+                let activeReqEntry = commandHandler.controller.activeRequests[res];
 
-                steamID64 = res; // If user provided an id as argument then use that instead of his/her id
+                // Refuse if user is not an owner and the request is not from them
+                if (!commandHandler.data.cachefile.ownerid.includes(steamID64) && (activeReqEntry && activeReqEntry.requestedby != steamID64)) return respond(commandHandler.data.lang.commandowneronly);
+                    else logger("debug", "CommandHandler failed cmd: Non-owner provided ID as parameter but is requester of that request. Permitting data retrieval...");
+
+                steamID64 = res; // If user provided an id as argument then use that instead of their id
             }
 
             commandHandler.controller.data.lastCommentDB.findOne({ id: steamID64 }, (err, doc) => {
