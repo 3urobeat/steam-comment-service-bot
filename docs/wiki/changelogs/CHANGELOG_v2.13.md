@@ -8,6 +8,7 @@
 - [2.13.1](#2.13.1)
 - [2.13.2](#2.13.2)
 - [2.13.3](#2.13.3)
+- [2.13.4](#2.13.4)
   
 &nbsp;
 
@@ -333,5 +334,35 @@ Commit: [0ffe0fa](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - Removed now unused clearPicsCache() library patch
 - Removed vanity resolving fix library patch as [my PR to the SteamCommunity library got merged](https://github.com/DoctorMcKay/node-steamcommunity/pull/314)
 - Updated dependencies
+
+Commit: [24984d6](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/24984d6)
+
+&nbsp;
+
+<a id="2.13.4"></a>
+
+## **2023-06-29, Version 2.13.4**
+**Additions:**
+- Added REST API plugin written by [@DerDeathraven](https://github.com/DerDeathraven) to default packages list. Plugin is disabled by default.
+- Added function to PluginSystem to delete files from their plugin data folder
+- Added proper handling of requesting >50 missing game licenses from Steam
+
+**Fixes:**
+- Fixed account loosing connection (changing status) during active request throwing error because the account could not be found anymore
+- Fixed non-owners not being permitted to use !abort and !failed commands for group & sharedfiles requests that they started
+- Fixed !failed command throwing error when providing non-profile ID
+- Fixed destructuring response of getUserCooldown() helper in comment command throwing error when database request fails
+- Fixed reloadPlugins() throwing error for plugins missing unload() function
+- Fixed error on plugin import causing subsequent error on load
+- Fixed login() "changed status" log message showing EStatus enum number instead of human readable string
+- Fixed !abort and !failed messages not mentioning sharedfiles
+
+**Changes:**
+- Request commands (comment, vote, favorite) will now log request start messages before the first iteration to avoid unintuitive log behaviour if the first iteration fails
+- The PluginSystem will now only display warnings (e.g. missing unload() function) for enabled plugins
+- "Last account logged in, waiting for user object to populate" message will now show the index of the affected bot account
+- Minor README.md improvements
+- Updated dependencies
+- Minor other changes
 
 Commit: [](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/)
