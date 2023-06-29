@@ -19,7 +19,7 @@
 **Additions:**
 - Added advancedconfig.json with lots of options
 - Added basic plugin support
-- Added a retryComments system that can automatically retry failed comments ([#104](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/104))
+- Added a retryComments system that can automatically retry failed comments ([#104](https://github.com/3urobeat/steam-comment-service-bot/issues/104))
 - Added steamid-resolver support to !comment, !groupcomment, !abort, !failed, !rc, !addfriend, !unfriend, !block and !unblock commands so that you can now specify profile links as well and the bot automatically converts them to IDs 
 - Added !sessions and !mysessions command to view all active comment sessions and their status (owner only) as well as only sessions for your profile (all users)
 - Added debug messages that can be enabled in the advancedconfig
@@ -42,10 +42,10 @@
 &nbsp;
 
 **Fixes:**
-- Fixed trailing slash in config owner & group urls causing a profile not found error in my node-steamid-resolver library ([#119](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/119))
+- Fixed trailing slash in config owner & group urls causing a profile not found error in my node-steamid-resolver library ([#119](https://github.com/3urobeat/steam-comment-service-bot/issues/119))
 - Fixed proxy index in login error message being undefined, relog message showing wrong proxy index and removed error enum from relog error message as it was undefined
-- Fixed unfriend check running even when unfriendtime is set to 0 ([#124](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/124))
-- Fixed chat messages failing when >1000 chars by cutting them and sending users a fallback message if Steam blocked a message ([#125](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/125))
+- Fixed unfriend check running even when unfriendtime is set to 0 ([#124](https://github.com/3urobeat/steam-comment-service-bot/issues/124))
+- Fixed chat messages failing when >1000 chars by cutting them and sending users a fallback message if Steam blocked a message ([#125](https://github.com/3urobeat/steam-comment-service-bot/issues/125))
 - Fixed config owner /profiles/ URL not being accepted
 - Fixed multiple useradded messages from main bot when adding x child accounts while bot was offline
 - Fixed typo leading to unfriendall cmd not working
@@ -80,7 +80,7 @@
 - Updated dependencies
 - Improved and refreshed README
 
-Commit: [a24e457](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/a24e457)
+Commit: [a24e457](https://github.com/3urobeat/steam-comment-service-bot/commit/a24e457)
 
 &nbsp;
 
@@ -97,7 +97,7 @@ Commit: [a24e457](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - Added instructions comment to proxies.txt to improve first time user experience
 
 **Fixes:**
-- Fixed steamID related errors in ready.js by making sure bot object is populated before proceeding ([#135](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/135))
+- Fixed steamID related errors in ready.js by making sure bot object is populated before proceeding ([#135](https://github.com/3urobeat/steam-comment-service-bot/issues/135))
 - Fixed relogInterval from being able to be set multiple times
 - Fixed disconnected event trying to initiate a relog for accounts which are already in the relogQueue
 - Fixed an error when accounts.txt or proxies.txt was completely empty (even missing the comment)
@@ -115,7 +115,7 @@ Commit: [a24e457](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - Added eslint code styling rules and enforced them (massive commit)
 - Updated dependencies
 
-Commit: [d9ab995](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/d9ab995)
+Commit: [d9ab995](https://github.com/3urobeat/steam-comment-service-bot/commit/d9ab995)
 
 &nbsp;
 
@@ -123,7 +123,7 @@ Commit: [d9ab995](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 
 ## **2022-11-08, Version 2.12.2**
 **Additions:**
-- Added a login timeout detection system that force-progresses the relogQueue to prevent the bot from soft-locking ([#139](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/139))
+- Added a login timeout detection system that force-progresses the relogQueue to prevent the bot from soft-locking ([#139](https://github.com/3urobeat/steam-comment-service-bot/issues/139))
 
 **Fixes:**
 - Fixed sessionHandler throwing an cancelLoginAttempt() error when skipping steamGuardCode
@@ -142,7 +142,7 @@ Commit: [d9ab995](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - Failed to send chat msg fallback msg will now be sent after 5 seconds instead of instantly to prevent further rate limiting
 - Updated dependencies
 
-Commit: [b641fd7](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/b641fd7)
+Commit: [b641fd7](https://github.com/3urobeat/steam-comment-service-bot/commit/b641fd7)
 
 &nbsp;
 
@@ -150,13 +150,13 @@ Commit: [b641fd7](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 
 ## **2023-03-06, Version 2.12.3**, co-author [@LesikEdelweiss](https://github.com/LesikEdelweiss)
 **Fixes:**  
-- [#150](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/150) updates `steam-session` dependency to fix [#184](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/184) and [#149](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/149) 
+- [#150](https://github.com/3urobeat/steam-comment-service-bot/issues/150) updates `steam-session` dependency to fix [#184](https://github.com/3urobeat/steam-comment-service-bot/issues/184) and [#149](https://github.com/3urobeat/steam-comment-service-bot/issues/149) 
 
 **Changes:**  
 - Reworded second E-Mail note when retrieving new session as Steam might have fixed the bug
 - Updated all dependencies
 
-Commit: [2b6cefd](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/2b6cefd)
+Commit: [2b6cefd](https://github.com/3urobeat/steam-comment-service-bot/commit/2b6cefd)
 
 &nbsp;
 
@@ -164,12 +164,12 @@ Commit: [2b6cefd](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 
 ## **2023-03-14, Version 2.12.4**
 **Fixes:**
-- Fixed bot asking for steam guard code even for accounts with a shared_secret [#152](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/152)
+- Fixed bot asking for steam guard code even for accounts with a shared_secret [#152](https://github.com/3urobeat/steam-comment-service-bot/issues/152)
 
 **Changes:**
 - Updated dependency `steam-session`
 
-Commit: [be5e154](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/be5e154)
+Commit: [be5e154](https://github.com/3urobeat/steam-comment-service-bot/commit/be5e154)
 
 &nbsp;
 
@@ -194,4 +194,4 @@ Commit: [be5e154](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - Shortened data import section in `controller.js`
 - Updated `steam-session` to v1.1.0
 
-Commit: [0d472be](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/0d472be)
+Commit: [0d472be](https://github.com/3urobeat/steam-comment-service-bot/commit/0d472be)

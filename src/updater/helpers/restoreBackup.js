@@ -4,10 +4,10 @@
  * Created Date: 26.02.2022 20:16:44
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 17:23:14
+ * Last Modified: 29.06.2023 22:35:03
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
+ * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -71,7 +71,7 @@ module.exports.run = () => {
 
         } else {
 
-            logger("error", "Unfortunately I was unable to find a backup. I don't know how to proceed from here so you sadly have to redownload the bot yourself: https://github.com/HerrEurobeat/steam-comment-service-bot\n        Please report this issue with all errors so that I'm able to fix this: https://github.com/HerrEurobeat/steam-comment-service-bot/issues\n        Exiting...", true);
+            logger("error", "Unfortunately I was unable to find a backup. I don't know how to proceed from here so you sadly have to redownload the bot yourself: https://github.com/3urobeat/steam-comment-service-bot\n        Please report this issue with all errors so that I'm able to fix this: https://github.com/3urobeat/steam-comment-service-bot/issues\n        Exiting...", true);
             process.send("stop()");
         }
 

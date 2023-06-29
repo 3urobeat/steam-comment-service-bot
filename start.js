@@ -4,10 +4,10 @@
  * Created Date: 15.01.2020 10:38:00
  * Author: 3urobeat
  *
- * Last Modified: 26.04.2023 22:39:31
+ * Last Modified: 29.06.2023 22:35:03
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
+ * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -25,7 +25,7 @@ function getExtdata() {
     try { // Just try to require, if it should fail then the actual restoring process will be handled later
         return require("./src/data/data.json");
     } catch (err) {
-        return { filetostart: "./src/starter.js", filetostarturl: "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/beta-testing/src/starter.js" };
+        return { filetostart: "./src/starter.js", filetostarturl: "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/starter.js" };
     }
 }
 
@@ -78,4 +78,4 @@ if (!fs.existsSync(extdata.filetostart)) { // Function that downloads filetostar
     require(extdata.filetostart).run(); // Start application
 }
 
-// Code by: https://github.com/HerrEurobeat/
+// Code by: https://github.com/3urobeat/

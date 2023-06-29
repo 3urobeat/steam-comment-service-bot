@@ -21,4 +21,4 @@
 - Removed myself from config if the bot is not running on my pc
 - Fixed a few other bugs and changed a few minor things
 
-Commit: [7cd1deb](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/7cd1deb)
+Commit: [7cd1deb](https://github.com/3urobeat/steam-comment-service-bot/commit/7cd1deb)

@@ -21,10 +21,10 @@
 - Added message spam protection and cooldown
 - Added message to owners on successful update
 - Added other checks to provide easier error descriptions etc and to make the bot more robust
-- Fixed [#57](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/57)
+- Fixed [#57](https://github.com/3urobeat/steam-comment-service-bot/issues/57)
 - Minor other changes
 
-Commit: [5ddef2a](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/5ddef2a)
+Commit: [5ddef2a](https://github.com/3urobeat/steam-comment-service-bot/commit/5ddef2a)
 
 &nbsp;
 
@@ -39,16 +39,16 @@ Commit: [5ddef2a](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - Reworked !settings cmd
 - Minor other changes
 
-Commit: [d7c5335](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/d7c5335)
+Commit: [d7c5335](https://github.com/3urobeat/steam-comment-service-bot/commit/d7c5335)
 
 &nbsp;
 
 <a id="2.9.2"></a>
 
 ## **2020-10-23, Version 2.9.2**
-- Fixed cooldown calculation error [#63](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/63)
+- Fixed cooldown calculation error [#63](https://github.com/3urobeat/steam-comment-service-bot/issues/63)
 - Reworked updater function and for better code quality
 - Added file integrity checks that can restore backups from cache.json or pull from GitHub
 - Minor other changes
 
-Commit: [8847635](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/8847635)
+Commit: [8847635](https://github.com/3urobeat/steam-comment-service-bot/commit/8847635)

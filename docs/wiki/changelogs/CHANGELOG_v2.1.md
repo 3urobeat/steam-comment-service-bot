@@ -17,4 +17,4 @@
 - Added arguments number_of_comments and profileid to !comment command
 - Updated README.md
 
-Commit: [43d6f28](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/43d6f28)
+Commit: [43d6f28](https://github.com/3urobeat/steam-comment-service-bot/commit/43d6f28)

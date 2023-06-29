@@ -19,4 +19,4 @@
 - Added update checker
 - Added a botgroup inviter function
 
-Commit: [4370c5c](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/4370c5c)
+Commit: [4370c5c](https://github.com/3urobeat/steam-comment-service-bot/commit/4370c5c)

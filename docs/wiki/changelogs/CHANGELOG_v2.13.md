@@ -37,7 +37,7 @@ If you are using a `customlang.json`, make sure to read the language string chan
   - Added a ratingHistory database to track which bot accounts have voted on or favorized which item
 - Added a completely new plugin system, co-author @DerDeathraven #174
   - Added a plugin loader which dynamically loads all installed npm packages with the prefix `steam-comment-bot-` @DerDeathraven #174
-  - Added new template plugin which you can [fork here to create your own plugin](https://github.com/HerrEurobeat/steam-comment-bot-template-plugin)
+  - Added new template plugin which you can [fork here to create your own plugin](https://github.com/3urobeat/steam-comment-bot-template-plugin)
   - Added plugin functions: `load`, `ready`, `statusUpdate`, `steamGuardInput`
   - Added plugin data directory and functions to handle data reading & writing: `getPluginDataPath`, `loadPluginData`, `writePluginData`, `loadPluginConfig`, `writePluginConfig`
   - Added a reload system to apply changes at runtime for development using command !reload
@@ -261,9 +261,9 @@ If you are using a `customlang.json`, make sure to read the language string chan
 **Stats:**  
 This update is the largest yet and took ~2.5 months with many full days.  
 332 commits have been added, 10962 lines have been added and 11894 removed.  
-Check out the full PR [here](https://github.com/HerrEurobeat/steam-comment-service-bot/pull/176).
+Check out the full PR [here](https://github.com/3urobeat/steam-comment-service-bot/pull/176).
 
-Commit: [3fa6a50](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/3fa6a50)
+Commit: [3fa6a50](https://github.com/3urobeat/steam-comment-service-bot/commit/3fa6a50)
 
 &nbsp;
 
@@ -305,7 +305,7 @@ Commit: [3fa6a50](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - Updated usage of deprecated friendMessage event
 - Updated dependencies
 
-Commit: [c5a0131](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/c5a0131)
+Commit: [c5a0131](https://github.com/3urobeat/steam-comment-service-bot/commit/c5a0131)
 
 &nbsp;
 
@@ -316,7 +316,7 @@ Commit: [c5a0131](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 **Fixes:**
 - Fixed links as command parameters being recognized as invalid, caused by embed junk inside the received message
 
-Commit: [0ffe0fa](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/0ffe0fa)
+Commit: [0ffe0fa](https://github.com/3urobeat/steam-comment-service-bot/commit/0ffe0fa)
 
 &nbsp;
 
@@ -335,7 +335,7 @@ Commit: [0ffe0fa](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - Removed vanity resolving fix library patch as [my PR to the SteamCommunity library got merged](https://github.com/DoctorMcKay/node-steamcommunity/pull/314)
 - Updated dependencies
 
-Commit: [24984d6](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/24984d6)
+Commit: [24984d6](https://github.com/3urobeat/steam-comment-service-bot/commit/24984d6)
 
 &nbsp;
 
@@ -343,7 +343,7 @@ Commit: [24984d6](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 
 ## **2023-06-29, Version 2.13.4**
 **Additions:**
-- Added REST API plugin written by [@DerDeathraven](https://github.com/DerDeathraven) to default packages list. Plugin is disabled by default.
+- Added REST API plugin written by [@DerDeathraven](https://github.com/DerDeathraven) to default packages list
 - Added function to PluginSystem to delete files from their plugin data folder
 - Added proper handling of requesting >50 missing game licenses from Steam
 
@@ -365,4 +365,4 @@ Commit: [24984d6](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - Updated dependencies
 - Minor other changes
 
-Commit: [](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/)
+Commit: [829c387](https://github.com/3urobeat/steam-comment-service-bot/commit/829c387)
