@@ -83,7 +83,7 @@
     "groupcmdnolink": "The botowner of this instance hasn't provided any group or the group doesn't exist.",
     "groupcmdinvitesent": "I sent you an invite! Thanks for joining!",
     "groupcmdinvitelink": "Join my group here: ",
-    "abortcmdnoprocess": "There is no active comment process running for this ID.\nIf you requested comments for another profile or for a group then please provide the id as argument!",
+    "abortcmdnoprocess": "There is no active comment process running for this ID.\nIf you requested comments for another profile, group or sharedfile then please provide that ID as argument!",
     "abortcmdsuccess": "Aborting your active comment process...",
 
     "resetcooldowncmdcooldowndisabled": "The cooldown is disabled in the config!",
@@ -98,8 +98,8 @@
     "settingscmdvaluetoobig": "Your new value is too big. (32-bit integer limit)\nPlease choose a smaller value.",
     "settingscmdvaluechanged": "targetkey has been changed from oldvalue to newvalue.\nPlease remember that certain values might need a restart to take effect. You can do that by typing cmdprefixrestart.",
 
-    "failedcmdnothingfound": "I can't remember any failed comments on your/that profile.\nIf you requested comments for another profile or for a group then please provide the id as argument!",
     "failedcmdmsg": "Your last request for 'steamID64' from 'requesttime' (GMT time) had these errors:",
+    "failedcmdnothingfound": "I can't remember any failed comments on your/that ID.\nIf you requested comments for another profile, group or sharedfile then please provide that ID as argument!",
 
     "sessionscmdnosessions": "There are currently no active sessions and no bot accounts on cooldown.",
     "sessionscmdmsg": "There are currently amount active session(s):",
