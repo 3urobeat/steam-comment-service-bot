@@ -4,10 +4,10 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2023 10:41:21
+ * Last Modified: 29.06.2023 22:35:03
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
+ * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -67,7 +67,7 @@ module.exports.help = {
             '${resInfo.cmdprefix}owner' - ${commandHandler.data.lang.helpowner}
             ${yourgroupText}
         
-            ${commandHandler.data.lang.helpreadothercmdshere} ' https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Commands-documentation '
+            ${commandHandler.data.lang.helpreadothercmdshere} ' https://github.com/3urobeat/steam-comment-service-bot/wiki/Commands-documentation '
         `.replace(/ {4}/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
     }
 };
@@ -206,7 +206,7 @@ module.exports.test = {
      * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, steamID64, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        let respond = ((txt) => respondModule(context, resInfo, txt)); // eslint-disable-line
 
         // Do not remove, these are handleSteamIdResolving test cases. Might be useful to include later in steamid-resolving lib test suite
         let handleSteamIdResolving = commandHandler.controller.handleSteamIdResolving;

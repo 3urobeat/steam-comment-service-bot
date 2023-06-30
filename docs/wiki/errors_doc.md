@@ -3,7 +3,7 @@
 
 This is a documentation of all bot errors and all steam errors I know and is therefore always under construction. 🚧  
 You can search for your error on this page by pressing `CTRL+F` in your browser.  
-If you can't find your error and need help, please open a new [issue.](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose)  
+If you can't find your error and need help, please open a new [issue.](https://github.com/3urobeat/steam-comment-service-bot/issues/new/choose)  
 <br />
 Please remember that the steam errors list is incomplete and the descriptions are only assumptions as there is no proper documentation from steam and sometimes errors seem to thrown randomly. The list only contains errors I have encountered and think to know what they mean.  
 <br />
@@ -38,11 +38,11 @@ You can find all HTTP status codes here: [Wikipedia](https://en.wikipedia.org/wi
 `Error: Unknown error` | As the error already states - the reason is unknown. Just try again.  
 `Error: There was a problem posting your comment. Please try again` | Reason unknown - wait a moment and try again.  
 `Error: You've been posting too frequently, and can't make another post right now` | The account has made too many comments in a short time frame. Wait a few minutes and try again. I think Steam also limits the amount of comments a profile can recieve in a short time frame.  
-`Error: The settings on this account do not allow you to add comments` | The profile's comment section you are trying to comment on is private, your bot account doesn't meet steams regulations or you have a cooldown. I don't know for sure but I have the feeling that a comment section also has a limit of comments it can recieve in a given timeframe. Try again later. Read more about steam limitations: [Click](https://github.com/HerrEurobeat/steam-comment-service-bot#steam-limitations)  
+`Error: The settings on this account do not allow you to add comments` | The profile's comment section you are trying to comment on is private, your bot account doesn't meet steams regulations or you have a cooldown. I don't know for sure but I have the feeling that a comment section also has a limit of comments it can recieve in a given timeframe. Try again later. Read more about steam limitations: [Click](https://github.com/3urobeat/steam-comment-service-bot#steam-limitations)  
 `Error: socket hang up` | The steam servers seem to have a problem/are down. Check [steam server status.](https://steamstat.us)  
 `Error: Failed loading profile data, please try again later` | The bot couldn't get profile data to prevent other possible errors and give a more precise error. Do not worry, the comment process can still work fine but other preventable errors could occur.
 `Error: Already logged on, cannot log on again` | The account is already logged in somewhere. Make sure the bot is not running already and that you aren't logged into them in your browser. Also make sure the bot is not in a compressed folder (.zip) anymore.
-`Error: To post this comment, your account must have Steam Guard enabled` | You must have at least an email steam guard configured for that account in order to comment on any steam profile. Read more about steam limitations: [Click](https://github.com/HerrEurobeat/steam-comment-service-bot#steam-limitations)  
+`Error: To post this comment, your account must have Steam Guard enabled` | You must have at least an email steam guard configured for that account in order to comment on any steam profile. Read more about steam limitations: [Click](https://github.com/3urobeat/steam-comment-service-bot#steam-limitations)  
 
 <br /><br />
 | Login Errors | Description |
@@ -52,7 +52,7 @@ You can find all HTTP status codes here: [Wikipedia](https://en.wikipedia.org/wi
 ## FAQ/Common problems  
 
 **Q: I got a problem/bug that isn't listed here.**  
-A: Please open a new [issue](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose) and describe your problem there!  
+A: Please open a new [issue](https://github.com/3urobeat/steam-comment-service-bot/issues/new/choose) and describe your problem there!  
 
 **Q: Can my bot accounts get banned by using this?**  
 A: As long as you **don't spam** comments or post comments with malicious content you won't get banned. Inappropiate behaviour can result in a Community Ban.  

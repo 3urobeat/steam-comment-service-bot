@@ -1,5 +1,5 @@
 {
-    "note": "This file contains nearly all messages the bot sends to users. If you want to modify messages, read here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/How-to-add-custom-messages",
+    "note": "This file contains nearly all messages the bot sends to users. If you want to modify messages, read here: https://github.com/3urobeat/steam-comment-service-bot/wiki/How-to-add-custom-messages",
 
     "updaterautoupdatedisabled": "You have disabled the automatic updater. Would you like to update now?\nIf yes, please force an update using the command: cmdprefixupdate true",
 
@@ -19,7 +19,7 @@
     "commentuserprofileprivate": "Your/the receiving profile seems to be private. Please edit the privacy settings to allow comments and try again!",
     "commenterroroccurred": "Oops, an error occurred! I sadly wasn't able to comment.",
     "commentprocessstarted": "Estimated wait time for numberOfComments comments: waittime.",
-    "commentfailedcmdreference": "To get detailed information why which comment failed please type 'cmdprefixfailed'. You can read what probably caused your error here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems",
+    "commentfailedcmdreference": "To get detailed information why which comment failed please type 'cmdprefixfailed'. You can read what probably caused your error here: https://github.com/3urobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems",
     
     "comment429stop": "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error. Please try again later. Failed: failedamount/numberOfComments",
     "commentretrying": "failedamount/numberOfComments comments have failed. I'm going to retry the failed comments in untilStr. (Attempt thisattempt/maxattempt)",
@@ -51,7 +51,7 @@
     "invalidprofileid": "This does not seem to be a valid ID or link or you provided the wrong ID type for this command!\nPlease make sure that you either provide a full link, only the vanity or only the ID, pointing to an existing profile, group or sharedfile.",
     "invalidgroupid": "This is not a valid group id or group url! \nA groupid must look like this: '103582791464712227' \n...or a group url like this: 'https://steamcommunity.com/groups/3urobeatGroup'",
     "invalidsharedfileid": "This does not seem to be a valid sharedfileID!\nPlease make sure that you either provide a full link: https://steamcommunity.com/sharedfiles/filedetails/?id=2980913451 ...or just the ID: 2980913451 ...which points to an existing screenshot, artwork or guide.\n\nCommand usage: cmdusage",
-    "errloadingsharedfile": "Sorry but an error occurred while loading the sharedfile you have provided:",
+    "errloadingsharedfile": "Sorry but an error occurred while loading the sharedfile you have provided: ",
     "idisownererror": "You are not allowed to provide the ID of an owner!",
     "idalreadyreceiving": "This user or id already has an active request! Please wait for it to be completed before requesting again.",
     "idoncooldown": "You only recently started a request. Please wait the remaining remainingcooldown before starting another request.",
@@ -83,7 +83,7 @@
     "groupcmdnolink": "The botowner of this instance hasn't provided any group or the group doesn't exist.",
     "groupcmdinvitesent": "I sent you an invite! Thanks for joining!",
     "groupcmdinvitelink": "Join my group here: ",
-    "abortcmdnoprocess": "There is no active comment process running for this ID.\nIf you requested comments for another profile or for a group then please provide the id as argument!",
+    "abortcmdnoprocess": "There is no active comment process running for this ID.\nIf you requested comments for another profile, group or sharedfile then please provide that ID as argument!",
     "abortcmdsuccess": "Aborting your active comment process...",
 
     "resetcooldowncmdcooldowndisabled": "The cooldown is disabled in the config!",
@@ -98,8 +98,8 @@
     "settingscmdvaluetoobig": "Your new value is too big. (32-bit integer limit)\nPlease choose a smaller value.",
     "settingscmdvaluechanged": "targetkey has been changed from oldvalue to newvalue.\nPlease remember that certain values might need a restart to take effect. You can do that by typing cmdprefixrestart.",
 
-    "failedcmdnothingfound": "I can't remember any failed comments on your/that profile.\nIf you requested comments for another profile or for a group then please provide the id as argument!",
-    "failedcmdmsg": "Your last request for 'steamID64' from 'requesttime' (GMT time) had these errors:",
+    "failedcmdnothingfound": "I can't remember any failed comments on your/that ID.\nIf you requested comments for another profile, group or sharedfile then please provide that ID as argument!",
+    "failedcmdmsg": "Your last request for 'steamID64' finished at 'requesttime' (GMT time) had these errors:",
 
     "sessionscmdnosessions": "There are currently no active sessions and no bot accounts on cooldown.",
     "sessionscmdmsg": "There are currently amount active session(s):",

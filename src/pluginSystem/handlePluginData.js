@@ -4,10 +4,10 @@
  * Created Date: 04.06.2023 17:52:51
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2023 19:15:06
+ * Last Modified: 29.06.2023 22:35:03
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
+ * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -75,6 +75,35 @@ PluginSystem.prototype.writePluginData = function (pluginName, filename, data) {
         fs.writeFile(path + filename, data, null, (err) => {
             if (err) {
                 logger("error", `PluginSystem: Failed to write data to file '${filename}' for plugin '${pluginName}': ${err.stack}`);
+                return reject(err);
+            }
+
+            resolve();
+        });
+
+    });
+};
+
+
+/**
+ * Deletes a file in your plugin data folder if it exists.
+ * @param {string} pluginName Name of your plugin
+ * @param {string} filename Name of the file to load
+ * @returns {Promise.<void>} Resolves on success, rejects otherwise with an error
+ */
+PluginSystem.prototype.deletePluginData = function (pluginName, filename) {
+    return new Promise((resolve, reject) => {
+
+        // Get path
+        let path = this.getPluginDataPath(pluginName);
+
+        // Check if file exists
+        if (!fs.existsSync(path + filename)) return reject(new Error("File does not exist"));
+
+        // Delete file
+        fs.unlink(path + filename, (err) => {
+            if (err) {
+                logger("error", `PluginSystem: Failed to delete file '${filename}' for plugin '${pluginName}': ${err.stack}`);
                 return reject(err);
             }
 

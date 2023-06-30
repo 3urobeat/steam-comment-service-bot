@@ -28,7 +28,7 @@ You should definitely take a look at the developer documentation though, it expl
 <a id="getting-started"></a>
 
 ## **Getting started**
-First, fork my [plugin template repository](https://github.com/HerrEurobeat/steam-comment-bot-template-plugin).  
+First, fork my [plugin template repository](https://github.com/3urobeat/steam-comment-bot-template-plugin).  
 You can do this easily through the GitHub web interface.  
 
 Give your fork a fitting name, but make sure to keep the `steam-comment-bot-` prefix. This is important later.  
@@ -44,6 +44,7 @@ Populate description, author and version as well. The plugin will be packed into
 Open the entry file `plugin.js` and edit the PluginSystem import file path at the top.  
 It should point to your `steam-comment-service-bot` installation. This makes sure your code editor's IntelliSense will work.  
 If your plugin folder is right beside the bot folder, the default path should already be correct.  
+**Important:** This path will cause errors when the plugin is being loaded. Uncomment the import before packing & publishing your plugin.
 
 &nbsp;
 
@@ -88,7 +89,7 @@ The steamGuardInput event function is called when any bot account is currently b
 <a id="logging"></a>
 
 ## **Logging messages**
-I'm using my own [logging library](https://github.com/HerrEurobeat/output-logger) to log everything to the terminal and the `output.txt` file. It is easy to use, do not be afraid of this wall of text ^^  
+I'm using my own [logging library](https://github.com/3urobeat/output-logger) to log everything to the terminal and the `output.txt` file. It is easy to use, do not be afraid of this wall of text ^^  
 Please do not use any `console.log` calls in your plugins (unless maybe for debugging).  
 
 Here is the parameter structure, first to last:  
@@ -96,13 +97,13 @@ Here is the parameter structure, first to last:
 - The message you want to log. If not of datatype string, the library will attempt to colorize the data, just like console.log does.
 - Optional - nodate: true if the message should not have a date
 - Optional - remove: true if the next message should overwrite this one
-- Optional - animation: An array containing strings. If this is specified, it will display each element of this array after another in the front of the message as an animation. The logger library has some default animations, check them out using your IntelliSense at: `logger.animations` or [here](https://github.com/HerrEurobeat/output-logger/blob/master/lib/data/animations.json)
+- Optional - animation: An array containing strings. If this is specified, it will display each element of this array after another in the front of the message as an animation. The logger library has some default animations, check them out using your IntelliSense at: `logger.animations` or [here](https://github.com/3urobeat/output-logger/blob/master/lib/data/animations.json)
 - Optional - printNow: true to force print this message now. This will skip the log hold back system explained below
 - Optional - cutToWidth: true to force cut this message to the current width of the terminal
 
 Check out the JsDoc of the logger function directly: [controller logger.js](../../src/controller/helpers/logger.js)
 
-You can also use this library to read input from the user, display a progress bar, managing animations and much more. Please check out the [output-logger README](https://github.com/HerrEurobeat/output-logger) for more information.  
+You can also use this library to read input from the user, display a progress bar, managing animations and much more. Please check out the [output-logger README](https://github.com/3urobeat/output-logger) for more information.  
 
 Do not be confused if your log messages are not showing up instantly while the bot is still logging in.  
 The bot has a logger hold-back functionality which holds back every log message that is not of type 'debug' or 'error' or has `printNow` set to true during login. These messages will be logged as soon as the bot is started, aka the ready event has fired.
@@ -208,4 +209,4 @@ If you make changes in your plugin project you now only need to run the `!reload
 
 **Issues and Pull Requests:**  
 You found a bug or you think something should be changed in the bot itself?  
-Feel free to [open an issue](https://github.com/HerrEurobeat/steam-comment-service-bot/issues/new/choose) or fork the bot, make changes and [open a pull request](https://github.com/HerrEurobeat/steam-comment-service-bot/compare) yourself! Every contribution is welcome!  
+Feel free to [open an issue](https://github.com/3urobeat/steam-comment-service-bot/issues/new/choose) or fork the bot, make changes and [open a pull request](https://github.com/3urobeat/steam-comment-service-bot/compare) yourself! Every contribution is welcome!  

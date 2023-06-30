@@ -4,10 +4,10 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 03.06.2023 11:06:09
+ * Last Modified: 29.06.2023 22:35:03
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
+ * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -23,13 +23,31 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
  * Checks if the following comment process iteration should be skipped
  * Aborts comment process on critical error.
  * @param {CommandHandler} commandHandler The commandHandler object
- * @param {{ next: function, break: function }} loop Object returned by misc.js syncLoop() helper
+ * @param {{ next: function, break: function, index: function }} loop Object returned by misc.js syncLoop() helper
  * @param {Bot} bot Bot object of the account posting this comment
  * @param {String} receiverSteamID64 steamID64 of the receiving user/group
  * @returns {Boolean} true if iteration should continue, false if iteration should be skipped using return
  */
 module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID64) => {
     let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
+
+    // Check if no bot account was found
+    if (!bot) {
+        activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b? p?`] = "Skipped because bot account does not exist";
+
+        logger("error", `[Bot ?] Error posting comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} to ${receiverSteamID64}: Bot account '${activeReqEntry.accounts[loop.index() % activeReqEntry.accounts.length]}' does not exist?! Skipping...`);
+        loop.next();
+        return false;
+    }
+
+    // Check if bot account is offline
+    if (bot.status != Bot.EStatus.ONLINE) {
+        activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = "Skipped because bot account is offline";
+
+        logger("error", `[${bot.logPrefix}] Error posting comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} to ${receiverSteamID64}: Skipped because bot account is offline`);
+        loop.next();
+        return false;
+    }
 
     // Check if comment process was aborted or activeReqEntry was deleted and stop loop
     if (!activeReqEntry || !activeReqEntry.failed || activeReqEntry.status == "aborted") {

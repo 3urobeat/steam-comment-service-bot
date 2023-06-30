@@ -17,7 +17,7 @@
 - User specific comment cooldown will now only be handled by lastcomment.json
 - Added feature to disable eval command (default)
 
-Commit: [bf84246](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/bf84246)
+Commit: [bf84246](https://github.com/3urobeat/steam-comment-service-bot/commit/bf84246)
 
 &nbsp;
 
@@ -30,4 +30,4 @@ Commit: [bf84246](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - Fixed config checker for my name
 - Changed a few logger messages
 
-Commit: [afd519f](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/afd519f)
+Commit: [afd519f](https://github.com/3urobeat/steam-comment-service-bot/commit/afd519f)

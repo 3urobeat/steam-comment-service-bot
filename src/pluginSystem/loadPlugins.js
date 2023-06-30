@@ -4,10 +4,10 @@
  * Created Date: 04.06.2023 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 04.06.2023 19:31:20
+ * Last Modified: 29.06.2023 22:35:03
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
+ * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -27,6 +27,7 @@ const PLUGIN_EVENTS = {
 };
 
 
+// Attempt to load all plugins. If a critical check fails loading will be denied
 function loadPlugin(pluginName) {
     try {
         // Load plugin and pluginJson
@@ -39,15 +40,13 @@ function loadPlugin(pluginName) {
             return {};
         }
 
-        // Display warning if the function is missing a unload function
-        if (!importedPlugin.prototype.unload) logger("warn", `Plugin '${pluginName}' does not have an unload function! This may prevent the reloading function from working properly.`);
-
         // Create new plugin object
         const pluginInstance = new importedPlugin(this);
 
         return { pluginName, pluginInstance, pluginJson };
     } catch (e) {
         logger("error", `Plugin '${pluginName}' could not be instantiated: ${e.stack}`);
+        return { pluginName, pluginInstance: null, pluginJson: null };
     }
 }
 
@@ -74,6 +73,9 @@ PluginSystem.prototype._loadPlugins = async function () {
             logger("debug", `Plugin '${pluginName}' is disabled. Skipping plugin...`);
             continue;
         }
+
+        // Display warning if the function is missing a unload function
+        if (!pluginInstance.unload) logger("warn", `Plugin '${pluginName}' does not have an unload function! This may prevent the reloading function from working properly.`);
 
         logger("info", `PluginSystem: Loading plugin '${pluginName}' v${pluginJson.version} by ${pluginJson.author}...`, false, true, logger.animation("loading"));
 

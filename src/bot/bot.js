@@ -4,10 +4,10 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 27.06.2023 22:35:43
+ * Last Modified: 29.06.2023 22:35:03
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
+ * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -90,6 +90,7 @@ const Bot = function(controller, index) {
     require("./events/webSession.js");
     require("./helpers/checkMsgBlock.js");
     require("./helpers/handleLoginTimeout.js");
+    require("./helpers/handleMissingGameLicenses.js");
     require("./helpers/steamChatInteraction.js");
 
     // Create sessionHandler object for this account
@@ -179,6 +180,16 @@ module.exports = Bot;
  * @returns {Boolean} `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
  */
 Bot.prototype.checkMsgBlock = function(steamID64, message) {}; // eslint-disable-line
+
+/**
+ * Handles aborting a login attempt should an account get stuck to prevent the bot from softlocking (see issue #139)
+ */
+Bot.prototype.handleLoginTimeout = function() {};
+
+/**
+ * Handles checking for missing game licenses, requests them and then starts playing
+ */
+Bot.prototype.handleMissingGameLicenses = function() {};
 
 /**
  * Our commandHandler respondModule implementation - Sends a message to a Steam user

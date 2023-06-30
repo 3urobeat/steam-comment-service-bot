@@ -25,7 +25,7 @@
 - Cleared up startup logs
 - Minor other changes and bugfixes
 
-Commit: [0d0f633](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/0d0f633)
+Commit: [0d0f633](https://github.com/3urobeat/steam-comment-service-bot/commit/0d0f633)
 
 &nbsp;
 
@@ -35,7 +35,7 @@ Commit: [0d0f633](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - Fixed a mistake that would crash the bot when the user adds a child bot account
 - Added default quotes in quotes.txt
 
-Commit: [c6fe60a](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/c6fe60a)
+Commit: [c6fe60a](https://github.com/3urobeat/steam-comment-service-bot/commit/c6fe60a)
 
 &nbsp;
 
@@ -49,7 +49,7 @@ Commit: [c6fe60a](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - Fixed updateeverywhere() still using loginindex instead of accountid when writing to lastcomment.json
 - Changed one wrong error description in error catch in commenteverywhere()
 
-Commit: [29e43b3](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/29e43b3)
+Commit: [29e43b3](https://github.com/3urobeat/steam-comment-service-bot/commit/29e43b3)
 
 &nbsp;
 
@@ -61,7 +61,7 @@ Commit: [29e43b3](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - Changed command usage messages to account for user's priviliges
 - Other minor fixes/changes
 
-Commit: [29a0d82](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/29a0d82)
+Commit: [29a0d82](https://github.com/3urobeat/steam-comment-service-bot/commit/29a0d82)
 
 &nbsp;
 
@@ -70,4 +70,4 @@ Commit: [29a0d82](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 ## **2020-05-21, Version 2.6.4**
 - Fixed bot corrupting the config and crashing on restart due to simultaneous writes
 
-Commit: [6c06b31](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/6c06b31)
+Commit: [6c06b31](https://github.com/3urobeat/steam-comment-service-bot/commit/6c06b31)

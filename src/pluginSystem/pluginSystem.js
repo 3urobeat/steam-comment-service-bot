@@ -4,10 +4,10 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 06.06.2023 12:28:05
+ * Last Modified: 29.06.2023 22:35:03
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
+ * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -69,7 +69,11 @@ module.exports = PluginSystem;
 PluginSystem.prototype.reloadPlugins = function () {
     // Delete all plugin objects. (I'm not sure if this is necessary or if clearing the pluginList obj will garbage collect them)
     Object.keys(this.pluginList).forEach((e) => {
-        this.pluginList[e].unload();
+        if (this.pluginList[e].unload) {
+            this.pluginList[e].unload();
+        } else {
+            logger("warn", `PluginSystem reloadPlugins: Plugin ${e} does not have an unload function, reloading might not work properly!`);
+        }
 
         delete this.pluginList[e];
     });
@@ -130,6 +134,14 @@ PluginSystem.prototype.loadPluginData = function (pluginName, filename) {}; // e
  * @returns {Promise.<void>} Resolves on success, rejects otherwise with an error
  */
 PluginSystem.prototype.writePluginData = function (pluginName, filename, data) {}; // eslint-disable-line
+
+/**
+ * Deletes a file in your plugin data folder if it exists.
+ * @param {string} pluginName Name of your plugin
+ * @param {string} filename Name of the file to load
+ * @returns {Promise.<void>} Resolves on success, rejects otherwise with an error
+ */
+PluginSystem.prototype.deletePluginData = function (pluginName, filename) {}; // eslint-disable-line
 
 /**
  * Loads your plugin config from the filesystem or creates a new one based on the default config provided by your plugin. The JSON data will be processed to an object.

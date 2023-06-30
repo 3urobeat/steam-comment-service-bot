@@ -4,10 +4,10 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.05.2023 14:03:41
+ * Last Modified: 29.06.2023 22:35:03
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
+ * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -71,7 +71,7 @@ DataManager.prototype._importFromDisk = function() {
                             logger("warn", "'data.json' seems to have lost it's data/is corrupted. Trying to restore from backup...", true);
 
                             // Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
-                            if (_this.cachefile.datajson) _this._restoreBackup("data.json", srcdir + "/data/data.json", _this.cachefile.datajson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/src/data/data.json", resolve);
+                            if (_this.cachefile.datajson) _this._restoreBackup("data.json", srcdir + "/data/data.json", _this.cachefile.datajson, "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/src/data/data.json", resolve);
                                 else _this._pullNewFile("data.json", "./src/data/data.json", resolve);
                         }
                     }
@@ -96,7 +96,7 @@ DataManager.prototype._importFromDisk = function() {
                                 logger("", logger.colors.fgred + "\n--------------------------------------" + logger.colors.reset, true);
                                 logger("", `${logger.colors.fgcyan}Hey!${logger.colors.reset} It seems like this is your first start and you made a formatting mistake in your '${logger.colors.fgcyan}config.json${logger.colors.reset}' file. Because of this I'm sadly ${logger.colors.fgcyan}unable to load${logger.colors.reset} the file.`, true);
                                 logger("", `You can stop the bot now by pressing ${logger.colors.fgcyan}CTRL+C${logger.colors.reset} to fix the issue. Please make sure that you exactly follow the format of the provided 'config.json' when filling in your settings.`, true);
-                                logger("", `Take a look at the default config here and pay attention to every ${logger.colors.fgcyan}"${logger.colors.reset} and ${logger.colors.fgcyan},${logger.colors.reset} as you most likely forgot one of them: ${logger.colors.fgcyan}${logger.colors.underscore}https://github.com/HerrEurobeat/steam-comment-service-bot/blob/master/config.json${logger.colors.reset}`, true);
+                                logger("", `Take a look at the default config here and pay attention to every ${logger.colors.fgcyan}"${logger.colors.reset} and ${logger.colors.fgcyan},${logger.colors.reset} as you most likely forgot one of them: ${logger.colors.fgcyan}${logger.colors.underscore}https://github.com/3urobeat/steam-comment-service-bot/blob/master/config.json${logger.colors.reset}`, true);
                                 logger("", `You can also take a look at this blog post to learn more about JSON formatting: ${logger.colors.fgcyan}${logger.colors.underscore}https://stackoverflow.blog/2022/06/02/a-beginners-guide-to-json-the-data-format-for-the-internet/${logger.colors.reset}`, true);
                                 logger("", logger.colors.fgred + "--------------------------------------\n" + logger.colors.reset, true);
                                 logger("", "Restoring the config to default in 15 seconds...", true, false, logger.animation("waiting"));
@@ -107,7 +107,7 @@ DataManager.prototype._importFromDisk = function() {
                             // Wait restoreTimeout ms if set by firststart check from above
                             setTimeout(() => {
                                 // Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
-                                if (_this.cachefile.configjson) _this._restoreBackup("config.json", srcdir + "/../config.json", _this.cachefile.configjson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/config.json", resolve);
+                                if (_this.cachefile.configjson) _this._restoreBackup("config.json", srcdir + "/../config.json", _this.cachefile.configjson, "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/config.json", resolve);
                                     else _this._pullNewFile("config.json", "./config.json", resolve);
                             }, restoreTimeout);
                         }
@@ -125,7 +125,7 @@ DataManager.prototype._importFromDisk = function() {
                             logger("warn", "advancedconfig.json seems to have lost it's data/is corrupted. Trying to restore from backup...", true);
 
                             // Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
-                            if (_this.cachefile.advancedconfigjson) _this._restoreBackup("advancedconfig.json", srcdir + "/../advancedconfig.json", _this.cachefile.advancedconfigjson, "https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/master/advancedconfig.json", resolve);
+                            if (_this.cachefile.advancedconfigjson) _this._restoreBackup("advancedconfig.json", srcdir + "/../advancedconfig.json", _this.cachefile.advancedconfigjson, "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/advancedconfig.json", resolve);
                                 else _this._pullNewFile("advancedconfig.json", "./advancedconfig.json", resolve);
                         }
                     }
@@ -145,7 +145,7 @@ DataManager.prototype._importFromDisk = function() {
                         if (data != "") {
                             logininfo = {}; // Set empty object
                             data.forEach((e) => {
-                                if (e.length < 2) return; // If the line is empty ignore it to avoid issues like this: https://github.com/HerrEurobeat/steam-comment-service-bot/issues/80
+                                if (e.length < 2) return; // If the line is empty ignore it to avoid issues like this: https://github.com/3urobeat/steam-comment-service-bot/issues/80
                                 e = e.split(":");
                                 e[e.length - 1] = e[e.length - 1].replace("\r", ""); // Remove Windows next line character from last index (which has to be the end of the line)
 

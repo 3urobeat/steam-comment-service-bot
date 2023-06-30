@@ -4,10 +4,10 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.06.2023 14:16:03
+ * Last Modified: 29.06.2023 22:35:03
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
+ * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -39,9 +39,13 @@ module.exports.abort = {
 
         commandHandler.controller.handleSteamIdResolving(args[0], null, (err, res) => {
             if (res) {
-                if (!commandHandler.data.cachefile.ownerid.includes(steamID64)) return respond(commandHandler.data.lang.commandowneronly);
+                let activeReqEntry = commandHandler.controller.activeRequests[res];
 
-                steamID64 = res; // If user provided an id as argument then use that instead of his/her id
+                // Refuse if user is not an owner and the request is not from them
+                if (!commandHandler.data.cachefile.ownerid.includes(steamID64) && (activeReqEntry && activeReqEntry.requestedby != steamID64)) return respond(commandHandler.data.lang.commandowneronly);
+                    else logger("debug", "CommandHandler abort cmd: Non-owner provided ID as parameter but is requester of that request. Permitting abort...");
+
+                steamID64 = res; // If user provided an id as argument then use that instead of their id
             }
 
             if (!commandHandler.controller.activeRequests[steamID64] || commandHandler.controller.activeRequests[steamID64].status != "active") return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.abortcmdnoprocess); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
@@ -119,26 +123,28 @@ module.exports.failed = {
 
         commandHandler.controller.handleSteamIdResolving(args[0], null, (err, res) => {
             if (res) {
-                if (!commandHandler.data.cachefile.ownerid.includes(steamID64)) return respond(commandHandler.data.lang.commandowneronly);
+                let activeReqEntry = commandHandler.controller.activeRequests[res];
 
-                steamID64 = res; // If user provided an id as argument then use that instead of his/her id
+                // Refuse if user is not an owner and the request is not from them
+                if (!commandHandler.data.cachefile.ownerid.includes(steamID64) && (activeReqEntry && activeReqEntry.requestedby != steamID64)) return respond(commandHandler.data.lang.commandowneronly);
+                    else logger("debug", "CommandHandler failed cmd: Non-owner provided ID as parameter but is requester of that request. Permitting data retrieval...");
+
+                steamID64 = res; // If user provided an id as argument then use that instead of their id
             }
 
-            commandHandler.controller.data.lastCommentDB.findOne({ id: steamID64 }, (err, doc) => {
-                if (!commandHandler.controller.activeRequests[steamID64] || Object.keys(commandHandler.controller.activeRequests[steamID64].failed).length < 1) return respond(commandHandler.data.lang.failedcmdnothingfound);
+            if (!commandHandler.controller.activeRequests[steamID64] || Object.keys(commandHandler.controller.activeRequests[steamID64].failed).length < 1) return respond(commandHandler.data.lang.failedcmdnothingfound);
 
-                // Get timestamp of request
-                let requestTime = new Date(doc.time).toISOString().replace(/T/, " ").replace(/\..+/, "");
+            // Get timestamp of request
+            let requestTime = new Date(commandHandler.controller.activeRequests[steamID64].until).toISOString().replace(/T/, " ").replace(/\..+/, "");
 
-                // Group errors and convert them to string using helper function
-                let failedcommentsstr = failedCommentsObjToString(commandHandler.controller.activeRequests[steamID64].failed);
+            // Group errors and convert them to string using helper function
+            let failedcommentsstr = failedCommentsObjToString(commandHandler.controller.activeRequests[steamID64].failed);
 
-                // Get start of message from lang file and add data
-                let messagestart = commandHandler.data.lang.failedcmdmsg.replace("steamID64", steamID64).replace("requesttime", requestTime);
+            // Get start of message from lang file and add data
+            let messagestart = commandHandler.data.lang.failedcmdmsg.replace("steamID64", steamID64).replace("requesttime", requestTime);
 
-                // Send message and limit to 500 chars as this call can cause many messages to be sent
-                respondModule(context, { prefix: "/pre", charLimit: 500, ...resInfo }, messagestart + "\nc = Comment, b = Bot, p = Proxy\n\n" + failedcommentsstr); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
-            });
+            // Send message and limit to 500 chars as this call can cause many messages to be sent
+            respondModule(context, { prefix: "/pre", charLimit: 500, ...resInfo }, messagestart + "\nc = Comment, b = Bot, p = Proxy\n\n" + failedcommentsstr); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         });
     }
 };

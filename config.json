@@ -1,5 +1,5 @@
 {
-    "_help_": "Read the docs: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Config-documentation",
+    "_help_": "Read the docs: https://github.com/3urobeat/steam-comment-service-bot/wiki/Config-documentation",
     "commentdelay": 15000,
     "skipSteamGuard": false,
     "commentcooldown": 5,

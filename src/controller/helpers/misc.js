@@ -4,10 +4,10 @@
  * Created Date: 25.03.2023 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 29.05.2023 16:47:44
+ * Last Modified: 29.06.2023 22:35:03
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
+ * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -38,10 +38,13 @@ module.exports.syncLoop = (iterations, func, exit) => {
                 } else {
                     this.break();
                 }1;
-            },
+        },
         break: function () { // Break loop and call exit function
             done = true;
             if (exit) exit();
+        },
+        index: function() {
+            return currentIndex - 1;
         }
     };
 

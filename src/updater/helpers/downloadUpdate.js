@@ -4,10 +4,10 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.06.2023 19:53:12
+ * Last Modified: 29.06.2023 22:35:03
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
+ * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -56,7 +56,7 @@ module.exports.startDownload = (controller) => {
         // Start downloading new files
         logger("", `${logger.colors.fgyellow}Downloading new files...${logger.colors.reset}`, true, false, logger.animation("loading"));
 
-        download(`https://github.com/HerrEurobeat/steam-comment-service-bot/archive/${controller.data.datafile.branch}.zip`, "./", { extract: true }).then(() => { // The download library makes downloading and extracting much easier
+        download(`https://github.com/3urobeat/steam-comment-service-bot/archive/${controller.data.datafile.branch}.zip`, "./", { extract: true }).then(() => { // The download library makes downloading and extracting much easier
             try {
                 // Helper function to scan directory recursively to get an array of all paths in this directory
                 let scandir = function(dir) { // Credit for this function before I modified it: https://stackoverflow.com/a/16684530/12934162

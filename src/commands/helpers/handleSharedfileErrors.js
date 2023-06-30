@@ -4,15 +4,86 @@
  * Created Date: 31.05.2023 16:57:21
  * Author: 3urobeat
  *
- * Last Modified: 02.06.2023 14:28:04
+ * Last Modified: 29.06.2023 22:35:03
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/HerrEurobeat>
+ * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+
+
+const Bot = require("../../bot/bot.js"); // eslint-disable-line
+
+
+/**
+ * Checks if the following vote process iteration should be skipped
+ * @param {CommandHandler} commandHandler The commandHandler object
+ * @param {{ next: function, break: function, index: function }} loop Object returned by misc.js syncLoop() helper
+ * @param {Bot} bot Bot object of the account making this request
+ * @param {String} id ID of the sharedfile that receives the votes
+ * @returns true if iteration should continue, false if iteration should be skipped using return
+ */
+module.exports.handleVoteIterationSkip = function(commandHandler, loop, bot, id) {
+    let activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
+
+    // Check if no bot account was found
+    if (!bot) {
+        activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b? p?`] = "Skipped because bot account does not exist";
+
+        logger("error", `[Bot ?] Error while voting ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id}: Bot account '${activeReqEntry.accounts[loop.index() % activeReqEntry.accounts.length]}' does not exist?! Skipping...`);
+        loop.next();
+        return false;
+    }
+
+    // Check if bot account is offline
+    if (bot.status != Bot.EStatus.ONLINE) {
+        activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = "Skipped because bot account is offline";
+
+        logger("error", `[${bot.logPrefix}] Error while voting ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id}: Skipped because bot account is offline`);
+        loop.next();
+        return false;
+    }
+
+    // If nothing above terminated the function then return true to let the vote loop continue
+    return true;
+};
+
+
+/**
+ * Checks if the following favorite process iteration should be skipped
+ * @param {CommandHandler} commandHandler The commandHandler object
+ * @param {{ next: function, break: function, index: function }} loop Object returned by misc.js syncLoop() helper
+ * @param {Bot} bot Bot object of the account making this request
+ * @param {String} id ID of the sharedfile that receives the votes
+ * @returns true if iteration should continue, false if iteration should be skipped using return
+ */
+module.exports.handleFavoriteIterationSkip = function(commandHandler, loop, bot, id) {
+    let activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
+
+    // Check if no bot account was found
+    if (!bot) {
+        activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b? p?`] = "Skipped because bot account does not exist";
+
+        logger("error", `[Bot ?] Error while un-/favorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id}: Bot account '${activeReqEntry.accounts[loop.index() % activeReqEntry.accounts.length]}' does not exist?! Skipping...`);
+        loop.next();
+        return false;
+    }
+
+    // Check if bot account is offline
+    if (bot.status != Bot.EStatus.ONLINE) {
+        activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = "Skipped because bot account is offline";
+
+        logger("error", `[${bot.logPrefix}] Error while un-/favorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id}: Skipped because bot account is offline`);
+        loop.next();
+        return false;
+    }
+
+    // If nothing above terminated the function then return true to let the favorite loop continue
+    return true;
+};
 
 
 /**

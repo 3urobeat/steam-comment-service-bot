@@ -18,7 +18,7 @@
 - Changed lastcomment.json behaviour
 - Edited/Changed ready event logger messages
 
-Commit: [a8454a3](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/a8454a3)
+Commit: [a8454a3](https://github.com/3urobeat/steam-comment-service-bot/commit/a8454a3)
 
 &nbsp;
 
@@ -28,4 +28,4 @@ Commit: [a8454a3](https://github.com/HerrEurobeat/steam-comment-service-bot/comm
 - Fixed time to account for your timezone
 - Fixed bug that would occur when the bot tried to write a new friend to the lastcomment.json after accepting the friend request after being offline
 
-Commit: [67cefad](https://github.com/HerrEurobeat/steam-comment-service-bot/commit/67cefad)
+Commit: [67cefad](https://github.com/3urobeat/steam-comment-service-bot/commit/67cefad)

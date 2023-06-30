@@ -4,10 +4,10 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.05.2023 15:28:18
+ * Last Modified: 29.06.2023 22:35:03
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 3urobeat <https://github.com/HerrEurobeat>
+ * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -34,7 +34,7 @@ module.exports.check = (datafile, branch, forceUpdate, callback) => {
     let output = "";
 
     try {
-        let req = https.get(`https://raw.githubusercontent.com/HerrEurobeat/steam-comment-service-bot/${branch}/src/data/data.json`, function(res) {
+        let req = https.get(`https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/${branch}/src/data/data.json`, function(res) {
             res.setEncoding("utf8");
 
             res.on("data", (chunk) => {
