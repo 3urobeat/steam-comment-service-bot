@@ -1,1 +1,1 @@
-//Comment: This file is used to provide proxies to spread your accounts over multiple IPs. Read the instructions here: https://github.com/HerrEurobeat/steam-comment-service-bot/wiki/Adding-proxies
+//Comment: This file is used to provide proxies to spread your accounts over multiple IPs. Read the instructions here: https://github.com/3urobeat/steam-comment-service-bot/wiki/Adding-proxies

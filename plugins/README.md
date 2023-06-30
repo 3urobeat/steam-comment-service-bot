@@ -5,4 +5,4 @@ This folder holds folders for all your installed plugins, which contain a config
 
 You can also store locally packed `.tgz` packages here to install them via `npm install ./plugins/steam-comment-bot-myplugin-1.0.0.tgz` from the project root.  
 
-To create your own plugin, fork my template: https://github.com/HerrEurobeat/steam-comment-bot-template-plugin
+To create your own plugin, fork my template: https://github.com/3urobeat/steam-comment-bot-template-plugin
