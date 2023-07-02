@@ -17,7 +17,6 @@
 const fs = require("fs");
 
 const PluginSystem = require("./pluginSystem.js");
-const { logger } = require("output-logger/lib/logger.js");
 
 /**
  * Gets the path holding all data of a plugin. If no folder exists yet, one will be created

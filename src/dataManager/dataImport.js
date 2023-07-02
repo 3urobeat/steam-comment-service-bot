@@ -14,9 +14,9 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const fs = require("fs");
-const path = require("path");
-const nedb = require("@seald-io/nedb");
+const fs   =   require("fs");
+const path =   require("path");
+const nedb =   require("@seald-io/nedb");
 const DataManager = require("./dataManager.js");
 
 /**
@@ -326,20 +326,20 @@ DataManager.prototype._importFromDisk = function () {
             // Call all functions from above after another. This must be done async to avoid a check failing that depends on something from a previous function
             logger("info", "Importing data files and settings...", false, true, logger.animation("loading"));
 
-            this.cachefile = await loadCache();
-            this.datafile = await loadData();
-            this.config = await loadConfig();
-            this.advancedconfig = await loadAdvancedConfig();
-            this.logininfo = await loadLoginInfo();
-            this.proxies = await loadProxies();
-            this.quotes = await loadQuotes();
-            this.lang = await loadLanguage();
-            this.lang = await loadCustomLang();
-            this.pluginVersions = this.cachefile.pluginVersions;
+            this.cachefile       =      await loadCache();
+            this.datafile        =      await loadData();
+            this.config          =      await loadConfig();
+            this.advancedconfig  =      await loadAdvancedConfig();
+            this.logininfo       =      await loadLoginInfo();
+            this.proxies         =      await loadProxies();
+            this.quotes          =      await loadQuotes();
+            this.lang            =      await loadLanguage();
+            this.lang            =      await loadCustomLang();
+            this.pluginVersions  =      this.cachefile.pluginVersions;
 
-            this.lastCommentDB = new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); // Autoload
-            this.ratingHistoryDB = new nedb({ filename: srcdir + "/data/ratingHistory.db", autoload: true });
-            this.tokensDB = new nedb({ filename: srcdir + "/data/tokens.db", autoload: true });
+            this.lastCommentDB   =   new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); // Autoload
+            this.ratingHistoryDB =   new nedb({ filename: srcdir + "/data/ratingHistory.db", autoload: true });
+            this.tokensDB        =   new nedb({ filename: srcdir + "/data/tokens.db", autoload: true });
 
             // Check tokens.db every 24 hours for expired tokens to allow users to refresh them beforehand
             this._startExpiringTokensCheckInterval();

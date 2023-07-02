@@ -25,6 +25,7 @@ const PLUGIN_EVENTS = {
     steamGuardInput: "steamGuardInput",
 };
 
+// Attempt to load all plugins. If a critical check fails loading will be denied
 function loadPlugin(pluginName) {
     try {
         // Load plugin and pluginJson
