@@ -164,6 +164,7 @@ You can implement your own message handler as well, allowing you to integrate al
 Take a look at the developer documentation (TODO) for more information about how to write a custom message handler.
 
 &nbsp;
+
 <a id="typescript"></a>
 
 ## **Typescript:**
@@ -182,6 +183,8 @@ there you can point your ts compiler to the file by adding the following to your
 ```
 
 The [web server](https://github.com/DerDeathraven/steam-comment-bot-rest-api) plugin is written in TS and can be used as a example
+
+&nbsp;
 
 <a id="npm"></a>
 
