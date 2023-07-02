@@ -14,11 +14,9 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
-const Controller     = require("../controller/controller.js");   // eslint-disable-line
+const Controller = require("../controller/controller.js"); // eslint-disable-line
 const CommandHandler = require("../commands/commandHandler.js"); // eslint-disable-line
-const Bot            = require("../../src/bot/bot.js");          // eslint-disable-line
-
+const Bot = require("../../src/bot/bot.js"); // eslint-disable-line
 
 /**
  * @typedef Plugin Documentation of the Plugin structure for IntelliSense support
@@ -29,7 +27,6 @@ const Bot            = require("../../src/bot/bot.js");          // eslint-disab
  * @property {function(Bot, Bot.EStatus, Bot.EStatus)} statusUpdate Controller statusUpdate event
  * @property {function(Bot, function(string))} steamGuardInput Controller steamGuardInput event
  */
-
 
 /**
  * Constructor - The plugin system loads all plugins and provides functions for plugins to hook into
@@ -62,7 +59,6 @@ const PluginSystem = function (controller) {
 // The plugin system loads all plugins and provides functions for plugins to hook into
 module.exports = PluginSystem;
 
-
 /**
  * Reloads all plugins and calls ready event after ~2.5 seconds.
  */
@@ -94,7 +90,6 @@ PluginSystem.prototype.reloadPlugins = function () {
     }, 3000);
 };
 
-
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
 
 /**
@@ -116,7 +111,7 @@ PluginSystem.prototype._checkPlugin = function (folderName, thisPlugin, thisPlug
  * @param {string} pluginName Name of your plugin
  * @returns {string} Path to the folder containing your plugin data
  */
-PluginSystem.prototype.getPluginDataPath = function(pluginName) {}; // eslint-disable-line
+PluginSystem.prototype.getPluginDataPath = function (pluginName) {}; // eslint-disable-line
 
 /**
  * Loads a file from your plugin data folder. The data will remain unprocessed. Use `loadPluginConfig()` instead if you want to load your plugin config.
@@ -157,3 +152,9 @@ PluginSystem.prototype.loadPluginConfig = function (pluginName) {}; // eslint-di
  * @returns {Promise.<void>} Resolves on success, rejects otherwise with an error
  */
 PluginSystem.prototype.writePluginConfig = function (pluginName, pluginConfig) {}; // eslint-disable-line
+/**
+ * Integrates changes made to the config to the users config
+ * @param {string} pluginName
+ * @returns {Record<string,any>} the config
+ */
+PluginSystem.prototype.aggregatePluginConfig = function (pluginName) {}; // eslint-disable-line

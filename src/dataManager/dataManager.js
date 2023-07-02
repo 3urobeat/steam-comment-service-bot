@@ -14,12 +14,10 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 const fs = require("fs");
 const { default: Nedb } = require("@seald-io/nedb"); // eslint-disable-line
 
 const Controller = require("../controller/controller.js"); // eslint-disable-line
-
 
 /**
  * Constructor - The dataManager system imports, checks, handles errors and provides a file updating service for all configuration files
@@ -27,7 +25,6 @@ const Controller = require("../controller/controller.js"); // eslint-disable-lin
  * @param {Controller} controller Reference to the controller object
  */
 const DataManager = function (controller) {
-
     /**
      * Reference to the controller object
      * @type {Controller}
@@ -106,7 +103,10 @@ const DataManager = function (controller) {
      * @type {Nedb}
      */
     this.tokensDB = {};
-
+    /**
+     * The last seen plugin versions.
+     */
+    this.pluginVersions = {};
 
     // Dynamically load all helper files
     const loadHelpersFromFolder = (folder) => {
@@ -122,7 +122,6 @@ const DataManager = function (controller) {
 
     loadHelpersFromFolder("./src/dataManager");
     loadHelpersFromFolder("./src/dataManager/helpers");
-
 };
 
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
