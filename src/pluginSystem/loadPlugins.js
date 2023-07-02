@@ -4,7 +4,7 @@
  * Created Date: 04.06.2023 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 04.06.2023 19:31:20
+ * Last Modified: 02.07.2023 19:07:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -59,20 +59,23 @@ PluginSystem.prototype._loadPlugins = async function () {
 
     for (const plugin of initiatedPlugins) {
         const { pluginName, pluginInstance, pluginJson } = plugin;
+
         if (!pluginInstance) {
             logger("warn", `Skipping plugin '${pluginName}'...`, false, false, null, true); // Force print now
             continue;
         }
+
         let pluginConfig = {};
-        const lastSeenVersion = this.controller.data.pluginVersions;
+        const lastSeenVersion = this.controller.data.cachefile.pluginVersions;
+
         if (lastSeenVersion[pluginName] && lastSeenVersion[pluginName] !== pluginJson.version) {
             logger("warn", `Plugin '${pluginName}' is outdated! Updating plugin...`, false, false, null, true); // Force print now
             pluginConfig = this.aggregatePluginConfig(pluginName);
         } else {
             pluginConfig = await this.loadPluginConfig(pluginName).catch((err) => logger("error", `The config of plugin '${pluginName}' is fucked, skipping plugin. ${err}`));
         }
-        // Skip plugin if it is disabled
 
+        // Skip plugin if it is disabled
         if (!pluginConfig || !pluginConfig.enabled) {
             logger("debug", `Plugin '${pluginName}' is disabled. Skipping plugin...`);
             continue;
@@ -89,6 +92,7 @@ PluginSystem.prototype._loadPlugins = async function () {
             // eslint-disable-line
             this.controller.events.on(event, (...args) => pluginInstance[event]?.call(pluginInstance, ...args));
         });
-        this.controller.data.pluginVersions[pluginName] = pluginJson.version;
+
+        this.controller.data.cachefile.pluginVersions[pluginName] = pluginJson.version;
     }
 };

@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 02.07.2023 19:07:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -73,7 +73,7 @@ const DataManager = function (controller) {
 
     /**
      * Stores IDs from config files converted at runtime and backups for all config & data files.
-     * @type {{ ownerid: Array<String>, botsgroup: string, botsgroupid: string, configgroup: string, configgroup64id: string, ownerlinkid: string, botaccid: Array<String>, configjson: {}, advancedconfigjson: {}, datajson: {} }}
+     * @type {{ ownerid: Array<String>, botsgroup: string, botsgroupid: string, configgroup: string, configgroup64id: string, ownerlinkid: string, botaccid: Array<String>, pluginVersions: {}, configjson: {}, advancedconfigjson: {}, datajson: {} }}
      */
     this.cachefile = {};
 
@@ -103,10 +103,6 @@ const DataManager = function (controller) {
      * @type {Nedb}
      */
     this.tokensDB = {};
-    /**
-     * The last seen plugin versions.
-     */
-    this.pluginVersions = {};
 
     // Dynamically load all helper files
     const loadHelpersFromFolder = (folder) => {

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.07.2023 18:51:27
+ * Last Modified: 02.07.2023 19:06:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -334,7 +334,6 @@ DataManager.prototype._importFromDisk = function () {
             this.quotes          = await loadQuotes();
             this.lang            = await loadLanguage();
             this.lang            = await loadCustomLang();
-            this.pluginVersions  = this.cachefile.pluginVersions;
 
             this.lastCommentDB   = new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); // Autoload
             this.ratingHistoryDB = new nedb({ filename: srcdir + "/data/ratingHistory.db", autoload: true });

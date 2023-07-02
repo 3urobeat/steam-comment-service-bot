@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 17:44:47
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 02.07.2023 19:07:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -49,7 +49,6 @@ DataManager.prototype.refreshCache = function () {
     this.cachefile["configjson"] = this.config;
     this.cachefile["advancedconfigjson"] = this.advancedconfig;
     this.cachefile["datajson"] = this.datafile;
-    this.cachefile["pluginVersions"] = this.pluginVersions;
 
     // Write changes to file
     fs.writeFile(srcdir + "/data/cache.json", JSON.stringify(this.cachefile, null, 4), (err) => {
