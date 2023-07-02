@@ -14,30 +14,27 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
-const fs          = require("fs");
-const path        = require("path");
-const nedb        = require("@seald-io/nedb");
+const fs   =   require("fs");
+const path =   require("path");
+const nedb =   require("@seald-io/nedb");
 const DataManager = require("./dataManager.js");
-
 
 /**
  * Internal: Loads all config & data files from disk and handles potential errors
  * @returns {Promise.<void>} Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
-DataManager.prototype._importFromDisk = function() {
+DataManager.prototype._importFromDisk = function () {
     let _this = this; // Make this accessible within the functions below
 
     return new Promise((resolve) => {
-        (async () => { // Lets us use await inside a Promise without creating an antipattern
+        (async () => {
+            // Lets us use await inside a Promise without creating an antipattern
 
             function loadCache() {
                 return new Promise((resolve) => {
                     try {
                         resolve(require(srcdir + "/data/cache.json"));
-
                     } catch (err) {
-
                         if (err) {
                             logger("", "", true, true);
                             logger("warn", "cache.json seems to have lost it's data/is corrupted. Trying to write/create...", true, true);
@@ -45,7 +42,8 @@ DataManager.prototype._importFromDisk = function() {
                             // Create the underlying folder structure to avoid error when trying to write the downloaded file
                             fs.mkdirSync(path.dirname("./src/data/cache.json"), { recursive: true });
 
-                            fs.writeFile("./src/data/cache.json", "{}", (err) => { // Write empty valid json
+                            fs.writeFile("./src/data/cache.json", "{}", (err) => {
+                                // Write empty valid json
                                 if (err) {
                                     logger("error", "Error writing {} to cache.json.\nPlease do this manually: Go into 'src' folder, open 'cache.json', write '{}' and save.\nOtherwise the bot will always crash.\nError: " + err + "\n\nAborting...", true);
                                     return _this.controller.stop(); // Abort since writeFile was unable to write and any further execution would crash
@@ -63,16 +61,15 @@ DataManager.prototype._importFromDisk = function() {
                 return new Promise((resolve) => {
                     try {
                         resolve(require(srcdir + "/data/data.json"));
-
                     } catch (err) {
-
-                        if (err) { // Corrupted!
+                        if (err) {
+                            // Corrupted!
                             logger("", "", true, true);
                             logger("warn", "'data.json' seems to have lost it's data/is corrupted. Trying to restore from backup...", true);
 
                             // Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
                             if (_this.cachefile.datajson) _this._restoreBackup("data.json", srcdir + "/data/data.json", _this.cachefile.datajson, "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/src/data/data.json", resolve);
-                                else _this._pullNewFile("data.json", "./src/data/data.json", resolve);
+                            else _this._pullNewFile("data.json", "./src/data/data.json", resolve);
                         }
                     }
                 });
@@ -82,10 +79,9 @@ DataManager.prototype._importFromDisk = function() {
                 return new Promise((resolve) => {
                     try {
                         resolve(require(srcdir + "/../config.json"));
-
                     } catch (err) {
-
-                        if (err) { // Corrupted!
+                        if (err) {
+                            // Corrupted!
                             logger("", "", true, true);
                             logger("warn", "'config.json' seems to have lost it's data/is corrupted. Trying to restore from backup...", true);
 
@@ -108,7 +104,7 @@ DataManager.prototype._importFromDisk = function() {
                             setTimeout(() => {
                                 // Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
                                 if (_this.cachefile.configjson) _this._restoreBackup("config.json", srcdir + "/../config.json", _this.cachefile.configjson, "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/config.json", resolve);
-                                    else _this._pullNewFile("config.json", "./config.json", resolve);
+                                else _this._pullNewFile("config.json", "./config.json", resolve);
                             }, restoreTimeout);
                         }
                     }
@@ -120,13 +116,14 @@ DataManager.prototype._importFromDisk = function() {
                     try {
                         resolve(require(srcdir + "/../advancedconfig.json"));
                     } catch (err) {
-                        if (err) { // Corrupted!
+                        if (err) {
+                            // Corrupted!
                             logger("", "", true, true);
                             logger("warn", "advancedconfig.json seems to have lost it's data/is corrupted. Trying to restore from backup...", true);
 
                             // Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
                             if (_this.cachefile.advancedconfigjson) _this._restoreBackup("advancedconfig.json", srcdir + "/../advancedconfig.json", _this.cachefile.advancedconfigjson, "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/advancedconfig.json", resolve);
-                                else _this._pullNewFile("advancedconfig.json", "./advancedconfig.json", resolve);
+                            else _this._pullNewFile("advancedconfig.json", "./advancedconfig.json", resolve);
                         }
                     }
                 });
@@ -155,7 +152,7 @@ DataManager.prototype._importFromDisk = function() {
                                     password: e[1],
                                     sharedSecret: e[2],
                                     steamGuardCode: null,
-                                    machineName: `${_this.datafile.mestr}'s Comment Bot`,        // For steam-user
+                                    machineName: `${_this.datafile.mestr}'s Comment Bot`, // For steam-user
                                     deviceFriendlyName: `${_this.datafile.mestr}'s Comment Bot`, // For steam-session
                                 };
                             });
@@ -179,8 +176,8 @@ DataManager.prototype._importFromDisk = function() {
                                     password: logininfo[k][1],
                                     sharedSecret: logininfo[k][2],
                                     steamGuardCode: null,
-                                    machineName: `${_this.datafile.mestr}'s Comment Bot`,       // For steam-user
-                                    deviceFriendlyName: `${_this.datafile.mestr}'s Comment Bot` // For steam-session
+                                    machineName: `${_this.datafile.mestr}'s Comment Bot`, // For steam-user
+                                    deviceFriendlyName: `${_this.datafile.mestr}'s Comment Bot`, // For steam-session
                                 };
 
                                 delete logininfo[k]; // Remove old entry
@@ -204,14 +201,14 @@ DataManager.prototype._importFromDisk = function() {
                     if (!fs.existsSync("./proxies.txt")) {
                         logger("info", "Creating proxies.txt file as it doesn't exist yet...", false, true, logger.animation("loading"));
 
-                        fs.writeFile(srcdir + "/../proxies.txt", "", err => {
+                        fs.writeFile(srcdir + "/../proxies.txt", "", (err) => {
                             if (err) logger("error", "error creating proxies.txt file: " + err);
-                                else logger("info", "Successfully created proxies.txt file.", false, true, logger.animation("loading"));
+                            else logger("info", "Successfully created proxies.txt file.", false, true, logger.animation("loading"));
                         });
-
-                    } else { // File does seem to exist so now we can try and read it
+                    } else {
+                        // File does seem to exist so now we can try and read it
                         proxies = fs.readFileSync("./proxies.txt", "utf8").split("\n");
-                        proxies = proxies.filter(str => str != ""); // Remove empty lines
+                        proxies = proxies.filter((str) => str != ""); // Remove empty lines
 
                         if (proxies.length > 0 && proxies[0].startsWith("//Comment")) proxies = proxies.slice(1); // Remove comment from array
 
@@ -235,15 +232,21 @@ DataManager.prototype._importFromDisk = function() {
 
                     // Pull new file and call loadQuotes again, wait for it to resolve, and then resolve this promise. This is slightly hacky but relatively clean
                     if (!fs.existsSync(srcdir + "/../quotes.txt")) {
-                        return _this._pullNewFile("quotes.txt", "./quotes.txt", async () => {
-                            resolve(await loadQuotes());
-                        }, true);
+                        return _this._pullNewFile(
+                            "quotes.txt",
+                            "./quotes.txt",
+                            async () => {
+                                resolve(await loadQuotes());
+                            },
+                            true
+                        );
                     }
 
                     quotes = fs.readFileSync(srcdir + "/../quotes.txt", "utf8").split("\n"); // Get all quotes from the quotes.txt file into an array
-                    quotes = quotes.filter(str => str != "");                                // Remove empty quotes
+                    quotes = quotes.filter((str) => str != ""); // Remove empty quotes
 
-                    quotes.forEach((e, i) => { // Multi line strings that contain \n will get split to \\n -> remove second \ so that node-steamcommunity understands the quote when commenting
+                    quotes.forEach((e, i) => {
+                        // Multi line strings that contain \n will get split to \\n -> remove second \ so that node-steamcommunity understands the quote when commenting
                         if (e.length > 999) {
                             logger("warn", `The quote.txt line ${i} is longer than the limit of 999 characters. This quote will be ignored for now.`, true, false, logger.animation("loading"));
                             quotes.splice(i, 1); // Remove this item from the array
@@ -253,7 +256,8 @@ DataManager.prototype._importFromDisk = function() {
                         quotes[i] = e.replace(/\\n/g, "\n").replace("\\n", "\n");
                     });
 
-                    if (quotes.length == 0) { // Check if quotes.txt is empty to avoid errors further down when trying to comment
+                    if (quotes.length == 0) {
+                        // Check if quotes.txt is empty to avoid errors further down when trying to comment
                         logger("error", `${logger.colors.fgred}You haven't put any comment quotes into the quotes.txt file! Aborting...`, true);
                         return _this.controller.stop();
                     } else {
@@ -269,7 +273,8 @@ DataManager.prototype._importFromDisk = function() {
                     try {
                         resolve(require(srcdir + "/data/lang/defaultlang.json"));
                     } catch (err) {
-                        if (err) { // Corrupted!
+                        if (err) {
+                            // Corrupted!
                             logger("", "", true, true);
 
                             // Pull the file directly from GitHub.
@@ -303,49 +308,44 @@ DataManager.prototype._importFromDisk = function() {
                                 customlangkeys++;
                             }
 
-                            if (i == Object.keys(customlang).length - 1) { // Check for last iteration
+                            if (i == Object.keys(customlang).length - 1) {
+                                // Check for last iteration
                                 if (customlangkeys > 0) logger("info", `${customlangkeys} customlang key imported!`, false, true, logger.animation("loading"));
-                                    else logger("info", "No customlang keys found.", false, true, logger.animation("loading"));
+                                else logger("info", "No customlang keys found.", false, true, logger.animation("loading"));
 
                                 resolve(_this.lang); // Resolve lang object with our new keys
                             }
                         });
-
                     } else {
-
                         logger("info", "No customlang.json file found...", false, true, logger.animation("loading"));
                         resolve(_this.lang); // Resolve with default lang object
                     }
                 });
             }
 
-
             // Call all functions from above after another. This must be done async to avoid a check failing that depends on something from a previous function
             logger("info", "Importing data files and settings...", false, true, logger.animation("loading"));
 
-            this.cachefile      = await loadCache();
-            this.datafile       = await loadData();
-            this.config         = await loadConfig();
-            this.advancedconfig = await loadAdvancedConfig();
-            this.logininfo      = await loadLoginInfo();
-            this.proxies        = await loadProxies();
-            this.quotes         = await loadQuotes();
-            this.lang           = await loadLanguage();
-            this.lang           = await loadCustomLang();
+            this.cachefile       =      await loadCache();
+            this.datafile        =      await loadData();
+            this.config          =      await loadConfig();
+            this.advancedconfig  =      await loadAdvancedConfig();
+            this.logininfo       =      await loadLoginInfo();
+            this.proxies         =      await loadProxies();
+            this.quotes          =      await loadQuotes();
+            this.lang            =      await loadLanguage();
+            this.lang            =      await loadCustomLang();
+            this.pluginVersions  =      this.cachefile.pluginVersions;
 
-            this.lastCommentDB   = new nedb({ filename: srcdir + "/data/lastcomment.db",   autoload: true }); // Autoload
-            this.ratingHistoryDB = new nedb({ filename: srcdir + "/data/ratingHistory.db", autoload: true });
-            this.tokensDB        = new nedb({ filename: srcdir + "/data/tokens.db",        autoload: true });
-
+            this.lastCommentDB   =   new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); // Autoload
+            this.ratingHistoryDB =   new nedb({ filename: srcdir + "/data/ratingHistory.db", autoload: true });
+            this.tokensDB        =   new nedb({ filename: srcdir + "/data/tokens.db", autoload: true });
 
             // Check tokens.db every 24 hours for expired tokens to allow users to refresh them beforehand
             this._startExpiringTokensCheckInterval();
 
-
             // Resolve our promise to let caller know the dataImport is finished
             resolve();
-
         })();
     });
-
 };
