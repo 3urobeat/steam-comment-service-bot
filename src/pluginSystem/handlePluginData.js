@@ -143,6 +143,7 @@ PluginSystem.prototype.aggregatePluginConfig = function (pluginName) {
     let path = this.getPluginDataPath(pluginName);
 
     if (!fs.existsSync(path + "config.json")) return;
+    if (!fs.existsSync(`${srcdir}/../node_modules/${pluginName}/config.json`)) return;
 
     const standardConfig = require(`${srcdir}/../node_modules/${pluginName}/config.json`);
     const config = require(path + "config.json");
