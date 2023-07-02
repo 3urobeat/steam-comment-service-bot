@@ -4,7 +4,7 @@
  * Created Date: 04.06.2023 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 02.07.2023 19:07:59
+ * Last Modified: 02.07.2023 19:12:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -68,7 +68,7 @@ PluginSystem.prototype._loadPlugins = async function () {
         let pluginConfig = {};
         const lastSeenVersion = this.controller.data.cachefile.pluginVersions;
 
-        if (lastSeenVersion[pluginName] && lastSeenVersion[pluginName] !== pluginJson.version) {
+        if (lastSeenVersion && lastSeenVersion[pluginName] && lastSeenVersion[pluginName] !== pluginJson.version) {
             logger("warn", `Plugin '${pluginName}' is outdated! Updating plugin...`, false, false, null, true); // Force print now
             pluginConfig = this.aggregatePluginConfig(pluginName);
         } else {
@@ -93,6 +93,8 @@ PluginSystem.prototype._loadPlugins = async function () {
             this.controller.events.on(event, (...args) => pluginInstance[event]?.call(pluginInstance, ...args));
         });
 
+        // Update last seen version of this plugin name
+        if (!lastSeenVersion) this.controller.data.cachefile.pluginVersions = {};
         this.controller.data.cachefile.pluginVersions[pluginName] = pluginJson.version;
     }
 };

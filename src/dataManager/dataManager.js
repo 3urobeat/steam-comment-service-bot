@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 02.07.2023 19:07:22
+ * Last Modified: 02.07.2023 19:10:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -73,7 +73,7 @@ const DataManager = function (controller) {
 
     /**
      * Stores IDs from config files converted at runtime and backups for all config & data files.
-     * @type {{ ownerid: Array<String>, botsgroup: string, botsgroupid: string, configgroup: string, configgroup64id: string, ownerlinkid: string, botaccid: Array<String>, pluginVersions: {}, configjson: {}, advancedconfigjson: {}, datajson: {} }}
+     * @type {{ ownerid: Array<String>, botsgroup: string, botsgroupid: string, configgroup: string, configgroup64id: string, ownerlinkid: string, botaccid: Array<String>, pluginVersions: object.<string, string>, configjson: {}, advancedconfigjson: {}, datajson: {} }}
      */
     this.cachefile = {};
 
