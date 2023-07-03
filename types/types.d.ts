@@ -850,6 +850,11 @@ declare class PluginSystem {
      */
     loadPluginConfig(pluginName: string): Promise<object>;
     /**
+     * Integrates changes made to the config to the users config
+     * @returns the config
+     */
+    aggregatePluginConfig(pluginName: string): Record<string, any>;
+    /**
      * Writes your plugin config changes to the filesystem. The object data will be processed to JSON.
      * @param pluginName - Name of your plugin
      * @param pluginConfig - Config object of your plugin
@@ -928,6 +933,11 @@ declare class PluginSystem {
      * @returns Resolves on success, rejects otherwise with an error
      */
     writePluginConfig(pluginName: string, pluginConfig: any): Promise<void>;
+    /**
+     * Integrates changes made to the config to the users config
+     * @returns the config
+     */
+    aggregatePluginConfig(pluginName: string): Record<string, any>;
 }
 
 /**
