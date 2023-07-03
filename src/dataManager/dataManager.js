@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 02.07.2023 19:10:50
+ * Last Modified: 03.07.2023 15:50:15
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -137,7 +137,7 @@ DataManager.prototype.processData = async function () {};
  * Internal: Loads all config & data files from disk and handles potential errors
  * @returns {Promise.<void>} Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
-DataManager.prototype._importFromDisk = function () {};
+DataManager.prototype._importFromDisk = async function () {};
 
 /**
  * Gets a random quote
