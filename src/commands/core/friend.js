@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 13:23:11
+ * Last Modified: 04.07.2023 17:55:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -28,11 +28,11 @@ module.exports.addFriend = {
     /**
      * The addFriend command
      * @param {CommandHandler} commandHandler The commandHandler object
-     * @param {Array} args Array of arguments that will be passed to the command
+     * @param {array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
@@ -88,11 +88,11 @@ module.exports.unfriend = {
     /**
      * The unfriend command
      * @param {CommandHandler} commandHandler The commandHandler object
-     * @param {Array} args Array of arguments that will be passed to the command
+     * @param {array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
@@ -141,11 +141,11 @@ module.exports.unfriendall = {
     /**
      * The unfriendall command
      * @param {CommandHandler} commandHandler The commandHandler object
-     * @param {Array} args Array of arguments that will be passed to the command
+     * @param {array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call

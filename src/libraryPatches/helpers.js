@@ -5,8 +5,8 @@ const xml2js  = require('xml2js');
 
 /**
  * Resolves a Steam profile URL to get steamID64 and vanityURL
- * @param {String} url - Full steamcommunity profile URL or only the vanity part.
- * @param {Object} callback - First argument is null/Error, second is object containing vanityURL (String) and steamID (String)
+ * @param {string} url - Full steamcommunity profile URL or only the vanity part.
+ * @param {object} callback - First argument is null/Error, second is object containing vanityURL (String) and steamID (String)
  */
 helpers.resolveVanityURL = function(url, callback) {
 	// Precede url param if only the vanity was provided

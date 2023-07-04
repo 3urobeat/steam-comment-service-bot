@@ -4,7 +4,7 @@
  * Created Date: 22.02.2022 17:39:21
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 17:50:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -21,9 +21,9 @@ const fs = require("fs");
 /**
  * Applies custom update rules for a few files (gets called by downloadUpdate.js)
  * @param {any} compatibilityfeaturedone Legacy param, is unused
- * @param {Object} oldconfig The old config from before the update
- * @param {Object} oldadvancedconfig The old advancedconfig from before the update
- * @param {Object} olddatafile The old datafile from before the update
+ * @param {object} oldconfig The old config from before the update
+ * @param {object} oldadvancedconfig The old advancedconfig from before the update
+ * @param {object} olddatafile The old datafile from before the update
  * @param {function} callback Legacy param, is unused
  * @returns {Promise.<void>} Resolves when we can proceed
  */

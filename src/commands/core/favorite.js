@@ -4,7 +4,7 @@
  * Created Date: 02.06.2023 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 13:22:27
+ * Last Modified: 04.07.2023 17:55:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -30,7 +30,7 @@ module.exports.favorite = {
     /**
      * The favorite command
      * @param {CommandHandler} commandHandler The commandHandler object
-     * @param {Array} args Array of arguments that will be passed to the command
+     * @param {array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
@@ -197,7 +197,7 @@ module.exports.unfavorite = {
     /**
      * The unfavorite command
      * @param {CommandHandler} commandHandler The commandHandler object
-     * @param {Array} args Array of arguments that will be passed to the command
+     * @param {array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.

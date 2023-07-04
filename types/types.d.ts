@@ -632,11 +632,11 @@ declare class DataManager {
     /**
      * Stores all quotes used for commenting provided via the `quotes.txt` file.
      */
-    quotes: String[];
+    quotes: string[];
     /**
      * Stores all proxies provided via the `proxies.txt` file.
      */
-    proxies: String[];
+    proxies: string[];
     /**
      * Stores IDs from config files converted at runtime and backups for all config & data files.
      */
@@ -792,6 +792,46 @@ declare class DataManager {
      * Internal: Helper function to pull new file from GitHub
      */
     _pullNewFile(): void;
+}
+
+/**
+ * Constructor - Creates a new SharedFile object
+ */
+declare class CSteamSharedFile {
+    constructor(community: SteamCommunity, data: any);
+    _community: SteamCommunity;
+    /**
+     * Deletes a comment from this sharedfile's comment section
+     * @param cid - ID of the comment to delete
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    deleteComment(cid: string, callback: (...params: any[]) => any): void;
+    /**
+     * Favorites this sharedfile
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    favorite(callback: (...params: any[]) => any): void;
+    /**
+     * Posts a comment to this sharedfile
+     * @param message - Content of the comment to post
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    comment(message: string, callback: (...params: any[]) => any): void;
+    /**
+     * Subscribes to this sharedfile's comment section. Note: Checkbox on webpage does not update
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    subscribe(callback: (...params: any[]) => any): void;
+    /**
+     * Unfavorites this sharedfile
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    unfavorite(callback: (...params: any[]) => any): void;
+    /**
+     * Unsubscribes from this sharedfile's comment section. Note: Checkbox on webpage does not update
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    unsubscribe(callback: (...params: any[]) => any): void;
 }
 
 /**

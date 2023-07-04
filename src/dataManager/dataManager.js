@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 03.07.2023 15:50:15
+ * Last Modified: 04.07.2023 18:08:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -42,44 +42,44 @@ const DataManager = function (controller) {
 
     /**
      * Stores all `config.json` settings.
-     * @type {Object.<string, any>}
+     * @type {object.<string, any>}
      */
     this.config = {};
 
     /**
      * Stores all `advancedconfig.json` settings.
-     * @type {Object.<string, any>}
+     * @type {object.<string, any>}
      */
     this.advancedconfig = {};
 
     /**
      * Stores all language strings used for responding to a user.
      * All default strings have already been replaced with corresponding matches from `customlang.json`.
-     * @type {Object.<string, string>}
+     * @type {object.<string, string>}
      */
     this.lang = {};
 
     /**
      * Stores all quotes used for commenting provided via the `quotes.txt` file.
-     * @type {Array<String>}
+     * @type {array.<string>}
      */
     this.quotes = [];
 
     /**
      * Stores all proxies provided via the `proxies.txt` file.
-     * @type {Array<String>}
+     * @type {array.<string>}
      */
     this.proxies = [];
 
     /**
      * Stores IDs from config files converted at runtime and backups for all config & data files.
-     * @type {{ ownerid: Array<String>, botsgroup: string, botsgroupid: string, configgroup: string, configgroup64id: string, ownerlinkid: string, botaccid: Array<String>, pluginVersions: object.<string, string>, configjson: {}, advancedconfigjson: {}, datajson: {} }}
+     * @type {{ ownerid: array.<string>, botsgroup: string, botsgroupid: string, configgroup: string, configgroup64id: string, ownerlinkid: string, botaccid: array.<string>, pluginVersions: object.<string, string>, configjson: {}, advancedconfigjson: {}, datajson: {} }}
      */
     this.cachefile = {};
 
     /**
      * Stores the login information for every bot account provided via the `logininfo.json` or `accounts.txt` files.
-     * @type {Object.<string, { accountName: string, password: string, sharedSecret: string, steamGuardCode: null, machineName: string, deviceFriendlyName: string }>}
+     * @type {object.<string, { accountName: string, password: string, sharedSecret: string, steamGuardCode: null, machineName: string, deviceFriendlyName: string }>}
      */
     this.logininfo = {};
 
@@ -141,22 +141,22 @@ DataManager.prototype._importFromDisk = async function () {};
 
 /**
  * Gets a random quote
- * @param {Array} quotesArr Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
+ * @param {array} quotesArr Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
  * @returns {Promise.<string>} Resolves with `quote` (String)
  */
 DataManager.prototype.getQuote = function (quotesArr = null) {}; // eslint-disable-line
 
 /**
  * Checks if a user ID is currently on cooldown and formats human readable lastRequestStr and untilStr strings.
- * @param {String} id ID of the user to look up
+ * @param {string} id ID of the user to look up
  * @returns {Promise.<{ lastRequest: number, until: number, lastRequestStr: string, untilStr: string }|null>} Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as String), `untilStr` (Wait until as String). If id wasn't found, `null` will be returned.
  */
 DataManager.prototype.getUserCooldown = function (id) {}; // eslint-disable-line
 
 /**
  * Updates or inserts timestamp of a user
- * @param {String} id ID of the user to update
- * @param {Number} timestamp Unix timestamp of the last interaction the user received
+ * @param {string} id ID of the user to update
+ * @param {number} timestamp Unix timestamp of the last interaction the user received
  */
 DataManager.prototype.setUserCooldown = function (id, timestamp) {}; // eslint-disable-line
 
@@ -167,20 +167,20 @@ DataManager.prototype._startExpiringTokensCheckInterval = () => {};
 
 /**
  * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active request was found and relogs them
- * @param {Object} expiring Object of botobject entries to ask user for
+ * @param {object} expiring Object of botobject entries to ask user for
  */
 DataManager.prototype._askForGetNewToken = function (expiring) {}; // eslint-disable-line
 
 /**
  * Retrieves the last processed request of anyone or a specific steamID64 from the lastcomment database
- * @param {String} steamID64 Search for a specific user
+ * @param {string} steamID64 Search for a specific user
  * @returns {Promise.<number>} Called with the greatest timestamp (Number) found
  */
 DataManager.prototype.getLastCommentRequest = function (steamID64 = null) {}; // eslint-disable-line
 
 /**
  * Decodes a JsonWebToken - https://stackoverflow.com/a/38552302
- * @param {String} token The token to decode
+ * @param {string} token The token to decode
  * @returns JWT object on success, `null` on failure
  */
 DataManager.prototype.decodeJWT = function (token) {}; // eslint-disable-line
@@ -192,11 +192,11 @@ DataManager.prototype.refreshCache = function () {};
 
 /**
  * Internal: Helper function to try and restore backup of corrupted file from cache.json
- * @param {String} name Name of the file
- * @param {String} filepath Absolute path of the file on the disk
- * @param {Object} cacheentry Backup-Object of the file in cache.json
- * @param {String} onlinelink Link to the raw file in the GitHub repository
- * @param {Function} resolve Function to resolve the caller's promise
+ * @param {string} name Name of the file
+ * @param {string} filepath Absolute path of the file on the disk
+ * @param {object} cacheentry Backup-Object of the file in cache.json
+ * @param {string} onlinelink Link to the raw file in the GitHub repository
+ * @param {function} resolve Function to resolve the caller's promise
  */
 DataManager.prototype._restoreBackup = function (name, filepath, cacheentry, onlinelink, resolve) {}; // eslint-disable-line
 

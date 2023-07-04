@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 18:02:14
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -34,30 +34,30 @@ const Controller = function() {
     this.misc = {
         /**
          * Implementation of a synchronous for loop in JS (Used as reference: https://whitfin.io/handling-synchronous-asynchronous-loops-javascriptnode-js/)
-         * @param {Number} iterations The amount of iterations
-         * @param {Function} func The function to run each iteration (Params: loop, index)
-         * @param {Function} exit This function will be called when the loop is finished
+         * @param {number} iterations The amount of iterations
+         * @param {function} func The function to run each iteration (Params: loop, index)
+         * @param {function} exit This function will be called when the loop is finished
          */
         syncLoop: (iterations, func, exit) => {}, // eslint-disable-line
 
         /**
          * Rounds a number with x decimals
-         * @param {Number} value Number to round
-         * @param {Number} decimals Amount of decimals
-         * @returns {Number} Rounded number
+         * @param {number} value Number to round
+         * @param {number} decimals Amount of decimals
+         * @returns {number} Rounded number
          */
         round: (value, decimals) => {}, // eslint-disable-line
 
         /**
          * Converts a timestamp to a human-readable until from now format. Does not care about past/future.
-         * @returns {String} "x seconds/minutes/hours/days"
+         * @returns {string} "x seconds/minutes/hours/days"
          */
         timeToString: () => {}, // eslint-disable-line
 
         /**
          * Pings an URL to check if the service and this internet connection is working
-         * @param {String} url The URL of the service to check
-         * @param {Boolean} throwTimeout If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
+         * @param {string} url The URL of the service to check
+         * @param {boolean} throwTimeout If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
          * @returns {Promise.<{ statusMessage: string, statusCode: number|null }>} Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
          */
         checkConnection: (url, throwTimeout) => {}, // eslint-disable-line
@@ -65,11 +65,11 @@ const Controller = function() {
         /**
          * Helper function which attempts to cut Strings intelligently and returns all parts. It will attempt to not cut words & links in half.
          * It is used by the steamChatInteraction helper but can be used in plugins as well.
-         * @param {String} txt The string to cut
-         * @param {Number} limit Maximum length for each part. The function will attempt to cut txt into parts that don't exceed this amount.
-         * @param {Array} cutChars Optional: Custom chars to search after for cutting string in parts. Default: [" ", "\n", "\r"]
-         * @param {Number} threshold Optional: Maximum amount that limit can be reduced to find the last space or line break. If no match is found within this limit a word will be cut. Default: 15% of total length
-         * @returns {Array} Returns all parts of the string in an array
+         * @param {string} txt The string to cut
+         * @param {number} limit Maximum length for each part. The function will attempt to cut txt into parts that don't exceed this amount.
+         * @param {array} cutChars Optional: Custom chars to search after for cutting string in parts. Default: [" ", "\n", "\r"]
+         * @param {number} threshold Optional: Maximum amount that limit can be reduced to find the last space or line break. If no match is found within this limit a word will be cut. Default: 15% of total length
+         * @returns {array} Returns all parts of the string in an array
          */
         cutStringsIntelligently: (txt, limit, cutChars, threshold) => {} // eslint-disable-line
     };
@@ -250,7 +250,7 @@ Controller.prototype._preLogin = async function() {
 
     /**
      * Stores references to all bot account objects mapped to their accountName
-     * @type {Object.<string, Bot>}
+     * @type {object.<string, Bot>}
      */
     this.bots = {};
 
@@ -352,7 +352,7 @@ if (parseInt(process.argv[3]) + 2500 > Date.now()) { // Check if this process ju
 
 /**
  * Restarts the whole application
- * @param {String} data Stringified restartdata object that will be kept through restarts
+ * @param {string} data Stringified restartdata object that will be kept through restarts
  */
 Controller.prototype.restart = function(data) { process.send(`restart(${data})`); };
 
@@ -364,7 +364,7 @@ Controller.prototype.stop = function() { process.send("stop()"); };
 /**
  * Attempts to log in all bot accounts which are currently offline one after another.
  * Creates a new bot object for every new account and reuses existing one if possible
- * @param {Boolean} firstLogin Is set to true by controller if this is the first login to display more information
+ * @param {boolean} firstLogin Is set to true by controller if this is the first login to display more information
  */
 Controller.prototype.login = function(firstLogin) {}; // eslint-disable-line
 
@@ -408,8 +408,8 @@ Controller.prototype._lastcommentUnfriendCheck = function() {} // eslint-disable
 /**
  * Retrieves all matching bot accounts and returns them.
  * @param {(EStatus|EStatus[]|string)} [statusFilter=EStatus.ONLINE] Optional: EStatus or Array of EStatus's including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'EStatus.ONLINE' will be returned.
- * @param {Boolean} mapToObject Optional: If true, an object will be returned where every bot object is mapped to their accountName.
- * @returns {Array|Object} An array or object if `mapToObject == true` containing all matching bot accounts.
+ * @param {boolean} mapToObject Optional: If true, an object will be returned where every bot object is mapped to their accountName.
+ * @returns {array|object} An array or object if `mapToObject == true` containing all matching bot accounts.
  */
 Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObject = false) {}; // eslint-disable-line
 
@@ -421,19 +421,19 @@ Controller.prototype._handleErrors = function() {} // eslint-disable-line
 
 /**
  * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation
- * @param {String} str The profileID argument provided by the user
- * @param {String} expectedIdType The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
+ * @param {string} str The profileID argument provided by the user
+ * @param {string} expectedIdType The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
  * @param {function} [callback] Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
  */
 Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) => {} // eslint-disable-line
 
 /**
  * Logs text to the terminal and appends it to the output.txt file.
- * @param {String} type String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
- * @param {String} str The text to log into the terminal
- * @param {Boolean} nodate Setting to true will hide date and time in the message
- * @param {Boolean} remove Setting to true will remove this message with the next one
- * @param {Boolean} printNow Ignores the readyafterlogs check and force prints the message now
+ * @param {string} type String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
+ * @param {string} str The text to log into the terminal
+ * @param {boolean} nodate Setting to true will hide date and time in the message
+ * @param {boolean} remove Setting to true will remove this message with the next one
+ * @param {boolean} printNow Ignores the readyafterlogs check and force prints the message now
  */
 Controller.prototype.logger = function(type, str, nodate, remove, animation, printNow) {}; // eslint-disable-line
 

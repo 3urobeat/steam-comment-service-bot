@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:18:49
  * Author: 3urobeat
  *
- * Last Modified: 03.07.2023 12:31:10
+ * Last Modified: 04.07.2023 18:01:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -21,10 +21,10 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 /**
  * Retrieves arguments from a vote request. If request is invalid, an error message will be sent
  * @param {CommandHandler} commandHandler The commandHandler object
- * @param {Array} args The command arguments
- * @param {String} cmd Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function
- * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
- * @param {Function} respond The function to send messages to the requesting user
+ * @param {array} args The command arguments
+ * @param {string} cmd Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function
+ * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+ * @param {function} respond The function to send messages to the requesting user
  * @returns {Promise.<{ amount: number|string, id: string }>} If the user provided a specific amount, amount will be a number. If user provided "all" or "max", it will be returned as an unmodified string for getVoteBots.js to handle
  */
 module.exports.getSharedfileArgs = (commandHandler, args, cmd, resInfo, respond) => {

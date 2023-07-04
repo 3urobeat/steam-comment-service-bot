@@ -4,7 +4,7 @@
  * Created Date: 31.05.2023 16:57:21
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 17:50:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -23,7 +23,7 @@ const Bot = require("../../bot/bot.js"); // eslint-disable-line
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {{ next: function, break: function, index: function }} loop Object returned by misc.js syncLoop() helper
  * @param {Bot} bot Bot object of the account making this request
- * @param {String} id ID of the sharedfile that receives the votes
+ * @param {string} id ID of the sharedfile that receives the votes
  * @returns true if iteration should continue, false if iteration should be skipped using return
  */
 module.exports.handleVoteIterationSkip = function(commandHandler, loop, bot, id) {
@@ -57,7 +57,7 @@ module.exports.handleVoteIterationSkip = function(commandHandler, loop, bot, id)
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {{ next: function, break: function, index: function }} loop Object returned by misc.js syncLoop() helper
  * @param {Bot} bot Bot object of the account making this request
- * @param {String} id ID of the sharedfile that receives the votes
+ * @param {string} id ID of the sharedfile that receives the votes
  * @returns true if iteration should continue, false if iteration should be skipped using return
  */
 module.exports.handleFavoriteIterationSkip = function(commandHandler, loop, bot, id) {
@@ -88,10 +88,10 @@ module.exports.handleFavoriteIterationSkip = function(commandHandler, loop, bot,
 
 /**
  * Logs vote errors
- * @param {String} error The error string returned by steam-community
+ * @param {string} error The error string returned by steam-community
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Bot} bot Bot object of the account making this request
- * @param {String} id ID of the sharedfile that receives the votes
+ * @param {string} id ID of the sharedfile that receives the votes
  */
 module.exports.logVoteError = (error, commandHandler, bot, id) => {
     let activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
@@ -114,10 +114,10 @@ module.exports.logVoteError = (error, commandHandler, bot, id) => {
 
 /**
  * Logs favorite errors
- * @param {String} error The error string returned by steam-community
+ * @param {string} error The error string returned by steam-community
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Bot} bot Bot object of the account making this request
- * @param {String} id ID of the sharedfile that receives the favorites
+ * @param {string} id ID of the sharedfile that receives the favorites
  */
 module.exports.logFavoriteError = (error, commandHandler, bot, id) => {
     let activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
@@ -140,7 +140,7 @@ module.exports.logFavoriteError = (error, commandHandler, bot, id) => {
 
 /**
  * Helper function to sort failed object by number so that it is easier to read
- * @param {Object} failedObj Current state of failed object
+ * @param {object} failedObj Current state of failed object
  */
 function sortFailedCommentsObject(failedObj) {
     let sortedvals = Object.keys(failedObj).sort((a, b) => {

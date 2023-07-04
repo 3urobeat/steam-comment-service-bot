@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 17:49:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -60,7 +60,7 @@ module.exports.update = (callback) => {
 
 /**
  * Updates all installed packages to versions listed in package.json
- * @param {String} path Custom path to read package.json from and install packages to
+ * @param {string} path Custom path to read package.json from and install packages to
  * @param {function} [callback] Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
 module.exports.updateFromPath = (path, callback) => {

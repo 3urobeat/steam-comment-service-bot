@@ -174,7 +174,7 @@ function CSteamSharedFile(community, data) {
 
 /**
  * Deletes a comment from this sharedfile's comment section
- * @param {String} cid - ID of the comment to delete
+ * @param {string} cid - ID of the comment to delete
  * @param {function} callback - Takes only an Error object/null as the first argument
  */
 CSteamSharedFile.prototype.deleteComment = function(cid, callback) {
@@ -191,7 +191,7 @@ CSteamSharedFile.prototype.favorite = function(callback) {
 
 /**
  * Posts a comment to this sharedfile
- * @param {String} message - Content of the comment to post
+ * @param {string} message - Content of the comment to post
  * @param {function} callback - Takes only an Error object/null as the first argument
  */
 CSteamSharedFile.prototype.comment = function(message, callback) {

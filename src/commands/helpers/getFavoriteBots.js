@@ -4,7 +4,7 @@
  * Created Date: 02.06.2023 14:07:27
  * Author: 3urobeat
  *
- * Last Modified: 03.07.2023 12:31:17
+ * Last Modified: 04.07.2023 18:07:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -25,7 +25,7 @@ const { timeToString } = require("../../controller/helpers/misc.js");
  * @param {number|"all"} amount Amount of favs requested or "all" to get the max available amount
  * @param {string} id The sharedfile id to favorize
  * @param {string} favType Either "favorite" or "unfavorite", depending on which request this is
- * @returns {Promise.<{ amount: number, availableAccounts: array<string>, whenAvailable: number, whenAvailableStr: string }>} Promise with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
+ * @returns {Promise.<{ amount: number, availableAccounts: array.<string>, whenAvailable: number, whenAvailableStr: string }>} Promise with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
 module.exports.getAvailableBotsForFavorizing = async (commandHandler, amount, id, favType) => {
 

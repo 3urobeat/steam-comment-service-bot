@@ -4,7 +4,7 @@
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 17:50:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -96,7 +96,7 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
 
 /**
  * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active request was found and relogs them
- * @param {Object} expiring Object of botobject entries to ask user for
+ * @param {object} expiring Object of botobject entries to ask user for
  */
 DataManager.prototype._askForGetNewToken = function(expiring) {
     let EStatus = require("../../bot/EStatus.js"); // Import not at top scope as this can be undefined because this helper file gets loaded before updater ran

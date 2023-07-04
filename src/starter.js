@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 17:55:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -220,10 +220,10 @@ function attachChildListeners() {
 
 /**
  * Checks if the needed file exists and gets it if it doesn't
- * @param {String} file The file path (from project root) to check and get
+ * @param {string} file The file path (from project root) to check and get
  * @param {function} logger Your current logger function
- * @param {Boolean} norequire If set to true the function will return the path instead of importing it
- * @param {Boolean} force If set to true the function will skip checking if the file exists and overwrite it.
+ * @param {boolean} norequire If set to true the function will return the path instead of importing it
+ * @param {boolean} force If set to true the function will skip checking if the file exists and overwrite it.
  * @returns {Promise.<undefined|string|object>} Resolves when file was successfully loaded
  */
 module.exports.checkAndGetFile = (file, logger, norequire = false, force = false) => {
@@ -349,7 +349,7 @@ module.exports.run = () => {
 
 /**
  * Restart the application
- * @param {Object} args The argument object that will be passed to `controller.restartargs()`
+ * @param {object} args The argument object that will be passed to `controller.restartargs()`
  */
 module.exports.restart = async (args) => {
     attachParentListeners(() => {

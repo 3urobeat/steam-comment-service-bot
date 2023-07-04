@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 17:50:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -22,7 +22,7 @@ const Controller = require("../../controller/controller.js"); // eslint-disable-
  * Wait for active requests and log off all bot accounts
  * @param {Controller} controller Reference to the controller object
  * @param {function(Object, string)} respondModule If defined, this function will be called with the result of the check. This allows to integrate checking for updates into commands or plugins. Passes resInfo and txt as parameters.
- * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+ * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @returns {Promise.<void>} Resolves when we can proceed
  */
 module.exports.run = (controller, respondModule, resInfo) => {

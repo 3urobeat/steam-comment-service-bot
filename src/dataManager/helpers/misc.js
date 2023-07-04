@@ -4,7 +4,7 @@
  * Created Date: 24.03.2023 18:58:55
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 17:49:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -20,7 +20,7 @@ const DataManager = require("../dataManager.js");
 
 /**
  * Retrieves the last processed request of anyone or a specific steamID64 from the lastcomment database
- * @param {String} steamID64 Search for a specific user
+ * @param {string} steamID64 Search for a specific user
  * @returns {Promise.<number>} Called with the greatest timestamp (Number) found
  */
 DataManager.prototype.getLastCommentRequest = function(steamID64 = null) {
@@ -47,7 +47,7 @@ DataManager.prototype.getLastCommentRequest = function(steamID64 = null) {
 
 /**
  * Decodes a JsonWebToken - https://stackoverflow.com/a/38552302
- * @param {String} token The token to decode
+ * @param {string} token The token to decode
  * @returns JWT object on success, `null` on failure
  */
 DataManager.prototype.decodeJWT = function(token) {

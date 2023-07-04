@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 18:03:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -42,7 +42,7 @@ const PluginSystem = function (controller) {
 
     /**
      * References to all plugin objects
-     * @type {Object.<string, Plugin>}
+     * @type {object.<string, Plugin>}
      */
     this.pluginList = {};
 
@@ -99,9 +99,9 @@ PluginSystem.prototype._loadPlugins = function () {};
 
 /**
  * Internal: Checks a plugin, displays relevant warnings and decides whether the plugin is allowed to be loaded
- * @param {String} folderName Name of the plugin folder. This is used to reference the plugin when thisPluginConf is undefined
- * @param {Object} thisPlugin Plugin file object returned by require()
- * @param {Object} thisPluginConf package.json object of this plugin
+ * @param {string} folderName Name of the plugin folder. This is used to reference the plugin when thisPluginConf is undefined
+ * @param {object} thisPlugin Plugin file object returned by require()
+ * @param {object} thisPluginConf package.json object of this plugin
  * @returns {Promise.<boolean>} Resolved with `true` (can be loaded) or `false` (must not be loaded) on completion
  */
 PluginSystem.prototype._checkPlugin = function (folderName, thisPlugin, thisPluginConf) {}; // eslint-disable-line

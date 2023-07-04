@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 17:55:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -47,9 +47,9 @@ module.exports = Updater;
 
 /**
  * Checks for any available update and installs it.
- * @param {Boolean} forceUpdate If true an update will be forced, even if disableAutoUpdate is true or the newest version is already installed
+ * @param {boolean} forceUpdate If true an update will be forced, even if disableAutoUpdate is true or the newest version is already installed
  * @param {function(Object, string)} respondModule If defined, this function will be called with the result of the check. This allows to integrate checking for updates into commands or plugins. Passes resInfo and txt as parameters.
- * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+ * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @returns {Promise.<boolean>} Promise that will be resolved with false when no update was found or with true when the update check or download was completed. Expect a restart when true was returned.
  */
 Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {

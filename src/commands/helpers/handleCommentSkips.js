@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 17:55:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -25,8 +25,8 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {{ next: function, break: function, index: function }} loop Object returned by misc.js syncLoop() helper
  * @param {Bot} bot Bot object of the account posting this comment
- * @param {String} receiverSteamID64 steamID64 of the receiving user/group
- * @returns {Boolean} true if iteration should continue, false if iteration should be skipped using return
+ * @param {string} receiverSteamID64 steamID64 of the receiving user/group
+ * @returns {boolean} true if iteration should continue, false if iteration should be skipped using return
  */
 module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID64) => {
     let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
@@ -99,10 +99,10 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
 
 /**
  * Adds a description to comment errors and applies additional cooldowns for certain errors
- * @param {String} error The error string returned by steamcommunity
+ * @param {string} error The error string returned by steamcommunity
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Bot} bot Bot object of the account posting this comment
- * @param {String} receiverSteamID64 steamID64 of the receiving user/group
+ * @param {string} receiverSteamID64 steamID64 of the receiving user/group
  */
 module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64) => {
     let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
@@ -176,7 +176,7 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
 
 /**
  * Helper function to sort failed object by comment number so that it is easier to read
- * @param {Object} failedObj Current state of failed object
+ * @param {object} failedObj Current state of failed object
  */
 function sortFailedCommentsObject(failedObj) {
     let sortedvals = Object.keys(failedObj).sort((a, b) => {
@@ -192,8 +192,8 @@ function sortFailedCommentsObject(failedObj) {
 
 /**
  * Groups same error messages together, counts amount, lists affected bots and converts it to a String.
- * @param {Object} obj failedcomments object that should be converted
- * @returns {String} String that looks like this: `amount`x - `indices`\n`error message`
+ * @param {object} obj failedcomments object that should be converted
+ * @returns {string} String that looks like this: `amount`x - `indices`\n`error message`
  */
 module.exports.failedCommentsObjToString = (obj) => {
     // Count amount of each string

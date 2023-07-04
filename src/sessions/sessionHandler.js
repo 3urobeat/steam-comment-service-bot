@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 17:50:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -81,7 +81,7 @@ SessionHandler.prototype.getToken = function() { // I'm not allowed to use arrow
 
 /**
  * Internal - Handles resolving the getToken() promise and skipping the account if necessary
- * @param {String} token The token to resolve with or null when account should be skipped
+ * @param {string} token The token to resolve with or null when account should be skipped
  */
 SessionHandler.prototype._resolvePromise = function(token) {
 
@@ -143,7 +143,7 @@ SessionHandler.prototype._attachEvents = function() {};
 
 /**
  * Internal: Handles submitting 2FA code
- * @param {Object} res Response object from startWithCredentials() promise
+ * @param {object} res Response object from startWithCredentials() promise
  */
 SessionHandler.prototype._handle2FA = function(res) {}; // eslint-disable-line
 
@@ -154,7 +154,7 @@ SessionHandler.prototype._get2FAUserInput = function() {};
 
 /**
  * Internal: Helper function to make accepting and re-requesting invalid steam guard codes easier
- * @param {String} code Input from user
+ * @param {string} code Input from user
  */
 SessionHandler.prototype._acceptSteamGuardCode = function(code) {}; // eslint-disable-line
 
@@ -172,7 +172,7 @@ SessionHandler.prototype._getTokenFromStorage = function(callback) {}; // eslint
 
 /**
  * Internal - Saves a new token for this account to tokens.db
- * @param {String} token The refreshToken to store
+ * @param {string} token The refreshToken to store
  */
 SessionHandler.prototype._saveTokenToStorage = function(token) {}; // eslint-disable-line
 

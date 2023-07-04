@@ -4,7 +4,7 @@
  * Created Date: 22.03.2023 12:35:01
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 18:01:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -22,11 +22,11 @@ const DataManager = require("../dataManager.js");
 
 /**
  * Internal: Helper function to try and restore backup of corrupted file from cache.json
- * @param {String} name Name of the file
- * @param {String} filepath Absolute path of the file on the disk
- * @param {Object} cacheentry Backup-Object of the file in cache.json
- * @param {String} onlinelink Link to the raw file in the GitHub repository
- * @param {Function} resolve Function to resolve the caller's promise
+ * @param {string} name Name of the file
+ * @param {string} filepath Absolute path of the file on the disk
+ * @param {object} cacheentry Backup-Object of the file in cache.json
+ * @param {string} onlinelink Link to the raw file in the GitHub repository
+ * @param {function} resolve Function to resolve the caller's promise
  */
 DataManager.prototype._restoreBackup = function(name, filepath, cacheentry, onlinelink, resolve) {
 
@@ -74,10 +74,10 @@ DataManager.prototype._restoreBackup = function(name, filepath, cacheentry, onli
 
 /**
  * Internal: Helper function to pull new file from GitHub
- * @param {String} name Name of the file
- * @param {String} filepath Full path, starting from project root with './'
+ * @param {string} name Name of the file
+ * @param {string} filepath Full path, starting from project root with './'
  * @param {function} resolve Your promise to resolve when file was pulled
- * @param {Boolean} noRequire Optional: Set to true if resolve() should not be called with require(file) as param
+ * @param {boolean} noRequire Optional: Set to true if resolve() should not be called with require(file) as param
  */
 DataManager.prototype._pullNewFile = async function(name, filepath, resolve, noRequire) {
     logger("warn", "Backup seems to be broken/not available! Pulling file from GitHub...", true);
