@@ -1,8 +1,12 @@
 # Data Documentation
 [⬅️ Go back to wiki home](./)
 
+&nbsp;
+
 This is the full documentation of the `data.json` file. This file must **not** be edited!  
 It stores various persistent data about what version the bot is running, which file to start, etc.  
+
+&nbsp;
 
 | Key           | Description  |
 | ------------- | ------------ |

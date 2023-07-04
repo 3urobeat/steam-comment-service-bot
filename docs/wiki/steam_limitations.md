@@ -3,6 +3,7 @@
 
 Steam sadly has some strict restrictions for commenting.  
 You can read all of them here: [Steam Support](https://help.steampowered.com/en/faqs/view/71D3-35C2-AD96-AA3A)  
+&nbsp;
 
 If you use *limited accounts* (spent <$5 on the Store) the user will need to send all of these bot accounts a friend request before requesting a comment!  
 

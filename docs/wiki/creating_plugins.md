@@ -1,6 +1,7 @@
 # Creating plugins
-
 [⬅️ Go back to wiki home](./)
+
+&nbsp;
 
 The functionality of this bot can be extended using plugins.  
 They allow you to intercept events from the bots, run commands, edit or supply data and much much more.

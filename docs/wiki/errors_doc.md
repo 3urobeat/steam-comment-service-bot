@@ -9,10 +9,14 @@ Please remember that the steam errors list is incomplete and the descriptions ar
 <br />
 Bot errors are errors that are being directly returned from my bot, not from steam. I created this documentation so that my bot doesn't suffer the same fate as the steam errors.
 
-- [Errors, FAQ \& Common problems](#errors-faq--common-problems)
-  - [Bot Errors:](#bot-errors)
-  - [Steam Errors:](#steam-errors)
-  - [FAQ/Common problems](#faqcommon-problems)
+&nbsp;
+
+**Table of Contents:**  
+- [Bot Errors:](#bot-errors)
+- [Steam Errors:](#steam-errors)
+- [FAQ/Common problems](#faqcommon-problems)
+
+&nbsp;
 
 ## Bot Errors:  
 | Error message | Description |
@@ -20,6 +24,8 @@ Bot errors are errors that are being directly returned from my bot, not from ste
 
 Coming soon...
   
+&nbsp;
+
 ## Steam Errors:
 Please don't take all error descriptions for granted. Steam sometimes seems to throw random errors that might not actually have an impact or have completely different reasons.  
 <br /><br />
@@ -48,6 +54,8 @@ You can find all HTTP status codes here: [Wikipedia](https://en.wikipedia.org/wi
 | Login Errors | Description |
 | ----- | ----- |
 `Error: AccessDenied` | This can happen if your session got invalidated for some reason. This can often be solved by deleting the `tokens.db` file, located at `src/data/` inside the bot folder, or by only removing the one line of the affected account inside the `tokens.db` file.  
+
+&nbsp;
 
 ## FAQ/Common problems  
 

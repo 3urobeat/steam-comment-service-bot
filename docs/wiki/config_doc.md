@@ -1,10 +1,13 @@
 # Config Documentation
 [⬅️ Go back to wiki home](./)
 
+&nbsp;
+
 This is the full documentation to customize your `config.json`.  
   
 **Note:** You don't need to change any values except the owner and ownerid values. Everything else is configured to work out of the box but there might be better settings for your specific situation. Recommendation: Try the default values and customize them if you get errors/problems.  
-  
+
+&nbsp; 
   
 | Key           | Usage            | Description  |
 | ------------- | ---------------- | ------------ |
