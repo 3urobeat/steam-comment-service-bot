@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 18:08:40
+ * Last Modified: 04.07.2023 19:59:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -42,44 +42,44 @@ const DataManager = function (controller) {
 
     /**
      * Stores all `config.json` settings.
-     * @type {object.<string, any>}
+     * @type {{[key: string]: any}}
      */
     this.config = {};
 
     /**
      * Stores all `advancedconfig.json` settings.
-     * @type {object.<string, any>}
+     * @type {{[key: string]: any}}
      */
     this.advancedconfig = {};
 
     /**
      * Stores all language strings used for responding to a user.
      * All default strings have already been replaced with corresponding matches from `customlang.json`.
-     * @type {object.<string, string>}
+     * @type {{[key: string]: string}}
      */
     this.lang = {};
 
     /**
      * Stores all quotes used for commenting provided via the `quotes.txt` file.
-     * @type {array.<string>}
+     * @type {Array.<string>}
      */
     this.quotes = [];
 
     /**
      * Stores all proxies provided via the `proxies.txt` file.
-     * @type {array.<string>}
+     * @type {Array.<string>}
      */
     this.proxies = [];
 
     /**
      * Stores IDs from config files converted at runtime and backups for all config & data files.
-     * @type {{ ownerid: array.<string>, botsgroup: string, botsgroupid: string, configgroup: string, configgroup64id: string, ownerlinkid: string, botaccid: array.<string>, pluginVersions: object.<string, string>, configjson: {}, advancedconfigjson: {}, datajson: {} }}
+     * @type {{ ownerid: Array.<string>, botsgroup: string, botsgroupid: string, configgroup: string, configgroup64id: string, ownerlinkid: string, botaccid: Array.<string>, pluginVersions: {[key: string]: string}, configjson: {}, advancedconfigjson: {}, datajson: {} }}
      */
     this.cachefile = {};
 
     /**
      * Stores the login information for every bot account provided via the `logininfo.json` or `accounts.txt` files.
-     * @type {object.<string, { accountName: string, password: string, sharedSecret: string, steamGuardCode: null, machineName: string, deviceFriendlyName: string }>}
+     * @type {{[key: string]: { accountName: string, password: string, sharedSecret: string, steamGuardCode: null, machineName: string, deviceFriendlyName: string }}}
      */
     this.logininfo = {};
 
@@ -141,7 +141,7 @@ DataManager.prototype._importFromDisk = async function () {};
 
 /**
  * Gets a random quote
- * @param {array} quotesArr Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
+ * @param {Array} quotesArr Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
  * @returns {Promise.<string>} Resolves with `quote` (String)
  */
 DataManager.prototype.getQuote = function (quotesArr = null) {}; // eslint-disable-line
@@ -181,7 +181,7 @@ DataManager.prototype.getLastCommentRequest = function (steamID64 = null) {}; //
 /**
  * Decodes a JsonWebToken - https://stackoverflow.com/a/38552302
  * @param {string} token The token to decode
- * @returns JWT object on success, `null` on failure
+ * @returns {object|null} JWT object on success, `null` on failure
  */
 DataManager.prototype.decodeJWT = function (token) {}; // eslint-disable-line
 
@@ -196,12 +196,16 @@ DataManager.prototype.refreshCache = function () {};
  * @param {string} filepath Absolute path of the file on the disk
  * @param {object} cacheentry Backup-Object of the file in cache.json
  * @param {string} onlinelink Link to the raw file in the GitHub repository
- * @param {function} resolve Function to resolve the caller's promise
+ * @param {function(any): void} resolve Function to resolve the caller's promise
  */
 DataManager.prototype._restoreBackup = function (name, filepath, cacheentry, onlinelink, resolve) {}; // eslint-disable-line
 
 /**
  * Internal: Helper function to pull new file from GitHub
+ * @param {string} name Name of the file
+ * @param {string} filepath Full path, starting from project root with './'
+ * @param {function(any): void} resolve Your promise to resolve when file was pulled
+ * @param {boolean} noRequire Optional: Set to true if resolve() should not be called with require(file) as param
  */
 DataManager.prototype._pullNewFile = async function (name, filepath, resolve) {}; // eslint-disable-line
 

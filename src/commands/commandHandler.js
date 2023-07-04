@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 18:04:59
+ * Last Modified: 04.07.2023 19:26:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -78,8 +78,8 @@ CommandHandler.prototype._importCoreCommands = function() {
  * @param {[string]} command.names All names that should trigger this command
  * @param {string} command.description Description of what this command does
  * @param {boolean} command.ownersOnly Set to true to only allow owners to use this command.
- * @param {function(CommandHandler, Array, string, function(object, object, string), object, object)} command.run Function that will be executed when the command runs. Arguments: commandHandler, args, steamID64, respondModule, context, resInfo
- * @returns true if the command was successfully registered, false otherwise
+ * @param {function(CommandHandler, Array, string, function(object, object, string): void, object, object): void} command.run Function that will be executed when the command runs. Arguments: commandHandler, args, steamID64, respondModule, context, resInfo
+ * @returns {boolean} true if the command was successfully registered, false otherwise
  */
 CommandHandler.prototype.registerCommand = function(command) {
 
@@ -117,7 +117,7 @@ CommandHandler.prototype.registerCommand = function(command) {
 /**
  * The name of the command to unregister during runtime
  * @param {string} commandName Name of the command to unregister
- * @returns true if the command was successfully unregistered, false otherwise
+ * @returns {boolean} `true` if the command was successfully unregistered, `false` otherwise
  */
 CommandHandler.prototype.unregisterCommand = function(commandName) {
 
@@ -143,12 +143,12 @@ CommandHandler.prototype.unregisterCommand = function(commandName) {
 /**
  * Finds a loaded command by name and runs it
  * @param {string} name The name of the command
- * @param {array} args Array of arguments that will be passed to the command
+ * @param {Array} args Array of arguments that will be passed to the command
  * @param {number} steamID64 SteamID64 of the requesting user which is used to check for ownerOnly and will be passed to the command
- * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+ * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
  * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
  * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Please also include a "cmdprefix" key & value pair if your command handler uses a prefix other than "!".
- * @returns `true` if command was found, `false` if not
+ * @returns {boolean} `true` if command was found, `false` if not
  */
 CommandHandler.prototype.runCommand = function(name, args, steamID64, respondModule, context, resInfo) {
 

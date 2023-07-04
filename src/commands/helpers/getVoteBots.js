@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:21:02
  * Author: 3urobeat
  *
- * Last Modified: 03.07.2023 12:59:52
+ * Last Modified: 04.07.2023 19:31:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -25,7 +25,7 @@ const { timeToString } = require("../../controller/helpers/misc.js");
  * @param {number|"all"} amount Amount of votes requested or "all" to get the max available amount
  * @param {string} id The sharedfile id to vote on
  * @param {string} voteType "upvote" or "downvote", depending on which request this is
- * @returns {Promise.<{ amount: number, availableAccounts: array<string>, whenAvailable: number, whenAvailableStr: string }>} Promise with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
+ * @returns {Promise.<{ amount: number, availableAccounts: Array.<string>, whenAvailable: number, whenAvailableStr: string }>} Resolves with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
 module.exports.getAvailableBotsForVoting = async (commandHandler, amount, id, voteType) => {
 

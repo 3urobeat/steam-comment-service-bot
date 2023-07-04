@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 18:02:14
+ * Last Modified: 04.07.2023 19:54:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -35,8 +35,8 @@ const Controller = function() {
         /**
          * Implementation of a synchronous for loop in JS (Used as reference: https://whitfin.io/handling-synchronous-asynchronous-loops-javascriptnode-js/)
          * @param {number} iterations The amount of iterations
-         * @param {function} func The function to run each iteration (Params: loop, index)
-         * @param {function} exit This function will be called when the loop is finished
+         * @param {function(): void} func The function to run each iteration (Params: loop, index)
+         * @param {function(): void} exit This function will be called when the loop is finished
          */
         syncLoop: (iterations, func, exit) => {}, // eslint-disable-line
 
@@ -49,7 +49,8 @@ const Controller = function() {
         round: (value, decimals) => {}, // eslint-disable-line
 
         /**
-         * Converts a timestamp to a human-readable until from now format. Does not care about past/future.
+         * Converts a timestamp to a human-readable "until from now" format. Does not care about past/future.
+         * @param {number} timestamp UNIX timestamp to convert
          * @returns {string} "x seconds/minutes/hours/days"
          */
         timeToString: () => {}, // eslint-disable-line
@@ -67,9 +68,9 @@ const Controller = function() {
          * It is used by the steamChatInteraction helper but can be used in plugins as well.
          * @param {string} txt The string to cut
          * @param {number} limit Maximum length for each part. The function will attempt to cut txt into parts that don't exceed this amount.
-         * @param {array} cutChars Optional: Custom chars to search after for cutting string in parts. Default: [" ", "\n", "\r"]
+         * @param {Array} cutChars Optional: Custom chars to search after for cutting string in parts. Default: [" ", "\n", "\r"]
          * @param {number} threshold Optional: Maximum amount that limit can be reduced to find the last space or line break. If no match is found within this limit a word will be cut. Default: 15% of total length
-         * @returns {array} Returns all parts of the string in an array
+         * @returns {Array} Returns all parts of the string in an array
          */
         cutStringsIntelligently: (txt, limit, cutChars, threshold) => {} // eslint-disable-line
     };
@@ -250,7 +251,7 @@ Controller.prototype._preLogin = async function() {
 
     /**
      * Stores references to all bot account objects mapped to their accountName
-     * @type {object.<string, Bot>}
+     * @type {{[key: string]: Bot}}
      */
     this.bots = {};
 
@@ -306,6 +307,7 @@ module.exports = Controller;
 
 /**
  * Process data that should be kept over restarts
+ * @param {string} data Stringified data received by previous process
  */
 function restartdata(data) {
     data = JSON.parse(data); // Convert the stringified object back to an object
@@ -376,14 +378,14 @@ Controller.prototype._readyEvent = function() {};
 /**
  * Runs internal statusUpdate event code and emits statusUpdate event for plugins
  * @param {Bot} bot Bot instance
- * @param {Bot.EStatus} newStatus The new status
+ * @param {Bot.EStatus} newStatus The new status of this bot
  */
 Controller.prototype._statusUpdateEvent = function(bot, newStatus) {}; // eslint-disable-line
 
 /**
  * Emits steamGuardInput event for bot & plugins
  * @param {Bot} bot Bot instance of the affected account
- * @param {function(string)} submitCode Function to submit a code. Pass an empty string to skip the account.
+ * @param {function(string): void} submitCode Function to submit a code. Pass an empty string to skip the account.
  */
 Controller.prototype._steamGuardInputEvent = function(bot, submitCode) {}; // eslint-disable-line
 
@@ -396,7 +398,7 @@ Controller.prototype.checkLastcommentDB = function(bot) {}; // eslint-disable-li
 /**
  * Checks the remaining space on the friendlist of a bot account, sends a warning message if it is less than 10 and force unfriends oldest lastcomment db user to always keep room for 1 friend.
  * @param {Bot} bot Bot object of the account to check
- * @param {function} [callback] Called with `remaining` (Number) on completion
+ * @param {function(number|null): void} [callback] Called with `remaining` (Number) on success or `null` on failure
  */
 Controller.prototype.friendListCapacityCheck = function(bot, callback) {}; // eslint-disable-line
 
@@ -409,7 +411,7 @@ Controller.prototype._lastcommentUnfriendCheck = function() {} // eslint-disable
  * Retrieves all matching bot accounts and returns them.
  * @param {(EStatus|EStatus[]|string)} [statusFilter=EStatus.ONLINE] Optional: EStatus or Array of EStatus's including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'EStatus.ONLINE' will be returned.
  * @param {boolean} mapToObject Optional: If true, an object will be returned where every bot object is mapped to their accountName.
- * @returns {array|object} An array or object if `mapToObject == true` containing all matching bot accounts.
+ * @returns {Array|object} An array or object if `mapToObject == true` containing all matching bot accounts.
  */
 Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObject = false) {}; // eslint-disable-line
 
@@ -423,7 +425,7 @@ Controller.prototype._handleErrors = function() {} // eslint-disable-line
  * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation
  * @param {string} str The profileID argument provided by the user
  * @param {string} expectedIdType The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
- * @param {function} [callback] Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
+ * @param {function(string|null, string|null, string|null): void} [callback] Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
  */
 Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) => {} // eslint-disable-line
 
@@ -433,12 +435,15 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
  * @param {string} str The text to log into the terminal
  * @param {boolean} nodate Setting to true will hide date and time in the message
  * @param {boolean} remove Setting to true will remove this message with the next one
+ * @param {Array.<string>} animation Array containing animation frames as elements
  * @param {boolean} printNow Ignores the readyafterlogs check and force prints the message now
+ * @param {boolean} cutToWidth Cuts the string to the width of the terminal
  */
 Controller.prototype.logger = function(type, str, nodate, remove, animation, printNow) {}; // eslint-disable-line
 
 /**
  * Internal: Call this function after loading advancedconfig.json to set previously inaccessible options
+ * @param {object} advancedconfig The advancedconfig object imported by the DataManager
  */
 Controller.prototype._loggerOptionsUpdateAfterConfigLoad = function(advancedconfig) {}; // eslint-disable-line
 

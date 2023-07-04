@@ -4,7 +4,7 @@
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 17:50:12
+ * Last Modified: 04.07.2023 20:00:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -24,6 +24,7 @@ const DataManager = require("../dataManager.js");
 DataManager.prototype._startExpiringTokensCheckInterval = function() {
     let _this = this;
 
+    /* eslint-disable-next-line jsdoc/require-jsdoc */
     function scanDatabase() {
         logger("debug", "DataManager detectExpiringTokens(): Scanning tokens.db for expiring tokens...");
 
@@ -102,6 +103,7 @@ DataManager.prototype._askForGetNewToken = function(expiring) {
     let EStatus = require("../../bot/EStatus.js"); // Import not at top scope as this can be undefined because this helper file gets loaded before updater ran
     let _this   = this;
 
+    /* eslint-disable-next-line jsdoc/require-jsdoc */
     function askForRelog() { // TODO: Add support for asking in steam chat
 
         // Ask for all accounts once

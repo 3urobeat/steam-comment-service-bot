@@ -4,7 +4,7 @@
  * Created Date: 15.01.2020 10:38:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 19:46:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -21,6 +21,11 @@
 // It is designed to be modular and to start and restart the whole application.
 // To be able to change the file it is supposed to start on the fly it pulls the necessary file path from the data.json file
 
+
+/**
+ * Attempts to load the data.json file.
+ * @returns {object|{ filetostart: string, filetostarturl: string }} Returns an data.json object on success or an object with default values for `filetostart` and `filetostarturl` on failure.
+ */
 function getExtdata() {
     try { // Just try to require, if it should fail then the actual restoring process will be handled later
         return require("./src/data/data.json");

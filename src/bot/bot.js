@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 17:58:09
+ * Last Modified: 04.07.2023 19:05:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -58,7 +58,7 @@ const Bot = function(controller, index) {
 
     /**
      * SteamID64's to ignore in the friendMessage event handler. This is used by readChatMessage() to prevent duplicate responses.
-     * @type {array.<string>}
+     * @type {string[]}
      */
     this.friendMessageBlock = [];
 

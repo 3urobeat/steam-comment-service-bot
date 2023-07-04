@@ -4,7 +4,7 @@
  * Created Date: 24.03.2023 18:58:55
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 17:49:45
+ * Last Modified: 04.07.2023 19:58:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -48,7 +48,7 @@ DataManager.prototype.getLastCommentRequest = function(steamID64 = null) {
 /**
  * Decodes a JsonWebToken - https://stackoverflow.com/a/38552302
  * @param {string} token The token to decode
- * @returns JWT object on success, `null` on failure
+ * @returns {object|null} JWT object on success, `null` on failure
  */
 DataManager.prototype.decodeJWT = function(token) {
     let payload = token.split(".")[1];            // Remove header and signature as we only care about the payload

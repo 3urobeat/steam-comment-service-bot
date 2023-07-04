@@ -159,13 +159,13 @@ declare class CommandHandler {
         description: string;
         ownersOnly: boolean;
         run: (...params: any[]) => any;
-    }): any;
+    }): boolean;
     /**
      * The name of the command to unregister during runtime
      * @param commandName - Name of the command to unregister
-     * @returns true if the command was successfully unregistered, false otherwise
+     * @returns `true` if the command was successfully unregistered, `false` otherwise
      */
-    unregisterCommand(commandName: string): any;
+    unregisterCommand(commandName: string): boolean;
     /**
      * Finds a loaded command by name and runs it
      * @param name - The name of the command
@@ -176,7 +176,7 @@ declare class CommandHandler {
      * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Please also include a "cmdprefix" key & value pair if your command handler uses a prefix other than "!".
      * @returns `true` if command was found, `false` if not
      */
-    runCommand(name: string, args: any[], steamID64: number, respondModule: (...params: any[]) => any, context: any, resInfo: any): any;
+    runCommand(name: string, args: any[], steamID64: number, respondModule: (...params: any[]) => any, context: any, resInfo: any): boolean;
     /**
      * Reloads all core commands. Does NOT reload commands registered at runtime. Please consider reloading the pluginSystem as well.
      */
@@ -187,7 +187,7 @@ declare class CommandHandler {
  * Internal: Do the actual commenting, activeRequests entry with all relevant information was processed by the comment command function above.
  * @param commandHandler - The commandHandler object
  * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
- * @param respond - Shortened respondModule call
+ * @param respond - The shortened respondModule call
  * @param postComment - The correct postComment function for this idType. Context from the correct bot account is being applied later.
  * @param commentArgs - All arguments this postComment function needs, without callback. It will be applied and a callback added as last param. Include a key called "quote" to dynamically replace it with a random quote.
  * @param receiverSteamID64 - steamID64 of the profile to receive the comments
@@ -200,7 +200,8 @@ declare function comment(commandHandler: CommandHandler, resInfo: any, respond: 
  * @param args - The command arguments
  * @param requesterSteamID64 - The steamID64 of the requesting user
  * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
- * @param respond - The function to send messages to the requesting user
+ * @param respond - The shortened respondModule call
+ * @returns Resolves promise with object containing all relevant data when done
  */
 declare function getCommentArgs(commandHandler: CommandHandler, args: any[], requesterSteamID64: string, resInfo: any, respond: (...params: any[]) => any): Promise<{ maxRequestAmount: number; commentcmdUsage: string; numberOfComments: number; profileID: string; idType: string; quotesArr: string[]; }>;
 
@@ -221,7 +222,7 @@ declare function getAvailableBotsForCommenting(commandHandler: CommandHandler, n
  * @param amount - Amount of favs requested or "all" to get the max available amount
  * @param id - The sharedfile id to favorize
  * @param favType - Either "favorite" or "unfavorite", depending on which request this is
- * @returns Promise with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
+ * @returns Resolves with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
 declare function getAvailableBotsForFavorizing(commandHandler: CommandHandler, amount: number | "all", id: string, favType: string): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
 
@@ -231,7 +232,7 @@ declare function getAvailableBotsForFavorizing(commandHandler: CommandHandler, a
  * @param args - The command arguments
  * @param cmd - Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function
  * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
- * @param respond - The function to send messages to the requesting user
+ * @param respond - The shortened respondModule call
  * @returns If the user provided a specific amount, amount will be a number. If user provided "all" or "max", it will be returned as an unmodified string for getVoteBots.js to handle
  */
 declare function getSharedfileArgs(commandHandler: CommandHandler, args: any[], cmd: string, resInfo: any, respond: (...params: any[]) => any): Promise<{ amount: number | string; id: string; }>;
@@ -242,7 +243,7 @@ declare function getSharedfileArgs(commandHandler: CommandHandler, args: any[], 
  * @param amount - Amount of votes requested or "all" to get the max available amount
  * @param id - The sharedfile id to vote on
  * @param voteType - "upvote" or "downvote", depending on which request this is
- * @returns Promise with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
+ * @returns Resolves with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
 declare function getAvailableBotsForVoting(commandHandler: CommandHandler, amount: number | "all", id: string, voteType: string): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
 
@@ -285,9 +286,9 @@ declare function failedCommentsObjToString(obj: any): string;
  * @param loop - Object returned by misc.js syncLoop() helper
  * @param bot - Bot object of the account making this request
  * @param id - ID of the sharedfile that receives the votes
- * @returns true if iteration should continue, false if iteration should be skipped using return
+ * @returns `true` if iteration should continue, `false` if iteration should be skipped using return
  */
-declare function handleVoteIterationSkip(commandHandler: CommandHandler, loop: any, bot: Bot, id: string): any;
+declare function handleVoteIterationSkip(commandHandler: CommandHandler, loop: any, bot: Bot, id: string): boolean;
 
 /**
  * Checks if the following favorite process iteration should be skipped
@@ -295,9 +296,9 @@ declare function handleVoteIterationSkip(commandHandler: CommandHandler, loop: a
  * @param loop - Object returned by misc.js syncLoop() helper
  * @param bot - Bot object of the account making this request
  * @param id - ID of the sharedfile that receives the votes
- * @returns true if iteration should continue, false if iteration should be skipped using return
+ * @returns `true` if iteration should continue, `false` if iteration should be skipped using return
  */
-declare function handleFavoriteIterationSkip(commandHandler: CommandHandler, loop: any, bot: Bot, id: string): any;
+declare function handleFavoriteIterationSkip(commandHandler: CommandHandler, loop: any, bot: Bot, id: string): boolean;
 
 /**
  * Logs vote errors
@@ -347,9 +348,7 @@ declare class Controller {
     /**
      * Stores references to all bot account objects mapped to their accountName
      */
-    bots: {
-        [key: string]: Bot;
-    };
+    bots: any;
     /**
      * The main bot account
      */
@@ -384,7 +383,7 @@ declare class Controller {
     /**
      * Runs internal statusUpdate event code and emits statusUpdate event for plugins
      * @param bot - Bot instance
-     * @param newStatus - The new status
+     * @param newStatus - The new status of this bot
      */
     _statusUpdateEvent(bot: Bot, newStatus: Bot.EStatus): void;
     /**
@@ -401,9 +400,8 @@ declare class Controller {
     /**
      * Checks the remaining space on the friendlist of a bot account, sends a warning message if it is less than 10 and force unfriends oldest lastcomment db user to always keep room for 1 friend.
      * @param bot - Bot object of the account to check
-     * @param [callback] - Called with `remaining` (Number) on completion
      */
-    friendListCapacityCheck(bot: Bot, callback?: (...params: any[]) => any): void;
+    friendListCapacityCheck(bot: Bot, callback: any): void;
     /**
      * Check for friends who haven't requested comments in config.unfriendtime days and unfriend them
      */
@@ -424,22 +422,24 @@ declare class Controller {
      * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation
      * @param str - The profileID argument provided by the user
      * @param expectedIdType - The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
-     * @param [callback] - Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
      */
-    handleSteamIdResolving(str: string, expectedIdType: string, callback?: (...params: any[]) => any): void;
+    handleSteamIdResolving(str: string, expectedIdType: string, callback: any): void;
     /**
      * Logs text to the terminal and appends it to the output.txt file.
      * @param type - String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
      * @param str - The text to log into the terminal
      * @param nodate - Setting to true will hide date and time in the message
      * @param remove - Setting to true will remove this message with the next one
+     * @param animation - Array containing animation frames as elements
      * @param printNow - Ignores the readyafterlogs check and force prints the message now
+     * @param cutToWidth - Cuts the string to the width of the terminal
      */
-    logger(type: string, str: string, nodate: boolean, remove: boolean, printNow: boolean): void;
+    logger(type: string, str: string, nodate: boolean, remove: boolean, animation: string[], printNow: boolean, cutToWidth: boolean): void;
     /**
      * Internal: Call this function after loading advancedconfig.json to set previously inaccessible options
+     * @param advancedconfig - The advancedconfig object imported by the DataManager
      */
-    _loggerOptionsUpdateAfterConfigLoad(): void;
+    _loggerOptionsUpdateAfterConfigLoad(advancedconfig: any): void;
     /**
      * Internal: Logs all held back messages from logAfterReady array
      */
@@ -451,7 +451,7 @@ declare class Controller {
     /**
      * Runs internal statusUpdate event code and emits statusUpdate event for plugins
      * @param bot - Bot instance
-     * @param newStatus - The new status
+     * @param newStatus - The new status of this bot
      */
     _statusUpdateEvent(bot: Bot, newStatus: Bot.EStatus): void;
     /**
@@ -468,9 +468,8 @@ declare class Controller {
     /**
      * Checks the remaining space on the friendlist of a bot account, sends a warning message if it is less than 10 and force unfriends oldest lastcomment db user to always keep room for 1 friend.
      * @param bot - Bot object of the account to check
-     * @param [callback] - Called with `remaining` (Number) on completion
      */
-    friendListCapacityCheck(bot: Bot, callback?: (...params: any[]) => any): void;
+    friendListCapacityCheck(bot: Bot, callback: any): void;
     /**
      * Check for friends who haven't requested comments in config.unfriendtime days and unfriend them
      */
@@ -491,22 +490,24 @@ declare class Controller {
      * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation
      * @param str - The profileID argument provided by the user
      * @param expectedIdType - The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
-     * @param [callback] - Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
      */
-    handleSteamIdResolving(str: string, expectedIdType: string, callback?: (...params: any[]) => any): void;
+    handleSteamIdResolving(str: string, expectedIdType: string, callback: any): void;
     /**
      * Logs text to the terminal and appends it to the output.txt file.
      * @param type - String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
      * @param str - The text to log into the terminal
      * @param nodate - Setting to true will hide date and time in the message
      * @param remove - Setting to true will remove this message with the next one
+     * @param animation - Array containing animation frames as elements
      * @param printNow - Ignores the readyafterlogs check and force prints the message now
+     * @param cutToWidth - Cuts the string to the width of the terminal
      */
-    logger(type: string, str: string, nodate: boolean, remove: boolean, printNow: boolean): void;
+    logger(type: string, str: string, nodate: boolean, remove: boolean, animation: string[], printNow: boolean, cutToWidth: boolean): void;
     /**
      * Internal: Call this function after loading advancedconfig.json to set previously inaccessible options
+     * @param advancedconfig - The advancedconfig object imported by the DataManager
      */
-    _loggerOptionsUpdateAfterConfigLoad(): void;
+    _loggerOptionsUpdateAfterConfigLoad(advancedconfig: any): void;
     /**
      * Internal: Logs all held back messages from logAfterReady array
      */
@@ -521,8 +522,9 @@ declare class Controller {
 
 /**
  * Process data that should be kept over restarts
+ * @param data - Stringified data received by previous process
  */
-declare function restartdata(): void;
+declare function restartdata(data: string): void;
 
 /**
  * Implementation of a synchronous for loop in JS (Used as reference: https://whitfin.io/handling-synchronous-asynchronous-loops-javascriptnode-js/)
@@ -541,10 +543,11 @@ declare function syncLoop(iterations: number, func: (...params: any[]) => any, e
 declare function round(value: number, decimals: number): number;
 
 /**
- * Converts a timestamp to a human-readable until from now format. Does not care about past/future.
+ * Converts a timestamp to a human-readable "until from now" format. Does not care about past/future.
+ * @param timestamp - UNIX timestamp to convert
  * @returns "x seconds/minutes/hours/days"
  */
-declare function timeToString(): string;
+declare function timeToString(timestamp: number): string;
 
 /**
  * Pings an URL to check if the service and this internet connection is working
@@ -568,22 +571,19 @@ declare function cutStringsIntelligently(txt: string, limit: number, cutChars: a
 /**
  * Attempts to reinstall all modules
  * @param logger - The currently used logger function (real or fake, the caller decides)
- * @param [callback] - Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
-declare function reinstallAll(logger: (...params: any[]) => any, callback?: (...params: any[]) => any): void;
+declare function reinstallAll(logger: (...params: any[]) => any, callback: any): void;
 
 /**
  * Updates all installed packages to versions listed in package.json from the project root directory.
- * @param [callback] - Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
-declare function update(callback?: (...params: any[]) => any): void;
+declare function update(callback: any): void;
 
 /**
  * Updates all installed packages to versions listed in package.json
  * @param path - Custom path to read package.json from and install packages to
- * @param [callback] - Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
-declare function updateFromPath(path: string, callback?: (...params: any[]) => any): void;
+declare function updateFromPath(path: string, callback: any): void;
 
 /**
  * Constructor - The dataManager system imports, checks, handles errors and provides a file updating service for all configuration files
@@ -613,22 +613,16 @@ declare class DataManager {
     /**
      * Stores all `config.json` settings.
      */
-    config: {
-        [key: string]: any;
-    };
+    config: any;
     /**
      * Stores all `advancedconfig.json` settings.
      */
-    advancedconfig: {
-        [key: string]: any;
-    };
+    advancedconfig: any;
     /**
      * Stores all language strings used for responding to a user.
      * All default strings have already been replaced with corresponding matches from `customlang.json`.
      */
-    lang: {
-        [key: string]: string;
-    };
+    lang: any;
     /**
      * Stores all quotes used for commenting provided via the `quotes.txt` file.
      */
@@ -644,9 +638,7 @@ declare class DataManager {
     /**
      * Stores the login information for every bot account provided via the `logininfo.json` or `accounts.txt` files.
      */
-    logininfo: {
-        [key: string]: { accountName: string; password: string; sharedSecret: string; steamGuardCode: null; machineName: string; deviceFriendlyName: string; };
-    };
+    logininfo: any;
     /**
      * Database which stores the timestamp of the last request of every user. This is used to enforce `config.unfriendTime`.
      * Document structure: { id: String, time: Number }
@@ -714,7 +706,7 @@ declare class DataManager {
      * @param token - The token to decode
      * @returns JWT object on success, `null` on failure
      */
-    decodeJWT(token: string): any;
+    decodeJWT(token: string): any | null;
     /**
      * Refreshes Backups in cache.json with new data
      */
@@ -730,8 +722,12 @@ declare class DataManager {
     _restoreBackup(name: string, filepath: string, cacheentry: any, onlinelink: string, resolve: (...params: any[]) => any): void;
     /**
      * Internal: Helper function to pull new file from GitHub
+     * @param name - Name of the file
+     * @param filepath - Full path, starting from project root with './'
+     * @param resolve - Your promise to resolve when file was pulled
+     * @param noRequire - Optional: Set to true if resolve() should not be called with require(file) as param
      */
-    _pullNewFile(): void;
+    _pullNewFile(name: string, filepath: string, resolve: (...params: any[]) => any, noRequire: boolean): void;
     /**
      * Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
      */
@@ -774,7 +770,7 @@ declare class DataManager {
      * @param token - The token to decode
      * @returns JWT object on success, `null` on failure
      */
-    decodeJWT(token: string): any;
+    decodeJWT(token: string): any | null;
     /**
      * Refreshes Backups in cache.json with new data
      */
@@ -790,8 +786,12 @@ declare class DataManager {
     _restoreBackup(name: string, filepath: string, cacheentry: any, onlinelink: string, resolve: (...params: any[]) => any): void;
     /**
      * Internal: Helper function to pull new file from GitHub
+     * @param name - Name of the file
+     * @param filepath - Full path, starting from project root with './'
+     * @param resolve - Your promise to resolve when file was pulled
+     * @param noRequire - Optional: Set to true if resolve() should not be called with require(file) as param
      */
-    _pullNewFile(): void;
+    _pullNewFile(name: string, filepath: string, resolve: (...params: any[]) => any, noRequire: boolean): void;
 }
 
 /**
@@ -833,6 +833,13 @@ declare class CSteamSharedFile {
      */
     unsubscribe(callback: (...params: any[]) => any): void;
 }
+
+/**
+ * Attempt to load all plugins. If a critical check fails loading will be denied
+ * @param pluginName - Name of the plugin package
+ * @returns Creates a plugin instance and returns it along with more information
+ */
+declare function loadPlugin(pluginName: string): any;
 
 /**
  * @property load - Called on Plugin load
@@ -912,9 +919,7 @@ declare class PluginSystem {
     /**
      * References to all plugin objects
      */
-    pluginList: {
-        [key: string]: Plugin;
-    };
+    pluginList: any;
     commandHandler: CommandHandler;
     /**
      * Reloads all plugins and calls ready event after ~2.5 seconds.
@@ -1011,9 +1016,8 @@ declare class SessionHandler {
     _handleCredentialsLoginError(err: any): void;
     /**
      * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
-     * @param [callback] - Called with `refreshToken` (String) on success or `null` on failure
      */
-    _getTokenFromStorage(callback?: (...params: any[]) => any): void;
+    _getTokenFromStorage(callback: any): void;
     /**
      * Internal - Saves a new token for this account to tokens.db
      * @param token - The refreshToken to store
@@ -1062,9 +1066,8 @@ declare class SessionHandler {
     _handleCredentialsLoginError(err: any): void;
     /**
      * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
-     * @param [callback] - Called with `refreshToken` (String) on success or `null` on failure
      */
-    _getTokenFromStorage(callback?: (...params: any[]) => any): void;
+    _getTokenFromStorage(callback: any): void;
     /**
      * Internal - Saves a new token for this account to tokens.db
      * @param token - The refreshToken to store
@@ -1075,6 +1078,22 @@ declare class SessionHandler {
      */
     invalidateTokenInStorage(): void;
 }
+
+/**
+ * Provide function to only once attach listeners to parent process
+ * @param callback - Called on completion
+ */
+declare function attachParentListeners(callback: (...params: any[]) => any): void;
+
+/**
+ * Provide function to detach parent process event listeners
+ */
+declare function detachParentListeners(): void;
+
+/**
+ * Provide function to attach listeners to make communicating with child possible
+ */
+declare function attachChildListeners(): void;
 
 /**
  * Checks if the needed file exists and gets it if it doesn't
@@ -1124,10 +1143,10 @@ declare function run(): void;
  * @param oldconfig - The old config from before the update
  * @param oldadvancedconfig - The old advancedconfig from before the update
  * @param olddatafile - The old datafile from before the update
- * @param callback - Legacy param, is unused
+ * @param [callback] - Legacy param, is unused
  * @returns Resolves when we can proceed
  */
-declare function customUpdateRules(compatibilityfeaturedone: any, oldconfig: any, oldadvancedconfig: any, olddatafile: any, callback: (...params: any[]) => any): Promise<void>;
+declare function customUpdateRules(compatibilityfeaturedone: any, oldconfig: any, oldadvancedconfig: any, olddatafile: any, callback?: (...params: any[]) => any): Promise<void>;
 
 /**
  * Downloads all files from the repository and installs them

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 17:55:32
+ * Last Modified: 04.07.2023 19:27:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -27,9 +27,9 @@ module.exports.abort = {
     /**
      * The abort command
      * @param {CommandHandler} commandHandler The commandHandler object
-     * @param {array} args Array of arguments that will be passed to the command
+     * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
@@ -68,9 +68,9 @@ module.exports.resetCooldown = {
     /**
      * The resetcooldown command
      * @param {CommandHandler} commandHandler The commandHandler object
-     * @param {array} args Array of arguments that will be passed to the command
+     * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
@@ -112,9 +112,9 @@ module.exports.failed = {
     /**
      * The failed command
      * @param {CommandHandler} commandHandler The commandHandler object
-     * @param {array} args Array of arguments that will be passed to the command
+     * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
@@ -158,9 +158,9 @@ module.exports.sessions = {
     /**
      * The sessions command
      * @param {CommandHandler} commandHandler The commandHandler object
-     * @param {array} args Array of arguments that will be passed to the command
+     * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
@@ -202,9 +202,9 @@ module.exports.mySessions = {
     /**
      * The mysessions command
      * @param {CommandHandler} commandHandler The commandHandler object
-     * @param {array} args Array of arguments that will be passed to the command
+     * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */

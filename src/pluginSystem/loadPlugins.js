@@ -4,7 +4,7 @@
  * Created Date: 04.06.2023 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 02.07.2023 19:12:35
+ * Last Modified: 04.07.2023 19:02:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -13,6 +13,7 @@
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+
 
 const PluginSystem = require("./pluginSystem.js");
 
@@ -25,7 +26,12 @@ const PLUGIN_EVENTS = {
     steamGuardInput: "steamGuardInput",
 };
 
-// Attempt to load all plugins. If a critical check fails loading will be denied
+
+/**
+ * Attempt to load all plugins. If a critical check fails loading will be denied
+ * @param {string} pluginName Name of the plugin package
+ * @returns {{ pluginName: string, pluginInstance: object, pluginJson: object }} Creates a plugin instance and returns it along with more information
+ */
 function loadPlugin(pluginName) {
     try {
         // Load plugin and pluginJson
@@ -88,7 +94,7 @@ PluginSystem.prototype._loadPlugins = async function () {
         pluginInstance.load();
 
         // Call the exposed event functions if they exist
-        Object.entries(PLUGIN_EVENTS).forEach(([eventName, event]) => {
+        Object.entries(PLUGIN_EVENTS).forEach(([eventName, event]) => { // eslint-disable-line no-unused-vars
             // eslint-disable-line
             this.controller.events.on(event, (...args) => pluginInstance[event]?.call(pluginInstance, ...args));
         });

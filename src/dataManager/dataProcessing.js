@@ -4,7 +4,7 @@
  * Created Date: 27.03.2023 21:34:45
  * Author: 3urobeat
  *
- * Last Modified: 03.07.2023 15:52:15
+ * Last Modified: 04.07.2023 19:59:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -28,6 +28,7 @@ const DataManager = require("./dataManager");
 DataManager.prototype.processData = async function() {
     let _this = this;
 
+    /* eslint-disable jsdoc/require-jsdoc */
     function yourgroup() {
         return new Promise((resolve) => {
 
@@ -154,6 +155,7 @@ DataManager.prototype.processData = async function() {
 
         });
     }
+    /* eslint-enable jsdoc/require-jsdoc */
 
 
     // Process all three, then update cache.json

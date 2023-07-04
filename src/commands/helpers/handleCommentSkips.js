@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 17:55:45
+ * Last Modified: 04.07.2023 19:33:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -23,7 +23,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
  * Checks if the following comment process iteration should be skipped
  * Aborts comment process on critical error.
  * @param {CommandHandler} commandHandler The commandHandler object
- * @param {{ next: function, break: function, index: function }} loop Object returned by misc.js syncLoop() helper
+ * @param {{ next: function(): void, break: function(): void, index: function(): number }} loop Object returned by misc.js syncLoop() helper
  * @param {Bot} bot Bot object of the account posting this comment
  * @param {string} receiverSteamID64 steamID64 of the receiving user/group
  * @returns {boolean} true if iteration should continue, false if iteration should be skipped using return

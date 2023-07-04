@@ -4,7 +4,7 @@
  * Created Date: 25.03.2023 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 18:01:36
+ * Last Modified: 04.07.2023 19:40:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -21,8 +21,8 @@ const https = require("https");
 /**
  * Implementation of a synchronous for loop in JS (Used as reference: https://whitfin.io/handling-synchronous-asynchronous-loops-javascriptnode-js/)
  * @param {number} iterations The amount of iterations
- * @param {function} func The function to run each iteration (Params: loop, index)
- * @param {function} exit This function will be called when the loop is finished
+ * @param {function(): void} func The function to run each iteration (Params: loop, index)
+ * @param {function(): void} exit This function will be called when the loop is finished
  */
 module.exports.syncLoop = (iterations, func, exit) => {
     let currentIndex = 0;
@@ -65,7 +65,8 @@ module.exports.round = (value, decimals) => {
 
 
 /**
- * Converts a timestamp to a human-readable until from now format. Does not care about past/future.
+ * Converts a timestamp to a human-readable "until from now" format. Does not care about past/future.
+ * @param {number} timestamp UNIX timestamp to convert
  * @returns {string} "x seconds/minutes/hours/days"
  */
 module.exports.timeToString = (timestamp) => {
@@ -126,9 +127,9 @@ module.exports.checkConnection = (url, throwTimeout) => {
  * It is used by the steamChatInteraction helper but can be used in plugins as well.
  * @param {string} txt The string to cut
  * @param {number} limit Maximum length for each part. The function will attempt to cut txt into parts that don't exceed this amount.
- * @param {array} cutChars Optional: Custom chars to search after for cutting string in parts. Default: [" ", "\n", "\r"]
+ * @param {Array} cutChars Optional: Custom chars to search after for cutting string in parts. Default: [" ", "\n", "\r"]
  * @param {number} threshold Optional: Maximum amount that limit can be reduced to find the last space or line break. If no match is found within this limit a word will be cut. Default: 15% of total length
- * @returns {array} Returns all parts of the string in an array
+ * @returns {Array} Returns all parts of the string in an array
  */
 module.exports.cutStringsIntelligently = (txt, limit, cutChars, threshold) => {
     if (!cutChars)  cutChars  = [" ", "\n", "\r"]; // Set cutChars to space, newline or Windows newline if undefined

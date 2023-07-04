@@ -4,7 +4,7 @@
  * Created Date: 31.05.2023 16:57:21
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 17:50:12
+ * Last Modified: 04.07.2023 19:51:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -21,10 +21,10 @@ const Bot = require("../../bot/bot.js"); // eslint-disable-line
 /**
  * Checks if the following vote process iteration should be skipped
  * @param {CommandHandler} commandHandler The commandHandler object
- * @param {{ next: function, break: function, index: function }} loop Object returned by misc.js syncLoop() helper
+ * @param {{ next: function(): void, break: function(): void, index: function(): number }} loop Object returned by misc.js syncLoop() helper
  * @param {Bot} bot Bot object of the account making this request
  * @param {string} id ID of the sharedfile that receives the votes
- * @returns true if iteration should continue, false if iteration should be skipped using return
+ * @returns {boolean} `true` if iteration should continue, `false` if iteration should be skipped using return
  */
 module.exports.handleVoteIterationSkip = function(commandHandler, loop, bot, id) {
     let activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
@@ -55,10 +55,10 @@ module.exports.handleVoteIterationSkip = function(commandHandler, loop, bot, id)
 /**
  * Checks if the following favorite process iteration should be skipped
  * @param {CommandHandler} commandHandler The commandHandler object
- * @param {{ next: function, break: function, index: function }} loop Object returned by misc.js syncLoop() helper
+ * @param {{ next: function(): void, break: function(): void, index: function(): number }} loop Object returned by misc.js syncLoop() helper
  * @param {Bot} bot Bot object of the account making this request
  * @param {string} id ID of the sharedfile that receives the votes
- * @returns true if iteration should continue, false if iteration should be skipped using return
+ * @returns {boolean} `true` if iteration should continue, `false` if iteration should be skipped using return
  */
 module.exports.handleFavoriteIterationSkip = function(commandHandler, loop, bot, id) {
     let activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter

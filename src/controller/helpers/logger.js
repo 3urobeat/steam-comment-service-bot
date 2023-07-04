@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 17:55:45
+ * Last Modified: 04.07.2023 19:39:07
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -41,7 +41,7 @@ let botIsReady = false;
  * @param {string} str The text to log into the terminal
  * @param {boolean} nodate Setting to true will hide date and time in the message
  * @param {boolean} remove Setting to true will remove this message with the next one
- * @param {array.<string>} animation Array containing animation frames as elements
+ * @param {Array.<string>} animation Array containing animation frames as elements
  * @param {boolean} printNow Ignores the readyafterlogs check and force prints the message now
  * @param {boolean} cutToWidth Cuts the string to the width of the terminal
  */
@@ -75,6 +75,7 @@ global.logger = Controller.prototype.logger;
 
 /**
  * Internal: Call this function after loading advancedconfig.json to set previously inaccessible options
+ * @param {object} advancedconfig The advancedconfig object imported by the DataManager
  */
 Controller.prototype._loggerOptionsUpdateAfterConfigLoad = function(advancedconfig) {
     logger.options({

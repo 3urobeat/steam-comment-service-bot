@@ -4,7 +4,7 @@
  * Created Date: 10.10.2022 12:53:20
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 17:49:45
+ * Last Modified: 04.07.2023 20:06:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -20,7 +20,7 @@ const SessionHandler = require("../sessionHandler.js");
 
 /**
  * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
- * @param {function} [callback] Called with `refreshToken` (String) on success or `null` on failure
+ * @param {function(string|null): void} [callback] Called with `refreshToken` (String) on success or `null` on failure
  */
 SessionHandler.prototype._getTokenFromStorage = function(callback) {
 

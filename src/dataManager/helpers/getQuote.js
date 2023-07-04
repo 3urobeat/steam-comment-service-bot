@@ -4,7 +4,7 @@
  * Created Date: 02.03.2022 16:21:11
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 17:55:32
+ * Last Modified: 04.07.2023 19:27:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -25,7 +25,7 @@ let lastQuotes = []; // Tracks recently used quotes to avoid duplicates
 
 /**
  * Gets a random quote
- * @param {array} quotesArr Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
+ * @param {Array} quotesArr Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
  * @returns {Promise.<string>} Resolves with `quote` (String)
  */
 DataManager.prototype.getQuote = function(quotesArr = null) {

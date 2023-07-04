@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 18:03:48
+ * Last Modified: 04.07.2023 20:05:42
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -21,11 +21,11 @@ const Bot = require("../../src/bot/bot.js"); // eslint-disable-line
 /**
  * @typedef Plugin Documentation of the Plugin structure for IntelliSense support
  * @type {object}
- * @property {function} load Called on Plugin load
- * @property {function} unload Called on Plugin unload
- * @property {function} ready Controller ready event
- * @property {function(Bot, Bot.EStatus, Bot.EStatus)} statusUpdate Controller statusUpdate event
- * @property {function(Bot, function(string))} steamGuardInput Controller steamGuardInput event
+ * @property {function(): void} load Called on Plugin load
+ * @property {function(): void} unload Called on Plugin unload
+ * @property {function(): void} ready Controller ready event
+ * @property {function(Bot, Bot.EStatus, Bot.EStatus): void} statusUpdate Controller statusUpdate event
+ * @property {function(Bot, function(string): void): void} steamGuardInput Controller steamGuardInput event
  */
 
 /**
@@ -42,7 +42,7 @@ const PluginSystem = function (controller) {
 
     /**
      * References to all plugin objects
-     * @type {object.<string, Plugin>}
+     * @type {{[key: string]: Plugin}}
      */
     this.pluginList = {};
 

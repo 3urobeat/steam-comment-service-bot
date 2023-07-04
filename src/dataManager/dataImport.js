@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 03.07.2023 21:32:21
+ * Last Modified: 04.07.2023 19:44:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -14,10 +14,12 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 const fs   = require("fs");
 const path = require("path");
 const nedb = require("@seald-io/nedb");
 const DataManager = require("./dataManager.js");
+
 
 /**
  * Internal: Loads all config & data files from disk and handles potential errors
@@ -26,6 +28,7 @@ const DataManager = require("./dataManager.js");
 DataManager.prototype._importFromDisk = async function () {
     let _this = this; // Make this accessible within the functions below
 
+    /* eslint-disable jsdoc/require-jsdoc */
     function loadCache() {
         return new Promise((resolve) => {
             try {
@@ -318,6 +321,7 @@ DataManager.prototype._importFromDisk = async function () {
             }
         });
     }
+    /* eslint-enable jsdoc/require-jsdoc */
 
     // Call all functions from above after another. This must be done async to avoid a check failing that depends on something from a previous function. We sadly cannot use Promise.all() because of this.
     logger("info", "Importing data files and settings...", false, true, logger.animation("loading"));
