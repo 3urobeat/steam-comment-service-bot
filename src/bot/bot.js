@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 15:45:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -104,6 +104,7 @@ const Bot = function(controller, index) {
     this.community = new SteamCommunity({ request: request.defaults({ "proxy": this.loginData.proxy }) }); // Pass proxy to community library as well
 
     // Load my library patches
+    require("../libraryPatches/CSteamSharedFile.js");
     require("../libraryPatches/profile.js");
     require("../libraryPatches/sharedfiles.js");
     require("../libraryPatches/helpers.js");
