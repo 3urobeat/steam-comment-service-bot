@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 13:25:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -22,7 +22,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 module.exports.group = {
     names: ["group"],
-    description: "",
+    description: "Sends an invite or responds with the group link set as yourgroup in the config",
     ownersOnly: false,
 
     /**
@@ -93,7 +93,7 @@ module.exports.joinGroup = {
 
 module.exports.leaveGroup = {
     names: ["leavegroup"],
-    description: "",
+    description: "Leaves a group with all bot accounts",
     ownersOnly: true,
 
     /**
@@ -130,7 +130,7 @@ module.exports.leaveGroup = {
 
 module.exports.leaveAllGroups = {
     names: ["leaveallgroups"],
-    description: "",
+    description: "Leaves all groups with all bot accounts",
     ownersOnly: true,
 
     /**

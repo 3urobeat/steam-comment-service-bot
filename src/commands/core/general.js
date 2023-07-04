@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 13:24:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -25,7 +25,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 module.exports.help = {
     names: ["h", "help", "commands"],
-    description: "",
+    description: "Returns a list of commands available to you and a link to the commands documentation wiki page",
     ownersOnly: false,
 
     /**
@@ -75,7 +75,7 @@ module.exports.help = {
 
 module.exports.info = {
     names: ["info"],
-    description: "",
+    description: "Returns useful information and statistics about the bot and you",
     ownersOnly: false,
 
     /**
@@ -118,7 +118,7 @@ module.exports.info = {
 
 module.exports.ping = {
     names: ["ping", "pong"],
-    description: "Pings SteamCommunity and measures the time it took.",
+    description: "Returns ping in ms to Steam's servers. Can be used to check if the bot is responsive",
     ownersOnly: false,
 
     /**
@@ -145,7 +145,7 @@ module.exports.ping = {
 
 module.exports.about = {
     names: ["about"],
-    description: "",
+    description: "Displays information about this project. The message also contains a disclaimer as well as a link to the owner's profile set in the config.json",
     ownersOnly: false,
 
     /**
@@ -167,7 +167,7 @@ module.exports.about = {
 
 module.exports.owner = {
     names: ["owner"],
-    description: "",
+    description: "Returns a link to the owner's profile set in the config.json",
     ownersOnly: false,
 
     /**
@@ -193,7 +193,7 @@ module.exports.owner = {
 // Test Command for debugging
 module.exports.test = {
     names: ["test"],
-    description: "",
+    description: "Test Command for debugging",
     ownersOnly: true,
 
     /**
@@ -208,7 +208,7 @@ module.exports.test = {
     run: async (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // eslint-disable-line
 
-        // Do not remove, these are handleSteamIdResolving test cases. Might be useful to include later in steamid-resolving lib test suite
+        /* // Do not remove, these are handleSteamIdResolving test cases. Might be useful to include later in steamid-resolving lib test suite
         let handleSteamIdResolving = commandHandler.controller.handleSteamIdResolving;
 
         // With type param
@@ -229,6 +229,6 @@ module.exports.test = {
 
         // We already provide the correct id
         handleSteamIdResolving("76561198260031749", null, console.log);
-        handleSteamIdResolving("103582791464712227", null, console.log);
+        handleSteamIdResolving("103582791464712227", null, console.log); */
     }
 };

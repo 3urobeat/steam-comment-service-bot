@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 13:23:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -22,7 +22,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 module.exports.addFriend = {
     names: ["addfriend"],
-    description: "",
+    description: "Adds the ID with all bot accounts. Requires unlimited accounts!",
     ownersOnly: true,
 
     /**
@@ -82,7 +82,7 @@ module.exports.addFriend = {
 
 module.exports.unfriend = {
     names: ["unfriend"],
-    description: "",
+    description: "Unfriends a user from all logged in accounts. (Owner only) Providing no argument will let all bots unfriend you. (Available to normal users)",
     ownersOnly: false,
 
     /**
@@ -135,7 +135,7 @@ module.exports.unfriend = {
 
 module.exports.unfriendall = {
     names: ["unfriendall"],
-    description: "",
+    description: "Unfriends everyone with all bot accounts",
     ownersOnly: true,
 
     /**

@@ -4,7 +4,7 @@
  * Created Date: 02.06.2023 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:49
+ * Last Modified: 04.07.2023 13:22:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -24,7 +24,7 @@ const { handleFavoriteIterationSkip, logFavoriteError } = require("../helpers/ha
 
 module.exports.favorite = {
     names: ["favorite", "fav"],
-    description: "Favorites a sharedfile",
+    description: "Favorizes a sharedfile with all bot accounts that haven't yet favorized that item",
     ownersOnly: false,
 
     /**
@@ -191,7 +191,7 @@ module.exports.favorite = {
 
 module.exports.unfavorite = {
     names: ["unfavorite", "unfav"],
-    description: "Unfavorites a sharedfile",
+    description: "Unfavorizes a sharedfile with all bot accounts that have favorized that item",
     ownersOnly: true,
 
     /**

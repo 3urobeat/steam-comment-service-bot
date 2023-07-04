@@ -16,12 +16,12 @@ This is the full documentation of all commands. Most commands have aliases but s
 | !info         | No arguments     | Returns useful information and statistics about the bot and you. |
 | !owner        | No arguments     | Returns a link to the owner's profile set in the config.json. |
 | !group        | No arguments     | Sends an invite or responds with the group link set as yourgroup in the config. |
-| !abort        | `ID`      | Abort your own comment process or one on another ID you have started. Owners can also abort requests started by other users. |
+| !abort        | `ID`             | Abort your own comment process or one on another ID you have started. Owners can also abort requests started by other users. |
 | !resetcooldown | `profileid` or `global` | Clear your, the profileid's or the comment cooldown of all bot accounts (global). Alias: !rc (Owner only.) |
 | !settings     | `config key` `new value` | Change a value in the config. (Owner only.) |
-| !failed       | `ID`      | See the exact errors of the last comment request on your profile or provide an ID to see the errors of the last request you started. Owners can also view errors for requests started by other users. | 
+| !failed       | `ID`             | See the exact errors of the last comment request on your profile or provide an ID to see the errors of the last request you started. Owners can also view errors for requests started by other users. | 
 | !sessions     | No arguments     | Displays all active requests. (Owner only.) |
-| !mysessions   | No arguments     | Displays all active requests for your profile. |
+| !mysessions   | No arguments     | Displays all active requests that you have started. |
 | !about        | No arguments     | Displays information about this project. The message also contains a disclaimer as well as a link to the owner's profile set in the config.json. |
 | !addfriend    | `profileid`      | Adds the profileid with all bot accounts. Requires unlimited accounts! (Owner only.) |
 | !unfriend     | `profileid`      | Unfriends a user from all logged in accounts. (Owner only.) Providing no argument will let all bots unfriend you. (Available to normal users) | 

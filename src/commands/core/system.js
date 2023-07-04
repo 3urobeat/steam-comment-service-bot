@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 13:29:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -22,7 +22,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 module.exports.restart = {
     names: ["restart", "rs"],
-    description: "",
+    description: "Restarts the bot and checks for available updates",
     ownersOnly: true,
 
     /**
@@ -44,7 +44,7 @@ module.exports.restart = {
 
 module.exports.stop = {
     names: ["stop"],
-    description: "",
+    description: "Stops the bot",
     ownersOnly: true,
 
     /**
@@ -66,7 +66,7 @@ module.exports.stop = {
 
 module.exports.reload = {
     names: ["reload", "rl"],
-    description: "Reloads all commands and plugins without needing to restart. Please only use it for testing, this isn't clean.",
+    description: "Reloads all commands and plugins without needing to restart. Please only use it for testing/development",
     ownersOnly: true,
 
     /**
@@ -95,7 +95,7 @@ module.exports.reload = {
 
 module.exports.update = {
     names: ["update"],
-    description: "",
+    description: "Checks for an available update and installs it if automatic updates are enabled and no requests are active. 'true' forces an update. Blocks new requests if it currently waits for one to be completed",
     ownersOnly: true,
 
     /**
@@ -125,7 +125,7 @@ module.exports.update = {
 
 module.exports.output = {
     names: ["output", "log"],
-    description: "",
+    description: "Shows the last 15 lines of the log",
     ownersOnly: true,
 
     /**
@@ -150,7 +150,7 @@ module.exports.output = {
 
 module.exports.eval = {
     names: ["eval"],
-    description: "",
+    description: "Disabled by default, needs to be toggled on with `enableevalcmd` in config.json. **Warning!** This will run any javascript code that was provided. It is strongly advised to leave this feature off unless you know exactly what this means! If you have multiple owners configured they can also run code on **your** machine!",
     ownersOnly: true,
 
     /**

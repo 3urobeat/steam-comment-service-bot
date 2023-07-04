@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 13:26:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -21,7 +21,7 @@ const { failedCommentsObjToString } = require("../helpers/handleCommentSkips.js"
 
 module.exports.abort = {
     names: ["abort"],
-    description: "",
+    description: "Abort your own comment process or one on another ID you have started. Owners can also abort requests started by other users",
     ownersOnly: false,
 
     /**
@@ -62,7 +62,7 @@ module.exports.abort = {
 
 module.exports.resetCooldown = {
     names: ["resetcooldown", "rc"],
-    description: "",
+    description: "Clear your, the ID's or the comment cooldown of all bot accounts (global)",
     ownersOnly: true,
 
     /**
@@ -106,7 +106,7 @@ module.exports.resetCooldown = {
 
 module.exports.failed = {
     names: ["failed"],
-    description: "",
+    description: "See the exact errors of the last comment request on your profile or provide an ID to see the errors of the last request you started. Owners can also view errors for requests started by other users",
     ownersOnly: false,
 
     /**
@@ -152,7 +152,7 @@ module.exports.failed = {
 
 module.exports.sessions = {
     names: ["sessions"],
-    description: "",
+    description: "Displays all active requests",
     ownersOnly: true,
 
     /**
@@ -196,7 +196,7 @@ module.exports.sessions = {
 
 module.exports.mySessions = {
     names: ["mysessions"],
-    description: "",
+    description: "Displays all active requests for your profile",
     ownersOnly: false,
 
     /**

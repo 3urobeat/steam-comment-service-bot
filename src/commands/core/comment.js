@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:49
+ * Last Modified: 04.07.2023 13:21:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -26,7 +26,7 @@ const { logCommentError, handleIterationSkip } = require("../helpers/handleComme
 
 module.exports.comment = {
     names: ["comment", "gcomment", "groupcomment"],
-    description: "",
+    description: "Request comments from all available bot accounts for a profile, group or sharedfile",
     ownersOnly: false,
 
     /**
