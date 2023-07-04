@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:59:31
+ * Last Modified: 04.07.2023 22:26:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -129,15 +129,55 @@ const DataManager = function (controller) {
 DataManager.prototype.checkData = function () {};
 
 /**
- * Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
+ * Writes (all) files imported by DataManager back to the disk
  */
-DataManager.prototype.processData = async function () {};
+DataManager.prototype.writeAllFilesToDisk = function() {};
+
+/**
+ * Writes cachefile to cache.json on disk
+ */
+DataManager.prototype.writeCachefileToDisk = function() {};
+
+/**
+ * Writes datafile to data.json on disk
+ */
+DataManager.prototype.writeDatafileToDisk = function() {};
+
+/**
+ * Writes config to config.json on disk
+ */
+DataManager.prototype.writeConfigToDisk = function() {};
+
+/**
+ * Writes advancedconfig to advancedconfig.json on disk
+ */
+DataManager.prototype.writeAdvancedconfigToDisk = function() {};
+
+/**
+ * Writes logininfo to logininfo.json and accounts.txt on disk, depending on which of the files exist
+ */
+DataManager.prototype.writeLogininfoToDisk = function() {};
+
+/**
+ * Writes proxies to proxies.txt on disk
+ */
+DataManager.prototype.writeProxiesToDisk = function() {};
+
+/**
+ * Writes quotes to quotes.txt on disk
+ */
+DataManager.prototype.writeQuotesToDisk = function() {};
 
 /**
  * Internal: Loads all config & data files from disk and handles potential errors
  * @returns {Promise.<void>} Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importFromDisk = async function () {};
+
+/**
+ * Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
+ */
+DataManager.prototype.processData = async function() {};
 
 /**
  * Gets a random quote
