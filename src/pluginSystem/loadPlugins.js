@@ -4,7 +4,7 @@
  * Created Date: 04.06.2023 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 04.07.2023 19:02:01
+ * Last Modified: 05.07.2023 10:31:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -52,6 +52,7 @@ function loadPlugin(pluginName) {
         return { pluginName, pluginInstance, pluginJson };
     } catch (e) {
         logger("error", `Plugin '${pluginName}' could not be instantiated: ${e.stack}`);
+        return { pluginName, pluginInstance: null, pluginJson: null };
     }
 }
 
