@@ -65,7 +65,6 @@ module.exports = PluginSystem;
 PluginSystem.prototype.reloadPlugins = function () {
     // Delete all plugin objects. (I'm not sure if this is necessary or if clearing the pluginList obj will garbage collect them)
     Object.keys(this.pluginList).forEach((e) => {
-        console.log(e);
         if (this.pluginList[e].unload) {
             this.pluginList[e].unload();
         } else {
