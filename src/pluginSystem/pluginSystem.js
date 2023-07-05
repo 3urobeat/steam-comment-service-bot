@@ -65,18 +65,14 @@ module.exports = PluginSystem;
 PluginSystem.prototype.reloadPlugins = function () {
     // Delete all plugin objects. (I'm not sure if this is necessary or if clearing the pluginList obj will garbage collect them)
     Object.keys(this.pluginList).forEach((e) => {
+        console.log(e);
         if (this.pluginList[e].unload) {
             this.pluginList[e].unload();
         } else {
             logger("warn", `PluginSystem reloadPlugins: Plugin ${e} does not have an unload function, reloading might not work properly!`);
         }
-
+        delete require.cache[require.resolve(e)];
         delete this.pluginList[e];
-    });
-
-    // Delete cache so requiring plugins again will load new changes
-    Object.keys(require.cache).forEach((key) => {
-        if (key.includes("node_modules/steam-comment-bot-") || key.includes("/plugins/")) delete require.cache[key];
     });
 
     this.pluginList = {};
