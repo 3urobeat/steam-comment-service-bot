@@ -4,7 +4,7 @@
  * Created Date: 22.02.2022 17:39:21
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 20:13:24
+ * Last Modified: 04.07.2023 21:57:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -95,8 +95,8 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
         let newextdata = require(srcdir + "/data/data.json");
 
         // Transfer a few specific values to the new datafile if they exist to avoid errors
-        if (olddatafile.timesloggedin)       newextdata.timesloggedin       = olddatafile.timesloggedin;
-        if (olddatafile.totallogintime)      newextdata.totallogintime      = olddatafile.totallogintime;
+        if (olddatafile.timesloggedin)  newextdata.timesloggedin  = olddatafile.timesloggedin;
+        if (olddatafile.totallogintime) newextdata.totallogintime = olddatafile.totallogintime;
 
         // Write changes to file
         fs.writeFile(srcdir + "/data/data.json", JSON.stringify(newextdata, null, 4), (err) => { // Write the changed file

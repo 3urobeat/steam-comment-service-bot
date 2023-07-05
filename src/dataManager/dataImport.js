@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:44:01
+ * Last Modified: 04.07.2023 22:47:47
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -231,14 +231,7 @@ DataManager.prototype._importFromDisk = async function () {
 
             // Pull new file and call loadQuotes again, wait for it to resolve, and then resolve this promise. This is slightly hacky but relatively clean
             if (!fs.existsSync(srcdir + "/../quotes.txt")) {
-                return _this._pullNewFile(
-                    "quotes.txt",
-                    "./quotes.txt",
-                    async () => {
-                        resolve(await loadQuotes());
-                    },
-                    true
-                );
+                return _this._pullNewFile("quotes.txt", "./quotes.txt", async () => { resolve(await loadQuotes()); }, true);
             }
 
             quotes = fs.readFileSync(srcdir + "/../quotes.txt", "utf8").split("\n"); // Get all quotes from the quotes.txt file into an array

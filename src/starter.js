@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 20:10:00
+ * Last Modified: 05.07.2023 10:48:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -78,7 +78,7 @@ function attachParentListeners(callback) {
 
             require("./controller/helpers/npminteraction.js").reinstallAll(logger, (err, stdout) => { // eslint-disable-line
                 if (err) {
-                    logger("error", "I was unable to reinstall all modules. Please try running 'npm install' manually. Error: " + err);
+                    logger("error", "I was unable to reinstall all modules. Please try running 'npm install --production' manually. Error: " + err);
                     process.exit(1);
                 } else {
                     // Logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
