@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 20:05:42
+ * Last Modified: 05.07.2023 17:49:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -71,12 +71,13 @@ PluginSystem.prototype.reloadPlugins = function () {
             logger("warn", `PluginSystem reloadPlugins: Plugin ${e} does not have an unload function, reloading might not work properly!`);
         }
 
+        delete require.cache[require.resolve(e)];
         delete this.pluginList[e];
     });
 
     // Delete cache so requiring plugins again will load new changes
     Object.keys(require.cache).forEach((key) => {
-        if (key.includes("node_modules/steam-comment-bot-") || key.includes("/plugins/")) delete require.cache[key];
+        if (key.includes("/plugins/")) delete require.cache[key];
     });
 
     this.pluginList = {};
