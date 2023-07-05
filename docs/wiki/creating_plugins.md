@@ -241,6 +241,9 @@ To do this, follow these steps:
 -   Run the command `npm link`. On Linux you might have to precede the command with `sudo` (or doas, or whatever you are using).  
     This will make the package available locally to all projects
 -   Open a terminal window in the folder of your bot installation. Run the command `npm link name-of-your-package`
+-   Open the package.json in the folder of your bot installation and add your plugin as a dependency with a random version. This is important so that the plugin loader will find your package.  
+    Example: `"name-of-your-package": "^0.0.0"`  
+    Don't forget to add a comma at the end of the previous line so that your JSON object is valid.
 
 On restart (or by running the command `!reload`) you should see your plugin get loaded!  
 If you make changes in your plugin project you now only need to run the `!reload` command to test them.
