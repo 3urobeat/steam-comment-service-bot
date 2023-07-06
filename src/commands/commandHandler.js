@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:26:29
+ * Last Modified: 06.07.2023 22:27:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -37,38 +37,50 @@ const CommandHandler = function(controller) {
 
 /**
  * Internal: Imports core commands on startup
+ * @returns {Promise.<void>} Resolved when all commands have been imported
  */
 CommandHandler.prototype._importCoreCommands = function() {
+    return new Promise((resolve) => {
 
-    logger("info", "CommandHandler: Loading all core commands...", false, true, logger.animation("loading"));
+        logger("info", "CommandHandler: Loading all core commands...", false, true, logger.animation("loading"));
 
-    fs.readdir("./src/commands/core", (err, files) => {
+        fs.readdir("./src/commands/core", (err, files) => {
 
-        // Stop now on error or if nothing was found
-        if (err)               return logger("error", "Error while reading core dir: " + err, true);
-        if (files.length == 0) return logger("info", "No commands in ./core found!", false, true, logger.animation("loading"));
-
-        // Iterate over all files in this dir
-        files.forEach((e, i) => {
-            let thisFile;
-
-            // Try to load plugin
-            try {
-                // Load the plugin file
-                thisFile = require(`./core/${e}`);
-
-                // Push all exported commands in this file into the command list
-                Object.values(thisFile).every(val => this.commands.push(val));
-
-            } catch (err) {
-
-                logger("error", `Error loading core command '${e}'! ${err.stack}`, true);
+            // Stop now on error or if nothing was found
+            if (err) {
+                logger("error", "Error while reading core dir: " + err, true);
+                return resolve();
+            }
+            if (files.length == 0) {
+                logger("info", "No commands in ./core found!", false, true, logger.animation("loading"));
+                return resolve();
             }
 
-            if (i + 1 == files.length) logger("info", `CommandHandler: Successfully loaded ${this.commands.length} core commands!`, false, true, logger.animation("loading"));
-        });
-    });
+            // Iterate over all files in this dir
+            files.forEach((e, i) => {
+                let thisFile;
 
+                // Try to load plugin
+                try {
+                    // Load the plugin file
+                    thisFile = require(`./core/${e}`);
+
+                    // Push all exported commands in this file into the command list
+                    Object.values(thisFile).every(val => this.commands.push(val));
+
+                } catch (err) {
+
+                    logger("error", `Error loading core command '${e}'! ${err.stack}`, true);
+                }
+
+                if (i + 1 == files.length) {
+                    logger("info", `CommandHandler: Successfully loaded ${this.commands.length} core commands!`, false, true, logger.animation("loading"));
+                    resolve();
+                }
+            });
+        });
+
+    });
 };
 
 

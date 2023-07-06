@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:54:44
+ * Last Modified: 06.07.2023 22:28:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -280,7 +280,7 @@ Controller.prototype._preLogin = async function() {
      * @type {CommandHandler}
      */
     this.commandHandler = new CommandHandler(this);
-    this.commandHandler._importCoreCommands();
+    await this.commandHandler._importCoreCommands();
 
 
     // Load pluginSystem

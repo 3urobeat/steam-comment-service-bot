@@ -145,8 +145,9 @@ declare class CommandHandler {
     constructor(controller: Controller);
     /**
      * Internal: Imports core commands on startup
+     * @returns Resolved when all commands have been imported
      */
-    _importCoreCommands(): void;
+    _importCoreCommands(): Promise<void>;
     /**
      * Registers a new command during runtime
      * @param command - The command object to register
