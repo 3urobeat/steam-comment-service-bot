@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:32:52
+ * Last Modified: 07.07.2023 11:06:42
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -27,6 +27,26 @@ const { logCommentError, handleIterationSkip } = require("../helpers/handleComme
 module.exports.comment = {
     names: ["comment", "gcomment", "groupcomment"],
     description: "Request comments from all available bot accounts for a profile, group or sharedfile",
+    args: [
+        {
+            name: "amount",
+            description: "The amount of comments to request",
+            type: "string",
+            ownersOnly: false
+        },
+        {
+            name: "ID",
+            description: "The link, steamID64 or vanity of the profile, group or sharedfile to comment on",
+            type: "string",
+            ownersOnly: true
+        },
+        {
+            name: "custom quotes",
+            description: "Array of strings to use as quotes in this comment request instead of the default quotes.txt set",
+            type: "string",
+            ownersOnly: true
+        }
+    ],
     ownersOnly: false,
 
     /**

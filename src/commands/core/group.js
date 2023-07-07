@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:27:09
+ * Last Modified: 07.07.2023 11:27:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -23,6 +23,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 module.exports.group = {
     names: ["group"],
     description: "Sends an invite or responds with the group link set as yourgroup in the config",
+    args: [],
     ownersOnly: false,
 
     /**
@@ -57,6 +58,14 @@ module.exports.group = {
 module.exports.joinGroup = {
     names: ["joingroup"],
     description: "Joins a Steam Group with all bot accounts",
+    args: [
+        {
+            name: "ID",
+            description: "The link or groupID64 of the group to join",
+            type: "string",
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**
@@ -94,6 +103,14 @@ module.exports.joinGroup = {
 module.exports.leaveGroup = {
     names: ["leavegroup"],
     description: "Leaves a group with all bot accounts",
+    args: [
+        {
+            name: "ID",
+            description: "The link or groupID64 of the group to leave",
+            type: "string",
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**
@@ -131,6 +148,14 @@ module.exports.leaveGroup = {
 module.exports.leaveAllGroups = {
     names: ["leaveallgroups"],
     description: "Leaves all groups with all bot accounts",
+    args: [
+        {
+            name: '"abort"',
+            description: "Aborts a leaveallgroups request if it did not start yet",
+            type: "string",
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**

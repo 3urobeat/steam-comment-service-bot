@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:27:09
+ * Last Modified: 07.07.2023 11:32:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -23,6 +23,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 module.exports.restart = {
     names: ["restart", "rs"],
     description: "Restarts the bot and checks for available updates",
+    args: [],
     ownersOnly: true,
 
     /**
@@ -45,6 +46,7 @@ module.exports.restart = {
 module.exports.stop = {
     names: ["stop"],
     description: "Stops the bot",
+    args: [],
     ownersOnly: true,
 
     /**
@@ -67,6 +69,7 @@ module.exports.stop = {
 module.exports.reload = {
     names: ["reload", "rl"],
     description: "Reloads all commands and plugins without needing to restart. Please only use it for testing/development",
+    args: [],
     ownersOnly: true,
 
     /**
@@ -96,6 +99,14 @@ module.exports.reload = {
 module.exports.update = {
     names: ["update"],
     description: "Checks for an available update and installs it if automatic updates are enabled and no requests are active. 'true' forces an update. Blocks new requests if it currently waits for one to be completed",
+    args: [
+        {
+            name: '"true"',
+            description: "Forces an update",
+            type: "string",
+            ownersOnly: true
+        },
+    ],
     ownersOnly: true,
 
     /**
@@ -126,6 +137,7 @@ module.exports.update = {
 module.exports.output = {
     names: ["output", "log"],
     description: "Shows the last 15 lines of the log",
+    args: [],
     ownersOnly: true,
 
     /**
@@ -151,6 +163,14 @@ module.exports.output = {
 module.exports.eval = {
     names: ["eval"],
     description: "Disabled by default, needs to be toggled on with `enableevalcmd` in config.json. **Warning!** This will run any javascript code that was provided. It is strongly advised to leave this feature off unless you know exactly what this means! If you have multiple owners configured they can also run code on **your** machine!",
+    args: [
+        {
+            name: "javascript code",
+            description: "The code to run",
+            type: "string",
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**

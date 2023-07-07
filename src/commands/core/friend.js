@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:27:09
+ * Last Modified: 07.07.2023 11:23:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -23,6 +23,14 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 module.exports.addFriend = {
     names: ["addfriend"],
     description: "Adds the ID with all bot accounts. Requires unlimited accounts!",
+    args: [
+        {
+            name: "ID",
+            description: "The link, steamID64 or vanity of the profile to add",
+            type: "string",
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**
@@ -83,6 +91,14 @@ module.exports.addFriend = {
 module.exports.unfriend = {
     names: ["unfriend"],
     description: "Unfriends a user from all logged in accounts. (Owner only) Providing no argument will let all bots unfriend you. (Available to normal users)",
+    args: [
+        {
+            name: "ID",
+            description: "The link, steamID64 or vanity of the profile to unfriend",
+            type: "string",
+            ownersOnly: false
+        }
+    ],
     ownersOnly: false,
 
     /**
@@ -136,6 +152,14 @@ module.exports.unfriend = {
 module.exports.unfriendall = {
     names: ["unfriendall"],
     description: "Unfriends everyone with all bot accounts",
+    args: [
+        {
+            name: '"abort"',
+            description: "Aborts a unfriendall request if it did not start yet",
+            type: "string",
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**

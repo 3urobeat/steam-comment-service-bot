@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:27:09
+ * Last Modified: 07.07.2023 11:30:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -23,6 +23,20 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 module.exports.settings = {
     names: ["set", "settings", "config"],
     description: "Change a value in the config",
+    args: [
+        {
+            name: "config key",
+            description: "Name of the config key to update",
+            type: "string",
+            ownersOnly: true
+        },
+        {
+            name: "new value",
+            description: "New value of the config key",
+            type: "string",
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**

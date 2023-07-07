@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:27:09
+ * Last Modified: 07.07.2023 11:30:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -22,6 +22,14 @@ const { failedCommentsObjToString } = require("../helpers/handleCommentSkips.js"
 module.exports.abort = {
     names: ["abort"],
     description: "Abort your own comment process or one on another ID you have started. Owners can also abort requests started by other users",
+    args: [
+        {
+            name: "ID",
+            description: "The link, steamID64 or vanity of the profile, group or sharedfile to abort the request of",
+            type: "string",
+            ownersOnly: false // Providing an ID for a request of another user is ownerOnly
+        },
+    ],
     ownersOnly: false,
 
     /**
@@ -63,6 +71,14 @@ module.exports.abort = {
 module.exports.resetCooldown = {
     names: ["resetcooldown", "rc"],
     description: "Clear your, the ID's or the comment cooldown of all bot accounts (global)",
+    args: [
+        {
+            name: 'ID or "global"',
+            description: "The link, steamID64 or vanity of the profile to clear the cooldown of or the word global to clear the cooldown of all bot accounts",
+            type: "string",
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**
@@ -107,6 +123,14 @@ module.exports.resetCooldown = {
 module.exports.failed = {
     names: ["failed"],
     description: "See the exact errors of the last comment request on your profile or provide an ID to see the errors of the last request you started. Owners can also view errors for requests started by other users",
+    args: [
+        {
+            name: "ID",
+            description: "The link, steamID64 or vanity of the profile, group or sharedfile to view the errors of",
+            type: "string",
+            ownersOnly: false // Providing an ID for a request of another user is ownerOnly
+        }
+    ],
     ownersOnly: false,
 
     /**
@@ -153,6 +177,7 @@ module.exports.failed = {
 module.exports.sessions = {
     names: ["sessions"],
     description: "Displays all active requests",
+    args: [],
     ownersOnly: true,
 
     /**
@@ -196,7 +221,8 @@ module.exports.sessions = {
 
 module.exports.mySessions = {
     names: ["mysessions"],
-    description: "Displays all active requests for your profile",
+    description: "Displays all active requests that you have started",
+    args: [],
     ownersOnly: false,
 
     /**

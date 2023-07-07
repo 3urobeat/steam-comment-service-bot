@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:27:09
+ * Last Modified: 07.07.2023 11:25:17
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -17,8 +17,7 @@
 
 // General commands
 
-
-const https   = require("https");
+const https = require("https");
 
 const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
@@ -26,6 +25,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 module.exports.help = {
     names: ["h", "help", "commands"],
     description: "Returns a list of commands available to you and a link to the commands documentation wiki page",
+    args: [],
     ownersOnly: false,
 
     /**
@@ -76,6 +76,7 @@ module.exports.help = {
 module.exports.info = {
     names: ["info"],
     description: "Returns useful information and statistics about the bot and you",
+    args: [],
     ownersOnly: false,
 
     /**
@@ -119,6 +120,7 @@ module.exports.info = {
 module.exports.ping = {
     names: ["ping", "pong"],
     description: "Returns ping in ms to Steam's servers. Can be used to check if the bot is responsive",
+    args: [],
     ownersOnly: false,
 
     /**
@@ -146,6 +148,7 @@ module.exports.ping = {
 module.exports.about = {
     names: ["about"],
     description: "Displays information about this project. The message also contains a disclaimer as well as a link to the owner's profile set in the config.json",
+    args: [],
     ownersOnly: false,
 
     /**
@@ -168,6 +171,7 @@ module.exports.about = {
 module.exports.owner = {
     names: ["owner"],
     description: "Returns a link to the owner's profile set in the config.json",
+    args: [],
     ownersOnly: false,
 
     /**
@@ -194,6 +198,7 @@ module.exports.owner = {
 module.exports.test = {
     names: ["test"],
     description: "Test Command for debugging",
+    args: [],
     ownersOnly: true,
 
     /**

@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:27:09
+ * Last Modified: 07.07.2023 11:34:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -25,6 +25,20 @@ const { handleVoteIterationSkip, logVoteError } = require("../helpers/handleShar
 module.exports.upvote = {
     names: ["upvote"],
     description: "Upvotes a sharedfile with all bot accounts that haven't yet voted on that item. Requires unlimited accounts!",
+    args: [
+        {
+            name: "amount",
+            description: "The amount of upvotes to request",
+            type: "string",
+            ownersOnly: false
+        },
+        {
+            name: "ID",
+            description: "The link or sharedfile ID to vote on",
+            type: "string",
+            ownersOnly: false
+        }
+    ],
     ownersOnly: false,
 
     /**
@@ -197,6 +211,20 @@ module.exports.upvote = {
 module.exports.downvote = {
     names: ["downvote"],
     description: "Downvotes a sharedfile with all bot accounts that haven't yet voted on that item. Requires unlimited accounts!",
+    args: [
+        {
+            name: "amount",
+            description: "The amount of downvotes to request",
+            type: "string",
+            ownersOnly: true
+        },
+        {
+            name: "ID",
+            description: "The link or sharedfile ID to vote on",
+            type: "string",
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true, // I would like to prevent users from abusing this feature to dislike other peoples creations
 
     /**

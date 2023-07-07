@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:25:54
+ * Last Modified: 07.07.2023 11:22:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -23,6 +23,14 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 module.exports.block = {
     names: ["block"],
     description: "Blocks a user with all bot accounts on Steam",
+    args: [
+        {
+            name: "ID",
+            description: "The link, steamID64 or vanity of the profile to block",
+            type: "string",
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**
@@ -59,6 +67,14 @@ module.exports.block = {
 module.exports.unblock = {
     names: ["unblock"],
     description: "Unblocks a user with all bot accounts on Steam. Note: The user can still get ignored by Steam for a while",
+    args: [
+        {
+            name: "ID",
+            description: "The link, steamID64 or vanity of the profile to unblock",
+            type: "string",
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**
