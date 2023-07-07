@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 11:30:25
+ * Last Modified: 07.07.2023 15:58:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -27,6 +27,7 @@ module.exports.abort = {
             name: "ID",
             description: "The link, steamID64 or vanity of the profile, group or sharedfile to abort the request of",
             type: "string",
+            isOptional: true,
             ownersOnly: false // Providing an ID for a request of another user is ownerOnly
         },
     ],
@@ -76,6 +77,7 @@ module.exports.resetCooldown = {
             name: 'ID or "global"',
             description: "The link, steamID64 or vanity of the profile to clear the cooldown of or the word global to clear the cooldown of all bot accounts",
             type: "string",
+            isOptional: true,
             ownersOnly: true
         }
     ],
@@ -128,6 +130,7 @@ module.exports.failed = {
             name: "ID",
             description: "The link, steamID64 or vanity of the profile, group or sharedfile to view the errors of",
             type: "string",
+            isOptional: true,
             ownersOnly: false // Providing an ID for a request of another user is ownerOnly
         }
     ],

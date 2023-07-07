@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 11:06:42
+ * Last Modified: 07.07.2023 15:51:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -32,18 +32,21 @@ module.exports.comment = {
             name: "amount",
             description: "The amount of comments to request",
             type: "string",
+            isOptional: false,
             ownersOnly: false
         },
         {
             name: "ID",
             description: "The link, steamID64 or vanity of the profile, group or sharedfile to comment on",
             type: "string",
+            isOptional: true,
             ownersOnly: true
         },
         {
             name: "custom quotes",
             description: "Array of strings to use as quotes in this comment request instead of the default quotes.txt set",
             type: "string",
+            isOptional: true,
             ownersOnly: true
         }
     ],

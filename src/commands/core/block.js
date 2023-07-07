@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 11:22:55
+ * Last Modified: 07.07.2023 15:51:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -28,6 +28,7 @@ module.exports.block = {
             name: "ID",
             description: "The link, steamID64 or vanity of the profile to block",
             type: "string",
+            isOptional: false,
             ownersOnly: true
         }
     ],
@@ -72,6 +73,7 @@ module.exports.unblock = {
             name: "ID",
             description: "The link, steamID64 or vanity of the profile to unblock",
             type: "string",
+            isOptional: false,
             ownersOnly: true
         }
     ],

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 11:32:54
+ * Last Modified: 07.07.2023 15:59:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -104,6 +104,7 @@ module.exports.update = {
             name: '"true"',
             description: "Forces an update",
             type: "string",
+            isOptional: true,
             ownersOnly: true
         },
     ],
@@ -168,6 +169,7 @@ module.exports.eval = {
             name: "javascript code",
             description: "The code to run",
             type: "string",
+            isOptional: false,
             ownersOnly: true
         }
     ],

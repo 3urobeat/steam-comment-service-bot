@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 11:23:51
+ * Last Modified: 07.07.2023 15:57:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -28,6 +28,7 @@ module.exports.addFriend = {
             name: "ID",
             description: "The link, steamID64 or vanity of the profile to add",
             type: "string",
+            isOptional: false,
             ownersOnly: true
         }
     ],
@@ -96,6 +97,7 @@ module.exports.unfriend = {
             name: "ID",
             description: "The link, steamID64 or vanity of the profile to unfriend",
             type: "string",
+            isOptional: true, // If not provided all bots will unfriend the requesting user
             ownersOnly: false
         }
     ],
@@ -157,6 +159,7 @@ module.exports.unfriendall = {
             name: '"abort"',
             description: "Aborts a unfriendall request if it did not start yet",
             type: "string",
+            isOptional: true,
             ownersOnly: true
         }
     ],

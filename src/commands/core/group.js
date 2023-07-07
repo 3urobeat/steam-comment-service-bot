@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 11:27:13
+ * Last Modified: 07.07.2023 16:01:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -63,6 +63,7 @@ module.exports.joinGroup = {
             name: "ID",
             description: "The link or groupID64 of the group to join",
             type: "string",
+            isOptional: false,
             ownersOnly: true
         }
     ],
@@ -108,6 +109,7 @@ module.exports.leaveGroup = {
             name: "ID",
             description: "The link or groupID64 of the group to leave",
             type: "string",
+            isOptional: false,
             ownersOnly: true
         }
     ],
@@ -153,6 +155,7 @@ module.exports.leaveAllGroups = {
             name: '"abort"',
             description: "Aborts a leaveallgroups request if it did not start yet",
             type: "string",
+            isOptional: true,
             ownersOnly: true
         }
     ],

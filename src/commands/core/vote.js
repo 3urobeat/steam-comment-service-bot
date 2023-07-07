@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 11:34:01
+ * Last Modified: 07.07.2023 15:59:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -30,12 +30,14 @@ module.exports.upvote = {
             name: "amount",
             description: "The amount of upvotes to request",
             type: "string",
+            isOptional: false,
             ownersOnly: false
         },
         {
             name: "ID",
             description: "The link or sharedfile ID to vote on",
             type: "string",
+            isOptional: false,
             ownersOnly: false
         }
     ],
@@ -216,12 +218,14 @@ module.exports.downvote = {
             name: "amount",
             description: "The amount of downvotes to request",
             type: "string",
+            isOptional: false,
             ownersOnly: true
         },
         {
             name: "ID",
             description: "The link or sharedfile ID to vote on",
             type: "string",
+            isOptional: false,
             ownersOnly: true
         }
     ],

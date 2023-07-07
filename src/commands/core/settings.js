@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 11:30:54
+ * Last Modified: 07.07.2023 15:59:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -28,12 +28,14 @@ module.exports.settings = {
             name: "config key",
             description: "Name of the config key to update",
             type: "string",
+            isOptional: false,
             ownersOnly: true
         },
         {
             name: "new value",
             description: "New value of the config key",
             type: "string",
+            isOptional: false,
             ownersOnly: true
         }
     ],

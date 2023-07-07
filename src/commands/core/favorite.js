@@ -4,7 +4,7 @@
  * Created Date: 02.06.2023 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 11:22:47
+ * Last Modified: 07.07.2023 15:53:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -30,12 +30,14 @@ module.exports.favorite = {
             name: "amount",
             description: "The amount of favorites to request",
             type: "string",
+            isOptional: false,
             ownersOnly: false
         },
         {
             name: "ID",
             description: "The link or sharedfile ID to vote on",
             type: "string",
+            isOptional: false,
             ownersOnly: false
         }
     ],
@@ -211,12 +213,14 @@ module.exports.unfavorite = {
             name: "amount",
             description: "The amount of favorites to request",
             type: "string",
+            isOptional: false,
             ownersOnly: true
         },
         {
             name: "ID",
             description: "The link or sharedfile ID to vote on",
             type: "string",
+            isOptional: false,
             ownersOnly: true
         }
     ],
