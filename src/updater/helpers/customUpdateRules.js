@@ -4,7 +4,7 @@
  * Created Date: 22.02.2022 17:39:21
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 21:57:28
+ * Last Modified: 08.07.2023 00:36:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -24,7 +24,7 @@ const fs = require("fs");
  * @param {object} oldconfig The old config from before the update
  * @param {object} oldadvancedconfig The old advancedconfig from before the update
  * @param {object} olddatafile The old datafile from before the update
- * @param {function(): void} [callback] Legacy param, is unused
+ * @param {function(): void} callback Legacy param, is unused
  * @returns {Promise.<void>} Resolves when we can proceed
  */
 module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadvancedconfig, olddatafile, callback) => { // eslint-disable-line

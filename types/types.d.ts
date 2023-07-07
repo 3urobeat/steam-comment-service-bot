@@ -145,9 +145,24 @@ declare namespace Bot {
  */
 declare type Command = {
     description: string;
-    args: { name: string; description: string; type: string; ownersOnly: boolean; }[];
+    args: CommandArg[];
     ownersOnly: boolean;
     run: (...params: any[]) => any;
+};
+
+/**
+ * @property name - Name of this argument. Use common phrases like "ID" or "amount" if possible. If a specific word is expected, put the word inside quotation marks.
+ * @property description - Description of this argument
+ * @property type - Expected datatype of this argument. If read from a chat it will usually be "string"
+ * @property isOptional - True if this argument is optional, false if it must be provided. Make sure to check for missing arguments and return an error if false.
+ * @property ownersOnly - True if this argument is only allowed to be provided by owners set in the config. If the command itself is `ownersOnly`, set this property to `true` as well.
+ */
+declare type CommandArg = {
+    name: string;
+    description: string;
+    type: string;
+    isOptional: boolean;
+    ownersOnly: boolean;
 };
 
 /**
@@ -1203,9 +1218,9 @@ declare function runCompatibility(controller: Controller): Promise<void | null>;
  * @param datafile - The current `data.json` file from the DataManager
  * @param branch - Which branch you want to check. Defaults to the current branch set in `data.json`
  * @param forceUpdate - If true an update will be forced, even if disableAutoUpdate is true or the newest version is already installed
- * @param [callback] - Called with `updateFound` (Boolean) and `data` (Object) on completion. `updatefound` will be false if the check should fail. `data` includes the full data.json file found online.
+ * @param callback - Called with `updateFound` (Boolean) and `data` (Object) on completion. `updatefound` will be false if the check should fail. `data` includes the full data.json file found online.
  */
-declare function check(datafile: any, branch: string, forceUpdate: boolean, callback?: (...params: any[]) => any): void;
+declare function check(datafile: any, branch: string, forceUpdate: boolean, callback: (...params: any[]) => any): void;
 
 /**
  * Run the application. This function is called by start.js
@@ -1218,10 +1233,10 @@ declare function run(): void;
  * @param oldconfig - The old config from before the update
  * @param oldadvancedconfig - The old advancedconfig from before the update
  * @param olddatafile - The old datafile from before the update
- * @param [callback] - Legacy param, is unused
+ * @param callback - Legacy param, is unused
  * @returns Resolves when we can proceed
  */
-declare function customUpdateRules(compatibilityfeaturedone: any, oldconfig: any, oldadvancedconfig: any, olddatafile: any, callback?: (...params: any[]) => any): Promise<void>;
+declare function customUpdateRules(compatibilityfeaturedone: any, oldconfig: any, oldadvancedconfig: any, olddatafile: any, callback: (...params: any[]) => any): Promise<void>;
 
 /**
  * Downloads all files from the repository and installs them

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.07.2023 10:48:17
+ * Last Modified: 08.07.2023 00:36:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -22,7 +22,7 @@ const { exec } = require("child_process"); // Wanted to do it with the npm packa
 /**
  * Attempts to reinstall all modules
  * @param {function(string, string): void} logger The currently used logger function (real or fake, the caller decides)
- * @param {function(string|null, string|null): void} [callback] Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
+ * @param {function(string|null, string|null): void} callback Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
 module.exports.reinstallAll = (logger, callback) => {
     if (!fs.existsSync(srcdir + "/../node_modules")) {
@@ -51,7 +51,7 @@ module.exports.reinstallAll = (logger, callback) => {
 
 /**
  * Updates all installed packages to versions listed in package.json from the project root directory.
- * @param {function(string|null, string|null): void} [callback] Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
+ * @param {function(string|null, string|null): void} callback Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
 module.exports.update = (callback) => {
     module.exports.updateFromPath(srcdir + "/..", callback);
@@ -61,7 +61,7 @@ module.exports.update = (callback) => {
 /**
  * Updates all installed packages to versions listed in package.json
  * @param {string} path Custom path to read package.json from and install packages to
- * @param {function(string|null, string|null): void} [callback] Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
+ * @param {function(string|null, string|null): void} callback Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
 module.exports.updateFromPath = (path, callback) => {
     logger("debug", `npminteraction update(): Running 'npm install --production' in '${path}'...`);
