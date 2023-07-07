@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 05.07.2023 17:49:09
+ * Last Modified: 07.07.2023 12:43:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -63,7 +63,7 @@ module.exports = PluginSystem;
  * Reloads all plugins and calls ready event after ~2.5 seconds.
  */
 PluginSystem.prototype.reloadPlugins = function () {
-    // Delete all plugin objects. (I'm not sure if this is necessary or if clearing the pluginList obj will garbage collect them)
+    // Delete all plugin objects and their subfiles
     Object.keys(this.pluginList).forEach((e) => {
         if (this.pluginList[e].unload) {
             this.pluginList[e].unload();
@@ -71,13 +71,18 @@ PluginSystem.prototype.reloadPlugins = function () {
             logger("warn", `PluginSystem reloadPlugins: Plugin ${e} does not have an unload function, reloading might not work properly!`);
         }
 
+        // Delete the original path of the plugin, otherwise plugins linked via 'npm link' won't be reloaded correctly
         delete require.cache[require.resolve(e)];
-        delete this.pluginList[e];
-    });
 
-    // Delete cache so requiring plugins again will load new changes
-    Object.keys(require.cache).forEach((key) => {
-        if (key.includes("/plugins/")) delete require.cache[key];
+        // Make sure to delete subfiles of this plugin
+        Object.keys(require.cache).forEach((key) => {
+            if (key.includes(e) || key.includes("/plugins/")) {
+                delete require.cache[require.resolve(key)];
+            }
+        });
+
+        // Delete entry from pluginList object
+        delete this.pluginList[e];
     });
 
     this.pluginList = {};
