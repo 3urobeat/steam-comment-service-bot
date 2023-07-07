@@ -4,7 +4,7 @@
  * Created Date: 04.06.2023 17:52:51
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 07.07.2023 15:25:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -24,6 +24,8 @@ const PluginSystem = require("./pluginSystem.js");
  * @returns {string} Path to the folder containing your plugin data
  */
 PluginSystem.prototype.getPluginDataPath = function (pluginName) {
+    if (!pluginName) throw new Error("Plugin name parameter is missing!");
+
     let path = `${srcdir}/../plugins/${pluginName}/`;
 
     if (!fs.existsSync(path)) fs.mkdirSync(path);
@@ -39,6 +41,9 @@ PluginSystem.prototype.getPluginDataPath = function (pluginName) {
  */
 PluginSystem.prototype.loadPluginData = function (pluginName, filename) {
     return new Promise((resolve, reject) => {
+        // Check for missing parameters
+        if (!pluginName || !filename) return reject(new Error("Plugin name or file name parameter is missing!"));
+
         // Get path
         let path = this.getPluginDataPath(pluginName);
 
@@ -62,6 +67,9 @@ PluginSystem.prototype.loadPluginData = function (pluginName, filename) {
  */
 PluginSystem.prototype.writePluginData = function (pluginName, filename, data) {
     return new Promise((resolve, reject) => {
+        // Check for missing parameters
+        if (!pluginName || !filename || !data) return reject(new Error("Plugin name, file name or data parameter is missing!"));
+
         // Get path
         let path = this.getPluginDataPath(pluginName);
 
@@ -84,6 +92,9 @@ PluginSystem.prototype.writePluginData = function (pluginName, filename, data) {
  */
 PluginSystem.prototype.deletePluginData = function (pluginName, filename) {
     return new Promise((resolve, reject) => {
+        // Check for missing parameters
+        if (!pluginName || !filename) return reject(new Error("Plugin name or file name parameter is missing!"));
+
         // Get path
         let path = this.getPluginDataPath(pluginName);
 
@@ -109,6 +120,9 @@ PluginSystem.prototype.deletePluginData = function (pluginName, filename) {
  */
 PluginSystem.prototype.loadPluginConfig = function (pluginName) {
     return new Promise((resolve, reject) => {
+        // Check for missing parameters
+        if (!pluginName) return reject(new Error("Plugin name parameter is missing!"));
+
         // Get path
         let path = this.getPluginDataPath(pluginName);
 
@@ -133,6 +147,8 @@ PluginSystem.prototype.loadPluginConfig = function (pluginName) {
         }
     });
 };
+
+
 /**
  * Integrates changes made to the config to the users config
  * @param {string} pluginName
@@ -151,6 +167,7 @@ PluginSystem.prototype.aggregatePluginConfig = function (pluginName) {
     return aggregatedConfig;
 };
 
+
 /**
  * Writes your plugin config changes to the filesystem. The object data will be processed to JSON.
  * @param {string} pluginName Name of your plugin
@@ -159,6 +176,9 @@ PluginSystem.prototype.aggregatePluginConfig = function (pluginName) {
  */
 PluginSystem.prototype.writePluginConfig = function (pluginName, pluginConfig) {
     return new Promise((resolve, reject) => {
+        // Check for missing parameters
+        if (!pluginName || !pluginConfig) return reject(new Error("Plugin name or plugin config parameter is missing!"));
+
         // Get path
         let path = this.getPluginDataPath(pluginName);
 
