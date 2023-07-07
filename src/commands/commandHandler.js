@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 12:15:05
+ * Last Modified: 07.07.2023 15:52:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -24,10 +24,21 @@ const Controller = require("../controller/controller.js"); // eslint-disable-lin
  * @type {object}
  * @property {[string]} names All names that should trigger this command
  * @property {string} description Description of what this command does
- * @property {Array.<{ name: string, description: string, type: string, ownersOnly: boolean }>} args Array of objects containing information about each parameter supported by this command
+ * @property {Array.<CommandArg>} args Array of objects containing information about each parameter supported by this command
  * @property {boolean} ownersOnly Set to true to only allow owners to use this command.
  * @property {function(CommandHandler, Array, string, function(object, object, string): void, object, object): void} run Function that will be executed when the command runs. Arguments: commandHandler, args, steamID64, respondModule, context, resInfo
  */
+
+/**
+ * @typedef CommandArg Documentation of the Command argument structure
+ * @type {object}
+ * @property {string} name Name of this argument. Use common phrases like "ID" or "amount" if possible. If a specific word is expected, put the word inside quotation marks.
+ * @property {string} description Description of this argument
+ * @property {string} type Expected datatype of this argument. If read from a chat it will usually be "string"
+ * @property {boolean} isOptional True if this argument is optional, false if it must be provided. Make sure to check for missing arguments and return an error if false.
+ * @property {boolean} ownersOnly True if this argument is only allowed to be provided by owners set in the config. If the command itself is `ownersOnly`, set this property to `true` as well.
+ */
+
 
 /**
  * Constructor - Initializes the commandHandler which allows you to integrate core commands into your plugin or add new commands from your plugin.
