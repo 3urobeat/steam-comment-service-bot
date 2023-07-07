@@ -138,11 +138,28 @@ declare namespace Bot {
 }
 
 /**
+ * @property description - Description of what this command does
+ * @property args - Array of objects containing information about each parameter supported by this command
+ * @property ownersOnly - Set to true to only allow owners to use this command.
+ * @property run - Function that will be executed when the command runs. Arguments: commandHandler, args, steamID64, respondModule, context, resInfo
+ */
+declare type Command = {
+    description: string;
+    args: { name: string; description: string; type: string; ownersOnly: boolean; }[];
+    ownersOnly: boolean;
+    run: (...params: any[]) => any;
+};
+
+/**
  * Constructor - Initializes the commandHandler which allows you to integrate core commands into your plugin or add new commands from your plugin.
  * @param controller - Reference to the current controller object
  */
 declare class CommandHandler {
     constructor(controller: Controller);
+    /**
+     * Array of objects, where each object represents a registered command
+     */
+    commands: Command[];
     /**
      * Internal: Imports core commands on startup
      * @returns Resolved when all commands have been imported
@@ -151,16 +168,9 @@ declare class CommandHandler {
     /**
      * Registers a new command during runtime
      * @param command - The command object to register
-     * @param command.description - Description of what this command does
-     * @param command.ownersOnly - Set to true to only allow owners to use this command.
-     * @param command.run - Function that will be executed when the command runs. Arguments: commandHandler, args, steamID64, respondModule, context, resInfo
      * @returns true if the command was successfully registered, false otherwise
      */
-    registerCommand(command: {
-        description: string;
-        ownersOnly: boolean;
-        run: (...params: any[]) => any;
-    }): boolean;
+    registerCommand(command: Command): boolean;
     /**
      * The name of the command to unregister during runtime
      * @param commandName - Name of the command to unregister

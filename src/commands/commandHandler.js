@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 06.07.2023 22:27:39
+ * Last Modified: 07.07.2023 12:15:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -19,6 +19,15 @@ const fs = require("fs");
 
 const Controller = require("../controller/controller.js"); // eslint-disable-line
 
+/**
+ * @typedef Command Documentation of the Command structure
+ * @type {object}
+ * @property {[string]} names All names that should trigger this command
+ * @property {string} description Description of what this command does
+ * @property {Array.<{ name: string, description: string, type: string, ownersOnly: boolean }>} args Array of objects containing information about each parameter supported by this command
+ * @property {boolean} ownersOnly Set to true to only allow owners to use this command.
+ * @property {function(CommandHandler, Array, string, function(object, object, string): void, object, object): void} run Function that will be executed when the command runs. Arguments: commandHandler, args, steamID64, respondModule, context, resInfo
+ */
 
 /**
  * Constructor - Initializes the commandHandler which allows you to integrate core commands into your plugin or add new commands from your plugin.
@@ -30,7 +39,11 @@ const CommandHandler = function(controller) {
     this.controller = controller;
     this.data       = controller.data;
 
-    this.commands = []; // Array of objects, where each object represents a command
+    /**
+     * Array of objects, where each object represents a registered command
+     * @type {Array.<Command>}
+     */
+    this.commands = [];
 
 };
 
@@ -86,11 +99,7 @@ CommandHandler.prototype._importCoreCommands = function() {
 
 /**
  * Registers a new command during runtime
- * @param {object} command The command object to register
- * @param {[string]} command.names All names that should trigger this command
- * @param {string} command.description Description of what this command does
- * @param {boolean} command.ownersOnly Set to true to only allow owners to use this command.
- * @param {function(CommandHandler, Array, string, function(object, object, string): void, object, object): void} command.run Function that will be executed when the command runs. Arguments: commandHandler, args, steamID64, respondModule, context, resInfo
+ * @param {Command} command The command object to register
  * @returns {boolean} true if the command was successfully registered, false otherwise
  */
 CommandHandler.prototype.registerCommand = function(command) {
