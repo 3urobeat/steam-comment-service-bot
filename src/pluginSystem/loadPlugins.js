@@ -4,7 +4,7 @@
  * Created Date: 04.06.2023 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 05.07.2023 10:31:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -27,12 +27,16 @@ const PLUGIN_EVENTS = {
 };
 
 
-// Attempt to load all plugins. If a critical check fails loading will be denied
+/**
+ * Attempt to load all plugins. If a critical check fails loading will be denied
+ * @param {string} pluginName Name of the plugin package
+ * @returns {{ pluginName: string, pluginInstance: object, pluginJson: object }} Creates a plugin instance and returns it along with more information
+ */
 function loadPlugin(pluginName) {
     try {
         // Load plugin and pluginJson
         const importedPlugin = require(pluginName);
-        const pluginJson     = require(`${srcdir}/../node_modules/${pluginName}/package.json`);
+        const pluginJson = require(`${srcdir}/../node_modules/${pluginName}/package.json`);
 
         // Check if plugin is missing required functions
         if (!(typeof importedPlugin === "function") || !importedPlugin.prototype || !importedPlugin.prototype.load) {
@@ -40,9 +44,11 @@ function loadPlugin(pluginName) {
             return {};
         }
 
+        // Display warning if the function is missing a unload function
+        if (!importedPlugin.prototype.unload) logger("warn", `Plugin '${pluginName}' does not have an unload function! This may prevent the reloading function from working properly.`);
+
         // Create new plugin object
         const pluginInstance = new importedPlugin(this);
-
         return { pluginName, pluginInstance, pluginJson };
     } catch (e) {
         logger("error", `Plugin '${pluginName}' could not be instantiated: ${e.stack}`);
@@ -50,32 +56,37 @@ function loadPlugin(pluginName) {
     }
 }
 
-
 /**
  * Internal: Loads all plugin npm packages and populates pluginList
  */
 PluginSystem.prototype._loadPlugins = async function () {
-
     // Get all plugins with the matching regex
     const plugins = Object.entries(packageJson.dependencies).filter(([key, value]) => PLUGIN_REGEX.test(key)); // eslint-disable-line
     const initiatedPlugins = plugins.map(([plugin]) => loadPlugin.bind(this)(plugin)); // Initalize each plugin
 
-    for (const { pluginName, pluginInstance, pluginJson } of initiatedPlugins) {
+    for (const plugin of initiatedPlugins) {
+        const { pluginName, pluginInstance, pluginJson } = plugin;
+
         if (!pluginInstance) {
             logger("warn", `Skipping plugin '${pluginName}'...`, false, false, null, true); // Force print now
             continue;
         }
 
-        // Skip plugin if it is disabled
-        let pluginConfig = await this.loadPluginConfig(pluginName).catch((err) => logger("error", `The config of plugin '${pluginName}' is fucked, skipping plugin. ${err}`));
+        let pluginConfig = {};
+        const lastSeenVersion = this.controller.data.cachefile.pluginVersions;
 
+        if (lastSeenVersion && lastSeenVersion[pluginName] && lastSeenVersion[pluginName] !== pluginJson.version) {
+            logger("warn", `Plugin '${pluginName}' is outdated! Updating plugin...`, false, false, null, true); // Force print now
+            pluginConfig = this.aggregatePluginConfig(pluginName);
+        } else {
+            pluginConfig = await this.loadPluginConfig(pluginName).catch((err) => logger("error", `The config of plugin '${pluginName}' is fucked, skipping plugin. ${err}`));
+        }
+
+        // Skip plugin if it is disabled
         if (!pluginConfig || !pluginConfig.enabled) {
             logger("debug", `Plugin '${pluginName}' is disabled. Skipping plugin...`);
             continue;
         }
-
-        // Display warning if the function is missing a unload function
-        if (!pluginInstance.unload) logger("warn", `Plugin '${pluginName}' does not have an unload function! This may prevent the reloading function from working properly.`);
 
         logger("info", `PluginSystem: Loading plugin '${pluginName}' v${pluginJson.version} by ${pluginJson.author}...`, false, true, logger.animation("loading"));
 
@@ -84,9 +95,13 @@ PluginSystem.prototype._loadPlugins = async function () {
         pluginInstance.load();
 
         // Call the exposed event functions if they exist
-        Object.entries(PLUGIN_EVENTS).forEach(([eventName, event]) => { // eslint-disable-line
+        Object.entries(PLUGIN_EVENTS).forEach(([eventName, event]) => { // eslint-disable-line no-unused-vars
+            // eslint-disable-line
             this.controller.events.on(event, (...args) => pluginInstance[event]?.call(pluginInstance, ...args));
         });
-    }
 
+        // Update last seen version of this plugin name
+        if (!lastSeenVersion) this.controller.data.cachefile.pluginVersions = {};
+        this.controller.data.cachefile.pluginVersions[pluginName] = pluginJson.version;
+    }
 };

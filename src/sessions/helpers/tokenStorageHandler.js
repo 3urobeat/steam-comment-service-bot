@@ -4,7 +4,7 @@
  * Created Date: 10.10.2022 12:53:20
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 08.07.2023 00:36:49
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -20,7 +20,7 @@ const SessionHandler = require("../sessionHandler.js");
 
 /**
  * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
- * @param {function} [callback] Called with `refreshToken` (String) on success or `null` on failure
+ * @param {function(string|null): void} callback Called with `refreshToken` (String) on success or `null` on failure
  */
 SessionHandler.prototype._getTokenFromStorage = function(callback) {
 
@@ -58,7 +58,7 @@ SessionHandler.prototype._getTokenFromStorage = function(callback) {
 
 /**
  * Internal - Saves a new token for this account to tokens.db
- * @param {String} token The refreshToken to store
+ * @param {string} token The refreshToken to store
  */
 SessionHandler.prototype._saveTokenToStorage = function(token) {
     logger("debug", `[${this.bot.logPrefix}] _saveTokenToStorage(): Updating tokens.db entry for accountName '${this.logOnOptions.accountName}'...`);

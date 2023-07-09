@@ -4,7 +4,7 @@
  * Created Date: 02.05.2023 13:46:21
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 19:38:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -22,8 +22,8 @@ const EStatus    = require("../../bot/EStatus.js");
 /**
  * Retrieves all matching bot accounts and returns them.
  * @param {(EStatus|EStatus[]|string)} [statusFilter=EStatus.ONLINE] Optional: EStatus or Array of EStatus's including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'EStatus.ONLINE' will be returned.
- * @param {Boolean} mapToObject Optional: If true, an object will be returned where every bot object is mapped to their accountName.
- * @returns {Array|Object} An array or object if `mapToObject == true` containing all matching bot accounts.
+ * @param {boolean} mapToObject Optional: If true, an object will be returned where every bot object is mapped to their accountName.
+ * @returns {Array|object} An array or object if `mapToObject == true` containing all matching bot accounts.
  */
 Controller.prototype.getBots = function(statusFilter, mapToObject) {
     if (!statusFilter) statusFilter = EStatus.ONLINE;

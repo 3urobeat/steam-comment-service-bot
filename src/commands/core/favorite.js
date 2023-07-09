@@ -4,7 +4,7 @@
  * Created Date: 02.06.2023 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:49
+ * Last Modified: 07.07.2023 15:53:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -24,7 +24,23 @@ const { handleFavoriteIterationSkip, logFavoriteError } = require("../helpers/ha
 
 module.exports.favorite = {
     names: ["favorite", "fav"],
-    description: "Favorites a sharedfile",
+    description: "Favorizes a sharedfile with all bot accounts that haven't yet favorized that item",
+    args: [
+        {
+            name: "amount",
+            description: "The amount of favorites to request",
+            type: "string",
+            isOptional: false,
+            ownersOnly: false
+        },
+        {
+            name: "ID",
+            description: "The link or sharedfile ID to vote on",
+            type: "string",
+            isOptional: false,
+            ownersOnly: false
+        }
+    ],
     ownersOnly: false,
 
     /**
@@ -32,7 +48,7 @@ module.exports.favorite = {
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
@@ -191,7 +207,23 @@ module.exports.favorite = {
 
 module.exports.unfavorite = {
     names: ["unfavorite", "unfav"],
-    description: "Unfavorites a sharedfile",
+    description: "Unfavorizes a sharedfile with all bot accounts that have favorized that item",
+    args: [
+        {
+            name: "amount",
+            description: "The amount of favorites to request",
+            type: "string",
+            isOptional: false,
+            ownersOnly: true
+        },
+        {
+            name: "ID",
+            description: "The link or sharedfile ID to vote on",
+            type: "string",
+            isOptional: false,
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**
@@ -199,7 +231,7 @@ module.exports.unfavorite = {
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */

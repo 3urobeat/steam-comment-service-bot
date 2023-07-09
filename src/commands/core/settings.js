@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 07.07.2023 15:59:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -22,7 +22,23 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 module.exports.settings = {
     names: ["set", "settings", "config"],
-    description: "",
+    description: "Change a value in the config",
+    args: [
+        {
+            name: "config key",
+            description: "Name of the config key to update",
+            type: "string",
+            isOptional: false,
+            ownersOnly: true
+        },
+        {
+            name: "new value",
+            description: "New value of the config key",
+            type: "string",
+            isOptional: false,
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**
@@ -30,9 +46,9 @@ module.exports.settings = {
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call

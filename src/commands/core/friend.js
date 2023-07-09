@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 07.07.2023 15:57:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -22,7 +22,16 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 module.exports.addFriend = {
     names: ["addfriend"],
-    description: "",
+    description: "Adds the ID with all bot accounts. Requires unlimited accounts!",
+    args: [
+        {
+            name: "ID",
+            description: "The link, steamID64 or vanity of the profile to add",
+            type: "string",
+            isOptional: false,
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**
@@ -30,9 +39,9 @@ module.exports.addFriend = {
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
@@ -82,7 +91,16 @@ module.exports.addFriend = {
 
 module.exports.unfriend = {
     names: ["unfriend"],
-    description: "",
+    description: "Unfriends a user from all logged in accounts. (Owner only) Providing no argument will let all bots unfriend you. (Available to normal users)",
+    args: [
+        {
+            name: "ID",
+            description: "The link, steamID64 or vanity of the profile to unfriend",
+            type: "string",
+            isOptional: true, // If not provided all bots will unfriend the requesting user
+            ownersOnly: false
+        }
+    ],
     ownersOnly: false,
 
     /**
@@ -90,9 +108,9 @@ module.exports.unfriend = {
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
@@ -135,7 +153,16 @@ module.exports.unfriend = {
 
 module.exports.unfriendall = {
     names: ["unfriendall"],
-    description: "",
+    description: "Unfriends everyone with all bot accounts",
+    args: [
+        {
+            name: '"abort"',
+            description: "Aborts a unfriendall request if it did not start yet",
+            type: "string",
+            isOptional: true,
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**
@@ -143,9 +170,9 @@ module.exports.unfriendall = {
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call

@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 17:44:47
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 02.07.2023 19:07:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -14,23 +14,22 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
-const fs      = require("fs");
+const fs = require("fs");
 const SteamID = require("steamid");
 
 const DataManager = require("../dataManager");
 
-
 /**
  * Refreshes Backups in cache.json with new data
  */
-DataManager.prototype.refreshCache = function() {
+DataManager.prototype.refreshCache = function () {
     logger("info", "Refreshing data backups in cache.json...", false, true, logger.animation("loading"));
 
     // Refresh cache of bot account ids, check if they inflict with owner settings
     let tempArr = [];
 
-    this.controller.getBots().forEach((e, i) => { // Get all online accounts
+    this.controller.getBots().forEach((e, i) => {
+        // Get all online accounts
         tempArr.push(new SteamID(String(e.user.steamID)).getSteamID64());
 
         // Check if this bot account is listed as an owner id and display warning
@@ -45,16 +44,14 @@ DataManager.prototype.refreshCache = function() {
         }
     });
 
-
     // Update Backups
     logger("debug", "Writing backups to cache.json...", false, true, logger.animation("loading"));
     this.cachefile["configjson"] = this.config;
     this.cachefile["advancedconfigjson"] = this.advancedconfig;
     this.cachefile["datajson"] = this.datafile;
 
-
     // Write changes to file
-    fs.writeFile(srcdir + "/data/cache.json", JSON.stringify(this.cachefile, null, 4), err => {
+    fs.writeFile(srcdir + "/data/cache.json", JSON.stringify(this.cachefile, null, 4), (err) => {
         if (err) logger("error", "error writing file backups to cache.json: " + err);
     });
 };

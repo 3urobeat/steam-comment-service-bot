@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 07.07.2023 12:43:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -14,22 +14,19 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
-const Controller     = require("../controller/controller.js");   // eslint-disable-line
+const Controller = require("../controller/controller.js"); // eslint-disable-line
 const CommandHandler = require("../commands/commandHandler.js"); // eslint-disable-line
-const Bot            = require("../../src/bot/bot.js");          // eslint-disable-line
-
+const Bot = require("../../src/bot/bot.js"); // eslint-disable-line
 
 /**
  * @typedef Plugin Documentation of the Plugin structure for IntelliSense support
  * @type {object}
- * @property {function} load Called on Plugin load
- * @property {function} unload Called on Plugin unload
- * @property {function} ready Controller ready event
- * @property {function(Bot, Bot.EStatus, Bot.EStatus)} statusUpdate Controller statusUpdate event
- * @property {function(Bot, function(string))} steamGuardInput Controller steamGuardInput event
+ * @property {function(): void} load Called on Plugin load
+ * @property {function(): void} unload Called on Plugin unload
+ * @property {function(): void} ready Controller ready event
+ * @property {function(Bot, Bot.EStatus, Bot.EStatus): void} statusUpdate Controller statusUpdate event
+ * @property {function(Bot, function(string): void): void} steamGuardInput Controller steamGuardInput event
  */
-
 
 /**
  * Constructor - The plugin system loads all plugins and provides functions for plugins to hook into
@@ -45,7 +42,7 @@ const PluginSystem = function (controller) {
 
     /**
      * References to all plugin objects
-     * @type {Object.<string, Plugin>}
+     * @type {{[key: string]: Plugin}}
      */
     this.pluginList = {};
 
@@ -62,12 +59,11 @@ const PluginSystem = function (controller) {
 // The plugin system loads all plugins and provides functions for plugins to hook into
 module.exports = PluginSystem;
 
-
 /**
  * Reloads all plugins and calls ready event after ~2.5 seconds.
  */
 PluginSystem.prototype.reloadPlugins = function () {
-    // Delete all plugin objects. (I'm not sure if this is necessary or if clearing the pluginList obj will garbage collect them)
+    // Delete all plugin objects and their subfiles
     Object.keys(this.pluginList).forEach((e) => {
         if (this.pluginList[e].unload) {
             this.pluginList[e].unload();
@@ -75,12 +71,18 @@ PluginSystem.prototype.reloadPlugins = function () {
             logger("warn", `PluginSystem reloadPlugins: Plugin ${e} does not have an unload function, reloading might not work properly!`);
         }
 
-        delete this.pluginList[e];
-    });
+        // Delete the original path of the plugin, otherwise plugins linked via 'npm link' won't be reloaded correctly
+        delete require.cache[require.resolve(e)];
 
-    // Delete cache so requiring plugins again will load new changes
-    Object.keys(require.cache).forEach((key) => {
-        if (key.includes("node_modules/steam-comment-bot-") || key.includes("/plugins/")) delete require.cache[key];
+        // Make sure to delete subfiles of this plugin
+        Object.keys(require.cache).forEach((key) => {
+            if (key.includes(e) || key.includes("/plugins/")) {
+                delete require.cache[require.resolve(key)];
+            }
+        });
+
+        // Delete entry from pluginList object
+        delete this.pluginList[e];
     });
 
     this.pluginList = {};
@@ -94,7 +96,6 @@ PluginSystem.prototype.reloadPlugins = function () {
     }, 3000);
 };
 
-
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
 
 /**
@@ -104,9 +105,9 @@ PluginSystem.prototype._loadPlugins = function () {};
 
 /**
  * Internal: Checks a plugin, displays relevant warnings and decides whether the plugin is allowed to be loaded
- * @param {String} folderName Name of the plugin folder. This is used to reference the plugin when thisPluginConf is undefined
- * @param {Object} thisPlugin Plugin file object returned by require()
- * @param {Object} thisPluginConf package.json object of this plugin
+ * @param {string} folderName Name of the plugin folder. This is used to reference the plugin when thisPluginConf is undefined
+ * @param {object} thisPlugin Plugin file object returned by require()
+ * @param {object} thisPluginConf package.json object of this plugin
  * @returns {Promise.<boolean>} Resolved with `true` (can be loaded) or `false` (must not be loaded) on completion
  */
 PluginSystem.prototype._checkPlugin = function (folderName, thisPlugin, thisPluginConf) {}; // eslint-disable-line
@@ -116,7 +117,7 @@ PluginSystem.prototype._checkPlugin = function (folderName, thisPlugin, thisPlug
  * @param {string} pluginName Name of your plugin
  * @returns {string} Path to the folder containing your plugin data
  */
-PluginSystem.prototype.getPluginDataPath = function(pluginName) {}; // eslint-disable-line
+PluginSystem.prototype.getPluginDataPath = function (pluginName) {}; // eslint-disable-line
 
 /**
  * Loads a file from your plugin data folder. The data will remain unprocessed. Use `loadPluginConfig()` instead if you want to load your plugin config.
@@ -157,3 +158,9 @@ PluginSystem.prototype.loadPluginConfig = function (pluginName) {}; // eslint-di
  * @returns {Promise.<void>} Resolves on success, rejects otherwise with an error
  */
 PluginSystem.prototype.writePluginConfig = function (pluginName, pluginConfig) {}; // eslint-disable-line
+/**
+ * Integrates changes made to the config to the users config
+ * @param {string} pluginName
+ * @returns {Record<string,any>} the config
+ */
+PluginSystem.prototype.aggregatePluginConfig = function (pluginName) {}; // eslint-disable-line

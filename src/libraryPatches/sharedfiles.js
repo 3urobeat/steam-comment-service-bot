@@ -2,7 +2,7 @@ const SteamCommunity = require('steamcommunity');
 
 /**
  * Downvotes a sharedfile
- * @param {String} sid - ID of the sharedfile
+ * @param {string} sid - ID of the sharedfile
  * @param {function} callback - Takes only an Error object/null as the first argument
  */
 SteamCommunity.prototype.voteDownSharedFile = function(sid, callback) {
@@ -23,7 +23,7 @@ SteamCommunity.prototype.voteDownSharedFile = function(sid, callback) {
 
 /**
  * Upvotes a sharedfile
- * @param {String} sid - ID of the sharedfile
+ * @param {string} sid - ID of the sharedfile
  * @param {function} callback - Takes only an Error object/null as the first argument
  */
 SteamCommunity.prototype.voteUpSharedFile = function(sid, callback) {

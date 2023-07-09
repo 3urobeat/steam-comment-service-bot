@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 17:55:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -26,7 +26,7 @@ const misc       = require("./helpers/misc.js");
 /**
  * Attempts to log in all bot accounts which are currently offline one after another.
  * Creates a new bot object for every new account and reuses existing one if possible
- * @param {Boolean} firstLogin Is set to true by controller if this is the first login to display more information
+ * @param {boolean} firstLogin Is set to true by controller if this is the first login to display more information
  */
 Controller.prototype.login = function(firstLogin) {
 

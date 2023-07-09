@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 07.07.2023 15:59:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -22,7 +22,8 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 module.exports.restart = {
     names: ["restart", "rs"],
-    description: "",
+    description: "Restarts the bot and checks for available updates",
+    args: [],
     ownersOnly: true,
 
     /**
@@ -30,9 +31,9 @@ module.exports.restart = {
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.restartcmdrestarting); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
@@ -44,7 +45,8 @@ module.exports.restart = {
 
 module.exports.stop = {
     names: ["stop"],
-    description: "",
+    description: "Stops the bot",
+    args: [],
     ownersOnly: true,
 
     /**
@@ -52,9 +54,9 @@ module.exports.stop = {
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.stopcmdstopping); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
@@ -66,7 +68,8 @@ module.exports.stop = {
 
 module.exports.reload = {
     names: ["reload", "rl"],
-    description: "Reloads all commands and plugins without needing to restart. Please only use it for testing, this isn't clean.",
+    description: "Reloads all commands and plugins without needing to restart. Please only use it for testing/development",
+    args: [],
     ownersOnly: true,
 
     /**
@@ -74,9 +77,9 @@ module.exports.reload = {
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
 
@@ -95,7 +98,16 @@ module.exports.reload = {
 
 module.exports.update = {
     names: ["update"],
-    description: "",
+    description: "Checks for an available update and installs it if automatic updates are enabled and no requests are active. 'true' forces an update. Blocks new requests if it currently waits for one to be completed",
+    args: [
+        {
+            name: '"true"',
+            description: "Forces an update",
+            type: "string",
+            isOptional: true,
+            ownersOnly: true
+        },
+    ],
     ownersOnly: true,
 
     /**
@@ -103,9 +115,9 @@ module.exports.update = {
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((modResInfo, txt) => respondModule(context, modResInfo, txt)); // Shorten each call. Updater takes resInfo as param and can modify it, so we need to pass the modified resInfo object here
@@ -125,7 +137,8 @@ module.exports.update = {
 
 module.exports.output = {
     names: ["output", "log"],
-    description: "",
+    description: "Shows the last 15 lines of the log",
+    args: [],
     ownersOnly: true,
 
     /**
@@ -133,9 +146,9 @@ module.exports.output = {
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         fs.readFile("./output.txt", function (err, data) {
@@ -150,7 +163,16 @@ module.exports.output = {
 
 module.exports.eval = {
     names: ["eval"],
-    description: "",
+    description: "Disabled by default, needs to be toggled on with `enableevalcmd` in config.json. **Warning!** This will run any javascript code that was provided. It is strongly advised to leave this feature off unless you know exactly what this means! If you have multiple owners configured they can also run code on **your** machine!",
+    args: [
+        {
+            name: "javascript code",
+            description: "The code to run",
+            type: "string",
+            isOptional: false,
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**
@@ -158,9 +180,9 @@ module.exports.eval = {
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call

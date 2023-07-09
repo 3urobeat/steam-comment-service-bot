@@ -4,7 +4,7 @@
  * Created Date: 20.03.2023 12:46:47
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 17:55:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -22,9 +22,9 @@ const lastmessage = {}; // Tracks the last cmd usage of a normal command to appl
 
 /**
  * Checks if user is blocked, has an active cooldown for spamming or isn't a friend
- * @param {Object} steamID64 The steamID64 of the message sender
- * @param {String} message The message string provided by steam-user friendMessage event
- * @returns {Boolean} `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
+ * @param {object} steamID64 The steamID64 of the message sender
+ * @param {string} message The message string provided by steam-user friendMessage event
+ * @returns {boolean} `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
  */
 Bot.prototype.checkMsgBlock = function(steamID64, message) {
 

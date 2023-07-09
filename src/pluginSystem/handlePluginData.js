@@ -4,7 +4,7 @@
  * Created Date: 04.06.2023 17:52:51
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 07.07.2023 15:25:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -14,25 +14,24 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 const fs = require("fs");
 
 const PluginSystem = require("./pluginSystem.js");
-
 
 /**
  * Gets the path holding all data of a plugin. If no folder exists yet, one will be created
  * @param {string} pluginName Name of your plugin
  * @returns {string} Path to the folder containing your plugin data
  */
-PluginSystem.prototype.getPluginDataPath = function(pluginName) {
+PluginSystem.prototype.getPluginDataPath = function (pluginName) {
+    if (!pluginName) throw new Error("Plugin name parameter is missing!");
+
     let path = `${srcdir}/../plugins/${pluginName}/`;
 
     if (!fs.existsSync(path)) fs.mkdirSync(path);
 
     return path;
 };
-
 
 /**
  * Loads a file from your plugin data folder. The data will remain unprocessed. Use `loadPluginConfig()` instead if you want to load your plugin config.
@@ -42,6 +41,8 @@ PluginSystem.prototype.getPluginDataPath = function(pluginName) {
  */
 PluginSystem.prototype.loadPluginData = function (pluginName, filename) {
     return new Promise((resolve, reject) => {
+        // Check for missing parameters
+        if (!pluginName || !filename) return reject(new Error("Plugin name or file name parameter is missing!"));
 
         // Get path
         let path = this.getPluginDataPath(pluginName);
@@ -54,10 +55,8 @@ PluginSystem.prototype.loadPluginData = function (pluginName, filename) {
 
             resolve(data);
         });
-
     });
 };
-
 
 /**
  * Writes a file to your plugin data folder. The data will remain unprocessed. Use `writePluginConfig()` instead if you want to write your plugin config.
@@ -68,6 +67,8 @@ PluginSystem.prototype.loadPluginData = function (pluginName, filename) {
  */
 PluginSystem.prototype.writePluginData = function (pluginName, filename, data) {
     return new Promise((resolve, reject) => {
+        // Check for missing parameters
+        if (!pluginName || !filename || !data) return reject(new Error("Plugin name, file name or data parameter is missing!"));
 
         // Get path
         let path = this.getPluginDataPath(pluginName);
@@ -80,10 +81,8 @@ PluginSystem.prototype.writePluginData = function (pluginName, filename, data) {
 
             resolve();
         });
-
     });
 };
-
 
 /**
  * Deletes a file in your plugin data folder if it exists.
@@ -93,6 +92,8 @@ PluginSystem.prototype.writePluginData = function (pluginName, filename, data) {
  */
 PluginSystem.prototype.deletePluginData = function (pluginName, filename) {
     return new Promise((resolve, reject) => {
+        // Check for missing parameters
+        if (!pluginName || !filename) return reject(new Error("Plugin name or file name parameter is missing!"));
 
         // Get path
         let path = this.getPluginDataPath(pluginName);
@@ -109,10 +110,8 @@ PluginSystem.prototype.deletePluginData = function (pluginName, filename) {
 
             resolve();
         });
-
     });
 };
-
 
 /**
  * Loads your plugin config from the filesystem or creates a new one based on the default config provided by your plugin. The JSON data will be processed to an object.
@@ -121,6 +120,8 @@ PluginSystem.prototype.deletePluginData = function (pluginName, filename) {
  */
 PluginSystem.prototype.loadPluginConfig = function (pluginName) {
     return new Promise((resolve, reject) => {
+        // Check for missing parameters
+        if (!pluginName) return reject(new Error("Plugin name parameter is missing!"));
 
         // Get path
         let path = this.getPluginDataPath(pluginName);
@@ -131,7 +132,7 @@ PluginSystem.prototype.loadPluginConfig = function (pluginName) {
 
             try {
                 fs.copyFileSync(`${srcdir}/../node_modules/${pluginName}/config.json`, path + "config.json");
-            } catch(err) {
+            } catch (err) {
                 logger("error", `Error copying default config provided by plugin '${pluginName}': ` + err);
                 return reject(err);
             }
@@ -144,8 +145,26 @@ PluginSystem.prototype.loadPluginConfig = function (pluginName) {
             logger("error", `PluginSystem: Failed to load config for plugin '${pluginName}': ${err.stack}`);
             return reject(err);
         }
-
     });
+};
+
+
+/**
+ * Integrates changes made to the config to the users config
+ * @param {string} pluginName
+ * @returns {Record<string,any>} the config
+ */
+PluginSystem.prototype.aggregatePluginConfig = function (pluginName) {
+    let path = this.getPluginDataPath(pluginName);
+
+    if (!fs.existsSync(path + "config.json")) return;
+    if (!fs.existsSync(`${srcdir}/../node_modules/${pluginName}/config.json`)) return;
+
+    const standardConfig = require(`${srcdir}/../node_modules/${pluginName}/config.json`);
+    const config = require(path + "config.json");
+    const aggregatedConfig = Object.assign(standardConfig, config);
+    fs.writeFileSync(path + "config.json", JSON.stringify(aggregatedConfig, null, 4));
+    return aggregatedConfig;
 };
 
 
@@ -157,6 +176,8 @@ PluginSystem.prototype.loadPluginConfig = function (pluginName) {
  */
 PluginSystem.prototype.writePluginConfig = function (pluginName, pluginConfig) {
     return new Promise((resolve, reject) => {
+        // Check for missing parameters
+        if (!pluginName || !pluginConfig) return reject(new Error("Plugin name or plugin config parameter is missing!"));
 
         // Get path
         let path = this.getPluginDataPath(pluginName);
@@ -170,6 +191,5 @@ PluginSystem.prototype.writePluginConfig = function (pluginName, pluginConfig) {
             logger("error", `PluginSystem: Failed to write config for plugin '${pluginName}': ${err.stack}`);
             return reject(err);
         }
-
     });
 };

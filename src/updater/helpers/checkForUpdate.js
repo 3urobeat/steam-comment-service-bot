@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 08.07.2023 00:36:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -20,10 +20,10 @@ const https = require("https");
 
 /**
  * Checks for an available update from the GitHub repo
- * @param {Object} datafile The current `data.json` file from the DataManager
- * @param {String} branch Which branch you want to check. Defaults to the current branch set in `data.json`
- * @param {Boolean} forceUpdate If true an update will be forced, even if disableAutoUpdate is true or the newest version is already installed
- * @param {function} [callback] Called with `updateFound` (Boolean) and `data` (Object) on completion. `updatefound` will be false if the check should fail. `data` includes the full data.json file found online.
+ * @param {object} datafile The current `data.json` file from the DataManager
+ * @param {string} branch Which branch you want to check. Defaults to the current branch set in `data.json`
+ * @param {boolean} forceUpdate If true an update will be forced, even if disableAutoUpdate is true or the newest version is already installed
+ * @param {function(boolean, object): void} callback Called with `updateFound` (Boolean) and `data` (Object) on completion. `updatefound` will be false if the check should fail. `data` includes the full data.json file found online.
  */
 module.exports.check = (datafile, branch, forceUpdate, callback) => {
     if (!branch) branch = datafile.branch; // Set current branch as default value

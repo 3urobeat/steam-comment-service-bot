@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 17:51:07
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -29,10 +29,10 @@ const { cutStringsIntelligently } = require("../../controller/helpers/misc.js");
 /**
  * Our commandHandler respondModule implementation - Sends a message to a Steam user
  * @param {Bot} _this The Bot object context
- * @param {Object} resInfo Object containing information passed to command by friendMessage event. Supported by this handler: prefix, charLimit, cutChars
- * @param {String} txt The text to send
- * @param {Number} retry Internal: Counter of retries for this part if sending failed
- * @param {Number} part Internal: Index of which part to send for messages larger than charLimit chars
+ * @param {object} resInfo Object containing information passed to command by friendMessage event. Supported by this handler: prefix, charLimit, cutChars
+ * @param {string} txt The text to send
+ * @param {number} retry Internal: Counter of retries for this part if sending failed
+ * @param {number} part Internal: Index of which part to send for messages larger than charLimit chars
  */
 Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 0) {
     if (!resInfo) return logger("warn", "sendChatMessage() was called without a resInfo object! Ignoring call...");
@@ -110,8 +110,8 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
 
 /**
  * Waits for a Steam Chat message from this user to this account and resolves their message content. The "normal" friendMessage event handler will be blocked for this user.
- * @param {String} steamID64 The steamID64 of the user to read a message from
- * @param {Number} timeout Time in ms after which the Promise will be resolved if user does not respond. Pass 0 to disable (not recommended)
+ * @param {string} steamID64 The steamID64 of the user to read a message from
+ * @param {number} timeout Time in ms after which the Promise will be resolved if user does not respond. Pass 0 to disable (not recommended)
  * @returns {Promise.<string|null>} Resolved with `String` on response or `null` on timeout.
  */
 Bot.prototype.readChatMessage = function(steamID64, timeout) {

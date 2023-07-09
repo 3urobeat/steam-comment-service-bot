@@ -9,6 +9,7 @@
 - [2.13.2](#2.13.2)
 - [2.13.3](#2.13.3)
 - [2.13.4](#2.13.4)
+- [2.13.5](#2.13.5)
   
 &nbsp;
 
@@ -35,8 +36,8 @@ If you are using a `customlang.json`, make sure to read the language string chan
   - Added a library patches system to load my changes until [my PR to the SteamCommunity library gets accepted](https://github.com/DoctorMcKay/node-steamcommunity/pull/306)
   - Added support for figuring out sharedfile IDs to the handleSteamIdResolving() helper
   - Added a ratingHistory database to track which bot accounts have voted on or favorized which item
-- Added a completely new plugin system, co-author @DerDeathraven #174
-  - Added a plugin loader which dynamically loads all installed npm packages with the prefix `steam-comment-bot-` @DerDeathraven #174
+- Added a completely new plugin system, co-author @DerDeathraven [#174](https://github.com/3urobeat/steam-comment-service-bot/pull/174)
+  - Added a plugin loader which dynamically loads all installed npm packages with the prefix `steam-comment-bot-` @DerDeathraven [#174](https://github.com/3urobeat/steam-comment-service-bot/pull/174)
   - Added new template plugin which you can [fork here to create your own plugin](https://github.com/3urobeat/steam-comment-bot-template-plugin)
   - Added plugin functions: `load`, `ready`, `statusUpdate`, `steamGuardInput`
   - Added plugin data directory and functions to handle data reading & writing: `getPluginDataPath`, `loadPluginData`, `writePluginData`, `loadPluginConfig`, `writePluginConfig`
@@ -120,7 +121,7 @@ If you are using a `customlang.json`, make sure to read the language string chan
 &nbsp;
 
 **Fixes:**
-- Fixed the webserver plugin from being completely broken #172
+- Fixed the webserver plugin from being completely broken [#172](https://github.com/3urobeat/steam-comment-service-bot/issues/172)
 - Fixed return parameters of checkConnection
 - Fixed webSession looping caused by broken botsgroup check
 - Fixed accounts.txt import still checking for loginfo.json
@@ -140,7 +141,7 @@ If you are using a `customlang.json`, make sure to read the language string chan
 - Fixed cooldown issues when cooldown is disabled and process got aborted
 - Fixed a data check error on broken internet connection by checking it beforehand
 - Fixed handleLoginTimeout causing a DuplicateRequest error on 2FA input
-- Fixed output-logger causing crash when running bot with pm2 #48
+- Fixed output-logger causing crash when running bot with pm2 [#48](https://github.com/3urobeat/steam-comment-service-bot/issues/48)
 - Fixed potential bug where whenAvailableStr in comment command could display wrong information if allAccounts was empty or if more accounts got removed after the activeRequests loop ran 9e6c569
 - Fixed/Removed minor unnecessary checks in comment command
 - Fixed user added while offline message being able to fail because it was sent too early after logging in
@@ -151,8 +152,8 @@ If you are using a `customlang.json`, make sure to read the language string chan
 - Removed support for the old login flow: f5957bb
 - Removed v2.13 login flow change notification message
 - Removed `disableCommentCmd` setting from `advancedconfig.json` and replaced it with `restrictAdditionalCommandsToOwners` array
-- Removed `enableurltocomment` setting from `advancedconfig.json`. Toggling the webserver plugin is now done in the plugin config in the `plugins` directory #172
-- Removed `urlrequestsecretkey` from `data.json`. This key is now stored in the plugin config in the `plugins` directory. The update will cause a new key to be generated. #172
+- Removed `enableurltocomment` setting from `advancedconfig.json`. Toggling the webserver plugin is now done in the plugin config in the `plugins` directory [#172](https://github.com/3urobeat/steam-comment-service-bot/issues/172)
+- Removed `urlrequestsecretkey` from `data.json`. This key is now stored in the plugin config in the `plugins` directory. The update will cause a new key to be generated. [#172](https://github.com/3urobeat/steam-comment-service-bot/issues/172)
 - Removed most global variables
 - Removed (nearly) every usage of `var`
 - Removed lots of unnecessary variables that are now replaced by better systems
@@ -165,7 +166,7 @@ If you are using a `customlang.json`, make sure to read the language string chan
 - Moved various updater, controller & bot helper files to new objects
 - Moved various log messages to log at more appropriate times
 - Shortened most comment error descriptions
-- Improved eslint styling rules, formatting & code quality and added prettier config @DerDeathraven #171
+- Improved eslint styling rules, formatting & code quality and added prettier config @DerDeathraven [#171](https://github.com/3urobeat/steam-comment-service-bot/pull/171)
 - Updated dependencies
 - Tons of fixes for features that have been added in this update and are therefore not listed here
 - Minor other changes
@@ -366,3 +367,35 @@ Commit: [24984d6](https://github.com/3urobeat/steam-comment-service-bot/commit/2
 - Minor other changes
 
 Commit: [829c387](https://github.com/3urobeat/steam-comment-service-bot/commit/829c387)
+
+&nbsp;
+
+<a id="2.13.5"></a>
+
+## **2023-07-09, Version 2.13.5**, co-author [@DerDeathraven](https://github.com/DerDeathraven)
+**Additions:**
+- Aggregate old config files for plugins [@DerDeathraven](https://github.com/DerDeathraven) [#188](https://github.com/3urobeat/steam-comment-service-bot/pull/188)
+- Added arguments documentation to all commands
+- Added command descriptions from wiki to all commands
+- Added data export functions to DataManager to write all data files back to the disk
+- Added JsDoc eslint rules and enforced them
+- Added Command and CommandArg typedef in CommandHandler
+
+**Fixes:**
+- Potentially fixed SteamCommunity library scraping sharedfile error caused by non-English page being returned by Steam
+- Fixed reload not clearing plugin cache when using 'npm link' [@DerDeathraven](https://github.com/DerDeathraven) [#192](https://github.com/3urobeat/steam-comment-service-bot/pull/192)
+- Fixed reload not clearing plugin cache of subfolders
+- Fixed plugins reading core commands on load getting an empty array because `_importCoreCommands()` wasn't being awaited
+
+**Changes:**
+- Wiki: Updated Integrating into your app and Creating Plugins [@DerDeathraven](https://github.com/DerDeathraven) [#189](https://github.com/3urobeat/steam-comment-service-bot/pull/189)
+- Wiki: Rewrote Steam Limitations page, rewrote Integrating into your app page, updated various command descriptions, added missing step to npm link explanation and more misc improvements
+- Plugin data handling functions will now throw errors on missing parameters
+- Data Check will now throw errors instead of rejecting with a string
+- Cleaned up a few unnecessarily nested promises
+- Enforced lowercase primitive types in JsDocs
+- Updated every mention of my old username
+- Updated dependencies
+- Minor other changes
+
+Commit: [](https://github.com/3urobeat/steam-comment-service-bot/commit/)

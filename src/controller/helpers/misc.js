@@ -4,7 +4,7 @@
  * Created Date: 25.03.2023 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 19:40:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -20,9 +20,9 @@ const https = require("https");
 
 /**
  * Implementation of a synchronous for loop in JS (Used as reference: https://whitfin.io/handling-synchronous-asynchronous-loops-javascriptnode-js/)
- * @param {Number} iterations The amount of iterations
- * @param {Function} func The function to run each iteration (Params: loop, index)
- * @param {Function} exit This function will be called when the loop is finished
+ * @param {number} iterations The amount of iterations
+ * @param {function(): void} func The function to run each iteration (Params: loop, index)
+ * @param {function(): void} exit This function will be called when the loop is finished
  */
 module.exports.syncLoop = (iterations, func, exit) => {
     let currentIndex = 0;
@@ -55,9 +55,9 @@ module.exports.syncLoop = (iterations, func, exit) => {
 
 /**
  * Rounds a number with x decimals
- * @param {Number} value Number to round
- * @param {Number} decimals Amount of decimals
- * @returns {Number} Rounded number
+ * @param {number} value Number to round
+ * @param {number} decimals Amount of decimals
+ * @returns {number} Rounded number
  */
 module.exports.round = (value, decimals) => {
     return Number(Math.round(value+"e"+decimals)+"e-"+decimals);
@@ -65,8 +65,9 @@ module.exports.round = (value, decimals) => {
 
 
 /**
- * Converts a timestamp to a human-readable until from now format. Does not care about past/future.
- * @returns {String} "x seconds/minutes/hours/days"
+ * Converts a timestamp to a human-readable "until from now" format. Does not care about past/future.
+ * @param {number} timestamp UNIX timestamp to convert
+ * @returns {string} "x seconds/minutes/hours/days"
  */
 module.exports.timeToString = (timestamp) => {
     let until = Math.abs((Date.now() - timestamp) / 1000);
@@ -90,8 +91,8 @@ module.exports.timeToString = (timestamp) => {
 
 /**
  * Pings an URL to check if the service and this internet connection is working
- * @param {String} url The URL of the service to check
- * @param {Boolean} throwTimeout If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
+ * @param {string} url The URL of the service to check
+ * @param {boolean} throwTimeout If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
  * @returns {Promise.<{ statusMessage: string, statusCode: number|null }>} Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
  */
 module.exports.checkConnection = (url, throwTimeout) => {
@@ -124,10 +125,10 @@ module.exports.checkConnection = (url, throwTimeout) => {
 /**
  * Helper function which attempts to cut Strings intelligently and returns all parts. It will attempt to not cut words & links in half.
  * It is used by the steamChatInteraction helper but can be used in plugins as well.
- * @param {String} txt The string to cut
- * @param {Number} limit Maximum length for each part. The function will attempt to cut txt into parts that don't exceed this amount.
+ * @param {string} txt The string to cut
+ * @param {number} limit Maximum length for each part. The function will attempt to cut txt into parts that don't exceed this amount.
  * @param {Array} cutChars Optional: Custom chars to search after for cutting string in parts. Default: [" ", "\n", "\r"]
- * @param {Number} threshold Optional: Maximum amount that limit can be reduced to find the last space or line break. If no match is found within this limit a word will be cut. Default: 15% of total length
+ * @param {number} threshold Optional: Maximum amount that limit can be reduced to find the last space or line break. If no match is found within this limit a word will be cut. Default: 15% of total length
  * @returns {Array} Returns all parts of the string in an array
  */
 module.exports.cutStringsIntelligently = (txt, limit, cutChars, threshold) => {

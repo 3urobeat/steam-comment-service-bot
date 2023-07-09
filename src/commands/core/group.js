@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 07.07.2023 16:01:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -22,7 +22,8 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 module.exports.group = {
     names: ["group"],
-    description: "",
+    description: "Sends an invite or responds with the group link set as yourgroup in the config",
+    args: [],
     ownersOnly: false,
 
     /**
@@ -30,9 +31,9 @@ module.exports.group = {
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
@@ -57,6 +58,15 @@ module.exports.group = {
 module.exports.joinGroup = {
     names: ["joingroup"],
     description: "Joins a Steam Group with all bot accounts",
+    args: [
+        {
+            name: "ID",
+            description: "The link or groupID64 of the group to join",
+            type: "string",
+            isOptional: false,
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**
@@ -64,9 +74,9 @@ module.exports.joinGroup = {
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
@@ -93,7 +103,16 @@ module.exports.joinGroup = {
 
 module.exports.leaveGroup = {
     names: ["leavegroup"],
-    description: "",
+    description: "Leaves a group with all bot accounts",
+    args: [
+        {
+            name: "ID",
+            description: "The link or groupID64 of the group to leave",
+            type: "string",
+            isOptional: false,
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**
@@ -101,9 +120,9 @@ module.exports.leaveGroup = {
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
@@ -130,7 +149,16 @@ module.exports.leaveGroup = {
 
 module.exports.leaveAllGroups = {
     names: ["leaveallgroups"],
-    description: "",
+    description: "Leaves all groups with all bot accounts",
+    args: [
+        {
+            name: '"abort"',
+            description: "Aborts a leaveallgroups request if it did not start yet",
+            type: "string",
+            isOptional: true,
+            ownersOnly: true
+        }
+    ],
     ownersOnly: true,
 
     /**
@@ -138,9 +166,9 @@ module.exports.leaveAllGroups = {
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
      * @param {string} steamID64 Steam ID of the user that executed this command
-     * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call

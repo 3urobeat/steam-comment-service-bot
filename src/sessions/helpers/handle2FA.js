@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:59:31
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 17:50:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -22,7 +22,7 @@ const SessionHandler = require("../sessionHandler.js");
 
 /**
  * Internal: Handles submitting 2FA code
- * @param {Object} res Response object from startWithCredentials() promise
+ * @param {object} res Response object from startWithCredentials() promise
  */
 SessionHandler.prototype._handle2FA = function(res) {
 
@@ -132,7 +132,7 @@ SessionHandler.prototype._get2FAUserInput = function() {
 
 /**
  * Internal: Helper function to make accepting and re-requesting invalid steam guard codes easier
- * @param {String} code Input from user
+ * @param {string} code Input from user
  */
 SessionHandler.prototype._acceptSteamGuardCode = function(code) {
 

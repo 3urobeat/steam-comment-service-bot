@@ -1,6 +1,8 @@
 # Adding proxies
 [⬅️ Go back to wiki home](./)
 
+&nbsp;
+
 If you are using 10+ accounts I encourage you to use proxies.  
 It drastically reduces the amount of requests on one IP by equally spreading all accounts onto different IPs, allowing you to comment more and faster, reducing the chance of an IP ban.  
   

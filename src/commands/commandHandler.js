@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 07.07.2023 15:52:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -19,6 +19,26 @@ const fs = require("fs");
 
 const Controller = require("../controller/controller.js"); // eslint-disable-line
 
+/**
+ * @typedef Command Documentation of the Command structure
+ * @type {object}
+ * @property {[string]} names All names that should trigger this command
+ * @property {string} description Description of what this command does
+ * @property {Array.<CommandArg>} args Array of objects containing information about each parameter supported by this command
+ * @property {boolean} ownersOnly Set to true to only allow owners to use this command.
+ * @property {function(CommandHandler, Array, string, function(object, object, string): void, object, object): void} run Function that will be executed when the command runs. Arguments: commandHandler, args, steamID64, respondModule, context, resInfo
+ */
+
+/**
+ * @typedef CommandArg Documentation of the Command argument structure
+ * @type {object}
+ * @property {string} name Name of this argument. Use common phrases like "ID" or "amount" if possible. If a specific word is expected, put the word inside quotation marks.
+ * @property {string} description Description of this argument
+ * @property {string} type Expected datatype of this argument. If read from a chat it will usually be "string"
+ * @property {boolean} isOptional True if this argument is optional, false if it must be provided. Make sure to check for missing arguments and return an error if false.
+ * @property {boolean} ownersOnly True if this argument is only allowed to be provided by owners set in the config. If the command itself is `ownersOnly`, set this property to `true` as well.
+ */
+
 
 /**
  * Constructor - Initializes the commandHandler which allows you to integrate core commands into your plugin or add new commands from your plugin.
@@ -30,56 +50,68 @@ const CommandHandler = function(controller) {
     this.controller = controller;
     this.data       = controller.data;
 
-    this.commands = []; // Array of objects, where each object represents a command
+    /**
+     * Array of objects, where each object represents a registered command
+     * @type {Array.<Command>}
+     */
+    this.commands = [];
 
 };
 
 
 /**
  * Internal: Imports core commands on startup
+ * @returns {Promise.<void>} Resolved when all commands have been imported
  */
 CommandHandler.prototype._importCoreCommands = function() {
+    return new Promise((resolve) => {
 
-    logger("info", "CommandHandler: Loading all core commands...", false, true, logger.animation("loading"));
+        logger("info", "CommandHandler: Loading all core commands...", false, true, logger.animation("loading"));
 
-    fs.readdir("./src/commands/core", (err, files) => {
+        fs.readdir("./src/commands/core", (err, files) => {
 
-        // Stop now on error or if nothing was found
-        if (err)               return logger("error", "Error while reading core dir: " + err, true);
-        if (files.length == 0) return logger("info", "No commands in ./core found!", false, true, logger.animation("loading"));
-
-        // Iterate over all files in this dir
-        files.forEach((e, i) => {
-            let thisFile;
-
-            // Try to load plugin
-            try {
-                // Load the plugin file
-                thisFile = require(`./core/${e}`);
-
-                // Push all exported commands in this file into the command list
-                Object.values(thisFile).every(val => this.commands.push(val));
-
-            } catch (err) {
-
-                logger("error", `Error loading core command '${e}'! ${err.stack}`, true);
+            // Stop now on error or if nothing was found
+            if (err) {
+                logger("error", "Error while reading core dir: " + err, true);
+                return resolve();
+            }
+            if (files.length == 0) {
+                logger("info", "No commands in ./core found!", false, true, logger.animation("loading"));
+                return resolve();
             }
 
-            if (i + 1 == files.length) logger("info", `CommandHandler: Successfully loaded ${this.commands.length} core commands!`, false, true, logger.animation("loading"));
-        });
-    });
+            // Iterate over all files in this dir
+            files.forEach((e, i) => {
+                let thisFile;
 
+                // Try to load plugin
+                try {
+                    // Load the plugin file
+                    thisFile = require(`./core/${e}`);
+
+                    // Push all exported commands in this file into the command list
+                    Object.values(thisFile).every(val => this.commands.push(val));
+
+                } catch (err) {
+
+                    logger("error", `Error loading core command '${e}'! ${err.stack}`, true);
+                }
+
+                if (i + 1 == files.length) {
+                    logger("info", `CommandHandler: Successfully loaded ${this.commands.length} core commands!`, false, true, logger.animation("loading"));
+                    resolve();
+                }
+            });
+        });
+
+    });
 };
 
 
 /**
  * Registers a new command during runtime
- * @param {Object} command The command object to register
- * @param {[String]} command.names All names that should trigger this command
- * @param {String} command.description Description of what this command does
- * @param {Boolean} command.ownersOnly Set to true to only allow owners to use this command.
- * @param {function(CommandHandler, Array, String, function(object, object, string), Object, Object)} command.run Function that will be executed when the command runs. Arguments: commandHandler, args, steamID64, respondModule, context, resInfo
- * @returns true if the command was successfully registered, false otherwise
+ * @param {Command} command The command object to register
+ * @returns {boolean} true if the command was successfully registered, false otherwise
  */
 CommandHandler.prototype.registerCommand = function(command) {
 
@@ -116,8 +148,8 @@ CommandHandler.prototype.registerCommand = function(command) {
 
 /**
  * The name of the command to unregister during runtime
- * @param {String} commandName Name of the command to unregister
- * @returns true if the command was successfully unregistered, false otherwise
+ * @param {string} commandName Name of the command to unregister
+ * @returns {boolean} `true` if the command was successfully unregistered, `false` otherwise
  */
 CommandHandler.prototype.unregisterCommand = function(commandName) {
 
@@ -142,13 +174,13 @@ CommandHandler.prototype.unregisterCommand = function(commandName) {
 
 /**
  * Finds a loaded command by name and runs it
- * @param {String} name The name of the command
+ * @param {string} name The name of the command
  * @param {Array} args Array of arguments that will be passed to the command
- * @param {Number} steamID64 SteamID64 of the requesting user which is used to check for ownerOnly and will be passed to the command
- * @param {function(object, object, string)} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
- * @param {Object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
- * @param {Object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Please also include a "cmdprefix" key & value pair if your command handler uses a prefix other than "!".
- * @returns `true` if command was found, `false` if not
+ * @param {number} steamID64 SteamID64 of the requesting user which is used to check for ownerOnly and will be passed to the command
+ * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+ * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+ * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Please also include a "cmdprefix" key & value pair if your command handler uses a prefix other than "!".
+ * @returns {boolean} `true` if command was found, `false` if not
  */
 CommandHandler.prototype.runCommand = function(name, args, steamID64, respondModule, context, resInfo) {
 

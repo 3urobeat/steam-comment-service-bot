@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 19:05:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -28,7 +28,7 @@ const SessionHandler = require("../sessions/sessionHandler.js");
  * Constructor - Initializes an object which represents a user steam account
  * @class
  * @param {Controller} controller Reference to the controller object
- * @param {Number} index The index of this account in the logininfo object
+ * @param {number} index The index of this account in the logininfo object
  */
 const Bot = function(controller, index) {
 
@@ -46,7 +46,7 @@ const Bot = function(controller, index) {
 
     /**
      * Login index of this bot account
-     * @type {Number}
+     * @type {number}
      */
     this.index = index;
 
@@ -58,7 +58,7 @@ const Bot = function(controller, index) {
 
     /**
      * SteamID64's to ignore in the friendMessage event handler. This is used by readChatMessage() to prevent duplicate responses.
-     * @type {Array.<string>}
+     * @type {string[]}
      */
     this.friendMessageBlock = [];
 
@@ -104,6 +104,7 @@ const Bot = function(controller, index) {
     this.community = new SteamCommunity({ request: request.defaults({ "proxy": this.loginData.proxy }) }); // Pass proxy to community library as well
 
     // Load my library patches
+    require("../libraryPatches/CSteamSharedFile.js");
     require("../libraryPatches/profile.js");
     require("../libraryPatches/sharedfiles.js");
     require("../libraryPatches/helpers.js");
@@ -175,9 +176,9 @@ module.exports = Bot;
 
 /**
  * Checks if user is blocked, has an active cooldown for spamming or isn't a friend
- * @param {Object} steamID64 The steamID64 of the message sender
- * @param {String} message The message string provided by steam-user friendMessage event
- * @returns {Boolean} `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
+ * @param {object} steamID64 The steamID64 of the message sender
+ * @param {string} message The message string provided by steam-user friendMessage event
+ * @returns {boolean} `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
  */
 Bot.prototype.checkMsgBlock = function(steamID64, message) {}; // eslint-disable-line
 
@@ -193,18 +194,18 @@ Bot.prototype.handleMissingGameLicenses = function() {};
 
 /**
  * Our commandHandler respondModule implementation - Sends a message to a Steam user
- * @param {Object} _this The Bot object context
- * @param {Object} resInfo Object containing information passed to command by friendMessage event
- * @param {String} txt The text to send
- * @param {Boolean} retry Internal: true if this message called itself again to send failure message
- * @param {Number} part Internal: Index of which part to send for messages larger than 750 chars
+ * @param {object} _this The Bot object context
+ * @param {object} resInfo Object containing information passed to command by friendMessage event
+ * @param {string} txt The text to send
+ * @param {boolean} retry Internal: true if this message called itself again to send failure message
+ * @param {number} part Internal: Index of which part to send for messages larger than 750 chars
  */
 Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry, part = 0) {}; // eslint-disable-line
 
 /**
  * Waits for a Steam Chat message from this user to this account and resolves their message content. The "normal" friendMessage event handler will be blocked for this user.
- * @param {String} steamID64 The steamID64 of the user to read a message from
- * @param {Number} timeout Time in ms after which the Promise will be resolved if user does not respond. Pass 0 to disable (not recommended)
+ * @param {string} steamID64 The steamID64 of the user to read a message from
+ * @param {number} timeout Time in ms after which the Promise will be resolved if user does not respond. Pass 0 to disable (not recommended)
  * @returns {Promise.<string|null>} Resolved with `String` on response or `null` on timeout.
  */
 Bot.prototype.readChatMessage = function(steamID64, timeout) {}; // eslint-disable-line

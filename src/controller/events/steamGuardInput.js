@@ -4,7 +4,7 @@
  * Created Date: 04.06.2023 12:00:48
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 19:36:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -22,7 +22,7 @@ const Controller = require("../controller");
 /**
  * Emits steamGuardInput event for bot & plugins
  * @param {Bot} bot Bot instance of the affected account
- * @param {function(string)} submitCode Function to submit a code. Pass an empty string to skip the account.
+ * @param {function(string): void} submitCode Function to submit a code. Pass an empty string to skip the account.
  */
 Controller.prototype._steamGuardInputEvent = function(bot, submitCode) {
 

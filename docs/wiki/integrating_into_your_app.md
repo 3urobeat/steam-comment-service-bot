@@ -1,30 +1,24 @@
 # Integrating into your own application
 [⬅️ Go back to wiki home](./)
 
-If you would like to integrate the comment command into your own application or you just don't want to deal with the Steam Chat then that is no problem! This can easily be done by pinging an URL.  
+&nbsp;
 
-Note: The current webserver will be replaced with a better one in version 2.14, featuring a full fledged frontend.
+This project provides you two ways to integrate it into your own application.  
+You can either write a **native plugin** or use the official **REST API** to communicate with another application.  
 
-First make sure that you started the bot at least once.  
-Go into your `plugins` and then `steam-comment-bot-webserver` folder, open `config.json` with a text editor, set `enabled` to `true` and save the file.
-Start the bot again. You should see this message when the bot is ready:  
-```
-[INFO] Webserver is enabled: Server is listening on port 3034.
-       Visit it in your browser: http://localhost:3034
-```  
+&nbsp;
 
-If you now reopen the `config.json` you should see a new value at `requestKey`. Copy it as we will need it in a minute.  
-Do not share this key! It is used to authenticate yourself to the webserver and allow comment requests to be made in the name of the first owner!  
+**Native plugin:**  
+A native plugin allows you to call functions provided by the bot, as well as reading & writing data directly.  
+This is the best way to add features to the bot directly. Check out the [creating plugins page](./creating_plugins.md) for a detailed walkthrough.  
 
-Visit the URL in your webbrowser and you will see a page that instructs you how to use it.  
-If your bot is running on a different machine you will need to provide the IP of that machine instead of localhost but I will assume that you know basic networking here. To be able to reach the URL from outside your private network you will need to allow port 3034 in your router's settings and provide your public IP instead of localhost but this should also be basic networking knowledge.  
-I however do not recommend exposing this port without any further security measures as I can't guarantee for any security here whatsoever!  
+&nbsp;
 
-Requesting comments is very easy now. Just ping the `/comment` page with the required query parameters shown on the page you just opened and the webserver will respond with a HTTP status code and a message.  
-Webserver comment requests will always be credited to the first owner set in the config.  
+**REST API:**  
+The REST API is an official web server plugin developed by [DerDeathraven](https://github.com/DerDeathraven). It is shipped with this project by default.  
+It uses this RPC style pattern `https://localhost:4000/rpc/${Class}.${Method}?${params}` to easily call various methods.
 
-Example:  
-`http://localhost:3034/comment?n=5&id=76561198260031749&key=pc90qtmzfk`  
+This is the best way to get data from the bot and run commands from another, completely detached application.  
+For an example, check out the official [Web UI project](https://github.com/DerDeathraven/steam-comment-service-bot-frontend) which is also made by [DerDeathraven](https://github.com/DerDeathraven)!
 
-This will request 5 comments for the steam profile `76561198260031749`.  
-You can of course also provide group or sharedfile IDs here.
+The full API documentation and a TS SDK file can be found on the [plugin project page](https://github.com/DerDeathraven/steam-comment-bot-rest-api).

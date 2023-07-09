@@ -4,7 +4,7 @@
  * Created Date: 26.02.2022 16:54:03
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 20:12:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -31,7 +31,12 @@ module.exports.run = () => {
         // Specify which files and folders we can ignore
         const dontCopy = [".git", ".github", "node_modules", "backup"];
 
-        // This but slightly modified - Thanks: https://stackoverflow.com/a/26038979/12934162
+        /**
+         * Copy everything in a folder including its subpaths - Thanks (modified): https://stackoverflow.com/a/26038979/12934162
+         * @param {string} src From path
+         * @param {string} dest To path
+         * @param {boolean} firstCall Set to `true` on first call, will be set to `false` on recursive call
+         */
         function copyFolderRecursiveSync(src, dest, firstCall) {
             let files = [];
 

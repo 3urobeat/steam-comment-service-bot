@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 22:26:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -14,12 +14,10 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 const fs = require("fs");
 const { default: Nedb } = require("@seald-io/nedb"); // eslint-disable-line
 
 const Controller = require("../controller/controller.js"); // eslint-disable-line
-
 
 /**
  * Constructor - The dataManager system imports, checks, handles errors and provides a file updating service for all configuration files
@@ -27,7 +25,6 @@ const Controller = require("../controller/controller.js"); // eslint-disable-lin
  * @param {Controller} controller Reference to the controller object
  */
 const DataManager = function (controller) {
-
     /**
      * Reference to the controller object
      * @type {Controller}
@@ -45,44 +42,44 @@ const DataManager = function (controller) {
 
     /**
      * Stores all `config.json` settings.
-     * @type {Object.<string, any>}
+     * @type {{[key: string]: any}}
      */
     this.config = {};
 
     /**
      * Stores all `advancedconfig.json` settings.
-     * @type {Object.<string, any>}
+     * @type {{[key: string]: any}}
      */
     this.advancedconfig = {};
 
     /**
      * Stores all language strings used for responding to a user.
      * All default strings have already been replaced with corresponding matches from `customlang.json`.
-     * @type {Object.<string, string>}
+     * @type {{[key: string]: string}}
      */
     this.lang = {};
 
     /**
      * Stores all quotes used for commenting provided via the `quotes.txt` file.
-     * @type {Array<String>}
+     * @type {Array.<string>}
      */
     this.quotes = [];
 
     /**
      * Stores all proxies provided via the `proxies.txt` file.
-     * @type {Array<String>}
+     * @type {Array.<string>}
      */
     this.proxies = [];
 
     /**
      * Stores IDs from config files converted at runtime and backups for all config & data files.
-     * @type {{ ownerid: Array<String>, botsgroup: string, botsgroupid: string, configgroup: string, configgroup64id: string, ownerlinkid: string, botaccid: Array<String>, configjson: {}, advancedconfigjson: {}, datajson: {} }}
+     * @type {{ ownerid: Array.<string>, botsgroup: string, botsgroupid: string, configgroup: string, configgroup64id: string, ownerlinkid: string, botaccid: Array.<string>, pluginVersions: {[key: string]: string}, configjson: {}, advancedconfigjson: {}, datajson: {} }}
      */
     this.cachefile = {};
 
     /**
      * Stores the login information for every bot account provided via the `logininfo.json` or `accounts.txt` files.
-     * @type {Object.<string, { accountName: string, password: string, sharedSecret: string, steamGuardCode: null, machineName: string, deviceFriendlyName: string }>}
+     * @type {{[key: string]: { accountName: string, password: string, sharedSecret: string, steamGuardCode: null, machineName: string, deviceFriendlyName: string }}}
      */
     this.logininfo = {};
 
@@ -107,7 +104,6 @@ const DataManager = function (controller) {
      */
     this.tokensDB = {};
 
-
     // Dynamically load all helper files
     const loadHelpersFromFolder = (folder) => {
         fs.readdirSync(folder).forEach(async (file) => {
@@ -122,7 +118,6 @@ const DataManager = function (controller) {
 
     loadHelpersFromFolder("./src/dataManager");
     loadHelpersFromFolder("./src/dataManager/helpers");
-
 };
 
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
@@ -134,15 +129,55 @@ const DataManager = function (controller) {
 DataManager.prototype.checkData = function () {};
 
 /**
- * Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
+ * Writes (all) files imported by DataManager back to the disk
  */
-DataManager.prototype.processData = async function () {};
+DataManager.prototype.writeAllFilesToDisk = function() {};
+
+/**
+ * Writes cachefile to cache.json on disk
+ */
+DataManager.prototype.writeCachefileToDisk = function() {};
+
+/**
+ * Writes datafile to data.json on disk
+ */
+DataManager.prototype.writeDatafileToDisk = function() {};
+
+/**
+ * Writes config to config.json on disk
+ */
+DataManager.prototype.writeConfigToDisk = function() {};
+
+/**
+ * Writes advancedconfig to advancedconfig.json on disk
+ */
+DataManager.prototype.writeAdvancedconfigToDisk = function() {};
+
+/**
+ * Writes logininfo to logininfo.json and accounts.txt on disk, depending on which of the files exist
+ */
+DataManager.prototype.writeLogininfoToDisk = function() {};
+
+/**
+ * Writes proxies to proxies.txt on disk
+ */
+DataManager.prototype.writeProxiesToDisk = function() {};
+
+/**
+ * Writes quotes to quotes.txt on disk
+ */
+DataManager.prototype.writeQuotesToDisk = function() {};
 
 /**
  * Internal: Loads all config & data files from disk and handles potential errors
  * @returns {Promise.<void>} Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
-DataManager.prototype._importFromDisk = function () {};
+DataManager.prototype._importFromDisk = async function () {};
+
+/**
+ * Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
+ */
+DataManager.prototype.processData = async function() {};
 
 /**
  * Gets a random quote
@@ -153,15 +188,15 @@ DataManager.prototype.getQuote = function (quotesArr = null) {}; // eslint-disab
 
 /**
  * Checks if a user ID is currently on cooldown and formats human readable lastRequestStr and untilStr strings.
- * @param {String} id ID of the user to look up
+ * @param {string} id ID of the user to look up
  * @returns {Promise.<{ lastRequest: number, until: number, lastRequestStr: string, untilStr: string }|null>} Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as String), `untilStr` (Wait until as String). If id wasn't found, `null` will be returned.
  */
 DataManager.prototype.getUserCooldown = function (id) {}; // eslint-disable-line
 
 /**
  * Updates or inserts timestamp of a user
- * @param {String} id ID of the user to update
- * @param {Number} timestamp Unix timestamp of the last interaction the user received
+ * @param {string} id ID of the user to update
+ * @param {number} timestamp Unix timestamp of the last interaction the user received
  */
 DataManager.prototype.setUserCooldown = function (id, timestamp) {}; // eslint-disable-line
 
@@ -172,21 +207,21 @@ DataManager.prototype._startExpiringTokensCheckInterval = () => {};
 
 /**
  * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active request was found and relogs them
- * @param {Object} expiring Object of botobject entries to ask user for
+ * @param {object} expiring Object of botobject entries to ask user for
  */
 DataManager.prototype._askForGetNewToken = function (expiring) {}; // eslint-disable-line
 
 /**
  * Retrieves the last processed request of anyone or a specific steamID64 from the lastcomment database
- * @param {String} steamID64 Search for a specific user
+ * @param {string} steamID64 Search for a specific user
  * @returns {Promise.<number>} Called with the greatest timestamp (Number) found
  */
 DataManager.prototype.getLastCommentRequest = function (steamID64 = null) {}; // eslint-disable-line
 
 /**
  * Decodes a JsonWebToken - https://stackoverflow.com/a/38552302
- * @param {String} token The token to decode
- * @returns JWT object on success, `null` on failure
+ * @param {string} token The token to decode
+ * @returns {object|null} JWT object on success, `null` on failure
  */
 DataManager.prototype.decodeJWT = function (token) {}; // eslint-disable-line
 
@@ -197,16 +232,20 @@ DataManager.prototype.refreshCache = function () {};
 
 /**
  * Internal: Helper function to try and restore backup of corrupted file from cache.json
- * @param {String} name Name of the file
- * @param {String} filepath Absolute path of the file on the disk
- * @param {Object} cacheentry Backup-Object of the file in cache.json
- * @param {String} onlinelink Link to the raw file in the GitHub repository
- * @param {Function} resolve Function to resolve the caller's promise
+ * @param {string} name Name of the file
+ * @param {string} filepath Absolute path of the file on the disk
+ * @param {object} cacheentry Backup-Object of the file in cache.json
+ * @param {string} onlinelink Link to the raw file in the GitHub repository
+ * @param {function(any): void} resolve Function to resolve the caller's promise
  */
 DataManager.prototype._restoreBackup = function (name, filepath, cacheentry, onlinelink, resolve) {}; // eslint-disable-line
 
 /**
  * Internal: Helper function to pull new file from GitHub
+ * @param {string} name Name of the file
+ * @param {string} filepath Full path, starting from project root with './'
+ * @param {function(any): void} resolve Your promise to resolve when file was pulled
+ * @param {boolean} noRequire Optional: Set to true if resolve() should not be called with require(file) as param
  */
 DataManager.prototype._pullNewFile = async function (name, filepath, resolve) {}; // eslint-disable-line
 

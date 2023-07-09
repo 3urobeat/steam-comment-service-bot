@@ -4,7 +4,7 @@
  * Created Date: 30.03.2023 21:05:13
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 04.07.2023 19:36:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -22,7 +22,7 @@ const Controller = require("../controller");
 /**
  * Runs internal statusUpdate event code and emits statusUpdate event for plugins
  * @param {Bot} bot Bot instance
- * @param {Bot.EStatus} newStatus The new status
+ * @param {Bot.EStatus} newStatus The new status of this bot
  */
 Controller.prototype._statusUpdateEvent = function(bot, newStatus) {
     let oldStatus = bot.status;

@@ -4,7 +4,7 @@
  * Created Date: 22.02.2022 17:39:21
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 08.07.2023 00:36:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -21,10 +21,10 @@ const fs = require("fs");
 /**
  * Applies custom update rules for a few files (gets called by downloadUpdate.js)
  * @param {any} compatibilityfeaturedone Legacy param, is unused
- * @param {Object} oldconfig The old config from before the update
- * @param {Object} oldadvancedconfig The old advancedconfig from before the update
- * @param {Object} olddatafile The old datafile from before the update
- * @param {function} callback Legacy param, is unused
+ * @param {object} oldconfig The old config from before the update
+ * @param {object} oldadvancedconfig The old advancedconfig from before the update
+ * @param {object} olddatafile The old datafile from before the update
+ * @param {function(): void} callback Legacy param, is unused
  * @returns {Promise.<void>} Resolves when we can proceed
  */
 module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadvancedconfig, olddatafile, callback) => { // eslint-disable-line
@@ -95,8 +95,8 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
         let newextdata = require(srcdir + "/data/data.json");
 
         // Transfer a few specific values to the new datafile if they exist to avoid errors
-        if (olddatafile.timesloggedin)       newextdata.timesloggedin       = olddatafile.timesloggedin;
-        if (olddatafile.totallogintime)      newextdata.totallogintime      = olddatafile.totallogintime;
+        if (olddatafile.timesloggedin)  newextdata.timesloggedin  = olddatafile.timesloggedin;
+        if (olddatafile.totallogintime) newextdata.totallogintime = olddatafile.totallogintime;
 
         // Write changes to file
         fs.writeFile(srcdir + "/data/data.json", JSON.stringify(newextdata, null, 4), (err) => { // Write the changed file

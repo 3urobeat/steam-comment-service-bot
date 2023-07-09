@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 05.07.2023 10:48:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -44,7 +44,10 @@ const execArgs = [ "--max-old-space-size=2048", "--optimize-for-size" ];
 
 /* -------- Now, provide functions for attaching/detaching event listeners to the parent and child process -------- */
 
-// Provide function to only once attach listeners to parent process
+/**
+ * Provide function to only once attach listeners to parent process
+ * @param {function(): void} callback Called on completion
+ */
 function attachParentListeners(callback) {
     let logafterrestart = [];
 
@@ -75,7 +78,7 @@ function attachParentListeners(callback) {
 
             require("./controller/helpers/npminteraction.js").reinstallAll(logger, (err, stdout) => { // eslint-disable-line
                 if (err) {
-                    logger("error", "I was unable to reinstall all modules. Please try running 'npm install' manually. Error: " + err);
+                    logger("error", "I was unable to reinstall all modules. Please try running 'npm install --production' manually. Error: " + err);
                     process.exit(1);
                 } else {
                     // Logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
@@ -150,7 +153,10 @@ function attachParentListeners(callback) {
     callback();
 }
 
-// Provide function to detach parent process event listeners
+
+/**
+ * Provide function to detach parent process event listeners
+ */
 function detachParentListeners() {
     logger("info", "Detaching parent's event listeners...", false, true);
 
@@ -161,7 +167,10 @@ function detachParentListeners() {
     if (parentExitEvent) process.removeListener("exit", parentExitEvent);
 }
 
-// Provide function to attach listeners to make communicating with child possible
+
+/**
+ * Provide function to attach listeners to make communicating with child possible
+ */
 function attachChildListeners() {
     forkedprocess.on("message", (msg) => {
         logger("debug", "Received message from child: " + msg);
@@ -220,10 +229,10 @@ function attachChildListeners() {
 
 /**
  * Checks if the needed file exists and gets it if it doesn't
- * @param {String} file The file path (from project root) to check and get
- * @param {function} logger Your current logger function
- * @param {Boolean} norequire If set to true the function will return the path instead of importing it
- * @param {Boolean} force If set to true the function will skip checking if the file exists and overwrite it.
+ * @param {string} file The file path (from project root) to check and get
+ * @param {function(string, string): void} logger Your current logger function
+ * @param {boolean} norequire If set to true the function will return the path instead of importing it
+ * @param {boolean} force If set to true the function will skip checking if the file exists and overwrite it.
  * @returns {Promise.<undefined|string|object>} Resolves when file was successfully loaded
  */
 module.exports.checkAndGetFile = (file, logger, norequire = false, force = false) => {
@@ -234,7 +243,9 @@ module.exports.checkAndGetFile = (file, logger, norequire = false, force = false
             return;
         }
 
-        // Function that will download a new file, test it and resolve/reject promise
+        /**
+         * Function that will download a new file, test it and resolve/reject promise
+         */
         function getNewFile() {
             // Determine branch
             let branch = "master"; // Default to master
@@ -349,7 +360,7 @@ module.exports.run = () => {
 
 /**
  * Restart the application
- * @param {Object} args The argument object that will be passed to `controller.restartargs()`
+ * @param {object} args The argument object that will be passed to `controller.restartargs()`
  */
 module.exports.restart = async (args) => {
     attachParentListeners(() => {

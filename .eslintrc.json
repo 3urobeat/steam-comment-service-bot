@@ -18,6 +18,9 @@
     "parserOptions": {
         "ecmaVersion": 11
     },
+    "plugins": [
+        "jsdoc"
+    ],
     "rules": {
         "no-var": "error",
         "no-redeclare": "off",
@@ -37,7 +40,23 @@
         "semi-spacing": "error",
         "semi-style": ["error", "last"],
         "quotes": ["error", "double", { "avoidEscape": true }],
-        "spaced-comment": "warn"
+        "spaced-comment": "warn",
+
+        // JsDoc - https://github.com/gajus/eslint-plugin-jsdoc
+        "jsdoc/check-alignment": "warn",
+        "jsdoc/check-indentation": "warn",
+        "jsdoc/check-types": "warn",
+        "jsdoc/informative-docs": "warn",
+        "jsdoc/require-asterisk-prefix": "warn",
+        "jsdoc/require-description": "warn",
+        "jsdoc/require-jsdoc": "warn",
+        "jsdoc/require-param": "warn",
+        "jsdoc/require-param-name": "warn",
+        "jsdoc/valid-types": "warn",
+        //"jsdoc/require-returns": "warn", // Always requires @return, even when function does not return something
+        "jsdoc/require-returns-type": "warn",
+        //"jsdoc/require-returns-check": "warn", // Unnecessary when require-returns above is disabled
+        "jsdoc/require-returns-description": "warn"
     },
     "ignorePatterns": ["src/libraryPatches/*"]
 }
