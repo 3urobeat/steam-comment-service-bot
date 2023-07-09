@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 06.07.2023 22:28:04
+ * Last Modified: 08.07.2023 00:47:49
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -68,7 +68,7 @@ const Controller = function() {
          * It is used by the steamChatInteraction helper but can be used in plugins as well.
          * @param {string} txt The string to cut
          * @param {number} limit Maximum length for each part. The function will attempt to cut txt into parts that don't exceed this amount.
-         * @param {Array} cutChars Optional: Custom chars to search after for cutting string in parts. Default: [" ", "\n", "\r"]
+         * @param {Array.<string>} cutChars Optional: Custom chars to search after for cutting string in parts. Default: [" ", "\n", "\r"]
          * @param {number} threshold Optional: Maximum amount that limit can be reduced to find the last space or line break. If no match is found within this limit a word will be cut. Default: 15% of total length
          * @returns {Array} Returns all parts of the string in an array
          */

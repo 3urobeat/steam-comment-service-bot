@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:30:48
+ * Last Modified: 09.07.2023 13:31:23
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -23,7 +23,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Array} args The command arguments
  * @param {string} requesterSteamID64 The steamID64 of the requesting user
- * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+ * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @param {function(string): void} respond The shortened respondModule call
  * @returns {Promise.<{ maxRequestAmount: number, commentcmdUsage: string, numberOfComments: number, profileID: string, idType: string, quotesArr: Array.<string> }>} Resolves promise with object containing all relevant data when done
  */
