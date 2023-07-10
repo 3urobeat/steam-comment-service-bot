@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 07.07.2023 15:32:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -46,7 +46,7 @@ DataManager.prototype.checkData = function() {
         // Filter all invalid ownerids which got replaced with null by processData()
         if (this.cachefile.ownerid.filter(e => e != null).length == 0) {
             logWarn("error", "Error: You did not set at least one valid ownerid in config.json! Aborting!");
-            return reject("no-ownerid-found");
+            return reject(new Error("No ownerid found!"));
         }
 
 
@@ -90,7 +90,7 @@ DataManager.prototype.checkData = function() {
 
         if (Object.keys(this.logininfo).length == 0) { // Check real quick if logininfo is empty
             logWarn("error", `${logger.colors.fgred}Your accounts.txt or logininfo.json file doesn't seem to contain any valid login credentials! Aborting...`, true);
-            return reject("no-logininfo-found");
+            return reject(new Error("No logininfo found!"));
         }
         if (this.config.maxOwnerComments < 1) {
             logWarn("info", `${logger.colors.fgred}Your maxOwnerComments value in config.json can't be smaller than 1! Automatically setting it to 1...`, true);
@@ -105,14 +105,14 @@ DataManager.prototype.checkData = function() {
         }
         if (this.config.commentdelay * maxCommentsOverall > 2147483647) { // Check for 32-bit integer limit for commentcmd timeout
             logWarn("error", `${logger.colors.fgred}Your maxComments and/or maxOwnerComments and/or commentdelay value in the config are too high.\n        Please lower these values so that 'commentdelay * maxComments' is not bigger than 2147483647 (32-bit integer limit).\n\nThis will otherwise cause an error when trying to comment. Aborting...\n`, true);
-            return reject("commentdelay-times-maxcomments-exceeds-32bit-limit");
+            return reject(new Error("Commentdelay times maxcomments exceeds 32bit integer limit!"));
         }
         if (this.config.randomizeAccounts && Object.keys(this.logininfo).length <= 5 && maxCommentsOverall > Object.keys(this.logininfo).length * 2) {
             logWarn("warn", `${logger.colors.fgred}I wouldn't recommend using randomizeAccounts with 5 or less accounts when each account can/has to comment multiple times. The chance of an account getting a cooldown is higher.\n        Please make sure your commentdelay is set adequately to reduce the chance of this happening.`, true);
         }
         if (this.advancedconfig.loginDelay < 500) { // Don't allow a logindelay below 500ms
             logWarn("error", `${logger.colors.fgred}I won't allow a logindelay below 500ms as this will probably get you blocked by Steam nearly instantly. I recommend setting it to 2500.\n        If you are using one proxy per account you might try setting it to 500 (on your own risk!). Aborting...`, true);
-            return reject("logindelay-below-500ms");
+            return reject(new Error("Logindelay is set below 500ms!"));
         }
         if (this.advancedconfig.lastQuotesSize >= this.quotes) { // Force clear lastQuotes array if we have less or equal amount of quotes to choose from than lastQuotesSize to avoid infinite loop
             logWarn("warn", "lastQuoteSize in 'advancedconfig.json' is greater or equal than the amount of quotes found in 'quotes.txt'. I'm therefore unable to filter recently used quotes when choosing a new one!", true);

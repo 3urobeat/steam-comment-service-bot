@@ -398,7 +398,7 @@ Controller.prototype.checkLastcommentDB = function(bot) {}; // eslint-disable-li
 /**
  * Checks the remaining space on the friendlist of a bot account, sends a warning message if it is less than 10 and force unfriends oldest lastcomment db user to always keep room for 1 friend.
  * @param {Bot} bot Bot object of the account to check
- * @param {function(number|null): void} [callback] Called with `remaining` (Number) on success or `null` on failure
+ * @param {function(number|null): void} callback Called with `remaining` (Number) on success or `null` on failure
  */
 Controller.prototype.friendListCapacityCheck = function(bot, callback) {}; // eslint-disable-line
 
@@ -425,7 +425,7 @@ Controller.prototype._handleErrors = function() {} // eslint-disable-line
  * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation
  * @param {string} str The profileID argument provided by the user
  * @param {string} expectedIdType The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
- * @param {function(string|null, string|null, string|null): void} [callback] Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
+ * @param {function(string|null, string|null, string|null): void} callback Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
  */
 Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) => {} // eslint-disable-line
 

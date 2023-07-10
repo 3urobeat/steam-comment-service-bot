@@ -1234,9 +1234,9 @@ declare function runCompatibility(controller: Controller): Promise<void | null>;
  * @param datafile - The current `data.json` file from the DataManager
  * @param branch - Which branch you want to check. Defaults to the current branch set in `data.json`
  * @param forceUpdate - If true an update will be forced, even if disableAutoUpdate is true or the newest version is already installed
- * @param [callback] - Called with `updateFound` (Boolean) and `data` (Object) on completion. `updatefound` will be false if the check should fail. `data` includes the full data.json file found online.
+ * @param callback - Called with `updateFound` (Boolean) and `data` (Object) on completion. `updatefound` will be false if the check should fail. `data` includes the full data.json file found online.
  */
-declare function check(datafile: any, branch: string, forceUpdate: boolean, callback?: (...params: any[]) => any): void;
+declare function check(datafile: any, branch: string, forceUpdate: boolean, callback: (...params: any[]) => any): void;
 
 /**
  * Run the application. This function is called by start.js
@@ -1249,10 +1249,10 @@ declare function run(): void;
  * @param oldconfig - The old config from before the update
  * @param oldadvancedconfig - The old advancedconfig from before the update
  * @param olddatafile - The old datafile from before the update
- * @param [callback] - Legacy param, is unused
+ * @param callback - Legacy param, is unused
  * @returns Resolves when we can proceed
  */
-declare function customUpdateRules(compatibilityfeaturedone: any, oldconfig: any, oldadvancedconfig: any, olddatafile: any, callback?: (...params: any[]) => any): Promise<void>;
+declare function customUpdateRules(compatibilityfeaturedone: any, oldconfig: any, oldadvancedconfig: any, olddatafile: any, callback: (...params: any[]) => any): Promise<void>;
 
 /**
  * Downloads all files from the repository and installs them

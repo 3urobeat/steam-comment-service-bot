@@ -52,7 +52,7 @@ Controller.prototype.checkLastcommentDB = function(bot) {
 /**
  * Checks the remaining space on the friendlist of a bot account, sends a warning message if it is less than 10 and force unfriends oldest lastcomment db user to always keep room for 1 friend.
  * @param {Bot} bot Bot object of the account to check
- * @param {function(number|null): void} [callback] Called with `remaining` (Number) on success or `null` on failure
+ * @param {function(number|null): void} callback Called with `remaining` (Number) on success or `null` on failure
  */
 Controller.prototype.friendListCapacityCheck = function(bot, callback) {
     try {

@@ -1,6 +1,6 @@
 {
-    "version": "21304",
-    "versionstr": "2.13.4",
+    "version": "21305",
+    "versionstr": "2.13.5",
     "branch": "beta-testing",
     "filetostart": "./src/starter.js",
     "filetostarturl": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/starter.js",
@@ -8,7 +8,7 @@
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/3urobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://paypal.me/3urobeat",
     "firststart": true,
     "compatibilityfeaturedone": false,
-    "whatsnew": "Added REST API plugin @DerDeathraven, added proper handling of >50 missing licenses, fixed error when acc looses connection during request, fixed non-profile behaviour of !failed & !abort for non-owners and more.",
+    "whatsnew": "Improved plugin system and other parts related to it, (potentially) fixed getting sharedfile error, improved code quality, improved a few wiki pages and minor other changes and fixes.",
     "timesloggedin": 0,
     "totallogintime": 0
 }

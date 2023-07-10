@@ -9,6 +9,7 @@
 - [2.13.2](#2.13.2)
 - [2.13.3](#2.13.3)
 - [2.13.4](#2.13.4)
+- [2.13.5](#2.13.5)
   
 &nbsp;
 
@@ -366,3 +367,35 @@ Commit: [24984d6](https://github.com/3urobeat/steam-comment-service-bot/commit/2
 - Minor other changes
 
 Commit: [829c387](https://github.com/3urobeat/steam-comment-service-bot/commit/829c387)
+
+&nbsp;
+
+<a id="2.13.5"></a>
+
+## **2023-07-09, Version 2.13.5**, co-author [@DerDeathraven](https://github.com/DerDeathraven)
+**Additions:**
+- Aggregate old config files for plugins [@DerDeathraven](https://github.com/DerDeathraven) [#188](https://github.com/3urobeat/steam-comment-service-bot/pull/188)
+- Added arguments documentation to all commands
+- Added command descriptions from wiki to all commands
+- Added data export functions to DataManager to write all data files back to the disk
+- Added JsDoc eslint rules and enforced them
+- Added Command and CommandArg typedef in CommandHandler
+
+**Fixes:**
+- Potentially fixed SteamCommunity library scraping sharedfile error caused by non-English page being returned by Steam
+- Fixed reload not clearing plugin cache when using 'npm link' [@DerDeathraven](https://github.com/DerDeathraven) [#192](https://github.com/3urobeat/steam-comment-service-bot/pull/192)
+- Fixed reload not clearing plugin cache of subfolders
+- Fixed plugins reading core commands on load getting an empty array because `_importCoreCommands()` wasn't being awaited
+
+**Changes:**
+- Wiki: Updated Integrating into your app and Creating Plugins [@DerDeathraven](https://github.com/DerDeathraven) [#189](https://github.com/3urobeat/steam-comment-service-bot/pull/189)
+- Wiki: Rewrote Steam Limitations page, rewrote Integrating into your app page, updated various command descriptions, added missing step to npm link explanation and more misc improvements
+- Plugin data handling functions will now throw errors on missing parameters
+- Data Check will now throw errors instead of rejecting with a string
+- Cleaned up a few unnecessarily nested promises
+- Enforced lowercase primitive types in JsDocs
+- Updated every mention of my old username
+- Updated dependencies
+- Minor other changes
+
+Commit: [](https://github.com/3urobeat/steam-comment-service-bot/commit/)
