@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 09:33:05
+ * Last Modified: 10.07.2023 09:36:42
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -30,7 +30,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         let steamID = msg.steamid_friend;
 
         let steamID64 = new SteamID(String(steamID)).getSteamID64();
-        let resInfo   = { userID: steamID64, cmdprefix: "!" }; // Object required for sendChatMessage(), our commandHandler respondModule implementation
+        let resInfo   = { userID: steamID64, cmdprefix: "!", fromSteamChat: true }; // Object required for sendChatMessage(), our commandHandler respondModule implementation
 
         // Check if another friendMessage handler is currently active
         if (this.friendMessageBlock.includes(steamID64)) return logger("debug", `[${this.logPrefix}] Ignoring friendMessage event from ${steamID64} as user is on friendMessageBlock list.`);

@@ -4,7 +4,7 @@
  * Created Date: 13.04.2023 17:58:23
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 17:51:07
+ * Last Modified: 10.07.2023 10:31:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -93,6 +93,8 @@ DataManager.prototype.getUserCooldown = function(id) {
  * @param {number} timestamp Unix timestamp of the last interaction the user received
  */
 DataManager.prototype.setUserCooldown = function(id, timestamp) {
+    if (!id) return logger("error", "CRITICAL: setUserCooldown was called without an ID! I am unable to apply a cooldown for this user!\n                              Not fixing this error will render the cooldown system useless and exposes your accounts to the risk of getting banned!");
+
     logger("debug", `DataManager setUserCooldown(): Updating lastcomment db entry for ${id} to ${timestamp}.`);
 
     this.lastCommentDB.update({ id: id }, { $set: { time: timestamp } }, { upsert: true }, (err) => {

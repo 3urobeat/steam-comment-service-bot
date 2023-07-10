@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 09.07.2023 17:31:22
+ * Last Modified: 10.07.2023 10:44:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -54,11 +54,15 @@ module.exports.upvote = {
     run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        let requesterSteamID64 = steamID64;
+        let requesterSteamID64 = resInfo.userID;
         let ownercheck         = commandHandler.data.cachefile.ownerid.includes(requesterSteamID64);
 
 
-        /* --------- Check for disabled cmd or if update is queued --------- */
+        /* --------- Various checks  --------- */
+        if (!resInfo.userID) {
+            respond(commandHandler.data.lang.nouserid); // Reject usage of command without an userID to avoid cooldown bypass
+            return logger("err", "The upvote command was called without resInfo.userID! Blocking the command as I'm unable to apply cooldowns, which is required for this command!");
+        }
         if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         if (commandHandler.controller.info.activeLogin)                 return respond(commandHandler.data.lang.activerelog);      // Bot is waiting for relog
         if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(commandHandler.data.lang.commandowneronly); // Command is restricted to owners only
@@ -241,11 +245,15 @@ module.exports.downvote = {
     run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        let requesterSteamID64 = steamID64;
+        let requesterSteamID64 = resInfo.userID;
         let ownercheck         = commandHandler.data.cachefile.ownerid.includes(requesterSteamID64);
 
 
-        /* --------- Check for disabled cmd or if update is queued --------- */
+        /* --------- Various checks  --------- */
+        if (!resInfo.userID) {
+            respond(commandHandler.data.lang.nouserid); // Reject usage of command without an userID to avoid cooldown bypass
+            return logger("err", "The downvote command was called without resInfo.userID! Blocking the command as I'm unable to apply cooldowns, which is required for this command!");
+        }
         if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         if (commandHandler.controller.info.activeLogin)                 return respond(commandHandler.data.lang.activerelog);      // Bot is waiting for relog
         if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(commandHandler.data.lang.commandowneronly); // Command is restricted to owners only

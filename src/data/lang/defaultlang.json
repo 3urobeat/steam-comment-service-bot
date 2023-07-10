@@ -45,7 +45,8 @@
     "usernotfriend": "Please add me before using a command!",
     "botnotready": "The bot is not completely started yet. Please wait a moment before using a command.",
     "commandnotfound": "I don't know that command. Type cmdprefixhelp for more info.",
-    "commandowneronly": "This command is only available for owners.\nIf you are the botowner, make sure you added your ownerid to the config.json.",
+    "commandowneronly": "This command is only available for owners.\nIf you are the botowner, make sure you added your ownerid to the config.json.\nIf this request originates from a plugin, make sure to pass the userID & ownerIDs parameters.",
+    "nouserid": "The command was called without a userID! Blocking the command as I'm unable to apply cooldowns, which is required for this command. This is a coding issue which must be fixed by a developer.",
 
     "invalidnumber": "This does not seem to be a valid number!\n\nCommand usage: cmdusage",
     "invalidprofileid": "This does not seem to be a valid ID or link or you provided the wrong ID type for this command!\nPlease make sure that you either provide a full link, only the vanity or only the ID, pointing to an existing profile, group or sharedfile.",

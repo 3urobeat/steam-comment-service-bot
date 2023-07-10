@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 09.07.2023 17:26:54
+ * Last Modified: 10.07.2023 09:48:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -157,7 +157,7 @@ CommandHandler.prototype.unregisterCommand = function(commandName) {
     let thisCmd = this.commands.find(e => e.names.includes(commandName));
 
     if (!thisCmd) {
-        logger("warn", `CommandHandler runCommand(): Command '${commandName}' was not found!`);
+        logger("warn", `CommandHandler unregisterCommand(): Command '${commandName}' was not found!`);
         return false;
     }
 
@@ -210,8 +210,17 @@ CommandHandler.prototype.runCommand = function(name, args, respondModule, contex
         thisCmd.ownersOnly = true;
     }
 
-    // If command is ownersOnly, check if user is included in owners array. If not, send error msg and return true to avoid caller sending a not found msg.
-    if (thisCmd.ownersOnly && !this.data.cachefile.ownerid.includes(steamID64)) {
+    // Display warning if a non Steam Chat userID was provided without a custom owner ID array. Permit usage of owner only parameters of non owner only commands.
+    if (resInfo.userID && !resInfo.fromSteamChat && (!resInfo.ownerIDs || resInfo.ownerIDs.length == 0)) {
+        logger("warn", `CommandHandler runCommand(): Command '${name}' was called with a non-SteamID without a custom ownerIDs array! *${logger.colors.fgred}This will BYPASS all owner checks, leading to unprotected access!${logger.colors.reset}*`);
+    }
+
+    // Get the correct ownerid array for this request
+    let owners = this.data.cachefile.ownerid;
+    if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
+
+    // If command is ownersOnly, check if user is included in owners array. If not, send error msg and return true to avoid caller sending a not found msg
+    if (thisCmd.ownersOnly && !owners.includes(resInfo.userID)) { // If no userID was provided this check will also trigger
         respondModule(context, resInfo, this.data.lang.commandowneronly);
         return true;
     }
