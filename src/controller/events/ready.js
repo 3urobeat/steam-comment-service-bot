@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 10.07.2023 09:33:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -152,7 +152,7 @@ Controller.prototype._readyEvent = function() {
     // Message all owners that are friends if firststart is true that the bot just updated itself
     if (this.data.datafile.firststart) {
         this.data.cachefile.ownerid.forEach((e) => {
-            if (!nonFriendOwners.includes(e)) this.main.sendChatMessage(this.main, { steamID64: e }, `I have updated myself to version ${this.data.datafile.versionstr}!\nWhat's new: ${this.data.datafile.whatsnew}`);
+            if (!nonFriendOwners.includes(e)) this.main.sendChatMessage(this.main, { userID: e }, `I have updated myself to version ${this.data.datafile.versionstr}!\nWhat's new: ${this.data.datafile.whatsnew}`);
         });
     }
 

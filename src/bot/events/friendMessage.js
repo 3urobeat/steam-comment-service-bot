@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 10.07.2023 09:33:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -30,7 +30,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         let steamID = msg.steamid_friend;
 
         let steamID64 = new SteamID(String(steamID)).getSteamID64();
-        let resInfo   = { steamID64: steamID64, cmdprefix: "!" }; // Object required for sendChatMessage(), our commandHandler respondModule implementation
+        let resInfo   = { userID: steamID64, cmdprefix: "!" }; // Object required for sendChatMessage(), our commandHandler respondModule implementation
 
         // Check if another friendMessage handler is currently active
         if (this.friendMessageBlock.includes(steamID64)) return logger("debug", `[${this.logPrefix}] Ignoring friendMessage event from ${steamID64} as user is on friendMessageBlock list.`);
@@ -90,7 +90,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         let cont = message.slice(1).split(" "); // Remove prefix and split
         let args = cont.slice(1);               // Remove cmd name to only get arguments
 
-        let success = this.controller.commandHandler.runCommand(cont[0].toLowerCase(), args, steamID64, this.sendChatMessage, this, resInfo);
+        let success = this.controller.commandHandler.runCommand(cont[0].toLowerCase(), args, this.sendChatMessage, this, resInfo);
 
         if (!success) this.sendChatMessage(this, resInfo, this.controller.data.lang.commandnotfound.replace(/cmdprefix/g, resInfo.cmdprefix)); // Send cmd not found msg if runCommand() returned false
     });

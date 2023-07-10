@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 09.07.2023 13:28:16
+ * Last Modified: 09.07.2023 17:26:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -220,7 +220,7 @@ CommandHandler.prototype.runCommand = function(name, args, respondModule, contex
     if (!resInfo || !resInfo.cmdprefix) resInfo["cmdprefix"] = "!";
 
     // Run command if one was found
-    thisCmd.run(this, args, steamID64, respondModule, context, resInfo);
+    thisCmd.run(this, args, respondModule, context, resInfo);
 
     // Return true if command was found
     return true;

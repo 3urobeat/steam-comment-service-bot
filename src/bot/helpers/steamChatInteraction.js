@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 08.07.2023 00:44:35
+ * Last Modified: 10.07.2023 09:29:15
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -39,7 +39,7 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
     if (!txt) return logger("warn", "sendChatMessage() was called without any message content! Ignoring call...");
     if (typeof txt !== "string") return logger("warn", "sendChatMessage() was called with txt that isn't a string! Ignoring call...");
 
-    let steamID64 = resInfo.steamID64;
+    let steamID64 = resInfo.userID;
 
     // Allow resInfo to overwrite char limit of 750 chars
     let limit = 750;

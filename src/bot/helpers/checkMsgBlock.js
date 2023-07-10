@@ -4,7 +4,7 @@
  * Created Date: 20.03.2023 12:46:47
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 17:55:45
+ * Last Modified: 10.07.2023 09:33:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -40,7 +40,7 @@ Bot.prototype.checkMsgBlock = function(steamID64, message) {
     if (lastmessage[steamID64] && lastmessage[steamID64][0] + this.controller.data.advancedconfig.commandCooldown > Date.now() && lastmessage[steamID64][1] > 5) return true; // Just don't respond
 
     if (lastmessage[steamID64] && lastmessage[steamID64][0] + this.controller.data.advancedconfig.commandCooldown > Date.now() && lastmessage[steamID64][1] > 4) { // Inform the user about the cooldown
-        this.sendChatMessage({ steamID: steamID64, prefix: "/me" }, this.controller.data.lang.userspamblock);
+        this.sendChatMessage({ userID: steamID64, prefix: "/me" }, this.controller.data.lang.userspamblock);
         logger("info", `${steamID64} has been blocked for 90 seconds for spamming.`);
 
         lastmessage[steamID64][0] += 90000;
@@ -54,7 +54,7 @@ Bot.prototype.checkMsgBlock = function(steamID64, message) {
 
     // Deny non-friends the use of any command
     if (this.user.myFriends[steamID64] != 3) {
-        this.sendChatMessage({ steamID: steamID64, prefix: "/me" }, this.controller.data.lang.usernotfriend);
+        this.sendChatMessage({ userID: steamID64, prefix: "/me" }, this.controller.data.lang.usernotfriend);
         return true;
     }
 
