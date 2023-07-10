@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 09.07.2023 17:30:33
+ * Last Modified: 10.07.2023 12:26:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -45,23 +45,28 @@ module.exports.abort = {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
+        let userID = resInfo.userID;
+
+        // Check for no userID and no id param as both can be missing if called from outside the Steam Chat
+        if (!userID && !args[0]) return respond(commandHandler.data.lang.noidparam);
+
         commandHandler.controller.handleSteamIdResolving(args[0], null, (err, res) => {
             if (res) {
                 let activeReqEntry = commandHandler.controller.activeRequests[res];
 
                 // Refuse if user is not an owner and the request is not from them
-                if (!commandHandler.data.cachefile.ownerid.includes(steamID64) && (activeReqEntry && activeReqEntry.requestedby != steamID64)) return respond(commandHandler.data.lang.commandowneronly);
+                if (!commandHandler.data.cachefile.ownerid.includes(resInfo.userID) && (activeReqEntry && activeReqEntry.requestedby != resInfo.userID)) return respond(commandHandler.data.lang.commandowneronly);
                     else logger("debug", "CommandHandler abort cmd: Non-owner provided ID as parameter but is requester of that request. Permitting abort...");
 
-                steamID64 = res; // If user provided an id as argument then use that instead of their id
+                userID = res; // If user provided an id as argument then use that instead of their id
             }
 
-            if (!commandHandler.controller.activeRequests[steamID64] || commandHandler.controller.activeRequests[steamID64].status != "active") return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.abortcmdnoprocess); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+            if (!commandHandler.controller.activeRequests[userID] || commandHandler.controller.activeRequests[userID].status != "active") return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.abortcmdnoprocess); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
             // Set new status for this request
-            commandHandler.controller.activeRequests[steamID64].status = "aborted";
+            commandHandler.controller.activeRequests[userID].status = "aborted";
 
-            logger("info", `Aborting active process for ID ${steamID64}...`);
+            logger("info", `Aborting active process for ID ${userID}...`);
             respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.abortcmdsuccess); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         });
     }
@@ -104,15 +109,20 @@ module.exports.resetCooldown = {
 
         } else {
 
+            let userID = resInfo.userID;
+
+            // Check for no userID and no id param as both can be missing if called from outside the Steam Chat
+            if (!userID && !args[0]) return respond(commandHandler.data.lang.noidparam);
+
             commandHandler.controller.handleSteamIdResolving(args[0], "profile", (err, res) => {
                 if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
-                if (res) steamID64 = res; // Change steamID64 to the provided id
+                if (res) userID = res; // Change steamID64 to the provided id
 
                 if (commandHandler.data.config.commentcooldown == 0) return respond(commandHandler.data.lang.resetcooldowncmdcooldowndisabled); // Is the cooldown enabled?
 
-                commandHandler.data.lastCommentDB.update({ id: steamID64 }, { $set: { time: Date.now() - (commandHandler.data.config.commentcooldown * 60000) } }, (err) => {
+                commandHandler.data.lastCommentDB.update({ id: userID }, { $set: { time: Date.now() - (commandHandler.data.config.commentcooldown * 60000) } }, (err) => {
                     if (err) return respond("Error updating database entry: " + err);
-                        else respond(commandHandler.data.lang.resetcooldowncmdsuccess.replace("profileid", steamID64.toString()));
+                        else respond(commandHandler.data.lang.resetcooldowncmdsuccess.replace("profileid", userID.toString()));
                 });
             });
         }
@@ -145,27 +155,32 @@ module.exports.failed = {
     run: (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
+        let userID = resInfo.userID;
+
+        // Check for no userID and no id param as both can be missing if called from outside the Steam Chat
+        if (!userID && !args[0]) return respond(commandHandler.data.lang.noidparam);
+
         commandHandler.controller.handleSteamIdResolving(args[0], null, (err, res) => {
             if (res) {
                 let activeReqEntry = commandHandler.controller.activeRequests[res];
 
                 // Refuse if user is not an owner and the request is not from them
-                if (!commandHandler.data.cachefile.ownerid.includes(steamID64) && (activeReqEntry && activeReqEntry.requestedby != steamID64)) return respond(commandHandler.data.lang.commandowneronly);
+                if (!commandHandler.data.cachefile.ownerid.includes(userID) && (activeReqEntry && activeReqEntry.requestedby != userID)) return respond(commandHandler.data.lang.commandowneronly);
                     else logger("debug", "CommandHandler failed cmd: Non-owner provided ID as parameter but is requester of that request. Permitting data retrieval...");
 
-                steamID64 = res; // If user provided an id as argument then use that instead of their id
+                userID = res; // If user provided an id as argument then use that instead of their id
             }
 
-            if (!commandHandler.controller.activeRequests[steamID64] || Object.keys(commandHandler.controller.activeRequests[steamID64].failed).length < 1) return respond(commandHandler.data.lang.failedcmdnothingfound);
+            if (!commandHandler.controller.activeRequests[userID] || Object.keys(commandHandler.controller.activeRequests[userID].failed).length < 1) return respond(commandHandler.data.lang.failedcmdnothingfound);
 
             // Get timestamp of request
-            let requestTime = new Date(commandHandler.controller.activeRequests[steamID64].until).toISOString().replace(/T/, " ").replace(/\..+/, "");
+            let requestTime = new Date(commandHandler.controller.activeRequests[userID].until).toISOString().replace(/T/, " ").replace(/\..+/, "");
 
             // Group errors and convert them to string using helper function
-            let failedcommentsstr = failedCommentsObjToString(commandHandler.controller.activeRequests[steamID64].failed);
+            let failedcommentsstr = failedCommentsObjToString(commandHandler.controller.activeRequests[userID].failed);
 
             // Get start of message from lang file and add data
-            let messagestart = commandHandler.data.lang.failedcmdmsg.replace("steamID64", steamID64).replace("requesttime", requestTime);
+            let messagestart = commandHandler.data.lang.failedcmdmsg.replace("steamID64", userID).replace("requesttime", requestTime);
 
             // Send message and limit to 500 chars as this call can cause many messages to be sent
             respondModule(context, { prefix: "/pre", charLimit: 500, ...resInfo }, messagestart + "\nc = Comment, b = Bot, p = Proxy\n\n" + failedcommentsstr); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
@@ -236,12 +251,15 @@ module.exports.mySessions = {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
         let str = "";
 
+        // Check for no userID as the default behavior might be unavailable when calling from outside of the Steam Chat
+        if (!resInfo.userID) return respond(commandHandler.data.lang.nouserid); // In this case the cmd doesn't have an ID param so send this message instead of noidparam
+
         if (Object.keys(commandHandler.controller.activeRequests).length > 0) { // Only loop through object if it isn't empty
             let objlength = Object.keys(commandHandler.controller.activeRequests).length; // Save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering
 
             Object.keys(commandHandler.controller.activeRequests).forEach((e, i) => {
                 if (Date.now() < commandHandler.controller.activeRequests[e].until + (commandHandler.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
-                    if (commandHandler.controller.activeRequests[e].requestedby == steamID64) str += `- Status: ${commandHandler.controller.activeRequests[e].status} | ${commandHandler.controller.activeRequests[e].amount} iterations with ${commandHandler.controller.activeRequests[e].accounts.length} accounts by ${commandHandler.controller.activeRequests[e].requestedby} for ${commandHandler.controller.activeRequests[e].type} ${Object.keys(commandHandler.controller.activeRequests)[i]}`;
+                    if (commandHandler.controller.activeRequests[e].requestedby == resInfo.userID) str += `- Status: ${commandHandler.controller.activeRequests[e].status} | ${commandHandler.controller.activeRequests[e].amount} iterations with ${commandHandler.controller.activeRequests[e].accounts.length} accounts by ${commandHandler.controller.activeRequests[e].requestedby} for ${commandHandler.controller.activeRequests[e].type} ${Object.keys(commandHandler.controller.activeRequests)[i]}`;
                 } else {
                     delete commandHandler.controller.activeRequests[e]; // Remove entry from object if it is finished to keep the object clean
                 }

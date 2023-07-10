@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 09:48:25
+ * Last Modified: 10.07.2023 12:04:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -180,7 +180,7 @@ CommandHandler.prototype.unregisterCommand = function(commandName) {
  * @property {Array.<string>} [ownerIDs] Can be provided to overwrite `config.ownerid` for owner privilege checks. Useful if you are implementing a different platform and so `userID` won't be a steamID64 (e.g. discord)
  * @property {number} [charLimit] Supported by the Steam Chat Message handler: Overwrites the default index from which response messages will be cut up into parts
  * @property {Array.<string>} [cutChars] Custom chars to search after for cutting string in parts to overwrite cutStringsIntelligently's default: [" ", "\n", "\r"]
- * @property {boolean} [fromSteamChat] Set to true if your command handler is receiving messages from the Steam Chat and so `userID` can be expected to be a `steamID64`. Will be used to enable command default behavior (e.g. commenting on the requester's profile)
+ * @property {boolean} [fromSteamChat] Set to true if your command handler is receiving messages from the Steam Chat and `userID` is therefore a `steamID64`. Will be used to enable command default behavior (e.g. commenting on the requester's profile)
  * @property {string} [prefix] Do not provide this argument, you'll receive it from commands: Steam Chat Message prefixes like /me. Can be ignored or translated to similar prefixes your platform might support
  */
 

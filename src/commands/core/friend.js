@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 09.07.2023 17:29:35
+ * Last Modified: 10.07.2023 12:16:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -115,14 +115,17 @@ module.exports.unfriend = {
 
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
-        // Unfriend message sender with all bot accounts if no id was provided
-        if (!args[0]) {
+        // Check for no args again as the default behavior from above might be unavailable when calling from outside of the Steam Chat
+        if (!args[0] && !resInfo.fromSteamChat) return respond(commandHandler.data.lang.noidparam);
+
+        // Unfriend message sender with all bot accounts if no id was provided and the command was called from the steam chat
+        if (!args[0] && resInfo.userID && resInfo.fromSteamChat) {
             respond(commandHandler.data.lang.unfriendcmdsuccess);
-            logger("info", `Removing friend ${steamID64} from all bot accounts...`);
+            logger("info", `Removing friend ${resInfo.userID} from all bot accounts...`);
 
             commandHandler.controller.getBots().forEach((e, i) => {
                 setTimeout(() => {
-                    e.user.removeFriend(new SteamID(steamID64));
+                    e.user.removeFriend(new SteamID(resInfo.userID));
                 }, 1000 * i);
             });
 

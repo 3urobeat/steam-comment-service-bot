@@ -4,7 +4,7 @@
  * Created Date: 13.04.2023 17:58:23
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 10:31:28
+ * Last Modified: 10.07.2023 12:47:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -35,7 +35,7 @@ DataManager.prototype.getUserCooldown = function(id) {
 
         this.lastCommentDB.findOne({ id: id }, (err, doc) => {
             if (!doc) { // Check if no entry was found and BAIL THE FUCK OUT
-                logger("warn", `User '${id}' has no lastComment database entry! Permitting request and hoping an entry will be inserted afterwards.\n                             If this warning appears multiple times for the same user you need to take action. Need help? https://github.com/3urobeat/steam-comment-service-bot/issues/new/choose`);
+                logger("warn", `User '${id}' has no lastComment database entry! Permitting request and hoping an entry will be inserted afterwards.\n                             If this warning appears multiple times for the same user you need to take action. Need help? https://github.com/3urobeat/steam-comment-service-bot/issues/new/choose\n                             If this warning is caused by a plugin for a userID from outside the Steam Chat for their first request you can ignore this warning as the behavior is to be expected.`);
                 return resolve(obj);
             }
 

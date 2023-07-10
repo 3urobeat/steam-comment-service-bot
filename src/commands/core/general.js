@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 09.07.2023 17:29:54
+ * Last Modified: 10.07.2023 12:02:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -89,7 +89,7 @@ module.exports.info = {
     run: (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        commandHandler.data.lastCommentDB.findOne({ id: steamID64 }, async (err, doc) => {
+        commandHandler.data.lastCommentDB.findOne({ id: resInfo.userID }, async (err, doc) => {
             let lastReq = await commandHandler.data.getLastCommentRequest();
 
             let userLastReq = "Never";
@@ -103,7 +103,7 @@ module.exports.info = {
                 >   'node.js' Version: ${process.version} | RAM Usage (RSS): ${Math.round(process.memoryUsage()["rss"] / 1024 / 1024 * 100) / 100} MB
                 >   Accounts: ${commandHandler.controller.getBots().length} | maxComments/owner: ${commandHandler.data.config.maxComments}/${commandHandler.data.config.maxOwnerComments} | delay: ${commandHandler.data.config.commentdelay}
                 |
-                >   Your steam64ID: ${steamID64}
+                >   Your ID: ${resInfo.userID} | From Steam Chat? ${resInfo.fromSteamChat ? "Yes" : "No"} | Owner? ${owners.includes(resInfo.userID) ? "Yes" : "No"}
                 >   Your last request: ${userLastReq}
                 >   Last processed request: ${(new Date(lastReq)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)
                 >   I have commented ${commandHandler.controller.info.commentCounter} times since my last restart and completed request!

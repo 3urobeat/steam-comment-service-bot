@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 09.07.2023 17:30:08
+ * Last Modified: 10.07.2023 12:20:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -39,12 +39,13 @@ module.exports.group = {
 
         if (commandHandler.data.config.yourgroup.length < 1 || !commandHandler.data.cachefile.configgroup64id) return respond(commandHandler.data.lang.groupcmdnolink); // No group info at all? stop.
 
-        if (commandHandler.data.cachefile.configgroup64id && Object.keys(commandHandler.controller.main.user.myGroups).includes(commandHandler.data.cachefile.configgroup64id)) {
-            commandHandler.controller.main.user.inviteToGroup(steamID64, commandHandler.data.cachefile.configgroup64id);
+        // Send user an invite if a group is set in the config and userID is a Steam ID by checking fromSteamChat
+        if (resInfo.userID && resInfo.fromSteamChat && commandHandler.data.cachefile.configgroup64id && Object.keys(commandHandler.controller.main.user.myGroups).includes(commandHandler.data.cachefile.configgroup64id)) {
+            commandHandler.controller.main.user.inviteToGroup(resInfo.userID, commandHandler.data.cachefile.configgroup64id);
             respond(commandHandler.data.lang.groupcmdinvitesent);
 
             if (commandHandler.data.cachefile.configgroup64id != "103582791464712227") { // https://steamcommunity.com/groups/3urobeatGroup
-                commandHandler.controller.main.user.inviteToGroup(steamID64, new SteamID("103582791464712227"));
+                commandHandler.controller.main.user.inviteToGroup(resInfo.userID, new SteamID("103582791464712227"));
             }
             return; // Id? send invite and stop
         }
