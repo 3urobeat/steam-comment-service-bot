@@ -4,7 +4,7 @@
  * Created Date: 02.06.2023 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 10:45:09
+ * Last Modified: 10.07.2023 12:59:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -54,8 +54,12 @@ module.exports.favorite = {
     run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
+        // Get the correct ownerid array for this request
+        let owners = commandHandler.data.cachefile.ownerid;
+        if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
+
         let requesterSteamID64 = resInfo.userID;
-        let ownercheck         = commandHandler.data.cachefile.ownerid.includes(requesterSteamID64);
+        let ownercheck         = owners.includes(requesterSteamID64);
 
 
         /* --------- Various checks  --------- */
@@ -240,8 +244,12 @@ module.exports.unfavorite = {
     run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
+        // Get the correct ownerid array for this request
+        let owners = commandHandler.data.cachefile.ownerid;
+        if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
+
         let requesterSteamID64 = resInfo.userID;
-        let ownercheck         = commandHandler.data.cachefile.ownerid.includes(requesterSteamID64);
+        let ownercheck         = owners.includes(requesterSteamID64);
 
 
         /* --------- Various checks  --------- */

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 09.07.2023 17:28:56
+ * Last Modified: 10.07.2023 12:58:49
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -49,9 +49,13 @@ module.exports.block = {
 
         if (!args[0]) return respond(commandHandler.data.lang.invalidprofileid);
 
+        // Get the correct ownerid array for this request
+        let owners = commandHandler.data.cachefile.ownerid;
+        if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
+
         commandHandler.controller.handleSteamIdResolving(args[0], "profile", (err, res) => {
             if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
-            if (commandHandler.data.cachefile.ownerid.includes(res)) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.idisownererror); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+            if (owners.includes(res)) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.idisownererror); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
             commandHandler.controller.getBots().forEach((e, i) => {
                 e.user.blockUser(new SteamID(res), (err) => { if (err) logger("error", `[Bot ${i}] Error blocking user ${res}: ${err}`); });

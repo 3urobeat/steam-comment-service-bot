@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 09.07.2023 13:31:23
+ * Last Modified: 10.07.2023 12:51:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -30,6 +30,10 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, resInfo, respond) => {
     return new Promise((resolve) => {
 
+        // Get the correct ownerid array for this request
+        let owners = commandHandler.data.cachefile.ownerid;
+        if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
+
         let maxRequestAmount = commandHandler.data.config.maxComments; // Set to default value and if the requesting user is an owner it gets changed below
         let numberOfComments = 0;
         let quotesArr        = commandHandler.data.quotes;
@@ -41,7 +45,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, resIn
         /* --------- Define command usage messages & maxRequestAmount for each user's privileges --------- */
         let commentcmdUsage;
 
-        if (commandHandler.data.cachefile.ownerid.includes(requesterSteamID64)) {
+        if (owners.includes(requesterSteamID64)) {
             maxRequestAmount = commandHandler.data.config.maxOwnerComments;
 
             if (maxRequestAmount > 1) commentcmdUsage = commandHandler.data.lang.commentcmdusageowner.replace(/cmdprefix/g, resInfo.cmdprefix).replace("maxRequestAmount", maxRequestAmount);
@@ -77,7 +81,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, resIn
 
             /* --------- Check profileid argument if it was provided --------- */
             if (args[1]) {
-                if (commandHandler.data.cachefile.ownerid.includes(requesterSteamID64) || args[1] == requesterSteamID64) { // Check if user is a bot owner or if he provided his own profile id
+                if (owners.includes(requesterSteamID64) || args[1] == requesterSteamID64) { // Check if user is a bot owner or if he provided his own profile id
                     let arg = args[1];
 
                     commandHandler.controller.handleSteamIdResolving(arg, null, (err, res, type) => {

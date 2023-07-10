@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 09:33:35
+ * Last Modified: 10.07.2023 13:10:14
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -134,7 +134,7 @@ Controller.prototype._lastcommentUnfriendCheck = function() {
                 this.getBots().forEach((f, j) => {
                     let thisbot = f.user;
 
-                    if (thisbot.myFriends[e.id] == 3 && !this.data.cachefile.ownerid.includes(e.id)) { // Check if the targeted user is still friend
+                    if (thisbot.myFriends[e.id] && thisbot.myFriends[e.id] == 3 && !this.data.cachefile.ownerid.includes(e.id)) { // Check if the targeted user is still friend and not an owner
                         if (j == 0) this.main.sendChatMessage(this.main, { userID: e.id }, this.data.lang.userforceunfriend.replace("unfriendtime", this.data.config.unfriendtime));
 
                         setTimeout(() => {
@@ -143,7 +143,8 @@ Controller.prototype._lastcommentUnfriendCheck = function() {
                         }, 1000 * j); // Delay every iteration so that we don't make a ton of requests at once (IP)
                     }
 
-                    if (!this.data.cachefile.ownerid.includes(e.id)) this.data.lastCommentDB.remove({ id: e.id }); // Entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
+                    // Disabled db cleanup as entries from plugins would be deleted as well. SteamID does not recognize Discord IDs for example as invalid so we cannot check for that
+                    // if (!this.data.cachefile.ownerid.includes(e.id)) this.data.lastCommentDB.remove({ id: e.id }); // Entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
                 });
 
             }, 1000 * i); // Delay every iteration so that we don't make a ton of requests at once (account)

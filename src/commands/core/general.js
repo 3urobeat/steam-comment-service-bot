@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 12:02:38
+ * Last Modified: 10.07.2023 13:02:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -39,10 +39,14 @@ module.exports.help = {
     run: (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
+        // Get the correct ownerid array for this request
+        let owners = commandHandler.data.cachefile.ownerid;
+        if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
+
         // Construct comment text for owner or non owner
         let commentText;
 
-        if (commandHandler.data.cachefile.ownerid.includes(steamID64)) {
+        if (owners.includes(resInfo.userID)) {
             if (commandHandler.controller.getBots().length > 1 || commandHandler.data.config.maxOwnerComments) commentText = `'${resInfo.cmdprefix}comment (amount/"all") [profileid] [custom, quotes]' - ${commandHandler.data.lang.helpcommentowner1.replace("maxOwnerComments", commandHandler.data.config.maxOwnerComments)}`;
                 else commentText = `'${resInfo.cmdprefix}comment ("1") [profileid] [custom, quotes]' - ${commandHandler.data.lang.helpcommentowner2}`;
         } else {
@@ -88,6 +92,10 @@ module.exports.info = {
      */
     run: (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+
+        // Get the correct ownerid array for this request
+        let owners = commandHandler.data.cachefile.ownerid;
+        if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
         commandHandler.data.lastCommentDB.findOne({ id: resInfo.userID }, async (err, doc) => {
             let lastReq = await commandHandler.data.getLastCommentRequest();

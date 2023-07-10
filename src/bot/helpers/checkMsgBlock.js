@@ -4,7 +4,7 @@
  * Created Date: 20.03.2023 12:46:47
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 09:33:21
+ * Last Modified: 10.07.2023 13:05:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -49,7 +49,7 @@ Bot.prototype.checkMsgBlock = function(steamID64, message) {
         return true;
     }
 
-    if (!this.controller.data.cachefile.ownerid.includes(steamID64)) lastmessage[steamID64][1]++; // Push new message to array if user isn't an owner
+    if (!this.controller.data.cachefile.ownerid.includes(steamID64)) lastmessage[steamID64][1]++; // Push new message to array if user isn't an owner (this function is only called for Steam Chat messages, not for plugins)
 
 
     // Deny non-friends the use of any command

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 12:26:58
+ * Last Modified: 10.07.2023 13:04:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -54,8 +54,12 @@ module.exports.abort = {
             if (res) {
                 let activeReqEntry = commandHandler.controller.activeRequests[res];
 
+                // Get the correct ownerid array for this request
+                let owners = commandHandler.data.cachefile.ownerid;
+                if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
+
                 // Refuse if user is not an owner and the request is not from them
-                if (!commandHandler.data.cachefile.ownerid.includes(resInfo.userID) && (activeReqEntry && activeReqEntry.requestedby != resInfo.userID)) return respond(commandHandler.data.lang.commandowneronly);
+                if (!owners.includes(resInfo.userID) && (activeReqEntry && activeReqEntry.requestedby != resInfo.userID)) return respond(commandHandler.data.lang.commandowneronly);
                     else logger("debug", "CommandHandler abort cmd: Non-owner provided ID as parameter but is requester of that request. Permitting abort...");
 
                 userID = res; // If user provided an id as argument then use that instead of their id
@@ -164,8 +168,12 @@ module.exports.failed = {
             if (res) {
                 let activeReqEntry = commandHandler.controller.activeRequests[res];
 
+                // Get the correct ownerid array for this request
+                let owners = commandHandler.data.cachefile.ownerid;
+                if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
+
                 // Refuse if user is not an owner and the request is not from them
-                if (!commandHandler.data.cachefile.ownerid.includes(userID) && (activeReqEntry && activeReqEntry.requestedby != userID)) return respond(commandHandler.data.lang.commandowneronly);
+                if (!owners.includes(userID) && (activeReqEntry && activeReqEntry.requestedby != userID)) return respond(commandHandler.data.lang.commandowneronly);
                     else logger("debug", "CommandHandler failed cmd: Non-owner provided ID as parameter but is requester of that request. Permitting data retrieval...");
 
                 userID = res; // If user provided an id as argument then use that instead of their id

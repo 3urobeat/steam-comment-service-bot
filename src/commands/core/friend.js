@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 12:16:57
+ * Last Modified: 10.07.2023 13:02:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -131,12 +131,16 @@ module.exports.unfriend = {
 
         } else {
 
+            // Get the correct ownerid array for this request
+            let owners = commandHandler.data.cachefile.ownerid;
+            if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
+
             // Unfriending a specific user is owner only
-            if (!commandHandler.data.cachefile.ownerid.includes(steamID64)) return respond(commandHandler.data.lang.commandowneronly);
+            if (!owners.includes(resInfo.userID)) return respond(commandHandler.data.lang.commandowneronly);
 
             commandHandler.controller.handleSteamIdResolving(args[0], "profile", (err, res) => {
                 if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
-                if (commandHandler.data.cachefile.ownerid.includes(res)) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.idisownererror); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+                if (commandHandler.data.cachefile.ownerid.includes(res)) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.idisownererror); // Check for the "original" ownerid array here, we don't care about non Steam IDs
 
                 commandHandler.controller.getBots().forEach((e, i) => {
                     setTimeout(() => {
@@ -201,7 +205,7 @@ module.exports.unfriendall = {
                         setTimeout(() => {
                             let friendSteamID = new SteamID(String(friend));
 
-                            if (!commandHandler.data.cachefile.ownerid.includes(friend)) {
+                            if (!commandHandler.data.cachefile.ownerid.includes(friend)) { // Check for the "original" ownerid array here, we don't care about non Steam IDs
                                 logger("info", `Removing friend ${friendSteamID.getSteamID64()} from all bot accounts...`, false, false, logger.animation("loading"));
                                 commandHandler.controller.getBots()[i].user.removeFriend(friendSteamID);
                             } else {
