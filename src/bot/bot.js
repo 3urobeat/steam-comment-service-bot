@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:05:34
+ * Last Modified: 08.07.2023 00:41:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -195,7 +195,7 @@ Bot.prototype.handleMissingGameLicenses = function() {};
 /**
  * Our commandHandler respondModule implementation - Sends a message to a Steam user
  * @param {object} _this The Bot object context
- * @param {object} resInfo Object containing information passed to command by friendMessage event
+ * @param {import("../commands/commandHandler.js").resInfo} resInfo Object containing information passed to command by friendMessage event
  * @param {string} txt The text to send
  * @param {boolean} retry Internal: true if this message called itself again to send failure message
  * @param {number} part Internal: Index of which part to send for messages larger than 750 chars

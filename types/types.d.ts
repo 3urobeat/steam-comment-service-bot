@@ -51,7 +51,6 @@ declare class Bot {
     /**
      * Our commandHandler respondModule implementation - Sends a message to a Steam user
      * @param _this - The Bot object context
-     * @param resInfo - Object containing information passed to command by friendMessage event
      * @param txt - The text to send
      * @param retry - Internal: true if this message called itself again to send failure message
      * @param part - Internal: Index of which part to send for messages larger than 750 chars
@@ -114,7 +113,6 @@ declare class Bot {
     /**
      * Our commandHandler respondModule implementation - Sends a message to a Steam user
      * @param _this - The Bot object context
-     * @param resInfo - Object containing information passed to command by friendMessage event
      * @param txt - The text to send
      * @param retry - Internal: true if this message called itself again to send failure message
      * @param part - Internal: Index of which part to send for messages larger than 750 chars
@@ -196,18 +194,36 @@ declare class CommandHandler {
      * Finds a loaded command by name and runs it
      * @param name - The name of the command
      * @param args - Array of arguments that will be passed to the command
-     * @param steamID64 - SteamID64 of the requesting user which is used to check for ownerOnly and will be passed to the command
      * @param respondModule - Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
-     * @param context - The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Please also include a "cmdprefix" key & value pair if your command handler uses a prefix other than "!".
+     * @param context - The context (`this.`) of the object calling this command. Will be passed to respondModule() as first parameter to make working in this function easier.
+     * @param resInfo - Object containing additional information
      * @returns `true` if command was found, `false` if not
      */
-    runCommand(name: string, args: any[], steamID64: number, respondModule: (...params: any[]) => any, context: any, resInfo: any): boolean;
+    runCommand(name: string, args: any[], respondModule: (...params: any[]) => any, context: any, resInfo: resInfo): boolean;
     /**
      * Reloads all core commands. Does NOT reload commands registered at runtime. Please consider reloading the pluginSystem as well.
      */
     reloadCommands(): void;
 }
+
+/**
+ * @property [cmdprefix] - Prefix your command execution handler uses. This will be used in response messages referencing commands. Default: !
+ * @property userID - ID of the user who executed this command. Will be used for command default behavior (e.g. commenting on the requester's profile), to check for owner privileges, apply cooldowns and maybe your respondModule implementation for responding. Strongly advised to include.
+ * @property [ownerIDs] - Can be provided to overwrite `config.ownerid` for owner privilege checks. Useful if you are implementing a different platform and so `userID` won't be a steamID64 (e.g. discord)
+ * @property [charLimit] - Supported by the Steam Chat Message handler: Overwrites the default index from which response messages will be cut up into parts
+ * @property [cutChars] - Custom chars to search after for cutting string in parts to overwrite cutStringsIntelligently's default: [" ", "\n", "\r"]
+ * @property [fromSteamChat] - Set to true if your command handler is receiving messages from the Steam Chat and so `userID` can be expected to be a `steamID64`. Will be used to enable command default behavior (e.g. commenting on the requester's profile)
+ * @property [prefix] - Do not provide this argument, you'll receive it from commands: Steam Chat Message prefixes like /me. Can be ignored or translated to similar prefixes your platform might support
+ */
+declare type resInfo = {
+    cmdprefix?: string;
+    userID: string;
+    ownerIDs?: string[];
+    charLimit?: number;
+    cutChars?: string[];
+    fromSteamChat?: boolean;
+    prefix?: string;
+};
 
 /**
  * Internal: Do the actual commenting, activeRequests entry with all relevant information was processed by the comment command function above.
@@ -218,7 +234,7 @@ declare class CommandHandler {
  * @param commentArgs - All arguments this postComment function needs, without callback. It will be applied and a callback added as last param. Include a key called "quote" to dynamically replace it with a random quote.
  * @param receiverSteamID64 - steamID64 of the profile to receive the comments
  */
-declare function comment(commandHandler: CommandHandler, resInfo: any, respond: (...params: any[]) => any, postComment: (...params: any[]) => any, commentArgs: any, receiverSteamID64: string): void;
+declare function comment(commandHandler: CommandHandler, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any, postComment: (...params: any[]) => any, commentArgs: any, receiverSteamID64: string): void;
 
 /**
  * Retrieves arguments from a comment request. If request is invalid (for example too many comments requested) an error message will be sent
@@ -229,7 +245,7 @@ declare function comment(commandHandler: CommandHandler, resInfo: any, respond: 
  * @param respond - The shortened respondModule call
  * @returns Resolves promise with object containing all relevant data when done
  */
-declare function getCommentArgs(commandHandler: CommandHandler, args: any[], requesterSteamID64: string, resInfo: any, respond: (...params: any[]) => any): Promise<{ maxRequestAmount: number; commentcmdUsage: string; numberOfComments: number; profileID: string; idType: string; quotesArr: string[]; }>;
+declare function getCommentArgs(commandHandler: CommandHandler, args: any[], requesterSteamID64: string, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any): Promise<{ maxRequestAmount: number; commentcmdUsage: string; numberOfComments: number; profileID: string; idType: string; quotesArr: string[]; }>;
 
 /**
  * Finds all needed and currently available bot accounts for a comment request.
@@ -261,7 +277,7 @@ declare function getAvailableBotsForFavorizing(commandHandler: CommandHandler, a
  * @param respond - The shortened respondModule call
  * @returns If the user provided a specific amount, amount will be a number. If user provided "all" or "max", it will be returned as an unmodified string for getVoteBots.js to handle
  */
-declare function getSharedfileArgs(commandHandler: CommandHandler, args: any[], cmd: string, resInfo: any, respond: (...params: any[]) => any): Promise<{ amount: number | string; id: string; }>;
+declare function getSharedfileArgs(commandHandler: CommandHandler, args: any[], cmd: string, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any): Promise<{ amount: number | string; id: string; }>;
 
 /**
  * Finds all needed and currently available bot accounts for a vote request.
@@ -592,7 +608,7 @@ declare function checkConnection(url: string, throwTimeout: boolean): Promise<{ 
  * @param threshold - Optional: Maximum amount that limit can be reduced to find the last space or line break. If no match is found within this limit a word will be cut. Default: 15% of total length
  * @returns Returns all parts of the string in an array
  */
-declare function cutStringsIntelligently(txt: string, limit: number, cutChars: any[], threshold: number): any[];
+declare function cutStringsIntelligently(txt: string, limit: number, cutChars: string[], threshold: number): any[];
 
 /**
  * Attempts to reinstall all modules
@@ -1265,7 +1281,6 @@ declare class Updater {
      * Checks for any available update and installs it.
      * @param forceUpdate - If true an update will be forced, even if disableAutoUpdate is true or the newest version is already installed
      * @param respondModule - If defined, this function will be called with the result of the check. This allows to integrate checking for updates into commands or plugins. Passes resInfo and txt as parameters.
-     * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      * @returns Promise that will be resolved with false when no update was found or with true when the update check or download was completed. Expect a restart when true was returned.
      */
     run(forceUpdate: boolean, respondModule: (...params: any[]) => any, resInfo: any): Promise<boolean>;

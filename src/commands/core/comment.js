@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 15:51:55
+ * Last Modified: 10.07.2023 12:49:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -56,23 +56,33 @@ module.exports.comment = {
      * The comment command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
-     * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: async (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        let requesterSteamID64 = steamID64;
+        // Get the correct ownerid array for this request
+        let owners = commandHandler.data.cachefile.ownerid;
+        if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
+
+        let requesterSteamID64 = resInfo.userID;
         let receiverSteamID64  = requesterSteamID64;
-        let ownercheck         = commandHandler.data.cachefile.ownerid.includes(requesterSteamID64);
+        let ownercheck         = owners.includes(requesterSteamID64);
 
 
-        /* --------- Check for disabled comment cmd or if update is queued --------- */
+        /* --------- Various checks  --------- */
+        if (!resInfo.userID) {
+            respond(commandHandler.data.lang.nouserid); // Reject usage of command without an userID to avoid cooldown bypass
+            return logger("err", "The comment command was called without resInfo.userID! Blocking the command as I'm unable to apply cooldowns, which is required for this command!");
+        }
         if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         if (commandHandler.controller.info.activeLogin)                 return respond(commandHandler.data.lang.activerelog);      // Bot is waiting for relog
         if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(commandHandler.data.lang.commandowneronly); // Comment command is restricted to owners only
+
+        // Check for no id param as default behavior is unavailable when calling from outside the Steam Chat
+        if (!resInfo.fromSteamChat && !args[1]) return respond(commandHandler.data.lang.noidparam);
 
 
         /* --------- Calculate maxRequestAmount and get arguments from comment request --------- */
@@ -187,7 +197,7 @@ module.exports.comment = {
         if (idType == "profile") {
             commandHandler.controller.main.community.getSteamUser(new SteamID(receiverSteamID64), (err, user) => {
                 if (err) {
-                    logger("warn", `[Main] Failed to check if ${steamID64} is private: ${err}\n       Trying to comment anyway and hoping no error occurs...`); // This can happen sometimes and most of the times commenting will still work
+                    logger("warn", `[Main] Failed to check if ${receiverSteamID64} is private: ${err}\n       Trying to comment anyway and hoping no error occurs...`); // This can happen sometimes and most of the times commenting will still work
                 } else {
                     logger("debug", "Successfully checked privacyState of receiving user: " + user.privacyState);
 
@@ -216,7 +226,7 @@ module.exports.comment = {
 /**
  * Internal: Do the actual commenting, activeRequests entry with all relevant information was processed by the comment command function above.
  * @param {CommandHandler} commandHandler The commandHandler object
- * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+ * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @param {function(string): void} respond The shortened respondModule call
  * @param {Function} postComment The correct postComment function for this idType. Context from the correct bot account is being applied later.
  * @param {object} commentArgs All arguments this postComment function needs, without callback. It will be applied and a callback added as last param. Include a key called "quote" to dynamically replace it with a random quote.

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 08.07.2023 00:36:19
+ * Last Modified: 10.07.2023 13:10:14
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -88,7 +88,7 @@ Controller.prototype.friendListCapacityCheck = function(bot, callback) {
                                 let steamID = new SteamID(e.id);
 
                                 // Unfriend user and send him/her a message // TODO: Maybe only do this from the main bot?
-                                bot.sendChatMessage(bot, { steamID64: steamID.getSteamID64() }, this.data.lang.userunfriend.replace("forceFriendlistSpaceTime", this.data.advancedconfig.forceFriendlistSpaceTime));
+                                bot.sendChatMessage(bot, { userID: steamID.getSteamID64() }, this.data.lang.userunfriend.replace("forceFriendlistSpaceTime", this.data.advancedconfig.forceFriendlistSpaceTime));
                                 bot.user.removeFriend(steamID);
 
                                 logger("info", `[Bot ${bot.index}] Force-Unfriended ${e.id} after being inactive for ${this.data.advancedconfig.forceFriendlistSpaceTime} days to keep 1 empty slot on the friendlist`);
@@ -134,8 +134,8 @@ Controller.prototype._lastcommentUnfriendCheck = function() {
                 this.getBots().forEach((f, j) => {
                     let thisbot = f.user;
 
-                    if (thisbot.myFriends[e.id] == 3 && !this.data.cachefile.ownerid.includes(e.id)) { // Check if the targeted user is still friend
-                        if (j == 0) this.main.sendChatMessage(this.main, { steamID64: e.id }, this.data.lang.userforceunfriend.replace("unfriendtime", this.data.config.unfriendtime));
+                    if (thisbot.myFriends[e.id] && thisbot.myFriends[e.id] == 3 && !this.data.cachefile.ownerid.includes(e.id)) { // Check if the targeted user is still friend and not an owner
+                        if (j == 0) this.main.sendChatMessage(this.main, { userID: e.id }, this.data.lang.userforceunfriend.replace("unfriendtime", this.data.config.unfriendtime));
 
                         setTimeout(() => {
                             thisbot.removeFriend(new SteamID(e.id)); // Unfriend user with each bot
@@ -143,7 +143,8 @@ Controller.prototype._lastcommentUnfriendCheck = function() {
                         }, 1000 * j); // Delay every iteration so that we don't make a ton of requests at once (IP)
                     }
 
-                    if (!this.data.cachefile.ownerid.includes(e.id)) this.data.lastCommentDB.remove({ id: e.id }); // Entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
+                    // Disabled db cleanup as entries from plugins would be deleted as well. SteamID does not recognize Discord IDs for example as invalid so we cannot check for that
+                    // if (!this.data.cachefile.ownerid.includes(e.id)) this.data.lastCommentDB.remove({ id: e.id }); // Entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
                 });
 
             }, 1000 * i); // Delay every iteration so that we don't make a ton of requests at once (account)

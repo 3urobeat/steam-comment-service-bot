@@ -4,7 +4,7 @@
  * Created Date: 13.04.2023 17:58:23
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 17:51:07
+ * Last Modified: 10.07.2023 12:47:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -35,7 +35,7 @@ DataManager.prototype.getUserCooldown = function(id) {
 
         this.lastCommentDB.findOne({ id: id }, (err, doc) => {
             if (!doc) { // Check if no entry was found and BAIL THE FUCK OUT
-                logger("warn", `User '${id}' has no lastComment database entry! Permitting request and hoping an entry will be inserted afterwards.\n                             If this warning appears multiple times for the same user you need to take action. Need help? https://github.com/3urobeat/steam-comment-service-bot/issues/new/choose`);
+                logger("warn", `User '${id}' has no lastComment database entry! Permitting request and hoping an entry will be inserted afterwards.\n                             If this warning appears multiple times for the same user you need to take action. Need help? https://github.com/3urobeat/steam-comment-service-bot/issues/new/choose\n                             If this warning is caused by a plugin for a userID from outside the Steam Chat for their first request you can ignore this warning as the behavior is to be expected.`);
                 return resolve(obj);
             }
 
@@ -93,6 +93,8 @@ DataManager.prototype.getUserCooldown = function(id) {
  * @param {number} timestamp Unix timestamp of the last interaction the user received
  */
 DataManager.prototype.setUserCooldown = function(id, timestamp) {
+    if (!id) return logger("error", "CRITICAL: setUserCooldown was called without an ID! I am unable to apply a cooldown for this user!\n                              Not fixing this error will render the cooldown system useless and exposes your accounts to the risk of getting banned!");
+
     logger("debug", `DataManager setUserCooldown(): Updating lastcomment db entry for ${id} to ${timestamp}.`);
 
     this.lastCommentDB.update({ id: id }, { $set: { time: timestamp } }, { upsert: true }, (err) => {

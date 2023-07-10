@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 15:57:36
+ * Last Modified: 10.07.2023 13:02:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -38,12 +38,11 @@ module.exports.addFriend = {
      * The addFriend command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
-     * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+    run: (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
@@ -107,35 +106,41 @@ module.exports.unfriend = {
      * The unfriend command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
-     * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+    run: (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
-        // Unfriend message sender with all bot accounts if no id was provided
-        if (!args[0]) {
+        // Check for no args again as the default behavior from above might be unavailable when calling from outside of the Steam Chat
+        if (!args[0] && !resInfo.fromSteamChat) return respond(commandHandler.data.lang.noidparam);
+
+        // Unfriend message sender with all bot accounts if no id was provided and the command was called from the steam chat
+        if (!args[0] && resInfo.userID && resInfo.fromSteamChat) {
             respond(commandHandler.data.lang.unfriendcmdsuccess);
-            logger("info", `Removing friend ${steamID64} from all bot accounts...`);
+            logger("info", `Removing friend ${resInfo.userID} from all bot accounts...`);
 
             commandHandler.controller.getBots().forEach((e, i) => {
                 setTimeout(() => {
-                    e.user.removeFriend(new SteamID(steamID64));
+                    e.user.removeFriend(new SteamID(resInfo.userID));
                 }, 1000 * i);
             });
 
         } else {
 
+            // Get the correct ownerid array for this request
+            let owners = commandHandler.data.cachefile.ownerid;
+            if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
+
             // Unfriending a specific user is owner only
-            if (!commandHandler.data.cachefile.ownerid.includes(steamID64)) return respond(commandHandler.data.lang.commandowneronly);
+            if (!owners.includes(resInfo.userID)) return respond(commandHandler.data.lang.commandowneronly);
 
             commandHandler.controller.handleSteamIdResolving(args[0], "profile", (err, res) => {
                 if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
-                if (commandHandler.data.cachefile.ownerid.includes(res)) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.idisownererror); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+                if (commandHandler.data.cachefile.ownerid.includes(res)) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.idisownererror); // Check for the "original" ownerid array here, we don't care about non Steam IDs
 
                 commandHandler.controller.getBots().forEach((e, i) => {
                     setTimeout(() => {
@@ -169,12 +174,11 @@ module.exports.unfriendall = {
      * The unfriendall command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
-     * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+    run: (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
@@ -201,7 +205,7 @@ module.exports.unfriendall = {
                         setTimeout(() => {
                             let friendSteamID = new SteamID(String(friend));
 
-                            if (!commandHandler.data.cachefile.ownerid.includes(friend)) {
+                            if (!commandHandler.data.cachefile.ownerid.includes(friend)) { // Check for the "original" ownerid array here, we don't care about non Steam IDs
                                 logger("info", `Removing friend ${friendSteamID.getSteamID64()} from all bot accounts...`, false, false, logger.animation("loading"));
                                 commandHandler.controller.getBots()[i].user.removeFriend(friendSteamID);
                             } else {
