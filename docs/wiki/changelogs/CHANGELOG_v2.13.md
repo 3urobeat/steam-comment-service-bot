@@ -398,4 +398,6 @@ Commit: [829c387](https://github.com/3urobeat/steam-comment-service-bot/commit/8
 - Updated dependencies
 - Minor other changes
 
-Commit: [](https://github.com/3urobeat/steam-comment-service-bot/commit/)
+Note: The russian translation added by [@Blueberryy](https://github.com/Blueberryy) in #186 will be noted in Version 2.14.0 with the upcoming improved language system.
+
+Commit: [75779db](https://github.com/3urobeat/steam-comment-service-bot/commit/75779db)

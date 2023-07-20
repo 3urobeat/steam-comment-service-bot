@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 12:20:12
+ * Last Modified: 10.07.2023 21:25:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -15,7 +15,7 @@
  */
 
 
-const SteamID         = require("steamid");
+const SteamID = require("steamid");
 
 const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 

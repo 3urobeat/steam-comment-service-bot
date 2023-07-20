@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 12:04:38
+ * Last Modified: 10.07.2023 21:25:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -212,7 +212,7 @@ CommandHandler.prototype.runCommand = function(name, args, respondModule, contex
 
     // Display warning if a non Steam Chat userID was provided without a custom owner ID array. Permit usage of owner only parameters of non owner only commands.
     if (resInfo.userID && !resInfo.fromSteamChat && (!resInfo.ownerIDs || resInfo.ownerIDs.length == 0)) {
-        logger("warn", `CommandHandler runCommand(): Command '${name}' was called with a non-SteamID without a custom ownerIDs array! *${logger.colors.fgred}This will BYPASS all owner checks, leading to unprotected access!${logger.colors.reset}*`);
+        logger("warn", `CommandHandler runCommand(): Command '${name}' was called with a non-SteamID without a custom ownerIDs array! *${logger.colors.fgred}This will either BYPASS or BLOCK all owner checks, leading to unprotected or no access!${logger.colors.reset}*`);
     }
 
     // Get the correct ownerid array for this request
