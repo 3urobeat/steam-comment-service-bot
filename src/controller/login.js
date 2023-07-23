@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 23.07.2023 13:43:12
+ * Last Modified: 23.07.2023 13:50:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -137,7 +137,7 @@ Controller.prototype.login = function(firstLogin) {
                 let onlineBots = this.getBots();
                 let lastBot    = onlineBots[onlineBots.length - 1];
 
-                if (i + 1 == Object.keys(this.data.logininfo).length && !lastBot.user.limitations) {
+                if (i + 1 == Object.keys(this.data.logininfo).length && lastBot && !lastBot.user.limitations) { // Only attempt to check if a lastBot was found, this can otherwise cause an infinite error loop
                     return logger("info", `Last account logged in, waiting for user object of Bot ${lastBot.index} to populate...`, true, true, logger.animation("waiting"));
                 }
 
