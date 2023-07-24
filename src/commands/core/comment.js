@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 12:49:36
+ * Last Modified: 24.07.2023 19:41:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -368,7 +368,7 @@ function comment(commandHandler, resInfo, respond, postComment, commentArgs, rec
             let failedcmdreference = "";
 
             if (Object.keys(commandHandler.controller.activeRequests[receiverSteamID64].failed).length > 0) {
-                failedcmdreference = `\nTo get detailed information why which comment failed please type '${resInfo.cmdprefix}failed'. You can read why your error was probably caused here: https://github.com/3urobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems`;
+                failedcmdreference = `\nTo get detailed information why which comment failed please type '${resInfo.cmdprefix}failed'. You can read why your error was probably caused here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md`;
             }
 
             // Send finished message

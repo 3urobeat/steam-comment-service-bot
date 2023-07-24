@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 13:02:40
+ * Last Modified: 24.07.2023 19:43:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -70,7 +70,7 @@ module.exports.help = {
             '${resInfo.cmdprefix}owner' - ${commandHandler.data.lang.helpowner}
             ${yourgroupText}
         
-            ${commandHandler.data.lang.helpreadothercmdshere} ' https://github.com/3urobeat/steam-comment-service-bot/wiki/Commands-documentation '
+            ${commandHandler.data.lang.helpreadothercmdshere} ' https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/commands_doc.md '
         `.replace(/ {4}/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
     }
 };

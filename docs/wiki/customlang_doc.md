@@ -17,7 +17,7 @@ After you have done that add a colon behind your key and write your message in t
 Example of how your `customlang.json` could look like after changing the `useradded` message:
 ```
 {
-    "note": "Please read here on how to use this file: https://github.com/3urobeat/steam-comment-service-bot/wiki/How-to-add-custom-messages",
+    "note": "Please read here on how to use this file: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/customlang_doc.md",
     "useradded": "You will recieve this message if you add me and it was modified using the customlang file!",
 }
 ```  

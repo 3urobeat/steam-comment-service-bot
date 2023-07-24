@@ -4,7 +4,7 @@
  * Created Date: 04.07.2023 21:29:42
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 23:04:19
+ * Last Modified: 24.07.2023 19:43:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -157,7 +157,7 @@ DataManager.prototype.writeLogininfoToDisk = function() {
 DataManager.prototype.writeProxiesToDisk = function() {
     logger("debug", "DataManager dataExport: Writing to proxies.txt...");
 
-    let comment = "//Comment: This file is used to provide proxies to spread your accounts over multiple IPs. Read the instructions here: https://github.com/3urobeat/steam-comment-service-bot/wiki/Adding-proxies";
+    let comment = "//Comment: This file is used to provide proxies to spread your accounts over multiple IPs. Read the instructions here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/adding_proxies.md";
 
     fs.writeFile(srcdir + "/../proxies.txt", comment + this.proxies.join("\n"), (err) => {
         if (err) logger("error", "DataManager: Error writing proxies to proxies.txt: " + err);

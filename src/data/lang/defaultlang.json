@@ -1,5 +1,5 @@
 {
-    "note": "This file contains nearly all messages the bot sends to users. If you want to modify messages, read here: https://github.com/3urobeat/steam-comment-service-bot/wiki/How-to-add-custom-messages",
+    "note": "This file contains nearly all messages the bot sends to users. If you want to modify messages, read here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/customlang_doc.md",
 
     "updaterautoupdatedisabled": "You have disabled the automatic updater. Would you like to update now?\nIf yes, please force an update using the command: cmdprefixupdate true",
 
@@ -19,7 +19,7 @@
     "commentuserprofileprivate": "Your/the receiving profile seems to be private. Please edit the privacy settings to allow comments and try again!",
     "commenterroroccurred": "Oops, an error occurred! I sadly wasn't able to comment.",
     "commentprocessstarted": "Estimated wait time for numberOfComments comments: waittime.",
-    "commentfailedcmdreference": "To get detailed information why which comment failed please type 'cmdprefixfailed'. You can read what probably caused your error here: https://github.com/3urobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems",
+    "commentfailedcmdreference": "To get detailed information why which comment failed please type 'cmdprefixfailed'. You can read what probably caused your error here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md",
     
     "comment429stop": "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error. Please try again later. Failed: failedamount/numberOfComments",
     "commentretrying": "failedamount/numberOfComments comments have failed. I'm going to retry the failed comments in untilStr. (Attempt thisattempt/maxattempt)",
