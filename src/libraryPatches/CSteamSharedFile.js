@@ -120,18 +120,20 @@ SteamCommunity.prototype.getSteamSharedFile = function(sharedFileId, callback) {
 
 
 			// Determine type by looking at the second breadcrumb. Find the first separator as it has a unique name and go to the next element which holds our value of interest
-			let breadcrumb = $(".breadcrumbs > .breadcrumb_separator").next().get(0).children[0].data || "";
+			let breadcrumb = $(".breadcrumbs > .breadcrumb_separator").next().get(0);
 
-			if (breadcrumb.includes("Screenshot")) {
-				sharedfile.type = ESharedFileType.Screenshot;
-			}
+			if (breadcrumb) {
+				if (breadcrumb.children[0].data.includes("Screenshot")) {
+					sharedfile.type = ESharedFileType.Screenshot;
+				}
 
-			if (breadcrumb.includes("Artwork")) {
-				sharedfile.type = ESharedFileType.Artwork;
-			}
+				if (breadcrumb.children[0].data.includes("Artwork")) {
+					sharedfile.type = ESharedFileType.Artwork;
+				}
 
-			if (breadcrumb.includes("Guide")) {
-				sharedfile.type = ESharedFileType.Guide;
+				if (breadcrumb.children[0].data.includes("Guide")) {
+					sharedfile.type = ESharedFileType.Guide;
+				}
 			}
 
 
