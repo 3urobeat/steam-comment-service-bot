@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 22:47:47
+ * Last Modified: 26.07.2023 17:07:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -32,6 +32,8 @@ DataManager.prototype._importFromDisk = async function () {
     function loadCache() {
         return new Promise((resolve) => {
             try {
+                delete require.cache[require.resolve(srcdir + "/data/cache.json")]; // Delete cache to enable reloading data
+
                 resolve(require(srcdir + "/data/cache.json"));
             } catch (err) {
                 if (err) {
@@ -59,6 +61,8 @@ DataManager.prototype._importFromDisk = async function () {
     function loadData() {
         return new Promise((resolve) => {
             try {
+                delete require.cache[require.resolve(srcdir + "/data/data.json")]; // Delete cache to enable reloading data
+
                 resolve(require(srcdir + "/data/data.json"));
             } catch (err) {
                 if (err) {
@@ -77,6 +81,8 @@ DataManager.prototype._importFromDisk = async function () {
     function loadConfig() {
         return new Promise((resolve) => {
             try {
+                delete require.cache[require.resolve(srcdir + "/../config.json")]; // Delete cache to enable reloading data
+
                 resolve(require(srcdir + "/../config.json"));
             } catch (err) {
                 if (err) {
@@ -113,6 +119,8 @@ DataManager.prototype._importFromDisk = async function () {
     function loadAdvancedConfig() {
         return new Promise((resolve) => {
             try {
+                delete require.cache[require.resolve(srcdir + "/../advancedconfig.json")]; // Delete cache to enable reloading data
+
                 resolve(require(srcdir + "/../advancedconfig.json"));
             } catch (err) {
                 if (err) {
@@ -166,6 +174,8 @@ DataManager.prototype._importFromDisk = async function () {
             try {
                 // Only check if file exists (it is not shipped by default anymore since 2.12.1). If it doesn't an empty obj will be returned, leading to empty logininfo err msg in checkData()
                 if (fs.existsSync("./logininfo.json")) {
+                    delete require.cache[require.resolve(srcdir + "/../logininfo.json")]; // Delete cache to enable reloading data
+
                     logininfo = require(srcdir + "/../logininfo.json");
 
                     // Reformat to use new logininfo object structure and use accountName as key instead of bot0 etc to allow the order to change
@@ -263,6 +273,8 @@ DataManager.prototype._importFromDisk = async function () {
     function loadLanguage() {
         return new Promise((resolve) => {
             try {
+                delete require.cache[require.resolve(srcdir + "/data/lang/defaultlang.json")]; // Delete cache to enable reloading data
+
                 resolve(require(srcdir + "/data/lang/defaultlang.json"));
             } catch (err) {
                 if (err) {
@@ -285,6 +297,8 @@ DataManager.prototype._importFromDisk = async function () {
 
                 // Try importing customlang.json
                 try {
+                    delete require.cache[require.resolve(srcdir + "/../customlang.json")]; // Delete cache to enable reloading data
+
                     customlang = require(srcdir + "/../customlang.json");
                 } catch (err) {
                     logger("error", "It seems like you made a mistake (probably Syntax) in your customlang.json! I will not use any custom message.\nError: " + err);

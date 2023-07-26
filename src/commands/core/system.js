@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.07.2023 13:28:49
+ * Last Modified: 26.07.2023 16:42:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -78,13 +78,16 @@ module.exports.reload = {
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
 
         // Reload commandHandler
         commandHandler.reloadCommands();
 
         // Reload pluginSystem
         commandHandler.controller.pluginSystem.reloadPlugins();
+
+        // Reload data
+        await commandHandler.data._importFromDisk();
 
         // Send response message
         respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.reloadcmdreloaded); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
