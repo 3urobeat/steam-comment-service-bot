@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.07.2023 13:28:30
+ * Last Modified: 26.07.2023 16:49:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -55,15 +55,21 @@ module.exports.settings = {
 
         // Only send current settings if no arguments were provided
         if (!args[0]) {
-            fs.readFile("./config.json", function(err, data) { // Use readFile to get an unprocessed object
-                if (err) return respond(commandHandler.data.lang.settingscmdfailedread + err);
+            let stringifiedconfig = JSON.stringify(commandHandler.data.config, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
+                if (v instanceof Array) return JSON.stringify(v);
+                return v;
+            }, 4)
+                .replace(/"\[/g, "[")
+                .replace(/\]"/g, "]")
+                .replace(/\\"/g, '"')
+                .replace(/""/g, '""');
 
-                // Remove first and last character which are brackets and remove leading and trailing whitespaces from all lines
-                let currentsettingsarr = data.toString().slice(1, -1).split("\n").map(s => s.trim());
+            // Remove first and last character which are brackets and remove leading and trailing whitespaces from all lines
+            let currentsettingsarr = stringifiedconfig.toString().slice(1, -1).split("\n").map(s => s.trim());
 
-                // Send message with code prefix and only allow cuts at newlines
-                respondModule(context, { prefix: "/code", cutChars: ["\n"], ...resInfo }, commandHandler.data.lang.settingscmdcurrentsettings + "\n" + currentsettingsarr.join("\n")); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
-            });
+            // Send message with code prefix and only allow cuts at newlines
+            respondModule(context, { prefix: "/code", cutChars: ["\n"], ...resInfo }, commandHandler.data.lang.settingscmdcurrentsettings + "\n" + currentsettingsarr.join("\n")); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+
             return;
         }
 
