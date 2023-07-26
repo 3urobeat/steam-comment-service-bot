@@ -79,7 +79,7 @@ const DataManager = function (controller) {
 
     /**
      * Stores the login information for every bot account provided via the `logininfo.json` or `accounts.txt` files.
-     * @type {{[key: string]: { accountName: string, password: string, sharedSecret: string, steamGuardCode: null, machineName: string, deviceFriendlyName: string }}}
+     * @type {{[key: string]: { accountName: string, password: string, sharedSecret?: string, steamGuardCode?: null, machineName?: string, deviceFriendlyName?: string }}}
      */
     this.logininfo = {};
 

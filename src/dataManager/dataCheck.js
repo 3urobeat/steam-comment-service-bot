@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 15:32:44
+ * Last Modified: 26.07.2023 15:43:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -108,7 +108,7 @@ DataManager.prototype.checkData = function() {
             return reject(new Error("Commentdelay times maxcomments exceeds 32bit integer limit!"));
         }
         if (this.config.randomizeAccounts && Object.keys(this.logininfo).length <= 5 && maxCommentsOverall > Object.keys(this.logininfo).length * 2) {
-            logWarn("warn", `${logger.colors.fgred}I wouldn't recommend using randomizeAccounts with 5 or less accounts when each account can/has to comment multiple times. The chance of an account getting a cooldown is higher.\n        Please make sure your commentdelay is set adequately to reduce the chance of this happening.`, true);
+            logWarn("warn", `${logger.colors.fgred}I wouldn't recommend using randomizeAccounts with 5 or less accounts when each account can/has to comment multiple times. The chance of an account getting a cooldown is higher.\n       Please make sure your commentdelay is set adequately to reduce the chance of this happening.`, true);
         }
         if (this.advancedconfig.loginDelay < 500) { // Don't allow a logindelay below 500ms
             logWarn("error", `${logger.colors.fgred}I won't allow a logindelay below 500ms as this will probably get you blocked by Steam nearly instantly. I recommend setting it to 2500.\n        If you are using one proxy per account you might try setting it to 500 (on your own risk!). Aborting...`, true);
