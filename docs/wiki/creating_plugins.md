@@ -156,13 +156,35 @@ From there, every other module of the bot is accessible. Worth noting:
 
 ## **Command System**
 
-The CommandHandler allows you to register and run commands.  
+The CommandHandler allows you to register new and run existing commands.  
 Commands are the core functionalities that allow you to request comments, retrieve information and manage the bot.  
-Any command you register will instantly be available to all message handlers.
+Any command you register will instantly be available to all message handlers (e.g. to other plugins as well).
 
 By default the bot has built-in Steam Chat message handling.  
 You can implement your own message handler as well, allowing you to integrate all registered commands into other platforms.  
 Take a look at the developer documentation (TODO) for more information about how to write a custom message handler.
+
+Running existing commands is very easy. Let's take a look at how requesting 5 comments for 3urobeat would work:  
+```js
+this.plugin.commandHandler.runCommand(
+    "comment",                                                          // Command Name
+    ["5", "3urobeat"],                                                  // Arguments Array
+    (x, y, msg) => { logger("info", "Comment Command said: " + msg) },  // Response Function
+    this,                                                               // The current context
+    { cmdprefix: "/", userID: "12345", ownerIDs: ["12345"]              // The resInfo object
+})
+```
+
+This would cause the comment command to send 5 comments to the Steam Profile "3urobeat".  
+The comments are requested by the user "12345", who has owner privileges.
+Every response from the command will be logged to the terminal output using the logger function.
+
+**Note:**  
+It is very important to provide a unique `userID` parameter in the `resInfo` object, which must not clash with steamID64s.  
+This ID is used to uniquely identify the requesting user, for example apply cooldown for them and check for owner privileges.  
+Failing to provide an ID will result in either unprotected or no access.
+
+This is also where the `ownerIDs` array comes into play: It allows you to overwrite the `ownerid` array set in the config to enable owner privilege checking when using commands from outside the Steam Chat. Very cool, right?
 
 &nbsp;
 
