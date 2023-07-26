@@ -4,7 +4,7 @@
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 09:33:39
+ * Last Modified: 26.07.2023 16:53:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -83,10 +83,13 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
         });
     }
 
+    // Clear existing interval if there is one
+    if (this._handleExpiringTokensInterval) clearInterval(this._handleExpiringTokensInterval);
+
     // Set interval to scan every 24 hours
     let lastScanTime = Date.now();
 
-    setInterval(() => {
+    this._handleExpiringTokensInterval = setInterval(() => {
         if (lastScanTime + 86400000 > Date.now()) return; // Abort if last run was less than 24h ago
 
         scanDatabase();

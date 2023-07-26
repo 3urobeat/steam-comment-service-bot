@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 22:26:01
+ * Last Modified: 26.07.2023 16:37:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -103,6 +103,9 @@ const DataManager = function (controller) {
      * @type {Nedb}
      */
     this.tokensDB = {};
+
+    // Stores a reference to the active handleExpiringTokens interval to prevent duplicates on reloads
+    this._handleExpiringTokensInterval = null;
 
     // Dynamically load all helper files
     const loadHelpersFromFolder = (folder) => {
