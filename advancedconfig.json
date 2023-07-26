@@ -1,6 +1,6 @@
 {
     "_disclaimer_": "This file includes only advanced settings! Please only use the 'config.json' for setup and ignore this file if you are new!",
-    "_help_": "Read the docs: https://github.com/3urobeat/steam-comment-service-bot/wiki/Advanced-Config-Documentation",
+    "_help_": "Read the docs: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/advancedconfig_doc.md",
     "disableAutoUpdate": false,
     "loginDelay": 2500,
     "loginTimeout": 60000,

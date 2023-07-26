@@ -62,7 +62,7 @@ Open the `accounts.txt` file and provide your accounts in the `username:password
 If you don't want to use a shared_secret just leave it out and only provide the account in the `username:password` format.  
   
 Please make sure you know about limited/unlimited accounts. Your accounts also need to have E-Mail Steam Guard active.  
-You can read a detailed explanation [here in the wiki](https://github.com/3urobeat/steam-comment-service-bot/wiki/Steam-limitations).
+You can read a detailed explanation [here in the wiki](https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/steam_limitations.md).
   
 <details>
   <summary>Another, optional method (not recommended anymore):</summary>
@@ -122,7 +122,7 @@ Head over to your Steam client, add the main bot (the first account in your acco
 It should respond with a list of commands available to you.  
 
 To request a comment, simply type `!comment 1`! [Click to see Demo](https://youtu.be/8J78rC9Z28U?t=294)  
-You can see all commands and their usage [here in the wiki](https://github.com/3urobeat/steam-comment-service-bot/wiki/Commands-documentation).  
+You can see all commands and their usage [here in the wiki](https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/commands_doc.md).  
 
 ## **Additional Information:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/8J78rC9Z28U?t=339)  
 Hey, if you like this project please consider donating a buck on my [PayPal!](https://paypal.me/3urobeat)  

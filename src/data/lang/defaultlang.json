@@ -1,5 +1,5 @@
 {
-    "note": "This file contains nearly all messages the bot sends to users. If you want to modify messages, read here: https://github.com/3urobeat/steam-comment-service-bot/wiki/How-to-add-custom-messages",
+    "note": "This file contains nearly all messages the bot sends to users. If you want to modify messages, read here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/customlang_doc.md",
 
     "updaterautoupdatedisabled": "You have disabled the automatic updater. Would you like to update now?\nIf yes, please force an update using the command: cmdprefixupdate true",
 
@@ -19,7 +19,7 @@
     "commentuserprofileprivate": "Your/the receiving profile seems to be private. Please edit the privacy settings to allow comments and try again!",
     "commenterroroccurred": "Oops, an error occurred! I sadly wasn't able to comment.",
     "commentprocessstarted": "Estimated wait time for numberOfComments comments: waittime.",
-    "commentfailedcmdreference": "To get detailed information why which comment failed please type 'cmdprefixfailed'. You can read what probably caused your error here: https://github.com/3urobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems",
+    "commentfailedcmdreference": "To get detailed information why which comment failed please type 'cmdprefixfailed'. You can read what probably caused your error here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md",
     
     "comment429stop": "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error. Please try again later. Failed: failedamount/numberOfComments",
     "commentretrying": "failedamount/numberOfComments comments have failed. I'm going to retry the failed comments in untilStr. (Attempt thisattempt/maxattempt)",
@@ -45,7 +45,9 @@
     "usernotfriend": "Please add me before using a command!",
     "botnotready": "The bot is not completely started yet. Please wait a moment before using a command.",
     "commandnotfound": "I don't know that command. Type cmdprefixhelp for more info.",
-    "commandowneronly": "This command is only available for owners.\nIf you are the botowner, make sure you added your ownerid to the config.json.",
+    "commandowneronly": "This command is only available for owners.\nIf you are the botowner, make sure you added your ownerid to the config.json.\nIf this request originates from a plugin, make sure to pass the userID & ownerIDs parameters.",
+    "nouserid": "The command was called without a userID! Blocking the command as I'm either unable to apply cooldowns or the default behavior of this command cannot be used without one. This is a coding issue which must be fixed by a developer.",
+    "noidparam": "Please provide an ID!\nThe default behavior of this command might be unavailable in this context, for example when the command was used from outside the Steam Chat or the developer forgot to pass a userID to enable it.",
 
     "invalidnumber": "This does not seem to be a valid number!\n\nCommand usage: cmdusage",
     "invalidprofileid": "This does not seem to be a valid ID or link or you provided the wrong ID type for this command!\nPlease make sure that you either provide a full link, only the vanity or only the ID, pointing to an existing profile, group or sharedfile.",

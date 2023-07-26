@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 15:52:46
+ * Last Modified: 10.07.2023 21:25:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -157,7 +157,7 @@ CommandHandler.prototype.unregisterCommand = function(commandName) {
     let thisCmd = this.commands.find(e => e.names.includes(commandName));
 
     if (!thisCmd) {
-        logger("warn", `CommandHandler runCommand(): Command '${commandName}' was not found!`);
+        logger("warn", `CommandHandler unregisterCommand(): Command '${commandName}' was not found!`);
         return false;
     }
 
@@ -173,16 +173,28 @@ CommandHandler.prototype.unregisterCommand = function(commandName) {
 
 
 /**
+ * @typedef resInfo Documentation of the default/commonly used content the resInfo object can/should contain
+ * @type {object}
+ * @property {string} [cmdprefix] Prefix your command execution handler uses. This will be used in response messages referencing commands. Default: !
+ * @property {string} userID ID of the user who executed this command. Will be used for command default behavior (e.g. commenting on the requester's profile), to check for owner privileges, apply cooldowns and maybe your respondModule implementation for responding. Strongly advised to include.
+ * @property {Array.<string>} [ownerIDs] Can be provided to overwrite `config.ownerid` for owner privilege checks. Useful if you are implementing a different platform and so `userID` won't be a steamID64 (e.g. discord)
+ * @property {number} [charLimit] Supported by the Steam Chat Message handler: Overwrites the default index from which response messages will be cut up into parts
+ * @property {Array.<string>} [cutChars] Custom chars to search after for cutting string in parts to overwrite cutStringsIntelligently's default: [" ", "\n", "\r"]
+ * @property {boolean} [fromSteamChat] Set to true if your command handler is receiving messages from the Steam Chat and `userID` is therefore a `steamID64`. Will be used to enable command default behavior (e.g. commenting on the requester's profile)
+ * @property {string} [prefix] Do not provide this argument, you'll receive it from commands: Steam Chat Message prefixes like /me. Can be ignored or translated to similar prefixes your platform might support
+ */
+
+
+/**
  * Finds a loaded command by name and runs it
  * @param {string} name The name of the command
  * @param {Array} args Array of arguments that will be passed to the command
- * @param {number} steamID64 SteamID64 of the requesting user which is used to check for ownerOnly and will be passed to the command
  * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
- * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
- * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command). Please also include a "cmdprefix" key & value pair if your command handler uses a prefix other than "!".
+ * @param {object} context The context (`this.`) of the object calling this command. Will be passed to respondModule() as first parameter to make working in this function easier.
+ * @param {resInfo} resInfo Object containing additional information
  * @returns {boolean} `true` if command was found, `false` if not
  */
-CommandHandler.prototype.runCommand = function(name, args, steamID64, respondModule, context, resInfo) {
+CommandHandler.prototype.runCommand = function(name, args, respondModule, context, resInfo) {
 
     // Iterate through all command objects in commands array and check if name is included in names array of each command.
     let thisCmd = this.commands.find(e => e.names.includes(name));
@@ -198,8 +210,17 @@ CommandHandler.prototype.runCommand = function(name, args, steamID64, respondMod
         thisCmd.ownersOnly = true;
     }
 
-    // If command is ownersOnly, check if user is included in owners array. If not, send error msg and return true to avoid caller sending a not found msg.
-    if (thisCmd.ownersOnly && !this.data.cachefile.ownerid.includes(steamID64)) {
+    // Display warning if a non Steam Chat userID was provided without a custom owner ID array. Permit usage of owner only parameters of non owner only commands.
+    if (resInfo.userID && !resInfo.fromSteamChat && (!resInfo.ownerIDs || resInfo.ownerIDs.length == 0)) {
+        logger("warn", `CommandHandler runCommand(): Command '${name}' was called with a non-SteamID without a custom ownerIDs array! *${logger.colors.fgred}This will either BYPASS or BLOCK all owner checks, leading to unprotected or no access!${logger.colors.reset}*`);
+    }
+
+    // Get the correct ownerid array for this request
+    let owners = this.data.cachefile.ownerid;
+    if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
+
+    // If command is ownersOnly, check if user is included in owners array. If not, send error msg and return true to avoid caller sending a not found msg
+    if (thisCmd.ownersOnly && !owners.includes(resInfo.userID)) { // If no userID was provided this check will also trigger
         respondModule(context, resInfo, this.data.lang.commandowneronly);
         return true;
     }
@@ -208,7 +229,7 @@ CommandHandler.prototype.runCommand = function(name, args, steamID64, respondMod
     if (!resInfo || !resInfo.cmdprefix) resInfo["cmdprefix"] = "!";
 
     // Run command if one was found
-    thisCmd.run(this, args, steamID64, respondModule, context, resInfo);
+    thisCmd.run(this, args, respondModule, context, resInfo);
 
     // Return true if command was found
     return true;

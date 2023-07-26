@@ -13,7 +13,8 @@ These are the patches being applied:
 - Re-enable primaryGroup profile setting: [#287](https://github.com/DoctorMcKay/node-steamcommunity/pull/287) & [#307](https://github.com/DoctorMcKay/node-steamcommunity/pull/307)  
 - Add sharedfiles voteUp & voteDown support
 - Fix resolving vanity for private profiles returning error: [#315](https://github.com/DoctorMcKay/node-steamcommunity/pull/315)
-- (Potentially) Fix sharedfile data scraping failing as a non-english page was returned by Steam
+- Fix sharedfile data scraping failing as a non-english page was returned by Steam: [#316](https://github.com/DoctorMcKay/node-steamcommunity/pull/316)
+- Fix scraping sharedfile type failing when incomplete breadcrumb was returned: [#316](https://github.com/DoctorMcKay/node-steamcommunity/pull/316)
 
 These patches have been applied in the past:  
 - Add full sharedfiles support: [#306](https://github.com/DoctorMcKay/node-steamcommunity/pull/306)

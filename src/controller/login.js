@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 17:55:45
+ * Last Modified: 23.07.2023 13:50:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -134,9 +134,10 @@ Controller.prototype.login = function(firstLogin) {
                 if (thisbot.status == Bot.EStatus.OFFLINE) return;
 
                 // Keep waiting if we are on the last iteration and user object is not fully populated yet, this takes a few seconds after login. Make sure to check for limitations of last entry in array instead of this iteration to not break when the this last acc got skipped
-                let lastBot = Object.values(this.bots)[Object.values(this.bots).filter(e => e.status == Bot.EStatus.ONLINE).length - 1]; // Get index of the last acc marked as online. I know, this line really sucks readability-wise
+                let onlineBots = this.getBots();
+                let lastBot    = onlineBots[onlineBots.length - 1];
 
-                if (i + 1 == Object.keys(this.data.logininfo).length && !lastBot.user.limitations) {
+                if (i + 1 == Object.keys(this.data.logininfo).length && lastBot && !lastBot.user.limitations) { // Only attempt to check if a lastBot was found, this can otherwise cause an infinite error loop
                     return logger("info", `Last account logged in, waiting for user object of Bot ${lastBot.index} to populate...`, true, true, logger.animation("waiting"));
                 }
 

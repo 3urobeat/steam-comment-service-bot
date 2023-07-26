@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 11:25:17
+ * Last Modified: 26.07.2023 16:03:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -23,7 +23,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 
 module.exports.help = {
-    names: ["h", "help", "commands"],
+    names: ["help", "h", "commands"],
     description: "Returns a list of commands available to you and a link to the commands documentation wiki page",
     args: [],
     ownersOnly: false,
@@ -32,18 +32,21 @@ module.exports.help = {
      * The help command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
-     * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+    run: (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+
+        // Get the correct ownerid array for this request
+        let owners = commandHandler.data.cachefile.ownerid;
+        if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
         // Construct comment text for owner or non owner
         let commentText;
 
-        if (commandHandler.data.cachefile.ownerid.includes(steamID64)) {
+        if (owners.includes(resInfo.userID)) {
             if (commandHandler.controller.getBots().length > 1 || commandHandler.data.config.maxOwnerComments) commentText = `'${resInfo.cmdprefix}comment (amount/"all") [profileid] [custom, quotes]' - ${commandHandler.data.lang.helpcommentowner1.replace("maxOwnerComments", commandHandler.data.config.maxOwnerComments)}`;
                 else commentText = `'${resInfo.cmdprefix}comment ("1") [profileid] [custom, quotes]' - ${commandHandler.data.lang.helpcommentowner2}`;
         } else {
@@ -67,8 +70,8 @@ module.exports.help = {
             '${resInfo.cmdprefix}owner' - ${commandHandler.data.lang.helpowner}
             ${yourgroupText}
         
-            ${commandHandler.data.lang.helpreadothercmdshere} ' https://github.com/3urobeat/steam-comment-service-bot/wiki/Commands-documentation '
-        `.replace(/ {4}/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
+            ${commandHandler.data.lang.helpreadothercmdshere} ' https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/commands_doc.md '
+        `.replace(/^( {4})+/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
     }
 };
 
@@ -83,15 +86,18 @@ module.exports.info = {
      * The info command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
-     * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+    run: (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        commandHandler.data.lastCommentDB.findOne({ id: steamID64 }, async (err, doc) => {
+        // Get the correct ownerid array for this request
+        let owners = commandHandler.data.cachefile.ownerid;
+        if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
+
+        commandHandler.data.lastCommentDB.findOne({ id: resInfo.userID }, async (err, doc) => {
             let lastReq = await commandHandler.data.getLastCommentRequest();
 
             let userLastReq = "Never";
@@ -101,16 +107,16 @@ module.exports.info = {
             respond(`
                 -----------------------------------~~~~~------------------------------------
                 >   ${commandHandler.data.datafile.mestr}'s Comment Bot [Version ${commandHandler.data.datafile.versionstr}] (More info: ${resInfo.cmdprefix}about)
-                >   Uptime: ${Number(Math.round(((new Date() - commandHandler.controller.info.bootStartTimestamp) / 3600000)+"e"+2)+"e-"+2)} hours | Branch: ${commandHandler.data.datafile.branch}
-                >   'node.js' Version: ${process.version} | RAM Usage (RSS): ${Math.round(process.memoryUsage()["rss"] / 1024 / 1024 * 100) / 100} MB
-                >   Accounts: ${commandHandler.controller.getBots().length} | maxComments/owner: ${commandHandler.data.config.maxComments}/${commandHandler.data.config.maxOwnerComments} | delay: ${commandHandler.data.config.commentdelay}
+                >   ${`Uptime: ${Number(Math.round(((new Date() - commandHandler.controller.info.bootStartTimestamp) / 3600000)+"e"+2)+"e-"+2)} hours`.padEnd(24, " ")} | Branch: ${commandHandler.data.datafile.branch}
+                >   ${`'node.js' Version: ${process.version}`.padEnd(25, " ")} | RAM Usage (RSS): ${Math.round(process.memoryUsage()["rss"] / 1024 / 1024 * 100) / 100} MB
+                >   ${`Accounts: ${commandHandler.controller.getBots().length}`.padEnd(24, " ")} | Active Plugins: ${Object.keys(commandHandler.controller.pluginSystem.pluginList).length}
                 |
-                >   Your steam64ID: ${steamID64}
+                >   Your ID: ${resInfo.userID} | Steam Chat? ${resInfo.fromSteamChat ? "Yes" : "No"} | Owner? ${owners.includes(resInfo.userID) ? "Yes" : "No"}
                 >   Your last request: ${userLastReq}
                 >   Last processed request: ${(new Date(lastReq)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)
                 >   I have commented ${commandHandler.controller.info.commentCounter} times since my last restart and completed request!
                 -----------------------------------~~~~~------------------------------------
-            `.replace(/ {4}/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
+            `.replace(/^( {4})+/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
             /* eslint-enable no-irregular-whitespace */
         });
     }
@@ -127,12 +133,11 @@ module.exports.ping = {
      * The ping command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
-     * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+    run: (commandHandler, args, respondModule, context, resInfo) => {
         let respond   = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
         let pingStart = Date.now();
 
@@ -155,12 +160,11 @@ module.exports.about = {
      * The about command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
-     * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+    run: (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         respond(commandHandler.data.datafile.aboutstr);
@@ -178,12 +182,11 @@ module.exports.owner = {
      * The owner command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
-     * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+    run: (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // Check if no owner link is set
@@ -205,12 +208,11 @@ module.exports.test = {
      * The test command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
-     * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: async (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // eslint-disable-line
 
         /* // Do not remove, these are handleSteamIdResolving test cases. Might be useful to include later in steamid-resolving lib test suite

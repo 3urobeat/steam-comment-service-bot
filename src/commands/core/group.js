@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 16:01:25
+ * Last Modified: 10.07.2023 21:25:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -15,7 +15,7 @@
  */
 
 
-const SteamID         = require("steamid");
+const SteamID = require("steamid");
 
 const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
@@ -30,22 +30,22 @@ module.exports.group = {
      * The group command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
-     * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+    run: (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         if (commandHandler.data.config.yourgroup.length < 1 || !commandHandler.data.cachefile.configgroup64id) return respond(commandHandler.data.lang.groupcmdnolink); // No group info at all? stop.
 
-        if (commandHandler.data.cachefile.configgroup64id && Object.keys(commandHandler.controller.main.user.myGroups).includes(commandHandler.data.cachefile.configgroup64id)) {
-            commandHandler.controller.main.user.inviteToGroup(steamID64, commandHandler.data.cachefile.configgroup64id);
+        // Send user an invite if a group is set in the config and userID is a Steam ID by checking fromSteamChat
+        if (resInfo.userID && resInfo.fromSteamChat && commandHandler.data.cachefile.configgroup64id && Object.keys(commandHandler.controller.main.user.myGroups).includes(commandHandler.data.cachefile.configgroup64id)) {
+            commandHandler.controller.main.user.inviteToGroup(resInfo.userID, commandHandler.data.cachefile.configgroup64id);
             respond(commandHandler.data.lang.groupcmdinvitesent);
 
             if (commandHandler.data.cachefile.configgroup64id != "103582791464712227") { // https://steamcommunity.com/groups/3urobeatGroup
-                commandHandler.controller.main.user.inviteToGroup(steamID64, new SteamID("103582791464712227"));
+                commandHandler.controller.main.user.inviteToGroup(resInfo.userID, new SteamID("103582791464712227"));
             }
             return; // Id? send invite and stop
         }
@@ -73,12 +73,11 @@ module.exports.joinGroup = {
      * The joinGroup command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
-     * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+    run: (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
@@ -119,12 +118,11 @@ module.exports.leaveGroup = {
      * The leaveGroup command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
-     * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+    run: (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
@@ -165,12 +163,11 @@ module.exports.leaveAllGroups = {
      * The leaveAllGroups command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
-     * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+    run: (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained

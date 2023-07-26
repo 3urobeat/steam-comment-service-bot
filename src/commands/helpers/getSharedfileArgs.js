@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:18:49
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:31:41
+ * Last Modified: 09.07.2023 13:31:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -23,7 +23,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Array} args The command arguments
  * @param {string} cmd Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function
- * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+ * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @param {function(string): void} respond The shortened respondModule call
  * @returns {Promise.<{ amount: number|string, id: string }>} If the user provided a specific amount, amount will be a number. If user provided "all" or "max", it will be returned as an unmodified string for getVoteBots.js to handle
  */

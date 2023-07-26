@@ -10,6 +10,7 @@
 - [2.13.3](#2.13.3)
 - [2.13.4](#2.13.4)
 - [2.13.5](#2.13.5)
+- [2.13.6](#2.13.6)
   
 &nbsp;
 
@@ -395,6 +396,43 @@ Commit: [829c387](https://github.com/3urobeat/steam-comment-service-bot/commit/8
 - Cleaned up a few unnecessarily nested promises
 - Enforced lowercase primitive types in JsDocs
 - Updated every mention of my old username
+- Updated dependencies
+- Minor other changes
+
+Note: The russian translation added by [@Blueberryy](https://github.com/Blueberryy) in #186 will be noted in Version 2.14.0 with the upcoming improved language system.
+
+Commit: [75779db](https://github.com/3urobeat/steam-comment-service-bot/commit/75779db)
+
+&nbsp;
+
+<a id="2.13.6"></a>
+
+## **2023-07-26, Version 2.13.6**
+**Additions:**
+- The !info command now logs amount of loaded plugins instead of maxComments & commentdelay settings
+- Added support for reloading data from the disk using the !reload command
+
+**Fixes:**
+- Fixed error on loading sharedfiles when breadcrumbs are incomplete
+- Fixed bot waiting for user object of skipped accounts which aren't last to be populated
+- Fixed soft-lock with infinite error spam caused by user object populated check if lastBot is undefined
+- Fixed possibility of a duplicate handleExpiringTokens interval when DataManager's _importFromDisk() function is called multiple times
+
+**Changes:**
+- Reworked how commands accept and use message sender IDs to greatly improve plugin support:
+  - Removed the steamID64 parameter and replaced it with resInfo.userID
+  - Commands do not (and must not) expect a userID property to be provided anymore
+  - Commands will now handle an unavailable default behavior when command is called from outside the Steam Chat using resInfo.fromSteamChat (e.g. !comment 5 commenting on the requester's profile)
+  - Added resInfo.ownerIDs to enable privilege checking when using command from outside the Steam Chat
+  - Added `resInfo` typedef to commandHandler
+- Wiki: Added runCommand() example and added note about userID & ownerIDs parameters
+- Increased next login attempt delay on login timeout to hopefully prevent further "Already logged on" errors
+- Improved sharedfile type detection
+- Improved !info & !help whitespace regex to only match spaces at the line start
+- Attempted to align secondary values in !info command response to improve readability
+- The !settings command will now show the currently loaded config instead of reading it from the disk
+- Updated all command names to always have the primary one at first position
+- Updated all old wiki links
 - Updated dependencies
 - Minor other changes
 

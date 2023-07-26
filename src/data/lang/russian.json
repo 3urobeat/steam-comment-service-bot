@@ -1,5 +1,5 @@
 {
-    "note": "Этот файл содержит почти все сообщения, которые бот посылает пользователям. Если вы хотите изменить сообщения, прочтите эту страницу: https://github.com/3urobeat/steam-comment-service-bot/wiki/How-to-add-custom-messages",
+    "note": "Этот файл содержит почти все сообщения, которые бот посылает пользователям. Если вы хотите изменить сообщения, прочтите эту страницу: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/customlang_doc.md",
 
     "updaterautoupdatedisabled": "Вы отключили автоматическое обновление. Хотите ли вы обновить его сейчас?\nЕсли да, пожалуйста, запустите обновление с помощью команды: cmdprefixupdate true",
 
@@ -19,7 +19,7 @@
     "commentuserprofileprivate": "Ваш/полученный профиль кажется скрытым. Пожалуйста, измените настройки приватности, чтобы разрешить комментарии, и повторите попытку!",
     "commenterroroccurred": "Опаньки, произошла ошибка! К сожалению, я не смог её прокомментировать.",
     "commentprocessstarted": "Примерное время ожидания для numberOfComments комментариев: waittime.",
-    "commentfailedcmdreference": "Чтобы получить подробную информацию о том, почему комментарий не сработал, введите «cmdprefixfailed». Вы можете прочитать, что, вероятно, вызвало вашу ошибку, здесь: https://github.com/3urobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems",
+    "commentfailedcmdreference": "Чтобы получить подробную информацию о том, почему комментарий не сработал, введите «cmdprefixfailed». Вы можете прочитать, что, вероятно, вызвало вашу ошибку, здесь: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md",
     
     "comment429stop": "Остановлен процесс комментирования, поскольку все прокси-серверы выдали ошибку HTTP 429 (восстановление IP). Пожалуйста, повторите попытку позже. Не удалось: failedamount/numberOfComments",
     "commentretrying": "failedamount/numberOfComments комментариев были неудачными. Я собираюсь повторить попытку неудачных комментариев в untilStr. (Попытка thisattempt/maxattempt)",

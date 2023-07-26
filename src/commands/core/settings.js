@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 15:59:10
+ * Last Modified: 26.07.2023 16:49:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -21,7 +21,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 
 module.exports.settings = {
-    names: ["set", "settings", "config"],
+    names: ["settings", "set", "config"],
     description: "Change a value in the config",
     args: [
         {
@@ -45,26 +45,31 @@ module.exports.settings = {
      * The settings command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
-     * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+    run: (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
         let config  = commandHandler.data.config;
 
         // Only send current settings if no arguments were provided
         if (!args[0]) {
-            fs.readFile("./config.json", function(err, data) { // Use readFile to get an unprocessed object
-                if (err) return respond(commandHandler.data.lang.settingscmdfailedread + err);
+            let stringifiedconfig = JSON.stringify(commandHandler.data.config, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
+                if (v instanceof Array) return JSON.stringify(v);
+                return v;
+            }, 4)
+                .replace(/"\[/g, "[")
+                .replace(/\]"/g, "]")
+                .replace(/\\"/g, '"')
+                .replace(/""/g, '""');
 
-                // Remove first and last character which are brackets and remove leading and trailing whitespaces from all lines
-                let currentsettingsarr = data.toString().slice(1, -1).split("\n").map(s => s.trim());
+            // Remove first and last character which are brackets and remove leading and trailing whitespaces from all lines
+            let currentsettingsarr = stringifiedconfig.toString().slice(1, -1).split("\n").map(s => s.trim());
 
-                // Send message with code prefix and only allow cuts at newlines
-                respondModule(context, { prefix: "/code", cutChars: ["\n"], ...resInfo }, commandHandler.data.lang.settingscmdcurrentsettings + "\n" + currentsettingsarr.join("\n")); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
-            });
+            // Send message with code prefix and only allow cuts at newlines
+            respondModule(context, { prefix: "/code", cutChars: ["\n"], ...resInfo }, commandHandler.data.lang.settingscmdcurrentsettings + "\n" + currentsettingsarr.join("\n")); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+
             return;
         }
 

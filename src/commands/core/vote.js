@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 15:59:45
+ * Last Modified: 24.07.2023 19:42:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -47,19 +47,26 @@ module.exports.upvote = {
      * The upvote command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
-     * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: async (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        let requesterSteamID64 = steamID64;
-        let ownercheck         = commandHandler.data.cachefile.ownerid.includes(requesterSteamID64);
+        // Get the correct ownerid array for this request
+        let owners = commandHandler.data.cachefile.ownerid;
+        if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
+
+        let requesterSteamID64 = resInfo.userID;
+        let ownercheck         = owners.includes(requesterSteamID64);
 
 
-        /* --------- Check for disabled cmd or if update is queued --------- */
+        /* --------- Various checks  --------- */
+        if (!resInfo.userID) {
+            respond(commandHandler.data.lang.nouserid); // Reject usage of command without an userID to avoid cooldown bypass
+            return logger("err", "The upvote command was called without resInfo.userID! Blocking the command as I'm unable to apply cooldowns, which is required for this command!");
+        }
         if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         if (commandHandler.controller.info.activeLogin)                 return respond(commandHandler.data.lang.activerelog);      // Bot is waiting for relog
         if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(commandHandler.data.lang.commandowneronly); // Command is restricted to owners only
@@ -193,7 +200,7 @@ module.exports.upvote = {
                     let failedcmdreference = "";
 
                     if (Object.keys(commandHandler.controller.activeRequests[id].failed).length > 0) {
-                        failedcmdreference = `\nTo get detailed information why which request failed please type '${resInfo.cmdprefix}failed'. You can read why your error was probably caused here: https://github.com/3urobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems`;
+                        failedcmdreference = `\nTo get detailed information why which request failed please type '${resInfo.cmdprefix}failed'. You can read why your error was probably caused here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md`;
                     }
 
                     // Send finished message
@@ -235,19 +242,26 @@ module.exports.downvote = {
      * The upvote command
      * @param {CommandHandler} commandHandler The commandHandler object
      * @param {Array} args Array of arguments that will be passed to the command
-     * @param {string} steamID64 Steam ID of the user that executed this command
      * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
-     * @param {object} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: async (commandHandler, args, steamID64, respondModule, context, resInfo) => {
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        let requesterSteamID64 = steamID64;
-        let ownercheck         = commandHandler.data.cachefile.ownerid.includes(requesterSteamID64);
+        // Get the correct ownerid array for this request
+        let owners = commandHandler.data.cachefile.ownerid;
+        if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
+
+        let requesterSteamID64 = resInfo.userID;
+        let ownercheck         = owners.includes(requesterSteamID64);
 
 
-        /* --------- Check for disabled cmd or if update is queued --------- */
+        /* --------- Various checks  --------- */
+        if (!resInfo.userID) {
+            respond(commandHandler.data.lang.nouserid); // Reject usage of command without an userID to avoid cooldown bypass
+            return logger("err", "The downvote command was called without resInfo.userID! Blocking the command as I'm unable to apply cooldowns, which is required for this command!");
+        }
         if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         if (commandHandler.controller.info.activeLogin)                 return respond(commandHandler.data.lang.activerelog);      // Bot is waiting for relog
         if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(commandHandler.data.lang.commandowneronly); // Command is restricted to owners only
@@ -381,7 +395,7 @@ module.exports.downvote = {
                     let failedcmdreference = "";
 
                     if (Object.keys(commandHandler.controller.activeRequests[id].failed).length > 0) {
-                        failedcmdreference = `\nTo get detailed information why which request failed please type '${resInfo.cmdprefix}failed'. You can read why your error was probably caused here: https://github.com/3urobeat/steam-comment-service-bot/wiki/Errors,-FAQ-&-Common-problems`;
+                        failedcmdreference = `\nTo get detailed information why which request failed please type '${resInfo.cmdprefix}failed'. You can read why your error was probably caused here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md`;
                     }
 
                     // Send finished message
