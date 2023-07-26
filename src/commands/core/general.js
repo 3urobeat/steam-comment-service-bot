@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.07.2023 13:27:48
+ * Last Modified: 26.07.2023 16:03:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -71,7 +71,7 @@ module.exports.help = {
             ${yourgroupText}
         
             ${commandHandler.data.lang.helpreadothercmdshere} ' https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/commands_doc.md '
-        `.replace(/ {4}/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
+        `.replace(/^( {4})+/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
     }
 };
 
@@ -116,7 +116,7 @@ module.exports.info = {
                 >   Last processed request: ${(new Date(lastReq)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)
                 >   I have commented ${commandHandler.controller.info.commentCounter} times since my last restart and completed request!
                 -----------------------------------~~~~~------------------------------------
-            `.replace(/ {4}/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
+            `.replace(/^( {4})+/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
             /* eslint-enable no-irregular-whitespace */
         });
     }
