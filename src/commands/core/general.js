@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 24.07.2023 19:43:08
+ * Last Modified: 26.07.2023 13:27:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -23,7 +23,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 
 module.exports.help = {
-    names: ["h", "help", "commands"],
+    names: ["help", "h", "commands"],
     description: "Returns a list of commands available to you and a link to the commands documentation wiki page",
     args: [],
     ownersOnly: false,

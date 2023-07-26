@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 09.07.2023 17:31:02
+ * Last Modified: 26.07.2023 13:28:49
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -132,7 +132,7 @@ module.exports.update = {
 
 
 module.exports.output = {
-    names: ["output", "log"],
+    names: ["log", "output"],
     description: "Shows the last 15 lines of the log",
     args: [],
     ownersOnly: true,

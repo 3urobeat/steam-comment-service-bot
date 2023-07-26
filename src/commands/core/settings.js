@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 09.07.2023 17:30:43
+ * Last Modified: 26.07.2023 13:28:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -21,7 +21,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 
 module.exports.settings = {
-    names: ["set", "settings", "config"],
+    names: ["settings", "set", "config"],
     description: "Change a value in the config",
     args: [
         {
