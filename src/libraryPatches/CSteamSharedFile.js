@@ -120,9 +120,9 @@ SteamCommunity.prototype.getSteamSharedFile = function(sharedFileId, callback) {
 
 
 			// Determine type by looking at the second breadcrumb. Find the first separator as it has a unique name and go to the next element which holds our value of interest
-			let breadcrumb = $(".breadcrumbs > .breadcrumb_separator").next().get(0);
+			let breadcrumb = $(".breadcrumbs > .breadcrumb_separator").next().get(0) || $(".breadcrumbs").get(0).children[1]; // Some artworks only have one breadcrumb like "username's Artwork" so let's check that as a backup
 
-			if (breadcrumb) {
+			if (breadcrumb) { // If neither could be found then leave type at null
 				if (breadcrumb.children[0].data.includes("Screenshot")) {
 					sharedfile.type = ESharedFileType.Screenshot;
 				}
