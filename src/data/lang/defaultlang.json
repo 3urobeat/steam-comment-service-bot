@@ -130,5 +130,5 @@
     "evalcmdturnedoff": "The eval command has been turned off!",
     "evalcmdlogininfoblock": "Your code includes 'logininfo'. In order to protect passwords this is not allowed.",
 
-    "childbotmessage": "This is one account running in a bot cluster.\nPlease add the main bot and send him a cmdprefixhelp message.\nIf you want to check out what this is about, type: cmdprefixabout"
+    "childbotmessage": "This is one account running in a bot cluster.\nPlease add the main bot and send him a cmdprefixhelp message.\nIf you want to check out what this is about, type: cmdprefixabout\nThis is the main bot account:"
 }
