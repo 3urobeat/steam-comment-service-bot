@@ -54,7 +54,7 @@ This is the basic setup guide. Visit the [Wiki](https://github.com/3urobeat/stea
 
 &nbsp;
 
-## **Download:** <a href="https://youtu.be/8J78rC9Z28U?t=45"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
+## **Download:** <a href="https://youtu.be/8J78rC9Z28U?t=45" target="_blank"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
 
 Click here: [Download](https://github.com/3urobeat/steam-comment-service-bot/archive/master.zip)  
 Extract the zip and open the `steam-comment-service-bot` folder.  
@@ -65,7 +65,7 @@ If you need a tutorial for this specific node part, [click here.](https://youtu.
 
 &nbsp;
 
-## **Setup & Configuration:** <a href="https://youtu.be/8J78rC9Z28U?t=125"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
+## **Setup & Configuration:** <a href="https://youtu.be/8J78rC9Z28U?t=125" target="_blank"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
 #### **Accounts**
 Open the `accounts.txt` file and provide your accounts in the `username:password:shared_secret` format, one account per line.  
 If you don't want to use a shared_secret just leave it out and only provide the account in the `username:password` format.  
@@ -93,7 +93,7 @@ You can read a detailed explanation [here in the wiki](https://github.com/3urobe
   
 &nbsp;
 
-#### **Config** <a href="https://youtu.be/8J78rC9Z28U?t=181"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a> 
+#### **Config** <a href="https://youtu.be/8J78rC9Z28U?t=181" target="_blank"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a> 
 Open `config.json` with a text editor.  
 You need to provide the link to your steam profile at "owner" and the link or your steam64id of your profile at "ownerid", following the existing template.  
 Make sure to put your link and or ID inside the brackets, just like the template shows.  
@@ -128,7 +128,7 @@ The bot is now ready! Do not modify any of the other files.
 
 &nbsp;
 
-## **Usage:** <a href="https://youtu.be/8J78rC9Z28U?t=239"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
+## **Usage:** <a href="https://youtu.be/8J78rC9Z28U?t=239" target="_blank"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
 Open up a power shell/terminal in this folder and type `node start.js`.  
 
 > **Important Disclaimer:** Do not start the bot with a tool that restarts on changes (like nodemon etc)! Only use normal `node`.  
@@ -141,7 +141,7 @@ You can see all commands and their usage [here in the wiki](https://github.com/3
 
 &nbsp;
 
-## **Additional Information:** <a href="https://youtu.be/8J78rC9Z28U?t=339"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
+## **Additional Information:** <a href="https://youtu.be/8J78rC9Z28U?t=339" target="_blank"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
 <div align="center">
 
 [![Sponsor](https://img.shields.io/badge/Sponsor-%241-orange)](https://github.com/sponsors/3urobeat) ![Star](https://img.shields.io/github/stars/3urobeat/steam-comment-service-bot)  
