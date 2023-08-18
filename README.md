@@ -1,6 +1,6 @@
 <div align="center" markdown=1>
 	<p align="center"><img width=45% src="https://3urobeat.com/comment-bot/steamLogo.png"></p>
-	<strong>Request multiple profile comments by texting a bot network!</strong>
+	<strong>Request tons of comments, favs & likes by texting a bot network!</strong>
 	<br>See how to set up the bot and customize it below.<br>
 	<p></p>
 </div>
@@ -12,7 +12,7 @@
 [![Star](https://img.shields.io/badge/-Give%20this%20repo%20a%20star!-yellow)](https://github.com/3urobeat/steam-comment-service-bot)
 [![Steam Group](https://img.shields.io/badge/Steam%20Group-Join!-blue)](https://steamcommunity.com/groups/3urobeatGroup)
 [![Donate](https://img.shields.io/badge/Donate-%241-orange)](https://github.com/sponsors/3urobeat)
-<p align="center">Click on a badge to learn more.</p>
+<p align="center">Click on a badge to learn more. Table of Contents:</p>
 
 </div>
 
@@ -54,7 +54,8 @@ This is the basic setup guide. Visit the [Wiki](https://github.com/3urobeat/stea
 
 &nbsp;
 
-## **Download:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/8J78rC9Z28U?t=45)  
+## **Download:** <a href="https://youtu.be/8J78rC9Z28U?t=45"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
+
 Click here: [Download](https://github.com/3urobeat/steam-comment-service-bot/archive/master.zip)  
 Extract the zip and open the `steam-comment-service-bot` folder.  
   
@@ -64,7 +65,7 @@ If you need a tutorial for this specific node part, [click here.](https://youtu.
 
 &nbsp;
 
-## **Setup & Configuration:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/8J78rC9Z28U?t=125)    
+## **Setup & Configuration:** <a href="https://youtu.be/8J78rC9Z28U?t=125"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
 #### **Accounts**
 Open the `accounts.txt` file and provide your accounts in the `username:password:shared_secret` format, one account per line.  
 If you don't want to use a shared_secret just leave it out and only provide the account in the `username:password` format.  
@@ -92,7 +93,7 @@ You can read a detailed explanation [here in the wiki](https://github.com/3urobe
   
 &nbsp;
 
-#### **Config** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/8J78rC9Z28U?t=181)  
+#### **Config** <a href="https://youtu.be/8J78rC9Z28U?t=181"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a> 
 Open `config.json` with a text editor.  
 You need to provide the link to your steam profile at "owner" and the link or your steam64id of your profile at "ownerid", following the existing template.  
 Make sure to put your link and or ID inside the brackets, just like the template shows.  
@@ -127,7 +128,7 @@ The bot is now ready! Do not modify any of the other files.
 
 &nbsp;
 
-## **Usage:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/8J78rC9Z28U?t=239)  
+## **Usage:** <a href="https://youtu.be/8J78rC9Z28U?t=239"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
 Open up a power shell/terminal in this folder and type `node start.js`.  
 
 > **Important Disclaimer:** Do not start the bot with a tool that restarts on changes (like nodemon etc)! Only use normal `node`.  
@@ -140,7 +141,7 @@ You can see all commands and their usage [here in the wiki](https://github.com/3
 
 &nbsp;
 
-## **Additional Information:** [![YouTube](https://img.shields.io/badge/YouTube-Tutorial%20section-red)](https://youtu.be/8J78rC9Z28U?t=339)  
+## **Additional Information:** <a href="https://youtu.be/8J78rC9Z28U?t=339"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
 <div align="center">
 
 [![Sponsor](https://img.shields.io/badge/Sponsor-%241-orange)](https://github.com/sponsors/3urobeat) ![Star](https://img.shields.io/github/stars/3urobeat/steam-comment-service-bot)  
