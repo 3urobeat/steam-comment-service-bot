@@ -6,7 +6,7 @@
 This page will walk you through downloading, setting up and configuring the bot!  
 This process usually takes around 5-10 minutes.  
 
-If you would like to rather follow a video than these written instructions, click: <a href="https://youtu.be/8J78rC9Z28U" target="_blank"><img align="center" src="https://img.shields.io/badge/YouTube-Tutorial-red"></a>  
+If you would like to rather follow a video than these written instructions, click: <a href="https://youtu.be/8J78rC9Z28U" target="_blank"><img src="https://img.shields.io/badge/YouTube-Tutorial-red"></a>  
 Every headline on this page also contains a YouTube badge which will take you to the corresponding video part when clicked!  
 
 **Disclaimer!**  
@@ -16,12 +16,12 @@ Every headline on this page also contains a YouTube badge which will take you to
 &nbsp;
 
 ## Table Of Contents
-- [Download](#download)
+- [Download](#download-)
 - [Setup & Configuration](#setup--configuration-)
   - [Accounts](#accounts)
-  - [Config](#config)
+  - [Config](#config-)
   - [Custom Quotes](#custom-quotes)
-- [Usage](#usage)
+- [Usage](#usage-)
 
 &nbsp;
 
@@ -109,7 +109,7 @@ Head over to your Steam client, add the main bot (the first account in your acco
 It should respond with a list of commands available to you.  
 
 To request a comment, simply type `!comment 1`!  
-Click on the <a href="https://youtu.be/8J78rC9Z28U?t=239" target="_blank"><img align="center" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a> badge to see a demo.  
+Click on the <a href="https://youtu.be/8J78rC9Z28U?t=239" target="_blank"><img src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a> badge to see a demo.  
 
 You can see all commands and their usage [here in the wiki](./commands_doc.md).  
 

@@ -11,14 +11,14 @@ Bot errors are errors that are being directly returned from my bot, not from ste
 
 &nbsp;
 
-**Table of Contents:**  
-- [Bot Errors:](#bot-errors)
-- [Steam Errors:](#steam-errors)
+## Table of Contents:
+- [Bot Errors](#bot-errors)
+- [Steam Errors](#steam-errors)
 - [FAQ/Common problems](#faqcommon-problems)
 
 &nbsp;
 
-## Bot Errors:  
+## Bot Errors:
 | Error message | Description |
 | ---- | ---- |
 
