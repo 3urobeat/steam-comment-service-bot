@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.07.2023 16:49:28
+ * Last Modified: 26.07.2023 19:05:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -133,18 +133,7 @@ module.exports.settings = {
             });
         }
 
-        // Get arrays on one line
-        let stringifiedconfig = JSON.stringify(config, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
-            if (v instanceof Array) return JSON.stringify(v);
-            return v;
-        }, 4)
-            .replace(/"\[/g, "[")
-            .replace(/\]"/g, "]")
-            .replace(/\\"/g, '"')
-            .replace(/""/g, '""');
-
-        fs.writeFile("./config.json", stringifiedconfig, (err) => {
-            if (err) return logger("error", `Error writing settings cmd changes to config: ${err}`);
-        });
+        // Update config.json
+        commandHandler.data.writeConfigToDisk();
     }
 };

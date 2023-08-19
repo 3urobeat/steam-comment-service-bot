@@ -1,5 +1,7 @@
 # Welcome to the steam-comment-service-bot wiki!  
-Setup instructions, documentation for all commands, configuration files, and error messages can be found here.
+[⬅️ Go back to the main page](../..#readme)
+
+You can find setup instructions, documentation for all commands, config files, error messages and much more here!
 
 &nbsp;
 
@@ -11,6 +13,7 @@ Setup instructions, documentation for all commands, configuration files, and err
 - [Adding proxies](./adding_proxies.md)
 - [Customizing chat messages](./customlang_doc.md)
 - [Errors, FAQ & Common problems](./errors_doc.md)
+- [Setup Guide](./setup_guide.md)
 - [Steam limitations](./steam_limitations.md)
 - [Integrating into your own application](./integrating_into_your_app.md)
 - [Creating plugins](./creating_plugins.md)

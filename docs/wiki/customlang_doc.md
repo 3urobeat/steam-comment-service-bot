@@ -1,5 +1,5 @@
 # How to customize chat messages sent by the bot
-[⬅️ Go back to wiki home](./)
+[⬅️ Go back to wiki home](./#readme)
 
 &nbsp;
 

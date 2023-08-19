@@ -1,5 +1,5 @@
 # Errors, FAQ & Common problems
-[⬅️ Go back to wiki home](./)
+[⬅️ Go back to wiki home](./#readme)
 
 This is a documentation of all bot errors and all steam errors I know and is therefore always under construction. 🚧  
 You can search for your error on this page by pressing `CTRL+F` in your browser.  
@@ -11,14 +11,14 @@ Bot errors are errors that are being directly returned from my bot, not from ste
 
 &nbsp;
 
-**Table of Contents:**  
-- [Bot Errors:](#bot-errors)
-- [Steam Errors:](#steam-errors)
+## Table of Contents:
+- [Bot Errors](#bot-errors)
+- [Steam Errors](#steam-errors)
 - [FAQ/Common problems](#faqcommon-problems)
 
 &nbsp;
 
-## Bot Errors:  
+## Bot Errors:
 | Error message | Description |
 | ---- | ---- |
 

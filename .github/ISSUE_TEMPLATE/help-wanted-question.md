@@ -1,6 +1,6 @@
 ---
 name: Help wanted/Question
-about: I have a question or need help
+about: I have a question/need help but a Q&A discussion isn't fitting
 title: ''
 labels: Question
 assignees: ''
