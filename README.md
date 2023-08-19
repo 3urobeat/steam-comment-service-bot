@@ -65,7 +65,7 @@ This process is pretty simple and should not take you long!
 &nbsp;
 
 #### **The Wiki**
-The Wiki of this repository holds a lot of valuable information, please [check it out](https://github.com/3urobeat/steam-comment-service-bot/tree/master/docs/wiki#readme)!  
+The Wiki of this repository holds a lot of valuable information, please [check it out](./docs/wiki#readme)!  
 You'll find pages on how to add proxies to drastically increase the amount of possible comments, how to integrate the bot into your own application, adding your own language, documentation on errors, the config, advancedconfig and much more.  
 
 #### **Questions, Bugs, Issues & Betas**

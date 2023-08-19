@@ -1,5 +1,5 @@
 # Errors, FAQ & Common problems
-[⬅️ Go back to wiki home](./)
+[⬅️ Go back to wiki home](./#readme)
 
 This is a documentation of all bot errors and all steam errors I know and is therefore always under construction. 🚧  
 You can search for your error on this page by pressing `CTRL+F` in your browser.  

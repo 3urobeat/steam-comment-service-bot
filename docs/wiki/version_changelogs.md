@@ -1,5 +1,5 @@
 # Version Changelogs
-[⬅️ Go back to wiki home](./)
+[⬅️ Go back to wiki home](./#readme)
 
 &nbsp;
 
