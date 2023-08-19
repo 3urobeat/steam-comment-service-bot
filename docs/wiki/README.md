@@ -1,5 +1,7 @@
 # Welcome to the steam-comment-service-bot wiki!  
-Setup instructions, documentation for all commands, configuration files, and error messages can be found here.
+[⬅️ Go back to the main page](../..#readme)
+
+You can find setup instructions, documentation for all commands, config files, error messages and much more here!
 
 &nbsp;
 
