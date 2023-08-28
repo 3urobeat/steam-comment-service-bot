@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.07.2023 10:48:48
+ * Last Modified: 28.08.2023 19:16:23
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -14,11 +14,13 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 // This file is called by start.js (which can't be updated).
 // This file can be updated but is not recommended as changes can't be applied cleanly without a manual restart.
 
 // It handles spawning and killing a child process which the bot runs in.
-// Please ignore the code quality, this file is designed to be pretty fail safe.
+// This file might look a bit weird - it is designed to hopefully be mostly failsafe.
+
 
 /* ---------------- First, import the core lib fs and define a few vars which will be used later ---------------- */
 const fs = require("fs");
@@ -40,7 +42,8 @@ global.srcdir = __dirname;
 process.argv[3] = 0;
 
 // Exec Arguments passed to the child process. Add --inspect here to enable the node.js debugger
-const execArgs = [ "--max-old-space-size=2048", "--optimize-for-size" ];
+const execArgs = [ "--max-old-space-size=2048", "--optimize-for-size", /* "--inspect" */ ];
+
 
 /* -------- Now, provide functions for attaching/detaching event listeners to the parent and child process -------- */
 
@@ -50,6 +53,7 @@ const execArgs = [ "--max-old-space-size=2048", "--optimize-for-size" ];
  */
 function attachParentListeners(callback) {
     let logafterrestart = [];
+
 
     /* ------------ Make a fake logger to use when the lib isn't loaded yet: ------------ */
     logger = (type, str) => {
@@ -64,14 +68,13 @@ function attachParentListeners(callback) {
     logger.animation = () => {}; // Just to be sure that no error occurs when trying to call this function without the real logger being present
     logger.detachEventListeners = () => {};
 
+
     /* ------------ Add unhandled rejection catches: ------------ */
-    handleUnhandledRejection = (reason) => {
-        // Should keep the bot at least from crashing
+    handleUnhandledRejection = (reason) => { // Should keep the bot at least from crashing
         logger("error", `Unhandled Rejection Error! Reason: ${reason.stack}`, true);
     };
 
-    handleUncaughtException = (reason) => {
-        // Try to fix error automatically by reinstalling all modules
+    handleUncaughtException = (reason) => { // Try to fix error automatically by reinstalling all modules
         if (String(reason).includes("Error: Cannot find module")) {
             logger("", "", true);
             if (global.extdata) logger("info", "Cannot find module error detected. Trying to fix error by reinstalling modules...\n"); // Check if extdata has been imported as workaround for hiding this message for new users to avoid confusion (because extdata.firststart can't be checked yet)
@@ -80,7 +83,9 @@ function attachParentListeners(callback) {
                 if (err) {
                     logger("error", "I was unable to reinstall all modules. Please try running 'npm install --production' manually. Error: " + err);
                     process.exit(1);
+
                 } else {
+
                     // Logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
                     logger("info", "Successfully reinstalled all modules.");
 
@@ -92,18 +97,16 @@ function attachParentListeners(callback) {
 
                     try {
                         process.kill(childpid, "SIGKILL");
-                    } catch (err) {} //eslint-disable-line
+                    } catch (err) {} // eslint-disable-line
 
                     setTimeout(() => {
                         logger("info", "Restarting...", false, true); // Note (Known issue!): Restarting here causes the application to start the bot in this process rather than creating a child_process. I have no idea why but it doesn't seem to cause issues (I HOPE) and is fixed when the user restarts the bot.
-                        require("../start.js").restart({
-                            logafterrestart: logafterrestart,
-                        }); // Call restart function with argsobject
+                        require("../start.js").restart({ logafterrestart: logafterrestart }); // Call restart function with argsobject
                     }, 2000);
                 }
             });
-        } else {
-            // Logging this message but still trying to fix it would probably confuse the user
+
+        } else { // Only log error if we are not trying to fix it in an effort to not confuse the user
 
             logger("error", `Uncaught Exception Error! Reason: ${reason.stack}`, true);
             logger("", "", true);
@@ -117,7 +120,8 @@ function attachParentListeners(callback) {
     };
 
     process.on("unhandledRejection", handleUnhandledRejection);
-    process.on("uncaughtException", handleUncaughtException);
+    process.on("uncaughtException",  handleUncaughtException);
+
 
     /* ------------ Add exit event listener and import logger: ------------ */
     // Attach exit event listener to display message in output & terminal when user stops the bot (before logger import so this runs before output-logger's exit event listener)
@@ -134,8 +138,9 @@ function attachParentListeners(callback) {
 
     process.on("exit", parentExitEvent);
 
+
     // Import logger lib
-    cp = require("child_process");
+    cp     = require("child_process");
     logger = require("output-logger"); // Look Mom, it's my own library!
 
     requestedKill = false;
@@ -148,6 +153,7 @@ function attachParentListeners(callback) {
         animationdelay: 250,
         exitmessage: "Goodbye!",
     });
+
 
     // Resume start/restart
     callback();
@@ -163,8 +169,8 @@ function detachParentListeners() {
     logger.detachEventListeners();
 
     if (handleUnhandledRejection) process.removeListener("unhandledRejection", handleUnhandledRejection);
-    if (handleUncaughtException) process.removeListener("uncaughtException", handleUncaughtException);
-    if (parentExitEvent) process.removeListener("exit", parentExitEvent);
+    if (handleUncaughtException)  process.removeListener("uncaughtException", handleUncaughtException);
+    if (parentExitEvent)          process.removeListener("exit", parentExitEvent);
 }
 
 
@@ -200,6 +206,7 @@ function attachChildListeners() {
                 logger("info", "Restarting...", false, true);
                 require("../start.js").restart(argsobject); // Call restart function with argsobject
             }, 2000);
+
         } else if (msg == "stop()") {
             requestedKill = true;
 
@@ -225,7 +232,8 @@ function attachChildListeners() {
     });
 }
 
-/* ------- Provide function to get file if it doesn't exist. Export it as it will be used later by the bot as well as a failsafe ------- */
+
+/* ------- Provide function to get a file if it doesn't exist. Export it to use it later as a failsafe from the bot process ------- */
 
 /**
  * Checks if the needed file exists and gets it if it doesn't
@@ -259,6 +267,7 @@ module.exports.checkAndGetFile = (file, logger, norequire = false, force = false
                     if (otherdata.versionstr.includes("BETA")) branch = "beta-testing";
                 } catch (err) {} //eslint-disable-line
             }
+
 
             // Construct URL for restoring a file from GitHub
             let fileurl = `https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/${branch}/${file.slice(2, file.length)}`; // Remove the dot at the beginning of the file string
@@ -307,11 +316,12 @@ module.exports.checkAndGetFile = (file, logger, norequire = false, force = false
             }
         }
 
+
         // Immediately get a new file if file doesn't exist or force is true
         if (!fs.existsSync(file) || force) {
             getNewFile();
-        } else {
-            // ...otherwise check if file is intact if norequire is false
+
+        } else { // ...otherwise check if file is intact if norequire is false
 
             if (norequire) {
                 resolve(file);
@@ -333,6 +343,7 @@ module.exports.checkAndGetFile = (file, logger, norequire = false, force = false
     });
 };
 
+
 /* ------------ Provide functions to start.js to start the bot: ------------ */
 
 /**
@@ -347,7 +358,7 @@ module.exports.run = () => {
 
         process.title = "CommentBot"; // Sets process title in task manager etc.
 
-        // get file to start
+        // Get file to start
         let file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false); // We can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
         if (!file) return;
 
@@ -357,6 +368,7 @@ module.exports.run = () => {
         attachChildListeners();
     });
 };
+
 
 /**
  * Restart the application
@@ -369,7 +381,7 @@ module.exports.restart = async (args) => {
 
         try {
             process.kill(args["pid"], "SIGKILL"); // Make sure the old child is dead
-        } catch (err) {} //eslint-disable-line
+        } catch (err) {} // eslint-disable-line
 
         setTimeout(async () => {
             // Get file to start

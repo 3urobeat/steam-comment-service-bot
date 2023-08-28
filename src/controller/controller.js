@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 08.07.2023 00:47:49
+ * Last Modified: 28.08.2023 19:20:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -93,7 +93,7 @@ const Controller = function() {
 
 
 /**
- * Internal: Inits the DataManager system, runs the updater and starts all bot accounts
+ * Internal: Initializes the bot by importing data from the disk, running the updater and finally logging in all bot accounts.
  */
 Controller.prototype._start = async function() {
     let checkAndGetFile = require("../starter.js").checkAndGetFile; // Temp var to use checkAndGetFile() before it is referenced in DataManager
@@ -204,8 +204,7 @@ Controller.prototype._start = async function() {
     let Updater = await checkAndGetFile("./src/updater/updater.js", logger, false, false);
     if (!Updater) {
         logger("error", "Fatal Error: Failed to load updater! Please reinstall the bot manually. Aborting...");
-        this.stop();
-        return;
+        return this.stop();
     }
 
     // Init a new updater object. This will start our auto update checker
