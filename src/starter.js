@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 28.08.2023 19:16:23
+ * Last Modified: 28.08.2023 20:24:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -100,7 +100,7 @@ function attachParentListeners(callback) {
                     } catch (err) {} // eslint-disable-line
 
                     setTimeout(() => {
-                        logger("info", "Restarting...", false, true); // Note (Known issue!): Restarting here causes the application to start the bot in this process rather than creating a child_process. I have no idea why but it doesn't seem to cause issues (I HOPE) and is fixed when the user restarts the bot.
+                        logger("info", "Restarting...", false, true);
                         require("../start.js").restart({ logafterrestart: logafterrestart }); // Call restart function with argsobject
                     }, 2000);
                 }
@@ -137,6 +137,8 @@ function attachParentListeners(callback) {
     };
 
     process.on("exit", parentExitEvent);
+
+    process.title = "CommentBot"; // Sets process title in task manager etc.
 
 
     // Import logger lib
@@ -356,8 +358,6 @@ module.exports.run = () => {
     attachParentListeners(async () => {
         logger("info", "Starting process...");
 
-        process.title = "CommentBot"; // Sets process title in task manager etc.
-
         // Get file to start
         let file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false); // We can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
         if (!file) return;
@@ -380,7 +380,7 @@ module.exports.restart = async (args) => {
         logger("info", "Starting new process...");
 
         try {
-            process.kill(args["pid"], "SIGKILL"); // Make sure the old child is dead
+            if (args["pid"]) process.kill(args["pid"], "SIGKILL"); // Make sure the old child is dead (if there was one)
         } catch (err) {} // eslint-disable-line
 
         setTimeout(async () => {
