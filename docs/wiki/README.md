@@ -3,6 +3,8 @@
 
 You can find setup instructions, documentation for all commands, config files, error messages and much more here!
 
+Are you rather searching for the developer documentation? [Click here to get redirected](../dev#readme)
+
 &nbsp;
 
 ## Table of Contents
