@@ -15,17 +15,16 @@ You should definitely take a look at the developer documentation though, it expl
 &nbsp;
 
 ## Table Of Contents
-
--   [Getting started](#getting-started)
--   [The filestructure](#filestructure)
--   [Exposed functions and events](#functions)
--   [Logging messages](#logging)
--   [Plugin System Interface](#pluginsystem)
--   [Controller](#controller)
--   [Command System](#commandhandler)
--   [Typescript](#typescript)
--   [Packing and installing your plugin using npm](#npm)
--   [Additional information](#additional-info)
+- [Getting started](#getting-started)
+- [The filestructure](#filestructure)
+- [Exposed functions and events](#functions)
+- [Logging messages](#logging)
+- [Plugin System Interface](#pluginsystem)
+- [Controller](#controller)
+- [Command System](#commandhandler)
+- [Typescript](#typescript)
+- [Packing and installing your plugin using npm](#npm)
+- [Additional information](#additional-info)
 
 &nbsp;
 
@@ -49,7 +48,9 @@ Populate description, author and version as well. The plugin will be packed into
 Open the entry file `plugin.js` and edit the PluginSystem import file path at the top.  
 It should point to your `steam-comment-service-bot` installation. This makes sure your code editor's IntelliSense will work.  
 If your plugin folder is right beside the bot folder, the default path should already be correct.  
-**Important:** This path will cause errors when the plugin is being loaded. Uncomment the import before packing & publishing your plugin.
+
+**Important:**  
+When packing your plugin using npm you **need to comment this path out**. This path can only be left in while developing and debugging the plugin using `npm link` (explained at [Additional information](#additional-info)) as the relative path will change.
 
 &nbsp;
 
@@ -59,9 +60,9 @@ If your plugin folder is right beside the bot folder, the default path should al
 
 Each plugin consists of three important files.
 
--   `plugin.js` - The entry file of your plugin. This one will be loaded by the bot and contains all the functions exposed by your plugin. It must contain an exposed constructor and load function.
--   `config.json` - The default configuration file of your plugin. This one will be copied into the plugin config folder by the bot the first time your plugin gets loaded. It must contain the parameter "enabled", everything else is up to you.
--   `package.json` - The NPM package config file of your plugin. This one will be read by NPM to package and install your plugin. The bot will go through all installed npm packages with the `steam-comment-bot-` name prefix and attempt to load their `plugin.js` file.
+- `plugin.js` - The entry file of your plugin. This one will be loaded by the bot and contains all the functions exposed by your plugin. It must contain an exposed constructor and load function.
+- `config.json` - The default configuration file of your plugin. This one will be copied into the plugin config folder by the bot the first time your plugin gets loaded. It must contain the parameter "enabled", everything else is up to you.
+- `package.json` - The NPM package config file of your plugin. This one will be read by NPM to package and install your plugin. The bot will go through all installed npm packages with the `steam-comment-bot-` name prefix and attempt to load their `plugin.js` file.
 
 You can of course add more files and folders as you like and load them from the `plugin.js` file.
 
@@ -103,13 +104,13 @@ Please do not use any `console.log` calls in your plugins (unless maybe for debu
 
 Here is the parameter structure, first to last:
 
--   One of these types: 'debug', 'info', 'warn', 'error'. Debug mesages are only logged if `printDebug` is set to true in `advancedconfig.json`
--   The message you want to log. If not of datatype string, the library will attempt to colorize the data, just like console.log does.
--   Optional - nodate: true if the message should not have a date
--   Optional - remove: true if the next message should overwrite this one
--   Optional - animation: An array containing strings. If this is specified, it will display each element of this array after another in the front of the message as an animation. The logger library has some default animations, check them out using your IntelliSense at: `logger.animations` or [here](https://github.com/3urobeat/output-logger/blob/master/lib/data/animations.json)
--   Optional - printNow: true to force print this message now. This will skip the log hold back system explained below
--   Optional - cutToWidth: true to force cut this message to the current width of the terminal
+- One of these types: 'debug', 'info', 'warn', 'error'. Debug mesages are only logged if `printDebug` is set to true in `advancedconfig.json`
+- The message you want to log. If not of datatype string, the library will attempt to colorize the data, just like console.log does.
+- Optional - nodate: true if the message should not have a date
+- Optional - remove: true if the next message should overwrite this one
+- Optional - animation: An array containing strings. If this is specified, it will display each element of this array after another in the front of the message as an animation. The logger library has some default animations, check them out using your IntelliSense at: `logger.animations` or [here](https://github.com/3urobeat/output-logger/blob/master/lib/data/animations.json)
+- Optional - printNow: true to force print this message now. This will skip the log hold back system explained below
+- Optional - cutToWidth: true to force cut this message to the current width of the terminal
 
 Check out the JsDoc of the logger function directly: [controller logger.js](../../src/controller/helpers/logger.js)
 
@@ -143,10 +144,10 @@ It is responsible for loading all modules on start, storing references to them, 
 You can access it from your plugin through the Plugin System: `sys.controller`  
 From there, every other module of the bot is accessible. Worth noting:
 
--   Functions to restart/stop the application, resolving steamIDs, getting bot accounts, etc.
--   `sys.controller.data` - The DataManager object which contains every loaded datafile (e.g. logininfo, config, quotes, proxies, etc.)
--   `sys.controller.bots` - Object which holds references to all Bot objects, mapped to their account names. Access any bot account that is in use right now from there. I recommend using the `getBots()` function instead of accessing this object directly.
--   `sys.controller.commandHandler` - The CommandHandler object, read more [below](#commandhandler).
+- Functions to restart/stop the application, resolving steamIDs, getting bot accounts, etc.
+- `sys.controller.data` - The DataManager object which contains every loaded datafile (e.g. logininfo, config, quotes, proxies, etc.)
+- `sys.controller.bots` - Object which holds references to all Bot objects, mapped to their account names. Access any bot account that is in use right now from there. I recommend using the `getBots()` function instead of accessing this object directly.
+- `sys.controller.commandHandler` - The CommandHandler object, read more [below](#commandhandler).
 
 ...and much more. Check it out using your code editor's IntelliSense.
 
@@ -171,8 +172,8 @@ this.plugin.commandHandler.runCommand(
     ["5", "3urobeat"],                                                  // Arguments Array
     (x, y, msg) => { logger("info", "Comment Command said: " + msg) },  // Response Function
     this,                                                               // The current context
-    { cmdprefix: "/", userID: "12345", ownerIDs: ["12345"]              // The resInfo object
-})
+    { cmdprefix: "/", userID: "12345", ownerIDs: ["12345"] }            // The resInfo object
+)
 ```
 
 This would cause the comment command to send 5 comments to the Steam Profile "3urobeat".  
@@ -190,13 +191,11 @@ This is also where the `ownerIDs` array comes into play: It allows you to overwr
 
 <a id="typescript"></a>
 
-## **Typescript:**
+## **Typescript**
 
-For the best development environment you can utilize our typing file in TS
-just take the [typing file](https://github.com/3urobeat/steam-comment-service-bot/blob/beta-testing/types/types.d.ts) and copy it to your project
+You can also write your plugins in TS by utilizing the project's [typing file](https://github.com/3urobeat/steam-comment-service-bot/blob/beta-testing/types/types.d.ts).
 
-there you can point your ts compiler to the file by adding the following to your tsconfig.json
-
+Copy it over to your plugin project and point your TS compiler to it by adding the following to your `tsconfig.json`:
 ```json
 {
     "compilerOptions": {
@@ -205,7 +204,7 @@ there you can point your ts compiler to the file by adding the following to your
 }
 ```
 
-The [web server](https://github.com/DerDeathraven/steam-comment-bot-rest-api) plugin is written in TS and can be used as a example
+The official [REST API](https://github.com/DerDeathraven/steam-comment-bot-rest-api) plugin is written in TS and can be used as an example.
 
 &nbsp;
 
