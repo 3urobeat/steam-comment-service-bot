@@ -15,7 +15,6 @@
  */
 
 
-const fs = require("fs");
 const { default: Nedb } = require("@seald-io/nedb"); // eslint-disable-line
 
 const Controller = require("../controller/controller.js"); // eslint-disable-line
@@ -109,12 +108,23 @@ const DataManager = function (controller) {
     // Stores a reference to the active handleExpiringTokens interval to prevent duplicates on reloads
     this._handleExpiringTokensInterval = null;
 
-    // Load all helper files. They need to be explicitly defined for restoring using checkAndGetFile to work
-    const helperPaths = ["dataCheck.js", "dataExport.js", "dataImport.js", "dataProcessing.js", "helpers/getQuote.js", "helpers/handleCooldowns.js", "helpers/handleExpiringTokens.js", "helpers/misc.js", "helpers/refreshCache.js", "helpers/repairFile.js"];
+};
 
-    helperPaths.forEach(async (e) => {
-        const getFile = await this.checkAndGetFile("./src/dataManager/" + e, controller.logger);
-        if (!getFile) logger("err", `Error! DataManager: Failed to load '${e}'!`);
+
+/**
+ * Loads all DataManager helper files. This is done outside of the constructor to be able to await it.
+ * @returns {Promise.<void>} Resolved when all files have been loaded
+ */
+DataManager.prototype._loadDataManagerFiles = function() {
+    return new Promise((resolve) => {
+        // The files need to be explicitly defined for restoring using checkAndGetFile to work
+        const helperPaths = ["dataCheck.js", "dataExport.js", "dataImport.js", "dataProcessing.js", "helpers/getQuote.js", "helpers/handleCooldowns.js", "helpers/handleExpiringTokens.js", "helpers/misc.js", "helpers/refreshCache.js", "helpers/repairFile.js"];
+
+        helperPaths.forEach(async (e, i) => {
+            const getFile = await this.checkAndGetFile("./src/dataManager/" + e, this.controller.logger);
+            if (!getFile) logger("err", `Error! DataManager: Failed to load '${e}'!`);
+            if (i + 1 == helperPaths.length) resolve();
+        });
     });
 };
 

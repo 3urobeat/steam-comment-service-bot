@@ -153,6 +153,7 @@ Controller.prototype._start = async function() {
 
     this.data = new DataManager(this); // All functions provided by the DataManager, as well as all imported file data will be accessible here
 
+    await this.data._loadDataManagerFiles();
     await this.data._importFromDisk();
 
     // Call optionsUpdateAfterConfigLoad() to set previously inaccessible options
