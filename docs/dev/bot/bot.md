@@ -1,5 +1,5 @@
 # Bot
-[⬅️ Go back to wiki home](../#readme) <a href="/src/bot/bot.js" target="_blank"><img align="right" src="https://img.shields.io/badge/<%2F>%20Source-darkcyan"></a>
+[⬅️ Go back to dev home](../#readme) <a href="/src/bot/bot.js" target="_blank"><img align="right" src="https://img.shields.io/badge/<%2F>%20Source-darkcyan"></a>
 
 &nbsp;
 
@@ -47,7 +47,7 @@ Object containing login related information for this bot account with the follow
 - `logOnOptions` (Object) - Object containing the login information of this bot account
 - `logOnTries` (number) - Amount of logOnTries used in the most recent login/relog attempt
 - `waitingFor2FA` (boolean) - Set by [sessionHandler](../sessionHandler/sessionHandler.md)'s handle2FA helper to prevent login timeout from triggering when waiting for user input
-- `proxyIndex` (Number) - Index of the proxy in the [DataManager.proxies](../dataManager/dataManager.md#proxies) array which this account uses to connect to Steam
+- `proxyIndex` (Number) - Index of the proxy in the DataManager.[proxies](../dataManager/dataManager.md#proxies) array which this account uses to connect to Steam
 - `proxy` (String) - The proxy URL behind the used proxyIndex
 
 ## sessionHandler

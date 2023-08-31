@@ -1,5 +1,5 @@
 # Controller
-[⬅️ Go back to wiki home](../#readme) <a href="/src/controller/controller.js" target="_blank"><img align="right" src="https://img.shields.io/badge/<%2F>%20Source-darkcyan"></a>
+[⬅️ Go back to dev home](../#readme) <a href="/src/controller/controller.js" target="_blank"><img align="right" src="https://img.shields.io/badge/<%2F>%20Source-darkcyan"></a>
 
 &nbsp;
 
