@@ -200,6 +200,9 @@ DataManager.prototype._importFromDisk = async function () {
                 logger("error", "It seems like you made a mistake in your logininfo.json. Please check if your Syntax looks exactly like in the example/template and try again.\n        " + err, true);
                 return _this.controller.stop();
             }
+
+            // Create empty accounts.txt file if neither exist
+            if (!fs.existsSync("./accounts.txt")) _this._pullNewFile("accounts.txt", "./accounts.txt", () => {}, true); // Ignore resolve() param
         });
     }
 

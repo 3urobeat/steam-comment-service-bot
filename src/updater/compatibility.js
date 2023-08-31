@@ -37,8 +37,11 @@ module.exports.runCompatibility = async (controller) => {
             }
 
 
-            // List all files in compatibility directory
-            let list = fs.readdirSync("./src/updater/compatibility");
+            // Initialize list with an empty array so the check below won't fail if the folder does not exist
+            let list = [];
+
+            // List all files in compatibility directory if it exists
+            if (fs.existsSync("./src/updater/compatbility")) list = fs.readdirSync("./src/updater/compatibility");
 
             // Try to find this version in list
             let match = list.find(e => e == controller.data.datafile.version.replace(/b[0-9]+/g, "") + ".js"); // Remove beta build from version so it still matches on every beta build | Old check used this regex pattern: str.match(/21200b[0-9]+/g)
