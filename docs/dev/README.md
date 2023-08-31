@@ -19,6 +19,7 @@ The order of this list represents the order in which they are instantiated when 
   - [Starter]()
 - Child Process:
   - [Controller](./controller/controller.md)
+  - [Bot](./bot/bot.md)
 
 &nbsp;
 
