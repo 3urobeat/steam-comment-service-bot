@@ -148,7 +148,7 @@ Controller.prototype._start = async function() {
 
 
     /* ------------ Init dataManager system and import: ------------ */
-    if (!checkAndGetFile("./src/dataManager/dataManager.js", logger, false, false)) return;
+    if (!await checkAndGetFile("./src/dataManager/dataManager.js", logger, false, false)) return;
     let DataManager = require("../dataManager/dataManager.js");
 
     this.data = new DataManager(this); // All functions provided by the DataManager, as well as all imported file data will be accessible here

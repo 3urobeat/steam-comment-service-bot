@@ -14,10 +14,12 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 const fs = require("fs");
 const { default: Nedb } = require("@seald-io/nedb"); // eslint-disable-line
 
 const Controller = require("../controller/controller.js"); // eslint-disable-line
+
 
 /**
  * Constructor - The dataManager system imports, checks, handles errors and provides a file updating service for all configuration files
@@ -107,21 +109,15 @@ const DataManager = function (controller) {
     // Stores a reference to the active handleExpiringTokens interval to prevent duplicates on reloads
     this._handleExpiringTokensInterval = null;
 
-    // Dynamically load all helper files
-    const loadHelpersFromFolder = (folder) => {
-        fs.readdirSync(folder).forEach(async (file) => {
-            if (!file.endsWith(".js")) return;
+    // Load all helper files. They need to be explicitly defined for restoring using checkAndGetFile to work
+    const helperPaths = ["dataCheck.js", "dataExport.js", "dataImport.js", "dataProcessing.js", "helpers/getQuote.js", "helpers/handleCooldowns.js", "helpers/handleExpiringTokens.js", "helpers/misc.js", "helpers/refreshCache.js", "helpers/repairFile.js"];
 
-            const path = `${folder}/${file}`;
-            const getFile = await this.checkAndGetFile(path, controller.logger);
-
-            if (!getFile) logger("err", `Error! DataManager: Failed to load '${file}'!`);
-        });
-    };
-
-    loadHelpersFromFolder("./src/dataManager");
-    loadHelpersFromFolder("./src/dataManager/helpers");
+    helperPaths.forEach(async (e) => {
+        const getFile = await this.checkAndGetFile("./src/dataManager/" + e, controller.logger);
+        if (!getFile) logger("err", `Error! DataManager: Failed to load '${e}'!`);
+    });
 };
+
 
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
 
@@ -251,6 +247,7 @@ DataManager.prototype._restoreBackup = function (name, filepath, cacheentry, onl
  * @param {boolean} noRequire Optional: Set to true if resolve() should not be called with require(file) as param
  */
 DataManager.prototype._pullNewFile = async function (name, filepath, resolve) {}; // eslint-disable-line
+
 
 // Export our freshly baked bread
 module.exports = DataManager;
