@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 28.08.2023 20:24:52
+ * Last Modified: 31.08.2023 17:44:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -74,12 +74,14 @@ function attachParentListeners(callback) {
         logger("error", `Unhandled Rejection Error! Reason: ${reason.stack}`, true);
     };
 
-    handleUncaughtException = (reason) => { // Try to fix error automatically by reinstalling all modules
+    handleUncaughtException = async (reason) => { // Try to fix error automatically by reinstalling all modules
         if (String(reason).includes("Error: Cannot find module")) {
             logger("", "", true);
             if (global.extdata) logger("info", "Cannot find module error detected. Trying to fix error by reinstalling modules...\n"); // Check if extdata has been imported as workaround for hiding this message for new users to avoid confusion (because extdata.firststart can't be checked yet)
 
-            require("./controller/helpers/npminteraction.js").reinstallAll(logger, (err, stdout) => { // eslint-disable-line
+            const npminteraction = await module.exports.checkAndGetFile("./src/controller/helpers/npminteraction.js", logger, false, false);
+
+            npminteraction.reinstallAll(logger, (err, stdout) => { // eslint-disable-line
                 if (err) {
                     logger("error", "I was unable to reinstall all modules. Please try running 'npm install --production' manually. Error: " + err);
                     process.exit(1);
@@ -278,7 +280,7 @@ module.exports.checkAndGetFile = (file, logger, norequire = false, force = false
 
             try {
                 const https = require("https"); // Import two libs which will only be needed in this block
-                const path = require("path");
+                const path  = require("path");
 
                 let output = "";
 
@@ -286,32 +288,30 @@ module.exports.checkAndGetFile = (file, logger, norequire = false, force = false
                 fs.mkdirSync(path.dirname(file), { recursive: true });
 
                 // Get the file
-                https
-                    .get(fileurl, function (res) {
-                        res.setEncoding("utf8");
+                https.get(fileurl, function (res) {
+                    res.setEncoding("utf8");
 
-                        res.on("data", function (chunk) {
-                            output += chunk;
-                        });
-
-                        // Write and test the file
-                        res.on("end", () => {
-                            fs.writeFile(file, output, (err) => {
-                                if (err) {
-                                    logger("error", "checkAndGetFile() writeFile error: " + err);
-                                    resolve(undefined);
-                                    return;
-                                }
-
-                                if (norequire) resolve(file);
-                                else resolve(require("." + file));
-                            });
-                        });
-                    })
-                    .on("error", (err) => {
-                        logger("error", `Fatal Error: File '${file}' is corrupted/missing and I can't restore it! Is your internet or GitHub down?\n                     ${err}`, true);
-                        resolve(undefined);
+                    res.on("data", function (chunk) {
+                        output += chunk;
                     });
+
+                    // Write and test the file
+                    res.on("end", () => {
+                        fs.writeFile(file, output, (err) => {
+                            if (err) {
+                                logger("error", "checkAndGetFile() writeFile error: " + err);
+                                resolve(undefined);
+                                return;
+                            }
+
+                            if (norequire) resolve(file);
+                            else resolve(require("." + file));
+                        });
+                    });
+                }).on("error", (err) => {
+                    logger("error", `Fatal Error: File '${file}' is corrupted/missing and I can't restore it! Is your internet or GitHub down?\n                     ${err}`, true);
+                    resolve(undefined);
+                });
             } catch (err) {
                 logger("error", `Fatal Error: File ${file} is corrupted/missing and I can't restore it!\n                     ${err}`, true);
                 resolve(undefined);
