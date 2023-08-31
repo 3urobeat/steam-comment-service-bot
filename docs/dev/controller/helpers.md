@@ -12,8 +12,8 @@ This page only includes functions which are directly exported, meaning to use th
 &nbsp;
 
 ## Table of Contents
-- [misc.js](#misc.js)
-- [npminteraction.js](#npminteraction.js)
+- [misc.js](#miscjs-)
+- [npminteraction.js](#npminteractionjs-)
 
 Please use your browser's search function <kbd>Ctrl</kbd>+<kbd>F</kbd> to find a specific function using its name on this page.
 

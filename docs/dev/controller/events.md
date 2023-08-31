@@ -10,9 +10,9 @@ This allows for running internal code (e.g. ready event) before an external modu
 &nbsp;
 
 ## Table of Contents
-- [ready](#ready)
-- [statusUpdate](#statusUpdate)
-- [steamGuardInput](#steamGuardInput)
+- [ready](#ready-)
+- [statusUpdate](#statusUpdate-)
+- [steamGuardInput](#steamGuardInput-)
 
 Please use your browser's search function <kbd>Ctrl</kbd>+<kbd>F</kbd> to find a specific event using its name on this page.
 

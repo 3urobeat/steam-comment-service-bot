@@ -7,7 +7,8 @@ Hey, welcome to the `steam-comment-service-bot` project!
 As the name suggests, this started as a small and simple bot cluster solely for commenting on profiles.  
 As of now it however is \*way\* more than that and a name along the lines of `steam-bot-network-manager` would be better suited.  
 
-The 
+This project now predominantly focuses on managing user data, handling issues and keeping Steam accounts logged in.  
+Various core commands like commenting, voting & favorizing then provide the user the functionality to command all accounts at once.
 
 &nbsp;
 
@@ -28,5 +29,5 @@ As mentioned above, the bot runs inside a child process, controlled by a parent 
 This two process architecture allows me to completely restart the bot itself without any user interaction at all and without leaving any old data in the memory behind. This was quite revolutionary for me to figure out back when I built the updater :'D  
 
 The startup procedure looks like follows:  
-`node start` -> start.js (cannot be reloaded) -> src/starter.js (can only be hot-reloaded) -> src/controller.js (child process, can be fully reloaded)  
+`node start` **->** start.js (cannot be reloaded) **->** src/starter.js (can only be hot-reloaded) **->** src/controller.js (child process, can be fully reloaded)  
 The Controller now inits the DataManager, then performs a few checks (e.g. internet connection), then inits the Updater and then starts spawning Bot objects to log in all accounts (if no update was found).

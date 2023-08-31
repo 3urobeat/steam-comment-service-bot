@@ -73,23 +73,23 @@ Constructor - Creates a new Controller object.
 &nbsp;
 
 ### misc.syncLoop(iterations, func, exit): object
-Implementation of a synchronous loop for easy iteration management.
+Implementation of a synchronous loop for easy iteration management.  
 This is an exported function, referenced in the `misc` object for easy access, see the [Helpers](./helpers.md) page for a more detailed documentation.
 
 ### misc.round(value, decimals): number
-Rounds a number with x decimals.
+Rounds a number with x decimals.  
 This is an exported function, referenced in the `misc` object for easy access, see the [Helpers](./helpers.md) page for a more detailed documentation.
 
 ### misc.timeToString(timestamp): string
-Converts a timestamp to a human-readable "until from now" format.
+Converts a timestamp to a human-readable "until from now" format.  
 This is an exported function, referenced in the `misc` object for easy access, see the [Helpers](./helpers.md) page for a more detailed documentation.
 
 ### misc.checkConnection(url, throwTimeout): Promise
-Pings an URL to check if the service and the user's internet connection is working.
+Pings an URL to check if the service and the user's internet connection is working.  
 This is an exported function, referenced in the `misc` object for easy access, see the [Helpers](./helpers.md) page for a more detailed documentation.
 
 ### misc.cutStringsIntelligently(txt, limit, cutChars, threshold): string[]
-Helper function which attempts to cut Strings intelligently and returns all parts. It will attempt to not cut words & links in half.
+Helper function which attempts to cut Strings intelligently and returns all parts. It will attempt to not cut words & links in half.  
 This is an exported function, referenced in the `misc` object for easy access, see the [Helpers](./helpers.md) page for a more detailed documentation.
 
 &nbsp;

@@ -11,7 +11,14 @@ Are you rather searching for the wiki? [Click here to get redirected](../wiki#re
 &nbsp;
 
 ## Table of Contents
+This documentation uses the same structure as the `src` folder. Each top-level module listed here contains further links to its submodules.  
+The order of this list represents the order in which they are instantiated when the application is started.
+
 - [Introduction](./introduction.md)
+- Parent Process:
+  - [Starter]()
+- Child Process:
+  - [Controller](./controller/controller.md)
 
 &nbsp;
 
