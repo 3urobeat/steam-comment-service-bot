@@ -1,5 +1,5 @@
 # Introduction
-[⬅️ Go back to wiki home](./#readme)
+[⬅️ Go back to dev home](./#readme)
 
 &nbsp;
 
@@ -31,3 +31,5 @@ This two process architecture allows me to completely restart the bot itself wit
 The startup procedure looks like follows:  
 `node start` **->** start.js (cannot be reloaded) **->** src/starter.js (can only be hot-reloaded) **->** src/controller.js (child process, can be fully reloaded)  
 The Controller now inits the DataManager, then performs a few checks (e.g. internet connection), then inits the Updater and then starts spawning Bot objects to log in all accounts (if no update was found).
+
+The starter process dev documentation page can be found [here](./starter.md).

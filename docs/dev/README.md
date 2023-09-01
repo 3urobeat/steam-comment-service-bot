@@ -16,7 +16,7 @@ The order of this list represents the order in which they are instantiated when 
 
 - [Introduction](./introduction.md)
 - Parent Process:
-  - [Starter]()
+  - [Starter](./starter.md)
 - Child Process:
   - [Controller](./controller/controller.md)
   - [Bot](./bot/bot.md)
