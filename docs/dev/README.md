@@ -20,8 +20,9 @@ The order of this list represents the order in which they are instantiated when 
 - Child Process:
   - [Controller](./controller/controller.md)
   - [DataManager](./dataManager/dataManager.md)
-  - [Bot](./bot/bot.md)
   - [Updater](./updater/updater.md)
+  - [Bot](./bot/bot.md)
+    - [sessionHandler](./sessionHandler/sessionHandler.md)
 
 &nbsp;
 
