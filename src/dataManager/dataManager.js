@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 26.07.2023 16:37:37
+ * Last Modified: 01.09.2023 12:59:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -215,7 +215,7 @@ DataManager.prototype.setUserCooldown = function (id, timestamp) {}; // eslint-d
 DataManager.prototype._startExpiringTokensCheckInterval = () => {};
 
 /**
- * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active request was found and relogs them
+ * Internal: Asks user if they want to refresh the tokens of all expiring accounts when no active request was found and relogs them
  * @param {object} expiring Object of botobject entries to ask user for
  */
 DataManager.prototype._askForGetNewToken = function (expiring) {}; // eslint-disable-line
@@ -256,7 +256,7 @@ DataManager.prototype._restoreBackup = function (name, filepath, cacheentry, onl
  * @param {function(any): void} resolve Your promise to resolve when file was pulled
  * @param {boolean} noRequire Optional: Set to true if resolve() should not be called with require(file) as param
  */
-DataManager.prototype._pullNewFile = async function (name, filepath, resolve) {}; // eslint-disable-line
+DataManager.prototype._pullNewFile = async function (name, filepath, resolve, noRequire) {}; // eslint-disable-line
 
 
 // Export our freshly baked bread

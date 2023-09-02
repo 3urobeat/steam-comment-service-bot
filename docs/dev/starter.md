@@ -21,6 +21,8 @@ Please use your browser's search function <kbd>Ctrl</kbd>+<kbd>F</kbd> to find a
 
 ## start.js <a href="/start.js" target="_blank"><img align="right" src="https://img.shields.io/badge/<%2F>%20Source-darkcyan"></a>
 
+This file cannot be updated!
+
 This is the entry point of the parent process.  
 If `src/data/data.json` exists, it reads the next file to start from it. If not, it defaults to `./src/starter.js`.  
 This allows the parent process to be semi-updateable, should the file structure change.  
@@ -40,6 +42,8 @@ It deletes the cache of `starter.js`, re-requires it and calls its `restart(args
 &nbsp;
 
 ## starter.js <a href="/src/starter.js" target="_blank"><img align="right" src="https://img.shields.io/badge/<%2F>%20Source-darkcyan"></a>
+
+This file can be semi-updated. When restarting after an update, start.js clears the cache of this file which will load changes but can leave old references behind in the memory. 
 
 The job of this file is to install dependencies and handle starting & restarting the child process.  
 To do so, it attaches various event listeners to the parent process:  

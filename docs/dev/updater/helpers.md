@@ -11,11 +11,11 @@ The helper files & functions are listed on this page in the same order.
 
 ## Table of Contents
 - [checkForUpdate.js](#checkForUpdatejs-)
-- [prepareUpdate.js](#prepareUpdatejs--)
+- [prepareUpdate.js](#prepareupdatejs-)
 - [createBackup.js](#createBackupjs-)
-- [downloadUpdate.js](#downloadUpdatejs--)
-- [customUpdateRules.js](#customUpdateRulesjs--)
-- [restoreBackup.js](#restoreBackupjs--)
+- [downloadUpdate.js](#downloadupdatejs-)
+- [customUpdateRules.js](#customupdaterulesjs-)
+- [restoreBackup.js](#restorebackupjs-)
 
 Please use your browser's search function <kbd>Ctrl</kbd>+<kbd>F</kbd> to find a specific function using its name on this page.
 

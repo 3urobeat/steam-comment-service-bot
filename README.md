@@ -70,9 +70,9 @@ You'll find pages on how to add proxies to drastically increase the amount of po
 
 #### **Questions, Bugs, Issues & Betas**
 If you have any questions, please feel free to open a [Q&A discussion](https://github.com/3urobeat/steam-comment-service-bot/discussions/new?category=q-a)!  
-If you encountered a **bug** or wish a feature to be added, please open an [**issue!**](https://github.com/3urobeat/steam-comment-service-bot/issues/new/choose)  
-If you are interested in beta builds of this project, visit the [beta-testing branch.](https://github.com/3urobeat/steam-comment-service-bot/tree/beta-testing)  
-If you are interested in the active development progress, visit the [projects section.](https://github.com/3urobeat/steam-comment-service-bot/projects)
+If you encountered a bug or wish a feature to be added, please open an [issue](https://github.com/3urobeat/steam-comment-service-bot/issues/new/choose)!  
+If you are interested in beta builds of this project, visit the [beta-testing branch](https://github.com/3urobeat/steam-comment-service-bot/tree/beta-testing).  
+If you are interested in the active development progress, visit the [projects section](https://github.com/3urobeat/steam-comment-service-bot/projects).
 
 #### **License**
 This project and all code included is distributed under the GPL-3.0 license.  
