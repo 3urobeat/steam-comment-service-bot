@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 28.08.2023 19:20:40
+ * Last Modified: 03.09.2023 18:40:07
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -186,6 +186,8 @@ Controller.prototype._start = async function() {
 
 
     /* ------------ Check imported data : ------------ */
+    let forceUpdate = false; // Provide forceUpdate var which the following helpers can modify to force a update
+
     global.extdata = this.data.datafile; // This needs to stay for backwards compatibility
 
     // Process imported owner & group ids and update cachefile
@@ -194,10 +196,11 @@ Controller.prototype._start = async function() {
     // Check imported data
     await this.data.checkData().catch(() => this.stop()); // Terminate the bot if some critical check failed
 
+    // Verify integrity of all source code files and restore invalid ones. It is safe to use require() after this function is done!
+    await this.data.verifyIntegrity();
+
 
     /* ------------ Run compatibility feature and updater or start logging in: ------------ */
-    let forceUpdate = false; // Provide forceUpdate var which is passed to updater which runCompatibility can overwrite
-
     let compatibility = await checkAndGetFile("./src/updater/compatibility.js", logger, false, false);
     if (compatibility) forceUpdate = await compatibility.runCompatibility(this); // Don't bother running it if it couldn't be found and just hope the next update will fix it
 

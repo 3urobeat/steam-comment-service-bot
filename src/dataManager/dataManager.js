@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 01.09.2023 12:59:48
+ * Last Modified: 03.09.2023 20:23:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -118,7 +118,7 @@ const DataManager = function (controller) {
 DataManager.prototype._loadDataManagerFiles = function() {
     return new Promise((resolve) => {
         // The files need to be explicitly defined for restoring using checkAndGetFile to work
-        const helperPaths = ["dataCheck.js", "dataExport.js", "dataImport.js", "dataProcessing.js", "helpers/getQuote.js", "helpers/handleCooldowns.js", "helpers/handleExpiringTokens.js", "helpers/misc.js", "helpers/refreshCache.js", "helpers/repairFile.js"];
+        const helperPaths = ["dataCheck.js", "dataExport.js", "dataImport.js", "dataIntegrity.js", "dataProcessing.js", "helpers/getQuote.js", "helpers/handleCooldowns.js", "helpers/handleExpiringTokens.js", "helpers/misc.js", "helpers/refreshCache.js", "helpers/repairFile.js"];
 
         helperPaths.forEach(async (e, i) => {
             const getFile = await this.checkAndGetFile("./src/dataManager/" + e, this.controller.logger);
@@ -182,6 +182,14 @@ DataManager.prototype.writeQuotesToDisk = function() {};
  * @returns {Promise.<void>} Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importFromDisk = async function () {};
+
+/**
+ * Verifies the data integrity of every source code file in the project by comparing its checksum.
+ * This function is used to verify the integrity of every module loaded AFTER the controller & DataManager. Both of those need manual checkAndGetFile() calls to import, which is handled by the Controller.
+ * If an already loaded file needed to be recovered then the bot will restart to load these changes.
+ * @returns {Promise.<void>} Resolves when all files have been checked and, if necessary, restored. Does not resolve if the bot needs to be restarted.
+ */
+DataManager.prototype.verifyIntegrity = function() {};
 
 /**
  * Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
