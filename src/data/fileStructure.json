@@ -253,12 +253,12 @@
         {
             "path": "package-lock.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package-lock.json",
-            "checksum": "2da16dc290e34ce220c435202e3e78a8"
+            "checksum": "f55febe8ed86bf8497ad78b935100726"
         },
         {
             "path": "package.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package.json",
-            "checksum": "18a415a592ce2fec9466a21657c95817"
+            "checksum": "d0736d769f18cccbd2c48c15cb23484b"
         },
         {
             "path": "scripts/README.md",
@@ -523,12 +523,12 @@
         {
             "path": "src/dataManager/dataIntegrity.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataIntegrity.js",
-            "checksum": "3f9f26c8a1ff8a113519a70842385857"
+            "checksum": "6c94de88b72304fe4a2b205b952fce44"
         },
         {
             "path": "src/dataManager/dataManager.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataManager.js",
-            "checksum": "f78a00fd4ec941ec191885d4589eb1a2"
+            "checksum": "5c028b4461d5ee82ba8595287f5e11a7"
         },
         {
             "path": "src/dataManager/dataProcessing.js",
