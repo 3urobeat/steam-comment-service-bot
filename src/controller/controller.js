@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 03.09.2023 18:40:07
+ * Last Modified: 03.09.2023 20:31:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -329,7 +329,7 @@ let logger = function(type, str) {
 logger.animation = () => {}; // Just to be sure that no error occurs when trying to call this function without the real logger being present
 
 
-/* ------------ Start the bot: ------------ */ // TODO: Not rewritten yet
+/* ------------ Start the bot: ------------ */
 
 if (parseInt(process.argv[3]) + 2500 > Date.now()) { // Check if this process just got started in the last 2.5 seconds or just required by itself by checking the timestamp attached by starter.js
 
@@ -353,18 +353,27 @@ if (parseInt(process.argv[3]) + 2500 > Date.now()) { // Check if this process ju
 }
 
 
-/* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
+/* ------------ Provide functions for restarting & stopping: ------------ */
 
 /**
  * Restarts the whole application
- * @param {string} data Stringified restartdata object that will be kept through restarts
+ * @param {string} data Optional: Stringified restartdata object that will be kept through restarts
  */
-Controller.prototype.restart = function(data) { process.send(`restart(${data})`); };
+Controller.prototype.restart = function(data) {
+    if (!data) data = JSON.stringify({ skippedaccounts: this.info.skippedaccounts, updateFailed: false });
+
+    process.send(`restart(${data})`);
+};
 
 /**
  * Stops the whole application
  */
-Controller.prototype.stop = function() { process.send("stop()"); };
+Controller.prototype.stop = function() {
+    process.send("stop()");
+};
+
+
+/* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
 
 /**
  * Attempts to log in all bot accounts which are currently offline one after another.

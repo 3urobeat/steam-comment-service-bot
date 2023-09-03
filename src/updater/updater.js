@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 09.07.2023 13:31:31
+ * Last Modified: 03.09.2023 20:32:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -150,7 +150,7 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
 
                         // Restart and indicate that the update failed
                         resolve(true);
-                        _this.controller.restart(JSON.stringify({ skippedaccounts: _this.controller.skippedaccounts, updateFailed: true }));
+                        _this.controller.restart(JSON.stringify({ skippedaccounts: _this.controller.info.skippedaccounts, updateFailed: true }));
 
                     } else { // Update succeeded, update npm dependencies and restart
 
@@ -161,7 +161,7 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
                         // Continue and pray nothing bad happens if the npminteraction helper got lost in the sauce somehow
                         if (!npminteraction) {
                             logger("error", "I failed trying to update the dependencies. Please check the log after other errors for more information.\nTrying to continue anyway...");
-                            _this.controller.restart(JSON.stringify({ skippedaccounts: _this.controller.skippedaccounts, updateFailed: false }));
+                            _this.controller.restart(JSON.stringify({ skippedaccounts: _this.controller.info.skippedaccounts, updateFailed: false }));
                             resolve(true); // Finished updating!
                             return;
                         }
@@ -173,7 +173,7 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
                             // If everything went to plan, resolve our promise and restart the bot!
                             logger("", `${logger.colors.fgyellow}Done! Restarting...\n${logger.colors.reset}`, true);
                             resolve(true);
-                            _this.controller.restart(JSON.stringify({ skippedaccounts: _this.controller.skippedaccounts, updateFailed: false }));
+                            _this.controller.restart(JSON.stringify({ skippedaccounts: _this.controller.info.skippedaccounts, updateFailed: false }));
                         });
                     }
                 }
