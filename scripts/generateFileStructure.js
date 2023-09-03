@@ -4,7 +4,7 @@
  * Created Date: 02.09.2023 14:41:54
  * Author: 3urobeat
  *
- * Last Modified: 02.09.2023 17:05:31
+ * Last Modified: 03.09.2023 20:19:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -26,7 +26,12 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 
-const ignore = [".git", ".github", "node_modules", "backup", "plugins", "docs", "accounts.txt", "output.txt", "comment-service-bot.code-workspace"];
+const ignore = [
+    ".git", "node_modules", "backup", "plugins", // Folders
+    "accounts.txt", "config.json", "proxies.txt", "quotes.txt", "advancedconfig.json", "config.json", "customlang.json", // Config files
+    "output.txt", "src/data/cache.json", "src/data/data.json", "src/data/fileStructure.json", "src/data/lastcomment.db", "src/data/ratingHistory.db", "src/data/tokens.db", // Files changing at runtime
+    "comment-service-bot.code-workspace" // Misc
+];
 
 const output = [];
 
@@ -46,7 +51,14 @@ function searchFolderRecursiveSync(src, firstCall) {
         let targetFolder = path.join("./", src);
 
         files.forEach(async (file) => {
-            if (ignore.includes(file)) return; // Ignore this file/folder if name is in ignore array
+            let filepath = targetFolder + "/" + file;
+
+            // Check if the file resides in the project root and prevent path from resulting in .//start.js
+            if (targetFolder == "./") filepath = file;
+
+            // Ignore this file/folder if name is in ignore array
+            if (ignore.includes(filepath)) return;
+
             let curSource = path.join(src, file);
 
             // Recursively call this function again if this is a dir
@@ -54,11 +66,6 @@ function searchFolderRecursiveSync(src, firstCall) {
                 searchFolderRecursiveSync(curSource, false);
 
             } else {
-
-                let filepath = targetFolder + "/" + file;
-
-                // Check if the file resides in the project root and prevent path from resulting in .//start.js
-                if (targetFolder == "./") filepath = file;
 
                 // Construct URL and calculate checksum
                 let fileurl  = "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/" + filepath;
