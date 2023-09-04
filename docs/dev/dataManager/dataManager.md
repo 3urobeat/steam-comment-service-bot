@@ -139,6 +139,13 @@ Writes [proxies](#proxies) to proxies.txt on disk.
 ### writeQuotesToDisk(): void
 Writes [quotes](#quotes) to quotes.txt on disk.
 
+### verifyIntegrity(): Promise
+Verifies the data integrity of every source code file in the project by comparing its checksum with `src/data/fileStructure.json`.  
+This function is used to verify the integrity of every module loaded AFTER the controller & DataManager. Both of those need manual checkAndGetFile() calls to import, which is handled by the Controller.  
+If an already loaded file needed to be recovered then the bot will restart to load these changes.  
+
+Returns a Promise which resolves when all files have been checked and, if necessary, restored. Does not resolve if the bot needs to be restarted.
+
 ### _importFromDisk(): Promise
 Internal: Loads all config & data files from disk and handles potential errors
 
