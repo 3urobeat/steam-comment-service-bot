@@ -38,11 +38,16 @@ If you need a tutorial for this specific node part, [click here.](https://youtu.
 
 ## Setup & Configuration: <a href="https://youtu.be/8J78rC9Z28U?t=125" target="_blank"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
 #### Accounts:
-Open the `accounts.txt` file and provide your accounts in the `username:password:shared_secret` format, one account per line.  
+The bot needs at least a few Steam Accounts configured to be effective.  
+These accounts are used to do the interactions in the SteamCommunity which you request (e.g. commenting, voting, favorizing, ...).  
+Creating a few accounts manually shouldn't take long. Make sure to give them a username and profile picture so they don't *instantly* look like random Bot accounts.  
+
+Open the `accounts.txt` file with a text editor and provide your accounts in the `username:password:shared_secret` format, one account per line.  
 If you don't want to use a shared_secret just leave it out and only provide the account in the `username:password` format.  
-  
-Please make sure you know about limited/unlimited accounts. Your accounts also need to have E-Mail Steam Guard active.  
-You can read a detailed explanation [here in the wiki](./steam_limitations.md).
+The first account which you provide in this file will be the one you interact with to run commands to request comments, see info, etc.
+
+Make sure your accounts have E-Mail Steam Guard activated! This is a requirement from Steam to be able to comment at all!  
+I highly recommend that you take a quick look at the [Steam Limitations wiki page](./steam_limitations.md) to learn more about what you can and cannot do with your accounts.
   
 <details>
   <summary>Another, optional method (not recommended anymore):</summary>
@@ -60,6 +65,9 @@ You can read a detailed explanation [here in the wiki](./steam_limitations.md).
   You can add more accounts by extending the list ("bot4": ["username4", "password4", "shared_secret"], etc...).  
     
   Make sure to **NOT** forget a comma after each line, **ONLY** the last line **MUST NOT** have a comma! (ignoring this will cause errors!)  
+
+  This was the method of providing login credentials back in the day and is kept for backwards compatiblity.  
+  It is not recommended anymore as the chance of making a syntax mistake is way higher and requires more effort to extend for lots of accounts.
 </details>  
   
 &nbsp;
@@ -109,7 +117,7 @@ Open up a power shell/terminal in this folder and type `node start.js`.
 
 > **Important Disclaimer:** Do not start the bot with a tool that restarts on changes (like nodemon etc)! Only use normal `node`.  
 
-Head over to your Steam client, add the main bot (the first account in your accounts.txt) as friend and send him the message `!help`.  
+Head over to your Steam client, add the main bot (the first account in your accounts.txt) as friend and send him the chat message `!help`.  
 It should respond with a list of commands available to you.  
 
 To request a comment, simply type `!comment 1`!  
