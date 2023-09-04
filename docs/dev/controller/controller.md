@@ -110,8 +110,8 @@ IntelliSense support without the risk of missing files.
 
 &nbsp;
 
-### restart(data): void
-- `data` (String) - A stringified JSON object containing data to keep through the restart
+### restart(data?): void
+- `data` (string) - Optional: A stringified JSON object containing data to keep through the restart. If not defined, the current [info.skippedaccounts](#info) array and updateFailed = false will be returned.
 
 Sends a signal to the parent process to kill and spawn a new child process.
 The Controller will handle the data key & value pairs `oldconfig`, `logafterrestart`, `skippedaccounts` and `updateFailed` directly.
