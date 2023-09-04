@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 31.08.2023 17:44:02
+ * Last Modified: 04.09.2023 21:45:19
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -305,7 +305,7 @@ module.exports.checkAndGetFile = (file, logger, norequire = false, force = false
                             }
 
                             if (norequire) resolve(file);
-                            else resolve(require("." + file));
+                                else resolve(require("." + file));
                         });
                     });
                 }).on("error", (err) => {

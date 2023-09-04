@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 03.09.2023 20:31:13
+ * Last Modified: 04.09.2023 21:43:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -35,7 +35,7 @@ const Controller = function() {
         /**
          * Implementation of a synchronous for loop in JS (Used as reference: https://whitfin.io/handling-synchronous-asynchronous-loops-javascriptnode-js/)
          * @param {number} iterations The amount of iterations
-         * @param {function(): void} func The function to run each iteration (Params: loop, index)
+         * @param {function(object, number): void} func The function to run each iteration (Params: loop, index)
          * @param {function(): void} exit This function will be called when the loop is finished
          */
         syncLoop: (iterations, func, exit) => {}, // eslint-disable-line

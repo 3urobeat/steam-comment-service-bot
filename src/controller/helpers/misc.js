@@ -4,7 +4,7 @@
  * Created Date: 25.03.2023 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 08.07.2023 00:47:33
+ * Last Modified: 04.09.2023 21:43:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -21,7 +21,7 @@ const https = require("https");
 /**
  * Implementation of a synchronous for loop in JS (Used as reference: https://whitfin.io/handling-synchronous-asynchronous-loops-javascriptnode-js/)
  * @param {number} iterations The amount of iterations
- * @param {function(): void} func The function to run each iteration (Params: loop, index)
+ * @param {function(object, number): void} func The function to run each iteration (Params: loop, index)
  * @param {function(): void} exit This function will be called when the loop is finished
  */
 module.exports.syncLoop = (iterations, func, exit) => {

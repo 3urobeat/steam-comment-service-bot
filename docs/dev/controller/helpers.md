@@ -24,7 +24,7 @@ Special Case: The functions in this helper are directly accessible from the Cont
 
 ### syncLoop(iterations, func, exit): object
 - `iterations` (number) - The amount of iterations
-- `func` (function(): void) - The function to run each iteration (Params: loop, index)
+- `func` (function(object, number): void) - The function to run each iteration (Params: loop, index)
 - `exit` (function(): void) - This function will be called when the loop is finished
 
 Implementation of a synchronous loop for easy iteration management.
