@@ -4,7 +4,7 @@
  * Created Date: 03.09.2023 09:52:15
  * Author: 3urobeat
  *
- * Last Modified: 03.09.2023 20:22:16
+ * Last Modified: 04.09.2023 21:52:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -41,7 +41,8 @@ DataManager.prototype.verifyIntegrity = function() {
             // Generate a checksum for every file in fileStructure and compare them
             let startDate = Date.now();
 
-            fileStructure.files.forEach(async (e, i) => {
+            this.controller.misc.syncLoop(fileStructure.files.length, async (loop, i) => {
+                let e = fileStructure.files[i];
 
                 // Generate checksum for file if it exists, otherwise default to null
                 let filesum = fs.existsSync(e.path) ? crypto.createHash("md5").update(fs.readFileSync(e.path)).digest("hex") : null;
@@ -54,18 +55,19 @@ DataManager.prototype.verifyIntegrity = function() {
                     // Logger("debug", `DataManager verifyIntegrity(): Successfully verified checksum of '${e.path}'`);
                 }
 
-                // Check for last iteration
-                if (i + 1 == fileStructure.files.length) {
-                    logger("debug", `DataManager verifyIntegrity(): Validating ${fileStructure.files.length} files took ${Date.now() - startDate}ms`);
+                process.nextTick(() => loop.next()); // Calling next too fast results in a crash for some reason
 
-                    // Check if a file which has already been loaded was restored and restart the bot
-                    if (invalidFiles.some((e) => Object.keys(require.cache).includes(path.resolve(e)))) { // If any file path, converted to absolute, is included in cache
-                        logger("warn", "The application needs to restart as one of the restored files was already loaded. Restarting...", false, false, null, true); // Force print now
-                        return this.controller.restart();
-                    }
+            }, () => { // Exit
 
-                    resolve();
+                logger("debug", `DataManager verifyIntegrity(): Validating ${fileStructure.files.length} files took ${Date.now() - startDate}ms`);
+
+                // Check if a file which has already been loaded was restored and restart the bot
+                if (invalidFiles.some((e) => Object.keys(require.cache).includes(path.resolve(e)))) { // If any file path, converted to absolute, is included in cache
+                    logger("warn", "The application needs to restart as one of the restored files was already loaded. Restarting...", false, false, null, true); // Force print now
+                    return this.controller.restart();
                 }
+
+                resolve();
             });
 
         })();
