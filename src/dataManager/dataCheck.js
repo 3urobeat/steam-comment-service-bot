@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 28.08.2023 19:37:48
+ * Last Modified: 05.09.2023 19:05:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -15,7 +15,6 @@
  */
 
 
-const fs              = require("fs");
 const os              = require("os");
 const steamIdResolver = require("steamid-resolver");
 
@@ -58,21 +57,7 @@ DataManager.prototype.checkData = function() {
             if (this.config.ownerid.includes("76561198260031749")) { this.config.ownerid.splice(this.config.ownerid.indexOf("76561198260031749"), 1); write = true; }
             if (this.config.ownerid.includes("3urobeat"))          { this.config.ownerid.splice(this.config.ownerid.indexOf("3urobeat"), 1); write = true; }
 
-            if (write) {
-                // Get arrays on one line
-                let stringifiedconfig = JSON.stringify(this.config, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
-                    if (v instanceof Array) return JSON.stringify(v);
-                    return v;
-                }, 4)
-                    .replace(/"\[/g, "[")
-                    .replace(/\]"/g, "]")
-                    .replace(/\\"/g, '"')
-                    .replace(/""/g, '""');
-
-                fs.writeFile("./config.json", stringifiedconfig, (err) => {
-                    if (err) logger("error", "Error cleaning config.json: " + err, true);
-                });
-            }
+            if (write) this.writeConfigToDisk();
         }
 
 

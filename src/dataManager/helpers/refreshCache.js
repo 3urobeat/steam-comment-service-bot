@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 17:44:47
  * Author: 3urobeat
  *
- * Last Modified: 02.07.2023 19:07:41
+ * Last Modified: 05.09.2023 19:05:14
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -14,10 +14,11 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const fs = require("fs");
+
 const SteamID = require("steamid");
 
 const DataManager = require("../dataManager");
+
 
 /**
  * Refreshes Backups in cache.json with new data
@@ -51,7 +52,5 @@ DataManager.prototype.refreshCache = function () {
     this.cachefile["datajson"] = this.datafile;
 
     // Write changes to file
-    fs.writeFile(srcdir + "/data/cache.json", JSON.stringify(this.cachefile, null, 4), (err) => {
-        if (err) logger("error", "error writing file backups to cache.json: " + err);
-    });
+    this.writeCachefileToDisk();
 };

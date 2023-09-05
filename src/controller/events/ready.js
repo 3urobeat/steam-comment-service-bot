@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 09:33:30
+ * Last Modified: 05.09.2023 19:05:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -15,7 +15,6 @@
  */
 
 
-const fs        = require("fs");
 const SteamUser = require("steam-user");
 
 const Controller = require("../controller");
@@ -175,9 +174,7 @@ Controller.prototype._readyEvent = function() {
     this.data.datafile.totallogintime = round(this.data.datafile.totallogintime, 2);
     this.data.datafile.firststart = false;
 
-    fs.writeFile(srcdir + "/data/data.json", JSON.stringify(this.data.datafile, null, 4), err => { // Write changes
-        if (err) logger("error", "change this.data.datafile to false error: " + err);
-    });
+    this.data.writeDatafileToDisk();
 
 
     // Set progress bar to 100% if one is active

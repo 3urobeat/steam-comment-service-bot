@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.07.2023 17:07:58
+ * Last Modified: 05.09.2023 19:00:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -211,13 +211,13 @@ DataManager.prototype._importFromDisk = async function () {
             let proxies = []; // When the file is just created there can't be proxies in it (this bot doesn't support magic)
 
             if (!fs.existsSync("./proxies.txt")) {
-                logger("info", "Creating proxies.txt file as it doesn't exist yet...", false, true, logger.animation("loading"));
+                logger("info", "Creating empty proxies.txt file because it doesn't exist...", false, true, logger.animation("loading"));
 
-                fs.writeFile(srcdir + "/../proxies.txt", "", (err) => {
-                    if (err) logger("error", "error creating proxies.txt file: " + err);
-                        else logger("info", "Successfully created proxies.txt file.", false, true, logger.animation("loading"));
-                });
+                _this.proxies = [];
+                _this.writeProxiesToDisk();
+
             } else {
+
                 // File does seem to exist so now we can try and read it
                 proxies = fs.readFileSync("./proxies.txt", "utf8").split("\n");
                 proxies = proxies.filter((str) => str != ""); // Remove empty lines

@@ -53,7 +53,7 @@
         {
             "path": "docs/dev/README.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/README.md",
-            "checksum": "fe5b00ed8d9f02ae4b1a7270f0c750ae"
+            "checksum": "76609e999701df1190e02fdc8d434a61"
         },
         {
             "path": "docs/dev/bot/bot.md",
@@ -64,6 +64,11 @@
             "path": "docs/dev/bot/events.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/bot/events.md",
             "checksum": "ee457f8d20f9512630f40fe0b7731d3e"
+        },
+        {
+            "path": "docs/dev/commands/commandHandler.md",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/commands/commandHandler.md",
+            "checksum": "b0cd1fb69e2071b0205268c5d1fe803b"
         },
         {
             "path": "docs/dev/controller/controller.md",
@@ -383,7 +388,7 @@
         {
             "path": "src/commands/core/settings.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/settings.js",
-            "checksum": "0fdccc885272f5c530ae1396932ef6ca"
+            "checksum": "95c75f43c2956ebab54641306f15ecc4"
         },
         {
             "path": "src/commands/core/system.js",
@@ -438,7 +443,7 @@
         {
             "path": "src/controller/events/ready.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/events/ready.js",
-            "checksum": "6cf6c1d308bd174663cc8a4192745a6d"
+            "checksum": "7dcbd6a1527a82e07ce22c9cc11cdd9a"
         },
         {
             "path": "src/controller/events/statusUpdate.js",
@@ -478,7 +483,7 @@
         {
             "path": "src/controller/helpers/misc.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/misc.js",
-            "checksum": "2a700e08e464e579c5ef6485daad455d"
+            "checksum": "6838f95d12eed9cfb025246fa2a36473"
         },
         {
             "path": "src/controller/helpers/npminteraction.js",
@@ -508,7 +513,7 @@
         {
             "path": "src/dataManager/dataCheck.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataCheck.js",
-            "checksum": "4e421f1a1bbe1596ca90eca47e516793"
+            "checksum": "773d5b0b0c0429e55ed325d7f030aab2"
         },
         {
             "path": "src/dataManager/dataExport.js",
@@ -518,12 +523,12 @@
         {
             "path": "src/dataManager/dataImport.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataImport.js",
-            "checksum": "0168fb8fa93ed9f6e1d131e1316f868d"
+            "checksum": "86ae677f324d4a623a20c4154daec75b"
         },
         {
             "path": "src/dataManager/dataIntegrity.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataIntegrity.js",
-            "checksum": "f3ad3c51c8a928622dcf0a5084d9e632"
+            "checksum": "24e166de510b5c3d85b3351f7da68713"
         },
         {
             "path": "src/dataManager/dataManager.js",
@@ -533,7 +538,7 @@
         {
             "path": "src/dataManager/dataProcessing.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataProcessing.js",
-            "checksum": "854302e4a82f0f1aed4e100e713bac59"
+            "checksum": "e3927776806e2df7cda77eace731232d"
         },
         {
             "path": "src/dataManager/helpers/getQuote.js",
@@ -558,7 +563,7 @@
         {
             "path": "src/dataManager/helpers/refreshCache.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/helpers/refreshCache.js",
-            "checksum": "20aad75af2f217d1364346ac69533444"
+            "checksum": "f9530c810fa48d6601a1295f5519adb3"
         },
         {
             "path": "src/dataManager/helpers/repairFile.js",
