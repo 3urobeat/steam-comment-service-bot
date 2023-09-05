@@ -4,7 +4,7 @@
  * Created Date: 03.09.2023 09:52:15
  * Author: 3urobeat
  *
- * Last Modified: 04.09.2023 21:52:13
+ * Last Modified: 05.09.2023 18:53:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -55,7 +55,7 @@ DataManager.prototype.verifyIntegrity = function() {
                     // Logger("debug", `DataManager verifyIntegrity(): Successfully verified checksum of '${e.path}'`);
                 }
 
-                process.nextTick(() => loop.next()); // Calling next too fast results in a crash for some reason
+                loop.next();
 
             }, () => { // Exit
 

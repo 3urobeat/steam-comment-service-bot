@@ -4,7 +4,7 @@
  * Created Date: 25.03.2023 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 04.09.2023 21:43:22
+ * Last Modified: 05.09.2023 18:55:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -31,13 +31,15 @@ module.exports.syncLoop = (iterations, func, exit) => {
     // Construct loop object
     let loop = {
         next: function () { // Run next iteration
+            process.nextTick(() => { // Delay by one tick to fix weird infinite loop crash bug
                 // Check if the next iteration is still allowed to run, otherwise stop by calling break
                 if (currentIndex < iterations && !done) {
                     func(loop, currentIndex); // Call function again with new index
                     currentIndex++;
                 } else {
                     this.break();
-                }1;
+                }
+            });
         },
         break: function () { // Break loop and call exit function
             done = true;
