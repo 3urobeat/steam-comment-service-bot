@@ -338,7 +338,7 @@
         {
             "path": "src/bot/helpers/handleMissingGameLicenses.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/helpers/handleMissingGameLicenses.js",
-            "checksum": "9ea5116a9d47d6de3b2ae5b9cf7f6d9a"
+            "checksum": "5761487cd1f889ac6db2d61a5b5b7f3e"
         },
         {
             "path": "src/bot/helpers/steamChatInteraction.js",

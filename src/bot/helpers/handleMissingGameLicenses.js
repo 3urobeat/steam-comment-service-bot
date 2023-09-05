@@ -4,7 +4,7 @@
  * Created Date: 29.06.2023 21:31:53
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 05.09.2023 20:10:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -34,7 +34,7 @@ Bot.prototype.handleMissingGameLicenses = function() {
 
     // Only request owned apps if we are supposed to idle something
     if (options.filterAppids.length > 0) {
-        this.user.getUserOwnedApps(data.cachefile.botaccid[this.index], options, (err, res) => {
+        this.user.getUserOwnedApps(this.user.steamID, options, (err, res) => {
             if (err) {
                 logger("error", `[${this.logPrefix}] Failed to get owned apps! Attempting to play set appIDs anyways...`);
 
