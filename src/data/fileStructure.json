@@ -258,7 +258,7 @@
         {
             "path": "package-lock.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package-lock.json",
-            "checksum": "f55febe8ed86bf8497ad78b935100726"
+            "checksum": "29883e6d847ec1ea1c482202babbd1a1"
         },
         {
             "path": "package.json",

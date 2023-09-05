@@ -23,6 +23,7 @@ The order of this list represents the order in which they are instantiated when 
   - [Updater](./updater/updater.md)
   - [Bot](./bot/bot.md)
     - [sessionHandler](./sessionHandler/sessionHandler.md)
+  - [CommandHandler](./commands/commandHandler.md)
 
 &nbsp;
 
