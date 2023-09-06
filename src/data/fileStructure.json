@@ -41,6 +41,11 @@
             "checksum": "07f3a7f724dd909ded2f149eef15fcc6"
         },
         {
+            "path": "CONTRIBUTING.md",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/CONTRIBUTING.md",
+            "checksum": "0d0ca37121b61957bd4ae48f2323d8ba"
+        },
+        {
             "path": "LICENSE",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/LICENSE",
             "checksum": "db95b6e40dc7d26d8308b6b7375637b6"
@@ -48,7 +53,7 @@
         {
             "path": "README.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/README.md",
-            "checksum": "48cfb28ec92e4afdbdf237ceb93d8f5d"
+            "checksum": "b086fd1c80d3bc2d7d3c47f2900277ee"
         },
         {
             "path": "docs/dev/README.md",
@@ -63,7 +68,7 @@
         {
             "path": "docs/dev/bot/events.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/bot/events.md",
-            "checksum": "ee457f8d20f9512630f40fe0b7731d3e"
+            "checksum": "502c61cdf9a2ca6f4f2167bc23d6a40b"
         },
         {
             "path": "docs/dev/commands/commandHandler.md",
@@ -118,7 +123,7 @@
         {
             "path": "docs/wiki/README.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/README.md",
-            "checksum": "dede07556ab2450d5307a45d2ad73358"
+            "checksum": "5b1cda5f2b5b1bb9b22f06e67d584c49"
         },
         {
             "path": "docs/wiki/adding_proxies.md",
@@ -214,6 +219,11 @@
             "path": "docs/wiki/config_doc.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/config_doc.md",
             "checksum": "532c8a8f31573be212f8e9074def809f"
+        },
+        {
+            "path": "docs/wiki/contributing.md",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/contributing.md",
+            "checksum": "4e40646b702c69254ae04e3e0c7003ec"
         },
         {
             "path": "docs/wiki/creating_plugins.md",

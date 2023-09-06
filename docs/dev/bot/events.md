@@ -46,4 +46,4 @@ Handles an incoming friend request or group invite by adding the user to the `la
 Handles setting cookies, accepting friend requests & group invites while the bot was offline, updates the bot's status, performs a few checks and starts playing games.  
 This event is fired after loggedOn when this bot account establishes a connection to Steam.  
 
-After this event was handled, a bot account is seen as online and ready to be used.
+After this event was handled, a bot account is considered to be online and ready to be used.

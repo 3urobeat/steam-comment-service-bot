@@ -74,6 +74,12 @@ If you encountered a bug or wish a feature to be added, please open an [issue](h
 If you are interested in beta builds of this project, visit the [beta-testing branch](https://github.com/3urobeat/steam-comment-service-bot/tree/beta-testing).  
 If you are interested in the active development progress, visit the [projects section](https://github.com/3urobeat/steam-comment-service-bot/projects).
 
+#### **Contributing**
+You would like to contribute to the project itself?  
+Great! No matter if it's fixing a few typos or adding a whole feature - every contribution is welcome.  
+
+The contributing page is located in the project's wiki, please [click here to get redirected](./docs/wiki/contributing.md)!
+
 #### **License**
 This project and all code included is distributed under the GPL-3.0 license.  
 If you want to use code from this repository in your project, feel free to do so as long as you **include a URL** as comment above the code block to the file in this repository!  
