@@ -130,7 +130,7 @@ The Plugin System is responsible for loading, checking and calling plugin functi
 It also stores references to the controller, giving you access to every part of the bot.
 
 The Plugin System is probably the most important part for you when developing a plugin.  
-Check it out using your IntelliSense and take a look at the developer documentation (TODO).
+Check it out using your IntelliSense and take a look at the [developer documentation](../dev/pluginSystem/pluginSystem.md).
 
 &nbsp;
 

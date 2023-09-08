@@ -24,6 +24,7 @@ The order of this list represents the order in which they are instantiated when 
   - [Bot](./bot/bot.md)
     - [sessionHandler](./sessionHandler/sessionHandler.md)
   - [CommandHandler](./commands/commandHandler.md)
+  - [PluginSystem](./pluginSystem/pluginSystem.md)
 
 &nbsp;
 
