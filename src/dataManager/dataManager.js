@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 09.09.2023 14:09:48
+ * Last Modified: 09.09.2023 15:38:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -125,7 +125,10 @@ const DataManager = function (controller) {
 DataManager.prototype._loadDataManagerFiles = function() {
     return new Promise((resolve) => {
         // The files need to be explicitly defined for restoring using checkAndGetFile to work
-        const helperPaths = ["dataCheck.js", "dataExport.js", "dataImport.js", "dataIntegrity.js", "dataProcessing.js", "helpers/getQuote.js", "helpers/handleCooldowns.js", "helpers/handleExpiringTokens.js", "helpers/misc.js", "helpers/refreshCache.js", "helpers/repairFile.js"];
+        const helperPaths = [
+            "dataCheck.js", "dataExport.js", "dataImport.js", "dataIntegrity.js", "dataProcessing.js",
+            "helpers/getLang.js", "helpers/getQuote.js", "helpers/handleCooldowns.js", "helpers/handleExpiringTokens.js", "helpers/misc.js", "helpers/refreshCache.js", "helpers/repairFile.js"
+        ];
 
         helperPaths.forEach(async (e, i) => {
             const getFile = await this.checkAndGetFile("./src/dataManager/" + e, this.controller.logger);
@@ -202,6 +205,16 @@ DataManager.prototype.verifyIntegrity = function() {};
  * Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
  */
 DataManager.prototype.processData = async function() {};
+
+/**
+ * Retrieves a language string from one of the available language files and replaces keywords if desired.
+ * If a userID is provided it will lookup which language the user has set. If nothing is set, the default language set in the config will be returned.
+ * @param {string} str Name of the language string to be retrieved
+ * @param {{[key: string]: string}} [replace] Optional: Object containing keywords in the string to replace. Pass the keyword as key and the corresponding value to replace as value.
+ * @param {string} [userIDOrLanguage] Optional: ID of the user to lookup in the userSettings database. You can also pass the name of a supported language like "english" to get a specific language.
+ * @returns {Promise.<string|null>} Returns a promise that resolves with the language string or `null` if it could not be found.
+ */
+DataManager.prototype.getLang = async function(str, replace = null, userIDOrLanguage = "") {}; // eslint-disable-line
 
 /**
  * Gets a random quote

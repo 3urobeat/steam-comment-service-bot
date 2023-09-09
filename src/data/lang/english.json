@@ -1,6 +1,8 @@
 {
     "note": "This file contains nearly all messages the bot sends to users. If you want to modify messages, read here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/customlang_doc.md",
 
+    "langname": "english",
+
     "updaterautoupdatedisabled": "You have disabled the automatic updater. Would you like to update now?\nIf yes, please force an update using the command: cmdprefixupdate true",
 
     "commentcmdusageowner": "'cmdprefixcomment amount/\"all\" id' to request amount many comments (or the max possible amount).\nProvide a profile, group or sharedfile (screenshot, artwork or guide) ID if you'd like to comment somewhere else instead of on your profile.",

@@ -1,6 +1,7 @@
 {
     "commentdelay": 15000,
     "_help_": "Read the docs: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/config_doc.md",
+    "defaultLanguage": "english",
     "skipSteamGuard": false,
     "commentcooldown": 5,
     "botaccountcooldown": 10,

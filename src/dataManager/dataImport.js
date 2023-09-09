@@ -356,6 +356,7 @@ DataManager.prototype._importFromDisk = async function () {
     this.lastCommentDB   = new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); // Autoload
     this.ratingHistoryDB = new nedb({ filename: srcdir + "/data/ratingHistory.db", autoload: true });
     this.tokensDB        = new nedb({ filename: srcdir + "/data/tokens.db", autoload: true });
+    this.userSettingsDB  = new nedb({ filename: srcdir + "/data/userSettings.db", autoload: true });
 
     // Check tokens.db every 24 hours for expired tokens to allow users to refresh them beforehand
     this._startExpiringTokensCheckInterval();

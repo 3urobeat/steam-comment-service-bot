@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.07.2023 16:03:51
+ * Last Modified: 09.09.2023 15:42:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -214,6 +214,15 @@ module.exports.test = {
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // eslint-disable-line
+
+        // Test getLang():
+        /* logger("", "1: " + await commandHandler.data.getLang("resetcooldowncmdsuccess", { "profileid": "1234" }), true); // Valid test cases
+        logger("", "2: " + await commandHandler.data.getLang("resetcooldowncmdsuccess", { "profileid": "1234" }, "russian"), true);
+        logger("", "3: " + await commandHandler.data.getLang("resetcooldowncmdsuccess", { "profileid": "1234" }, resInfo.userID), true); // Note: Make sure you exist in the database
+
+        logger("", "4: " + await commandHandler.data.getLang("resetcooldowncmdsuccess", { "testvalue": "1234" }), true); // Invalid test cases
+        logger("", "5: " + await commandHandler.data.getLang("resetcooldowncmdsucces"), true);
+        logger("", "6: " + await commandHandler.data.getLang("resetcooldowncmdsuccess", { "profileid": "1234" }, "99827634"), true); */
 
         /* // Do not remove, these are handleSteamIdResolving test cases. Might be useful to include later in steamid-resolving lib test suite
         let handleSteamIdResolving = commandHandler.controller.handleSteamIdResolving;
