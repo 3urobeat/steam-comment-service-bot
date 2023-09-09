@@ -58,7 +58,7 @@
         {
             "path": "docs/dev/README.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/README.md",
-            "checksum": "76609e999701df1190e02fdc8d434a61"
+            "checksum": "dcce07da1e79429ab6bdc9832ea39b80"
         },
         {
             "path": "docs/dev/bot/bot.md",
@@ -93,12 +93,17 @@
         {
             "path": "docs/dev/dataManager/dataManager.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/dataManager/dataManager.md",
-            "checksum": "59a72038d1e8b7339eb6be9a26fa8094"
+            "checksum": "05e1cef77cc007dd0cd175b856b52ab0"
         },
         {
             "path": "docs/dev/introduction.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/introduction.md",
             "checksum": "759da9533bfa9e1ad2c8775858cfbfc1"
+        },
+        {
+            "path": "docs/dev/pluginSystem/pluginSystem.md",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/pluginSystem/pluginSystem.md",
+            "checksum": "46d5e1947b1a022e6e54c058539d0d15"
         },
         {
             "path": "docs/dev/sessionHandler/sessionHandler.md",
@@ -228,7 +233,7 @@
         {
             "path": "docs/wiki/creating_plugins.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/creating_plugins.md",
-            "checksum": "38505125cf171421dc9dcce5d4b73fa6"
+            "checksum": "c40d369f9401cf5980c6e562495688e5"
         },
         {
             "path": "docs/wiki/customlang_doc.md",
@@ -268,12 +273,12 @@
         {
             "path": "package-lock.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package-lock.json",
-            "checksum": "29883e6d847ec1ea1c482202babbd1a1"
+            "checksum": "baf1a9f057cd937d27f3377999a59e04"
         },
         {
             "path": "package.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package.json",
-            "checksum": "d0736d769f18cccbd2c48c15cb23484b"
+            "checksum": "8c9b3a44e4ddd4c49e7901fba058fc9c"
         },
         {
             "path": "scripts/README.md",
@@ -618,7 +623,7 @@
         {
             "path": "src/pluginSystem/pluginSystem.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/pluginSystem/pluginSystem.js",
-            "checksum": "a8ae28f9387413b51be108ad77d558e7"
+            "checksum": "10c13cc9d4bf5f6f4c97f571c1d5cf5d"
         },
         {
             "path": "src/sessions/events/sessionEvents.js",

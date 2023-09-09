@@ -3,8 +3,8 @@
 
 &nbsp;
 
-The DataManager system imports, checks, handles errors and provides a file updating service for all configuration files.  
-It is the central point for holding any managing any data which the application stores on the filesystem.  
+The DataManager system imports, checks, handles errors and provides a file updating service for all config & source code files.  
+It is the central point for holding and managing any data which the application stores on the filesystem.  
 
 Use the data and functions exposed by this module whenever you need to e.g. read and write to a config file. 
 
