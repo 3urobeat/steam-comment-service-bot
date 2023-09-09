@@ -93,7 +93,7 @@
         {
             "path": "docs/dev/dataManager/dataManager.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/dataManager/dataManager.md",
-            "checksum": "05e1cef77cc007dd0cd175b856b52ab0"
+            "checksum": "aca7f83416c1188b71773c91ba350db1"
         },
         {
             "path": "docs/dev/introduction.md",
@@ -238,7 +238,7 @@
         {
             "path": "docs/wiki/customlang_doc.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/customlang_doc.md",
-            "checksum": "9b2bfc90340661ba2cfdfe10b2d3cb6d"
+            "checksum": "6a48eacb565d40b93454c4affe2b8c94"
         },
         {
             "path": "docs/wiki/data_doc.md",
@@ -293,7 +293,7 @@
         {
             "path": "scripts/langStringsChangeDetector.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/scripts/langStringsChangeDetector.js",
-            "checksum": "16e54c703afe9efc49266183dd2ad1b8"
+            "checksum": "032e423242c502d5aa9281f47e33d14b"
         },
         {
             "path": "src/bot/EStatus.js",
@@ -388,7 +388,7 @@
         {
             "path": "src/commands/core/general.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/general.js",
-            "checksum": "86c80e7711f33c9492847504270f9a8d"
+            "checksum": "567ef2f7aee2fcbfdb60e19b77498259"
         },
         {
             "path": "src/commands/core/group.js",
@@ -548,7 +548,7 @@
         {
             "path": "src/dataManager/dataManager.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataManager.js",
-            "checksum": "0f5d14f207cecd54d0602d0f4b6b43ae"
+            "checksum": "77f295ff16819560f774f711ad95f884"
         },
         {
             "path": "src/dataManager/dataProcessing.js",
@@ -658,7 +658,7 @@
         {
             "path": "src/starter.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/starter.js",
-            "checksum": "b65402c2178dd9b1bce469713fe9d3f7"
+            "checksum": "c551b25e9795ab4149c894af3f0077f1"
         },
         {
             "path": "src/updater/compatibility/2060.js",

@@ -40,9 +40,12 @@ Object holding the content of `advancedconfig.json`.
 You can see its content by clicking [here](/advancedconfig.json).
 
 ### lang
-Object holding all language strings for responding to a user.  
-It loads the data of `src/data/lang/defaultlang.json` and overwrites all keys with the corresponding values from `customlang.json` (does not overwrite the file on the disk).  
-You can see the default lang content by clicking [here](/src/data/lang/defaultlang.json) and your customlang file by clicking [here](/customlang.json).
+Object storing all supported languages and their strings used for responding to a user.
+
+It loads the files of `src/data/lang/` and overwrites all keys with the corresponding values from `customlang.json` (does not overwrite the file on the disk).  
+You can see the default lang content by clicking [here](/src/data/lang/english.json) and your customlang file by clicking [here](/customlang.json).
+
+Use the function [getLang()](#getlangstr-replace-useridorlanguage-promise) to access the languages stored in this object.
 
 ### quotes
 Array of strings holding all quotes used for commenting which are set in `quotes.txt`.  
@@ -154,6 +157,16 @@ The function will log an error and terminate the application should a fatal erro
 
 ### processData(): void
 Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
+
+### getLang(str, replace?, userIDOrLanguage?): Promise
+- `str` (string) - Name of the language string to be retrieved
+- `replace` ({[key: string]: string}) - Optional: Object containing keywords in the string to replace. Pass the keyword as key and the corresponding value to replace as value.
+- `userIDOrLanguage` (string) - Optional: ID of the user to lookup in the userSettings database. You can also pass the name of a supported language like "english" to get a specific language.
+
+Retrieves a language string from one of the available language files and replaces keywords if desired.
+If a userID is provided it will lookup which language the user has set. If nothing is set, the default language set in the config will be returned.
+
+Returns a promise which resolves with the language string or `null` if it could not be found.
 
 ### getQuote(quotesArr?): Promise
 - `quotesArr` (string[]) - Optional: Provide a custom quotes array to not use the DataManager [quotes](#quotes) array.
