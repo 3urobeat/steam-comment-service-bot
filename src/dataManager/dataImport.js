@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.09.2023 19:00:03
+ * Last Modified: 09.09.2023 14:06:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -276,22 +276,29 @@ DataManager.prototype._importFromDisk = async function () {
     function loadLanguage() {
         return new Promise((resolve) => {
             try {
-                delete require.cache[require.resolve(srcdir + "/data/lang/defaultlang.json")]; // Delete cache to enable reloading data
+                let obj = {};
 
-                resolve(require(srcdir + "/data/lang/defaultlang.json"));
+                delete require.cache[require.resolve(srcdir + "/data/lang/english.json")]; // Delete cache to enable reloading data
+                delete require.cache[require.resolve(srcdir + "/data/lang/russian.json")]; // Delete cache to enable reloading data
+
+                obj["english"] = require(srcdir + "/data/lang/english.json");
+                obj["russian"] = require(srcdir + "/data/lang/russian.json");
+
+                resolve(obj);
             } catch (err) {
                 if (err) {
                     // Corrupted!
                     logger("", "", true, true);
 
                     // Pull the file directly from GitHub.
-                    _this._pullNewFile("defaultlang.json", "./src/data/lang/defaultlang.json", resolve);
+                    _this._pullNewFile("english.json", "./src/data/lang/english.json", resolve); // Only resolve for the default language
+                    _this._pullNewFile("english.json", "./src/data/lang/russian.json", () => {});
                 }
             }
         });
     }
 
-    function loadCustomLang() {
+    /* function loadCustomLang() {
         return new Promise((resolve) => {
             // Check before trying to import if the user even created the file
             if (fs.existsSync(srcdir + "/../customlang.json")) {
@@ -312,7 +319,7 @@ DataManager.prototype._importFromDisk = async function () {
                 // Overwrite values in lang object with values from customlang
                 Object.keys(customlang).forEach((e, i) => {
                     if (e != "" && e != "note") {
-                        _this.lang[e] = customlang[e]; // Overwrite each defaultlang key with a corresponding customlang key if one is set
+                        _this.lang[e] = customlang[e]; // Overwrite each english key with a corresponding customlang key if one is set
 
                         customlangkeys++;
                     }
@@ -330,7 +337,7 @@ DataManager.prototype._importFromDisk = async function () {
                 resolve(_this.lang); // Resolve with default lang object
             }
         });
-    }
+    } */
     /* eslint-enable jsdoc/require-jsdoc */
 
     // Call all functions from above after another. This must be done async to avoid a check failing that depends on something from a previous function. We sadly cannot use Promise.all() because of this.
@@ -344,7 +351,7 @@ DataManager.prototype._importFromDisk = async function () {
     this.proxies         = await loadProxies();
     this.quotes          = await loadQuotes();
     this.lang            = await loadLanguage();
-    this.lang            = await loadCustomLang();
+    //this.lang            = await loadCustomLang();
 
     this.lastCommentDB   = new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); // Autoload
     this.ratingHistoryDB = new nedb({ filename: srcdir + "/data/ratingHistory.db", autoload: true });

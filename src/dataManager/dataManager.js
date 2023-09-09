@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 03.09.2023 20:23:44
+ * Last Modified: 09.09.2023 14:09:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -54,9 +54,9 @@ const DataManager = function (controller) {
     this.advancedconfig = {};
 
     /**
-     * Stores all language strings used for responding to a user.
+     * Stores all supported languages and their strings used for responding to a user.
      * All default strings have already been replaced with corresponding matches from `customlang.json`.
-     * @type {{[key: string]: string}}
+     * @type {{[key: string]: {[key: string]: string}}}
      */
     this.lang = {};
 
@@ -86,24 +86,31 @@ const DataManager = function (controller) {
 
     /**
      * Database which stores the timestamp of the last request of every user. This is used to enforce `config.unfriendTime`.
-     * Document structure: { id: String, time: Number }
+     * Document structure: { id: string, time: Number }
      * @type {Nedb}
      */
     this.lastCommentDB = {};
 
     /**
      * Database which stores information about which bot accounts have already voted on which sharedfiles. This allows us to filter without pinging Steam for every account on every request.
-     * Document structure: { id: String, accountName: String, type: String, time: Number }
+     * Document structure: { id: string, accountName: string, type: string, time: Number }
      * @type {Nedb}
      */
     this.ratingHistoryDB = {};
 
     /**
      * Database which stores the refreshTokens for all bot accounts.
-     * Document structure: { accountName: String, token: String }
+     * Document structure: { accountName: string, token: string }
      * @type {Nedb}
      */
     this.tokensDB = {};
+
+    /**
+     * Database which stores user specific settings, for example the language set
+     * Document structure: { id: string, lang: string }
+     * @type {Nedb}
+     */
+    this.userSettingsDB = {};
 
     // Stores a reference to the active handleExpiringTokens interval to prevent duplicates on reloads
     this._handleExpiringTokensInterval = null;
@@ -133,7 +140,7 @@ DataManager.prototype._loadDataManagerFiles = function() {
 
 /**
  * Checks currently loaded data for validity and logs some recommendations for a few settings.
- * @returns {Promise.<void>} Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
+ * @returns {Promise.<void>} Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a string specifying the failed check.
  */
 DataManager.prototype.checkData = function () {};
 
@@ -199,14 +206,14 @@ DataManager.prototype.processData = async function() {};
 /**
  * Gets a random quote
  * @param {Array} quotesArr Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
- * @returns {Promise.<string>} Resolves with `quote` (String)
+ * @returns {Promise.<string>} Resolves with `quote` (string)
  */
 DataManager.prototype.getQuote = function (quotesArr = null) {}; // eslint-disable-line
 
 /**
  * Checks if a user ID is currently on cooldown and formats human readable lastRequestStr and untilStr strings.
  * @param {string} id ID of the user to look up
- * @returns {Promise.<{ lastRequest: number, until: number, lastRequestStr: string, untilStr: string }|null>} Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as String), `untilStr` (Wait until as String). If id wasn't found, `null` will be returned.
+ * @returns {Promise.<{ lastRequest: number, until: number, lastRequestStr: string, untilStr: string }|null>} Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as string), `untilStr` (Wait until as string). If id wasn't found, `null` will be returned.
  */
 DataManager.prototype.getUserCooldown = function (id) {}; // eslint-disable-line
 
