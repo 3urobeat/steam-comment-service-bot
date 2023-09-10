@@ -92,6 +92,10 @@
     "resetcooldowncmdglobalreset": "Время восстановления всех аккаунтов ботов было сброшено.",
     "resetcooldowncmdsuccess": "Время восстановления ${profileid} было сброшено.",
 
+    "langcmdsupported": "TODO:",
+    "langcmdnotsupported": "TODO: ${supportedlangs}\n\nTODO: ' https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/contributing.md#translating '",
+    "langcmdsuccess": "TODO!",
+
     "settingscmdfailedread": "Не удалось прочитать конфигурацию для вывода текущих настроек: ",
     "settingscmdcurrentsettings": "Текущие настройки:",
     "settingscmdblockedvalues": "enableevalcmd, ownerid и owner не могут быть изменены через команду settings по соображениям безопасности. Пожалуйста, сделайте это непосредственно в конфигурационном файле.",

@@ -94,6 +94,10 @@
     "resetcooldowncmdglobalreset": "The cooldown of all bot accounts has been reset.",
     "resetcooldowncmdsuccess": "${profileid}'s cooldown has been cleared.",
 
+    "langcmdsupported": "The bot supports these languages:",
+    "langcmdnotsupported": "This language is sadly not supported. Please choose a language from this list: ${supportedlangs}\n\nYou would like to contribute an unsupported language? Read here: ' https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/contributing.md#translating '",
+    "langcmdsuccess": "Your language has been changed!",
+
     "settingscmdfailedread": "Failed to read config to output current settings: ",
     "settingscmdcurrentsettings": "Current settings:",
     "settingscmdblockedvalues": "enableevalcmd, ownerid and owner can't be changed via the settings command for security reasons. Please do it directly in the config file.",

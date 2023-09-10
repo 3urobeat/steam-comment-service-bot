@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.09.2023 15:26:17
+ * Last Modified: 10.09.2023 17:29:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -16,6 +16,65 @@
 
 
 const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
+
+
+module.exports.lang = {
+    names: ["lang", "setlang"],
+    description: "Changes the language the bot will reply to you in. Call without params to see all supported languages.",
+    args: [
+        {
+            name: "language",
+            description: "Name of the language",
+            type: "string",
+            isOptional: true,
+            ownersOnly: false
+        }
+    ],
+    ownersOnly: false,
+
+    /**
+     * The lang command
+     * @param {CommandHandler} commandHandler The commandHandler object
+     * @param {Array} args Array of arguments that will be passed to the command
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     */
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
+        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+
+        // List all supported languages by joining the keys of the data lang object with a line break and -
+        if (!args[0]) {
+            respond(`${await commandHandler.data.getLang("langcmdsupported", null, resInfo.userID)}\n- ${Object.keys(commandHandler.data.lang).join("\n - ")}`);
+            return;
+        }
+
+        let suppliedLang = args[0].toLowerCase();
+
+        // Check if the supplied language is supported
+        if (!Object.keys(commandHandler.data.lang).includes(suppliedLang)) {
+            respond(await commandHandler.data.getLang("langcmdnotsupported", { "supportedlangs": "\n- " + Object.keys(commandHandler.data.lang).join("\n - ") }, resInfo.userID));
+            return;
+        }
+
+        // Check if command was called without a userid and reject database write
+        if (!resInfo.userID) {
+            respond(await commandHandler.data.getLang("nouserid")); // Reject usage of command without an userID to avoid cooldown bypass
+            return logger("err", "The lang command was called without resInfo.userID! Blocking the command as I'm unable to attribute the lang change to a user, which is required for this database write!");
+        }
+
+        // Upsert database record
+        commandHandler.data.userSettingsDB.update({ id: resInfo.userID }, { $set: { lang: suppliedLang } }, { upsert: true }, async (err) => {
+            if (err) {
+                respond("Error: Couldn't write to database! Please check the log for an error stacktrace.");
+                logger("error", "Failed to write language change to userSettings database!\nError: " + err);
+                return;
+            }
+
+            respond(await commandHandler.data.getLang("langcmdsuccess", null, suppliedLang));
+        });
+    }
+};
 
 
 module.exports.settings = {
