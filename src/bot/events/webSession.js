@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 09:33:16
+ * Last Modified: 10.09.2023 00:04:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -63,8 +63,8 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
                     // Log message and send welcome message. Delay msg to avoid AccessDenied and RateLimitExceeded errors
                     logger("info", `[${this.logPrefix}] Added user while I was offline! User: ` + thisfriend);
 
-                    setTimeout(() => {
-                        if (this.index == 0) this.sendChatMessage(this, { userID: String(thisfriend) }, this.controller.data.lang.useradded.replace(/cmdprefix/g, "!"));
+                    setTimeout(async () => {
+                        if (this.index == 0) this.sendChatMessage(this, { userID: String(thisfriend) }, await this.controller.data.getLang("useradded", { "cmdprefix": "!" }, String(thisfriend)));
                             else logger("debug", "Not sending useradded message because this isn't the main user...");
                     }, 1000 * processedFriendRequests);
 

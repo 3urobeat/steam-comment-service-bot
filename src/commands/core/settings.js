@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 05.09.2023 19:05:48
+ * Last Modified: 10.09.2023 15:26:17
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -47,7 +47,7 @@ module.exports.settings = {
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
         let config  = commandHandler.data.config;
 
@@ -66,7 +66,7 @@ module.exports.settings = {
             let currentsettingsarr = stringifiedconfig.toString().slice(1, -1).split("\n").map(s => s.trim());
 
             // Send message with code prefix and only allow cuts at newlines
-            respondModule(context, { prefix: "/code", cutChars: ["\n"], ...resInfo }, commandHandler.data.lang.settingscmdcurrentsettings + "\n" + currentsettingsarr.join("\n")); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+            respondModule(context, { prefix: "/code", cutChars: ["\n"], ...resInfo }, (await commandHandler.data.getLang("settingscmdcurrentsettings", null, resInfo.userID)) + "\n" + currentsettingsarr.join("\n")); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
             return;
         }
@@ -77,7 +77,8 @@ module.exports.settings = {
 
         // Block those 3 values to don't allow another owner to take over ownership
         if (args[0] == "enableevalcmd" || args[0] == "ownerid" || args[0] == "owner") {
-            return respond(commandHandler.data.lang.settingscmdblockedvalues);
+            respond(await commandHandler.data.getLang("settingscmdblockedvalues", null, resInfo.userID));
+            return;
         }
 
         let keyvalue = config[args[0]]; // Save old value to be able to reset changes
@@ -109,18 +110,18 @@ module.exports.settings = {
         // Round maxComments value in order to avoid the possibility of weird amounts
         if (args[0] == "maxComments" || args[0] == "maxOwnerComments") args[1] = Math.round(args[1]);
 
-        if (keyvalue == undefined) return respond(commandHandler.data.lang.settingscmdkeynotfound);
-        if (keyvalue == args[1]) return respond(commandHandler.data.lang.settingscmdsamevalue.replace("value", args[1]));
+        if (keyvalue == undefined) return respond(await commandHandler.data.getLang("settingscmdkeynotfound", null, resInfo.userID));
+        if (keyvalue == args[1]) return respond(await commandHandler.data.getLang("settingscmdsamevalue", { "value": args[1] }, resInfo.userID));
 
         config[args[0]] = args[1]; // Apply changes
 
         // 32-bit integer limit check from controller.js's startup checks
         if (typeof(keyvalue) == "number" && config.commentdelay * config.maxComments > 2147483647 || typeof(keyvalue) == "number" && config.commentdelay * config.maxOwnerComments > 2147483647) { // Check this here after the key has been set and reset the changes if it should be true
             config[args[0]] = keyvalue;
-            return respond(commandHandler.data.lang.settingscmdvaluetoobig); // Just using the check from controller.js
+            return respond(await commandHandler.data.getLang("settingscmdvaluetoobig", null, resInfo.userID));
         }
 
-        respond(commandHandler.data.lang.settingscmdvaluechanged.replace("targetkey", args[0]).replace("oldvalue", keyvalue).replace("newvalue", args[1]).replace(/cmdprefix/g, resInfo.cmdprefix));
+        respond(await commandHandler.data.getLang("settingscmdvaluechanged", { "targetkey": args[0], "oldvalue": keyvalue, "newvalue": args[1], "cmdprefix": resInfo.cmdprefix }, resInfo.userID));
         logger("info", `${args[0]} has been changed from ${keyvalue} to ${args[1]}.`);
 
         if (args[0] == "playinggames") {

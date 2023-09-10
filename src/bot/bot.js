@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 08.07.2023 00:41:25
+ * Last Modified: 10.09.2023 11:51:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -180,7 +180,7 @@ module.exports = Bot;
  * @param {string} message The message string provided by steam-user friendMessage event
  * @returns {boolean} `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
  */
-Bot.prototype.checkMsgBlock = function(steamID64, message) {}; // eslint-disable-line
+Bot.prototype.checkMsgBlock = async function(steamID64, message) {}; // eslint-disable-line
 
 /**
  * Handles aborting a login attempt should an account get stuck to prevent the bot from softlocking (see issue #139)

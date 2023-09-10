@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 24.07.2023 19:41:59
+ * Last Modified: 10.09.2023 12:51:23
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -74,15 +74,15 @@ module.exports.comment = {
 
         /* --------- Various checks  --------- */
         if (!resInfo.userID) {
-            respond(commandHandler.data.lang.nouserid); // Reject usage of command without an userID to avoid cooldown bypass
+            respond(await commandHandler.data.getLang("nouserid", null, requesterSteamID64)); // Reject usage of command without an userID to avoid cooldown bypass
             return logger("err", "The comment command was called without resInfo.userID! Blocking the command as I'm unable to apply cooldowns, which is required for this command!");
         }
-        if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
-        if (commandHandler.controller.info.activeLogin)                 return respond(commandHandler.data.lang.activerelog);      // Bot is waiting for relog
-        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(commandHandler.data.lang.commandowneronly); // Comment command is restricted to owners only
+        if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterSteamID64)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.activeLogin)                 return respond(await commandHandler.data.getLang("activerelog", null, requesterSteamID64));      // Bot is waiting for relog
+        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterSteamID64)); // Comment command is restricted to owners only
 
         // Check for no id param as default behavior is unavailable when calling from outside the Steam Chat
-        if (!resInfo.fromSteamChat && !args[1]) return respond(commandHandler.data.lang.noidparam);
+        if (!resInfo.fromSteamChat && !args[1]) return respond(await commandHandler.data.getLang("noidparam", null, requesterSteamID64));
 
 
         /* --------- Calculate maxRequestAmount and get arguments from comment request --------- */
@@ -102,13 +102,13 @@ module.exports.comment = {
         // Check if user is already receiving comments right now
         let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64];
 
-        if (activeReqEntry && activeReqEntry.status == "active") return respond(commandHandler.data.lang.idalreadyreceiving);
+        if (activeReqEntry && activeReqEntry.status == "active") return respond(await commandHandler.data.getLang("idalreadyreceiving", null, requesterSteamID64));
 
 
         // Check if user has cooldown
         let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterSteamID64);
 
-        if (until > Date.now()) return respond(commandHandler.data.lang.idoncooldown.replace("remainingcooldown", untilStr));
+        if (until > Date.now()) return respond(await commandHandler.data.getLang("idoncooldown", { "remainingcooldown": untilStr }, requesterSteamID64));
 
 
         // Get all currently available bot accounts. Block limited accounts from being eligible from commenting in groups
@@ -116,14 +116,14 @@ module.exports.comment = {
         let { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = getAvailableBotsForCommenting(commandHandler, numberOfComments, allowLimitedAccounts, idType, receiverSteamID64);
 
         if (availableAccounts.length == 0 && !whenAvailableStr) { // Check if this bot has no suitable accounts for this request and there won't be any available at any point
-            if (!allowLimitedAccounts) respond(commandHandler.data.lang.commentnounlimitedaccs.replace(/cmdprefix/g, resInfo.cmdprefix)); // Send less generic message for requests which require unlimited accounts
-                else respond(commandHandler.data.lang.commentnoaccounts.replace(/cmdprefix/g, resInfo.cmdprefix));
+            if (!allowLimitedAccounts) respond(await commandHandler.data.getLang("commentnounlimitedaccs", { "cmdprefix": resInfo.cmdprefix }, requesterSteamID64)); // Send less generic message for requests which require unlimited accounts
+                else respond(await commandHandler.data.getLang("commentnoaccounts", { "cmdprefix": resInfo.cmdprefix }, requesterSteamID64));
 
             return;
         }
 
         if (availableAccounts.length - accsToAdd.length < accsNeeded && !whenAvailableStr) { // Check if user needs to add accounts first. Make sure the lack of accounts is caused by accsToAdd, not cooldown
-            let addStr = commandHandler.data.lang.commentaddbotaccounts;
+            let addStr = await commandHandler.data.getLang("commentaddbotaccounts", null, requesterSteamID64);
             accsToAdd.forEach(e => addStr += `\n' steamcommunity.com/profiles/${commandHandler.data.cachefile.botaccid[commandHandler.controller.getBots(null, true)[e].index]} '`);
 
             logger("info", `Found enough available accounts but user needs to add ${accsToAdd.length} limited accounts first before I'm able to comment.`);
@@ -133,8 +133,8 @@ module.exports.comment = {
         }
 
         if (availableAccounts.length < accsNeeded) { // Check if not enough available accounts were found because of cooldown
-            if (availableAccounts.length > 0) respond(commandHandler.data.lang.commentnotenoughavailableaccs.replace("waittime", whenAvailableStr).replace("availablenow", availableAccounts.length)); // Using allAccounts.length works for the "spread requests on as many accounts as possible" method
-                else respond(commandHandler.data.lang.commentzeroavailableaccs.replace("waittime", whenAvailableStr));
+            if (availableAccounts.length > 0) respond(await commandHandler.data.getLang("commentnotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availableAccounts.length }, requesterSteamID64)); // Using allAccounts.length works for the "spread requests on as many accounts as possible" method
+                else respond(await commandHandler.data.getLang("commentzeroavailableaccs", { "waittime": whenAvailableStr }, requesterSteamID64));
 
             logger("info", `Found only ${availableAccounts.length} available account(s) but ${accsNeeded} account(s) are needed to send ${numberOfComments} comments.`);
             return;
@@ -195,13 +195,13 @@ module.exports.comment = {
 
         // Check if profile is private
         if (idType == "profile") {
-            commandHandler.controller.main.community.getSteamUser(new SteamID(receiverSteamID64), (err, user) => {
+            commandHandler.controller.main.community.getSteamUser(new SteamID(receiverSteamID64), async (err, user) => {
                 if (err) {
                     logger("warn", `[Main] Failed to check if ${receiverSteamID64} is private: ${err}\n       Trying to comment anyway and hoping no error occurs...`); // This can happen sometimes and most of the times commenting will still work
                 } else {
                     logger("debug", "Successfully checked privacyState of receiving user: " + user.privacyState);
 
-                    if (user.privacyState != "public") return respond(commandHandler.data.lang.commentuserprofileprivate); // Only check if getting the Steam user's data didn't result in an error
+                    if (user.privacyState != "public") return respond(await commandHandler.data.getLang("commentuserprofileprivate", requesterSteamID64)); // Only check if getting the Steam user's data didn't result in an error
                 }
 
                 // Register this comment process in activeRequests
@@ -232,8 +232,9 @@ module.exports.comment = {
  * @param {object} commentArgs All arguments this postComment function needs, without callback. It will be applied and a callback added as last param. Include a key called "quote" to dynamically replace it with a random quote.
  * @param {string} receiverSteamID64 steamID64 of the profile to receive the comments
  */
-function comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64) {
-    let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
+async function comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64) {
+    let activeReqEntry     = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
+    let requesterSteamID64 = resInfo.userID;
 
 
     // Log request start and give user cooldown on the first iteration
@@ -246,7 +247,7 @@ function comment(commandHandler, resInfo, respond, postComment, commentArgs, rec
         if (activeReqEntry.amount > 1) {
             let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amount - 1 because the first comment is instant. Multiply by delay and add to current time to get timestamp when last comment was sent
 
-            respond(commandHandler.data.lang.commentprocessstarted.replace("numberOfComments", activeReqEntry.amount).replace("waittime", waitTime));
+            respond(await commandHandler.data.getLang("commentprocessstarted", { "numberOfComments": activeReqEntry.amount, "waittime": waitTime }, requesterSteamID64));
         }
 
         // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
@@ -273,7 +274,8 @@ function comment(commandHandler, resInfo, respond, postComment, commentArgs, rec
             let quote = await commandHandler.data.getQuote(activeReqEntry.quotesArr); // Get a random quote to comment with
             commentArgs["quote"] = quote; // Replace key "quote" in args obj
 
-            postComment.call(bot.community, ...Object.values(commentArgs), (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
+            //postComment.call(bot.community, ...Object.values(commentArgs), (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
+                let error = ""
 
                 /* --------- Handle errors thrown by this comment attempt or log success message --------- */
                 if (error) {
@@ -286,17 +288,17 @@ function comment(commandHandler, resInfo, respond, postComment, commentArgs, rec
                 // Continue with the next iteration
                 loop.next();
 
-            });
+            //});
 
         }, commandHandler.data.config.commentdelay * (i > 0)); // Delay every comment that is not the first one
 
-    }, () => { // Function that will run on exit, aka the last iteration: Respond to the user
+    }, async () => { // Function that will run on exit, aka the last iteration: Respond to the user
 
         // Handle singular comments separately
         if (activeReqEntry.amount == 1) {
             // Check if an error occurred
-            if (Object.keys(activeReqEntry.failed).length > 0) respond(`${commandHandler.data.lang.commenterroroccurred}\n${Object.values(activeReqEntry.failed)[0]}`); // TODO: Do I want to handle retryComments for singular comments?
-                else respond(commandHandler.data.lang.commentsuccess.replace("failedamount", "0").replace("numberOfComments", "1"));
+            if (Object.keys(activeReqEntry.failed).length > 0) respond(`${await commandHandler.data.getLang("commenterroroccurred", null, requesterSteamID64)}\n${Object.values(activeReqEntry.failed)[0]}`); // TODO: Do I want to handle retryComments for singular comments?
+                else respond(await commandHandler.data.getLang("commentsuccess", { "failedamount": "0", "numberOfComments": "1" }, requesterSteamID64));
 
             // Instantly set status of this request to cooldown
             activeReqEntry.status = "cooldown";
@@ -315,14 +317,14 @@ function comment(commandHandler, resInfo, respond, postComment, commentArgs, rec
             // Log and notify user about retry attempt starting in retryFailedCommentsDelay ms
             let untilStr = timeToString(Date.now() + commandHandler.data.advancedconfig.retryFailedCommentsDelay);
 
-            respond(commandHandler.data.lang.commentretrying.replace("failedamount", Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount - activeReqEntry.amountBeforeRetry).replace("untilStr", untilStr).replace("thisattempt", activeReqEntry.retryAttempt).replace("maxattempt", commandHandler.data.advancedconfig.retryFailedCommentsAttempts));
+            respond(await commandHandler.data.getLang("commentretrying", { "failedamount": Object.keys(activeReqEntry.failed).length, "numberOfComments": activeReqEntry.amount - activeReqEntry.amountBeforeRetry, "untilStr": untilStr, "thisattempt": activeReqEntry.retryAttempt, "maxattempt": commandHandler.data.advancedconfig.retryFailedCommentsAttempts }, requesterSteamID64));
             logger("info", `${Object.keys(activeReqEntry.failed).length}/${activeReqEntry.amount - activeReqEntry.amountBeforeRetry} comments failed for ${receiverSteamID64}. Retrying in ${untilStr} (Attempt ${activeReqEntry.retryAttempt}/${commandHandler.data.advancedconfig.retryFailedCommentsAttempts})`, false, false, logger.animation("waiting"));
 
             // Wait retryFailedCommentsDelay ms before retrying failed comments
-            setTimeout(() => {
+            setTimeout(async () => {
                 // Check if comment process was aborted, send finished message and avoid increasing cooldown etc.
                 if (!activeReqEntry || activeReqEntry.status == "aborted") {
-                    respond(commandHandler.data.lang.requestaborted.replace("successAmount", "0").replace("totalAmount", Object.keys(activeReqEntry.failed).length));
+                    respond(await commandHandler.data.getLang("requestaborted", { "successAmount": "0", "totalAmount": Object.keys(activeReqEntry.failed).length }, requesterSteamID64));
                     logger("info", `Comment process for ${receiverSteamID64} was aborted while waiting for retry attempt ${activeReqEntry.retryAttempt}. Stopping...`);
                     return;
                 }
@@ -355,11 +357,11 @@ function comment(commandHandler, resInfo, respond, postComment, commentArgs, rec
         /* ------------- Send finished message for corresponding status -------------  */
         if (activeReqEntry.status == "aborted") {
 
-            respond(commandHandler.data.lang.requestaborted.replace("successAmount", activeReqEntry.amount - activeReqEntry.amountBeforeRetry - Object.keys(activeReqEntry.failed).length).replace("totalAmount", activeReqEntry.amount - activeReqEntry.amountBeforeRetry));
+            respond(await commandHandler.data.getLang("requestaborted", { "successAmount": activeReqEntry.amount - activeReqEntry.amountBeforeRetry - Object.keys(activeReqEntry.failed).length, "totalAmount": activeReqEntry.amount - activeReqEntry.amountBeforeRetry }, requesterSteamID64));
 
         } else if (activeReqEntry.status == "error") {
 
-            respond(`${commandHandler.data.lang.comment429stop.replace("failedamount", Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount - activeReqEntry.amountBeforeRetry)}\n\n${commandHandler.data.lang.commentfailedcmdreference.replace(/cmdprefix/g, resInfo.cmdprefix)}`); // Add !failed cmd reference to message
+            respond(`${await commandHandler.data.getLang("comment429stop", { "failedamount": Object.keys(activeReqEntry.failed).length, "numberOfComments": activeReqEntry.amount - activeReqEntry.amountBeforeRetry }, requesterSteamID64)}\n\n${await commandHandler.data.getLang("commentfailedcmdreference", { "cmdprefix": resInfo.cmdprefix }, requesterSteamID64)}`); // Add !failed cmd reference to message
             logger("warn", "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error!");
 
         } else {
@@ -372,7 +374,7 @@ function comment(commandHandler, resInfo, respond, postComment, commentArgs, rec
             }
 
             // Send finished message
-            respond(`${commandHandler.data.lang.commentsuccess.replace("failedamount", Object.keys(activeReqEntry.failed).length).replace("numberOfComments", activeReqEntry.amount - activeReqEntry.amountBeforeRetry)}\n${failedcmdreference}`);
+            respond(`${await commandHandler.data.getLang("commentsuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "numberOfComments": activeReqEntry.amount - activeReqEntry.amountBeforeRetry }, requesterSteamID64)}\n${failedcmdreference}`);
 
             // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
             activeReqEntry.status = "cooldown";

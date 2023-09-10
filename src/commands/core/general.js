@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 09.09.2023 15:42:41
+ * Last Modified: 10.09.2023 14:57:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -36,8 +36,9 @@ module.exports.help = {
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        let requesterSteamID64 = resInfo.userID;
 
         // Get the correct ownerid array for this request
         let owners = commandHandler.data.cachefile.ownerid;
@@ -47,30 +48,30 @@ module.exports.help = {
         let commentText;
 
         if (owners.includes(resInfo.userID)) {
-            if (commandHandler.controller.getBots().length > 1 || commandHandler.data.config.maxOwnerComments) commentText = `'${resInfo.cmdprefix}comment (amount/"all") [profileid] [custom, quotes]' - ${commandHandler.data.lang.helpcommentowner1.replace("maxOwnerComments", commandHandler.data.config.maxOwnerComments)}`;
-                else commentText = `'${resInfo.cmdprefix}comment ("1") [profileid] [custom, quotes]' - ${commandHandler.data.lang.helpcommentowner2}`;
+            if (commandHandler.controller.getBots().length > 1 || commandHandler.data.config.maxOwnerComments) commentText = `'${resInfo.cmdprefix}comment (amount/"all") [profileid] [custom, quotes]' - ${await commandHandler.data.getLang("helpcommentowner1", { "maxOwnerComments": commandHandler.data.config.maxOwnerComments }, requesterSteamID64)}`;
+                else commentText = `'${resInfo.cmdprefix}comment ("1") [profileid] [custom, quotes]' - ${await commandHandler.data.getLang("helpcommentowner2", null, requesterSteamID64)}`;
         } else {
-            if (commandHandler.controller.getBots().length > 1 || commandHandler.data.config.maxComments) commentText = `'${resInfo.cmdprefix}comment (amount/"all")' - ${commandHandler.data.lang.helpcommentuser1.replace("maxComments", commandHandler.data.config.maxComments)}`;
-                else commentText = `'${resInfo.cmdprefix}comment' - ${commandHandler.data.lang.helpcommentuser2}`;
+            if (commandHandler.controller.getBots().length > 1 || commandHandler.data.config.maxComments) commentText = `'${resInfo.cmdprefix}comment (amount/"all")' - ${await commandHandler.data.getLang("helpcommentuser1", { "maxComments": commandHandler.data.config.maxComments }, requesterSteamID64)}`;
+                else commentText = `'${resInfo.cmdprefix}comment' - ${await commandHandler.data.getLang("helpcommentuser2", null, requesterSteamID64)}`;
         }
 
         // Add yourgroup text if one was set
         let yourgroupText;
 
-        if (commandHandler.data.config.yourgroup.length > 1) yourgroupText = commandHandler.data.lang.helpjoingroup.replace(/cmdprefix/g, resInfo.cmdprefix);
+        if (commandHandler.data.config.yourgroup.length > 1) yourgroupText = await commandHandler.data.getLang("helpjoingroup", { "cmdprefix": resInfo.cmdprefix }, requesterSteamID64);
 
         // Send message
         respond(`
-            ${commandHandler.data.datafile.mestr}'s Comment Bot | ${commandHandler.data.lang.helpcommandlist}\n
+            ${commandHandler.data.datafile.mestr}'s Comment Bot | ${await commandHandler.data.getLang("helpcommandlist", null, requesterSteamID64)}\n
             ${commentText}\n
-            '${resInfo.cmdprefix}ping' - ${commandHandler.data.lang.helpping}
-            '${resInfo.cmdprefix}info' - ${commandHandler.data.lang.helpinfo}
-            '${resInfo.cmdprefix}abort' - ${commandHandler.data.lang.helpabort}
-            '${resInfo.cmdprefix}about' - ${commandHandler.data.lang.helpabout}
-            '${resInfo.cmdprefix}owner' - ${commandHandler.data.lang.helpowner}
+            '${resInfo.cmdprefix}ping' - ${await commandHandler.data.getLang("helpping", null, requesterSteamID64)}
+            '${resInfo.cmdprefix}info' - ${await commandHandler.data.getLang("helpinfo", null, requesterSteamID64)}
+            '${resInfo.cmdprefix}abort' - ${await commandHandler.data.getLang("helpabort", null, requesterSteamID64)}
+            '${resInfo.cmdprefix}about' - ${await commandHandler.data.getLang("helpabout", null, requesterSteamID64)}
+            '${resInfo.cmdprefix}owner' - ${await commandHandler.data.getLang("helpowner", null, requesterSteamID64)}
             ${yourgroupText}
         
-            ${commandHandler.data.lang.helpreadothercmdshere} ' https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/commands_doc.md '
+            ${await commandHandler.data.getLang("helpreadothercmdshere", null, requesterSteamID64)} ' https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/commands_doc.md '
         `.replace(/^( {4})+/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
     }
 };
@@ -144,7 +145,7 @@ module.exports.ping = {
         https.get("https://steamcommunity.com/ping", (res) => { // Ping steamcommunity.com/ping and measure time
             res.setEncoding("utf8");
             res.on("data", () => {});
-            res.on("end", () => respond(commandHandler.data.lang.pingcmdmessage.replace("pingtime", Date.now() - pingStart)));
+            res.on("end", async () => respond(await commandHandler.data.getLang("pingcmdmessage", { "pingtime": Date.now() - pingStart }, resInfo.userID)));
         });
     }
 };
@@ -186,13 +187,13 @@ module.exports.owner = {
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // Check if no owner link is set
-        if (commandHandler.data.config.owner.length < 1) return respond(commandHandler.data.lang.ownercmdnolink);
+        if (commandHandler.data.config.owner.length < 1) return respond(await commandHandler.data.getLang("ownercmdnolink", null, resInfo.userID));
 
-        respond(commandHandler.data.lang.ownercmdmsg.replace(/cmdprefix/g, resInfo.cmdprefix) + "\n" + commandHandler.data.config.owner);
+        respond((await commandHandler.data.getLang("ownercmdmsg", { "cmdprefix": resInfo.cmdprefix }, resInfo.userID)) + "\n" + commandHandler.data.config.owner);
     }
 };
 

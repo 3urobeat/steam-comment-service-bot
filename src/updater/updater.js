@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 03.09.2023 20:32:29
+ * Last Modified: 10.09.2023 15:54:07
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -74,7 +74,7 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
             let checkForUpdate = await checkAndGetFile("./src/updater/helpers/checkForUpdate.js", logger, false, false);
             if (!checkForUpdate) return resolve(false);
 
-            checkForUpdate.check(this.data.datafile, null, forceUpdate, (updateFound, onlineData) => {
+            checkForUpdate.check(this.data.datafile, null, forceUpdate, async (updateFound, onlineData) => {
 
                 // Check if no update was found and abort
                 if (!updateFound) {
@@ -101,7 +101,7 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
                     respondModule(resInfo, `What's new: ${onlineData.whatsnew}`);
 
                     // Instruct user to force update if disableAutoUpdate is true and stop here
-                    if (this.data.advancedconfig.disableAutoUpdate && !forceUpdate) return respondModule(resInfo, this.data.lang.updaterautoupdatedisabled.replace(/cmdprefix/g, resInfo.cmdprefix));
+                    if (this.data.advancedconfig.disableAutoUpdate && !forceUpdate) return respondModule(resInfo, await this.data.getLang("updaterautoupdatedisabled", { "cmdprefix": resInfo.cmdprefix }, resInfo.userID));
                 }
 
 

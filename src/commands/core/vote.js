@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 24.07.2023 19:42:37
+ * Last Modified: 10.09.2023 15:49:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -64,12 +64,12 @@ module.exports.upvote = {
 
         /* --------- Various checks  --------- */
         if (!resInfo.userID) {
-            respond(commandHandler.data.lang.nouserid); // Reject usage of command without an userID to avoid cooldown bypass
+            respond(await commandHandler.data.getLang("nouserid", null, requesterSteamID64)); // Reject usage of command without an userID to avoid cooldown bypass
             return logger("err", "The upvote command was called without resInfo.userID! Blocking the command as I'm unable to apply cooldowns, which is required for this command!");
         }
-        if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
-        if (commandHandler.controller.info.activeLogin)                 return respond(commandHandler.data.lang.activerelog);      // Bot is waiting for relog
-        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(commandHandler.data.lang.commandowneronly); // Command is restricted to owners only
+        if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterSteamID64)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.activeLogin)                 return respond(await commandHandler.data.getLang("activerelog", null, requesterSteamID64));      // Bot is waiting for relog
+        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterSteamID64)); // Comment command is restricted to owners only
 
 
         // Check and get arguments from user
@@ -81,35 +81,35 @@ module.exports.upvote = {
         // Check if this id is already receiving something right now
         let idReq = commandHandler.controller.activeRequests[id];
 
-        if (idReq && idReq.status == "active") return respond(commandHandler.data.lang.idalreadyreceiving); // Note: No need to check for user as that is supposed to be handled by a cooldown
+        if (idReq && idReq.status == "active") return respond(await commandHandler.data.getLang("idalreadyreceiving", null, requesterSteamID64)); // Note: No need to check for user as that is supposed to be handled by a cooldown
 
 
         // Check if user has cooldown
         let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterSteamID64);
 
-        if (until > Date.now()) return respond(commandHandler.data.lang.idoncooldown.replace("remainingcooldown", untilStr));
+        if (until > Date.now()) return respond(await commandHandler.data.getLang("idoncooldown", { "remainingcooldown": untilStr }, requesterSteamID64));
 
 
         // Get all available bot accounts
         let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForVoting(commandHandler, amountRaw, id, "upvote");
 
         if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point.
-            if (availableAccounts.length == 0) respond(commandHandler.data.lang.votenoaccounts);         // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
-                else respond(commandHandler.data.lang.voterequestless.replace("availablenow", availableAccounts.length));
+            if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("votenoaccounts", null, requesterSteamID64)); // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
+                else respond(await commandHandler.data.getLang("voterequestless", { "availablenow": availableAccounts.length }, requesterSteamID64));
 
             return;
         }
 
         if (availableAccounts.length < amount) { // Check if not enough available accounts were found because of cooldown
-            respond(commandHandler.data.lang.votenotenoughavailableaccs.replace("waittime", whenAvailableStr).replace("availablenow", availableAccounts.length));
+            respond(await commandHandler.data.getLang("votenotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availableAccounts.length }, requesterSteamID64));
             return;
         }
 
 
         // Get the sharedfile
-        commandHandler.controller.main.community.getSteamSharedFile(id, (err, sharedfile) => {
+        commandHandler.controller.main.community.getSteamSharedFile(id, async (err, sharedfile) => {
             if (err) {
-                respond(commandHandler.data.lang.errloadingsharedfile + err);
+                respond((await commandHandler.data.getLang("errloadingsharedfile", null, requesterSteamID64)) + err);
                 return;
             }
 
@@ -138,7 +138,7 @@ module.exports.upvote = {
                 if (activeReqEntry.amount > 1) {
                     let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amount - 1 because the first vote is instant. Multiply by delay and add to current time to get timestamp when last vote was sent
 
-                    respond(commandHandler.data.lang.voteprocessstarted.replace("numberOfVotes", activeReqEntry.amount).replace("waittime", waitTime));
+                    respond(await commandHandler.data.getLang("voteprocessstarted", { "numberOfVotes": activeReqEntry.amount, "waittime": waitTime }, requesterSteamID64));
                 }
 
                 // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
@@ -187,12 +187,12 @@ module.exports.upvote = {
 
                 }, commandHandler.data.config.commentdelay * (i > 0)); // We use commentdelay here for now, not sure if I'm going to add a separate setting
 
-            }, () => { // Function that will run on exit, aka the last iteration: Respond to the user
+            }, async () => { // Function that will run on exit, aka the last iteration: Respond to the user
 
                 /* ------------- Send finished message for corresponding status -------------  */
                 if (activeReqEntry.status == "aborted") {
 
-                    respond(commandHandler.data.lang.requestaborted.replace("successAmount", activeReqEntry.amount - Object.keys(activeReqEntry.failed).length).replace("totalAmount", activeReqEntry.amount));
+                    respond(await commandHandler.data.getLang("requestaborted", { "successAmount": activeReqEntry.amount - Object.keys(activeReqEntry.failed).length, "totalAmount": activeReqEntry.amount }, requesterSteamID64));
 
                 } else {
 
@@ -204,7 +204,7 @@ module.exports.upvote = {
                     }
 
                     // Send finished message
-                    respond(`${commandHandler.data.lang.votesuccess.replace("failedamount", Object.keys(activeReqEntry.failed).length).replace("numberOfVotes", activeReqEntry.amount)}\n${failedcmdreference}`);
+                    respond(`${await commandHandler.data.getLang("votesuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "numberOfVotes": activeReqEntry.amount }, requesterSteamID64)}\n${failedcmdreference}`);
 
                     // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
                     activeReqEntry.status = "cooldown";
@@ -259,12 +259,12 @@ module.exports.downvote = {
 
         /* --------- Various checks  --------- */
         if (!resInfo.userID) {
-            respond(commandHandler.data.lang.nouserid); // Reject usage of command without an userID to avoid cooldown bypass
+            respond(await commandHandler.data.getLang("nouserid", null, requesterSteamID64)); // Reject usage of command without an userID to avoid cooldown bypass
             return logger("err", "The downvote command was called without resInfo.userID! Blocking the command as I'm unable to apply cooldowns, which is required for this command!");
         }
-        if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
-        if (commandHandler.controller.info.activeLogin)                 return respond(commandHandler.data.lang.activerelog);      // Bot is waiting for relog
-        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(commandHandler.data.lang.commandowneronly); // Command is restricted to owners only
+        if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterSteamID64)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.activeLogin)                 return respond(await commandHandler.data.getLang("activerelog", null, requesterSteamID64));      // Bot is waiting for relog
+        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterSteamID64)); // Comment command is restricted to owners only
 
 
         // Check and get arguments from user
@@ -276,35 +276,35 @@ module.exports.downvote = {
         // Check if this id is already receiving something right now
         let idReq = commandHandler.controller.activeRequests[id];
 
-        if (idReq && idReq.status == "active") return respond(commandHandler.data.lang.idalreadyreceiving); // Note: No need to check for user as that is supposed to be handled by a cooldown
+        if (idReq && idReq.status == "active") return respond(await commandHandler.data.getLang("idalreadyreceiving", null, requesterSteamID64)); // Note: No need to check for user as that is supposed to be handled by a cooldown
 
 
         // Check if user has cooldown
         let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterSteamID64);
 
-        if (until > Date.now()) return respond(commandHandler.data.lang.idoncooldown.replace("remainingcooldown", untilStr));
+        if (until > Date.now()) return respond(await commandHandler.data.getLang("idoncooldown", { "remainingcooldown": untilStr }, requesterSteamID64));
 
 
         // Get all available bot accounts
         let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForVoting(commandHandler, amountRaw, id, "downvote");
 
         if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point.
-            if (availableAccounts.length == 0) respond(commandHandler.data.lang.votenoaccounts);         // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
-                else respond(commandHandler.data.lang.voterequestless.replace("availablenow", availableAccounts.length));
+            if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("votenoaccounts", null, requesterSteamID64)); // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
+                else respond(await commandHandler.data.getLang("voterequestless", { "availablenow": availableAccounts.length }, requesterSteamID64));
 
             return;
         }
 
         if (availableAccounts.length < amount) { // Check if not enough available accounts were found because of cooldown
-            respond(commandHandler.data.lang.votenotenoughavailableaccs.replace("waittime", whenAvailableStr).replace("availablenow", availableAccounts.length));
+            respond(await commandHandler.data.getLang("votenotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availableAccounts.length }, requesterSteamID64));
             return;
         }
 
 
         // Get the sharedfile
-        commandHandler.controller.main.community.getSteamSharedFile(id, (err, sharedfile) => {
+        commandHandler.controller.main.community.getSteamSharedFile(id, async (err, sharedfile) => {
             if (err) {
-                respond(commandHandler.data.lang.errloadingsharedfile + err);
+                respond((await commandHandler.data.getLang("errloadingsharedfile", null, requesterSteamID64)) + err);
                 return;
             }
 
@@ -333,7 +333,7 @@ module.exports.downvote = {
                 if (activeReqEntry.amount > 1) {
                     let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amount - 1 because the first vote is instant. Multiply by delay and add to current time to get timestamp when last vote was sent
 
-                    respond(commandHandler.data.lang.voteprocessstarted.replace("numberOfVotes", activeReqEntry.amount).replace("waittime", waitTime));
+                    respond(await commandHandler.data.getLang("voteprocessstarted", { "numberOfVotes": activeReqEntry.amount, "waittime": waitTime }, requesterSteamID64));
                 }
 
                 // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
@@ -382,12 +382,12 @@ module.exports.downvote = {
 
                 }, commandHandler.data.config.commentdelay * (i > 0)); // We use commentdelay here for now, not sure if I'm going to add a separate setting
 
-            }, () => { // Function that will run on exit, aka the last iteration: Respond to the user
+            }, async () => { // Function that will run on exit, aka the last iteration: Respond to the user
 
                 /* ------------- Send finished message for corresponding status -------------  */
                 if (activeReqEntry.status == "aborted") {
 
-                    respond(commandHandler.data.lang.requestaborted.replace("successAmount", activeReqEntry.amount - Object.keys(activeReqEntry.failed).length).replace("totalAmount", activeReqEntry.amount));
+                    respond(await commandHandler.data.getLang("requestaborted", { "successAmount": activeReqEntry.amount - Object.keys(activeReqEntry.failed).length, "totalAmount": activeReqEntry.amount }, requesterSteamID64));
 
                 } else {
 
@@ -399,7 +399,7 @@ module.exports.downvote = {
                     }
 
                     // Send finished message
-                    respond(`${commandHandler.data.lang.votesuccess.replace("failedamount", Object.keys(activeReqEntry.failed).length).replace("numberOfVotes", activeReqEntry.amount)}\n${failedcmdreference}`);
+                    respond(`${await commandHandler.data.getLang("votesuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "numberOfVotes": activeReqEntry.amount }, requesterSteamID64)}\n${failedcmdreference}`);
 
                     // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
                     activeReqEntry.status = "cooldown";

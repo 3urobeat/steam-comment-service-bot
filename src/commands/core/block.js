@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 12:58:49
+ * Last Modified: 10.09.2023 00:18:49
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -42,26 +42,26 @@ module.exports.block = {
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, resInfo.userID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
-        if (!args[0]) return respond(commandHandler.data.lang.invalidprofileid);
+        if (!args[0]) return respond(await commandHandler.data.getLang("invalidprofileid", null, resInfo.userID));
 
         // Get the correct ownerid array for this request
         let owners = commandHandler.data.cachefile.ownerid;
         if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-        commandHandler.controller.handleSteamIdResolving(args[0], "profile", (err, res) => {
-            if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
-            if (owners.includes(res)) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.idisownererror); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        commandHandler.controller.handleSteamIdResolving(args[0], "profile", async (err, res) => {
+            if (err) return respond((await commandHandler.data.getLang("invalidprofileid", null, resInfo.userID)) + "\n\nError: " + err);
+            if (owners.includes(res)) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("idisownererror", null, resInfo.userID)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
             commandHandler.controller.getBots().forEach((e, i) => {
                 e.user.blockUser(new SteamID(res), (err) => { if (err) logger("error", `[Bot ${i}] Error blocking user ${res}: ${err}`); });
             });
 
-            respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.blockcmdsuccess.replace("profileid", res)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+            respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("blockcmdsuccess", { "profileid": res }, resInfo.userID)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
             logger("info", `Blocked ${res} with all bot accounts.`);
         });
     }
@@ -90,21 +90,21 @@ module.exports.unblock = {
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, resInfo.userID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
-        if (!args[0]) return respond(commandHandler.data.lang.invalidprofileid);
+        if (!args[0]) return respond(await commandHandler.data.getLang("invalidprofileid", null, resInfo.userID));
 
-        commandHandler.controller.handleSteamIdResolving(args[0], "profile", (err, res) => {
-            if (err) return respond(commandHandler.data.lang.invalidprofileid + "\n\nError: " + err);
+        commandHandler.controller.handleSteamIdResolving(args[0], "profile", async (err, res) => {
+            if (err) return respond((await commandHandler.data.getLang("invalidprofileid", null, resInfo.userID)) + "\n\nError: " + err);
 
             commandHandler.controller.getBots().forEach((e, i) => {
                 e.user.unblockUser(new SteamID(res), (err) => { if (err) logger("error", `[Bot ${i}] Error unblocking user ${res}: ${err}`); });
             });
 
-            respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.unblockcmdsuccess.replace("profileid", res)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+            respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("unblockcmdsuccess", { "profileid": res }, resInfo.userID)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
             logger("info", `Unblocked ${res} with all bot accounts.`);
         });
     }

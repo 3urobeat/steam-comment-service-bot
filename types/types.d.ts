@@ -376,7 +376,7 @@ declare class Controller {
      */
     misc: any;
     /**
-     * Internal: Inits the DataManager system, runs the updater and starts all bot accounts
+     * Internal: Initializes the bot by importing data from the disk, running the updater and finally logging in all bot accounts.
      */
     _start(): void;
     /**
@@ -405,7 +405,7 @@ declare class Controller {
     pluginSystem: PluginSystem;
     /**
      * Restarts the whole application
-     * @param data - Stringified restartdata object that will be kept through restarts
+     * @param data - Optional: Stringified restartdata object that will be kept through restarts
      */
     restart(data: string): void;
     /**
@@ -676,6 +676,13 @@ declare class DataManager {
      */
     _importFromDisk(): Promise<void>;
     /**
+     * Verifies the data integrity of every source code file in the project by comparing its checksum.
+     * This function is used to verify the integrity of every module loaded AFTER the controller & DataManager. Both of those need manual checkAndGetFile() calls to import, which is handled by the Controller.
+     * If an already loaded file needed to be recovered then the bot will restart to load these changes.
+     * @returns Resolves when all files have been checked and, if necessary, restored. Does not resolve if the bot needs to be restarted.
+     */
+    verifyIntegrity(): Promise<void>;
+    /**
      * Reference to the controller object
      */
     controller: Controller;
@@ -693,7 +700,7 @@ declare class DataManager {
      */
     advancedconfig: any;
     /**
-     * Stores all language strings used for responding to a user.
+     * Stores all supported languages and their strings used for responding to a user.
      * All default strings have already been replaced with corresponding matches from `customlang.json`.
      */
     lang: any;
@@ -715,19 +722,29 @@ declare class DataManager {
     logininfo: any;
     /**
      * Database which stores the timestamp of the last request of every user. This is used to enforce `config.unfriendTime`.
-     * Document structure: { id: String, time: Number }
+     * Document structure: { id: string, time: Number }
      */
     lastCommentDB: Nedb;
     /**
      * Database which stores information about which bot accounts have already voted on which sharedfiles. This allows us to filter without pinging Steam for every account on every request.
-     * Document structure: { id: String, accountName: String, type: String, time: Number }
+     * Document structure: { id: string, accountName: string, type: string, time: Number }
      */
     ratingHistoryDB: Nedb;
     /**
      * Database which stores the refreshTokens for all bot accounts.
-     * Document structure: { accountName: String, token: String }
+     * Document structure: { accountName: string, token: string }
      */
     tokensDB: Nedb;
+    /**
+     * Database which stores user specific settings, for example the language set
+     * Document structure: { id: string, lang: string }
+     */
+    userSettingsDB: Nedb;
+    /**
+     * Loads all DataManager helper files. This is done outside of the constructor to be able to await it.
+     * @returns Resolved when all files have been loaded
+     */
+    _loadDataManagerFiles(): Promise<void>;
     /**
      * Checks currently loaded data for validity and logs some recommendations for a few settings.
      * @returns Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
@@ -771,19 +788,34 @@ declare class DataManager {
      */
     _importFromDisk(): Promise<void>;
     /**
+     * Verifies the data integrity of every source code file in the project by comparing its checksum.
+     * This function is used to verify the integrity of every module loaded AFTER the controller & DataManager. Both of those need manual checkAndGetFile() calls to import, which is handled by the Controller.
+     * If an already loaded file needed to be recovered then the bot will restart to load these changes.
+     * @returns Resolves when all files have been checked and, if necessary, restored. Does not resolve if the bot needs to be restarted.
+     */
+    verifyIntegrity(): Promise<void>;
+    /**
      * Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
      */
     processData(): void;
     /**
+     * Retrieves a language string from one of the available language files and replaces keywords if desired.
+     * If a userID is provided it will lookup which language the user has set. If nothing is set, the default language set in the config will be returned.
+     * @param str - Name of the language string to be retrieved
+     * @param [userIDOrLanguage] - Optional: ID of the user to lookup in the userSettings database. You can also pass the name of a supported language like "english" to get a specific language.
+     * @returns Returns a promise that resolves with the language string or `null` if it could not be found.
+     */
+    getLang(str: string, replace: any, userIDOrLanguage?: string): Promise<string | null>;
+    /**
      * Gets a random quote
      * @param quotesArr - Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
-     * @returns Resolves with `quote` (String)
+     * @returns Resolves with `quote` (string)
      */
     getQuote(quotesArr: any[]): Promise<string>;
     /**
      * Checks if a user ID is currently on cooldown and formats human readable lastRequestStr and untilStr strings.
      * @param id - ID of the user to look up
-     * @returns Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as String), `untilStr` (Wait until as String). If id wasn't found, `null` will be returned.
+     * @returns Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as string), `untilStr` (Wait until as string). If id wasn't found, `null` will be returned.
      */
     getUserCooldown(id: string): Promise<{ lastRequest: number; until: number; lastRequestStr: string; untilStr: string; } | null>;
     /**
@@ -797,7 +829,7 @@ declare class DataManager {
      */
     _startExpiringTokensCheckInterval(): void;
     /**
-     * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active request was found and relogs them
+     * Internal: Asks user if they want to refresh the tokens of all expiring accounts when no active request was found and relogs them
      * @param expiring - Object of botobject entries to ask user for
      */
     _askForGetNewToken(expiring: any): void;
@@ -839,15 +871,23 @@ declare class DataManager {
      */
     processData(): void;
     /**
+     * Retrieves a language string from one of the available language files and replaces keywords if desired.
+     * If a userID is provided it will lookup which language the user has set. If nothing is set, the default language set in the config will be returned.
+     * @param str - Name of the language string to be retrieved
+     * @param [userIDOrLanguage] - Optional: ID of the user to lookup in the userSettings database. You can also pass the name of a supported language like "english" to get a specific language.
+     * @returns Returns a promise that resolves with the language string or `null` if it could not be found.
+     */
+    getLang(str: string, replace: any, userIDOrLanguage?: string): Promise<string | null>;
+    /**
      * Gets a random quote
      * @param quotesArr - Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
-     * @returns Resolves with `quote` (String)
+     * @returns Resolves with `quote` (string)
      */
     getQuote(quotesArr: any[]): Promise<string>;
     /**
      * Checks if a user ID is currently on cooldown and formats human readable lastRequestStr and untilStr strings.
      * @param id - ID of the user to look up
-     * @returns Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as String), `untilStr` (Wait until as String). If id wasn't found, `null` will be returned.
+     * @returns Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as string), `untilStr` (Wait until as string). If id wasn't found, `null` will be returned.
      */
     getUserCooldown(id: string): Promise<{ lastRequest: number; until: number; lastRequestStr: string; untilStr: string; } | null>;
     /**
@@ -861,7 +901,7 @@ declare class DataManager {
      */
     _startExpiringTokensCheckInterval(): void;
     /**
-     * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active request was found and relogs them
+     * Internal: Asks user if they want to refresh the tokens of all expiring accounts when no active request was found and relogs them
      * @param expiring - Object of botobject entries to ask user for
      */
     _askForGetNewToken(expiring: any): void;

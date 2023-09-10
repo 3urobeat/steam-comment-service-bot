@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.07.2023 16:42:30
+ * Last Modified: 10.09.2023 15:35:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -34,8 +34,8 @@ module.exports.restart = {
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
-        respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.restartcmdrestarting); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
+        respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("restartcmdrestarting", null, resInfo.userID)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         commandHandler.controller.restart(JSON.stringify({ skippedaccounts: commandHandler.controller.info.skippedaccounts }));
     }
@@ -56,8 +56,8 @@ module.exports.stop = {
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
-        respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.stopcmdstopping); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
+        respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("stopcmdstopping", null, resInfo.userID)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         commandHandler.controller.stop();
     }
@@ -90,7 +90,7 @@ module.exports.reload = {
         await commandHandler.data._importFromDisk();
 
         // Send response message
-        respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.reloadcmdreloaded); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("reloadcmdreloaded", null, resInfo.userID)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
     }
 };
@@ -118,15 +118,14 @@ module.exports.update = {
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((modResInfo, txt) => respondModule(context, modResInfo, txt)); // Shorten each call. Updater takes resInfo as param and can modify it, so we need to pass the modified resInfo object here
 
-        // If the first argument is true then we shall force an update
-        let force = (args[0] == "true");
+        // If the first argument is "true" or "force" then we shall force an update
+        let force = (args[0] == "true" || args[0] == "force");
 
-        // Use the correct message depending on if force is true or false
-        if (force) respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.updatecmdforce.replace("branchname", commandHandler.data.datafile.branch));
-            else respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.updatecmdcheck.replace("branchname", commandHandler.data.datafile.branch));
+        // Use the correct message depending on if force is true or false with a ternary operator
+        respond({ prefix: "/me", ...resInfo }, await commandHandler.data.getLang(force ? "updatecmdforce" : "updatecmdcheck", { "branchname": commandHandler.data.datafile.branch }, resInfo.userID));
 
         // Run the updater, pass force and our respond function which will allow the updater to text the user what's going on
         commandHandler.controller.updater.run(force, respond, resInfo);
@@ -181,9 +180,13 @@ module.exports.eval = {
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        if (!commandHandler.data.advancedconfig.enableevalcmd) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.evalcmdturnedoff); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+
+        if (!commandHandler.data.advancedconfig.enableevalcmd) {
+            respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("evalcmdturnedoff", null, resInfo.userID)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+            return;
+        }
 
         const clean = text => { // eslint-disable-line no-case-declarations
             if (typeof(text) === "string") return text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
@@ -192,7 +195,7 @@ module.exports.eval = {
 
         try {
             const code = args.join(" ");
-            if (code.includes("logininfo")) return respond(commandHandler.data.lang.evalcmdlogininfoblock); // Not 100% safe but should be at least some protection (only owners can use this cmd)
+            if (code.includes("logininfo")) return respond(await commandHandler.data.getLang("evalcmdlogininfoblock", null, resInfo.userID)); // Not 100% safe but should be at least some protection (only owners can use this cmd)
 
             // Make using the command a little bit easier
             let controller = commandHandler.controller;      // eslint-disable-line
