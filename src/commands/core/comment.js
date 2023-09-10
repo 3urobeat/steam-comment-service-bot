@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.09.2023 12:51:23
+ * Last Modified: 10.09.2023 17:21:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -74,7 +74,7 @@ module.exports.comment = {
 
         /* --------- Various checks  --------- */
         if (!resInfo.userID) {
-            respond(await commandHandler.data.getLang("nouserid", null, requesterSteamID64)); // Reject usage of command without an userID to avoid cooldown bypass
+            respond(await commandHandler.data.getLang("nouserid")); // Reject usage of command without an userID to avoid cooldown bypass
             return logger("err", "The comment command was called without resInfo.userID! Blocking the command as I'm unable to apply cooldowns, which is required for this command!");
         }
         if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterSteamID64)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained

@@ -15,6 +15,7 @@ Please read this page *before* diving in, it contains a few **very** important p
 ## Table Of Contents
 - [Reporting an issue](#reporting-an-issue)
 - [How to fork and open pull requests](#how-to-fork-and-open-pull-requests)
+- [Translating](#translating)
 - [Styling Guidelines](#styling-guidelines)
 - [Starting the bot](#starting-the-bot)
 
@@ -53,6 +54,27 @@ Then, choose your fork on the right at `head repository:`, your branch at `compa
 Give your pull request a fitting title which describes your changes in a few words and put a more in depth explanation below in the description.  
 Once you are satisfied, hit the "Create pull request" button below to submit.  
 I'll take a look at it and perhaps suggest or make some minor changes in the following few days.  
+
+&nbsp;
+
+## Translating
+You know an unsupported language and would like to contribute a translation? Cool!  
+
+Create a new `.json` file in the `src/data/lang/` directory with the name of the language in English (e.g. "german" instead of "deutsch").  
+Please also make sure the filename is lowercase, like the other ones.  
+
+Open the file, copy the content of `english.json` into your file and start translating the value of every key (except the key `langname`, it must be the same as the filename).  
+
+Some language strings contain variables which are replaced by the bot with corresponding values at runtime.  
+These are marked with `${variablename}` and must occur like that in your translated string as well.  
+
+Some strings also contain command syntax information which must not be translated, like for example in the key `updaterautoupdatedisabled` at the very end: "update true"  
+These are sadly not 100% obvious but you should be able to recognize them fairly easily.
+
+When you are done, open a PR like explained above in [How to fork and open pull requests](#how-to-fork-and-open-pull-requests).  
+
+Should you want to test your translation, please make sure to read [Starting the bot](#starting-the-bot) below. Your changes may otherwise get lost!  
+Should you get an error while starting, make sure your syntax is correct. Common mistakes are for example missing quotation marks `"` or missing commas `,` at line ends.
 
 &nbsp;
 

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.09.2023 15:22:16
+ * Last Modified: 10.09.2023 17:21:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -263,7 +263,7 @@ module.exports.mySessions = {
         let str = "";
 
         // Check for no userID as the default behavior might be unavailable when calling from outside of the Steam Chat
-        if (!resInfo.userID) return respond(await commandHandler.data.getLang("nouserid", null, resInfo.userID)); // In this case the cmd doesn't have an ID param so send this message instead of noidparam
+        if (!resInfo.userID) return respond(await commandHandler.data.getLang("nouserid")); // In this case the cmd doesn't have an ID param so send this message instead of noidparam
 
         if (Object.keys(commandHandler.controller.activeRequests).length > 0) { // Only loop through object if it isn't empty
             let objlength = Object.keys(commandHandler.controller.activeRequests).length; // Save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering

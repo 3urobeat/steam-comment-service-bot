@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 10.09.2023 15:49:16
+ * Last Modified: 10.09.2023 17:21:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -64,7 +64,7 @@ module.exports.upvote = {
 
         /* --------- Various checks  --------- */
         if (!resInfo.userID) {
-            respond(await commandHandler.data.getLang("nouserid", null, requesterSteamID64)); // Reject usage of command without an userID to avoid cooldown bypass
+            respond(await commandHandler.data.getLang("nouserid")); // Reject usage of command without an userID to avoid cooldown bypass
             return logger("err", "The upvote command was called without resInfo.userID! Blocking the command as I'm unable to apply cooldowns, which is required for this command!");
         }
         if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterSteamID64)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
@@ -259,7 +259,7 @@ module.exports.downvote = {
 
         /* --------- Various checks  --------- */
         if (!resInfo.userID) {
-            respond(await commandHandler.data.getLang("nouserid", null, requesterSteamID64)); // Reject usage of command without an userID to avoid cooldown bypass
+            respond(await commandHandler.data.getLang("nouserid")); // Reject usage of command without an userID to avoid cooldown bypass
             return logger("err", "The downvote command was called without resInfo.userID! Blocking the command as I'm unable to apply cooldowns, which is required for this command!");
         }
         if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterSteamID64)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
