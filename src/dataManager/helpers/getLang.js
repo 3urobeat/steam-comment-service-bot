@@ -4,7 +4,7 @@
  * Created Date: 09.09.2023 12:35:10
  * Author: 3urobeat
  *
- * Last Modified: 09.09.2023 15:36:41
+ * Last Modified: 10.09.2023 16:56:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -46,7 +46,7 @@ DataManager.prototype.getLang = async function(str, replace = null, userIDOrLang
 
                 logger("debug", `DataManager getLang(): Request for userID '${userIDOrLanguage}' resulted in '${res.lang}'`);
             } else {
-                logger("error", `getLang(): Unsupported language or userID '${userIDOrLanguage}' was provided! Using default '${this.config.defaultLanguage}'...`);
+                logger("debug", `DataManager getLang(): Unsupported language or userID '${userIDOrLanguage}' was provided, using default '${this.config.defaultLanguage}'...`);
             }
         }
     }
@@ -64,11 +64,14 @@ DataManager.prototype.getLang = async function(str, replace = null, userIDOrLang
     // Modify the string if replace was passed
     if (replace) {
         Object.keys(replace).forEach((e) => {
-            // Skip iteration and display warning if the string does not contain the specified keyword
-            if (!langStr.includes(e)) return logger("warn", `getLang(): The string '${str}' of language '${lang.langname}' does not contain the provided keyword '${e}'!`);
+            // Add ${ prefix and } suffix to e
+            let rawPattern = "${" + e + "}";
 
-            // Build regex pattern to dynamically replace all occurrences below. Escape e before concatenating to avoid special char issues later on
-            let regex = new RegExp(e.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"), "g"); // Regex credit: https://stackoverflow.com/a/17886301
+            // Skip iteration and display warning if the string does not contain the specified keyword
+            if (!langStr.includes(rawPattern)) return logger("warn", `getLang(): The string '${str}' of language '${lang.langname}' does not contain the provided keyword '${rawPattern}'!`);
+
+            // Build regex pattern to dynamically replace all occurrences below. Escape rawPattern before concatenating to avoid special char issues later on
+            let regex = new RegExp(rawPattern.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"), "g"); // Regex credit: https://stackoverflow.com/a/17886301
 
             langStr = langStr.replace(regex, replace[e]);
         });
