@@ -67,6 +67,11 @@ Handles resolving the getToken() promise and skipping the account if necessary
 Internal:  
 Attempts to log into account with credentials
 
+### attemptTokenRenew(): Promise
+Attempts to renew the refreshToken used for the current session. Whether a new token will actually be issued is at the discretion of Steam.
+
+Returns a promise which resolves with either a new token if successful, or the current one if not. Rejects if no token is stored in the database.
+
 ### _attachEvents(): void
 Internal:  
 Attaches listeners to all steam-session events we care about

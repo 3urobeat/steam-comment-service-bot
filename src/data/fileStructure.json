@@ -108,7 +108,7 @@
         {
             "path": "docs/dev/sessionHandler/sessionHandler.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/sessionHandler/sessionHandler.md",
-            "checksum": "fa7768121f22fabcf02e1e7b6efccde4"
+            "checksum": "8aacb348350314061d5cd1b14aa33a0a"
         },
         {
             "path": "docs/dev/starter.md",
@@ -653,7 +653,7 @@
         {
             "path": "src/sessions/sessionHandler.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/sessions/sessionHandler.js",
-            "checksum": "8fbb9eae768dcd9c83abf117f67f51e6"
+            "checksum": "fec15788b336f1f978896f374078d71d"
         },
         {
             "path": "src/starter.js",
