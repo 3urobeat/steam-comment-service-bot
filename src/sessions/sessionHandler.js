@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 11.09.2023 20:50:38
+ * Last Modified: 12.09.2023 21:28:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -136,7 +136,7 @@ SessionHandler.prototype._attemptCredentialsLogin = function() {
 
 /**
  * Attempts to renew the refreshToken used for the current session. Whether a new token will actually be issued is at the discretion of Steam.
- * @returns {Promise.<string>} Returns a promise which resolves with either a new token if successful, or the current one if not. Rejects if no token is stored in the database.
+ * @returns {Promise.<boolean>} Returns a promise which resolves with `true` if Steam issued a new token, `false` otherwise. Rejects if no token is stored in the database.
  */
 SessionHandler.prototype.attemptTokenRenew = function() {
     return new Promise((resolve, reject) => {
@@ -154,8 +154,8 @@ SessionHandler.prototype.attemptTokenRenew = function() {
             this.session.renewRefreshToken()
                 .then((res) => {
                     if (!res) {
-                        logger("warn", `[${this.bot.logPrefix}] Failed to renew refresh token - Steam did not issue a new one. Returning the existing token...`);
-                        resolve(storedToken);
+                        logger("warn", `[${this.bot.logPrefix}] Failed to renew refresh token: Steam did not issue a new one`);
+                        resolve(res);
                         return;
                     }
 
@@ -168,7 +168,7 @@ SessionHandler.prototype.attemptTokenRenew = function() {
                     // Save token to the database
                     this._saveTokenToStorage(newToken);
 
-                    resolve(newToken);
+                    resolve(res);
                 })
                 .catch((err) => {
                     logger("error", `[${this.bot.logPrefix}] Failed to renew refresh token! Error: ${err}`);
