@@ -573,7 +573,7 @@
         {
             "path": "src/dataManager/helpers/handleExpiringTokens.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/helpers/handleExpiringTokens.js",
-            "checksum": "c37ec98826973e019952a5c284e997b1"
+            "checksum": "3ac60726500ad4c8d3847863cb11ae27"
         },
         {
             "path": "src/dataManager/helpers/misc.js",
