@@ -4,7 +4,7 @@
  * Created Date: 24.03.2023 18:58:55
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:58:05
+ * Last Modified: 11.09.2023 19:49:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -24,7 +24,6 @@ const DataManager = require("../dataManager.js");
  * @returns {Promise.<number>} Called with the greatest timestamp (Number) found
  */
 DataManager.prototype.getLastCommentRequest = function(steamID64 = null) {
-
     return new Promise((resolve) => {
 
         let searchFor = {};                           // Get all documents
@@ -41,7 +40,6 @@ DataManager.prototype.getLastCommentRequest = function(steamID64 = null) {
         });
 
     });
-
 };
 
 
