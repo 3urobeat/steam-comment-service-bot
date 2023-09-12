@@ -4,7 +4,7 @@
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 12.09.2023 21:49:55
+ * Last Modified: 12.09.2023 22:26:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -19,7 +19,8 @@ const DataManager = require("../dataManager.js");
 
 
 /**
- * Internal: Checks tokens.db every 24 hours for refreshToken expiration in <=7 days, logs warning and sends botowner a Steam msg
+ * Internal: Checks tokens.db every 24 hours for refreshToken expiration in <=31 days and attempts to renew.
+ * If this fails and the token expires in <=7 days, it logs a warning and sends the botowner a Steam msg
  */
 DataManager.prototype._startExpiringTokensCheckInterval = function() {
     let _this = this;
@@ -50,8 +51,8 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
                 return;
             }
 
-            // Skip iteration if token does not expire in <= 7 days or if the corresponding bot object does not exist (aka no login credentials are currently available)
-            if (tokenObj.exp * 1000 > Date.now() + 604800000 || !thisbot) return loop.next();
+            // Skip iteration if token does not expire in <=31 days or if the corresponding bot object does not exist (aka no login credentials are currently available)
+            if (tokenObj.exp * 1000 > Date.now() + 2.6784e+6 || !thisbot) return loop.next();
 
 
             // Attempt to renew the token automatically and check if it succeeded
@@ -62,7 +63,7 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
 
             // Check if renew was successful in logindelay ms to avoid multiple fast renewals getting us blocked
             setTimeout(() => {
-                if (tokenObj.exp * 1000 > Date.now() + 604800000) return loop.next(); // Skip to next iteration if renew was successful
+                if (tokenObj.exp * 1000 > Date.now() + 604800000) return loop.next(); // Skip to next iteration if either the renew was successful or if the token is not yet expiring in <=7 days
 
                 // Always push to expiring and also to expired if token already expired
                 expiring[e.accountName] = thisbot;
