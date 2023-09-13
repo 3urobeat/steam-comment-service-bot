@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 13.09.2023 21:12:33
+ * Last Modified: 13.09.2023 22:32:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -111,9 +111,10 @@ DataManager.prototype.checkData = function() {
 
 
         // Check language for too long strings and display warning. This will of course not catch replacements that happen at runtime but it's better than nothing
-        Object.keys(this.lang).forEach((e) => {
-            let val = this.lang[e];
-            if (val.length > 500) logWarn("warn", `Your language string '${e}' is ${val.length} chars long! I will need to cut in parts to send it in the Steam Chat! Please consider reducing it to less than 500 chars.`, true);
+        Object.values(this.lang).forEach((translation) => {
+            Object.keys(translation).forEach((e) => {
+                if (translation[e].length > 500) logWarn("warn", `Your language string '${e}' of '${translation.langname}' is ${translation[e].length} chars long! I will need to cut in parts to send it in the Steam Chat! Please consider reducing it to less than 500 chars.`, true);
+            });
         });
 
 

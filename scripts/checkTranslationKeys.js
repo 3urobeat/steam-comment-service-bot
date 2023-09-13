@@ -4,7 +4,7 @@
  * Created Date: 13.09.2023 21:58:32
  * Author: 3urobeat
  *
- * Last Modified: 13.09.2023 22:26:12
+ * Last Modified: 13.09.2023 22:30:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -27,7 +27,7 @@ const eng = require("../src/data/lang/english.json");
 // Find all translations inside the same directory
 let translations = fs.readdirSync("./src/data/lang/");
 
-console.log(`Checking ${translations.length} translations. If the script exits with no further messages, all translations contain the same keys.`);
+console.log(`Checking ${translations.length - 1} translation(s). If the script exits with no further messages, all translations contain the same keys.`);
 
 
 // Iterate through all translations
