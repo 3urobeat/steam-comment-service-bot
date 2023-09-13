@@ -3,4 +3,6 @@ This directory holds various scripts that aid in developing and releasing update
 
 &nbsp;
 
+- checkTranslationKeys: Finds misnamed, missing or obsolete language strings in all translations
+- generateFileStructure: Updates "src/data/fileStructure.json" which is used to recover broken files.
 - langStringsChangeDetector: Generates language file changes for the version changelog.

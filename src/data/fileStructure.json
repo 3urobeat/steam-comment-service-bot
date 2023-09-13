@@ -283,7 +283,12 @@
         {
             "path": "scripts/README.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/scripts/README.md",
-            "checksum": "e06d8d34ec6d034611fa2a9a2f7f51be"
+            "checksum": "a76e44a490b21758d75999e21c1867a6"
+        },
+        {
+            "path": "scripts/checkTranslationKeys.js",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/scripts/checkTranslationKeys.js",
+            "checksum": "1e92c73c9933f12e8f2584c1bee36c17"
         },
         {
             "path": "scripts/generateFileStructure.js",
