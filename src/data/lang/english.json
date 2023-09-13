@@ -104,6 +104,7 @@
     "settingscmdkeynotfound": "I can't find this key in the config.",
     "settingscmdsamevalue": "The requested key is already value.",
     "settingscmdvaluetoobig": "Your new value is too big. (32-bit integer limit)\nPlease choose a smaller value.",
+    "settingscmdvaluereset": "The DataManager rejected this change with this warning:",
     "settingscmdvaluechanged": "${targetkey} has been changed from ${oldvalue} to ${newvalue}.\nPlease remember that certain values might need a restart to take effect. You can do that by typing ${cmdprefix}restart.",
 
     "failedcmdnothingfound": "I can't remember any failed comments on your/that ID.\nIf you requested comments for another profile, group or sharedfile then please provide that ID as argument!",
