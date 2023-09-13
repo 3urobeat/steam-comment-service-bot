@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 13.09.2023 17:35:23
+ * Last Modified: 13.09.2023 20:24:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -23,7 +23,7 @@ const DataManager = require("./dataManager.js");
 
 /**
  * Checks currently loaded data for validity and logs some recommendations for a few settings.
- * @returns {Promise.<void>} Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
+ * @returns {Promise.<null|string>} Resolves with `null` when all settings have been accepted, or with a string containing reasons if a setting has been reset. On reject you should terminate the application. It is called with a String specifying the failed check.
  */
 DataManager.prototype.checkData = function() {
     return new Promise((resolve, reject) => {
@@ -33,6 +33,8 @@ DataManager.prototype.checkData = function() {
         let logWarn = ((a, b, c) => { logger(a, b, c); this.controller.info.startupWarnings++; }); // I originally wanted to use iArguments instead of hardcoding a, b, c but that didn't work out easily so I digress
 
         this.controller.info.startupWarnings = 0; // Reset value to start fresh if this module should be integrated into a plugin or something like that
+
+        let resolveMsg = ""; // Collects all warnings from value resets to resolve with them at the end
 
 
         // Display warning/notice if user is running in beta mode. Don't count this to startupWarnings
@@ -74,10 +76,12 @@ DataManager.prototype.checkData = function() {
         }
         if (this.config.maxOwnerComments < 1) {
             logWarn("info", `${logger.colors.fgred}Your maxOwnerComments value in config.json can't be smaller than 1! Automatically setting it to 1...`, true);
+            resolveMsg += "Your maxOwnerComments value in config.json can't be smaller than 1! Automatically setting it to 1...\n";
             this.config.maxOwnerComments = 1;
         }
         if (this.config.commentdelay <= 500) {
             logWarn("warn", `${logger.colors.fgred}Your commentdelay is set to a way too low value!\n       Using a commentdelay of 500ms or less will result in an instant cooldown from Steam and therefore a failed comment request.\n       Automatically setting it to the default value of 15 seconds...`, true);
+            resolveMsg += "Your commentdelay is set to a way too low value!\n       Using a commentdelay of 500ms or less will result in an instant cooldown from Steam and therefore a failed comment request.\n       Automatically setting it to the default value of 15 seconds...\n";
             this.config.commentdelay = 15000;
         }
         if (this.config.commentdelay / (maxCommentsOverall / 2) < 1250) {
@@ -92,6 +96,7 @@ DataManager.prototype.checkData = function() {
         }
         if (!Object.keys(this.lang).includes(this.config.defaultLanguage.toLowerCase())) {
             logWarn("warn", `${logger.colors.fgred}You've set an unsupported language as defaultLanguage in your config.json. Please choose one of the following: ${Object.keys(this.lang).join(", ")}.\n       Defaulting to English...`, true);
+            resolveMsg += `You've set an unsupported language as defaultLanguage in your config.json. Please choose one of the following: ${Object.keys(this.lang).join(", ")}. Defaulting to English...\n`;
             this.config.defaultLanguage = "english";
         }
         if (this.advancedconfig.loginDelay < 500) { // Don't allow a logindelay below 500ms
@@ -156,6 +161,6 @@ DataManager.prototype.checkData = function() {
 
         // Resolve promise if this point was reached
         logger("debug", "DataManager checkData(): All checks ran successfully! Resolving promise...");
-        resolve();
+        resolve(resolveMsg || null);
     });
 };

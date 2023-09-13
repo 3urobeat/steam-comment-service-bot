@@ -93,7 +93,7 @@
         {
             "path": "docs/dev/dataManager/dataManager.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/dataManager/dataManager.md",
-            "checksum": "aca7f83416c1188b71773c91ba350db1"
+            "checksum": "1403cfac804aea30977d4699e0b90068"
         },
         {
             "path": "docs/dev/introduction.md",
@@ -528,7 +528,7 @@
         {
             "path": "src/dataManager/dataCheck.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataCheck.js",
-            "checksum": "05f7df7488baef22d65bd1ca73506b62"
+            "checksum": "0d8cdf96983f5b5e75e6b4e792c29578"
         },
         {
             "path": "src/dataManager/dataExport.js",

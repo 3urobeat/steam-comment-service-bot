@@ -116,7 +116,7 @@ Returns a Promise which resolves when all source code files have been loaded.
 Checks currently loaded data for validity and logs some recommendations for a few settings.  
 This function is called on startup by the Controller but can be executed again at any time.
 
-Returns a Promise which resolves when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
+Returns a Promise which resolves with `null` when all settings have been accepted, or with a string containing reasons if a setting has been reset. On reject you should terminate the application. It is called with a String specifying the failed check.
 
 ### writeAllFilesToDisk(): void
 Writes (all) files imported by the DataManager back to the disk.
