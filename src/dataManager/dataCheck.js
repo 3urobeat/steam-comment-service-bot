@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 13.09.2023 20:24:37
+ * Last Modified: 13.09.2023 21:12:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -89,6 +89,7 @@ DataManager.prototype.checkData = function() {
         }
         if (this.config.commentdelay * maxCommentsOverall > 2147483647) { // Check for 32-bit integer limit for commentcmd timeout
             logWarn("error", `${logger.colors.fgred}Your maxComments and/or maxOwnerComments and/or commentdelay value in the config are too high.\n        Please lower these values so that 'commentdelay * maxComments' is not bigger than 2147483647 (32-bit integer limit).\n\nThis will otherwise cause an error when trying to comment. Aborting...\n`, true);
+            this.config.commentdelay = 15000;
             return reject(new Error("Commentdelay times maxcomments exceeds 32bit integer limit!"));
         }
         if (this.config.randomizeAccounts && Object.keys(this.logininfo).length <= 5 && maxCommentsOverall > Object.keys(this.logininfo).length * 2) {
@@ -101,6 +102,7 @@ DataManager.prototype.checkData = function() {
         }
         if (this.advancedconfig.loginDelay < 500) { // Don't allow a logindelay below 500ms
             logWarn("error", `${logger.colors.fgred}I won't allow a logindelay below 500ms as this will probably get you blocked by Steam nearly instantly. I recommend setting it to 2500.\n        If you are using one proxy per account you might try setting it to 500 (on your own risk!). Aborting...`, true);
+            this.advancedconfig.loginDelay = 2500;
             return reject(new Error("Logindelay is set below 500ms!"));
         }
         if (this.advancedconfig.lastQuotesSize >= this.quotes) { // Force clear lastQuotes array if we have less or equal amount of quotes to choose from than lastQuotesSize to avoid infinite loop
