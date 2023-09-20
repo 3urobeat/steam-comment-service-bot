@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 08.09.2023 16:31:03
+ * Last Modified: 15.09.2023 16:32:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -62,6 +62,7 @@ const PluginSystem = function (controller) {
 // The plugin system loads all plugins and provides functions for plugins to hook into
 module.exports = PluginSystem;
 
+
 /**
  * Reloads all plugins and calls ready event after ~2.5 seconds.
  */
@@ -98,6 +99,7 @@ PluginSystem.prototype.reloadPlugins = function () {
         });
     }, 3000);
 };
+
 
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
 
