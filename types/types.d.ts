@@ -635,9 +635,9 @@ declare class DataManager {
     constructor(controller: Controller);
     /**
      * Checks currently loaded data for validity and logs some recommendations for a few settings.
-     * @returns Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
+     * @returns Resolves with `null` when all settings have been accepted, or with a string containing reasons if a setting has been reset. On reject you should terminate the application. It is called with a String specifying the failed check.
      */
-    checkData(): Promise<void>;
+    checkData(): Promise<null | string>;
     /**
      * Writes (all) files imported by DataManager back to the disk
      */
@@ -747,9 +747,9 @@ declare class DataManager {
     _loadDataManagerFiles(): Promise<void>;
     /**
      * Checks currently loaded data for validity and logs some recommendations for a few settings.
-     * @returns Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
+     * @returns Resolves with `null` when all settings have been accepted, or with a string containing reasons if a setting has been reset. On reject you should terminate the application. It is called with a String specifying the failed check.
      */
-    checkData(): Promise<void>;
+    checkData(): Promise<null | string>;
     /**
      * Writes (all) files imported by DataManager back to the disk
      */
@@ -938,6 +938,43 @@ declare class DataManager {
      * @param noRequire - Optional: Set to true if resolve() should not be called with require(file) as param
      */
     _pullNewFile(name: string, filepath: string, resolve: (...params: any[]) => any, noRequire: boolean): void;
+}
+
+/**
+ * Constructor - Creates a new Discussion object
+ */
+declare class CSteamDiscussion {
+    constructor(community: SteamCommunity, data: any);
+    _community: SteamCommunity;
+    /**
+     * Scrapes a range of comments from this discussion
+     * @param startIndex - Index (0 based) of the first comment to fetch
+     * @param endIndex - Index (0 based) of the last comment to fetch
+     * @param callback - First argument is null/Error, second is array containing the requested comments
+     */
+    getComments(startIndex: number, endIndex: number, callback: (...params: any[]) => any): void;
+    /**
+     * Posts a comment to this discussion's comment section
+     * @param message - Content of the comment to post
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    postComment(message: string, callback: (...params: any[]) => any): void;
+    /**
+     * Delete a comment from this discussion's comment section
+     * @param gidcomment - ID of the comment to delete
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    deleteComment(gidcomment: string, callback: (...params: any[]) => any): void;
+    /**
+     * Subscribes to this discussion's comment section
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    subscribe(callback: (...params: any[]) => any): void;
+    /**
+     * Unsubscribes from this discussion's comment section
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    unsubscribe(callback: (...params: any[]) => any): void;
 }
 
 /**
@@ -1187,6 +1224,11 @@ declare class SessionHandler {
      * Internal - Attempts to log into account with credentials
      */
     _attemptCredentialsLogin(): void;
+    /**
+     * Attempts to renew the refreshToken used for the current session. Whether a new token will actually be issued is at the discretion of Steam.
+     * @returns Returns a promise which resolves with `true` if Steam issued a new token, `false` otherwise. Rejects if no token is stored in the database.
+     */
+    attemptTokenRenew(): Promise<boolean>;
     /**
      * Internal: Attaches listeners to all steam-session events we care about
      */

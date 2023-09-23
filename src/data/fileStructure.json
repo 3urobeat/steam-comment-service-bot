@@ -93,7 +93,7 @@
         {
             "path": "docs/dev/dataManager/dataManager.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/dataManager/dataManager.md",
-            "checksum": "1403cfac804aea30977d4699e0b90068"
+            "checksum": "92d884d0610c063da28fd0f80f0d37ae"
         },
         {
             "path": "docs/dev/introduction.md",
@@ -273,12 +273,12 @@
         {
             "path": "package-lock.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package-lock.json",
-            "checksum": "0e4fef5d10f6016a6c68c56edb0f2220"
+            "checksum": "84f7f626147675c632d379a537e7c0b1"
         },
         {
             "path": "package.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package.json",
-            "checksum": "6a039fd5c73ac686e04881a013164ae4"
+            "checksum": "702b9f145475b41101659fb8dbef7162"
         },
         {
             "path": "scripts/README.md",
@@ -308,7 +308,7 @@
         {
             "path": "src/bot/bot.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/bot.js",
-            "checksum": "3999d5df3456f99a3716bc2fcf0421ed"
+            "checksum": "1b5f79965d37468916255cf3f1ce497d"
         },
         {
             "path": "src/bot/events/debug.js",
@@ -578,7 +578,7 @@
         {
             "path": "src/dataManager/helpers/handleExpiringTokens.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/helpers/handleExpiringTokens.js",
-            "checksum": "ae2bccc4096dd8916b97fb65dec312a2"
+            "checksum": "7dcd29cf3d3e6ed985d636615248a4f9"
         },
         {
             "path": "src/dataManager/helpers/misc.js",
@@ -773,7 +773,7 @@
         {
             "path": "types/types.d.ts",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/types/types.d.ts",
-            "checksum": "71d9cc4cad57ba2aba5b131ffa1c0b86"
+            "checksum": "0c25395f79d0180a619e8be33d769892"
         }
     ]
 }

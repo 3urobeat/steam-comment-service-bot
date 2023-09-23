@@ -196,7 +196,10 @@ Updates or inserts a timestamp of a user in the [lastCommentDB](#lastcommentdb) 
 
 ### _startExpiringTokensCheckInterval(): void
 Internal:  
-Checks [tokens.db](#tokensdb) every 24 hours for refreshToken expiration in <=7 days, logs warning and sends botowner a Steam message.
+Checks tokens.db every 24 hours for refreshToken expiration in <=31 days and attempts to renew.  
+If this fails and the token expires in <=7 days, it logs a warning and sends the botowner a Steam message.
+
+Note: This function should be redundant as SteamUser now automatically attempts to renew refreshTokens when `renewRefreshTokens` is enabled.
 
 ### _askForGetNewToken(expiring): void
 - `expiring` (object) - Object of botobject entries to ask the user for

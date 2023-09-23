@@ -4,7 +4,7 @@
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 12.09.2023 22:26:52
+ * Last Modified: 23.09.2023 13:06:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -21,6 +21,8 @@ const DataManager = require("../dataManager.js");
 /**
  * Internal: Checks tokens.db every 24 hours for refreshToken expiration in <=31 days and attempts to renew.
  * If this fails and the token expires in <=7 days, it logs a warning and sends the botowner a Steam msg
+ *
+ * Note: This function should be redundant as SteamUser now automatically attempts to renew refreshTokens when `renewRefreshTokens` is enabled.
  */
 DataManager.prototype._startExpiringTokensCheckInterval = function() {
     let _this = this;
