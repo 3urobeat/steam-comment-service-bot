@@ -5,12 +5,12 @@
 
     "updaterautoupdatedisabled": "You have disabled the automatic updater. Would you like to update now?\nIf yes, please force an update using the command: ${cmdprefix}update true",
 
-    "commentcmdusageowner": "'${cmdprefix}comment amount/\"all\" id' to request amount many comments (or the max possible amount).\nProvide a profile, group or sharedfile (screenshot, artwork or guide) ID if you'd like to comment somewhere else instead of on your profile.",
-    "commentcmdusageowner2": "'${cmdprefix}comment 1 id'. Provide a profile, group or sharedfile (screenshot, artwork or guide) ID if you'd like to comment somewhere else instead of on your profile.",
+    "commentcmdusageowner": "'${cmdprefix}comment amount/\"all\" id' to request amount many comments (or the max possible amount).\nProvide a profile, group, sharedfile (screenshot, artwork or guide) or discussion ID/URL if you'd like to comment somewhere else instead of on your profile.",
+    "commentcmdusageowner2": "'${cmdprefix}comment 1 id'. Provide a profile, group, sharedfile (screenshot, artwork or guide) or discussion ID/URL if you'd like to comment somewhere else instead of on your profile.",
     "commentcmdusage": "'${cmdprefix}comment amount/\"all\"' to request amount many comments (or the max possible amount) on your profile.",
     "commentcmdusage2": "'${cmdprefix}comment' to request a comment on your profile!",
     "commentrequesttoohigh": "You can request max. ${maxRequestAmount} comments.\nCommand usage: ${commentcmdusage}",
-    "commentinvalidid": "This does not seem to be a valid profile, group or sharedfile (screenshot, artwork or guide) ID!\nPlease make sure that you either provide a full link, only the vanity or only the ID, pointing to an existing profile, group or sharedfile.\n\nCommand usage: ${commentcmdusage}",
+    "commentinvalidid": "This does not seem to be a valid profile, group, sharedfile (screenshot, artwork or guide) or discussion ID/URL!\nPlease make sure that you either provide a full link, only the vanity or ID, pointing to an existing element.\n\nCommand usage: ${commentcmdusage}",
     "commentprofileidowneronly": "Specifying a ID is only allowed for bot owners.\nIf you are a bot owner, please make sure that you have added your ID to the ownerid setting in the config.json.",
     "commentmissingnumberofcomments": "Please specify how many comments out of ${maxRequestAmount} you would like to request.\nCommand usage: ${commentcmdusage}",
     "commentzeroavailableaccs": "Sorry but there are currently not enough accounts available to fulfill your request. Please wait ${waittime} and try again!",
@@ -18,6 +18,7 @@
     "commentnoaccounts": "Sorry but there are no accounts to fulfill this request. Please contact the bot administrator of this instance.\nUse the ${cmdprefix}owner command to get information about who runs this instance.",
     "commentnounlimitedaccs": "Sorry but there are no unlimited accounts which are needed to fulfill this request. Please contact the bot administrator of this instance.\nUse the ${cmdprefix}owner command to get information about who runs this instance.",
     "commentaddbotaccounts": "Please add these accounts and then request again: (limited accounts)",
+    "commentunsupportedtype": "Sorry but the comment command does not support this type of ID. Please provide a profile, group, sharedfile (screenshot, artwork or guide) or discussion ID/URL.",
     "commentuserprofileprivate": "Your/the receiving profile seems to be private. Please edit the privacy settings to allow comments and try again!",
     "commenterroroccurred": "Oops, an error occurred! I sadly wasn't able to comment.",
     "commentprocessstarted": "Estimated wait time for ${numberOfComments} comments: ${waittime}.",
@@ -52,7 +53,7 @@
     "noidparam": "Please provide an ID!\nThe default behavior of this command might be unavailable in this context, for example when the command was used from outside the Steam Chat or the developer forgot to pass a userID to enable it.",
 
     "invalidnumber": "This does not seem to be a valid number!\n\nCommand usage: ${cmdusage}",
-    "invalidprofileid": "This does not seem to be a valid ID or link or you provided the wrong ID type for this command!\nPlease make sure that you either provide a full link, only the vanity or only the ID, pointing to an existing profile, group or sharedfile.",
+    "invalidprofileid": "This does not seem to be a valid ID or link or you provided the wrong ID type for this command!\nPlease make sure that you either provide a full link, only the vanity or ID, pointing to an existing element.",
     "invalidgroupid": "This is not a valid group id or group url! \nA groupid must look like this: '103582791464712227' \n...or a group url like this: 'https://steamcommunity.com/groups/3urobeatGroup'",
     "invalidsharedfileid": "This does not seem to be a valid sharedfileID!\nPlease make sure that you either provide a full link: https://steamcommunity.com/sharedfiles/filedetails/?id=2980913451 ...or just the ID: 2980913451 ...which points to an existing screenshot, artwork or guide.\n\nCommand usage: ${cmdusage}",
     "errloadingsharedfile": "Sorry but an error occurred while loading the sharedfile you have provided: ",
@@ -87,7 +88,7 @@
     "groupcmdnolink": "The botowner of this instance hasn't provided any group or the group doesn't exist.",
     "groupcmdinvitesent": "I sent you an invite! Thanks for joining!",
     "groupcmdinvitelink": "Join my group here: ",
-    "abortcmdnoprocess": "There is no active comment process running for this ID.\nIf you requested comments for another profile, group or sharedfile then please provide that ID as argument!",
+    "abortcmdnoprocess": "There is no active comment process running for this ID.\nIf you requested comments for another profile, group or sharedfile then please provide that ID/URL as argument!",
     "abortcmdsuccess": "Aborting your active comment process...",
 
     "resetcooldowncmdcooldowndisabled": "The cooldown is disabled in the config!",
@@ -107,7 +108,7 @@
     "settingscmdvaluereset": "The DataManager rejected this change with this warning:",
     "settingscmdvaluechanged": "${targetkey} has been changed from ${oldvalue} to ${newvalue}.\nPlease remember that certain values might need a restart to take effect. You can do that by typing ${cmdprefix}restart.",
 
-    "failedcmdnothingfound": "I can't remember any failed comments on your/that ID.\nIf you requested comments for another profile, group or sharedfile then please provide that ID as argument!",
+    "failedcmdnothingfound": "I can't remember any failed comments on your/that ID.\nIf you requested comments for another profile, group, sharedfile or discussion then please provide that ID/URL as argument!",
     "failedcmdmsg": "Your last request for '${steamID64}' finished at '${requesttime}' (GMT time) had these errors:",
 
     "sessionscmdnosessions": "There are currently no active sessions and no bot accounts on cooldown.",

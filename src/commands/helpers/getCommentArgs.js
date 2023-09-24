@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 10.09.2023 14:10:56
+ * Last Modified: 24.09.2023 13:12:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -40,7 +40,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, resIn
             let quotesArr        = commandHandler.data.quotes;
 
             let profileID;
-            let idType = "profile"; // Set profile as default because that makes sense (because it can only be a group/sharedfile when param was provided yk)
+            let idType = "profile"; // Set profile as default because that makes sense (because it can only be a group/sharedfile/discussion when param was provided yk)
 
 
             /* --------- Define command usage messages & maxRequestAmount for each user's privileges --------- */

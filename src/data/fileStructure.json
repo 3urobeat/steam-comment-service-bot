@@ -378,7 +378,7 @@
         {
             "path": "src/commands/core/comment.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/comment.js",
-            "checksum": "0d27c303cf0c7efed7ebf25a58d84524"
+            "checksum": "ff8d2739848e3780c4c3f2ad4bcc8fb0"
         },
         {
             "path": "src/commands/core/favorite.js",
@@ -423,12 +423,12 @@
         {
             "path": "src/commands/helpers/getCommentArgs.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getCommentArgs.js",
-            "checksum": "009596f3956bde2cc38c66b47889580d"
+            "checksum": "b52b574013e2402484302f6d3afb5bb2"
         },
         {
             "path": "src/commands/helpers/getCommentBots.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getCommentBots.js",
-            "checksum": "62828fdd5d24facf7b05dde546bb9766"
+            "checksum": "eab2934e073186ad6e84ea8c3b1070d1"
         },
         {
             "path": "src/commands/helpers/getFavoriteBots.js",
@@ -493,7 +493,7 @@
         {
             "path": "src/controller/helpers/handleSteamIdResolving.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/handleSteamIdResolving.js",
-            "checksum": "df0aa98887f270da8067ce312d55231f"
+            "checksum": "8809e2fb75c7c3b51ce85a9645ba5e23"
         },
         {
             "path": "src/controller/helpers/logger.js",
@@ -523,12 +523,12 @@
         {
             "path": "src/data/lang/english.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/english.json",
-            "checksum": "ee6dd32ec6a94dd1fd5c64f5998017f1"
+            "checksum": "064f296bfa59c0ed3f0dc75881f1fb83"
         },
         {
             "path": "src/data/lang/russian.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/russian.json",
-            "checksum": "101beb5111ad9a982b879a947645ee8d"
+            "checksum": "c946b98f1ab67fef914ba94a5960e3e9"
         },
         {
             "path": "src/dataManager/dataCheck.js",

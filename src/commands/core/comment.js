@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 24.09.2023 12:57:11
+ * Last Modified: 24.09.2023 13:20:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -190,6 +190,32 @@ module.exports.comment = {
                     });
                 })();
                 break;
+            case "discussionComment":
+                postComment = commandHandler.controller.main.community.postDiscussionComment;
+                commentArgs = { topicOwner: null, gidforum: null, discussionId: null, quote: null };
+
+                // Get topicOwner & gidforum by scraping discussion DOM - Quick hack to await function that only supports callbacks
+                await (() => {
+                    return new Promise((resolve) => {
+                        commandHandler.controller.main.community.getSteamDiscussion(receiverSteamID64, (err, obj) => { // ReceiverSteamID64 is a URL in this case
+                            if (err) {
+                                logger("error", "Couldn't get discussion even though it exists?! Aborting!\n" + err);
+                                respond("Error: Couldn't get discussion even though it exists?! Aborting!\n" + err);
+                                return;
+                            }
+
+                            commentArgs.topicOwner = obj.topicOwner;
+                            commentArgs.gidforum = obj.gidforum;
+                            commentArgs.discussionId = obj.id;
+                            resolve();
+                        });
+                    });
+                })();
+                break;
+            default:
+                logger("warn", `[Main] Unsupported comment type '${activeRequestsObj.type}'! Rejecting request...`);
+                respond(await commandHandler.data.getLang("commentunsupportedtype", null, requesterSteamID64));
+                return;
         }
 
 
@@ -274,8 +300,7 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
             let quote = await commandHandler.data.getQuote(activeReqEntry.quotesArr); // Get a random quote to comment with
             commentArgs["quote"] = quote; // Replace key "quote" in args obj
 
-            //postComment.call(bot.community, ...Object.values(commentArgs), (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
-                let error = ""
+            postComment.call(bot.community, ...Object.values(commentArgs), (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
 
                 /* --------- Handle errors thrown by this comment attempt or log success message --------- */
                 if (error) {
@@ -288,7 +313,7 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
                 // Continue with the next iteration
                 loop.next();
 
-            //});
+            });
 
         }, commandHandler.data.config.commentdelay * (i > 0)); // Delay every comment that is not the first one
 
