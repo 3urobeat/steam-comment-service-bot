@@ -4,7 +4,7 @@
  * Created Date: 02.06.2023 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 24.09.2023 15:41:45
+ * Last Modified: 24.09.2023 21:03:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -73,7 +73,7 @@ module.exports.favorite = {
 
 
         // Check and get arguments from user
-        let { amountRaw, id } = await getSharedfileArgs(commandHandler, args, "favorite", resInfo, respond); // We can use the voteArgs function here as it uses the same arguments
+        let { amountRaw, id } = await getSharedfileArgs(commandHandler, args, "favorite", resInfo, respond);
 
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
@@ -94,14 +94,14 @@ module.exports.favorite = {
         let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFavorizing(commandHandler, amountRaw, id, "favorite");
 
         if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point.
-            if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("favoritenoaccounts", null, requesterSteamID64)); // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
-                else respond(await commandHandler.data.getLang("favoriterequestless", { "availablenow": availableAccounts.length }, requesterSteamID64));
+            if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterSteamID64)); // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
+                else respond(await commandHandler.data.getLang("genericrequestless", { "availablenow": availableAccounts.length }, requesterSteamID64));
 
             return;
         }
 
         if (availableAccounts.length < amount) { // Check if not enough available accounts were found because of cooldown
-            respond(await commandHandler.data.getLang("favoritenotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availableAccounts.length }, requesterSteamID64));
+            respond(await commandHandler.data.getLang("genericnotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availableAccounts.length }, requesterSteamID64));
             return;
         }
 
@@ -263,7 +263,7 @@ module.exports.unfavorite = {
 
 
         // Check and get arguments from user
-        let { amountRaw, id } = await getSharedfileArgs(commandHandler, args, "unfavorite", resInfo, respond); // We can use the voteArgs function here as it uses the same arguments
+        let { amountRaw, id } = await getSharedfileArgs(commandHandler, args, "unfavorite", resInfo, respond);
 
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
@@ -284,14 +284,14 @@ module.exports.unfavorite = {
         let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFavorizing(commandHandler, amountRaw, id, "unfavorite");
 
         if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point.
-            if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("favoritenoaccounts", null, requesterSteamID64));     // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
-                else respond(await commandHandler.data.getLang("favoriterequestless", { "availablenow": availableAccounts.length }, requesterSteamID64));
+            if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterSteamID64));     // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
+                else respond(await commandHandler.data.getLang("genericrequestless", { "availablenow": availableAccounts.length }, requesterSteamID64));
 
             return;
         }
 
         if (availableAccounts.length < amount) { // Check if not enough available accounts were found because of cooldown
-            respond(await commandHandler.data.getLang("favoritenotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availableAccounts.length }, requesterSteamID64));
+            respond(await commandHandler.data.getLang("genericnotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availableAccounts.length }, requesterSteamID64));
             return;
         }
 

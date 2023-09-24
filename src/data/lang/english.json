@@ -28,15 +28,13 @@
     "commentretrying": "${failedamount}/${numberOfComments} comments have failed. I'm going to retry the failed comments in untilStr. (Attempt ${thisattempt}/${maxattempt})",
     "commentsuccess": "All comments have been sent. Failed: ${failedamount}/${numberOfComments}\nIf you are a nice person then please comment on my profile too!",
 
-    "votenoaccounts": "Sorry but there are no unlimited accounts available which haven't voted on this item yet.",
-    "voterequestless": "There are currently only ${availablenow} bot accounts available which have not yet voted on this item.",
-    "votenotenoughavailableaccs": "Sorry but there are currently not enough accounts available which haven't voted on this item yet. Please wait ${waittime} and try again or only request ${availablenow} votes now.",
+    "genericnoaccounts": "Sorry but there are no accounts available for this request on this id.",
+    "genericrequestless": "There are currently only ${availablenow} bot accounts available for this request on this id.",
+    "genericnotenoughavailableaccs": "Sorry but there are currently not enough accounts available for this request on this id. Please wait ${waittime} and try again or only request ${availablenow} now.",
+
     "voteprocessstarted": "Estimated wait time for ${numberOfVotes} votes: ${waittime}.",
     "votesuccess": "All votes have been sent. Failed: ${failedamount}/${numberOfVotes}",
 
-    "favoritenoaccounts": "Sorry but there are no accounts available for this request on this id.",
-    "favoriterequestless": "There are currently only ${availablenow} bot accounts available for this request on this id.",
-    "favoritenotenoughavailableaccs": "Sorry but there are currently not enough accounts available for this request on this id. Please wait ${waittime} and try again or only request ${availablenow} now.",
     "favoriteprocessstarted": "Estimated wait time for ${numberOfFavs} un-/favorites: ${waittime}.",
     "favoritesuccess": "All un-/favorites have been sent. Failed: ${failedamount}/${numberOfFavs}",
     
