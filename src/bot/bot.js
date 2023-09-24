@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 23.09.2023 13:04:23
+ * Last Modified: 24.09.2023 14:59:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -110,6 +110,7 @@ const Bot = function(controller, index) {
     require("../libraryPatches/helpers.js");
     require("../libraryPatches/CSteamDiscussion.js");
     require("../libraryPatches/discussions.js");
+    require("../libraryPatches/users.js");
 
     if (global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<") this.controller.stop(); // eslint-disable-line
 
