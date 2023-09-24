@@ -111,7 +111,7 @@
     "failedcmdmsg": "Your last request for '${steamID64}' finished at '${requesttime}' (GMT time) had these errors:",
 
     "sessionscmdnosessions": "There are currently no active sessions and no bot accounts on cooldown.",
-    "sessionscmdmsg": "There are currently amount active session(s):",
+    "sessionscmdmsg": "There are currently ${amount} active session(s):",
     "mysessionscmdnosessions": "There are currently no active sessions that you have started.",
 
     "addfriendcmdacclimited": "Can't add friend ${profileid} with bot0 because the bot account is limited.",

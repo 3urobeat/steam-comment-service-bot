@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.09.2023 17:21:21
+ * Last Modified: 24.09.2023 12:57:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -201,7 +201,7 @@ module.exports.comment = {
                 } else {
                     logger("debug", "Successfully checked privacyState of receiving user: " + user.privacyState);
 
-                    if (user.privacyState != "public") return respond(await commandHandler.data.getLang("commentuserprofileprivate", requesterSteamID64)); // Only check if getting the Steam user's data didn't result in an error
+                    if (user.privacyState != "public") return respond(await commandHandler.data.getLang("commentuserprofileprivate", null, requesterSteamID64)); // Only check if getting the Steam user's data didn't result in an error
                 }
 
                 // Register this comment process in activeRequests
