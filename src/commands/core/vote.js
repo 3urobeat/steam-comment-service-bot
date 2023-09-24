@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 10.09.2023 17:21:45
+ * Last Modified: 24.09.2023 15:42:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -69,7 +69,7 @@ module.exports.upvote = {
         }
         if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterSteamID64)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         if (commandHandler.controller.info.activeLogin)                 return respond(await commandHandler.data.getLang("activerelog", null, requesterSteamID64));      // Bot is waiting for relog
-        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterSteamID64)); // Comment command is restricted to owners only
+        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterSteamID64)); // Command is restricted to owners only
 
 
         // Check and get arguments from user
@@ -264,7 +264,7 @@ module.exports.downvote = {
         }
         if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterSteamID64)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         if (commandHandler.controller.info.activeLogin)                 return respond(await commandHandler.data.getLang("activerelog", null, requesterSteamID64));      // Bot is waiting for relog
-        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterSteamID64)); // Comment command is restricted to owners only
+        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterSteamID64)); // Command is restricted to owners only
 
 
         // Check and get arguments from user

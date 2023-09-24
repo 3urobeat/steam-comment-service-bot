@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 24.09.2023 13:20:51
+ * Last Modified: 24.09.2023 15:41:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -26,7 +26,7 @@ const { logCommentError, handleIterationSkip } = require("../helpers/handleComme
 
 module.exports.comment = {
     names: ["comment", "gcomment", "groupcomment"],
-    description: "Request comments from all available bot accounts for a profile, group or sharedfile",
+    description: "Request comments from all available bot accounts for a profile, group, sharedfile or discussion",
     args: [
         {
             name: "amount",
@@ -37,7 +37,7 @@ module.exports.comment = {
         },
         {
             name: "ID",
-            description: "The link, steamID64 or vanity of the profile, group or sharedfile to comment on",
+            description: "The link, steamID64 or vanity of the profile, group, sharedfile or discussion to comment on",
             type: "string",
             isOptional: true,
             ownersOnly: true
@@ -79,7 +79,7 @@ module.exports.comment = {
         }
         if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterSteamID64)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         if (commandHandler.controller.info.activeLogin)                 return respond(await commandHandler.data.getLang("activerelog", null, requesterSteamID64));      // Bot is waiting for relog
-        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterSteamID64)); // Comment command is restricted to owners only
+        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterSteamID64)); // Command is restricted to owners only
 
         // Check for no id param as default behavior is unavailable when calling from outside the Steam Chat
         if (!resInfo.fromSteamChat && !args[1]) return respond(await commandHandler.data.getLang("noidparam", null, requesterSteamID64));

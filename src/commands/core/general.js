@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.09.2023 14:57:33
+ * Last Modified: 24.09.2023 15:00:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -216,6 +216,77 @@ module.exports.test = {
     run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // eslint-disable-line
 
+        // Test steamcommunity follow & unfollow implementation
+        /* commandHandler.controller.main.community.followUser(args[0], (err, res) => {
+            if (err) return logger("", err, true);
+
+            logger("", res, true);
+        });
+
+        setTimeout(() => {
+            commandHandler.controller.main.community.unfollowUser(args[0], (err, res) => {
+                if (err) return logger("", err, true);
+
+                logger("", res, true);
+            });
+        }, 10000); */
+
+
+        // Test steamcommunity steam discussion implementation
+        // App Discussion with lots of comments: https://steamcommunity.com/app/739630/discussions/0/1750150652078713439
+        // Forum Discussion I can post in with my test acc: https://steamcommunity.com/discussions/forum/24/3815167348912316274
+        // Group discussion with no comment rights: https://steamcommunity.com/groups/SteamLabs/discussions/2/1643168364649277130/
+
+        /* commandHandler.controller.main.community.getSteamDiscussion(args[0], async (err, discussion) => {
+            if (err) {
+                respond("Error loading discussion: " + err);
+                return;
+            }
+
+            logger("", discussion, true);
+        });
+
+        commandHandler.controller.main.community.getDiscussionComments("https://steamcommunity.com/app/739630/discussions/0/5904837854428568148", 0, null, (err, res) => {
+            logger("", res, true);
+        });
+
+        commandHandler.controller.main.community.postDiscussionComment("103582791432902485", "882957625821686010", "5291222404430243834", "bleh", (err, res) => {
+            logger("", res + " " + err, true);
+        });
+
+        setTimeout(() => {
+            commandHandler.controller.main.community.getDiscussionComments("https://steamcommunity.com/app/730/discussions/0/5291222404430243834/", 32, 32, (err, res) => {
+                let id = res[0].commentId;
+
+                console.log(id);
+
+                commandHandler.controller.main.community.deleteDiscussionComment("103582791432902485", "882957625821686010", "5291222404430243834", id, (err, res) => {
+                    logger("", res + " " + err, true);
+                });
+            });
+        }, 5000);
+
+        commandHandler.controller.main.community.getSteamDiscussion("https://steamcommunity.com/discussions/forum/24/3815167348912316274", (err, res) => {
+            if (err) logger("", err.stack, true);
+                else logger("", res, true);
+        });
+
+        commandHandler.controller.main.community.setDiscussionCommentsPerPage("30", (err) => {
+            logger("", err, true);
+        });
+
+        commandHandler.controller.main.community.getSteamDiscussion("https://steamcommunity.com/groups/SteamLabs/discussions/2/1643168364649277130/", (err, res) => {
+            if (err) logger("", err.stack, true);
+                else logger("", res, true);
+        });
+
+        commandHandler.controller.main.community.getSteamDiscussion("https://steamcommunity.com/app/739630/discussions/0/1750150652078713439/", (err, res) => {
+            res.getComments(35, 37, (err, res2) => {
+                console.log(res2);
+            });
+        }); */
+
+
         // Test getLang():
         /* logger("", "1: " + await commandHandler.data.getLang("resetcooldowncmdsuccess", { "profileid": "1234" }), true); // Valid test cases
         logger("", "2: " + await commandHandler.data.getLang("resetcooldowncmdsuccess", { "profileid": "1234" }, "russian"), true);
@@ -225,19 +296,24 @@ module.exports.test = {
         logger("", "5: " + await commandHandler.data.getLang("resetcooldowncmdsucces"), true);
         logger("", "6: " + await commandHandler.data.getLang("resetcooldowncmdsuccess", { "profileid": "1234" }, "99827634"), true); */
 
-        /* // Do not remove, these are handleSteamIdResolving test cases. Might be useful to include later in steamid-resolving lib test suite
-        let handleSteamIdResolving = commandHandler.controller.handleSteamIdResolving;
+
+        // Test handleSteamIdResolving():
+        /* let handleSteamIdResolving = commandHandler.controller.handleSteamIdResolving;
 
         // With type param
         handleSteamIdResolving("3urobeat", "profile", console.log);
         handleSteamIdResolving("3urobeatGroup", "group", console.log);
         handleSteamIdResolving("2966606880", "sharedfile", console.log);
+        handleSteamIdResolving("https://steamcommunity.com/app/739630/discussions/0/1750150652078713439/", "discussion", console.log);
 
         // Link matching
         handleSteamIdResolving("https://steamcommunity.com/id/3urobeat", null, console.log);
         handleSteamIdResolving("https://steamcommunity.com/profiles/76561198260031749", null, console.log);
         handleSteamIdResolving("https://steamcommunity.com/groups/3urobeatGroup", null, console.log);
         handleSteamIdResolving("https://steamcommunity.com/sharedfiles/filedetails/?id=2966606880", null, console.log);
+        handleSteamIdResolving("https://steamcommunity.com/discussions/forum/24/3815167348912316274", null, console.log);
+        handleSteamIdResolving("https://steamcommunity.com/groups/SteamLabs/discussions/2/1643168364649277130/", null, console.log);
+        handleSteamIdResolving("https://steamcommunity.com/app/739630/discussions/0/1750150652078713439/", null, console.log);
 
         // We don't know, let helper figure it out
         handleSteamIdResolving("3urobeat", null, console.log);
