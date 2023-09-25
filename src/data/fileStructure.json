@@ -443,7 +443,7 @@
         {
             "path": "src/commands/helpers/getFollowArgs.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getFollowArgs.js",
-            "checksum": "6988946fa33c3c07f6b335b8acb89d01"
+            "checksum": "48564baea7cd0776a39dada759951d37"
         },
         {
             "path": "src/commands/helpers/getFollowBots.js",
