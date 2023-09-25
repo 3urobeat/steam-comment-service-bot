@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 24.09.2023 15:00:41
+ * Last Modified: 25.09.2023 23:03:42
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -225,6 +225,20 @@ module.exports.test = {
 
         setTimeout(() => {
             commandHandler.controller.main.community.unfollowUser(args[0], (err, res) => {
+                if (err) return logger("", err, true);
+
+                logger("", res, true);
+            });
+        }, 10000);
+
+        commandHandler.controller.main.community.followCurator(args[0], (err, res) => {
+            if (err) return logger("", err, true);
+
+            logger("", res, true);
+        });
+
+        setTimeout(() => {
+            commandHandler.controller.main.community.unfollowCurator(args[0], (err, res) => {
                 if (err) return logger("", err, true);
 
                 logger("", res, true);
