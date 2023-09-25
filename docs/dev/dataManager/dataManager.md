@@ -80,7 +80,7 @@ This is used to enforce `config.unfriendTime` and cooldowns.
 The data is stored in documents following this format: `{ id: string, time: number }`
 
 ### ratingHistoryDB
-[Nedb](https://github.com/seald/nedb) database which stores information about which bot accounts have already voted on which sharedfiles.  
+[Nedb](https://github.com/seald/nedb) database which stores information about which bot accounts have fulfilled one-time requests (vote, fav, follow).
 This allows us to filter without pinging Steam for every account on every request.
 
 The data is stored in documents following this format: `{ id: string, accountName: string, type: string, time: number }`

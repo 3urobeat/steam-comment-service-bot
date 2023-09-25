@@ -37,7 +37,10 @@
 
     "favoriteprocessstarted": "Estimated wait time for ${numberOfFavs} un-/favorites: ${waittime}.",
     "favoritesuccess": "All un-/favorites have been sent. Failed: ${failedamount}/${numberOfFavs}",
-    
+
+    "followprocessstarted": "Estimated wait time for ${totalamount} un-/follows: ${waittime}.",
+    "followsuccess": "All un-/follows have been sent. Failed: ${failedamount}/${totalamount}",
+
     "useradded": "Hello there! Thanks for adding me!\nRequest a free comment with ${cmdprefix}comment\nType ${cmdprefix}help for more commands or ${cmdprefix}about for more information!",
     "userunfriend": "You have been unfriended for being inactive for ${forceFriendlistSpaceTime} days as the friendlist was running low on space.\nIf you need me again, feel free to add me again!",
     "userforceunfriend": "You have been unfriended for being inactive for ${unfriendtime} days.\nIf you need me again, feel free to add me again!",

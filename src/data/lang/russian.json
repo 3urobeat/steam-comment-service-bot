@@ -37,7 +37,10 @@
 
     "favoriteprocessstarted": "Примерное время ожидания для ${numberOfFavs} добавлений/удалений в избранное: ${waittime}.",
     "favoritesuccess": "Все добавления/удаления в избранное были отправлены. Не удалось: ${failedamount}/${numberOfFavs}",
-    
+
+    "followprocessstarted": "TODO ${totalamount} TODO: ${waittime}.",
+    "followsuccess": "TODO. Не удалось: ${failedamount}/${totalamount}",
+
     "useradded": "Здравствуйте! Спасибо, что добавили меня!\nЗапросите бесплатный комментарий с помощью ${cmdprefix}comment\nВведите ${cmdprefix}help для получения дополнительных команд или ${cmdprefix}about для получения дополнительной информации!",
     "userunfriend": "Вы были удалены из друзей за неактивность в течение ${forceFriendlistSpaceTime} дн., так как в списке друзей было мало места.\nЕсли я вам снова понадоблюсь, добавляйте меня снова!",
     "userforceunfriend": "Вы были удалены из друзей за неактивность в течение ${unfriendtime} дн.\nЕсли я вам снова понадоблюсь, не стесняйтесь добавить меня снова!",

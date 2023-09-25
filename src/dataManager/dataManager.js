@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 09.09.2023 15:38:03
+ * Last Modified: 24.09.2023 18:10:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -92,7 +92,7 @@ const DataManager = function (controller) {
     this.lastCommentDB = {};
 
     /**
-     * Database which stores information about which bot accounts have already voted on which sharedfiles. This allows us to filter without pinging Steam for every account on every request.
+     * Database which stores information about which bot accounts have fulfilled one-time requests (vote, fav, follow). This allows us to filter without pinging Steam for every account on every request.
      * Document structure: { id: string, accountName: string, type: string, time: Number }
      * @type {Nedb}
      */
