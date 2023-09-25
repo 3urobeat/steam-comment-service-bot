@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 24.09.2023 13:12:52
+ * Last Modified: 25.09.2023 19:26:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -82,7 +82,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, resIn
 
                 /* --------- Check profileid argument if it was provided --------- */
                 if (args[1]) {
-                    if (owners.includes(requesterSteamID64) || args[1] == requesterSteamID64) { // Check if user is a bot owner or if he provided his own profile id
+                    if (owners.includes(requesterSteamID64) || args[1] == requesterSteamID64) { // Check if user is a bot owner or if they provided their own profile id
                         let arg = args[1];
 
                         commandHandler.controller.handleSteamIdResolving(arg, null, async (err, res, type) => {
@@ -98,7 +98,6 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, resIn
                     } else {
                         logger("debug", "CommandHandler getCommentArgs(): Non-Owner tried to provide profileid for another profile. Stopping...");
 
-                        profileID = null;
                         respond(await commandHandler.data.getLang("commentprofileidowneronly", null, requesterSteamID64));
                         return resolve(false);
                     }
