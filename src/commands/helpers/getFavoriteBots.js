@@ -4,7 +4,7 @@
  * Created Date: 02.06.2023 14:07:27
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:31:26
+ * Last Modified: 25.09.2023 18:58:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -50,7 +50,7 @@ module.exports.getAvailableBotsForFavorizing = async (commandHandler, amount, id
         });
     }
 
-    if (previousLengthFavorized - allAccounts.length > 0) logger("info", `${previousLengthFavorized - allAccounts.length} of ${previousLengthFavorized} bot accounts were removed from available accounts because we know that they have already favorized this item!`);
+    if (previousLengthFavorized - allAccounts.length > 0) logger("info", `${previousLengthFavorized - allAccounts.length} of ${previousLengthFavorized} bot accounts were removed from available accounts because we know that they have already un-/favorized this item!`);
 
 
     // Loop over activeRequests and remove all active entries from allAccounts if both are not empty

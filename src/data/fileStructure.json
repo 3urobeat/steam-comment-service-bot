@@ -388,7 +388,7 @@
         {
             "path": "src/commands/core/follow.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/follow.js",
-            "checksum": "e7fe2c4d410454802b814d52f86810d4"
+            "checksum": "67348d71ddf8796a98d70ab89ca31ef6"
         },
         {
             "path": "src/commands/core/friend.js",
@@ -438,7 +438,7 @@
         {
             "path": "src/commands/helpers/getFavoriteBots.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getFavoriteBots.js",
-            "checksum": "4833fedd1ded096f8b9b43fa9721e305"
+            "checksum": "448123c44d0cad61817147848471e60b"
         },
         {
             "path": "src/commands/helpers/getFollowArgs.js",
@@ -448,7 +448,7 @@
         {
             "path": "src/commands/helpers/getFollowBots.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getFollowBots.js",
-            "checksum": "0c8ae30b3216a0c94f7526344d1dfc40"
+            "checksum": "bc6ffa0b48d26ed2582288a40a7932d4"
         },
         {
             "path": "src/commands/helpers/getSharedfileArgs.js",

@@ -4,7 +4,7 @@
  * Created Date: 24.09.2023 18:01:44
  * Author: 3urobeat
  *
- * Last Modified: 24.09.2023 19:39:00
+ * Last Modified: 25.09.2023 18:58:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -50,7 +50,7 @@ module.exports.getAvailableBotsForFollowing = async (commandHandler, amount, id,
         });
     }
 
-    if (previousLength - allAccounts.length > 0) logger("info", `${previousLength - allAccounts.length} of ${previousLength} bot accounts were removed from available accounts because we know that they have already followed this user!`);
+    if (previousLength - allAccounts.length > 0) logger("info", `${previousLength - allAccounts.length} of ${previousLength} bot accounts were removed from available accounts because we know that they have already un-/followed this user!`);
 
 
     // Loop over activeRequests and remove all active entries from allAccounts if both are not empty
