@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 04.09.2023 21:43:44
+ * Last Modified: 26.09.2023 21:51:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -434,9 +434,10 @@ Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObje
 Controller.prototype._handleErrors = function() {} // eslint-disable-line
 
 /**
- * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation
+ * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
+ * Note: You need to provide a full URL for discussions & curators. For discussions only type checking/determination is supported.
  * @param {string} str The profileID argument provided by the user
- * @param {string} expectedIdType The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
+ * @param {string} expectedIdType The type of SteamID expected ("profile", "group", "sharedfile", "discussion" or "curator") or `null` if type should be assumed.
  * @param {function(string|null, string|null, string|null): void} callback Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
  */
 Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) => {} // eslint-disable-line

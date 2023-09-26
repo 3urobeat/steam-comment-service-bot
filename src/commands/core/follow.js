@@ -4,7 +4,7 @@
  * Created Date: 24.09.2023 15:04:33
  * Author: 3urobeat
  *
- * Last Modified: 25.09.2023 18:57:03
+ * Last Modified: 26.09.2023 22:23:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -73,7 +73,7 @@ module.exports.follow = {
 
 
         // Check and get arguments from user
-        let { amountRaw, id } = await getFollowArgs(commandHandler, args, "follow", resInfo, respond);
+        let { amountRaw, id, idType } = await getFollowArgs(commandHandler, args, "follow", resInfo, respond);
 
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
@@ -90,8 +90,9 @@ module.exports.follow = {
         if (until > Date.now()) return respond(await commandHandler.data.getLang("idoncooldown", { "remainingcooldown": untilStr }, requesterSteamID64));
 
 
-        // Get all available bot accounts
-        let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFollowing(commandHandler, amountRaw, id, "follow");
+        // Get all available bot accounts. Block limited accounts from following curators
+        let allowLimitedAccounts = (idType != "curator");
+        let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFollowing(commandHandler, amountRaw, allowLimitedAccounts, id, idType, "follow");
 
         if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point.
             if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterSteamID64)); // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
@@ -109,7 +110,7 @@ module.exports.follow = {
         // Register this follow process in activeRequests. We use commentdelay here for now, not sure if I'm going to add a separate setting
         commandHandler.controller.activeRequests[id] = {
             status: "active",
-            type: "follow",
+            type: idType + "Follow",
             amount: amount,
             requestedby: requesterSteamID64,
             accounts: availableAccounts,
@@ -124,7 +125,7 @@ module.exports.follow = {
 
         // Log request start and give user cooldown on the first iteration
         if (activeReqEntry.thisIteration == -1) {
-            logger("info", `${logger.colors.fggreen}[${commandHandler.controller.main.logPrefix}] ${activeReqEntry.amount} Follow(s) requested. Starting to follow ${id}...`);
+            logger("info", `${logger.colors.fggreen}[${commandHandler.controller.main.logPrefix}] ${activeReqEntry.amount} Follow(s) requested. Starting to follow ${idType} ${id}...`);
 
             // Only send estimated wait time message for multiple follow
             if (activeReqEntry.amount > 1) {
@@ -149,7 +150,9 @@ module.exports.follow = {
                 if (!handleFollowIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
                 /* --------- Try to follow --------- */
-                bot.community.followUser(id, (error) => {
+                let followFunc = activeReqEntry.type == "curatorFollow" ? bot.community.followCurator : bot.community.followUser; // Get the correct function, depending on if the user provided a curator id or a user id
+
+                followFunc.call(bot.community, id, (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
 
                     /* --------- Handle errors thrown by this follow attempt or update ratingHistory db and log success message --------- */
                     if (error) {
@@ -158,13 +161,13 @@ module.exports.follow = {
                     } else {
 
                         // Add follow entry
-                        commandHandler.data.ratingHistoryDB.insert({ id: id, accountName: activeReqEntry.accounts[i], type: "follow", time: Date.now() }, (err) => {
-                            if (err) logger("warn", `Failed to insert 'follow' entry for '${activeReqEntry.accounts[i]}' for '${id}' into ratingHistory database! Error: ` + err);
+                        commandHandler.data.ratingHistoryDB.insert({ id: id, accountName: activeReqEntry.accounts[i], type: idType + "Follow", time: Date.now() }, (err) => {
+                            if (err) logger("warn", `Failed to insert '${idType}Follow' entry for '${activeReqEntry.accounts[i]}' for '${id}' into ratingHistory database! Error: ` + err);
                         });
 
                         // Log success message
-                        if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Following ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id} with proxy ${bot.loginData.proxyIndex}...`);
-                            else logger("info", `[${bot.logPrefix}] Following ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id}...`);
+                        if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Sending follow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${idType} ${id} with proxy ${bot.loginData.proxyIndex}...`);
+                            else logger("info", `[${bot.logPrefix}] Sending follow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${idType} ${id}...`);
                     }
 
                     // Continue with the next iteration
@@ -254,7 +257,7 @@ module.exports.unfavorite = {
 
 
         // Check and get arguments from user
-        let { amountRaw, id } = await getFollowArgs(commandHandler, args, "unfollow", resInfo, respond);
+        let { amountRaw, id, idType } = await getFollowArgs(commandHandler, args, "unfollow", resInfo, respond);
 
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
@@ -271,8 +274,9 @@ module.exports.unfavorite = {
         if (until > Date.now()) return respond(await commandHandler.data.getLang("idoncooldown", { "remainingcooldown": untilStr }, requesterSteamID64));
 
 
-        // Get all available bot accounts
-        let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFollowing(commandHandler, amountRaw, id, "unfollow");
+        // Get all available bot accounts. Block limited accounts from following curators
+        let allowLimitedAccounts = (idType != "curator");
+        let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFollowing(commandHandler, amountRaw, allowLimitedAccounts, id, idType, "unfollow");
 
         if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point.
             if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterSteamID64)); // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
@@ -290,7 +294,7 @@ module.exports.unfavorite = {
         // Register this unfollow process in activeRequests. We use commentdelay here for now, not sure if I'm going to add a separate setting
         commandHandler.controller.activeRequests[id] = {
             status: "active",
-            type: "unfollow",
+            type: idType + "Unfollow",
             amount: amount,
             requestedby: requesterSteamID64,
             accounts: availableAccounts,
@@ -305,7 +309,7 @@ module.exports.unfavorite = {
 
         // Log request start and give user cooldown on the first iteration
         if (activeReqEntry.thisIteration == -1) {
-            logger("info", `${logger.colors.fggreen}[${commandHandler.controller.main.logPrefix}] ${activeReqEntry.amount} Unfollow(s) requested. Starting to unfollow ${id}...`);
+            logger("info", `${logger.colors.fggreen}[${commandHandler.controller.main.logPrefix}] ${activeReqEntry.amount} Unfollow(s) requested. Starting to unfollow ${idType} ${id}...`);
 
             // Only send estimated wait time message for multiple unfollow
             if (activeReqEntry.amount > 1) {
@@ -330,7 +334,9 @@ module.exports.unfavorite = {
                 if (!handleFollowIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
                 /* --------- Try to unfollow --------- */
-                bot.community.unfollowUser(id, (error) => {
+                let followFunc = activeReqEntry.type == "curatorUnfollow" ? bot.community.unfollowCurator : bot.community.unfollowUser; // Get the correct function, depending on if the user provided a curator id or a user id
+
+                followFunc.call(bot.community, id, (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
 
                     /* --------- Handle errors thrown by this unfollow attempt or update ratingHistory db and log success message --------- */
                     if (error) {
@@ -339,13 +345,13 @@ module.exports.unfavorite = {
                     } else {
 
                         // Remove follow entry
-                        commandHandler.data.ratingHistoryDB.remove({ id: id, accountName: activeReqEntry.accounts[i], type: "follow" }, (err) => {
-                            if (err) logger("warn", `Failed to remove 'follow' entry for '${activeReqEntry.accounts[i]}' for '${id}' from ratingHistory database! Error: ` + err);
+                        commandHandler.data.ratingHistoryDB.remove({ id: id, accountName: activeReqEntry.accounts[i], type: idType + "Follow" }, (err) => {
+                            if (err) logger("warn", `Failed to remove '${idType}Follow' entry for '${activeReqEntry.accounts[i]}' for '${id}' from ratingHistory database! Error: ` + err);
                         });
 
                         // Log success message
-                        if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Unfollowing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id} with proxy ${bot.loginData.proxyIndex}...`);
-                            else logger("info", `[${bot.logPrefix}] Unfollowing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id}...`);
+                        if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Sending unfollow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${idType} ${id} with proxy ${bot.loginData.proxyIndex}...`);
+                            else logger("info", `[${bot.logPrefix}] Sending unfollow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${idType} ${id}...`);
                     }
 
                     // Continue with the next iteration

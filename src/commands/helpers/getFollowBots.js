@@ -4,7 +4,7 @@
  * Created Date: 24.09.2023 18:01:44
  * Author: 3urobeat
  *
- * Last Modified: 25.09.2023 18:58:33
+ * Last Modified: 26.09.2023 22:19:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -23,11 +23,13 @@ const { timeToString } = require("../../controller/helpers/misc.js");
  * Finds all needed and currently available bot accounts for a follow request.
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {number|"all"} amount Amount of favs requested or "all" to get the max available amount
+ * @param {boolean} canBeLimited If the accounts are allowed to be limited
  * @param {string} id The user id to follow
+ * @param {string} idType Either "user" or "curator"
  * @param {string} favType Either "follow" or "unfollow", depending on which request this is
  * @returns {Promise.<{ amount: number, availableAccounts: Array.<string>, whenAvailable: number, whenAvailableStr: string }>} Resolves with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
-module.exports.getAvailableBotsForFollowing = async (commandHandler, amount, id, favType) => {
+module.exports.getAvailableBotsForFollowing = async (commandHandler, amount, canBeLimited, id, idType, favType) => {
 
     /* --------- Get all bots which haven't followed this id yet and aren't currently in another follow request --------- */
     let whenAvailable; // We will save the until value of the account that the user has to wait for here
@@ -36,9 +38,18 @@ module.exports.getAvailableBotsForFollowing = async (commandHandler, amount, id,
     let allAccounts = [ ... Object.keys(allAccsOnline) ]; // Clone keys array (bot usernames) of bots object
 
 
+    // Remove limited accounts from allAccounts array if desired
+    if (!canBeLimited) {
+        let previousLength = allAccounts.length;
+        allAccounts = allAccounts.filter(e => allAccsOnline[e].user.limitations && !allAccsOnline[e].user.limitations.limited);
+
+        if (previousLength - allAccounts.length > 0) logger("info", `${previousLength - allAccounts.length} of ${previousLength} bot accounts were removed from available accounts as they are limited and can't be used for this request!`);
+    }
+
+
     // Remove bot accounts from allAccounts which have already followed this id, or only allow them for type unfollow
     let previousLength = allAccounts.length;
-    let alreadyUsed    = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: "follow" }, {});
+    let alreadyUsed    = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: idType + "Follow" }, {});
 
     if (favType == "follow") {
         alreadyUsed.forEach((e) => {
@@ -56,7 +67,7 @@ module.exports.getAvailableBotsForFollowing = async (commandHandler, amount, id,
     // Loop over activeRequests and remove all active entries from allAccounts if both are not empty
     if (allAccounts.length > 0 && Object.keys(commandHandler.controller.activeRequests).length > 0) {
         Object.keys(commandHandler.controller.activeRequests).forEach((e) => {
-            if (!commandHandler.controller.activeRequests[e].type.includes("follow")) return; // Ignore entry if not of this type
+            if (!commandHandler.controller.activeRequests[e].type.toLowerCase().includes("follow")) return; // Ignore entry if not of this type. ToLowerCase() is important here because type is in camelCase
 
             if (Date.now() < commandHandler.controller.activeRequests[e].until + (commandHandler.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
                 commandHandler.controller.activeRequests[e].accounts.forEach((f) => { // Loop over every account used in this request

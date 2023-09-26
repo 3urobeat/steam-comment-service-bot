@@ -252,7 +252,7 @@ declare function getCommentArgs(commandHandler: CommandHandler, args: any[], req
  * @param commandHandler - The commandHandler object
  * @param numberOfComments - Number of requested comments
  * @param canBeLimited - If the accounts are allowed to be limited
- * @param idType - Type of the request. This can either be "profile", "group" or "sharedfile". This is used to determine if limited accs need to be added first.
+ * @param idType - Type of the request. This can either be "profile", "group", "sharedfile" or "discussion". This is used to determine if limited accs need to be added first.
  * @param receiverSteamID - Optional: steamID64 of the receiving user. If set, accounts that are friend with the user will be prioritized and accsToAdd will be calculated.
  * @returns `availableAccounts` contains all account names from bot object, `accsToAdd` account names which are limited and not friend, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
@@ -269,7 +269,30 @@ declare function getAvailableBotsForCommenting(commandHandler: CommandHandler, n
 declare function getAvailableBotsForFavorizing(commandHandler: CommandHandler, amount: number | "all", id: string, favType: string): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
 
 /**
- * Retrieves arguments from a vote request. If request is invalid, an error message will be sent
+ * Retrieves arguments from a follow request. If request is invalid, an error message will be sent
+ * @param commandHandler - The commandHandler object
+ * @param args - The command arguments
+ * @param cmd - Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function
+ * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+ * @param respond - The shortened respondModule call
+ * @returns If the user provided a specific amount, amount will be a number. If user provided "all" or "max", it will be returned as an unmodified string for getVoteBots.js to handle
+ */
+declare function getFollowArgs(commandHandler: CommandHandler, args: any[], cmd: string, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any): Promise<{ amount: number | string; id: string; }>;
+
+/**
+ * Finds all needed and currently available bot accounts for a follow request.
+ * @param commandHandler - The commandHandler object
+ * @param amount - Amount of favs requested or "all" to get the max available amount
+ * @param canBeLimited - If the accounts are allowed to be limited
+ * @param id - The user id to follow
+ * @param idType - Either "user" or "curator"
+ * @param favType - Either "follow" or "unfollow", depending on which request this is
+ * @returns Resolves with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
+ */
+declare function getAvailableBotsForFollowing(commandHandler: CommandHandler, amount: number | "all", canBeLimited: boolean, id: string, idType: string, favType: string): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
+
+/**
+ * Retrieves arguments from a favorite/vote request. If request is invalid, an error message will be sent
  * @param commandHandler - The commandHandler object
  * @param args - The command arguments
  * @param cmd - Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function
@@ -321,6 +344,31 @@ declare function sortFailedCommentsObject(failedObj: any): void;
  * @returns String that looks like this: `amount`x - `indices`\n`error message`
  */
 declare function failedCommentsObjToString(obj: any): string;
+
+/**
+ * Checks if the following follow process iteration should be skipped
+ * @param commandHandler - The commandHandler object
+ * @param loop - Object returned by misc.js syncLoop() helper
+ * @param bot - Bot object of the account making this request
+ * @param id - ID of the profile that receives the follow
+ * @returns `true` if iteration should continue, `false` if iteration should be skipped using return
+ */
+declare function handleFollowIterationSkip(commandHandler: CommandHandler, loop: any, bot: Bot, id: string): boolean;
+
+/**
+ * Logs follow errors
+ * @param error - The error string returned by steam-community
+ * @param commandHandler - The commandHandler object
+ * @param bot - Bot object of the account making this request
+ * @param id - ID of the profile that receives the follow
+ */
+declare function logFollowError(error: string, commandHandler: CommandHandler, bot: Bot, id: string): void;
+
+/**
+ * Helper function to sort failed object by comment number so that it is easier to read
+ * @param failedObj - Current state of failed object
+ */
+declare function sortFailedCommentsObject(failedObj: any): void;
 
 /**
  * Checks if the following vote process iteration should be skipped
@@ -461,9 +509,10 @@ declare class Controller {
      */
     _handleErrors(): void;
     /**
-     * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation
+     * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
+     * Note: You need to provide a full URL for discussions & curators. For discussions only type checking/determination is supported.
      * @param str - The profileID argument provided by the user
-     * @param expectedIdType - The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
+     * @param expectedIdType - The type of SteamID expected ("profile", "group", "sharedfile", "discussion" or "curator") or `null` if type should be assumed.
      */
     handleSteamIdResolving(str: string, expectedIdType: string, callback: any): void;
     /**
@@ -529,9 +578,10 @@ declare class Controller {
      */
     _handleErrors(): void;
     /**
-     * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation
+     * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
+     * Note: You need to provide a full URL for discussions & curators. For discussions only type checking/determination is supported.
      * @param str - The profileID argument provided by the user
-     * @param expectedIdType - The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
+     * @param expectedIdType - The type of SteamID expected ("profile", "group", "sharedfile", "discussion" or "curator") or `null` if type should be assumed.
      */
     handleSteamIdResolving(str: string, expectedIdType: string, callback: any): void;
     /**
@@ -726,7 +776,7 @@ declare class DataManager {
      */
     lastCommentDB: Nedb;
     /**
-     * Database which stores information about which bot accounts have already voted on which sharedfiles. This allows us to filter without pinging Steam for every account on every request.
+     * Database which stores information about which bot accounts have fulfilled one-time requests (vote, fav, follow). This allows us to filter without pinging Steam for every account on every request.
      * Document structure: { id: string, accountName: string, type: string, time: Number }
      */
     ratingHistoryDB: Nedb;

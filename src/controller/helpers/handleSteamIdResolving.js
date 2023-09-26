@@ -4,7 +4,7 @@
  * Created Date: 09.03.2022 12:58:17
  * Author: 3urobeat
  *
- * Last Modified: 23.09.2023 15:59:37
+ * Last Modified: 26.09.2023 20:52:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -26,9 +26,9 @@ const Controller = require("../controller.js");
 
 /**
  * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
- * Note: For discussions only type checking/determination is supported and you need to provide a full URL.
+ * Note: You need to provide a full URL for discussions & curators. For discussions only type checking/determination is supported.
  * @param {string} str The profileID argument provided by the user
- * @param {string} expectedIdType The type of SteamID expected ("profile", "group", "sharedfile" or "discussion") or `null` if type should be assumed.
+ * @param {string} expectedIdType The type of SteamID expected ("profile", "group", "sharedfile", "discussion" or "curator") or `null` if type should be assumed.
  * @param {function(string|null, string|null, string|null): void} callback Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
  */
 Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) => {
@@ -100,6 +100,21 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
                 if (expectedIdType && idType != expectedIdType) callback(`Received steamID of type ${idType} but expected ${expectedIdType}.`, null, null);
                     else callback(null, str, idType);
             });
+
+        } else if (str.includes("store.steampowered.com/curator/")) {
+            logger("debug", "handleSteamIdResolving: User provided curator link...");
+
+            // Cut domain away
+            let split = str.replace("/?appid=", "").split("/"); // Remove any trailing app id, we don't exactly know what the user provided
+            if (split[split.length - 1] == "") split.pop();     // Remove trailing slash (which is now a space because of split("/"))
+
+            str = split[split.length - 1].split("-")[0];
+
+            // Update idType
+            idType = "curator";
+
+            if (expectedIdType && idType != expectedIdType) callback(`Received steamID of type ${idType} but expected ${expectedIdType}.`, null, null);
+                else callback(null, str, idType);
 
         } else { // Doesn't seem to be an URL. We can ignore discussions as we need to provide an URL to SteamCommunity.
 
