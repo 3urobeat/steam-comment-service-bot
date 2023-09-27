@@ -658,7 +658,7 @@
         {
             "path": "src/libraryPatches/sharedfiles.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/libraryPatches/sharedfiles.js",
-            "checksum": "910bdf9a3eb3b3b6fe7e739566e863e9"
+            "checksum": "99a177a51429a00363a764b63d5919df"
         },
         {
             "path": "src/libraryPatches/users.js",
