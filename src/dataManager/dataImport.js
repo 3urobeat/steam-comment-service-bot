@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 09.09.2023 14:06:41
+ * Last Modified: 28.09.2023 22:36:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -298,12 +298,12 @@ DataManager.prototype._importFromDisk = async function () {
         });
     }
 
-    /* function loadCustomLang() {
+    function loadCustomLang() {
         return new Promise((resolve) => {
             // Check before trying to import if the user even created the file
             if (fs.existsSync(srcdir + "/../customlang.json")) {
                 let customlang;
-                let customlangkeys = 0;
+                let customlangkeys;
 
                 // Try importing customlang.json
                 try {
@@ -316,28 +316,43 @@ DataManager.prototype._importFromDisk = async function () {
                     resolve(_this.lang); // Resolve with default lang object
                 }
 
-                // Overwrite values in lang object with values from customlang
-                Object.keys(customlang).forEach((e, i) => {
-                    if (e != "" && e != "note") {
-                        _this.lang[e] = customlang[e]; // Overwrite each english key with a corresponding customlang key if one is set
+                // Instantly resolve if nothing was found
+                if (Object.keys(customlang).length == 0) resolve(_this.lang);
 
-                        customlangkeys++;
+                // Overwrite values in each lang object with values from customlang
+                Object.keys(customlang).forEach((lang, langIteration) => {
+                    customlangkeys = 0; // Reset for this language
+
+                    // Check if valid language was provided
+                    if (_this.lang[lang]) {
+
+                        Object.keys(customlang[lang]).forEach((e) => { // Note: No need to check for last iteration here as the loop does nothing asynchronous
+                            if (e != "" && e != "note") { // Ignore empty strings and note
+                                if (_this.lang[lang][e]) {
+                                    _this.lang[lang][e] = customlang[lang][e]; // Overwrite each english key with a corresponding customlang key if one is set
+
+                                    customlangkeys++;
+                                } else {
+                                    logger("warn", `Customlang key '${e}' does not exist in language '${lang}'! You must update your customlang.json file. Ignoring this key...`, false, false, null, true);
+                                }
+                            }
+                        });
+
+                        if (customlangkeys > 0) logger("info", `${customlangkeys} customlang keys for language '${lang}' imported!`, false, true, logger.animation("loading"));
+
+                    } else {
+                        logger("warn", `Language '${lang}' in customlang.json is not supported by the bot! You must update your customlang.json file. Ignoring this language...`, false, false, null, true);
                     }
 
-                    if (i == Object.keys(customlang).length - 1) {
-                        // Check for last iteration
-                        if (customlangkeys > 0) logger("info", `${customlangkeys} customlang key imported!`, false, true, logger.animation("loading"));
-                            else logger("info", "No customlang keys found.", false, true, logger.animation("loading"));
-
-                        resolve(_this.lang); // Resolve lang object with our new keys
-                    }
+                    // Resolve lang object with our new keys on the very last iteration
+                    if (langIteration == Object.keys(customlang).length - 1) resolve(_this.lang);
                 });
             } else {
                 logger("info", "No customlang.json file found...", false, true, logger.animation("loading"));
                 resolve(_this.lang); // Resolve with default lang object
             }
         });
-    } */
+    }
     /* eslint-enable jsdoc/require-jsdoc */
 
     // Call all functions from above after another. This must be done async to avoid a check failing that depends on something from a previous function. We sadly cannot use Promise.all() because of this.
@@ -351,7 +366,7 @@ DataManager.prototype._importFromDisk = async function () {
     this.proxies         = await loadProxies();
     this.quotes          = await loadQuotes();
     this.lang            = await loadLanguage();
-    //this.lang            = await loadCustomLang();
+    this.lang            = await loadCustomLang();
 
     this.lastCommentDB   = new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); // Autoload
     this.ratingHistoryDB = new nedb({ filename: srcdir + "/data/ratingHistory.db", autoload: true });
