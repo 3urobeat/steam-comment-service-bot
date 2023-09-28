@@ -4,7 +4,7 @@
  * Created Date: 28.09.2023 17:27:08
  * Author: 3urobeat
  *
- * Last Modified: 28.09.2023 18:10:47
+ * Last Modified: 28.09.2023 21:15:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -48,5 +48,5 @@ module.exports.run = (controller, resolve) => {
 
 module.exports.info = {
     "master": "21400",
-    "beta-testing": "21400b01"
+    "beta-testing": "21400b02"
 };

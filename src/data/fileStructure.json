@@ -273,7 +273,7 @@
         {
             "path": "package-lock.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package-lock.json",
-            "checksum": "418b8203e815b6462d78f1f0fe59388e"
+            "checksum": "21564edc4517ae6145078b4be742cd5d"
         },
         {
             "path": "package.json",
@@ -758,7 +758,7 @@
         {
             "path": "src/updater/compatibility/21400.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/compatibility/21400.js",
-            "checksum": "7fb7d2fe4e41d2400363d8dfcfef20a6"
+            "checksum": "08e64df2c57a3d4caf2cb26ce23df9fe"
         },
         {
             "path": "src/updater/compatibility.js",
