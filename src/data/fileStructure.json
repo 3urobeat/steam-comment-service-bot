@@ -638,7 +638,7 @@
         {
             "path": "src/libraryPatches/discussions.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/libraryPatches/discussions.js",
-            "checksum": "23dcba441c9b8040b96541ac2f1e0509"
+            "checksum": "c004d68b5ccd29f308b5e611c6cf46a4"
         },
         {
             "path": "src/libraryPatches/groups.js",
