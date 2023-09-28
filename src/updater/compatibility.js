@@ -4,7 +4,7 @@
  * Created Date: 04.05.2023 20:26:42
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 28.09.2023 18:33:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -41,7 +41,7 @@ module.exports.runCompatibility = async (controller) => {
             let list = [];
 
             // List all files in compatibility directory if it exists
-            if (fs.existsSync("./src/updater/compatbility")) list = fs.readdirSync("./src/updater/compatibility");
+            if (fs.existsSync("./src/updater/compatibility")) list = fs.readdirSync("./src/updater/compatibility");
 
             // Try to find this version in list
             let match = list.find(e => e == controller.data.datafile.version.replace(/b[0-9]+/g, "") + ".js"); // Remove beta build from version so it still matches on every beta build | Old check used this regex pattern: str.match(/21200b[0-9]+/g)
@@ -57,7 +57,7 @@ module.exports.runCompatibility = async (controller) => {
 
             } else { // Continue startup like normal if no file was found for this version
 
-                logger("debug", `Updater runCompatibility(): No compatibility feature was found for ${controller.data.datafile.version} in a list of ${list.length} files...`);
+                logger("debug", `Updater runCompatibility(): No compatibility feature was found for ${controller.data.datafile.version.replace(/b[0-9]+/g, "")} in a list of ${list.length} files...`);
                 resolve(false);
             }
 
