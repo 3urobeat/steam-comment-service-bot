@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 05.09.2023 19:05:25
+ * Last Modified: 28.09.2023 22:42:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -85,7 +85,7 @@ Controller.prototype._readyEvent = function() {
     let playinggames = "";
     if (this.data.config.playinggames[1]) playinggames = `(${this.data.config.playinggames.slice(1, this.data.config.playinggames.length)})`;
 
-    logger("", `${logger.colors.brfgyellow}>${logger.colors.reset} Playing status: ${logger.colors.fggreen}${this.data.config.playinggames[0]}${logger.colors.reset} ${playinggames}`, true, false, null, false, true);
+    logger("", `${logger.colors.brfgyellow}>${logger.colors.reset} Playing status: ${logger.colors.fggreen}${this.data.config.playinggames[0] || "/"}${logger.colors.reset} ${playinggames}`, true, false, null, false, true);
 
 
     // Calculate time the bot took to start
