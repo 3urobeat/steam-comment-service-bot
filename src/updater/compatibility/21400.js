@@ -4,7 +4,7 @@
  * Created Date: 28.09.2023 17:27:08
  * Author: 3urobeat
  *
- * Last Modified: 28.09.2023 21:15:46
+ * Last Modified: 29.09.2023 16:04:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -26,10 +26,12 @@ module.exports.run = (controller, resolve) => {
         try {
             let customlang = require(srcdir + "/../customlang.json");
 
-            // Nest existing params into the default language
-            customlang = { "english": customlang };
+            // Nest existing params into the default language if not done already
+            if (!customlang["english"]) {
+                customlang = { "english": customlang };
 
-            fs.writeFileSync(srcdir + "/../customlang.json", JSON.stringify(customlang, null, 4));
+                fs.writeFileSync(srcdir + "/../customlang.json", JSON.stringify(customlang, null, 4));
+            }
         } catch (err) {
             logger("warn", "Compatibility feature 2.14: Failed to convert 'customlang.json'. Error: " + err);
         }
@@ -38,9 +40,7 @@ module.exports.run = (controller, resolve) => {
 
     controller.data.datafile.compatibilityfeaturedone = true; // Set compatibilityfeaturedone to true here because we don't need to make another force update through checkforupdate() which would be necessary in order to set it to true from there
 
-    fs.writeFile(srcdir + "/data/data.json", JSON.stringify(controller.data.datafile, null, 4), (err) => {
-        if (err) logger("error", "Error in compatibilityfeature changing compatibilityfeaturedone to true! Please open 'data.json' in the 'src' folder and do this manually!\nOtherwise this will be retried on every startup. Error: " + err, true);
-    });
+    controller.data.writeDatafileToDisk();
 
     resolve(false);
 

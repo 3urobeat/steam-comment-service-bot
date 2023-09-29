@@ -758,7 +758,7 @@
         {
             "path": "src/updater/compatibility/21400.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/compatibility/21400.js",
-            "checksum": "08e64df2c57a3d4caf2cb26ce23df9fe"
+            "checksum": "ff2bc9ef6ec966a5a7f545a0bea191b3"
         },
         {
             "path": "src/updater/compatibility.js",
