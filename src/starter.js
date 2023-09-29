@@ -4,7 +4,7 @@
  * Created Date: 10.07.2021 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 09.09.2023 12:23:32
+ * Last Modified: 29.09.2023 16:42:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -329,8 +329,8 @@ module.exports.checkAndGetFile = (file, logger, norequire = false, force = false
                 resolve(file);
             } else {
                 try {
-                    // Don't log debug msg for logger. handleErrors & npminteraction as they get loaded before the actual logger is loaded. This looks bad in the terminal, is kinda irrelevant and is logged even when logDebug is off
-                    if (!file.includes("logger.js") && !file.includes("handleErrors.js") && !file.includes("npminteraction.js")) logger("debug", `checkAndGetFile(): file ${file} exists, force and norequire are false. Testing integrity by requiring...`); // Ignore message for logger.js as it won't use the real logger yet
+                    // Don't log debug msg for package, logger, handleErrors & npminteraction as they get loaded before the actual logger is loaded. This looks bad in the terminal, is kinda irrelevant and is logged even when logDebug is off
+                    if (!file.includes("package.json") && !file.includes("logger.js") && !file.includes("handleErrors.js") && !file.includes("npminteraction.js")) logger("debug", `checkAndGetFile(): file ${file} exists, force and norequire are false. Testing integrity by requiring...`); // Ignore message for logger.js as it won't use the real logger yet
 
                     let fileToLoad = require("." + file);
 

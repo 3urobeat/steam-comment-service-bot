@@ -528,7 +528,7 @@
         {
             "path": "src/controller/helpers/npminteraction.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/npminteraction.js",
-            "checksum": "e6dd97abb94325c7a750046225044c92"
+            "checksum": "7ffd76e47873baf32b9ae7f0a94e672a"
         },
         {
             "path": "src/controller/login.js",
@@ -708,7 +708,7 @@
         {
             "path": "src/starter.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/starter.js",
-            "checksum": "c551b25e9795ab4149c894af3f0077f1"
+            "checksum": "2a54dbf7a601a91b65b3db55e81ece7c"
         },
         {
             "path": "src/updater/compatibility/2060.js",
