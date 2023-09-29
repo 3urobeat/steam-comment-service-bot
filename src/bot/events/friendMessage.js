@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.09.2023 12:02:10
+ * Last Modified: 29.09.2023 17:12:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -48,7 +48,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         // Sort out any chat messages not sent to the main bot
         if (this.index !== 0) {
             switch(message.toLowerCase()) {
-                case `${resInfo.cmdprefix}about`: // Please don't change this message as it gives credit to me; the person who put really much of his free time into this project. The bot will still refer to you - the operator of this instance.
+                case `${resInfo.cmdprefix}about`: // Please don't change this message as it gives credit to me; the person who put really much of their free time into this project. The bot will still refer to you - the operator of this instance.
                     this.sendChatMessage(this, resInfo, this.controller.data.datafile.aboutstr);
                     break;
                 default:

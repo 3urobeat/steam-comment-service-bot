@@ -4,7 +4,7 @@
  * Created Date: 24.09.2023 15:04:33
  * Author: 3urobeat
  *
- * Last Modified: 26.09.2023 22:23:12
+ * Last Modified: 29.09.2023 17:24:23
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -206,7 +206,7 @@ module.exports.follow = {
 };
 
 
-module.exports.unfavorite = {
+module.exports.unfollow = {
     names: ["unfollow"],
     description: "Unfollows a user with all bot accounts that have followed them",
     args: [

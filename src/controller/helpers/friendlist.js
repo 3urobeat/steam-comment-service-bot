@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.09.2023 15:52:41
+ * Last Modified: 29.09.2023 17:13:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -87,7 +87,7 @@ Controller.prototype.friendListCapacityCheck = function(bot, callback) {
                             if (bot.user.myFriends[e.id] == 3 && !this.data.cachefile.ownerid.includes(e.id)) { // Check if friend and not owner
                                 let steamID = new SteamID(e.id);
 
-                                // Unfriend user and send him/her a message // TODO: Maybe only do this from the main bot?
+                                // Unfriend user and send them a message // TODO: Maybe only do this from the main bot?
                                 bot.sendChatMessage(bot, { userID: steamID.getSteamID64() }, await this.data.getLang("userunfriend", { "forceFriendlistSpaceTime": this.data.advancedconfig.forceFriendlistSpaceTime }, steamID.getSteamID64()));
                                 bot.user.removeFriend(steamID);
 
