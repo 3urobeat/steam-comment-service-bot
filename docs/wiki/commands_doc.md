@@ -11,11 +11,13 @@ This is the full documentation of all commands. Most commands have aliases but s
 | Command       | Usage/Arguments  | Description  |
 | ------------- | ---------------- | ------------ |
 | !help         | No arguments     | Returns a list of commands available to you and a link to this page. |
-| !comment      | User: `amount`<br /><br />Owner: `amount ID [custom quotes]` | Request comments from all available bot accounts. Max amount can be defined in `config.json`.<br /><br />Owner specific: Provide an ID to send comments to a specific profile, group or sharedfile. You must always provide `amount` when providing `ID`.<br />A botowner can also provide a custom quote selection in the form of an array [quote1, quote2, ...]. You need to provide all previous arguments.<br /><br />When no `ID` has been provided the bot will always use the profile of the requesting user. (You) |
+| !comment      | User: `amount`<br><br>Owner: `amount ID [custom quotes]` | Request comments from all available bot accounts. Max amount can be defined in `config.json`.<br><br>Owner specific: Provide an ID/url to send comments to a specific profile, group, sharedfile (screenshot, artwork, guide) or discussion (you must provide a full url for discussions). You must always provide `amount` when providing `ID`.<br>A botowner can also provide a custom quote selection in the form of an array [quote1, quote2, ...]. You need to provide all previous arguments.<br><br>When no `ID` has been provided the bot will always use the profile of the requesting user. (You) |
 | !upvote       | `amount ID`      | Upvotes a sharedfile with all bot accounts that haven't yet voted on that item. Requires unlimited accounts! |
 | !downvote     | `amount ID`      | Downvotes a sharedfile with all bot accounts that haven't yet voted on that item. Requires unlimited accounts! (Owner only.) |
 | !favorite     | `amount ID`      | Favorizes a sharedfile with all bot accounts that haven't yet favorized that item. |
 | !unfavorite   | `amount ID`      | Unfavorizes a sharedfile with all bot accounts that have favorized that item. (Owners only.) |
+| !follow       | `amount ID`      | Follows a user's workshop or a curator (you must provide a full url for curators) with all bot accounts that haven't yet done so.<br>Providing an ID/url is owner only, normal users can only request follows for themselves.<br>When no `ID` has been provided the bot will always use the profile of the requesting user. (You) |
+| !unfollow     | `amount ID`      | Unfollows a user's workshop or a curator (you must provide a full url for curators) with all bot accounts that have done so.<br>Providing an ID/url is owner only, normal users can only request unfollows for themselves.<br>When no `ID` has been provided the bot will always use the profile of the requesting user. (You) |
 | !ping         | No arguments     | Returns ping in ms to Steam's servers. Can be used to check if the bot is responsive | 
 | !info         | No arguments     | Returns useful information and statistics about the bot and you. |
 | !owner        | No arguments     | Returns a link to the owner's profile set in the config.json. |
@@ -23,6 +25,7 @@ This is the full documentation of all commands. Most commands have aliases but s
 | !abort        | `ID`             | Abort your own comment process or one on another ID you have started. Owners can also abort requests started by other users. |
 | !resetcooldown | `profileid` or `global` | Clear your, the profileid's or the comment cooldown of all bot accounts (global). Alias: !rc (Owner only.) |
 | !settings     | `config key` `new value` | Change a value in the config. (Owner only.) |
+| !lang         | `language`       | Set a language which the bot will use to respond to you. This setting is per-user. Provide no argument to get a list of all supported languages. |
 | !failed       | `ID`             | See the exact errors of the last comment request on your profile or provide an ID to see the errors of the last request you started. Owners can also view errors for requests started by other users. | 
 | !sessions     | No arguments     | Displays all active requests. (Owner only.) |
 | !mysessions   | No arguments     | Displays all active requests that you have started. |
@@ -42,9 +45,10 @@ This is the full documentation of all commands. Most commands have aliases but s
 | !log          | No arguments     | Shows the last 15 lines of the log. (Owner only.) |
 | !eval         | `javascript code` | Disabled by default, needs to be toggled on with `enableevalcmd` in config.json.<h4>**Warning!** This will run any javascript code that was provided. It is strongly advised to leave this feature off unless you know exactly what this means! If you have multiple owners configured they can also run code on **your** machine!</h4> (Owner only.) |
   
-<br /><br />
+&nbsp;
+
 To get more information about responses in form of an error that one of these commands could return, visit the `Errors & FAQ` page in this wiki.  
 
-Note about voting & favorizing commands:  
-The bot only knows about accounts which have already voted/favorized an item for requests that have been made through the bot.  
+**Note about voting, favorizing & follow commands:**  
+The bot only knows about accounts which have already voted/favorized/followed an item for requests that have been made through the bot.  
 This is because all requests are stored in a database and we cannot ask Steam for every account on every request as this would spam the heck out of them.
