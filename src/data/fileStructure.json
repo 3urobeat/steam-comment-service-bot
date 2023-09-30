@@ -543,12 +543,12 @@
         {
             "path": "src/data/lang/english.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/english.json",
-            "checksum": "60bf41ba4d3b4b125d3f106524b2418b"
+            "checksum": "cf00807194b77e1c5a01e514b3d959b6"
         },
         {
             "path": "src/data/lang/russian.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/russian.json",
-            "checksum": "5a9c81d649fffe19f85a16f03afc213f"
+            "checksum": "ee93f2c1b36b5a7c8d6a3e2fe4eed8b2"
         },
         {
             "path": "src/dataManager/dataCheck.js",

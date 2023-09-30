@@ -71,9 +71,9 @@
     "stopcmdstopping": "Stopping...",
 
     "helpcommandlist": "Command list:",
-    "helpcommentowner1": "Request x many or the max amount of comments (max maxOwnerComments). Provide a ${profileid} to comment on a specific profile.",
+    "helpcommentowner1": "Request x many or the max amount of comments (max ${maxOwnerComments}). Provide a ${profileid} to comment on a specific profile.",
     "helpcommentowner2": "Request 1 comment (max amount with current settings). Provide a profile id to comment on a specific profile.",
-    "helpcommentuser1": "Request x many or the max amount of comments (max maxComments).",
+    "helpcommentuser1": "Request x many or the max amount of comments (max ${maxComments}).",
     "helpcommentuser2": "Request a comment on your profile!",
     "helpping": "Get a pong and response time from Steam in ms.",
     "helpinfo": "Get useful information about the bot and you.",
