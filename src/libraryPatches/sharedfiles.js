@@ -1,6 +1,7 @@
 const SteamCommunity = require('steamcommunity');
 const EResult = SteamCommunity.EResult;
 const SteamID = require('steamid');
+const Helpers = require("../../node_modules/steamcommunity/components/helpers.js");
 
 /**
  * Downvotes a sharedfile
@@ -27,9 +28,7 @@ SteamCommunity.prototype.voteDownSharedFile = function(sid, callback) {
 		}
 
 		if (body.success && body.success != SteamCommunity.EResult.OK) {
-			let err = new Error(body.message || SteamCommunity.EResult[body.success]);
-			err.eresult = err.code = body.success;
-			callback(err);
+			callback(Helpers.eresultError(body.success));
 			return;
 		}
 
@@ -62,9 +61,7 @@ SteamCommunity.prototype.voteUpSharedFile = function(sid, callback) {
 		}
 
 		if (body.success && body.success != SteamCommunity.EResult.OK) {
-			let err = new Error(body.message || SteamCommunity.EResult[body.success]);
-			err.eresult = err.code = body.success;
-			callback(err);
+			callback(Helpers.eresultError(body.success));
 			return;
 		}
 

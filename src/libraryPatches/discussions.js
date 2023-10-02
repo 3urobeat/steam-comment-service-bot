@@ -240,9 +240,7 @@ SteamCommunity.prototype.subscribeDiscussionComments = function(topicOwner, gidf
 		}
 
 		if (body.success && body.success != SteamCommunity.EResult.OK) {
-			let err = new Error(body.message || SteamCommunity.EResult[body.success]);
-			err.eresult = err.code = body.success;
-			callback(err);
+			callback(Helpers.eresultError(body.success));
 			return;
 		}
 
@@ -279,9 +277,7 @@ SteamCommunity.prototype.unsubscribeDiscussionComments = function(topicOwner, gi
 		}
 
 		if (body.success && body.success != SteamCommunity.EResult.OK) {
-			let err = new Error(body.message || SteamCommunity.EResult[body.success]);
-			err.eresult = err.code = body.success;
-			callback(err);
+			callback(Helpers.eresultError(body.success));
 			return;
 		}
 
@@ -316,9 +312,7 @@ SteamCommunity.prototype.setDiscussionCommentsPerPage = function(value, callback
 		}
 
 		if (body.success && body.success != SteamCommunity.EResult.OK) {
-			let err = new Error(body.message || SteamCommunity.EResult[body.success]);
-			err.eresult = err.code = body.success;
-			callback(err);
+			callback(Helpers.eresultError(body.success));
 			return;
 		}
 

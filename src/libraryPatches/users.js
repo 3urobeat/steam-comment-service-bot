@@ -1,5 +1,6 @@
 const SteamID = require("steamid");
 const SteamCommunity = require('steamcommunity');
+const Helpers = require("../../node_modules/steamcommunity/components/helpers.js");
 
 SteamCommunity.prototype.followUser = function(userID, callback) {
 	if(typeof userID === 'string') {
@@ -22,11 +23,12 @@ SteamCommunity.prototype.followUser = function(userID, callback) {
 			return;
 		}
 
-		if (body.success) {
-			callback(null);
-		} else {
-			callback(new Error("Unknown error"));
+		if (body.success && body.success != SteamCommunity.EResult.OK) {
+			callback(Helpers.eresultError(body.success));
+			return;
 		}
+
+		callback(null);
 	}, "steamcommunity");
 };
 
@@ -51,10 +53,11 @@ SteamCommunity.prototype.unfollowUser = function(userID, callback) {
 			return;
 		}
 
-		if (body.success) {
-			callback(null);
-		} else {
-			callback(new Error("Unknown error"));
+		if (body.success && body.success != SteamCommunity.EResult.OK) {
+			callback(Helpers.eresultError(body.success));
+			return;
 		}
+
+		callback(null);
 	}, "steamcommunity");
 };

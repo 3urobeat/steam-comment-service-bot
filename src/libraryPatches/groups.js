@@ -1,4 +1,5 @@
 const SteamCommunity = require('steamcommunity');
+const Helpers = require("../../node_modules/steamcommunity/components/helpers.js");
 
 /**
  * Follows a curator page
@@ -24,11 +25,12 @@ SteamCommunity.prototype.followCurator = function(clanid, callback) {
 			return;
 		}
 
-		if (body.success) {
-			callback(null);
-		} else {
-			callback(new Error(EResult[body] || ("Error " + body)));
+		if (body.success && body.success.success != SteamCommunity.EResult.OK) {
+			callback(Helpers.eresultError(body.success.success));
+			return;
 		}
+
+		callback(null);
 	}, "steamcommunity");
 };
 
@@ -56,10 +58,11 @@ SteamCommunity.prototype.unfollowCurator = function(clanid, callback) {
 			return;
 		}
 
-		if (body.success) {
-			callback(null);
-		} else {
-			callback(new Error(EResult[body] || ("Error " + body)));
+		if (body.success && body.success.success != SteamCommunity.EResult.OK) {
+			callback(Helpers.eresultError(body.success.success));
+			return;
 		}
+
+		callback(null);
 	}, "steamcommunity");
 };
