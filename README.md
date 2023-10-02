@@ -1,6 +1,6 @@
 <div align="center" markdown=1>
 	<p align="center"><img width=45% src="https://3urobeat.com/comment-bot/steamLogo.png"></p>
-	<strong>Request tons of comments, favs & likes by texting a bot network!</strong>
+	<strong>Request tons of comments, favs, likes & follows by texting a bot network!</strong>
 	<br>See how to set up the bot and customize it below.<br>
 	<p></p>
 </div>
@@ -31,12 +31,12 @@
 ## **Introduction**  
 <img align="right" width="200" height="200" src="https://3urobeat.com/comment-bot/mesh.png">  
   
-* Request many profile comments directly from the steam chat  
-* Easily host multiple steam accounts and control them from **one** console and chat with this bot cluster  
-* Send comments to other steam profiles  
-* Apply cooldowns & customize nearly any value  
-* Advertise your group & automatically invite users to it  
+* Request profile, group, screenshot, artwork, guide or discussion comments directly from the Steam Chat  
+* Manage hundreds of Steam accounts with ease and control them from **one** console and Steam Chat  
+* Apply cooldowns to users and customize various settings (including multi language support!) 
+* Advertise your Steam group and automatically invite users to it  
 * Use proxies and requests comments via URL in your browser  
+* Extend the bot's functionality with plugins
   
 You can see and test out my 24/7 hosted comment bot in action [by clicking here!](https://steamcommunity.com/id/3urobeatscommentbot)  
   

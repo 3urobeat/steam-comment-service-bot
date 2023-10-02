@@ -53,7 +53,7 @@
         {
             "path": "README.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/README.md",
-            "checksum": "b086fd1c80d3bc2d7d3c47f2900277ee"
+            "checksum": "d274d3ab808cf13911e5690e608d1fbf"
         },
         {
             "path": "docs/dev/README.md",
@@ -278,7 +278,7 @@
         {
             "path": "package.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package.json",
-            "checksum": "44d5b9e20f35ead3d786da3e0180830c"
+            "checksum": "30a5325dcb535d754e526ac3e38f24ac"
         },
         {
             "path": "scripts/README.md",
@@ -618,7 +618,7 @@
         {
             "path": "src/libraryPatches/CSteamDiscussion.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/libraryPatches/CSteamDiscussion.js",
-            "checksum": "3e3c93f114d26e2c804c97f30ffaf72d"
+            "checksum": "6abfc176a3eac92d5d85edd7e2453b29"
         },
         {
             "path": "src/libraryPatches/CSteamSharedFile.js",

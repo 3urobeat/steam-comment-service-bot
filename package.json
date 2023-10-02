@@ -1,7 +1,7 @@
 {
     "name": "steam-comment-service-bot",
     "version": "2.13.6",
-    "description": "Request a ton of steam profile/group comments from a bot network with just one command!",
+    "description": "Steam Multi Account Manager with built-in comment, like & favorite commands and extensive plugin support.",
     "main": "start.js",
     "dependencies": {
         "@seald-io/nedb": "^4.0.2",
