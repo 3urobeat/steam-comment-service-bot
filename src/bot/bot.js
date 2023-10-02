@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 25.09.2023 23:01:16
+ * Last Modified: 02.10.2023 11:12:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -105,13 +105,10 @@ const Bot = function(controller, index) {
 
     // Load my library patches
     require("../libraryPatches/CSteamSharedFile.js");
-    require("../libraryPatches/profile.js");
     require("../libraryPatches/sharedfiles.js");
     require("../libraryPatches/helpers.js");
     require("../libraryPatches/CSteamDiscussion.js");
     require("../libraryPatches/discussions.js");
-    require("../libraryPatches/users.js");
-    require("../libraryPatches/groups.js");
 
     if (global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<") this.controller.stop(); // eslint-disable-line
 
@@ -177,6 +174,46 @@ module.exports = Bot;
 
 
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
+
+/**
+ * Handles the SteamUser debug events if enabled in advancedconfig
+ */
+Bot.prototype._attachSteamDebugEvent = function() {};
+
+/**
+ * Handles the SteamUser disconnect event and tries to relog the account
+ */
+Bot.prototype._attachSteamDisconnectedEvent = function() {};
+
+/**
+ * Handles the SteamUser error event
+ */
+Bot.prototype._attachSteamErrorEvent = function() {};
+
+/**
+ * Handles messages, cooldowns and executes commands.
+ */
+Bot.prototype._attachSteamFriendMessageEvent = function() {};
+
+/**
+ * Do some stuff when account is logged in
+ */
+Bot.prototype._attachSteamLoggedOnEvent = function() {};
+
+/**
+ * Accepts a friend request, adds the user to the lastcomment.db database and invites him to your group
+ */
+Bot.prototype._attachSteamFriendRelationshipEvent = function() {};
+
+/**
+ * Accepts a group invite if acceptgroupinvites in the config is true
+ */
+Bot.prototype._attachSteamGroupRelationshipEvent = function() {};
+
+/**
+ * Handles setting cookies and accepting offline friend & group invites
+ */
+Bot.prototype._attachSteamWebSessionEvent = function() {};
 
 /**
  * Checks if user is blocked, has an active cooldown for spamming or isn't a friend

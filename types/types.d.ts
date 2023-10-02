@@ -34,6 +34,38 @@ declare class Bot {
      */
     _loginToSteam(): void;
     /**
+     * Handles the SteamUser debug events if enabled in advancedconfig
+     */
+    _attachSteamDebugEvent(): void;
+    /**
+     * Handles the SteamUser disconnect event and tries to relog the account
+     */
+    _attachSteamDisconnectedEvent(): void;
+    /**
+     * Handles the SteamUser error event
+     */
+    _attachSteamErrorEvent(): void;
+    /**
+     * Handles messages, cooldowns and executes commands.
+     */
+    _attachSteamFriendMessageEvent(): void;
+    /**
+     * Do some stuff when account is logged in
+     */
+    _attachSteamLoggedOnEvent(): void;
+    /**
+     * Accepts a friend request, adds the user to the lastcomment.db database and invites him to your group
+     */
+    _attachSteamFriendRelationshipEvent(): void;
+    /**
+     * Accepts a group invite if acceptgroupinvites in the config is true
+     */
+    _attachSteamGroupRelationshipEvent(): void;
+    /**
+     * Handles setting cookies and accepting offline friend & group invites
+     */
+    _attachSteamWebSessionEvent(): void;
+    /**
      * Checks if user is blocked, has an active cooldown for spamming or isn't a friend
      * @param steamID64 - The steamID64 of the message sender
      * @param message - The message string provided by steam-user friendMessage event
