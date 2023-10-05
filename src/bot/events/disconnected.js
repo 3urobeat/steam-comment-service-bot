@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 05.10.2023 21:57:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -34,9 +34,9 @@ Bot.prototype._attachSteamDisconnectedEvent = function() {
 
         // Don't relog if account is in skippedaccounts array or if relogAfterDisconnect is false
         if (!this.controller.info.skippedaccounts.includes(this.loginData.logOnOptions.accountName) && this.controller.info.relogAfterDisconnect) {
-            logger("info", `${logger.colors.fggreen}[${this.logPrefix}] Initiating a relog in ${this.controller.data.advancedconfig.relogTimeout / 1000} seconds.`); // Announce relog
+            logger("info", `${logger.colors.fggreen}[${this.logPrefix}] Initiating a relog in ${this.controller.data.advancedconfig.loginRetryTimeout / 1000} seconds.`); // Announce relog
 
-            setTimeout(() => this.controller.login(), this.controller.data.advancedconfig.relogTimeout); // Relog in relogTimeout ms
+            setTimeout(() => this.controller.login(), this.controller.data.advancedconfig.loginRetryTimeout); // Relog in loginRetryTimeout ms
         } else {
             logger("info", `[${this.logPrefix}] I won't queue myself for a relog because this account is either already being relogged, was skipped or this is an intended logOff.`);
         }

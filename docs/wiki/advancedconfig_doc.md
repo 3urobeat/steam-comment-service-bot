@@ -16,7 +16,7 @@ This is the full documentation to customize your `advancedconfig.json`.
 | disableautoupdate | true or false | Disables auto updates. **Setting to true is not recommended!** Default: false | 
 | loginDelay  | Number in ms | Time the bot will wait between logging in each account to prevent an IP ban. Default: 2500 |
 | loginTimeout | Number in ms | Time after which an active login attempt will be considered as timed out and failed. It will be retried or skipped when maxLogOnRetries is exceeded. Set to 0 to disable. Default: 60000 |
-| relogTimeout | Number in ms | Time the bot will wait after loosing connection to Steam before trying to check if Steam/your internet is up again. Default: 30000 |
+| loginRetryTimeout | Number in ms | Time the bot will wait after loosing connection to Steam before trying to check if Steam/your internet is up again. Default: 30000 |
 | maxLogOnRetries | Number | Amount of times the bot will retry logging in to an account if the first try fails. Default: 1 |
 | useLocalIP | true or false | If the bot should use your real IP as well when using proxies. Default: true |
 | acceptFriendRequests | true or false | If the bot should accept friend requests. Default: true |
