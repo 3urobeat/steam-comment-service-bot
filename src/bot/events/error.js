@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 05.10.2023 21:57:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -72,8 +72,8 @@ Bot.prototype._attachSteamErrorEvent = function() {
                 // Add additional messages for specific errors to hopefully help the user diagnose the cause
                 if (this.loginData.proxy) logger("", `        Is your proxy ${this.proxyIndex} offline or maybe blocked by Steam?`, true);
 
-                // Abort execution if account is bot0
-                if (this.index == 0) {
+                // Abort if bot0 failed on initial login or skip account
+                if (this.index == 0 && this.controller.info.readyAfter == 0) {
                     logger("", "", true);
                     logger("error", "Aborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true);
                     return this.controller.stop();

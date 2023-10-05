@@ -4,7 +4,7 @@
  * Created Date: 03.11.2022 12:27:46
  * Author: 3urobeat
  *
- * Last Modified: 24.07.2023 19:37:03
+ * Last Modified: 05.10.2023 19:33:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -48,8 +48,8 @@ Bot.prototype.handleLoginTimeout = function() {
             // Add additional messages for specific errors to hopefully help the user diagnose the cause
             if (this.loginData.proxy != null) logger("", `        Is your proxy ${this.loginData.proxyIndex} offline or maybe blocked by Steam?`, true);
 
-            // Abort execution if account is bot0
-            if (this.index == 0) {
+            // Abort if bot0 failed on initial login or skip account
+            if (this.index == 0 && this.controller.info.readyAfter == 0) {
                 logger("", "", true);
                 logger("error", "Aborting because the first bot account always needs to be logged in!\nPlease wait a moment and start the bot again.", true);
                 return this.controller.stop();
