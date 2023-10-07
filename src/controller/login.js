@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 23.07.2023 13:50:31
+ * Last Modified: 07.10.2023 12:13:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -94,8 +94,6 @@ Controller.prototype.login = function(firstLogin) {
     // Iterate over all accounts, use syncLoop() helper to make our job easier
     misc.syncLoop(allAccounts.length, (loop, i) => {
         let k = this.data.logininfo[allAccounts[i]]; // Get logininfo for this account name
-
-        // TODO: Check for connection loss timestamp when it is available and wait a bit before retrying a failed login. Maybe add reason why account was skipped to not reattempt steam guard login
 
         // Calculate wait time
         let waitTime = (this.info.lastLoginTimestamp + this.data.advancedconfig.loginDelay) - Date.now();

@@ -30,6 +30,10 @@ declare class Bot {
      */
     loginData: any;
     /**
+     * Stores the timestamp and reason of the last disconnect. This is used by handleRelog() to take proper action
+     */
+    lastDisconnect: any;
+    /**
      * Calls SteamUser logOn() for this account. This will either trigger the SteamUser loggedOn or error event.
      */
     _loginToSteam(): void;
@@ -80,6 +84,10 @@ declare class Bot {
      * Handles checking for missing game licenses, requests them and then starts playing
      */
     handleMissingGameLicenses(): void;
+    /**
+     * Attempts to get this account, after failing all logOnRetries, back online after some time. Does not apply to initial logins.
+     */
+    handleRelog(): void;
     /**
      * Our commandHandler respondModule implementation - Sends a message to a Steam user
      * @param _this - The Bot object context
@@ -142,6 +150,10 @@ declare class Bot {
      * Handles checking for missing game licenses, requests them and then starts playing
      */
     handleMissingGameLicenses(): void;
+    /**
+     * Attempts to get this account, after failing all logOnRetries, back online after some time. Does not apply to initial logins.
+     */
+    handleRelog(): void;
     /**
      * Our commandHandler respondModule implementation - Sends a message to a Steam user
      * @param _this - The Bot object context
@@ -536,6 +548,12 @@ declare class Controller {
      */
     getBots(statusFilter?: EStatus | EStatus[] | string, mapToObject: boolean): any[] | any;
     /**
+     * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
+     * @param [filterInactive = false] - Set to true to remove inactive proxies. A proxy is deemed inactive if it is unused or all associated bot accounts are not ONLINE.
+     * @returns Bot accounts mapped to their associated proxy
+     */
+    getBotsPerProxy(filterInactive?: boolean): { proxyIndex: number; proxy: string; bots: Bot[]; }[];
+    /**
      * Internal: Handles process's unhandledRejection & uncaughtException error events.
      * Should a NPM related error be detected it attempts to reinstall all packages using our npminteraction helper function
      */
@@ -604,6 +622,12 @@ declare class Controller {
      * @returns An array or object if `mapToObject == true` containing all matching bot accounts.
      */
     getBots(statusFilter?: EStatus | EStatus[] | string, mapToObject: boolean): any[] | any;
+    /**
+     * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
+     * @param [filterInactive = false] - Set to true to remove inactive proxies. A proxy is deemed inactive if it is unused or all associated bot accounts are not ONLINE.
+     * @returns Bot accounts mapped to their associated proxy
+     */
+    getBotsPerProxy(filterInactive?: boolean): { proxyIndex: number; proxy: string; bots: Bot[]; }[];
     /**
      * Internal: Handles process's unhandledRejection & uncaughtException error events.
      * Should a NPM related error be detected it attempts to reinstall all packages using our npminteraction helper function

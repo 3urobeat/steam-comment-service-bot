@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 12.09.2023 21:28:08
+ * Last Modified: 05.10.2023 19:34:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -108,6 +108,7 @@ SessionHandler.prototype._resolvePromise = function(token) {
     this.bot.loginData.waitingFor2FA = false; // Allow handleLoginTimeout to work again
 
     this.getTokenPromise(token);
+
 };
 
 

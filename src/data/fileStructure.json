@@ -273,12 +273,12 @@
         {
             "path": "package-lock.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package-lock.json",
-            "checksum": "c50a040e5cf416ffdca4584b5a0b3436"
+            "checksum": "fcd8d730402fb8a6c6646a06402b255a"
         },
         {
             "path": "package.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package.json",
-            "checksum": "30a5325dcb535d754e526ac3e38f24ac"
+            "checksum": "5110b3e1bd9bac18b2dd3a469037d363"
         },
         {
             "path": "scripts/README.md",
@@ -323,7 +323,7 @@
         {
             "path": "src/bot/events/error.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/error.js",
-            "checksum": "58601f24a504158a4d350e1086ecd224"
+            "checksum": "8b51195364680ae6f0226c8450052083"
         },
         {
             "path": "src/bot/events/friendMessage.js",
@@ -538,7 +538,7 @@
         {
             "path": "src/controller/login.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/login.js",
-            "checksum": "b8990111ae89414155ec9a293574ac8a"
+            "checksum": "98099786ff03ebd33793cfc1ea0b3ba8"
         },
         {
             "path": "src/data/ascii.js",
@@ -693,7 +693,7 @@
         {
             "path": "src/sessions/sessionHandler.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/sessions/sessionHandler.js",
-            "checksum": "06ce635043584d82c4f364522ae22edc"
+            "checksum": "5fc33e7e7dc1ae8af292d129cd77d486"
         },
         {
             "path": "src/starter.js",
@@ -798,7 +798,7 @@
         {
             "path": "types/types.d.ts",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/types/types.d.ts",
-            "checksum": "91f30631222cff45d52fceed6b3de0b9"
+            "checksum": "ac9b39d831630ea880ea5fd8accfcc72"
         }
     ]
 }
