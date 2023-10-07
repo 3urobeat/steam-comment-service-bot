@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.10.2023 22:25:43
+ * Last Modified: 08.10.2023 01:21:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -56,12 +56,13 @@ const Controller = function() {
         timeToString: () => {}, // eslint-disable-line
 
         /**
-         * Pings an URL to check if the service and this internet connection is working
+         * Pings a *https* URL to check if the service and this internet connection is working
          * @param {string} url The URL of the service to check
-         * @param {boolean} throwTimeout If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
+         * @param {boolean} [throwTimeout=false] If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
+         * @param {{ ip: string, port: number, username: string, password: string }} [proxy] Provide a proxy if the connection check should be made through a proxy instead of the local connection
          * @returns {Promise.<{ statusMessage: string, statusCode: number|null }>} Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
          */
-        checkConnection: (url, throwTimeout) => {}, // eslint-disable-line
+        checkConnection: (url, throwTimeout = false, proxy) => {}, // eslint-disable-line
 
         /**
          * Helper function which attempts to cut Strings intelligently and returns all parts. It will attempt to not cut words & links in half.
