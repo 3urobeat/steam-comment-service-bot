@@ -4,7 +4,7 @@
  * Created Date: 02.06.2023 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 24.09.2023 21:03:16
+ * Last Modified: 07.10.2023 23:34:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -58,8 +58,8 @@ module.exports.favorite = {
         let owners = commandHandler.data.cachefile.ownerid;
         if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-        let requesterSteamID64 = resInfo.userID;
-        let ownercheck         = owners.includes(requesterSteamID64);
+        let requesterID = resInfo.userID;
+        let ownercheck         = owners.includes(requesterID);
 
 
         /* --------- Various checks  --------- */
@@ -67,9 +67,9 @@ module.exports.favorite = {
             respond(await commandHandler.data.getLang("nouserid")); // Reject usage of command without an userID to avoid cooldown bypass
             return logger("err", "The favorite command was called without resInfo.userID! Blocking the command as I'm unable to apply cooldowns, which is required for this command!");
         }
-        if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterSteamID64)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
-        if (commandHandler.controller.info.activeLogin)                 return respond(await commandHandler.data.getLang("activerelog", null, requesterSteamID64));      // Bot is waiting for relog
-        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterSteamID64)); // Command is restricted to owners only
+        if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.activeLogin)                 return respond(await commandHandler.data.getLang("activerelog", null, requesterID));      // Bot is waiting for relog
+        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterID)); // Command is restricted to owners only
 
 
         // Check and get arguments from user
@@ -81,27 +81,27 @@ module.exports.favorite = {
         // Check if this id is already receiving something right now
         let idReq = commandHandler.controller.activeRequests[id];
 
-        if (idReq && idReq.status == "active") return respond(await commandHandler.data.getLang("idalreadyreceiving", null, requesterSteamID64)); // Note: No need to check for user as that is supposed to be handled by a cooldown
+        if (idReq && idReq.status == "active") return respond(await commandHandler.data.getLang("idalreadyreceiving", null, requesterID)); // Note: No need to check for user as that is supposed to be handled by a cooldown
 
 
         // Check if user has cooldown
-        let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterSteamID64);
+        let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterID);
 
-        if (until > Date.now()) return respond(await commandHandler.data.getLang("idoncooldown", { "remainingcooldown": untilStr }, requesterSteamID64));
+        if (until > Date.now()) return respond(await commandHandler.data.getLang("idoncooldown", { "remainingcooldown": untilStr }, requesterID));
 
 
         // Get all available bot accounts
         let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFavorizing(commandHandler, amountRaw, id, "favorite");
 
         if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point.
-            if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterSteamID64)); // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
-                else respond(await commandHandler.data.getLang("genericrequestless", { "availablenow": availableAccounts.length }, requesterSteamID64));
+            if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterID)); // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
+                else respond(await commandHandler.data.getLang("genericrequestless", { "availablenow": availableAccounts.length }, requesterID));
 
             return;
         }
 
         if (availableAccounts.length < amount) { // Check if not enough available accounts were found because of cooldown
-            respond(await commandHandler.data.getLang("genericnotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availableAccounts.length }, requesterSteamID64));
+            respond(await commandHandler.data.getLang("genericnotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availableAccounts.length }, requesterID));
             return;
         }
 
@@ -109,7 +109,7 @@ module.exports.favorite = {
         // Get the sharedfile
         commandHandler.controller.main.community.getSteamSharedFile(id, async (err, sharedfile) => {
             if (err) {
-                respond((await commandHandler.data.getLang("errloadingsharedfile", null, requesterSteamID64)) + err);
+                respond((await commandHandler.data.getLang("errloadingsharedfile", null, requesterID)) + err);
                 return;
             }
 
@@ -119,7 +119,7 @@ module.exports.favorite = {
                 status: "active",
                 type: "favorite",
                 amount: amount,
-                requestedby: requesterSteamID64,
+                requestedby: requesterID,
                 accounts: availableAccounts,
                 thisIteration: -1, // Set to -1 so that first iteration will increase it to 0
                 retryAttempt: 0,
@@ -138,7 +138,7 @@ module.exports.favorite = {
                 if (activeReqEntry.amount > 1) {
                     let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amount - 1 because the first fav is instant. Multiply by delay and add to current time to get timestamp when last fav was sent
 
-                    respond(await commandHandler.data.getLang("favoriteprocessstarted", { "numberOfFavs": activeReqEntry.amount, "waittime": waitTime }, requesterSteamID64));
+                    respond(await commandHandler.data.getLang("favoriteprocessstarted", { "numberOfFavs": activeReqEntry.amount, "waittime": waitTime }, requesterID));
                 }
 
                 // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
@@ -187,7 +187,7 @@ module.exports.favorite = {
                 /* ------------- Send finished message for corresponding status -------------  */
                 if (activeReqEntry.status == "aborted") {
 
-                    respond(await commandHandler.data.getLang("requestaborted", { "successAmount": activeReqEntry.amount - Object.keys(activeReqEntry.failed).length, "totalAmount": activeReqEntry.amount }, requesterSteamID64));
+                    respond(await commandHandler.data.getLang("requestaborted", { "successAmount": activeReqEntry.amount - Object.keys(activeReqEntry.failed).length, "totalAmount": activeReqEntry.amount }, requesterID));
 
                 } else {
 
@@ -199,7 +199,7 @@ module.exports.favorite = {
                     }
 
                     // Send finished message
-                    respond(`${await commandHandler.data.getLang("favoritesuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "numberOfFavs": activeReqEntry.amount }, requesterSteamID64)}\n${failedcmdreference}`);
+                    respond(`${await commandHandler.data.getLang("favoritesuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "numberOfFavs": activeReqEntry.amount }, requesterID)}\n${failedcmdreference}`);
 
                     // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
                     activeReqEntry.status = "cooldown";
@@ -248,8 +248,8 @@ module.exports.unfavorite = {
         let owners = commandHandler.data.cachefile.ownerid;
         if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-        let requesterSteamID64 = resInfo.userID;
-        let ownercheck         = owners.includes(requesterSteamID64);
+        let requesterID = resInfo.userID;
+        let ownercheck         = owners.includes(requesterID);
 
 
         /* --------- Various checks  --------- */
@@ -257,9 +257,9 @@ module.exports.unfavorite = {
             respond(await commandHandler.data.getLang("nouserid")); // Reject usage of command without an userID to avoid cooldown bypass
             return logger("err", "The unfavorite command was called without resInfo.userID! Blocking the command as I'm unable to apply cooldowns, which is required for this command!");
         }
-        if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterSteamID64)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
-        if (commandHandler.controller.info.activeLogin)                 return respond(await commandHandler.data.getLang("activerelog", null, requesterSteamID64));      // Bot is waiting for relog
-        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterSteamID64)); // Command is restricted to owners only
+        if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.activeLogin)                 return respond(await commandHandler.data.getLang("activerelog", null, requesterID));      // Bot is waiting for relog
+        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterID)); // Command is restricted to owners only
 
 
         // Check and get arguments from user
@@ -271,27 +271,27 @@ module.exports.unfavorite = {
         // Check if this id is already receiving something right now
         let idReq = commandHandler.controller.activeRequests[id];
 
-        if (idReq && idReq.status == "active") return respond(await commandHandler.data.getLang("idalreadyreceiving", null, requesterSteamID64)); // Note: No need to check for user as that is supposed to be handled by a cooldown
+        if (idReq && idReq.status == "active") return respond(await commandHandler.data.getLang("idalreadyreceiving", null, requesterID)); // Note: No need to check for user as that is supposed to be handled by a cooldown
 
 
         // Check if user has cooldown
-        let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterSteamID64);
+        let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterID);
 
-        if (until > Date.now()) return respond(await commandHandler.data.getLang("idoncooldown", { "remainingcooldown": untilStr }, requesterSteamID64));
+        if (until > Date.now()) return respond(await commandHandler.data.getLang("idoncooldown", { "remainingcooldown": untilStr }, requesterID));
 
 
         // Get all available bot accounts
         let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFavorizing(commandHandler, amountRaw, id, "unfavorite");
 
         if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point.
-            if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterSteamID64));     // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
-                else respond(await commandHandler.data.getLang("genericrequestless", { "availablenow": availableAccounts.length }, requesterSteamID64));
+            if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterID));     // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
+                else respond(await commandHandler.data.getLang("genericrequestless", { "availablenow": availableAccounts.length }, requesterID));
 
             return;
         }
 
         if (availableAccounts.length < amount) { // Check if not enough available accounts were found because of cooldown
-            respond(await commandHandler.data.getLang("genericnotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availableAccounts.length }, requesterSteamID64));
+            respond(await commandHandler.data.getLang("genericnotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availableAccounts.length }, requesterID));
             return;
         }
 
@@ -299,7 +299,7 @@ module.exports.unfavorite = {
         // Get the sharedfile
         commandHandler.controller.main.community.getSteamSharedFile(id, async (err, sharedfile) => {
             if (err) {
-                respond((await commandHandler.data.getLang("errloadingsharedfile", null, requesterSteamID64)) + err);
+                respond((await commandHandler.data.getLang("errloadingsharedfile", null, requesterID)) + err);
                 return;
             }
 
@@ -309,7 +309,7 @@ module.exports.unfavorite = {
                 status: "active",
                 type: "unfavorite",
                 amount: amount,
-                requestedby: requesterSteamID64,
+                requestedby: requesterID,
                 accounts: availableAccounts,
                 thisIteration: -1, // Set to -1 so that first iteration will increase it to 0
                 retryAttempt: 0,
@@ -328,7 +328,7 @@ module.exports.unfavorite = {
                 if (activeReqEntry.amount > 1) {
                     let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amount - 1 because the first fav is instant. Multiply by delay and add to current time to get timestamp when last fav was sent
 
-                    respond(await commandHandler.data.getLang("favoriteprocessstarted", { "numberOfFavs": activeReqEntry.amount, "waittime": waitTime }, requesterSteamID64));
+                    respond(await commandHandler.data.getLang("favoriteprocessstarted", { "numberOfFavs": activeReqEntry.amount, "waittime": waitTime }, requesterID));
                 }
 
                 // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
@@ -377,7 +377,7 @@ module.exports.unfavorite = {
                 /* ------------- Send finished message for corresponding status -------------  */
                 if (activeReqEntry.status == "aborted") {
 
-                    respond(await commandHandler.data.getLang("requestaborted", { "successAmount": activeReqEntry.amount - Object.keys(activeReqEntry.failed).length, "totalAmount": activeReqEntry.amount }, requesterSteamID64));
+                    respond(await commandHandler.data.getLang("requestaborted", { "successAmount": activeReqEntry.amount - Object.keys(activeReqEntry.failed).length, "totalAmount": activeReqEntry.amount }, requesterID));
 
                 } else {
 
@@ -389,7 +389,7 @@ module.exports.unfavorite = {
                     }
 
                     // Send finished message
-                    respond(`${await commandHandler.data.getLang("favoritesuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "numberOfFavs": activeReqEntry.amount }, requesterSteamID64)}\n${failedcmdreference}`);
+                    respond(`${await commandHandler.data.getLang("favoritesuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "numberOfFavs": activeReqEntry.amount }, requesterID)}\n${failedcmdreference}`);
 
                     // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
                     activeReqEntry.status = "cooldown";

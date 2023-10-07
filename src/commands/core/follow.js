@@ -4,7 +4,7 @@
  * Created Date: 24.09.2023 15:04:33
  * Author: 3urobeat
  *
- * Last Modified: 29.09.2023 17:24:23
+ * Last Modified: 07.10.2023 23:34:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -58,8 +58,8 @@ module.exports.follow = {
         let owners = commandHandler.data.cachefile.ownerid;
         if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-        let requesterSteamID64 = resInfo.userID;
-        let ownercheck         = owners.includes(requesterSteamID64);
+        let requesterID = resInfo.userID;
+        let ownercheck         = owners.includes(requesterID);
 
 
         /* --------- Various checks  --------- */
@@ -67,9 +67,9 @@ module.exports.follow = {
             respond(await commandHandler.data.getLang("nouserid")); // Reject usage of command without an userID to avoid cooldown bypass
             return logger("err", "The follow command was called without resInfo.userID! Blocking the command as I'm unable to apply cooldowns, which is required for this command!");
         }
-        if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterSteamID64)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
-        if (commandHandler.controller.info.activeLogin)                 return respond(await commandHandler.data.getLang("activerelog", null, requesterSteamID64));      // Bot is waiting for relog
-        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterSteamID64)); // Command is restricted to owners only
+        if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.activeLogin)                 return respond(await commandHandler.data.getLang("activerelog", null, requesterID));      // Bot is waiting for relog
+        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterID)); // Command is restricted to owners only
 
 
         // Check and get arguments from user
@@ -81,13 +81,13 @@ module.exports.follow = {
         // Check if this id is already receiving something right now
         let idReq = commandHandler.controller.activeRequests[id];
 
-        if (idReq && idReq.status == "active") return respond(await commandHandler.data.getLang("idalreadyreceiving", null, requesterSteamID64)); // Note: No need to check for user as that is supposed to be handled by a cooldown
+        if (idReq && idReq.status == "active") return respond(await commandHandler.data.getLang("idalreadyreceiving", null, requesterID)); // Note: No need to check for user as that is supposed to be handled by a cooldown
 
 
         // Check if user has cooldown
-        let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterSteamID64);
+        let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterID);
 
-        if (until > Date.now()) return respond(await commandHandler.data.getLang("idoncooldown", { "remainingcooldown": untilStr }, requesterSteamID64));
+        if (until > Date.now()) return respond(await commandHandler.data.getLang("idoncooldown", { "remainingcooldown": untilStr }, requesterID));
 
 
         // Get all available bot accounts. Block limited accounts from following curators
@@ -95,14 +95,14 @@ module.exports.follow = {
         let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFollowing(commandHandler, amountRaw, allowLimitedAccounts, id, idType, "follow");
 
         if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point.
-            if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterSteamID64)); // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
-                else respond(await commandHandler.data.getLang("genericrequestless", { "availablenow": availableAccounts.length }, requesterSteamID64));
+            if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterID)); // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
+                else respond(await commandHandler.data.getLang("genericrequestless", { "availablenow": availableAccounts.length }, requesterID));
 
             return;
         }
 
         if (availableAccounts.length < amount) { // Check if not enough available accounts were found because of cooldown
-            respond(await commandHandler.data.getLang("genericnotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availableAccounts.length }, requesterSteamID64));
+            respond(await commandHandler.data.getLang("genericnotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availableAccounts.length }, requesterID));
             return;
         }
 
@@ -112,7 +112,7 @@ module.exports.follow = {
             status: "active",
             type: idType + "Follow",
             amount: amount,
-            requestedby: requesterSteamID64,
+            requestedby: requesterID,
             accounts: availableAccounts,
             thisIteration: -1, // Set to -1 so that first iteration will increase it to 0
             retryAttempt: 0,
@@ -131,7 +131,7 @@ module.exports.follow = {
             if (activeReqEntry.amount > 1) {
                 let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amount - 1 because the first fav is instant. Multiply by delay and add to current time to get timestamp when last fav was sent
 
-                respond(await commandHandler.data.getLang("followprocessstarted", { "totalamount": activeReqEntry.amount, "waittime": waitTime }, requesterSteamID64));
+                respond(await commandHandler.data.getLang("followprocessstarted", { "totalamount": activeReqEntry.amount, "waittime": waitTime }, requesterID));
             }
 
             // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
@@ -182,7 +182,7 @@ module.exports.follow = {
             /* ------------- Send finished message for corresponding status -------------  */
             if (activeReqEntry.status == "aborted") {
 
-                respond(await commandHandler.data.getLang("requestaborted", { "successAmount": activeReqEntry.amount - Object.keys(activeReqEntry.failed).length, "totalAmount": activeReqEntry.amount }, requesterSteamID64));
+                respond(await commandHandler.data.getLang("requestaborted", { "successAmount": activeReqEntry.amount - Object.keys(activeReqEntry.failed).length, "totalAmount": activeReqEntry.amount }, requesterID));
 
             } else {
 
@@ -194,7 +194,7 @@ module.exports.follow = {
                 }
 
                 // Send finished message
-                respond(`${await commandHandler.data.getLang("followsuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "totalamount": activeReqEntry.amount }, requesterSteamID64)}\n${failedcmdreference}`);
+                respond(`${await commandHandler.data.getLang("followsuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "totalamount": activeReqEntry.amount }, requesterID)}\n${failedcmdreference}`);
 
                 // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
                 activeReqEntry.status = "cooldown";
@@ -242,8 +242,8 @@ module.exports.unfollow = {
         let owners = commandHandler.data.cachefile.ownerid;
         if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-        let requesterSteamID64 = resInfo.userID;
-        let ownercheck         = owners.includes(requesterSteamID64);
+        let requesterID = resInfo.userID;
+        let ownercheck         = owners.includes(requesterID);
 
 
         /* --------- Various checks  --------- */
@@ -251,9 +251,9 @@ module.exports.unfollow = {
             respond(await commandHandler.data.getLang("nouserid")); // Reject usage of command without an userID to avoid cooldown bypass
             return logger("err", "The unfollow command was called without resInfo.userID! Blocking the command as I'm unable to apply cooldowns, which is required for this command!");
         }
-        if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterSteamID64)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
-        if (commandHandler.controller.info.activeLogin)                 return respond(await commandHandler.data.getLang("activerelog", null, requesterSteamID64));      // Bot is waiting for relog
-        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterSteamID64)); // Command is restricted to owners only
+        if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.activeLogin)                 return respond(await commandHandler.data.getLang("activerelog", null, requesterID));      // Bot is waiting for relog
+        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterID)); // Command is restricted to owners only
 
 
         // Check and get arguments from user
@@ -265,13 +265,13 @@ module.exports.unfollow = {
         // Check if this id is already receiving something right now
         let idReq = commandHandler.controller.activeRequests[id];
 
-        if (idReq && idReq.status == "active") return respond(await commandHandler.data.getLang("idalreadyreceiving", null, requesterSteamID64)); // Note: No need to check for user as that is supposed to be handled by a cooldown
+        if (idReq && idReq.status == "active") return respond(await commandHandler.data.getLang("idalreadyreceiving", null, requesterID)); // Note: No need to check for user as that is supposed to be handled by a cooldown
 
 
         // Check if user has cooldown
-        let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterSteamID64);
+        let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterID);
 
-        if (until > Date.now()) return respond(await commandHandler.data.getLang("idoncooldown", { "remainingcooldown": untilStr }, requesterSteamID64));
+        if (until > Date.now()) return respond(await commandHandler.data.getLang("idoncooldown", { "remainingcooldown": untilStr }, requesterID));
 
 
         // Get all available bot accounts. Block limited accounts from following curators
@@ -279,14 +279,14 @@ module.exports.unfollow = {
         let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFollowing(commandHandler, amountRaw, allowLimitedAccounts, id, idType, "unfollow");
 
         if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point.
-            if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterSteamID64)); // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
-                else respond(await commandHandler.data.getLang("genericrequestless", { "availablenow": availableAccounts.length }, requesterSteamID64));
+            if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterID)); // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
+                else respond(await commandHandler.data.getLang("genericrequestless", { "availablenow": availableAccounts.length }, requesterID));
 
             return;
         }
 
         if (availableAccounts.length < amount) { // Check if not enough available accounts were found because of cooldown
-            respond(await commandHandler.data.getLang("genericnotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availableAccounts.length }, requesterSteamID64));
+            respond(await commandHandler.data.getLang("genericnotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availableAccounts.length }, requesterID));
             return;
         }
 
@@ -296,7 +296,7 @@ module.exports.unfollow = {
             status: "active",
             type: idType + "Unfollow",
             amount: amount,
-            requestedby: requesterSteamID64,
+            requestedby: requesterID,
             accounts: availableAccounts,
             thisIteration: -1, // Set to -1 so that first iteration will increase it to 0
             retryAttempt: 0,
@@ -315,7 +315,7 @@ module.exports.unfollow = {
             if (activeReqEntry.amount > 1) {
                 let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amount - 1 because the first fav is instant. Multiply by delay and add to current time to get timestamp when last fav was sent
 
-                respond(await commandHandler.data.getLang("followprocessstarted", { "totalamount": activeReqEntry.amount, "waittime": waitTime }, requesterSteamID64));
+                respond(await commandHandler.data.getLang("followprocessstarted", { "totalamount": activeReqEntry.amount, "waittime": waitTime }, requesterID));
             }
 
             // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
@@ -366,7 +366,7 @@ module.exports.unfollow = {
             /* ------------- Send finished message for corresponding status -------------  */
             if (activeReqEntry.status == "aborted") {
 
-                respond(await commandHandler.data.getLang("requestaborted", { "successAmount": activeReqEntry.amount - Object.keys(activeReqEntry.failed).length, "totalAmount": activeReqEntry.amount }, requesterSteamID64));
+                respond(await commandHandler.data.getLang("requestaborted", { "successAmount": activeReqEntry.amount - Object.keys(activeReqEntry.failed).length, "totalAmount": activeReqEntry.amount }, requesterID));
 
             } else {
 
@@ -378,7 +378,7 @@ module.exports.unfollow = {
                 }
 
                 // Send finished message
-                respond(`${await commandHandler.data.getLang("followsuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "totalamount": activeReqEntry.amount }, requesterSteamID64)}\n${failedcmdreference}`);
+                respond(`${await commandHandler.data.getLang("followsuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "totalamount": activeReqEntry.amount }, requesterID)}\n${failedcmdreference}`);
 
                 // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
                 activeReqEntry.status = "cooldown";

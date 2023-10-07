@@ -4,7 +4,7 @@
  * Created Date: 24.09.2023 16:10:36
  * Author: 3urobeat
  *
- * Last Modified: 26.09.2023 22:14:34
+ * Last Modified: 07.10.2023 23:34:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -48,17 +48,17 @@ module.exports.getFollowArgs = (commandHandler, args, cmd, resInfo, respond) => 
             let owners = commandHandler.data.cachefile.ownerid;
             if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-            let requesterSteamID64 = resInfo.userID;
+            let requesterID = resInfo.userID;
 
 
             // Check if id was provided and process input
             if (args[1]) {
-                if (owners.includes(requesterSteamID64) || args[1] == requesterSteamID64) { // Check if user is a bot owner or if they provided their own profile id
+                if (owners.includes(requesterID) || args[1] == requesterID) { // Check if user is a bot owner or if they provided their own profile id
                     let arg = args[1];
 
                     commandHandler.controller.handleSteamIdResolving(arg, null, async (err, res, idType) => {
                         if (err || (idType != "profile" && idType != "curator")) {
-                            respond((await commandHandler.data.getLang("invalidprofileid", null, requesterSteamID64)) + "\n\nError: " + err);
+                            respond((await commandHandler.data.getLang("invalidprofileid", null, requesterID)) + "\n\nError: " + err);
                             return resolve({});
                         }
 
@@ -74,15 +74,15 @@ module.exports.getFollowArgs = (commandHandler, args, cmd, resInfo, respond) => 
                 } else {
                     logger("debug", "CommandHandler getFollowArgs(): Non-Owner tried to provide id for another profile. Stopping...");
 
-                    respond(await commandHandler.data.getLang("commentprofileidowneronly", null, requesterSteamID64));
+                    respond(await commandHandler.data.getLang("commentprofileidowneronly", null, requesterID));
                     return resolve({});
                 }
             } else {
-                logger("debug", `CommandHandler getFollowArgs(): No id parameter received, using requesterSteamID64 - amount: ${amount} | id: ${requesterSteamID64} | idType: profile`);
+                logger("debug", `CommandHandler getFollowArgs(): No id parameter received, using requesterID - amount: ${amount} | id: ${requesterID} | idType: profile`);
 
                 resolve({
                     "amountRaw": amount,
-                    "id": requesterSteamID64,
+                    "id": requesterID,
                     "idType": "profile"
                 });
             }

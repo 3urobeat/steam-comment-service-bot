@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 25.09.2023 19:26:10
+ * Last Modified: 07.10.2023 23:34:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -22,12 +22,12 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
  * Retrieves arguments from a comment request. If request is invalid (for example too many comments requested) an error message will be sent
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Array} args The command arguments
- * @param {string} requesterSteamID64 The steamID64 of the requesting user
+ * @param {string} requesterID The steamID64 of the requesting user
  * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @param {function(string): void} respond The shortened respondModule call
  * @returns {Promise.<{ maxRequestAmount: number, commentcmdUsage: string, numberOfComments: number, profileID: string, idType: string, quotesArr: Array.<string> }>} Resolves promise with object containing all relevant data when done
  */
-module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, resInfo, respond) => {
+module.exports.getCommentArgs = (commandHandler, args, requesterID, resInfo, respond) => {
     return new Promise((resolve) => {
         (async () => { // Lets us use await insidea Promise without creating an antipattern
 
@@ -46,14 +46,14 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, resIn
             /* --------- Define command usage messages & maxRequestAmount for each user's privileges --------- */
             let commentcmdUsage;
 
-            if (owners.includes(requesterSteamID64)) {
+            if (owners.includes(requesterID)) {
                 maxRequestAmount = commandHandler.data.config.maxOwnerComments;
 
-                if (maxRequestAmount > 1) commentcmdUsage = await commandHandler.data.getLang("commentcmdusageowner", { "cmdprefix": resInfo.cmdprefix }, requesterSteamID64);
-                    else commentcmdUsage = await commandHandler.data.getLang("commentcmdusageowner2", { "cmdprefix": resInfo.cmdprefix }, requesterSteamID64);
+                if (maxRequestAmount > 1) commentcmdUsage = await commandHandler.data.getLang("commentcmdusageowner", { "cmdprefix": resInfo.cmdprefix }, requesterID);
+                    else commentcmdUsage = await commandHandler.data.getLang("commentcmdusageowner2", { "cmdprefix": resInfo.cmdprefix }, requesterID);
             } else {
-                if (maxRequestAmount > 1) commentcmdUsage = await commandHandler.data.getLang("commentcmdusage", { "cmdprefix": resInfo.cmdprefix }, requesterSteamID64);
-                    else commentcmdUsage = await commandHandler.data.getLang("commentcmdusage2", { "cmdprefix": resInfo.cmdprefix }, requesterSteamID64);
+                if (maxRequestAmount > 1) commentcmdUsage = await commandHandler.data.getLang("commentcmdusage", { "cmdprefix": resInfo.cmdprefix }, requesterID);
+                    else commentcmdUsage = await commandHandler.data.getLang("commentcmdusage2", { "cmdprefix": resInfo.cmdprefix }, requesterID);
             }
 
 
@@ -65,7 +65,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, resIn
                     } else {
                         logger("debug", `CommandHandler getCommentArgs(): User provided invalid request amount "${args[0]}". Stopping...`);
 
-                        respond(await commandHandler.data.getLang("invalidnumber", { "cmdusage": commentcmdUsage }, requesterSteamID64));
+                        respond(await commandHandler.data.getLang("invalidnumber", { "cmdusage": commentcmdUsage }, requesterID));
                         return resolve(false);
                     }
                 }
@@ -73,7 +73,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, resIn
                 if (args[0] > maxRequestAmount) { // Number is greater than maxRequestAmount?
                     logger("debug", `CommandHandler getCommentArgs(): User requested ${args[0]} but is only allowed ${maxRequestAmount} comments. Stopping...`);
 
-                    respond(await commandHandler.data.getLang("commentrequesttoohigh", { "maxRequestAmount": maxRequestAmount, "commentcmdusage": commentcmdUsage }, requesterSteamID64));
+                    respond(await commandHandler.data.getLang("commentrequesttoohigh", { "maxRequestAmount": maxRequestAmount, "commentcmdusage": commentcmdUsage }, requesterID));
                     return resolve(false);
                 }
 
@@ -82,12 +82,12 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, resIn
 
                 /* --------- Check profileid argument if it was provided --------- */
                 if (args[1]) {
-                    if (owners.includes(requesterSteamID64) || args[1] == requesterSteamID64) { // Check if user is a bot owner or if they provided their own profile id
+                    if (owners.includes(requesterID) || args[1] == requesterID) { // Check if user is a bot owner or if they provided their own profile id
                         let arg = args[1];
 
                         commandHandler.controller.handleSteamIdResolving(arg, null, async (err, res, type) => {
                             if (err) {
-                                respond((await commandHandler.data.getLang("commentinvalidid", { "commentcmdusage": commentcmdUsage }, requesterSteamID64)) + "\n\nError: " + err);
+                                respond((await commandHandler.data.getLang("commentinvalidid", { "commentcmdusage": commentcmdUsage }, requesterID)) + "\n\nError: " + err);
                                 return resolve(false);
                             }
 
@@ -98,13 +98,13 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, resIn
                     } else {
                         logger("debug", "CommandHandler getCommentArgs(): Non-Owner tried to provide profileid for another profile. Stopping...");
 
-                        respond(await commandHandler.data.getLang("commentprofileidowneronly", null, requesterSteamID64));
+                        respond(await commandHandler.data.getLang("commentprofileidowneronly", null, requesterID));
                         return resolve(false);
                     }
                 } else {
-                    logger("debug", "CommandHandler getCommentArgs(): No profileID parameter received, setting profileID to requesterSteamID64...");
+                    logger("debug", "CommandHandler getCommentArgs(): No profileID parameter received, setting profileID to requesterID...");
 
-                    profileID = requesterSteamID64;
+                    profileID = requesterID;
                     idType = "profile";
                 }
 
@@ -123,11 +123,11 @@ module.exports.getCommentArgs = (commandHandler, args, requesterSteamID64, resIn
                     logger("debug", "CommandHandler getCommentArgs(): User didn't provide numberOfComments but maxRequestAmount is 1. Accepting request as numberOfComments = 1.");
 
                     numberOfComments = 1;     // If only one account is active, set 1 automatically
-                    profileID = requesterSteamID64; // Define profileID so that the interval below resolves
+                    profileID = requesterID; // Define profileID so that the interval below resolves
                 } else {
                     logger("debug", `CommandHandler getCommentArgs(): User didn't provide numberOfComments and maxRequestAmount is ${maxRequestAmount} (> 1). Rejecting request.`);
 
-                    respond(await commandHandler.data.getLang("commentmissingnumberofcomments", { "maxRequestAmount": maxRequestAmount, "commentcmdusage": commentcmdUsage }, requesterSteamID64));
+                    respond(await commandHandler.data.getLang("commentmissingnumberofcomments", { "maxRequestAmount": maxRequestAmount, "commentcmdusage": commentcmdUsage }, requesterID));
                     return resolve(false);
                 }
             }

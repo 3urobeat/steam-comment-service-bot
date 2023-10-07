@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.09.2023 14:37:41
+ * Last Modified: 07.10.2023 23:34:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -44,22 +44,22 @@ module.exports.addFriend = {
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterSteamID64 = resInfo.userID;
+        let requesterID = resInfo.userID;
 
-        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterSteamID64)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
-        if (!args[0]) return respond(await commandHandler.data.getLang("invalidprofileid", null, requesterSteamID64));
+        if (!args[0]) return respond(await commandHandler.data.getLang("invalidprofileid", null, requesterID));
 
         commandHandler.controller.handleSteamIdResolving(args[0], "profile", async (err, res) => {
-            if (err) return respond((await commandHandler.data.getLang("invalidprofileid", null, requesterSteamID64)) + "\n\nError: " + err);
+            if (err) return respond((await commandHandler.data.getLang("invalidprofileid", null, requesterID)) + "\n\nError: " + err);
 
             // Check if first bot account is limited to be able to display error message instantly
             if (commandHandler.controller.main.user.limitations && commandHandler.controller.main.user.limitations.limited == true) {
-                respond(await commandHandler.data.getLang("addfriendcmdacclimited", { "profileid": res }, requesterSteamID64));
+                respond(await commandHandler.data.getLang("addfriendcmdacclimited", { "profileid": res }, requesterID));
                 return;
             }
 
-            respond(await commandHandler.data.getLang("addfriendcmdsuccess", { "profileid": res, "estimatedtime": 5 * commandHandler.controller.getBots().length }, requesterSteamID64));
+            respond(await commandHandler.data.getLang("addfriendcmdsuccess", { "profileid": res, "estimatedtime": 5 * commandHandler.controller.getBots().length }, requesterID));
             logger("info", `Adding friend ${res} with all bot accounts... This will take ~${5 * commandHandler.controller.getBots().length} seconds.`);
 
             commandHandler.controller.getBots().forEach((e, i) => {
@@ -113,16 +113,16 @@ module.exports.unfriend = {
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterSteamID64 = resInfo.userID;
+        let requesterID = resInfo.userID;
 
-        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterSteamID64)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         // Check for no args again as the default behavior from above might be unavailable when calling from outside of the Steam Chat
-        if (!args[0] && !resInfo.fromSteamChat) return respond(await commandHandler.data.getLang("noidparam", null, requesterSteamID64));
+        if (!args[0] && !resInfo.fromSteamChat) return respond(await commandHandler.data.getLang("noidparam", null, requesterID));
 
         // Unfriend message sender with all bot accounts if no id was provided and the command was called from the steam chat
         if (!args[0] && resInfo.userID && resInfo.fromSteamChat) {
-            respond(commandHandler.data.getLang("unfriendcmdsuccess", null, requesterSteamID64));
+            respond(commandHandler.data.getLang("unfriendcmdsuccess", null, requesterID));
             logger("info", `Removing friend ${resInfo.userID} from all bot accounts...`);
 
             commandHandler.controller.getBots().forEach((e, i) => {
@@ -138,11 +138,11 @@ module.exports.unfriend = {
             if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
             // Unfriending a specific user is owner only
-            if (!owners.includes(resInfo.userID)) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterSteamID64));
+            if (!owners.includes(resInfo.userID)) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterID));
 
             commandHandler.controller.handleSteamIdResolving(args[0], "profile", async (err, res) => {
-                if (err) return respond((await commandHandler.data.getLang("invalidprofileid", null, requesterSteamID64)) + "\n\nError: " + err);
-                if (commandHandler.data.cachefile.ownerid.includes(res)) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("idisownererror", null, requesterSteamID64)); // Check for the "original" ownerid array here, we don't care about non Steam IDs
+                if (err) return respond((await commandHandler.data.getLang("invalidprofileid", null, requesterID)) + "\n\nError: " + err);
+                if (commandHandler.data.cachefile.ownerid.includes(res)) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("idisownererror", null, requesterID)); // Check for the "original" ownerid array here, we don't care about non Steam IDs
 
                 commandHandler.controller.getBots().forEach((e, i) => {
                     setTimeout(() => {
@@ -150,7 +150,7 @@ module.exports.unfriend = {
                     }, 1000 * i); // Delay every iteration so that we don't make a ton of requests at once
                 });
 
-                respond(await commandHandler.data.getLang("unfriendidcmdsuccess", { "profileid": res }, requesterSteamID64));
+                respond(await commandHandler.data.getLang("unfriendidcmdsuccess", { "profileid": res }, requesterID));
                 logger("info", `Removed friend ${res} from all bot accounts.`);
             });
         }
@@ -182,24 +182,24 @@ module.exports.unfriendall = {
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterSteamID64 = resInfo.userID;
+        let requesterID = resInfo.userID;
 
-        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterSteamID64)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         // TODO: This is bad. Rewrite using a message collector, maybe add one to steamChatInteraction helper
         var abortunfriendall; // eslint-disable-line no-var
 
         if (args[0] == "abort") {
-            respond(await commandHandler.data.getLang("unfriendallcmdabort", null, requesterSteamID64));
+            respond(await commandHandler.data.getLang("unfriendallcmdabort", null, requesterID));
             return abortunfriendall = true;
         }
 
         abortunfriendall = false;
-        respond(await commandHandler.data.getLang("unfriendallcmdpending", { cmdprefix: resInfo.cmdprefix }, requesterSteamID64));
+        respond(await commandHandler.data.getLang("unfriendallcmdpending", { cmdprefix: resInfo.cmdprefix }, requesterID));
 
         setTimeout(async () => {
             if (abortunfriendall) return logger("info", "unfriendall process was aborted.");
-            respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("unfriendallcmdstart", null, requesterSteamID64)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+            respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("unfriendallcmdstart", null, requesterID)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
             logger("info", "Starting to unfriend everyone...");
 
             for (let i = 0; i < commandHandler.controller.getBots().length; i++) {

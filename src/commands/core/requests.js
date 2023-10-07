@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.09.2023 17:21:37
+ * Last Modified: 07.10.2023 23:34:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -43,14 +43,14 @@ module.exports.abort = {
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterSteamID64 = resInfo.userID;
+        let requesterID = resInfo.userID;
 
-        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterSteamID64)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         let userID = resInfo.userID;
 
         // Check for no userID and no id param as both can be missing if called from outside the Steam Chat
-        if (!userID && !args[0]) return respond(await commandHandler.data.getLang("noidparam", null, requesterSteamID64));
+        if (!userID && !args[0]) return respond(await commandHandler.data.getLang("noidparam", null, requesterID));
 
         commandHandler.controller.handleSteamIdResolving(args[0], null, async (err, res) => {
             if (res) {
@@ -61,19 +61,19 @@ module.exports.abort = {
                 if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
                 // Refuse if user is not an owner and the request is not from them
-                if (!owners.includes(resInfo.userID) && (activeReqEntry && activeReqEntry.requestedby != resInfo.userID)) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterSteamID64));
+                if (!owners.includes(resInfo.userID) && (activeReqEntry && activeReqEntry.requestedby != resInfo.userID)) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterID));
                     else logger("debug", "CommandHandler abort cmd: Non-owner provided ID as parameter but is requester of that request. Permitting abort...");
 
                 userID = res; // If user provided an id as argument then use that instead of their id
             }
 
-            if (!commandHandler.controller.activeRequests[userID] || commandHandler.controller.activeRequests[userID].status != "active") return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("abortcmdnoprocess", null, requesterSteamID64)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+            if (!commandHandler.controller.activeRequests[userID] || commandHandler.controller.activeRequests[userID].status != "active") return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("abortcmdnoprocess", null, requesterID)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
             // Set new status for this request
             commandHandler.controller.activeRequests[userID].status = "aborted";
 
             logger("info", `Aborting active process for ID ${userID}...`);
-            respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("abortcmdsuccess", null, requesterSteamID64)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+            respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("abortcmdsuccess", null, requesterID)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         });
     }
 };
@@ -103,33 +103,33 @@ module.exports.resetCooldown = {
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterSteamID64 = resInfo.userID;
+        let requesterID = resInfo.userID;
 
         if (args[0] && args[0] == "global") { // Check if user wants to reset the global cooldown (will reset all until entries in activeRequests)
-            if (commandHandler.data.config.botaccountcooldown == 0) return respond(await commandHandler.data.getLang("resetcooldowncmdcooldowndisabled", null, requesterSteamID64)); // Is the global cooldown enabled?
+            if (commandHandler.data.config.botaccountcooldown == 0) return respond(await commandHandler.data.getLang("resetcooldowncmdcooldowndisabled", null, requesterID)); // Is the global cooldown enabled?
 
             Object.keys(commandHandler.controller.activeRequests).forEach((e) => {
                 commandHandler.controller.activeRequests[e].until = Date.now() - (commandHandler.data.config.botaccountcooldown * 60000); // Since the cooldown checks will add the cooldown we need to subtract it (can't delete the entry because we might abort running processes with it)
             });
 
-            respond(await commandHandler.data.getLang("resetcooldowncmdglobalreset", null, requesterSteamID64));
+            respond(await commandHandler.data.getLang("resetcooldowncmdglobalreset", null, requesterID));
 
         } else {
 
             let userID = resInfo.userID;
 
             // Check for no userID and no id param as both can be missing if called from outside the Steam Chat
-            if (!userID && !args[0]) return respond(await commandHandler.data.getLang("noidparam", null, requesterSteamID64));
+            if (!userID && !args[0]) return respond(await commandHandler.data.getLang("noidparam", null, requesterID));
 
             commandHandler.controller.handleSteamIdResolving(args[0], "profile", async (err, res) => {
-                if (err) return respond((await commandHandler.data.getLang("invalidprofileid", null, requesterSteamID64)) + "\n\nError: " + err);
+                if (err) return respond((await commandHandler.data.getLang("invalidprofileid", null, requesterID)) + "\n\nError: " + err);
                 if (res) userID = res; // Change steamID64 to the provided id
 
-                if (commandHandler.data.config.commentcooldown == 0) return respond(await commandHandler.data.getLang("resetcooldowncmdcooldowndisabled", null, requesterSteamID64)); // Is the cooldown enabled?
+                if (commandHandler.data.config.commentcooldown == 0) return respond(await commandHandler.data.getLang("resetcooldowncmdcooldowndisabled", null, requesterID)); // Is the cooldown enabled?
 
                 commandHandler.data.lastCommentDB.update({ id: userID }, { $set: { time: Date.now() - (commandHandler.data.config.commentcooldown * 60000) } }, async (err) => {
                     if (err) return respond("Error updating database entry: " + err);
-                        else respond(await commandHandler.data.getLang("resetcooldowncmdsuccess", { "profileid": userID.toString() }, requesterSteamID64));
+                        else respond(await commandHandler.data.getLang("resetcooldowncmdsuccess", { "profileid": userID.toString() }, requesterID));
                 });
             });
         }

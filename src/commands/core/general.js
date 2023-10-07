@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 01.10.2023 00:08:01
+ * Last Modified: 07.10.2023 23:34:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -38,7 +38,7 @@ module.exports.help = {
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterSteamID64 = resInfo.userID;
+        let requesterID = resInfo.userID;
 
         // Get the correct ownerid array for this request
         let owners = commandHandler.data.cachefile.ownerid;
@@ -48,9 +48,9 @@ module.exports.help = {
         let commentText;
 
         if (owners.includes(resInfo.userID)) {
-            commentText = `'${resInfo.cmdprefix}comment (amount/"all") [id/url] [custom, quotes]' - ${await commandHandler.data.getLang("helpcommentowner", { "maxOwnerComments": commandHandler.data.config.maxOwnerComments }, requesterSteamID64)}`;
+            commentText = `'${resInfo.cmdprefix}comment (amount/"all") [id/url] [custom, quotes]' - ${await commandHandler.data.getLang("helpcommentowner", { "maxOwnerComments": commandHandler.data.config.maxOwnerComments }, requesterID)}`;
         } else {
-            commentText = `'${resInfo.cmdprefix}comment (amount/"all")' - ${await commandHandler.data.getLang("helpcommentuser", { "maxComments": commandHandler.data.config.maxComments }, requesterSteamID64)}`;
+            commentText = `'${resInfo.cmdprefix}comment (amount/"all")' - ${await commandHandler.data.getLang("helpcommentuser", { "maxComments": commandHandler.data.config.maxComments }, requesterID)}`;
         }
 
         // Construct follow text for owner and user
@@ -68,17 +68,17 @@ module.exports.help = {
 
         // Send message
         respond(`
-            ${commandHandler.data.datafile.mestr}'s Comment Bot | ${await commandHandler.data.getLang("helpcommandlist", null, requesterSteamID64)}\n
+            ${commandHandler.data.datafile.mestr}'s Comment Bot | ${await commandHandler.data.getLang("helpcommandlist", null, requesterID)}\n
             ${commentText}
-            '${resInfo.cmdprefix}vote (amount/"all") (id/url)' - ${await commandHandler.data.getLang("helpvote", { "maxComments": maxTotalComments }, requesterSteamID64)}
-            '${resInfo.cmdprefix}favorite (amount/"all") (id/url)' - ${await commandHandler.data.getLang("helpfavorite", { "maxComments": maxTotalComments }, requesterSteamID64)}
-            ${followText} - ${await commandHandler.data.getLang("helpfollow", { "maxComments": commandHandler.data.config.maxComments }, requesterSteamID64)}\n
-            '${resInfo.cmdprefix}info' - ${await commandHandler.data.getLang("helpinfo", null, requesterSteamID64)}
-            '${resInfo.cmdprefix}abort' - ${await commandHandler.data.getLang("helpabort", null, requesterSteamID64)}
-            '${resInfo.cmdprefix}about' - ${await commandHandler.data.getLang("helpabout", null, requesterSteamID64)}
-            '${resInfo.cmdprefix}owner' - ${await commandHandler.data.getLang("helpowner", null, requesterSteamID64)}
+            '${resInfo.cmdprefix}vote (amount/"all") (id/url)' - ${await commandHandler.data.getLang("helpvote", { "maxComments": maxTotalComments }, requesterID)}
+            '${resInfo.cmdprefix}favorite (amount/"all") (id/url)' - ${await commandHandler.data.getLang("helpfavorite", { "maxComments": maxTotalComments }, requesterID)}
+            ${followText} - ${await commandHandler.data.getLang("helpfollow", { "maxComments": commandHandler.data.config.maxComments }, requesterID)}\n
+            '${resInfo.cmdprefix}info' - ${await commandHandler.data.getLang("helpinfo", null, requesterID)}
+            '${resInfo.cmdprefix}abort' - ${await commandHandler.data.getLang("helpabort", null, requesterID)}
+            '${resInfo.cmdprefix}about' - ${await commandHandler.data.getLang("helpabout", null, requesterID)}
+            '${resInfo.cmdprefix}owner' - ${await commandHandler.data.getLang("helpowner", null, requesterID)}
         
-            ${await commandHandler.data.getLang("helpreadothercmdshere", null, requesterSteamID64)} ' https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/commands_doc.md '
+            ${await commandHandler.data.getLang("helpreadothercmdshere", null, requesterID)} ' https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/commands_doc.md '
         `.replace(/^( {4})+/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
     }
 };

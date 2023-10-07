@@ -284,12 +284,12 @@ declare function comment(commandHandler: CommandHandler, resInfo: CommandHandler
  * Retrieves arguments from a comment request. If request is invalid (for example too many comments requested) an error message will be sent
  * @param commandHandler - The commandHandler object
  * @param args - The command arguments
- * @param requesterSteamID64 - The steamID64 of the requesting user
+ * @param requesterID - The steamID64 of the requesting user
  * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @param respond - The shortened respondModule call
  * @returns Resolves promise with object containing all relevant data when done
  */
-declare function getCommentArgs(commandHandler: CommandHandler, args: any[], requesterSteamID64: string, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any): Promise<{ maxRequestAmount: number; commentcmdUsage: string; numberOfComments: number; profileID: string; idType: string; quotesArr: string[]; }>;
+declare function getCommentArgs(commandHandler: CommandHandler, args: any[], requesterID: string, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any): Promise<{ maxRequestAmount: number; commentcmdUsage: string; numberOfComments: number; profileID: string; idType: string; quotesArr: string[]; }>;
 
 /**
  * Finds all needed and currently available bot accounts for a comment request.
