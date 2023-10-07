@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.10.2023 12:08:09
+ * Last Modified: 07.10.2023 22:25:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -135,9 +135,9 @@ Controller.prototype._start = async function() {
     logger("info", "Checking if Steam is reachable...", false, true, logger.animation("loading"));
 
     if (!await checkAndGetFile("./src/controller/helpers/misc.js", logger, false, false)) return this.stop();
-    this.misc = await require("./helpers/misc.js");
+    this.misc = require("./helpers/misc.js");
 
-    this.misc.checkConnection("https://steamcommunity.com", true)
+    await this.misc.checkConnection("https://steamcommunity.com", true)
         .then((res) => logger("info", `SteamCommunity is up! Status code: ${res.statusCode}`, false, true, logger.animation("loading")))
         .catch((res) => {
             if (!res.statusCode) logger("error", `SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n        ${res.statusMessage}\n\n        Aborting...\n`, true);
