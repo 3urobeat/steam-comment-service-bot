@@ -30,6 +30,10 @@ Bot.prototype._attachSteamDisconnectedEvent = function() {
 
         logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam. Message: ${msg} | Check: https://steamstat.us`);
 
+        // Store disconnect timestamp & reason
+        this.lastDisconnect.timestamp = Date.now();
+        this.lastDisconnect.reason = msg;
+
         this.controller._statusUpdateEvent(this, Bot.EStatus.OFFLINE); // Set status of this account to offline
 
         // Don't relog if account is in skippedaccounts array or if relogAfterDisconnect is false

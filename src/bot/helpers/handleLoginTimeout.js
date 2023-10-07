@@ -4,7 +4,7 @@
  * Created Date: 03.11.2022 12:27:46
  * Author: 3urobeat
  *
- * Last Modified: 05.10.2023 19:33:55
+ * Last Modified: 06.10.2023 11:47:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -56,9 +56,10 @@ Bot.prototype.handleLoginTimeout = function() {
 
             } else { // Skip account if not bot0
 
-                logger("info", "Failed account is not bot0. Skipping account...", true);
-                this.controller._statusUpdateEvent(this, Bot.EStatus.SKIPPED);
-                this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
+                //logger("info", "Failed account is not bot0. Skipping account...", true);
+                //this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
+                this.controller._statusUpdateEvent(this, Bot.EStatus.ERROR);
+                this.handleRelog();
             }
 
         } else {

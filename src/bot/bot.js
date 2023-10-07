@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.10.2023 11:12:34
+ * Last Modified: 07.10.2023 16:58:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -70,9 +70,18 @@ const Bot = function(controller, index) {
     this.loginData = {
         logOnOptions:  Object.values(controller.data.logininfo)[index], // TODO: This could be an issue later when the index could change at runtime
         logOnTries:    0,
+        relogTries:    0, // Amount of times logOns have been retried after relogTimeout. handleRelog() attempts to cycle proxies after enough failures
         waitingFor2FA: false, // Set by sessionHandler's handle2FA helper to prevent handleLoginTimeout from triggering
         proxyIndex:    proxyIndex,
         proxy:         controller.data.proxies[proxyIndex]
+    };
+
+    /**
+     * Stores the timestamp and reason of the last disconnect. This is used by handleRelog() to take proper action
+     */
+    this.lastDisconnect = {
+        timestamp: 0,
+        reason: ""
     };
 
     // Define the log message prefix of this account in order to
@@ -91,6 +100,7 @@ const Bot = function(controller, index) {
     require("./helpers/checkMsgBlock.js");
     require("./helpers/handleLoginTimeout.js");
     require("./helpers/handleMissingGameLicenses.js");
+    require("./helpers/handleRelog.js");
     require("./helpers/steamChatInteraction.js");
 
     // Create sessionHandler object for this account
@@ -232,6 +242,11 @@ Bot.prototype.handleLoginTimeout = function() {};
  * Handles checking for missing game licenses, requests them and then starts playing
  */
 Bot.prototype.handleMissingGameLicenses = function() {};
+
+/**
+ * Attempts to get this account, after failing all logOnRetries, back online after some time. Does not apply to initial logins.
+ */
+Bot.prototype.handleRelog = function() {};
 
 /**
  * Our commandHandler respondModule implementation - Sends a message to a Steam user

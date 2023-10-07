@@ -308,7 +308,7 @@
         {
             "path": "src/bot/bot.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/bot.js",
-            "checksum": "41f182986a71d139925288d65cda4173"
+            "checksum": "2ad6cc587383f80fed8dd83315286b18"
         },
         {
             "path": "src/bot/events/debug.js",
@@ -318,12 +318,12 @@
         {
             "path": "src/bot/events/disconnected.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/disconnected.js",
-            "checksum": "13c78263b5d3fe30a7a7d2d7e672901d"
+            "checksum": "8e9284fe314cff4a26ba8ab358c94e73"
         },
         {
             "path": "src/bot/events/error.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/error.js",
-            "checksum": "c07a5c0014337c5b1727ab491e5c6d68"
+            "checksum": "58601f24a504158a4d350e1086ecd224"
         },
         {
             "path": "src/bot/events/friendMessage.js",
@@ -343,7 +343,7 @@
         {
             "path": "src/bot/events/webSession.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/webSession.js",
-            "checksum": "b7c4b43e9936f11d4a051a8b1d42db08"
+            "checksum": "9a4caafdde3fbc7ea5102d06b64ae2d8"
         },
         {
             "path": "src/bot/helpers/checkMsgBlock.js",
@@ -353,12 +353,17 @@
         {
             "path": "src/bot/helpers/handleLoginTimeout.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/helpers/handleLoginTimeout.js",
-            "checksum": "66e2480d4f2b4fff01f2b9f19defac8a"
+            "checksum": "6914d61dc5e2ed3745f4838cadae7148"
         },
         {
             "path": "src/bot/helpers/handleMissingGameLicenses.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/helpers/handleMissingGameLicenses.js",
             "checksum": "5761487cd1f889ac6db2d61a5b5b7f3e"
+        },
+        {
+            "path": "src/bot/helpers/handleRelog.js",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/helpers/handleRelog.js",
+            "checksum": "ee7a9250e4839e5c7015f0eb19a40861"
         },
         {
             "path": "src/bot/helpers/steamChatInteraction.js",
