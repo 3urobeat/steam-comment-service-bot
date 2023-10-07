@@ -164,6 +164,12 @@ Check for friends who haven't requested comments in `config.unfriendtime` days a
 Retrieves all bot accounts whose status matches the `statusFilter` parameter.  
 By default, or if `!mapToObject`, an array containing a reference to every bot will be returned.
 
+## getBotsPerProxy(filterInactive?): Array
+- `filterInactive` (boolean) - Set to true to remove inactive proxies. A proxy is deemed inactive if it is unused or all associated bot accounts are not ONLINE.
+
+Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.  
+Bot accounts mapped to their associated proxy.
+
 ### _handleErrors(): void
 Internal:  
 Handles process's unhandledRejection & uncaughtException error events.  

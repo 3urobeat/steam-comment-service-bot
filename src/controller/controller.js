@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.09.2023 21:51:27
+ * Last Modified: 07.10.2023 12:08:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -426,6 +426,13 @@ Controller.prototype._lastcommentUnfriendCheck = function() {} // eslint-disable
  * @returns {Array|object} An array or object if `mapToObject == true` containing all matching bot accounts.
  */
 Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObject = false) {}; // eslint-disable-line
+
+/**
+ * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
+ * @param {boolean} [filterInactive=false] Set to true to remove inactive proxies. A proxy is deemed inactive if it is unused or all associated bot accounts are not ONLINE.
+ * @returns {Array.<{ proxyIndex: number, proxy: string, bots: Array.<Bot> }>} Bot accounts mapped to their associated proxy
+ */
+Controller.prototype.getBotsPerProxy = function(filterInactive = false) {}; // eslint-disable-line
 
 /**
  * Internal: Handles process's unhandledRejection & uncaughtException error events.
