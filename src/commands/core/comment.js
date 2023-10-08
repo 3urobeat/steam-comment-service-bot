@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.10.2023 23:34:56
+ * Last Modified: 07.10.2023 23:37:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -67,7 +67,7 @@ module.exports.comment = {
         let owners = commandHandler.data.cachefile.ownerid;
         if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-        let requesterID = resInfo.userID;
+        let requesterID        = resInfo.userID;
         let receiverSteamID64  = requesterID;
         let ownercheck         = owners.includes(requesterID);
 

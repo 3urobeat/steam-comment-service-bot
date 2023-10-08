@@ -53,7 +53,7 @@
         {
             "path": "README.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/README.md",
-            "checksum": "d274d3ab808cf13911e5690e608d1fbf"
+            "checksum": "6bb04bb40d687d36fc4a54513a329a14"
         },
         {
             "path": "docs/dev/README.md",
@@ -308,7 +308,7 @@
         {
             "path": "src/bot/bot.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/bot.js",
-            "checksum": "2ad6cc587383f80fed8dd83315286b18"
+            "checksum": "c2edc2ddecd87d57389ea5fb6eaedea0"
         },
         {
             "path": "src/bot/events/debug.js",
@@ -383,17 +383,17 @@
         {
             "path": "src/commands/core/comment.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/comment.js",
-            "checksum": "6967058c0bcc4e81a2d96a499b29575c"
+            "checksum": "e37236f4b9ce3ce7df22296d55b3ccd9"
         },
         {
             "path": "src/commands/core/favorite.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/favorite.js",
-            "checksum": "ccaa3910db84606f1e2083fbbf8d2766"
+            "checksum": "eb53fadec0f77b09f037ee2780d53a1f"
         },
         {
             "path": "src/commands/core/follow.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/follow.js",
-            "checksum": "22765de0d2b97aef0bb95d1a6de464c3"
+            "checksum": "74a1a3219c5b6f7a60a93ff8a28a454d"
         },
         {
             "path": "src/commands/core/friend.js",
@@ -428,7 +428,7 @@
         {
             "path": "src/commands/core/vote.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/vote.js",
-            "checksum": "9642aad5f5c819fd13953e8a3f1a3816"
+            "checksum": "14c60989eed5c9743a733270b314284b"
         },
         {
             "path": "src/commands/helpers/getCommentArgs.js",
@@ -528,7 +528,7 @@
         {
             "path": "src/controller/helpers/misc.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/misc.js",
-            "checksum": "9951f92e19149fa4613669ea6ef6b44b"
+            "checksum": "af5f340609cdb8674df993e23b505c84"
         },
         {
             "path": "src/controller/helpers/npminteraction.js",

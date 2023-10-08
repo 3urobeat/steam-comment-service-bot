@@ -4,7 +4,7 @@
  * Created Date: 02.06.2023 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 07.10.2023 23:34:56
+ * Last Modified: 07.10.2023 23:37:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -59,7 +59,7 @@ module.exports.favorite = {
         if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
         let requesterID = resInfo.userID;
-        let ownercheck         = owners.includes(requesterID);
+        let ownercheck  = owners.includes(requesterID);
 
 
         /* --------- Various checks  --------- */
@@ -249,7 +249,7 @@ module.exports.unfavorite = {
         if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
         let requesterID = resInfo.userID;
-        let ownercheck         = owners.includes(requesterID);
+        let ownercheck  = owners.includes(requesterID);
 
 
         /* --------- Various checks  --------- */

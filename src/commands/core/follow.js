@@ -4,7 +4,7 @@
  * Created Date: 24.09.2023 15:04:33
  * Author: 3urobeat
  *
- * Last Modified: 07.10.2023 23:34:56
+ * Last Modified: 07.10.2023 23:38:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -59,7 +59,7 @@ module.exports.follow = {
         if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
         let requesterID = resInfo.userID;
-        let ownercheck         = owners.includes(requesterID);
+        let ownercheck  = owners.includes(requesterID);
 
 
         /* --------- Various checks  --------- */
@@ -243,7 +243,7 @@ module.exports.unfollow = {
         if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
         let requesterID = resInfo.userID;
-        let ownercheck         = owners.includes(requesterID);
+        let ownercheck  = owners.includes(requesterID);
 
 
         /* --------- Various checks  --------- */

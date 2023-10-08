@@ -1,6 +1,6 @@
 <div align="center" markdown=1>
 	<p align="center"><img width=45% src="https://3urobeat.com/comment-bot/steamLogo.png"></p>
-	<strong>Request tons of comments, favs, likes & follows by texting a bot network!</strong>
+	<strong>Manage accounts and request tons of comments, favs, likes & follows by texting a bot network!</strong>
 	<br>See how to set up the bot and customize it below.<br>
 	<p></p>
 </div>

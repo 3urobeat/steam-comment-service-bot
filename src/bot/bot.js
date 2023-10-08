@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.10.2023 16:58:36
+ * Last Modified: 08.10.2023 17:47:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -17,10 +17,11 @@
 
 const SteamUser      = require("steam-user");
 const SteamCommunity = require("steamcommunity");
-const request        = require("request"); // Yes I know, the library is deprecated but steamcommunity uses it as well so it is being used anyway
+const request        = require("request"); // Yes I know, the library is deprecated but we must wait for node-steamcommunity to drop the lib as well
 
 const EStatus        = require("./EStatus.js");
 const Controller     = require("../controller/controller.js"); // eslint-disable-line
+const DataManager    = require("../dataManager/dataManager.js"); // eslint-disable-line
 const SessionHandler = require("../sessions/sessionHandler.js");
 
 
