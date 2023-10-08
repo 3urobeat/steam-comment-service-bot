@@ -4,7 +4,7 @@
  * Created Date: 25.03.2023 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 08.10.2023 01:23:12
+ * Last Modified: 08.10.2023 16:59:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -93,7 +93,7 @@ module.exports.timeToString = (timestamp) => {
 
 
 /**
- * Pings a *https* URL to check if the service and this internet connection is working
+ * Pings a **https** URL to check if the service and this internet connection is working
  * @param {string} url The URL of the service to check
  * @param {boolean} [throwTimeout=false] If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
  * @param {{ ip: string, port: number, username: string, password: string }} [proxy] Provide a proxy if the connection check should be made through a proxy instead of the local connection
@@ -157,6 +157,40 @@ module.exports.checkConnection = (url, throwTimeout = false, proxy) => {
         }
 
     });
+};
+
+
+/**
+ * Splits a HTTP proxy URL into its parts
+ * @param {string} url The HTTP proxy URL
+ * @returns {{ ip: string, port: number, username: string, password: string }} Object containing the proxy parts
+ */
+module.exports.splitProxyString = (url) => { // TODO: Missing authentication could perhaps cause errors here
+
+    let obj = { ip: "", port: 0, username: "", password: "" };
+
+    if (!url) return obj;
+
+    // Cut away http prefix
+    url = url.replace("http://", "");
+
+    // Split at @ to get username:pw and ip:port parts
+    url = url.split("@");
+
+    // Split both parts at : to separate the 4 different elements
+    let usernamePassword = url[0].split(":");
+    let ipPort           = url[1].split(":");
+
+    // Extract ip and port from ipPort and username and password from usernamePassword
+    obj.ip   = ipPort[0];
+    obj.port = ipPort[1];
+
+    obj.username = usernamePassword[0];
+    obj.password = usernamePassword[1];
+
+    // Return result
+    return obj;
+
 };
 
 

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 08.10.2023 01:21:04
+ * Last Modified: 08.10.2023 16:56:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -63,6 +63,13 @@ const Controller = function() {
          * @returns {Promise.<{ statusMessage: string, statusCode: number|null }>} Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
          */
         checkConnection: (url, throwTimeout = false, proxy) => {}, // eslint-disable-line
+
+        /**
+         * Splits a HTTP proxy URL into its parts
+         * @param {string} url The HTTP proxy URL
+         * @returns {{ ip: string, port: number, username: string, password: string }} Object containing the proxy parts
+         */
+        splitProxyString: (url) => {}, // eslint-disable-line
 
         /**
          * Helper function which attempts to cut Strings intelligently and returns all parts. It will attempt to not cut words & links in half.

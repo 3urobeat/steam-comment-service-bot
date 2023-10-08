@@ -46,12 +46,19 @@ Returns the rounded number as number.
 Converts a timestamp to a human-readable "until from now" format.  
 Returns the timestamp converted to "x seconds/minutes/hours/days".
 
-### checkConnection(url, throwTimeout): Promise
+### checkConnection(url, throwTimeout, proxy): Promise
 - `url` (string) - The URL of the service to check
-- `throwTimeout` (boolean) - If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
+- `throwTimeout` (boolean) - Optional: If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
+- `proxy` ({ ip: string, port: number, username: string, password: string }) - Optional: Provide a proxy if the connection check should be made through a proxy instead of the local connection
 
-Pings an URL to check if the service and the user's internet connection is working.  
+Pings a **https** URL to check if the service and the user's internet connection is working.  
 Returns a Promise which will be resolved on response code 2xx and rejected otherwise. Both are called with an object containing `statusMessage`: string and `statusCode`: number | null.
+
+### splitProxyString(url): object
+- `url` (string) - The HTTP proxy URL
+
+Splits a HTTP proxy URL into its parts.  
+Returns an object containing these parts: `{ ip: string, port: number, username: string, password: string }`
 
 ### cutStringsIntelligently(txt, limit, cutChars?, threshold?): string[]
 - `txt` (string) - The string to cut

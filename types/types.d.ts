@@ -698,12 +698,20 @@ declare function round(value: number, decimals: number): number;
 declare function timeToString(timestamp: number): string;
 
 /**
- * Pings an URL to check if the service and this internet connection is working
+ * Pings a **https** URL to check if the service and this internet connection is working
  * @param url - The URL of the service to check
- * @param throwTimeout - If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
+ * @param [throwTimeout = false] - If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
+ * @param [proxy] - Provide a proxy if the connection check should be made through a proxy instead of the local connection
  * @returns Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
  */
-declare function checkConnection(url: string, throwTimeout: boolean): Promise<{ statusMessage: string; statusCode: number | null; }>;
+declare function checkConnection(url: string, throwTimeout?: boolean, proxy?: any): Promise<{ statusMessage: string; statusCode: number | null; }>;
+
+/**
+ * Splits a HTTP proxy URL into its parts
+ * @param url - The HTTP proxy URL
+ * @returns Object containing the proxy parts
+ */
+declare function splitProxyString(url: string): any;
 
 /**
  * Helper function which attempts to cut Strings intelligently and returns all parts. It will attempt to not cut words & links in half.
