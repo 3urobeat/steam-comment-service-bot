@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 10.10.2023 16:57:59
+ * Last Modified: 10.10.2023 22:16:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -127,7 +127,7 @@ DataManager.prototype._loadDataManagerFiles = function() {
         // The files need to be explicitly defined for restoring using checkAndGetFile to work
         const helperPaths = [
             "dataCheck.js", "dataExport.js", "dataImport.js", "dataIntegrity.js", "dataProcessing.js",
-            "helpers/getLang.js", "helpers/getQuote.js", "helpers/handleCooldowns.js", "helpers/handleExpiringTokens.js", "helpers/misc.js", "helpers/refreshCache.js", "helpers/repairFile.js"
+            "helpers/checkProxies.js", "helpers/getLang.js", "helpers/getQuote.js", "helpers/handleCooldowns.js", "helpers/handleExpiringTokens.js", "helpers/misc.js", "helpers/refreshCache.js", "helpers/repairFile.js"
         ];
 
         helperPaths.forEach(async (e, i) => {
@@ -205,6 +205,19 @@ DataManager.prototype.verifyIntegrity = function() {};
  * Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
  */
 DataManager.prototype.processData = async function() {};
+
+/**
+ * Checks if a proxy can reach steamcommunity.com and updates its isOnline and lastOnlineCheck
+ * @param {number} proxyIndex Index of the proxy to check in the DataManager proxies array
+ * @returns {boolean} True if the proxy can reach steamcommunity.com, false otherwise.
+ */
+DataManager.prototype.checkProxy = async function(proxyIndex) {}; // eslint-disable-line
+
+/**
+ * Checks all proxies if they can reach steamcommunity.com and updates their entries
+ * @returns {Promise.<void>} Resolves when all proxies have been checked
+ */
+DataManager.prototype.checkAllProxies = async function() {};
 
 /**
  * Retrieves a language string from one of the available language files and replaces keywords if desired.

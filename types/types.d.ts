@@ -151,6 +151,11 @@ declare class Bot {
      */
     handleMissingGameLicenses(): void;
     /**
+     * Changes the proxy of this bot account and relogs it.
+     * @param newProxyIndex - Index of the new proxy inside the DataManager.proxies array.
+     */
+    switchProxy(newProxyIndex: number): void;
+    /**
      * Attempts to get this account, after failing all logOnRetries, back online after some time. Does not apply to initial logins.
      */
     handleRelog(): void;
@@ -825,7 +830,7 @@ declare class DataManager {
     /**
      * Stores all proxies provided via the `proxies.txt` file.
      */
-    proxies: string[];
+    proxies: { proxy: string; proxyIndex: number; isOnline: boolean; lastOnlineCheck: number; }[];
     /**
      * Stores IDs from config files converted at runtime and backups for all config & data files.
      */
@@ -913,6 +918,17 @@ declare class DataManager {
      */
     processData(): void;
     /**
+     * Checks if a proxy can reach steamcommunity.com and updates its isOnline and lastOnlineCheck
+     * @param proxyIndex - Index of the proxy to check in the DataManager proxies array
+     * @returns True if the proxy can reach steamcommunity.com, false otherwise.
+     */
+    checkProxy(proxyIndex: number): boolean;
+    /**
+     * Checks all proxies if they can reach steamcommunity.com and updates their entries
+     * @returns Resolves when all proxies have been checked
+     */
+    checkAllProxies(): Promise<void>;
+    /**
      * Retrieves a language string from one of the available language files and replaces keywords if desired.
      * If a userID is provided it will lookup which language the user has set. If nothing is set, the default language set in the config will be returned.
      * @param str - Name of the language string to be retrieved
@@ -984,6 +1000,17 @@ declare class DataManager {
      * Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
      */
     processData(): void;
+    /**
+     * Checks if a proxy can reach steamcommunity.com and updates its isOnline and lastOnlineCheck
+     * @param proxyIndex - Index of the proxy to check in the DataManager proxies array
+     * @returns True if the proxy can reach steamcommunity.com, false otherwise.
+     */
+    checkProxy(proxyIndex: number): boolean;
+    /**
+     * Checks all proxies if they can reach steamcommunity.com and updates their entries
+     * @returns Resolves when all proxies have been checked
+     */
+    checkAllProxies(): Promise<void>;
     /**
      * Retrieves a language string from one of the available language files and replaces keywords if desired.
      * If a userID is provided it will lookup which language the user has set. If nothing is set, the default language set in the config will be returned.
