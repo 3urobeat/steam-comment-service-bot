@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 28.09.2023 22:36:54
+ * Last Modified: 10.10.2023 17:59:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -225,6 +225,11 @@ DataManager.prototype._importFromDisk = async function () {
                 if (proxies.length > 0 && proxies[0].startsWith("//Comment")) proxies = proxies.slice(1); // Remove comment from array
 
                 if (_this.advancedconfig.useLocalIP) proxies.unshift(null); // Add no proxy (local ip) if useLocalIP is true
+
+                // Restructure array into array of objects
+                proxies.forEach((e, i) => {
+                    proxies[i] = { proxyIndex: i, proxy: e, isOnline: true, lastOnlineCheck: 0 };
+                });
 
                 // Check if no proxies were found (can only be the case when useLocalIP is false)
                 if (proxies.length == 0) {

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 08.10.2023 17:47:39
+ * Last Modified: 10.10.2023 17:37:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -74,7 +74,7 @@ const Bot = function(controller, index) {
         relogTries:    0, // Amount of times logOns have been retried after relogTimeout. handleRelog() attempts to cycle proxies after enough failures
         waitingFor2FA: false, // Set by sessionHandler's handle2FA helper to prevent handleLoginTimeout from triggering
         proxyIndex:    proxyIndex,
-        proxy:         controller.data.proxies[proxyIndex]
+        proxy:         controller.data.proxies[proxyIndex].proxy
     };
 
     /**

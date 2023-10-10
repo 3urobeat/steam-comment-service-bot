@@ -4,7 +4,7 @@
  * Created Date: 02.05.2023 13:46:21
  * Author: 3urobeat
  *
- * Last Modified: 07.10.2023 12:07:56
+ * Last Modified: 10.10.2023 17:34:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -55,7 +55,7 @@ Controller.prototype.getBotsPerProxy = function(filterInactive = false) {
     // Prefill mappedProxies
     let mappedProxies = [];
 
-    this.data.proxies.forEach((e, i) => mappedProxies.push({ proxyIndex: i, proxy: e, bots: [] }));
+    this.data.proxies.forEach((e) => mappedProxies.push({ proxyIndex: e.proxyIndex, proxy: e.proxy, bots: [] }));
 
     // Find associated proxies
     accs.forEach((e) => {

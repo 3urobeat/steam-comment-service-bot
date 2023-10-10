@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 24.09.2023 18:10:08
+ * Last Modified: 10.10.2023 16:57:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -68,7 +68,7 @@ const DataManager = function (controller) {
 
     /**
      * Stores all proxies provided via the `proxies.txt` file.
-     * @type {Array.<string>}
+     * @type {Array.<{ proxy: string, proxyIndex: number, isOnline: boolean, lastOnlineCheck: number }>}
      */
     this.proxies = [];
 
