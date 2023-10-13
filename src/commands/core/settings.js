@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 13.09.2023 21:09:09
+ * Last Modified: 14.10.2023 00:31:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -188,9 +188,24 @@ module.exports.settings = {
 
                 if (args[0] == "playinggames") {
                     logger("info", "Refreshing game status of all bot accounts...");
+
                     commandHandler.controller.getBots().forEach((e) => {
                         if (e.index == 0) e.user.gamesPlayed(config.playinggames); // Set game only for the main bot
-                        if (e.index != 0 && config.childaccsplaygames) e.user.gamesPlayed(config.playinggames.slice(1, config.playinggames.length)); // Play game with child bots but remove the custom game
+
+                        if (e.index != 0 && config.childaccsplaygames) { // Set game for child accounts
+
+                            // Check if user provided games specifically for this account. We only need to check this for child accounts
+                            let configChildGames = config.childaccplayinggames;
+
+                            if (typeof configChildGames[0] == "object") {
+                                if (Object.keys(configChildGames[0]).includes(e.loginData.logOnOptions.accountName)) configChildGames = configChildGames[0][e.loginData.logOnOptions.accountName]; // Get the specific settings for this account if included
+                                    else configChildGames = configChildGames.slice(1);                                                                                                             // ...otherwise remove object containing acc specific settings to use the generic ones
+
+                                logger("debug", `settings: Setting includes specific games for ${e.logPrefix}, filtered for this account: ${configChildGames.join(", ")}`);
+                            }
+
+                            e.user.gamesPlayed(configChildGames);
+                        }
                     });
                 }
 
