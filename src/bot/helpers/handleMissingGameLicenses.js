@@ -4,7 +4,7 @@
  * Created Date: 29.06.2023 21:31:53
  * Author: 3urobeat
  *
- * Last Modified: 05.09.2023 20:10:36
+ * Last Modified: 13.10.2023 23:49:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -44,7 +44,7 @@ Bot.prototype.handleMissingGameLicenses = function() {
             }
 
             // Check if we are missing a license
-            let missingLicenses = this.data.config.playinggames.filter(e => !isNaN(e) && res.apps.filter(f => f.appid == e).length == 0);
+            let missingLicenses = options.filterAppids.filter(e => !isNaN(e) && res.apps.filter(f => f.appid == e).length == 0);
 
             // Redeem missing licenses or start playing if none are missing. Event will get triggered again on change.
             if (missingLicenses.length > 0) {
