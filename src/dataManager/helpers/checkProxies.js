@@ -4,7 +4,7 @@
  * Created Date: 09.10.2023 21:08:13
  * Author: 3urobeat
  *
- * Last Modified: 10.10.2023 22:12:47
+ * Last Modified: 14.10.2023 10:41:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -46,13 +46,16 @@ DataManager.prototype.checkProxy = async function(proxyIndex) {
 
 /**
  * Checks all proxies if they can reach steamcommunity.com and updates their entries
+ * @param {number} [ignoreLastCheckedWithin=0] Ignore proxies that have already been checked in less than `ignoreLastCheckedWithin` ms
  * @returns {Promise.<void>} Resolves when all proxies have been checked
  */
-DataManager.prototype.checkAllProxies = async function() {
+DataManager.prototype.checkAllProxies = async function(ignoreLastCheckedWithin = 0) {
     let promiseArr = [];
 
     // Iterate over all proxies and call this.checkProxies(). We don't need any delay here as all requests go over different IPs
     this.proxies.forEach((e) => {
+        if (ignoreLastCheckedWithin && ignoreLastCheckedWithin + e.lastOnlineCheck > Date.now()) return; // Ignore proxy if it has been checked recently
+
         promiseArr.push(this.checkProxy(e.proxyIndex));
     });
 

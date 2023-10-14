@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 10.10.2023 22:16:36
+ * Last Modified: 14.10.2023 10:43:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -215,9 +215,10 @@ DataManager.prototype.checkProxy = async function(proxyIndex) {}; // eslint-disa
 
 /**
  * Checks all proxies if they can reach steamcommunity.com and updates their entries
+ * @param {number} [ignoreLastCheckedWithin=0] Ignore proxies that have already been checked in less than `ignoreLastCheckedWithin` ms
  * @returns {Promise.<void>} Resolves when all proxies have been checked
  */
-DataManager.prototype.checkAllProxies = async function() {};
+DataManager.prototype.checkAllProxies = async function(ignoreLastCheckedWithin = 0) {}; // eslint-disable-line
 
 /**
  * Retrieves a language string from one of the available language files and replaces keywords if desired.

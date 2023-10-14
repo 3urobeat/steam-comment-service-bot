@@ -925,9 +925,10 @@ declare class DataManager {
     checkProxy(proxyIndex: number): boolean;
     /**
      * Checks all proxies if they can reach steamcommunity.com and updates their entries
+     * @param [ignoreLastCheckedWithin = 0] - Ignore proxies that have already been checked in less than `ignoreLastCheckedWithin` ms
      * @returns Resolves when all proxies have been checked
      */
-    checkAllProxies(): Promise<void>;
+    checkAllProxies(ignoreLastCheckedWithin?: number): Promise<void>;
     /**
      * Retrieves a language string from one of the available language files and replaces keywords if desired.
      * If a userID is provided it will lookup which language the user has set. If nothing is set, the default language set in the config will be returned.
@@ -1008,9 +1009,10 @@ declare class DataManager {
     checkProxy(proxyIndex: number): boolean;
     /**
      * Checks all proxies if they can reach steamcommunity.com and updates their entries
+     * @param [ignoreLastCheckedWithin = 0] - Ignore proxies that have already been checked in less than `ignoreLastCheckedWithin` ms
      * @returns Resolves when all proxies have been checked
      */
-    checkAllProxies(): Promise<void>;
+    checkAllProxies(ignoreLastCheckedWithin?: number): Promise<void>;
     /**
      * Retrieves a language string from one of the available language files and replaces keywords if desired.
      * If a userID is provided it will lookup which language the user has set. If nothing is set, the default language set in the config will be returned.
