@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.10.2023 17:37:34
+ * Last Modified: 15.10.2023 17:38:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -163,9 +163,12 @@ Bot.prototype._loginToSteam = async function() {
     // Count this attempt
     this.loginData.logOnTries++;
 
+    // Find proxyIndex from steam-user object options instead of loginData to get reliable log data
+    let thisProxy = this.data.proxies.find((e) => e.proxy == this.user.options.httpProxy);
+
     // Log login message for this account, with mentioning proxies or without
-    if (!this.loginData.proxy) logger("info", `[${this.logPrefix}] Trying to log in without proxy... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
-        else logger("info", `[${this.logPrefix}] Trying to log in with proxy ${this.loginData.proxyIndex}... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+    if (!thisProxy.proxy) logger("info", `[${this.logPrefix}] Trying to log in without proxy... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+        else logger("info", `[${this.logPrefix}] Trying to log in with proxy ${thisProxy.proxyIndex}... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
 
     // Attach loginTimeout handler
     this.handleLoginTimeout();
@@ -243,6 +246,18 @@ Bot.prototype.handleLoginTimeout = function() {};
  * Handles checking for missing game licenses, requests them and then starts playing
  */
 Bot.prototype.handleMissingGameLicenses = function() {};
+
+/**
+ * Changes the proxy of this bot account and relogs it.
+ * @param {number} newProxyIndex Index of the new proxy inside the DataManager.proxies array.
+ */
+Bot.prototype.switchProxy = function(newProxyIndex) {}; // eslint-disable-line
+
+/**
+ * Checks host internet connection, updates the status of all proxies checked >2.5 min ago and switches the proxy of this bot account if necessary.
+ * @returns {Promise.<boolean>} Resolves with a boolean indicating whether the proxy was switched when done. A relog is triggered when the proxy was switched.
+ */
+Bot.prototype.checkAndSwitchMyProxy = async function() {};
 
 /**
  * Attempts to get this account, after failing all logOnRetries, back online after some time. Does not apply to initial logins.

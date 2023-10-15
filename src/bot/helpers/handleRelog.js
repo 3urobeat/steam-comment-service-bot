@@ -4,7 +4,7 @@
  * Created Date: 05.10.2023 16:14:46
  * Author: 3urobeat
  *
- * Last Modified: 15.10.2023 11:44:40
+ * Last Modified: 15.10.2023 17:24:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -26,6 +26,8 @@ const Bot = require("../bot");
  * @param {number} newProxyIndex Index of the new proxy inside the DataManager.proxies array.
  */
 Bot.prototype.switchProxy = function(newProxyIndex) {
+
+    if (!newProxyIndex) return new Error("newProxyIndex is undefined");
 
     logger("info", `[${this.logPrefix}] Switching proxy from ${this.loginData.proxyIndex} to ${newProxyIndex}. The bot account will relog in a moment...`);
 

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 14.10.2023 14:41:13
+ * Last Modified: 15.10.2023 17:05:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -53,7 +53,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
             // Check if this is an intended logoff
             if (this.controller.info.relogAfterDisconnect && !this.controller.info.skippedaccounts.includes(this.loginData.logOnOptions.accountName)) {
-                logger("info", `${logger.colors.fggreen}[${this.logPrefix}] Initiating a relog in ${this.controller.data.advancedconfig.loginRetryTimeout / 1000} seconds.`); // Announce relog
+                logger("info", `${logger.colors.fggreen}[${this.logPrefix}] Initiating a login retry in ${this.controller.data.advancedconfig.loginRetryTimeout / 1000} seconds.`); // Announce relog
 
                 setTimeout(() => this.controller.login(), this.controller.data.advancedconfig.loginRetryTimeout); // Relog after waiting loginRetryTimeout ms
             } else {

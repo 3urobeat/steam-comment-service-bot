@@ -85,6 +85,16 @@ declare class Bot {
      */
     handleMissingGameLicenses(): void;
     /**
+     * Changes the proxy of this bot account and relogs it.
+     * @param newProxyIndex - Index of the new proxy inside the DataManager.proxies array.
+     */
+    switchProxy(newProxyIndex: number): void;
+    /**
+     * Checks host internet connection, updates the status of all proxies checked >2.5 min ago and switches the proxy of this bot account if necessary.
+     * @returns Resolves with a boolean indicating whether the proxy was switched when done. A relog is triggered when the proxy was switched.
+     */
+    checkAndSwitchMyProxy(): Promise<boolean>;
+    /**
      * Attempts to get this account, after failing all logOnRetries, back online after some time. Does not apply to initial logins.
      */
     handleRelog(): void;
