@@ -4,7 +4,7 @@
  * Created Date: 05.10.2023 16:14:46
  * Author: 3urobeat
  *
- * Last Modified: 15.10.2023 18:53:09
+ * Last Modified: 15.10.2023 20:15:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -104,7 +104,7 @@ Bot.prototype.checkAndSwitchMyProxy = async function() {
         logger("warn", `[${this.logPrefix}] Failed to ping Steam using proxy ${this.loginData.proxyIndex}! Switched to proxy ${leastUsedProxy.proxyIndex} which currently has the least amount of usage and appears to be online.`);
 
 
-        // Switch proxy and instantly queue a login. I'm not sure if the disconnect event is triggered when bot is already offline so let's set status and call login() manually
+        // Switch proxy and relog, no need for handleRelog() to do something
         this.switchProxy(leastUsedProxy.proxyIndex);
         this.status = Bot.EStatus.OFFLINE;
         this.controller.login();

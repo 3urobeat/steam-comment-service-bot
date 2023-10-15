@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.09.2023 17:12:52
+ * Last Modified: 15.10.2023 19:52:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -52,7 +52,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
                     this.sendChatMessage(this, resInfo, this.controller.data.datafile.aboutstr);
                     break;
                 default:
-                    if (message.startsWith(resInfo.cmdprefix)) this.sendChatMessage(this, resInfo, `${this.controller.data.getLang("childbotmessage", { "cmdprefix": resInfo.cmdprefix }, steamID64)}\nhttps://steamcommunity.com/profiles/${new SteamID(String(this.controller.main.user.steamID)).getSteamID64()}`);
+                    if (message.startsWith(resInfo.cmdprefix)) this.sendChatMessage(this, resInfo, `${await this.controller.data.getLang("childbotmessage", { "cmdprefix": resInfo.cmdprefix }, steamID64)}\nhttps://steamcommunity.com/profiles/${new SteamID(String(this.controller.main.user.steamID)).getSteamID64()}`);
                         else logger("debug", `[${this.logPrefix}] Chat message is not a command, ignoring message.`);
             }
 
