@@ -4,7 +4,7 @@
  * Created Date: 05.10.2023 16:14:46
  * Author: 3urobeat
  *
- * Last Modified: 15.10.2023 17:24:30
+ * Last Modified: 15.10.2023 18:53:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -41,6 +41,16 @@ Bot.prototype.switchProxy = function(newProxyIndex) {
     // Recreate user and community object with new proxy
     this.user      = new SteamUser({ autoRelogin: false, renewRefreshTokens: true, httpProxy: this.loginData.proxy, protocol: SteamUser.EConnectionProtocol.WebSocket });
     this.community = new SteamCommunity({ request: request.defaults({ "proxy": this.loginData.proxy }) });
+
+    // Attach event listeners again. The old ones are taken care of by the Garbage Collector because the object gets destroyed
+    this._attachSteamDebugEvent();
+    this._attachSteamDisconnectedEvent();
+    this._attachSteamErrorEvent();
+    this._attachSteamFriendMessageEvent();
+    this._attachSteamLoggedOnEvent();
+    this._attachSteamFriendRelationshipEvent();
+    this._attachSteamGroupRelationshipEvent();
+    this._attachSteamWebSessionEvent();
 
 };
 
