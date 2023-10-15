@@ -4,7 +4,7 @@
  * Created Date: 02.05.2023 13:46:21
  * Author: 3urobeat
  *
- * Last Modified: 10.10.2023 17:34:48
+ * Last Modified: 15.10.2023 11:07:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -44,10 +44,10 @@ Controller.prototype.getBots = function(statusFilter, mapToObject) {
 
 /**
  * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
- * @param {boolean} [filterInactive=false] Set to true to remove inactive proxies. A proxy is deemed inactive if it is unused or all associated bot accounts are not ONLINE.
- * @returns {Array.<{ proxyIndex: number, proxy: string, bots: Array.<Bot> }>} Bot accounts mapped to their associated proxy
+ * @param {boolean} [filterOffline=false] Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
+ * @returns {Array.<{ bots: Array.<Bot>, proxy: string, proxyIndex: number, isOnline: boolean, lastOnlineCheck: number }>} Bot accounts mapped to their associated proxy
  */
-Controller.prototype.getBotsPerProxy = function(filterInactive = false) {
+Controller.prototype.getBotsPerProxy = function(filterOffline = false) {
 
     // Get all bot accounts
     let accs = this.getBots("*");
@@ -55,7 +55,7 @@ Controller.prototype.getBotsPerProxy = function(filterInactive = false) {
     // Prefill mappedProxies
     let mappedProxies = [];
 
-    this.data.proxies.forEach((e) => mappedProxies.push({ proxyIndex: e.proxyIndex, proxy: e.proxy, bots: [] }));
+    this.data.proxies.forEach((e) => mappedProxies.push({ bots: [], ...e }));
 
     // Find associated proxies
     accs.forEach((e) => {
@@ -65,22 +65,7 @@ Controller.prototype.getBotsPerProxy = function(filterInactive = false) {
     });
 
     // Filter inactive proxies if desired
-    if (filterInactive) {
-        let filteredArray = []; // Pushing elements that should not be filtered to a new array is easier than constantly splicing the existing one while iterating through it
-
-        mappedProxies.forEach((e) => {
-
-            // Test if every associated bot account is not online
-            let everyAccOffline = e.bots.every((f) => f.status != EStatus.ONLINE);
-
-            // Keep proxy if test returned false and bots is not empty
-            if (!everyAccOffline && e.bots.length != 0) filteredArray.push(e);
-
-        });
-
-        // Overwrite mappedProxies with filteredArray so the return below returns our filtered array
-        mappedProxies = filteredArray;
-    }
+    if (filterOffline) mappedProxies = mappedProxies.filter((e) => e.isOnline);
 
     // Return result
     return mappedProxies;

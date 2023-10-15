@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 08.10.2023 16:56:37
+ * Last Modified: 15.10.2023 11:13:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -437,10 +437,10 @@ Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObje
 
 /**
  * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
- * @param {boolean} [filterInactive=false] Set to true to remove inactive proxies. A proxy is deemed inactive if it is unused or all associated bot accounts are not ONLINE.
- * @returns {Array.<{ proxyIndex: number, proxy: string, bots: Array.<Bot> }>} Bot accounts mapped to their associated proxy
+ * @param {boolean} [filterOffline=false] Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
+ * @returns {Array.<{ bots: Array.<Bot>, proxy: string, proxyIndex: number, isOnline: boolean, lastOnlineCheck: number }>} Bot accounts mapped to their associated proxy
  */
-Controller.prototype.getBotsPerProxy = function(filterInactive = false) {}; // eslint-disable-line
+Controller.prototype.getBotsPerProxy = function(filterOffline = false) {}; // eslint-disable-line
 
 /**
  * Internal: Handles process's unhandledRejection & uncaughtException error events.
