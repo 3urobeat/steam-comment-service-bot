@@ -156,6 +156,11 @@ declare class Bot {
      */
     switchProxy(newProxyIndex: number): void;
     /**
+     * Checks host internet connection, updates the status of all proxies checked >2.5 min ago and switches the proxy of this bot account if necessary.
+     * @returns Resolves with a boolean indicating whether the proxy was switched when done. A relog is triggered when the proxy was switched.
+     */
+    checkAndSwitchMyProxy(): Promise<boolean>;
+    /**
      * Attempts to get this account, after failing all logOnRetries, back online after some time. Does not apply to initial logins.
      */
     handleRelog(): void;
@@ -554,10 +559,10 @@ declare class Controller {
     getBots(statusFilter?: EStatus | EStatus[] | string, mapToObject: boolean): any[] | any;
     /**
      * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
-     * @param [filterInactive = false] - Set to true to remove inactive proxies. A proxy is deemed inactive if it is unused or all associated bot accounts are not ONLINE.
+     * @param [filterOffline = false] - Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
      * @returns Bot accounts mapped to their associated proxy
      */
-    getBotsPerProxy(filterInactive?: boolean): { proxyIndex: number; proxy: string; bots: Bot[]; }[];
+    getBotsPerProxy(filterOffline?: boolean): { bots: Bot[]; proxy: string; proxyIndex: number; isOnline: boolean; lastOnlineCheck: number; }[];
     /**
      * Internal: Handles process's unhandledRejection & uncaughtException error events.
      * Should a NPM related error be detected it attempts to reinstall all packages using our npminteraction helper function
@@ -629,10 +634,10 @@ declare class Controller {
     getBots(statusFilter?: EStatus | EStatus[] | string, mapToObject: boolean): any[] | any;
     /**
      * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
-     * @param [filterInactive = false] - Set to true to remove inactive proxies. A proxy is deemed inactive if it is unused or all associated bot accounts are not ONLINE.
+     * @param [filterOffline = false] - Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
      * @returns Bot accounts mapped to their associated proxy
      */
-    getBotsPerProxy(filterInactive?: boolean): { proxyIndex: number; proxy: string; bots: Bot[]; }[];
+    getBotsPerProxy(filterOffline?: boolean): { bots: Bot[]; proxy: string; proxyIndex: number; isOnline: boolean; lastOnlineCheck: number; }[];
     /**
      * Internal: Handles process's unhandledRejection & uncaughtException error events.
      * Should a NPM related error be detected it attempts to reinstall all packages using our npminteraction helper function

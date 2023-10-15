@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 28.09.2023 22:42:36
+ * Last Modified: 14.10.2023 00:01:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -81,7 +81,7 @@ Controller.prototype._readyEvent = function() {
     if (Object.keys(this.pluginSystem.pluginList).length > 0) logger("", `${logger.colors.fgblack}>${logger.colors.reset} Successfully loaded ${Object.keys(this.pluginSystem.pluginList).length} plugins!`, true, false, null, false, true);
 
 
-    // Log which games the main and child bots are playing
+    // Log which games the main bot is playing
     let playinggames = "";
     if (this.data.config.playinggames[1]) playinggames = `(${this.data.config.playinggames.slice(1, this.data.config.playinggames.length)})`;
 

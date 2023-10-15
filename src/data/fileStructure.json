@@ -323,7 +323,7 @@
         {
             "path": "src/bot/events/error.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/error.js",
-            "checksum": "8b51195364680ae6f0226c8450052083"
+            "checksum": "2f2a6e6eccc72317a447bfac7c78a589"
         },
         {
             "path": "src/bot/events/friendMessage.js",
@@ -353,12 +353,12 @@
         {
             "path": "src/bot/helpers/handleLoginTimeout.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/helpers/handleLoginTimeout.js",
-            "checksum": "6914d61dc5e2ed3745f4838cadae7148"
+            "checksum": "08d684f7e3ea347fdd31a88e94aa461b"
         },
         {
             "path": "src/bot/helpers/handleMissingGameLicenses.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/helpers/handleMissingGameLicenses.js",
-            "checksum": "bc84148bf7a850401c475fe084dfec48"
+            "checksum": "841bf2256855624b39a5370a67c09bc0"
         },
         {
             "path": "src/bot/helpers/handleRelog.js",
@@ -488,7 +488,7 @@
         {
             "path": "src/controller/events/ready.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/events/ready.js",
-            "checksum": "daa3239717714e5ba0d02172c973aeb9"
+            "checksum": "146696c13d6020fdf9fc16041f1fc0d7"
         },
         {
             "path": "src/controller/events/statusUpdate.js",
@@ -803,7 +803,7 @@
         {
             "path": "types/types.d.ts",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/types/types.d.ts",
-            "checksum": "84bd00d49ac26209ed36f525d561d553"
+            "checksum": "ddc311324300935fdef40d26ca788d82"
         }
     ]
 }

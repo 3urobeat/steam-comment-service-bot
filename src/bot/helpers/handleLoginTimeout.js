@@ -4,7 +4,7 @@
  * Created Date: 03.11.2022 12:27:46
  * Author: 3urobeat
  *
- * Last Modified: 06.10.2023 11:47:38
+ * Last Modified: 14.10.2023 14:44:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -42,11 +42,7 @@ Bot.prototype.handleLoginTimeout = function() {
 
         // Check if all logOnRetries are used up and skip account
         if (this.loginData.logOnTries > this.data.advancedconfig.maxLogOnRetries) {
-            logger("", "", true);
-            logger("error", `Couldn't log in bot${this.index} after ${this.loginData.logOnTries} attempt(s). Error: Login attempt timed out and all available logOnRetries were used.`, true);
-
-            // Add additional messages for specific errors to hopefully help the user diagnose the cause
-            if (this.loginData.proxy != null) logger("", `        Is your proxy ${this.loginData.proxyIndex} offline or maybe blocked by Steam?`, true);
+            logger("error", `Couldn't log in bot${this.index} after ${this.loginData.logOnTries} attempt(s). Error: Login attempt timed out and all available logOnRetries were used.`);
 
             // Abort if bot0 failed on initial login or skip account
             if (this.index == 0 && this.controller.info.readyAfter == 0) {
@@ -65,7 +61,7 @@ Bot.prototype.handleLoginTimeout = function() {
         } else {
 
             // Force progress if account is stuck
-            logger("warn", `Detected timed out login attempt for bot${this.index}! Force progressing login attempt to avoid soft-locking the bot...`, true);
+            logger("warn", `Detected timed out login attempt for bot${this.index}! Force progressing login attempt to avoid soft-locking the bot...`, false, false, null, true);
 
             this.user.logOff(); // Call logOff() just to be sure
             if (this.sessionHandler.session) this.sessionHandler.session.cancelLoginAttempt(); // TODO: This might cause an error as idk if we are polling. Maybe use the timeout event of steam-session
