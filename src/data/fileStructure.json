@@ -423,7 +423,7 @@
         {
             "path": "src/commands/core/system.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/system.js",
-            "checksum": "29442b462ef1914d54f9a2de55616893"
+            "checksum": "62e984e12389b40d42d12d4f78a0c055"
         },
         {
             "path": "src/commands/core/vote.js",

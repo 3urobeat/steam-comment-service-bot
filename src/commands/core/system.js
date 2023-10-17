@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.09.2023 15:35:48
+ * Last Modified: 17.10.2023 23:11:07
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -195,28 +195,34 @@ module.exports.eval = {
 
         try {
             const code = args.join(" ");
-            if (code.includes("logininfo")) return respond(await commandHandler.data.getLang("evalcmdlogininfoblock", null, resInfo.userID)); // Not 100% safe but should be at least some protection (only owners can use this cmd)
+            if (code.includes("logininfo") || code.includes("logOnOptions") || code.includes("tokensDB")) return respond(await commandHandler.data.getLang("evalcmdlogininfoblock", null, resInfo.userID)); // Not 100% safe but should prevent accidental leaks (only owners can use this cmd)
 
             // Make using the command a little bit easier
             let controller = commandHandler.controller;      // eslint-disable-line
             let main       = commandHandler.controller.main; // eslint-disable-line
             let data       = commandHandler.data;            // eslint-disable-line
 
+            // Run code & convert to string
             let evaled = eval(code);
             if (typeof evaled !== "string") evaled = require("util").inspect(evaled);
+
+            // Sanitize result to filter logindata. This is not 100% safe but should prevent accidental leaks (only owners can use this cmd)
+            Object.values(commandHandler.data.logininfo).forEach((e) => {
+                evaled = evaled.replace(new RegExp(e.password, "g"), "\"censored\"");
+            });
 
             // Check for character limit and cut message
             let chatResult = clean(evaled);
 
-            if (chatResult.length >= 500) respond(`Code executed. Result:\n\n${chatResult.slice(0, 500)}.......\n\n\nResult too long for chat.`);
-                else respond(`Code executed. Result:\n\n${clean(evaled)}`);
+            if (chatResult.length >= 500) respond(`Code executed. Result:\n\n${chatResult.slice(0, 500)}.......\n\nResult too long for chat.`);
+                else respond(`Code executed. Result:\n\n${chatResult}`);
 
-            logger("info", `${logger.colors.fgyellow}Eval result:${logger.colors.reset} \n${clean(evaled)}\n`, true);
+            logger("info", `${logger.colors.fgyellow}Eval result:${logger.colors.reset} \n${clean(evaled)}`, true);
 
         } catch (err) {
 
             respond(`Error:\n${clean(err)}`);
-            logger("error", `${logger.colors.fgyellow}Eval error:${logger.colors.reset} \n${clean(err)}\n`, true);                                                                                                                                                                                                                                                                                                                // Hi I'm a comment that serves no purpose
+            logger("error", `${logger.colors.fgyellow}Eval error:${logger.colors.reset} \n${clean(err)}`, true);                                                                                                                                                                                                                                                                                                                // Hi I'm a comment that serves no purpose
             return;
         }
     }
