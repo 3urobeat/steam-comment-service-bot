@@ -508,7 +508,7 @@
         {
             "path": "src/controller/helpers/getBots.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/getBots.js",
-            "checksum": "81e8da036e18e4730a40401e29b51a2e"
+            "checksum": "f9239fdf6c149cedc79148e7a61dad41"
         },
         {
             "path": "src/controller/helpers/handleErrors.js",

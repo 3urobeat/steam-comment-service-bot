@@ -4,7 +4,7 @@
  * Created Date: 02.05.2023 13:46:21
  * Author: 3urobeat
  *
- * Last Modified: 15.10.2023 11:07:39
+ * Last Modified: 17.10.2023 18:26:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -27,7 +27,7 @@ const EStatus    = Bot.EStatus;
  * @returns {Array|object} An array or object if `mapToObject == true` containing all matching bot accounts.
  */
 Controller.prototype.getBots = function(statusFilter, mapToObject) {
-    if (!statusFilter) statusFilter = EStatus.ONLINE;
+    if (statusFilter == null) statusFilter = EStatus.ONLINE; // Explicitly check for null so that filtering for OFFLINE (enum 0) works properly
 
     let accs = Object.values(this.bots); // Mark all bots as candidates
 
