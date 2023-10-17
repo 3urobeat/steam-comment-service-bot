@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.10.2023 17:59:57
+ * Last Modified: 17.10.2023 23:12:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -158,9 +158,7 @@ DataManager.prototype._importFromDisk = async function () {
                             accountName: e[0],
                             password: e[1],
                             sharedSecret: e[2],
-                            steamGuardCode: null,
-                            machineName: `${_this.datafile.mestr}'s Comment Bot`, // For steam-user
-                            deviceFriendlyName: `${_this.datafile.mestr}'s Comment Bot`, // For steam-session
+                            steamGuardCode: null
                         };
                     });
 
@@ -184,9 +182,7 @@ DataManager.prototype._importFromDisk = async function () {
                             accountName: logininfo[k][0],
                             password: logininfo[k][1],
                             sharedSecret: logininfo[k][2],
-                            steamGuardCode: null,
-                            machineName: `${_this.datafile.mestr}'s Comment Bot`, // For steam-user
-                            deviceFriendlyName: `${_this.datafile.mestr}'s Comment Bot`, // For steam-session
+                            steamGuardCode: null
                         };
 
                         delete logininfo[k]; // Remove old entry
