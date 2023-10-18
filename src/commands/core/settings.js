@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 14.10.2023 00:31:09
+ * Last Modified: 18.10.2023 22:57:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -142,22 +142,21 @@ module.exports.settings = {
 
         let keyvalue = config[args[0]]; // Save old value to be able to reset changes
 
-        // I'm not proud of this code but whatever -> used to convert array into usable array
+
+        // Convert array-like string into usable array
         if (Array.isArray(keyvalue)) {
-            let newarr = [];
+            try {
+                let newValue = args.slice(1).join(" "); // Remove first element, which is the key name and join the rest
 
-            args.forEach((e, i) => {
-                if (i == 0) return; // Skip args[0]
-                if (i == 1) e = e.slice(1); // Remove first char which is a [
-                if (i == args.length - 1) e = e.slice(0, -1); // Remove last char which is a ]
+                args[1] = JSON.parse(newValue); // Attempt to parse user input
 
-                e = e.replace(/,/g, ""); // Remove ,
-                if (e.startsWith('"')) newarr[i - 1] = String(e.replace(/"/g, ""));
-                    else newarr[i - 1] = Number(e);
-            });
+            } catch (err) { // Abort if user input contains issues
 
-            args[1] = newarr;
+                respond(await commandHandler.data.getLang("settingscmdcouldnotconvert", null, resInfo.userID) + err);
+                return;
+            }
         }
+
 
         // Convert to number or boolean as input is always a String
         if (typeof(keyvalue) == "number") args[1] = Number(args[1]);
