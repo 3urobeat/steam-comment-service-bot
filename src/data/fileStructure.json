@@ -223,7 +223,7 @@
         {
             "path": "docs/wiki/config_doc.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/config_doc.md",
-            "checksum": "6eeafa16e648bf0843c542f8f8a2eaa1"
+            "checksum": "521c76407297ab89d341dbfe66925c5e"
         },
         {
             "path": "docs/wiki/contributing.md",
@@ -248,7 +248,7 @@
         {
             "path": "docs/wiki/errors_doc.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/errors_doc.md",
-            "checksum": "a7d7ed4381b167fd4307a455b6629477"
+            "checksum": "50a5970494d2361939ed599830e9a2de"
         },
         {
             "path": "docs/wiki/integrating_into_your_app.md",
@@ -258,7 +258,7 @@
         {
             "path": "docs/wiki/setup_guide.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/setup_guide.md",
-            "checksum": "23d15128af7d8e9e22f8514c59981391"
+            "checksum": "ec0468f2883394a8f059b74377808dd4"
         },
         {
             "path": "docs/wiki/steam_limitations.md",
@@ -383,17 +383,17 @@
         {
             "path": "src/commands/core/comment.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/comment.js",
-            "checksum": "e37236f4b9ce3ce7df22296d55b3ccd9"
+            "checksum": "85a7614876e7fac7f1b5a0fbef8741f3"
         },
         {
             "path": "src/commands/core/favorite.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/favorite.js",
-            "checksum": "eb53fadec0f77b09f037ee2780d53a1f"
+            "checksum": "ae056754af4021a9f2289086fa80b50d"
         },
         {
             "path": "src/commands/core/follow.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/follow.js",
-            "checksum": "74a1a3219c5b6f7a60a93ff8a28a454d"
+            "checksum": "32a1874d42574d38a28e90b2a84fbb25"
         },
         {
             "path": "src/commands/core/friend.js",
@@ -403,7 +403,7 @@
         {
             "path": "src/commands/core/general.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/general.js",
-            "checksum": "359a703c380a5eca4545556aa9f6a057"
+            "checksum": "e030175359d73498f73d4d5853670a98"
         },
         {
             "path": "src/commands/core/group.js",
@@ -418,7 +418,7 @@
         {
             "path": "src/commands/core/settings.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/settings.js",
-            "checksum": "3b102e9b47a0203d29c4a06a31b23ace"
+            "checksum": "dd9920d634a6e16ec557c481709eb8cb"
         },
         {
             "path": "src/commands/core/system.js",
@@ -428,12 +428,12 @@
         {
             "path": "src/commands/core/vote.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/vote.js",
-            "checksum": "14c60989eed5c9743a733270b314284b"
+            "checksum": "15920a7e90ef8851c98fc10b309ed8ff"
         },
         {
             "path": "src/commands/helpers/getCommentArgs.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getCommentArgs.js",
-            "checksum": "9357e81b0819b2259a26889e4a48c2c6"
+            "checksum": "3172adbc009ed93fcc42edb0582d7636"
         },
         {
             "path": "src/commands/helpers/getCommentBots.js",
@@ -488,7 +488,7 @@
         {
             "path": "src/controller/events/ready.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/events/ready.js",
-            "checksum": "146696c13d6020fdf9fc16041f1fc0d7"
+            "checksum": "98da12c04b040d649a23e3c118748002"
         },
         {
             "path": "src/controller/events/statusUpdate.js",
@@ -538,7 +538,7 @@
         {
             "path": "src/controller/login.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/login.js",
-            "checksum": "98099786ff03ebd33793cfc1ea0b3ba8"
+            "checksum": "0d0c66ba30afb547f782b9cf4c937010"
         },
         {
             "path": "src/data/ascii.js",
@@ -548,17 +548,17 @@
         {
             "path": "src/data/lang/english.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/english.json",
-            "checksum": "9954a0f0eb8565ca3619275934b8bfc2"
+            "checksum": "609fb752852f8401ba5972668b74aa3c"
         },
         {
             "path": "src/data/lang/russian.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/russian.json",
-            "checksum": "83f41a0e2edc7008e7f62de8c4f38df4"
+            "checksum": "0b89c1effd04599266563af545e5de1b"
         },
         {
             "path": "src/dataManager/dataCheck.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataCheck.js",
-            "checksum": "52ae0f457d15f1fbb6cb3b4df60fe13b"
+            "checksum": "0129ecba881e10f7aea4d8b7eb5fbac1"
         },
         {
             "path": "src/dataManager/dataExport.js",
@@ -753,7 +753,7 @@
         {
             "path": "src/updater/compatibility/21400.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/compatibility/21400.js",
-            "checksum": "fbe6c97972fe31ed345d6b8d1ad79843"
+            "checksum": "7b00c45aab69399f330daf719745e6d0"
         },
         {
             "path": "src/updater/compatibility.js",

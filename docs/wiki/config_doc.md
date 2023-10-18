@@ -12,12 +12,12 @@ This is the full documentation to customize your `config.json`.
 | Key           | Usage            | Description  |
 | ------------- | ---------------- | ------------ |
 | \_help\_ | String | No functionality. Links directly to here to provide easily accessible explanations. |
-| commentdelay  | Number in ms | Adds a delay between each comment to prevent a cooldown from steam. Default: 7500
+| requestDelay  | Number in ms | Adds a delay between each comment to prevent a cooldown from steam. Default: 7500
 | skipSteamGuard | true or false | When true, the bot will skip all accounts that require a steamGuard to be typed in when logging in. Default: false |
 | commentcooldown | Number in min | Applies this cooldown in minutes to every user after they requested comments. Set to 0 to disable. Default: 5
 | botaccountcooldown | Number in min | Applies this cooldown to every bot account used in a comment request to prevent getting a cooldown from steam. Set to 0 to disable. Default: 10 |
-| maxComments | Number | Defines how many comments a normal user can request from your bot. Will automatically use accounts multiple times if it is greater than the amount of accounts logged in. |
-| maxOwnerComments | Number | Defines how many comments owners can request (every user in the ownerid array). Will automatically use accounts multiple times if it is greater than the amount of accounts logged in. |
+| maxRequests | Number | Defines how many comments a normal user can request from your bot. Will automatically use accounts multiple times if it is greater than the amount of accounts logged in. |
+| maxOwnerRequests | Number | Defines how many comments owners can request (every user in the ownerid array). Will automatically use accounts multiple times if it is greater than the amount of accounts logged in. |
 | randomizeAccounts | true or false | Defines if the order of accounts used to comment should be random. Default: false |
 | unfriendtime | Days | Number of days the bot will wait before unfriending someone who hasn't requested a comment in that time period except the owner. Set to 0 to disable. |
 | playinggames | `["custom game", game id, game id, ...]` | This custom text will be shown on your profile as the name of a game you are playing. The bot will play the set game ids. Don't provide a string to disable the custom game text. |

@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 07.10.2023 23:34:56
+ * Last Modified: 18.10.2023 23:07:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -35,7 +35,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterID, resInfo, res
             let owners = commandHandler.data.cachefile.ownerid;
             if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-            let maxRequestAmount = commandHandler.data.config.maxComments; // Set to default value and if the requesting user is an owner it gets changed below
+            let maxRequestAmount = commandHandler.data.config.maxRequests; // Set to default value and if the requesting user is an owner it gets changed below
             let numberOfComments = 0;
             let quotesArr        = commandHandler.data.quotes;
 
@@ -47,7 +47,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterID, resInfo, res
             let commentcmdUsage;
 
             if (owners.includes(requesterID)) {
-                maxRequestAmount = commandHandler.data.config.maxOwnerComments;
+                maxRequestAmount = commandHandler.data.config.maxOwnerRequests;
 
                 if (maxRequestAmount > 1) commentcmdUsage = await commandHandler.data.getLang("commentcmdusageowner", { "cmdprefix": resInfo.cmdprefix }, requesterID);
                     else commentcmdUsage = await commandHandler.data.getLang("commentcmdusageowner2", { "cmdprefix": resInfo.cmdprefix }, requesterID);

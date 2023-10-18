@@ -4,7 +4,7 @@
  * Created Date: 24.09.2023 15:04:33
  * Author: 3urobeat
  *
- * Last Modified: 07.10.2023 23:38:08
+ * Last Modified: 18.10.2023 23:11:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -69,7 +69,7 @@ module.exports.follow = {
         }
         if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         if (commandHandler.controller.info.activeLogin)                 return respond(await commandHandler.data.getLang("activerelog", null, requesterID));      // Bot is waiting for relog
-        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterID)); // Command is restricted to owners only
+        if (commandHandler.data.config.maxRequests == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterID)); // Command is restricted to owners only
 
 
         // Check and get arguments from user
@@ -107,7 +107,7 @@ module.exports.follow = {
         }
 
 
-        // Register this follow process in activeRequests. We use commentdelay here for now, not sure if I'm going to add a separate setting
+        // Register this follow process in activeRequests
         commandHandler.controller.activeRequests[id] = {
             status: "active",
             type: idType + "Follow",
@@ -116,7 +116,7 @@ module.exports.follow = {
             accounts: availableAccounts,
             thisIteration: -1, // Set to -1 so that first iteration will increase it to 0
             retryAttempt: 0,
-            until: Date.now() + ((amount - 1) * commandHandler.data.config.commentdelay), // Calculate estimated wait time (first follow is instant -> remove 1 from numberOfComments)
+            until: Date.now() + ((amount - 1) * commandHandler.data.config.requestDelay), // Calculate estimated wait time (first follow is instant -> remove 1 from numberOfComments)
             failed: {}
         };
 
@@ -129,7 +129,7 @@ module.exports.follow = {
 
             // Only send estimated wait time message for multiple follow
             if (activeReqEntry.amount > 1) {
-                let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amount - 1 because the first fav is instant. Multiply by delay and add to current time to get timestamp when last fav was sent
+                let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.requestDelay)); // Amount - 1 because the first fav is instant. Multiply by delay and add to current time to get timestamp when last fav was sent
 
                 respond(await commandHandler.data.getLang("followprocessstarted", { "totalamount": activeReqEntry.amount, "waittime": waitTime }, requesterID));
             }
@@ -175,7 +175,7 @@ module.exports.follow = {
 
                 });
 
-            }, commandHandler.data.config.commentdelay * (i > 0)); // We use commentdelay here for now, not sure if I'm going to add a separate setting
+            }, commandHandler.data.config.requestDelay * (i > 0));
 
         }, async () => { // Function that will run on exit, aka the last iteration: Respond to the user
 
@@ -253,7 +253,7 @@ module.exports.unfollow = {
         }
         if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         if (commandHandler.controller.info.activeLogin)                 return respond(await commandHandler.data.getLang("activerelog", null, requesterID));      // Bot is waiting for relog
-        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterID)); // Command is restricted to owners only
+        if (commandHandler.data.config.maxRequests == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterID)); // Command is restricted to owners only
 
 
         // Check and get arguments from user
@@ -291,7 +291,7 @@ module.exports.unfollow = {
         }
 
 
-        // Register this unfollow process in activeRequests. We use commentdelay here for now, not sure if I'm going to add a separate setting
+        // Register this unfollow process in activeRequests
         commandHandler.controller.activeRequests[id] = {
             status: "active",
             type: idType + "Unfollow",
@@ -300,7 +300,7 @@ module.exports.unfollow = {
             accounts: availableAccounts,
             thisIteration: -1, // Set to -1 so that first iteration will increase it to 0
             retryAttempt: 0,
-            until: Date.now() + ((amount - 1) * commandHandler.data.config.commentdelay), // Calculate estimated wait time (first unfollow is instant -> remove 1 from numberOfComments)
+            until: Date.now() + ((amount - 1) * commandHandler.data.config.requestDelay), // Calculate estimated wait time (first unfollow is instant -> remove 1 from numberOfComments)
             failed: {}
         };
 
@@ -313,7 +313,7 @@ module.exports.unfollow = {
 
             // Only send estimated wait time message for multiple unfollow
             if (activeReqEntry.amount > 1) {
-                let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amount - 1 because the first fav is instant. Multiply by delay and add to current time to get timestamp when last fav was sent
+                let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.requestDelay)); // Amount - 1 because the first fav is instant. Multiply by delay and add to current time to get timestamp when last fav was sent
 
                 respond(await commandHandler.data.getLang("followprocessstarted", { "totalamount": activeReqEntry.amount, "waittime": waitTime }, requesterID));
             }
@@ -359,7 +359,7 @@ module.exports.unfollow = {
 
                 });
 
-            }, commandHandler.data.config.commentdelay * (i > 0)); // We use commentdelay here for now, not sure if I'm going to add a separate setting
+            }, commandHandler.data.config.requestDelay * (i > 0));
 
         }, async () => { // Function that will run on exit, aka the last iteration: Respond to the user
 

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.10.2023 23:34:56
+ * Last Modified: 18.10.2023 23:07:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -48,9 +48,9 @@ module.exports.help = {
         let commentText;
 
         if (owners.includes(resInfo.userID)) {
-            commentText = `'${resInfo.cmdprefix}comment (amount/"all") [id/url] [custom, quotes]' - ${await commandHandler.data.getLang("helpcommentowner", { "maxOwnerComments": commandHandler.data.config.maxOwnerComments }, requesterID)}`;
+            commentText = `'${resInfo.cmdprefix}comment (amount/"all") [id/url] [custom, quotes]' - ${await commandHandler.data.getLang("helpcommentowner", { "maxOwnerRequests": commandHandler.data.config.maxOwnerRequests }, requesterID)}`;
         } else {
-            commentText = `'${resInfo.cmdprefix}comment (amount/"all")' - ${await commandHandler.data.getLang("helpcommentuser", { "maxComments": commandHandler.data.config.maxComments }, requesterID)}`;
+            commentText = `'${resInfo.cmdprefix}comment (amount/"all")' - ${await commandHandler.data.getLang("helpcommentuser", { "maxRequests": commandHandler.data.config.maxRequests }, requesterID)}`;
         }
 
         // Construct follow text for owner and user
@@ -63,16 +63,16 @@ module.exports.help = {
         }
 
         // Get amount user is allowed to request
-        let maxTotalComments = commandHandler.data.config.maxComments;
-        if (owners.includes(resInfo.userID)) maxTotalComments = commandHandler.data.config.maxOwnerComments;
+        let maxTotalComments = commandHandler.data.config.maxRequests;
+        if (owners.includes(resInfo.userID)) maxTotalComments = commandHandler.data.config.maxOwnerRequests;
 
         // Send message
         respond(`
             ${commandHandler.data.datafile.mestr}'s Comment Bot | ${await commandHandler.data.getLang("helpcommandlist", null, requesterID)}\n
             ${commentText}
-            '${resInfo.cmdprefix}vote (amount/"all") (id/url)' - ${await commandHandler.data.getLang("helpvote", { "maxComments": maxTotalComments }, requesterID)}
-            '${resInfo.cmdprefix}favorite (amount/"all") (id/url)' - ${await commandHandler.data.getLang("helpfavorite", { "maxComments": maxTotalComments }, requesterID)}
-            ${followText} - ${await commandHandler.data.getLang("helpfollow", { "maxComments": commandHandler.data.config.maxComments }, requesterID)}\n
+            '${resInfo.cmdprefix}vote (amount/"all") (id/url)' - ${await commandHandler.data.getLang("helpvote", { "maxRequests": maxTotalComments }, requesterID)}
+            '${resInfo.cmdprefix}favorite (amount/"all") (id/url)' - ${await commandHandler.data.getLang("helpfavorite", { "maxRequests": maxTotalComments }, requesterID)}
+            ${followText} - ${await commandHandler.data.getLang("helpfollow", { "maxRequests": commandHandler.data.config.maxRequests }, requesterID)}\n
             '${resInfo.cmdprefix}info' - ${await commandHandler.data.getLang("helpinfo", null, requesterID)}
             '${resInfo.cmdprefix}abort' - ${await commandHandler.data.getLang("helpabort", null, requesterID)}
             '${resInfo.cmdprefix}about' - ${await commandHandler.data.getLang("helpabout", null, requesterID)}

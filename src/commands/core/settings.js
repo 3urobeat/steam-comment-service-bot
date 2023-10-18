@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 18.10.2023 22:57:36
+ * Last Modified: 18.10.2023 23:07:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -165,8 +165,8 @@ module.exports.settings = {
             if (args[1] == "false") args[1] = false; // Could have been worse tbh
         }
 
-        // Round maxComments value in order to avoid the possibility of weird amounts
-        if (args[0] == "maxComments" || args[0] == "maxOwnerComments") args[1] = Math.round(args[1]);
+        // Round maxRequests value in order to avoid the possibility of weird amounts
+        if (args[0] == "maxRequests" || args[0] == "maxOwnerRequests") args[1] = Math.round(args[1]);
 
         if (keyvalue == undefined) return respond(await commandHandler.data.getLang("settingscmdkeynotfound", null, resInfo.userID));
         if (keyvalue == args[1]) return respond(await commandHandler.data.getLang("settingscmdsamevalue", { "value": args[1] }, resInfo.userID));

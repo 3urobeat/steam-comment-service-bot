@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.10.2023 23:37:41
+ * Last Modified: 18.10.2023 23:06:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -79,7 +79,7 @@ module.exports.comment = {
         }
         if (commandHandler.controller.info.readyAfter == 0)             return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         if (commandHandler.controller.info.activeLogin)                 return respond(await commandHandler.data.getLang("activerelog", null, requesterID));      // Bot is waiting for relog
-        if (commandHandler.data.config.maxComments == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterID)); // Command is restricted to owners only
+        if (commandHandler.data.config.maxRequests == 0 && !ownercheck) return respond(await commandHandler.data.getLang("commandowneronly", null, requesterID)); // Command is restricted to owners only
 
         // Check for no id param as default behavior is unavailable when calling from outside the Steam Chat
         if (!resInfo.fromSteamChat && !args[1]) return respond(await commandHandler.data.getLang("noidparam", null, requesterID));
@@ -152,7 +152,7 @@ module.exports.comment = {
             thisIteration: -1, // Set to -1 so that first iteration will increase it to 0
             retryAttempt: 0,
             amountBeforeRetry: 0, // Saves the amount of requested comments before the most recent retry attempt was made to send a correct finished message
-            until: Date.now() + ((numberOfComments - 1) * commandHandler.data.config.commentdelay), // Calculate estimated wait time (first comment is instant -> remove 1 from numberOfComments)
+            until: Date.now() + ((numberOfComments - 1) * commandHandler.data.config.requestDelay), // Calculate estimated wait time (first comment is instant -> remove 1 from numberOfComments)
             failed: {}
         };
 
@@ -271,7 +271,7 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
 
         // Only send estimated wait time message for multiple comments
         if (activeReqEntry.amount > 1) {
-            let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.commentdelay)); // Amount - 1 because the first comment is instant. Multiply by delay and add to current time to get timestamp when last comment was sent
+            let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.requestDelay)); // Amount - 1 because the first comment is instant. Multiply by delay and add to current time to get timestamp when last comment was sent
 
             respond(await commandHandler.data.getLang("commentprocessstarted", { "numberOfComments": activeReqEntry.amount, "waittime": waitTime }, requesterID));
         }
@@ -315,7 +315,7 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
 
             });
 
-        }, commandHandler.data.config.commentdelay * (i > 0)); // Delay every comment that is not the first one
+        }, commandHandler.data.config.requestDelay * (i > 0)); // Delay every comment that is not the first one
 
     }, async () => { // Function that will run on exit, aka the last iteration: Respond to the user
 
@@ -358,8 +358,8 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
                 activeReqEntry.amountBeforeRetry = activeReqEntry.amount;
                 activeReqEntry.amount += Object.keys(activeReqEntry.failed).length;
 
-                // Increase until value (amount of retried comments * commentdelay) + delay before starting retry attempts
-                activeReqEntry.until = activeReqEntry.until + (Object.keys(activeReqEntry.failed).length * commandHandler.data.config.commentdelay) + commandHandler.data.advancedconfig.retryFailedCommentsDelay;
+                // Increase until value (amount of retried comments * requestDelay) + delay before starting retry attempts
+                activeReqEntry.until = activeReqEntry.until + (Object.keys(activeReqEntry.failed).length * commandHandler.data.config.requestDelay) + commandHandler.data.advancedconfig.retryFailedCommentsDelay;
 
                 // Update cooldown to new extended until value
                 commandHandler.data.setUserCooldown(activeReqEntry.requestedby, activeReqEntry.until);

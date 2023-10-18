@@ -80,8 +80,8 @@ We need to configure just a couple of things - your profile link, your ID and ma
 - **Second,** provide the same link, just the vanity or steamID64 inside the "ownerid" array. This will give yourself owner rights, giving you access to more features and certain owner only commands. If you want to set multiple owners, check out the [config documentation](./config_doc.md).  
 Example (using the vanity): `"ownerid": ["3urobeat"]`
 - **Third,** set an amount a normal user and an owner is allowed to request from the bot at once. This largely depends on how many accounts you use, the delay set and if you use proxies.  
-For now, I would recommend max 2 comments per account if you use no proxies and default settings. So if you use 5 accounts, try setting "maxComments" and "maxOwnerComments" to `10` and leave the commentdelay at default.  
-Example: `"maxComments": 10,` & `"maxOwnerComments": 10,`
+For now, I would recommend max 2 comments per account if you use no proxies and default settings. So if you use 5 accounts, try setting "maxRequests" and "maxOwnerRequests" to `10` and leave the requestDelay at default.  
+Example: `"maxRequests": 10,` & `"maxOwnerRequests": 10,`
   
 Make sure your formatting follows the default `config.json` exactly (especially the commas at the end of every line and quotation marks)!
 

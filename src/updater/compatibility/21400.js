@@ -4,7 +4,7 @@
  * Created Date: 28.09.2023 17:27:08
  * Author: 3urobeat
  *
- * Last Modified: 05.10.2023 22:21:50
+ * Last Modified: 18.10.2023 23:08:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -36,6 +36,13 @@ module.exports.run = (controller, resolve) => {
             logger("warn", "Compatibility feature 2.14: Failed to convert 'customlang.json'. Error: " + err);
         }
     }
+
+
+    // Config commentdelay, maxComments & maxOwnerComments -> requestDelay, maxRequests & maxOwnerRequests
+    controller.data.config.requestDelay     = controller.data.config.commentdelay;
+    controller.data.config.maxRequests      = controller.data.config.maxComments;
+    controller.data.config.maxOwnerRequests = controller.data.config.maxOwnerComments;
+
 
     // Advancedconfig relogTimeout -> loginRetryTimeout
     controller.data.advancedconfig.loginRetryTimeout = controller.data.advancedconfig.relogTimeout;

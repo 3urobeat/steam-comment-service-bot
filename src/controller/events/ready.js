@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 14.10.2023 00:01:34
+ * Last Modified: 18.10.2023 23:07:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -33,12 +33,12 @@ Controller.prototype._readyEvent = function() {
 
 
     // Calculate what the max amount of comments per account is and log it
-    let maxCommentsOverall = this.data.config.maxOwnerComments; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
-    if (this.data.config.maxComments > this.data.config.maxOwnerComments) maxCommentsOverall = this.data.config.maxComments;
+    let maxRequestsOverall = this.data.config.maxOwnerRequests; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
+    if (this.data.config.maxRequests > this.data.config.maxOwnerRequests) maxRequestsOverall = this.data.config.maxRequests;
 
     let repeatedCommentsStr;
-    if (maxCommentsOverall > 3) repeatedCommentsStr = `${logger.colors.underscore}${logger.colors.fgred}${round(maxCommentsOverall / this.getBots().length, 2)}`;
-        else repeatedCommentsStr = round(maxCommentsOverall / this.getBots().length, 2);
+    if (maxRequestsOverall > 3) repeatedCommentsStr = `${logger.colors.underscore}${logger.colors.fgred}${round(maxRequestsOverall / this.getBots().length, 2)}`;
+        else repeatedCommentsStr = round(maxRequestsOverall / this.getBots().length, 2);
 
     logger("", `${logger.colors.brfgblue}>${logger.colors.reset} ${this.getBots().length} total account(s) | ${repeatedCommentsStr} comments per account allowed`, true, false, null, false, true);
 

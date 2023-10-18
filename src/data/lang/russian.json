@@ -71,8 +71,8 @@
     "stopcmdstopping": "Остановка...",
 
     "helpcommandlist": "Команды:",
-    "helpcommentowner": "Запросить x или максимальное количество комментариев (максимум ${maxOwnerComments}). Укажите ID профиля, чтобы прокомментировать конкретный профиль.",
-    "helpcommentuser": "Запросить x или максимальное количество комментариев (максимум ${maxComments}).",
+    "helpcommentowner": "Запросить x или максимальное количество комментариев (максимум ${maxOwnerRequests}). Укажите ID профиля, чтобы прокомментировать конкретный профиль.",
+    "helpcommentuser": "Запросить x или максимальное количество комментариев (максимум ${maxRequests}).",
     "helpvote": "TODO",
     "helpfavorite": "TODO",
     "helpfollow": "TODO",

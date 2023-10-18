@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 13.09.2023 22:32:32
+ * Last Modified: 18.10.2023 23:07:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -64,36 +64,36 @@ DataManager.prototype.checkData = function() {
 
 
         // Check config values:
-        this.config.maxComments      = Math.round(this.config.maxComments); // Round maxComments number every time to avoid user being able to set weird numbers (who can comment 4.8 times? right - no one)
-        this.config.maxOwnerComments = Math.round(this.config.maxOwnerComments);
+        this.config.maxRequests      = Math.round(this.config.maxRequests); // Round maxRequests number every time to avoid user being able to set weird numbers (who can comment 4.8 times? right - no one)
+        this.config.maxOwnerRequests = Math.round(this.config.maxOwnerRequests);
 
-        let maxCommentsOverall = this.config.maxOwnerComments; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
-        if (this.config.maxComments > this.config.maxOwnerComments) maxCommentsOverall = this.config.maxComments;
+        let maxRequestsOverall = this.config.maxOwnerRequests; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
+        if (this.config.maxRequests > this.config.maxOwnerRequests) maxRequestsOverall = this.config.maxRequests;
 
         if (Object.keys(this.logininfo).length == 0) { // Check real quick if logininfo is empty
             logWarn("error", `${logger.colors.fgred}Your accounts.txt or logininfo.json file doesn't seem to contain any valid login credentials! Aborting...`, true);
             return reject(new Error("No logininfo found!"));
         }
-        if (this.config.maxOwnerComments < 1) {
-            logWarn("info", `${logger.colors.fgred}Your maxOwnerComments value in config.json can't be smaller than 1! Automatically setting it to 1...`, true);
-            resolveMsg += "Your maxOwnerComments value in config.json can't be smaller than 1! Automatically setting it to 1...\n";
-            this.config.maxOwnerComments = 1;
+        if (this.config.maxOwnerRequests < 1) {
+            logWarn("info", `${logger.colors.fgred}Your maxOwnerRequests value in config.json can't be smaller than 1! Automatically setting it to 1...`, true);
+            resolveMsg += "Your maxOwnerRequests value in config.json can't be smaller than 1! Automatically setting it to 1...\n";
+            this.config.maxOwnerRequests = 1;
         }
-        if (this.config.commentdelay <= 500) {
-            logWarn("warn", `${logger.colors.fgred}Your commentdelay is set to a way too low value!\n       Using a commentdelay of 500ms or less will result in an instant cooldown from Steam and therefore a failed comment request.\n       Automatically setting it to the default value of 15 seconds...`, true);
-            resolveMsg += "Your commentdelay is set to a way too low value!\n       Using a commentdelay of 500ms or less will result in an instant cooldown from Steam and therefore a failed comment request.\n       Automatically setting it to the default value of 15 seconds...\n";
-            this.config.commentdelay = 15000;
+        if (this.config.requestDelay <= 500) {
+            logWarn("warn", `${logger.colors.fgred}Your requestDelay is set to a way too low value!\n       Using a requestDelay of 500ms or less will result in an instant cooldown from Steam and therefore a failed comment request.\n       Automatically setting it to the default value of 15 seconds...`, true);
+            resolveMsg += "Your requestDelay is set to a way too low value!\n       Using a requestDelay of 500ms or less will result in an instant cooldown from Steam and therefore a failed comment request.\n       Automatically setting it to the default value of 15 seconds...\n";
+            this.config.requestDelay = 15000;
         }
-        if (this.config.commentdelay / (maxCommentsOverall / 2) < 1250) {
-            logWarn("warn", `${logger.colors.fgred}You have raised maxComments or maxOwnerComments but I would recommend to raise the commentdelay further. Not increasing the commentdelay further raises the probability to get cooldown errors from Steam.`, true);
+        if (this.config.requestDelay / (maxRequestsOverall / 2) < 1250) {
+            logWarn("warn", `${logger.colors.fgred}You have raised maxRequests or maxOwnerRequests but I would recommend to raise the requestDelay further. Not increasing the requestDelay further raises the probability to get cooldown errors from Steam.`, true);
         }
-        if (this.config.commentdelay * maxCommentsOverall > 2147483647) { // Check for 32-bit integer limit for commentcmd timeout
-            logWarn("error", `${logger.colors.fgred}Your maxComments and/or maxOwnerComments and/or commentdelay value in the config are too high.\n        Please lower these values so that 'commentdelay * maxComments' is not bigger than 2147483647 (32-bit integer limit).\n\nThis will otherwise cause an error when trying to comment. Aborting...\n`, true);
-            this.config.commentdelay = 15000;
-            return reject(new Error("Commentdelay times maxcomments exceeds 32bit integer limit!"));
+        if (this.config.requestDelay * maxRequestsOverall > 2147483647) { // Check for 32-bit integer limit for commentcmd timeout
+            logWarn("error", `${logger.colors.fgred}Your maxRequests and/or maxOwnerRequests and/or requestDelay value in the config are too high.\n        Please lower these values so that 'requestDelay * maxRequests' is not bigger than 2147483647 (32-bit integer limit).\n\nThis will otherwise cause an error when trying to comment. Aborting...\n`, true);
+            this.config.requestDelay = 15000;
+            return reject(new Error("requestDelay times maxRequests exceeds 32bit integer limit!"));
         }
-        if (this.config.randomizeAccounts && Object.keys(this.logininfo).length <= 5 && maxCommentsOverall > Object.keys(this.logininfo).length * 2) {
-            logWarn("warn", `${logger.colors.fgred}I wouldn't recommend using randomizeAccounts with 5 or less accounts when each account can/has to comment multiple times. The chance of an account getting a cooldown is higher.\n       Please make sure your commentdelay is set adequately to reduce the chance of this happening.`, true);
+        if (this.config.randomizeAccounts && Object.keys(this.logininfo).length <= 5 && maxRequestsOverall > Object.keys(this.logininfo).length * 2) {
+            logWarn("warn", `${logger.colors.fgred}I wouldn't recommend using randomizeAccounts with 5 or less accounts when each account can/has to comment multiple times. The chance of an account getting a cooldown is higher.\n       Please make sure your requestDelay is set adequately to reduce the chance of this happening.`, true);
         }
         if (!Object.keys(this.lang).includes(this.config.defaultLanguage.toLowerCase())) {
             logWarn("warn", `${logger.colors.fgred}You've set an unsupported language as defaultLanguage in your config.json. Please choose one of the following: ${Object.keys(this.lang).join(", ")}.\n       Defaulting to English...`, true);

@@ -32,7 +32,7 @@ Please don't take all error descriptions for granted. Steam sometimes seems to t
 | HTTP Errors |
 | ----- |
 `Error: HTTP Error 403`: Steam denied your request. Why? I don't know for sure.  
-`Error: HTTP Error 429`: Your IP has made too many requests to Steam and got a cooldown. Wait a few minutes and try again. You can increase the commentdelay or reduce the amount of accounts using one IP (for example with proxies) to combat this.  
+`Error: HTTP Error 429`: Your IP has made too many requests to Steam and got a cooldown. Wait a few minutes and try again. You can increase the requestDelay or reduce the amount of accounts using one IP (for example with proxies) to combat this.  
 `Error: HTTP Error 500`: The steam servers seem to have a problem/are down. Check [steam server status.](https://steamstat.us)  
 `Error: HTTP Error 502`: The steam servers seem to have a problem/are down. Check [steam server status.](https://steamstat.us)  
 `Error: HTTP Error 504`: The steam servers are slow atm/are down. Check [steam server status.](https://steamstat.us)  
