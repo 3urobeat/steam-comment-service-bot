@@ -4,7 +4,7 @@
  * Created Date: 22.02.2022 17:39:21
  * Author: 3urobeat
  *
- * Last Modified: 08.07.2023 00:36:58
+ * Last Modified: 19.10.2023 19:14:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -37,10 +37,13 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
         let newconfig = require(srcdir + "/../config.json");
 
         // Transfer every setting to the new config
-        Object.keys(newconfig).forEach(e => {
-            if (!Object.keys(oldconfig).includes(e)) return; // Config value seems to be new so don't bother trying to set it to something (which would probably be undefined anyway)
+        Object.keys(newconfig).forEach((e) => {
+            if (Object.keys(oldconfig).includes(e)) newconfig[e] = oldconfig[e]; // Transfer setting if oldconfig contains it
+        });
 
-            newconfig[e] = oldconfig[e]; // Transfer setting
+        // Find and transfer removed config settings, the compatibility feature must process and delete them
+        Object.keys(oldconfig).forEach((e) => {
+            if (!Object.keys(newconfig).includes(e)) newconfig[e] = oldconfig[e]; // Transfer setting if newconfig does not contain it
         });
 
         // Get arrays on one line
@@ -66,10 +69,13 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
         let newadvancedconfig = require(srcdir + "/../advancedconfig.json");
 
         // Transfer every setting to the new advancedconfig
-        Object.keys(newadvancedconfig).forEach(e => {
-            if (!Object.keys(oldadvancedconfig).includes(e)) return; // Config value seems to be new so don't bother trying to set it to something (which would probably be undefined anyway)
+        Object.keys(newadvancedconfig).forEach((e) => {
+            if (Object.keys(oldadvancedconfig).includes(e)) newadvancedconfig[e] = oldadvancedconfig[e]; // Transfer setting if oldconfig contains it
+        });
 
-            newadvancedconfig[e] = oldadvancedconfig[e]; // Transfer setting
+        // Find and transfer removed advancedconfig settings, the compatibility feature must process and delete them
+        Object.keys(oldadvancedconfig).forEach((e) => {
+            if (!Object.keys(newadvancedconfig).includes(e)) newadvancedconfig[e] = oldadvancedconfig[e]; // Transfer setting if newconfig does not contain it
         });
 
         // Get arrays on one line

@@ -753,7 +753,7 @@
         {
             "path": "src/updater/compatibility/21400.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/compatibility/21400.js",
-            "checksum": "17384d410fe7da7acf495d78b83a31d9"
+            "checksum": "3b55c81a1847153c7cdd0b7a83a62fd5"
         },
         {
             "path": "src/updater/compatibility.js",
@@ -773,7 +773,7 @@
         {
             "path": "src/updater/helpers/customUpdateRules.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/helpers/customUpdateRules.js",
-            "checksum": "6022741a7c4b201fd47b9e296c2ae3e2"
+            "checksum": "f11376db8f60880a9e92755fc6477dce"
         },
         {
             "path": "src/updater/helpers/downloadUpdate.js",

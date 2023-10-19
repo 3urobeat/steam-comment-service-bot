@@ -4,7 +4,7 @@
  * Created Date: 28.09.2023 17:27:08
  * Author: 3urobeat
  *
- * Last Modified: 19.10.2023 17:38:13
+ * Last Modified: 19.10.2023 19:01:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -38,16 +38,24 @@ module.exports.run = (controller, resolve) => {
     }
 
 
-    // Config commentdelay, maxComments & maxOwnerComments -> requestDelay, maxRequests & maxOwnerRequests
-    controller.data.config.requestDelay     = controller.data.config.commentdelay;
-    controller.data.config.maxRequests      = controller.data.config.maxComments;
-    controller.data.config.maxOwnerRequests = controller.data.config.maxOwnerComments;
+    let { config, advancedconfig } = controller.data;
 
+    // Config commentdelay, commentcooldown, maxComments & maxOwnerComments -> requestDelay, requestCooldown, maxRequests & maxOwnerRequests
+    if (config.commentdelay)     config.requestDelay     = config.commentdelay;
+    if (config.commentcooldown)  config.requestCooldown  = config.commentcooldown;
+    if (config.maxComments)      config.maxRequests      = config.maxComments;
+    if (config.maxOwnerComments) config.maxOwnerRequests = config.maxOwnerComments;
+
+    delete config.commentdelay;
+    delete config.commentcooldown;
+    delete config.maxComments;
+    delete config.maxOwnerComments;
 
     // Advancedconfig relogTimeout -> loginRetryTimeout
-    controller.data.advancedconfig.loginRetryTimeout = controller.data.advancedconfig.relogTimeout;
-    controller.data.advancedconfig.relogTimeout      = 900000;
-
+    if (advancedconfig.loginRetryTimeout == 30000) {
+        advancedconfig.loginRetryTimeout = advancedconfig.relogTimeout;
+        advancedconfig.relogTimeout      = 900000;
+    }
 
     controller.data.writeConfigToDisk();
 
