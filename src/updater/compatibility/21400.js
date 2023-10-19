@@ -4,7 +4,7 @@
  * Created Date: 28.09.2023 17:27:08
  * Author: 3urobeat
  *
- * Last Modified: 19.10.2023 19:01:27
+ * Last Modified: 19.10.2023 19:28:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -40,6 +40,7 @@ module.exports.run = (controller, resolve) => {
 
     let { config, advancedconfig } = controller.data;
 
+
     // Config commentdelay, commentcooldown, maxComments & maxOwnerComments -> requestDelay, requestCooldown, maxRequests & maxOwnerRequests
     if (config.commentdelay)     config.requestDelay     = config.commentdelay;
     if (config.commentcooldown)  config.requestCooldown  = config.commentcooldown;
@@ -51,13 +52,15 @@ module.exports.run = (controller, resolve) => {
     delete config.maxComments;
     delete config.maxOwnerComments;
 
-    // Advancedconfig relogTimeout -> loginRetryTimeout
-    if (advancedconfig.loginRetryTimeout == 30000) {
-        advancedconfig.loginRetryTimeout = advancedconfig.relogTimeout;
-        advancedconfig.relogTimeout      = 900000;
-    }
-
     controller.data.writeConfigToDisk();
+
+
+    // Advancedconfig relogTimeout -> loginRetryTimeout
+    if (advancedconfig.relogTimeout != 900000) advancedconfig.loginRetryTimeout = advancedconfig.relogTimeout; // Only update loginRetryTimeout on update by checking if the old setting got transferred
+
+    advancedconfig.relogTimeout = 900000;
+
+    controller.data.writeAdvancedconfigToDisk();
 
 
     controller.data.datafile.compatibilityfeaturedone = true; // Set compatibilityfeaturedone to true, the bot would otherwise force another update
