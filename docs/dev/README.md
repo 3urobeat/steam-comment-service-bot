@@ -1,8 +1,8 @@
 # Welcome to the steam-comment-service-bot developer documentation!  
 [⬅️ Go back to the main page](../..#readme)
 
-The developer documentation includes pages for every module and the functions exposed by it.  
-This should help you greatly figuring out how to implement parts of the bot into your plugin or when working on the project itself!  
+The developer documentation includes pages for every module and some useful information about it.  
+This should help you figuring out how to implement parts of the bot into your plugin or when working on the project itself!  
 
 It makes sense to first learn how this project works and is built before diving in further. The [introduction](./introduction.md) page should get you started quickly.
 

@@ -15,8 +15,6 @@ This leaves no old data behind in the memory, which is especially important for 
 - [start.js](#startjs-)
 - [starter.js](#starterjs-)
 
-Please use your browser's search function <kbd>Ctrl</kbd>+<kbd>F</kbd> to find a specific function using its name on this page.
-
 &nbsp;
 
 ## start.js <a href="/start.js" target="_blank"><img align="right" src="https://img.shields.io/badge/<%2F>%20Source-darkcyan"></a>
@@ -30,14 +28,10 @@ Should this file be missing, it is able to fetch it from GitHub, allowing the bo
 
 Following up, it executes the `run()` function which `starter.js` exposes.  
 
-### Functions
-start.js exposes one function:
+&nbsp;
 
-#### restart(args): void
-- `args` (string) - Stringified JSON object, containing data that should be kept through restarts
-
-This function is called by `starter.js` when the child process requests to be restarted.  
-It deletes the cache of `starter.js`, re-requires it and calls its `restart(args)` function.
+Every function and object property is documented with JsDocs in the implementation file.  
+Please check them out using your IntelliSense or by clicking the button in the top right corner of this paragraph.
 
 &nbsp;
 
@@ -61,25 +55,7 @@ By default the child process is spawned with the flags `--max-old-space-size=204
 You can add more by extending the `execArgs` array at the top of the file.  
 To enable the memory debugger you can for example pass the flag `--inspect`.
 
-### Functions
-starter.js exposes the following functions:
+&nbsp;
 
-#### run(): void
-Sets `process.env.started = true` to avoid the same parent process from spawning multiple child processes.  
-It then attaches the parent listeners mentioned above, fetches `controller.js` should it be missing, forks a new child process and attaches the mentioned child process listeners.
-
-#### restart(args): void
-- `args` - Stringified JSON object containing restart data which will be passed to the child process
-
-This function is executed instead of `run()` when the bot was previously started and so this is a restart. It is called by `start.js`.    
-It makes sure the current child process has exited by sending a SIGKILL packet, forks a new child process after 2 seconds and attaches the child listeners again.
-
-#### checkAndGetFile(file, logger, norequire?, force?): Promise
-- `file` (string) - The file path (from project root) to check and get if missing/corrupted
-- `logger` (function(string, string): void) - The currently active logger function (this is used to support a fake logger if no dependencies could be loaded)
-- `norequire` (boolean) - If set to true the function will return the path instead of importing it. Default: false
-- `force` (boolean) - If set to true the function will skip checking if the file exists and overwrite it. Default: false
-
-Checks if a file exists and pulls it from GitHub if it doesn't.  
-This function is heavily used to require files the first time inside the child process to handle potential missing or corrupted files.  
-It returns a Promise which will be resolved when the file was successfully loaded.  
+Every function and object property is documented with JsDocs in the implementation file.  
+Please check them out using your IntelliSense or by clicking the button in the top right corner of this paragraph.
