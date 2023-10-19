@@ -223,7 +223,7 @@
         {
             "path": "docs/wiki/config_doc.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/config_doc.md",
-            "checksum": "521c76407297ab89d341dbfe66925c5e"
+            "checksum": "3663cc9af21201dbedc6c538c2e60945"
         },
         {
             "path": "docs/wiki/contributing.md",
@@ -328,7 +328,7 @@
         {
             "path": "src/bot/events/friendMessage.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/friendMessage.js",
-            "checksum": "275022cd3e65b2d6463f3c58b1387564"
+            "checksum": "808e9f56ee7246b9fc146551ff5b099a"
         },
         {
             "path": "src/bot/events/loggedOn.js",
@@ -338,12 +338,12 @@
         {
             "path": "src/bot/events/relationship.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/relationship.js",
-            "checksum": "54f47fc608f7dc15e8ad06fbd5967fbb"
+            "checksum": "c59e096971df409c17b07cf25c2ed167"
         },
         {
             "path": "src/bot/events/webSession.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/webSession.js",
-            "checksum": "9a4caafdde3fbc7ea5102d06b64ae2d8"
+            "checksum": "9f0bab858334349bd8fae8c7dac4a873"
         },
         {
             "path": "src/bot/helpers/checkMsgBlock.js",
@@ -383,17 +383,17 @@
         {
             "path": "src/commands/core/comment.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/comment.js",
-            "checksum": "85a7614876e7fac7f1b5a0fbef8741f3"
+            "checksum": "17a0106bd432bd48bb3fe4b31f0b45d1"
         },
         {
             "path": "src/commands/core/favorite.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/favorite.js",
-            "checksum": "ae056754af4021a9f2289086fa80b50d"
+            "checksum": "c04d5a5108404fe2c553ef1ebf9615bf"
         },
         {
             "path": "src/commands/core/follow.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/follow.js",
-            "checksum": "32a1874d42574d38a28e90b2a84fbb25"
+            "checksum": "fc00572ec05fce0040ee0eb518e8fa1d"
         },
         {
             "path": "src/commands/core/friend.js",
@@ -413,7 +413,7 @@
         {
             "path": "src/commands/core/requests.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/requests.js",
-            "checksum": "aa524705271741066cc89ce0b74912b1"
+            "checksum": "18c4250b933248e4f720d7b26e290194"
         },
         {
             "path": "src/commands/core/settings.js",
@@ -428,7 +428,7 @@
         {
             "path": "src/commands/core/vote.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/vote.js",
-            "checksum": "15920a7e90ef8851c98fc10b309ed8ff"
+            "checksum": "c5f08b08c385d58c36040c3c94c7bdd8"
         },
         {
             "path": "src/commands/helpers/getCommentArgs.js",
@@ -503,7 +503,7 @@
         {
             "path": "src/controller/helpers/friendlist.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/friendlist.js",
-            "checksum": "ca070f444b4aff9942e912a6117d2953"
+            "checksum": "115150407cf054d506eef7831e89022b"
         },
         {
             "path": "src/controller/helpers/getBots.js",
@@ -603,7 +603,7 @@
         {
             "path": "src/dataManager/helpers/handleCooldowns.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/helpers/handleCooldowns.js",
-            "checksum": "2ce3303785620a6f9072cfda9af45a34"
+            "checksum": "078a375e1fd1ee91c76a4d76de34d16c"
         },
         {
             "path": "src/dataManager/helpers/handleExpiringTokens.js",

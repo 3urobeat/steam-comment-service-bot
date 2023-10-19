@@ -3,7 +3,7 @@
     "defaultLanguage": "english",
     "requestDelay": 15000,
     "skipSteamGuard": false,
-    "commentcooldown": 5,
+    "requestCooldown": 5,
     "botaccountcooldown": 10,
     "maxRequests": 0,
     "maxOwnerRequests": 5,

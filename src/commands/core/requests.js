@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 07.10.2023 23:34:56
+ * Last Modified: 19.10.2023 19:00:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -125,9 +125,9 @@ module.exports.resetCooldown = {
                 if (err) return respond((await commandHandler.data.getLang("invalidprofileid", null, requesterID)) + "\n\nError: " + err);
                 if (res) userID = res; // Change steamID64 to the provided id
 
-                if (commandHandler.data.config.commentcooldown == 0) return respond(await commandHandler.data.getLang("resetcooldowncmdcooldowndisabled", null, requesterID)); // Is the cooldown enabled?
+                if (commandHandler.data.config.requestCooldown == 0) return respond(await commandHandler.data.getLang("resetcooldowncmdcooldowndisabled", null, requesterID)); // Is the cooldown enabled?
 
-                commandHandler.data.lastCommentDB.update({ id: userID }, { $set: { time: Date.now() - (commandHandler.data.config.commentcooldown * 60000) } }, async (err) => {
+                commandHandler.data.lastCommentDB.update({ id: userID }, { $set: { time: Date.now() - (commandHandler.data.config.requestCooldown * 60000) } }, async (err) => {
                     if (err) return respond("Error updating database entry: " + err);
                         else respond(await commandHandler.data.getLang("resetcooldowncmdsuccess", { "profileid": userID.toString() }, requesterID));
                 });

@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 18.10.2023 23:11:23
+ * Last Modified: 19.10.2023 19:00:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -142,7 +142,7 @@ module.exports.upvote = {
                 }
 
                 // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
-                if (commandHandler.data.config.commentcooldown == 0) commandHandler.data.setUserCooldown(activeReqEntry.requestedby, Date.now());
+                if (commandHandler.data.config.requestCooldown == 0) commandHandler.data.setUserCooldown(activeReqEntry.requestedby, Date.now());
                     else commandHandler.data.setUserCooldown(activeReqEntry.requestedby, activeReqEntry.until);
             }
 
@@ -337,7 +337,7 @@ module.exports.downvote = {
                 }
 
                 // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
-                if (commandHandler.data.config.commentcooldown == 0) commandHandler.data.setUserCooldown(activeReqEntry.requestedby, Date.now());
+                if (commandHandler.data.config.requestCooldown == 0) commandHandler.data.setUserCooldown(activeReqEntry.requestedby, Date.now());
                     else commandHandler.data.setUserCooldown(activeReqEntry.requestedby, activeReqEntry.until);
             }
 

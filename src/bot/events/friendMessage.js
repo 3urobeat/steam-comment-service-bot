@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 15.10.2023 19:52:43
+ * Last Modified: 19.10.2023 19:00:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -69,7 +69,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
             if (!doc) { // Add user to database if he/she is missing for some reason
                 let lastcommentobj = {
                     id: new SteamID(String(steamID)).getSteamID64(),
-                    time: Date.now() - (this.data.config.commentcooldown * 60000) // Subtract commentcooldown so that the user is able to use the command instantly
+                    time: Date.now() - (this.data.config.requestCooldown * 60000) // Subtract requestCooldown so that the user is able to use the command instantly
                 };
 
                 this.controller.data.lastCommentDB.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err); });

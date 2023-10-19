@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 18.10.2023 23:06:09
+ * Last Modified: 19.10.2023 19:00:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -277,7 +277,7 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
         }
 
         // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
-        if (commandHandler.data.config.commentcooldown == 0) commandHandler.data.setUserCooldown(activeReqEntry.requestedby, Date.now());
+        if (commandHandler.data.config.requestCooldown == 0) commandHandler.data.setUserCooldown(activeReqEntry.requestedby, Date.now());
             else commandHandler.data.setUserCooldown(activeReqEntry.requestedby, activeReqEntry.until);
     }
 

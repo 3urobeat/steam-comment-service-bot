@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.09.2023 17:13:11
+ * Last Modified: 19.10.2023 19:00:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -36,7 +36,7 @@ Controller.prototype.checkLastcommentDB = function(bot) {
 
                 let obj = {
                     id: e,
-                    time: Date.now() - (this.data.config.commentcooldown * 60000) // Subtract commentcooldown so that the user is able to use the command instantly
+                    time: Date.now() - (this.data.config.requestCooldown * 60000) // Subtract requestCooldown so that the user is able to use the command instantly
                 };
 
                 this.data.lastCommentDB.insert(obj, (err) => {

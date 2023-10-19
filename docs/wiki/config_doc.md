@@ -14,7 +14,7 @@ This is the full documentation to customize your `config.json`.
 | \_help\_ | String | No functionality. Links directly to here to provide easily accessible explanations. |
 | requestDelay  | Number in ms | Adds a delay between each comment to prevent a cooldown from steam. Default: 7500
 | skipSteamGuard | true or false | When true, the bot will skip all accounts that require a steamGuard to be typed in when logging in. Default: false |
-| commentcooldown | Number in min | Applies this cooldown in minutes to every user after they requested comments. Set to 0 to disable. Default: 5
+| requestCooldown | Number in min | Applies this cooldown in minutes to every user after they requested comments. Set to 0 to disable. Default: 5
 | botaccountcooldown | Number in min | Applies this cooldown to every bot account used in a comment request to prevent getting a cooldown from steam. Set to 0 to disable. Default: 10 |
 | maxRequests | Number | Defines how many comments a normal user can request from your bot. Will automatically use accounts multiple times if it is greater than the amount of accounts logged in. |
 | maxOwnerRequests | Number | Defines how many comments owners can request (every user in the ownerid array). Will automatically use accounts multiple times if it is greater than the amount of accounts logged in. |

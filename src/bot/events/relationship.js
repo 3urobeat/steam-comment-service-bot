@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.09.2023 11:51:42
+ * Last Modified: 19.10.2023 19:00:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -45,7 +45,7 @@ Bot.prototype._attachSteamFriendRelationshipEvent = function() {
             // Add user to lastcomment database
             let lastcommentobj = {
                 id: steamID64,
-                time: Date.now() - (this.controller.data.config.commentcooldown * 60000) // Subtract commentcooldown so that the user is able to use the command instantly
+                time: Date.now() - (this.controller.data.config.requestCooldown * 60000) // Subtract requestCooldown so that the user is able to use the command instantly
             };
 
             this.controller.data.lastCommentDB.remove({ id: steamID64 }, {}, (err) => { if (err) logger("error", "Error removing duplicate steamid from lastcomment.db on friendRelationship! Error: " + err); }); // Remove any old entries
