@@ -273,12 +273,12 @@
         {
             "path": "package-lock.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package-lock.json",
-            "checksum": "fcd8d730402fb8a6c6646a06402b255a"
+            "checksum": "b5827f9728a1571d424268925373b3c0"
         },
         {
             "path": "package.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package.json",
-            "checksum": "5110b3e1bd9bac18b2dd3a469037d363"
+            "checksum": "a0b83c436d7c7fe3a0009bf2cf874a04"
         },
         {
             "path": "scripts/README.md",
@@ -553,7 +553,7 @@
         {
             "path": "src/data/lang/russian.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/russian.json",
-            "checksum": "0b89c1effd04599266563af545e5de1b"
+            "checksum": "44c2754b505bd61026848a9d4a09cbff"
         },
         {
             "path": "src/dataManager/dataCheck.js",
@@ -753,7 +753,7 @@
         {
             "path": "src/updater/compatibility/21400.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/compatibility/21400.js",
-            "checksum": "7b00c45aab69399f330daf719745e6d0"
+            "checksum": "17384d410fe7da7acf495d78b83a31d9"
         },
         {
             "path": "src/updater/compatibility.js",

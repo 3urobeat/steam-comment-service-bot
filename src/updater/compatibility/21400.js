@@ -4,7 +4,7 @@
  * Created Date: 28.09.2023 17:27:08
  * Author: 3urobeat
  *
- * Last Modified: 18.10.2023 23:08:24
+ * Last Modified: 19.10.2023 17:38:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -49,7 +49,10 @@ module.exports.run = (controller, resolve) => {
     controller.data.advancedconfig.relogTimeout      = 900000;
 
 
-    controller.data.datafile.compatibilityfeaturedone = true; // Set compatibilityfeaturedone to true here because we don't need to make another force update through checkforupdate() which would be necessary in order to set it to true from there
+    controller.data.writeConfigToDisk();
+
+
+    controller.data.datafile.compatibilityfeaturedone = true; // Set compatibilityfeaturedone to true, the bot would otherwise force another update
 
     controller.data.writeDatafileToDisk();
 

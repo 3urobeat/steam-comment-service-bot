@@ -5,7 +5,7 @@
     "main": "start.js",
     "dependencies": {
         "@seald-io/nedb": "^4.0.2",
-        "@types/tail": "^2.2.1",
+        "@types/tail": "^2.2.2",
         "download": "^8.0.0",
         "htmlparser2": "^9.0.0",
         "https": "^1.0.0",
@@ -21,6 +21,7 @@
     },
     "scripts": {
         "start": "node start.js",
+        "dev": "npm run types ; node scripts/generateFileStructure.js && node start",
         "types": "jsdoc -t node_modules/tsd-jsdoc/dist -r src/. -d types"
     },
     "author": "3urobeat",
