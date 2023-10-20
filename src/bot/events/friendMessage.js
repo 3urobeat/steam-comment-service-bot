@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 19.10.2023 19:00:06
+ * Last Modified: 19.10.2023 19:34:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -90,7 +90,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         let cont = message.slice(1).split(" "); // Remove prefix and split
         let args = cont.slice(1);               // Remove cmd name to only get arguments
 
-        let success = await this.controller.commandHandler.runCommand(cont[0].toLowerCase(), args, this.sendChatMessage, this, resInfo);
+        let success = await this.controller.commandHandler.runCommand(cont[0].toLowerCase(), args, this.sendChatMessage, this, resInfo); // Don't listen to your IDE, this *await is necessary*
 
         if (!success) this.sendChatMessage(this, resInfo, await this.controller.data.getLang("commandnotfound", { "cmdprefix": resInfo.cmdprefix }, steamID64)); // Send cmd not found msg if runCommand() returned false
     });

@@ -53,7 +53,7 @@
         {
             "path": "README.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/README.md",
-            "checksum": "6bb04bb40d687d36fc4a54513a329a14"
+            "checksum": "400ce1d775f3786989e41d968b8e7295"
         },
         {
             "path": "docs/dev/README.md",
@@ -273,12 +273,12 @@
         {
             "path": "package-lock.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package-lock.json",
-            "checksum": "b5827f9728a1571d424268925373b3c0"
+            "checksum": "f8b9b1b8725562e47840937f2fce5572"
         },
         {
             "path": "package.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package.json",
-            "checksum": "a0b83c436d7c7fe3a0009bf2cf874a04"
+            "checksum": "b469fc7f41324624b456b0b401cde966"
         },
         {
             "path": "scripts/README.md",
@@ -328,7 +328,7 @@
         {
             "path": "src/bot/events/friendMessage.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/friendMessage.js",
-            "checksum": "808e9f56ee7246b9fc146551ff5b099a"
+            "checksum": "662a8e4e64ca270f0efcbb688fb517ed"
         },
         {
             "path": "src/bot/events/loggedOn.js",

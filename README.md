@@ -31,11 +31,13 @@
 ## **Introduction**  
 <img align="right" width="200" height="200" src="https://3urobeat.com/comment-bot/mesh.png">  
   
-* Request profile, group, screenshot, artwork, guide or discussion comments directly from the Steam Chat  
-* Manage hundreds of Steam accounts with ease and control them from **one** console and Steam Chat  
-* Apply cooldowns to users and customize various settings (including multi language support!) 
-* Advertise your Steam group and automatically invite users to it  
-* Use proxies and requests comments via URL in your browser  
+* Request profile, group, screenshot, artwork, guide or discussion comments directly from the Steam Chat
+* Manage hundreds of Steam accounts with ease and control them from **one** terminal and Steam Chat
+* No need of having a Steam Client installed - perfect for hosting on a server
+* Apply cooldowns to users and customize various settings (including multi language support!)
+* Advertise your Steam group and automatically invite users to it
+* Use proxies to spread requests over multiple IPs
+* Completely VAC safe as it does not directly interact with any games
 * Extend the bot's functionality with plugins
   
 You can see and test out my 24/7 hosted comment bot in action [by clicking here!](https://steamcommunity.com/id/3urobeatscommentbot)  
