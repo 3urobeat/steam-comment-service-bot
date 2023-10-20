@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 19.10.2023 19:00:06
+ * Last Modified: 20.10.2023 20:17:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -119,30 +119,35 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
         }
 
 
-        /* ------------ Join botsgroup: ------------ */
-        logger("debug", `[${this.logPrefix}] Checking if bot account is in botsgroup...`, false, true, logger.animation("loading"));
+        // Run the following only on initial login
+        if (this.lastDisconnect.timestamp == 0) {
 
-        if (this.controller.data.cachefile.botsgroupid && (!this.user.myGroups[this.controller.data.cachefile.botsgroupid] || this.user.myGroups[this.controller.data.cachefile.botsgroupid] != 3)) { // If botsgroupid is defined, not in myGroups or in it but not enum 3
-            this.community.joinGroup(new SteamID(this.controller.data.cachefile.botsgroupid));
+            /* ------------ Join botsgroup: ------------ */
+            logger("debug", `[${this.logPrefix}] Checking if bot account is in botsgroup...`, false, true, logger.animation("loading"));
 
-            logger("info", `[${this.logPrefix}] Joined/Requested to join steam group that has been set as botsgroup.`);
+            if (this.controller.data.cachefile.botsgroupid && (!this.user.myGroups[this.controller.data.cachefile.botsgroupid] || this.user.myGroups[this.controller.data.cachefile.botsgroupid] != 3)) { // If botsgroupid is defined, not in myGroups or in it but not enum 3
+                this.community.joinGroup(new SteamID(this.controller.data.cachefile.botsgroupid));
+
+                logger("info", `[${this.logPrefix}] Joined/Requested to join steam group that has been set as botsgroup.`);
+            }
+
+
+            /* ------------ Set primary group: ------------ */ // TODO: Add further delays? https://github.com/3urobeat/steam-comment-service-bot/issues/165
+            if (this.controller.data.advancedconfig.setPrimaryGroup && this.controller.data.cachefile.configgroup64id) {
+                logger("info", `[${this.logPrefix}] setPrimaryGroup is enabled and configgroup64id is set, setting ${this.controller.data.cachefile.configgroup64id} as primary group...`, false, true, logger.animation("loading"));
+
+                this.community.editProfile({
+                    primaryGroup: new SteamID(this.controller.data.cachefile.configgroup64id)
+                }, (err) => {
+                    if (err) logger("err", `[${this.logPrefix}] Error setting primary group: ${err}`, true);
+                });
+            }
+
+
+            /* ------------ Check for missing game licenses and start playing: ------------ */
+            this.handleMissingGameLicenses();
+
         }
-
-
-        /* ------------ Set primary group: ------------ */ // TODO: Add further delays? https://github.com/3urobeat/steam-comment-service-bot/issues/165
-        if (this.controller.data.advancedconfig.setPrimaryGroup && this.controller.data.cachefile.configgroup64id) {
-            logger("info", `[${this.logPrefix}] setPrimaryGroup is enabled and configgroup64id is set, setting ${this.controller.data.cachefile.configgroup64id} as primary group...`, false, true, logger.animation("loading"));
-
-            this.community.editProfile({
-                primaryGroup: new SteamID(this.controller.data.cachefile.configgroup64id)
-            }, (err) => {
-                if (err) logger("err", `[${this.logPrefix}] Error setting primary group: ${err}`, true);
-            });
-        }
-
-
-        /* ------------ Check for missing game licenses and start playing: ------------ */
-        this.handleMissingGameLicenses();
 
 
         // Increase progress bar if one is active

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 15.10.2023 17:05:12
+ * Last Modified: 20.10.2023 20:04:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -50,6 +50,10 @@ Bot.prototype._attachSteamErrorEvent = function() {
         if (this.status == Bot.EStatus.ONLINE) { // It must be a fresh connection loss if status has not changed yet
             logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam. Reason: ${err}`);
             this.controller._statusUpdateEvent(this, Bot.EStatus.OFFLINE); // Set status of this account to offline
+
+            // Store disconnect timestamp & reason
+            this.lastDisconnect.timestamp = Date.now();
+            this.lastDisconnect.reason = err;
 
             // Check if this is an intended logoff
             if (this.controller.info.relogAfterDisconnect && !this.controller.info.skippedaccounts.includes(this.loginData.logOnOptions.accountName)) {
