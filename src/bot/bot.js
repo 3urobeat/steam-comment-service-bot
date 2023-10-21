@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 08.07.2023 00:41:25
+ * Last Modified: 21.10.2023 12:26:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -17,10 +17,11 @@
 
 const SteamUser      = require("steam-user");
 const SteamCommunity = require("steamcommunity");
-const request        = require("request"); // Yes I know, the library is deprecated but steamcommunity uses it as well so it is being used anyway
+const request        = require("request"); // Yes I know, the library is deprecated but we must wait for node-steamcommunity to drop the lib as well
 
 const EStatus        = require("./EStatus.js");
 const Controller     = require("../controller/controller.js"); // eslint-disable-line
+const DataManager    = require("../dataManager/dataManager.js"); // eslint-disable-line
 const SessionHandler = require("../sessions/sessionHandler.js");
 
 
@@ -68,11 +69,20 @@ const Bot = function(controller, index) {
      * Additional login related information for this bot account
      */
     this.loginData = {
-        logOnOptions:  Object.values(controller.data.logininfo)[index], // TODO: This could be an issue later when the index could change at runtime
+        logOnOptions:  controller.data.logininfo[index], // TODO: This could be an issue later when the index could change at runtime
         logOnTries:    0,
+        relogTries:    0, // Amount of times logOns have been retried after relogTimeout. handleRelog() attempts to cycle proxies after enough failures
         waitingFor2FA: false, // Set by sessionHandler's handle2FA helper to prevent handleLoginTimeout from triggering
         proxyIndex:    proxyIndex,
-        proxy:         controller.data.proxies[proxyIndex]
+        proxy:         controller.data.proxies[proxyIndex].proxy
+    };
+
+    /**
+     * Stores the timestamp and reason of the last disconnect. This is used by handleRelog() to take proper action
+     */
+    this.lastDisconnect = {
+        timestamp: 0,
+        reason: ""
     };
 
     // Define the log message prefix of this account in order to
@@ -91,6 +101,7 @@ const Bot = function(controller, index) {
     require("./helpers/checkMsgBlock.js");
     require("./helpers/handleLoginTimeout.js");
     require("./helpers/handleMissingGameLicenses.js");
+    require("./helpers/handleRelog.js");
     require("./helpers/steamChatInteraction.js");
 
     // Create sessionHandler object for this account
@@ -100,14 +111,15 @@ const Bot = function(controller, index) {
     logger("debug", `[${this.logPrefix}] Using proxy ${this.loginData.proxyIndex} "${this.loginData.proxy}" to log in to Steam and SteamCommunity...`);
 
     // Force protocol for now: https://dev.doctormckay.com/topic/4187-disconnect-due-to-encryption-error-causes-relog-to-break-error-already-logged-on/?do=findComment&comment=10917
-    this.user      = new SteamUser({ autoRelogin: false, httpProxy: this.loginData.proxy, protocol: SteamUser.EConnectionProtocol.WebSocket });
+    this.user      = new SteamUser({ autoRelogin: false, renewRefreshTokens: true, httpProxy: this.loginData.proxy, protocol: SteamUser.EConnectionProtocol.WebSocket });
     this.community = new SteamCommunity({ request: request.defaults({ "proxy": this.loginData.proxy }) }); // Pass proxy to community library as well
 
     // Load my library patches
     require("../libraryPatches/CSteamSharedFile.js");
-    require("../libraryPatches/profile.js");
     require("../libraryPatches/sharedfiles.js");
     require("../libraryPatches/helpers.js");
+    require("../libraryPatches/CSteamDiscussion.js");
+    require("../libraryPatches/discussions.js");
 
     if (global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<") this.controller.stop(); // eslint-disable-line
 
@@ -151,9 +163,12 @@ Bot.prototype._loginToSteam = async function() {
     // Count this attempt
     this.loginData.logOnTries++;
 
+    // Find proxyIndex from steam-user object options instead of loginData to get reliable log data
+    let thisProxy = this.data.proxies.find((e) => e.proxy == this.user.options.httpProxy);
+
     // Log login message for this account, with mentioning proxies or without
-    if (!this.loginData.proxy) logger("info", `[${this.logPrefix}] Trying to log in without proxy... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
-        else logger("info", `[${this.logPrefix}] Trying to log in with proxy ${this.loginData.proxyIndex}... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+    if (!thisProxy.proxy) logger("info", `[${this.logPrefix}] Trying to log in without proxy... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+        else logger("info", `[${this.logPrefix}] Trying to log in with proxy ${thisProxy.proxyIndex}... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
 
     // Attach loginTimeout handler
     this.handleLoginTimeout();
@@ -175,12 +190,52 @@ module.exports = Bot;
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
 
 /**
+ * Handles the SteamUser debug events if enabled in advancedconfig
+ */
+Bot.prototype._attachSteamDebugEvent = function() {};
+
+/**
+ * Handles the SteamUser disconnect event and tries to relog the account
+ */
+Bot.prototype._attachSteamDisconnectedEvent = function() {};
+
+/**
+ * Handles the SteamUser error event
+ */
+Bot.prototype._attachSteamErrorEvent = function() {};
+
+/**
+ * Handles messages, cooldowns and executes commands.
+ */
+Bot.prototype._attachSteamFriendMessageEvent = function() {};
+
+/**
+ * Do some stuff when account is logged in
+ */
+Bot.prototype._attachSteamLoggedOnEvent = function() {};
+
+/**
+ * Accepts a friend request, adds the user to the lastcomment.db database and invites him to your group
+ */
+Bot.prototype._attachSteamFriendRelationshipEvent = function() {};
+
+/**
+ * Accepts a group invite if acceptgroupinvites in the config is true
+ */
+Bot.prototype._attachSteamGroupRelationshipEvent = function() {};
+
+/**
+ * Handles setting cookies and accepting offline friend & group invites
+ */
+Bot.prototype._attachSteamWebSessionEvent = function() {};
+
+/**
  * Checks if user is blocked, has an active cooldown for spamming or isn't a friend
  * @param {object} steamID64 The steamID64 of the message sender
  * @param {string} message The message string provided by steam-user friendMessage event
  * @returns {boolean} `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
  */
-Bot.prototype.checkMsgBlock = function(steamID64, message) {}; // eslint-disable-line
+Bot.prototype.checkMsgBlock = async function(steamID64, message) {}; // eslint-disable-line
 
 /**
  * Handles aborting a login attempt should an account get stuck to prevent the bot from softlocking (see issue #139)
@@ -191,6 +246,23 @@ Bot.prototype.handleLoginTimeout = function() {};
  * Handles checking for missing game licenses, requests them and then starts playing
  */
 Bot.prototype.handleMissingGameLicenses = function() {};
+
+/**
+ * Changes the proxy of this bot account and relogs it.
+ * @param {number} newProxyIndex Index of the new proxy inside the DataManager.proxies array.
+ */
+Bot.prototype.switchProxy = function(newProxyIndex) {}; // eslint-disable-line
+
+/**
+ * Checks host internet connection, updates the status of all proxies checked >2.5 min ago and switches the proxy of this bot account if necessary.
+ * @returns {Promise.<boolean>} Resolves with a boolean indicating whether the proxy was switched when done. A relog is triggered when the proxy was switched.
+ */
+Bot.prototype.checkAndSwitchMyProxy = async function() {};
+
+/**
+ * Attempts to get this account, after failing all logOnRetries, back online after some time. Does not apply to initial logins.
+ */
+Bot.prototype.handleRelog = function() {};
 
 /**
  * Our commandHandler respondModule implementation - Sends a message to a Steam user

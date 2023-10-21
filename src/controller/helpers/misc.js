@@ -4,7 +4,7 @@
  * Created Date: 25.03.2023 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 08.07.2023 00:47:33
+ * Last Modified: 08.10.2023 16:59:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -15,13 +15,14 @@
  */
 
 
+const http  = require("http");
 const https = require("https");
 
 
 /**
  * Implementation of a synchronous for loop in JS (Used as reference: https://whitfin.io/handling-synchronous-asynchronous-loops-javascriptnode-js/)
  * @param {number} iterations The amount of iterations
- * @param {function(): void} func The function to run each iteration (Params: loop, index)
+ * @param {function(object, number): void} func The function to run each iteration (Params: loop, index)
  * @param {function(): void} exit This function will be called when the loop is finished
  */
 module.exports.syncLoop = (iterations, func, exit) => {
@@ -31,13 +32,15 @@ module.exports.syncLoop = (iterations, func, exit) => {
     // Construct loop object
     let loop = {
         next: function () { // Run next iteration
+            process.nextTick(() => { // Delay by one tick to fix weird infinite loop crash bug
                 // Check if the next iteration is still allowed to run, otherwise stop by calling break
                 if (currentIndex < iterations && !done) {
                     func(loop, currentIndex); // Call function again with new index
                     currentIndex++;
                 } else {
                     this.break();
-                }1;
+                }
+            });
         },
         break: function () { // Break loop and call exit function
             done = true;
@@ -90,12 +93,13 @@ module.exports.timeToString = (timestamp) => {
 
 
 /**
- * Pings an URL to check if the service and this internet connection is working
+ * Pings a **https** URL to check if the service and this internet connection is working
  * @param {string} url The URL of the service to check
- * @param {boolean} throwTimeout If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
+ * @param {boolean} [throwTimeout=false] If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
+ * @param {{ ip: string, port: number, username: string, password: string }} [proxy] Provide a proxy if the connection check should be made through a proxy instead of the local connection
  * @returns {Promise.<{ statusMessage: string, statusCode: number|null }>} Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
  */
-module.exports.checkConnection = (url, throwTimeout) => {
+module.exports.checkConnection = (url, throwTimeout = false, proxy) => {
     return new Promise((resolve, reject) => {
 
         // Start a 20 sec timeout to display an error when Steam can't be reached but also doesn't throw an error
@@ -105,20 +109,88 @@ module.exports.checkConnection = (url, throwTimeout) => {
             timeoutTimeout = setTimeout(() => reject({ "statusMessage": "Timeout: Received no response within 20 seconds.", "statusCode": null }), 20000);
         }
 
-        https.get(url, function (res) {
-            if (throwTimeout) clearTimeout(timeoutTimeout);
+        // Use http and provide a proxy if requested - Credit: https://stackoverflow.com/a/49611762
+        if (proxy) {                                                                                     // TODO: Missing authentication could perhaps cause errors here
+            let auth = "Basic " + Buffer.from(proxy.username + ":" + proxy.password).toString("base64"); // Construct autentication
 
-            if (res.statusCode >= 200 && res.statusCode < 300) resolve(res);
-                else reject(res);
+            url = url.replace("https://", ""); // Remove preceding https:// from url
 
-        }).on("error", function(err) {
+            // Connect to proxy server
+            http.request({
+                host: proxy.ip,     // IP address of proxy server
+                port: proxy.port,   // Port of proxy server
+                method: "CONNECT",
+                path: url + ":443", // Some destination, add 443 port for https!
+                headers: { "Proxy-Authorization": auth },
+            }).on("connect", (res, socket) => {
 
-            if (throwTimeout) clearTimeout(timeoutTimeout);
+                if (res.statusCode === 200) { // Connected to proxy server, now ping the url
+                    https.get({
+                        host: url,
+                        path: "/",
+                        agent: new https.Agent({ socket }), // Cannot use a default agent
+                    }, (res) => {
+                        resolve(res);
+                    });
+                } else {
+                    reject({ "statusMessage": "Failed to connect to proxy server.", "statusCode": res.statusCode });
+                }
 
-            reject({ "statusMessage": err.message, "statusCode": null });
-        });
+            }).on("error", (err) => {
+                reject({ "statusMessage": "Failed to connect to proxy server. Error: " + err, "statusCode": null });
+            }).end();
+
+        } else {
+
+            https.get(url, (res) => {
+                if (throwTimeout) clearTimeout(timeoutTimeout);
+
+                if (res.statusCode >= 200 && res.statusCode < 300) resolve(res);
+                    else reject(res);
+
+            }).on("error", (err) => {
+
+                if (throwTimeout) clearTimeout(timeoutTimeout);
+
+                reject({ "statusMessage": err.message, "statusCode": null });
+            });
+        }
 
     });
+};
+
+
+/**
+ * Splits a HTTP proxy URL into its parts
+ * @param {string} url The HTTP proxy URL
+ * @returns {{ ip: string, port: number, username: string, password: string }} Object containing the proxy parts
+ */
+module.exports.splitProxyString = (url) => { // TODO: Missing authentication could perhaps cause errors here
+
+    let obj = { ip: "", port: 0, username: "", password: "" };
+
+    if (!url) return obj;
+
+    // Cut away http prefix
+    url = url.replace("http://", "");
+
+    // Split at @ to get username:pw and ip:port parts
+    url = url.split("@");
+
+    // Split both parts at : to separate the 4 different elements
+    let usernamePassword = url[0].split(":");
+    let ipPort           = url[1].split(":");
+
+    // Extract ip and port from ipPort and username and password from usernamePassword
+    obj.ip   = ipPort[0];
+    obj.port = ipPort[1];
+
+    obj.username = usernamePassword[0];
+    obj.password = usernamePassword[1];
+
+    // Return result
+    return obj;
+
 };
 
 

@@ -31,14 +31,16 @@ Controller.prototype._handleErrors = function() {
 
 
     // Known issue: This event listener doesn't seem to capture uncaught exceptions in functions. However if it is inside for example a setTimeout it suddently works.
-    process.on("uncaughtException", (reason) => {
+    process.on("uncaughtException", async (reason) => {
         // Try to fix error automatically by reinstalling all modules
         if (String(reason).includes("Error: Cannot find module")) {
             logger("", "", true);
             logger("info", "Cannot find module error detected. Trying to fix error by reinstalling modules...\n");
             logger("debug", "uncaughtException " + reason.stack, true);
 
-            require("./npminteraction.js").reinstallAll(logger, (err, stdout) => { //eslint-disable-line
+            const npminteraction = await this.checkAndGetFile("./src/controller/helpers/npminteraction.js", logger, false, false);
+
+            npminteraction.reinstallAll(logger, (err, stdout) => { //eslint-disable-line
                 if (err) {
                     logger("error", "I was unable to reinstall all modules. Please try running 'npm install --production' manually. Error: " + err);
                     return this.stop();

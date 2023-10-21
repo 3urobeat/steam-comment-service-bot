@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 21:25:38
+ * Last Modified: 07.10.2023 23:34:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -34,15 +34,15 @@ module.exports.group = {
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
-        if (commandHandler.data.config.yourgroup.length < 1 || !commandHandler.data.cachefile.configgroup64id) return respond(commandHandler.data.lang.groupcmdnolink); // No group info at all? stop.
+        if (commandHandler.data.config.yourgroup.length < 1 || !commandHandler.data.cachefile.configgroup64id) return respond(await commandHandler.data.getLang("groupcmdnolink", null, resInfo.userID)); // No group info at all? stop.
 
         // Send user an invite if a group is set in the config and userID is a Steam ID by checking fromSteamChat
         if (resInfo.userID && resInfo.fromSteamChat && commandHandler.data.cachefile.configgroup64id && Object.keys(commandHandler.controller.main.user.myGroups).includes(commandHandler.data.cachefile.configgroup64id)) {
             commandHandler.controller.main.user.inviteToGroup(resInfo.userID, commandHandler.data.cachefile.configgroup64id);
-            respond(commandHandler.data.lang.groupcmdinvitesent);
+            respond(await commandHandler.data.getLang("groupcmdinvitesent", null, resInfo.userID));
 
             if (commandHandler.data.cachefile.configgroup64id != "103582791464712227") { // https://steamcommunity.com/groups/3urobeatGroup
                 commandHandler.controller.main.user.inviteToGroup(resInfo.userID, new SteamID("103582791464712227"));
@@ -50,7 +50,7 @@ module.exports.group = {
             return; // Id? send invite and stop
         }
 
-        respond(commandHandler.data.lang.groupcmdinvitelink + commandHandler.data.config.yourgroup); // Seems like no id has been saved but an url. Send the user the url
+        respond((await commandHandler.data.getLang("groupcmdinvitelink", null, resInfo.userID)) + commandHandler.data.config.yourgroup); // Seems like no id has been saved but an url. Send the user the url
     }
 };
 
@@ -77,15 +77,16 @@ module.exports.joinGroup = {
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        let requesterID = resInfo.userID;
 
-        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
-        if (isNaN(args[0]) && !String(args[0]).startsWith("https://steamcommunity.com/groups/")) return respond(commandHandler.data.lang.invalidgroupid);
+        if (isNaN(args[0]) && !String(args[0]).startsWith("https://steamcommunity.com/groups/")) return respond(await commandHandler.data.getLang("invalidgroupid", null, requesterID));
 
-        commandHandler.controller.handleSteamIdResolving(args[0], "group", (err, id) => {
-            if (err) return respond(commandHandler.data.lang.invalidgroupid + "\n\nError: " + err);
+        commandHandler.controller.handleSteamIdResolving(args[0], "group", async (err, id) => {
+            if (err) return respond((await commandHandler.data.getLang("invalidgroupid", null, requesterID)) + "\n\nError: " + err);
 
             commandHandler.controller.getBots().forEach((e, i) => {
                 setTimeout(() => {
@@ -93,7 +94,7 @@ module.exports.joinGroup = {
                 }, 1000 * i); // Delay every iteration so that we don't make a ton of requests at once
             });
 
-            respond(commandHandler.data.lang.joingroupcmdsuccess.replace("groupid", id));
+            respond(await commandHandler.data.getLang("joingroupcmdsuccess", { "groupid": id }, requesterID));
             logger("info", `Joining group '${id}' with all bot accounts...`);
         });
     }
@@ -122,15 +123,16 @@ module.exports.leaveGroup = {
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        let requesterID = resInfo.userID;
 
-        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
-        if (isNaN(args[0]) && !String(args[0]).startsWith("https://steamcommunity.com/groups/")) return respond(commandHandler.data.lang.invalidgroupid);
+        if (isNaN(args[0]) && !String(args[0]).startsWith("https://steamcommunity.com/groups/")) return respond(await commandHandler.data.getLang("invalidgroupid", null, requesterID));
 
-        commandHandler.controller.handleSteamIdResolving(args[0], "group", (err, id) => {
-            if (err) return respond(commandHandler.data.lang.invalidgroupid + "\n\nError: " + err);
+        commandHandler.controller.handleSteamIdResolving(args[0], "group", async (err, id) => {
+            if (err) return respond((await commandHandler.data.getLang("invalidgroupid", null, requesterID)) + "\n\nError: " + err);
 
             commandHandler.controller.getBots().forEach((e, i) => {
                 setTimeout(() => {
@@ -138,7 +140,7 @@ module.exports.leaveGroup = {
                 }, 1000 * i); // Delay every iteration so that we don't make a ton of requests at once
             });
 
-            respond(commandHandler.data.lang.leavegroupcmdsuccess.replace("groupid", id));
+            respond(await commandHandler.data.getLang("leavegroupcmdsuccess", { "groupid": id }, requesterID));
             logger("info", `Leaving group ${id} with all bot accounts.`);
         });
     }
@@ -167,25 +169,26 @@ module.exports.leaveAllGroups = {
      * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
-    run: (commandHandler, args, respondModule, context, resInfo) => {
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        let requesterID = resInfo.userID;
 
-        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.botnotready); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
         // TODO: This is bad. Rewrite using a message collector, maybe add one to steamChatInteraction helper
         var abortleaveallgroups; // eslint-disable-line no-var
 
         if (args[0] == "abort") {
-            respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.leaveallgroupscmdabort); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+            respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("leaveallgroupscmdabort", null, requesterID)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
             return abortleaveallgroups = true;
         }
 
         abortleaveallgroups = false;
-        respond(commandHandler.data.lang.leaveallgroupscmdpending.replace(/cmdprefix/g, resInfo.cmdprefix));
+        respond(await commandHandler.data.getLang("leaveallgroupscmdpending", { "cmdprefix": resInfo.cmdprefix }, requesterID));
 
-        setTimeout(() => {
+        setTimeout(async () => {
             if (abortleaveallgroups) return logger("info", "leaveallgroups process was aborted.");
-            respondModule(context, { prefix: "/me", ...resInfo }, commandHandler.data.lang.leaveallgroupscmdstart); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+            respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("leaveallgroupscmdstart", null, requesterID)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
             logger("info", "Starting to leave all groups...");
 
             for (let i = 0; i < commandHandler.controller.getBots().length; i++) {

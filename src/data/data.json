@@ -1,14 +1,14 @@
 {
-    "version": "21306",
-    "versionstr": "2.13.6",
+    "version": "21400",
+    "versionstr": "2.14.0",
     "branch": "master",
     "filetostart": "./src/starter.js",
     "filetostarturl": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/src/starter.js",
     "mestr": "3urobeat",
-    "firststart": true,
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/3urobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://github.com/sponsors/3urobeat",
+    "firststart": true,
     "compatibilityfeaturedone": false,
-    "whatsnew": "Reworked how commands accept and use IDs to greatly improve plugin support, fixed error when loading sharedfiles with incomplete breadcrumbs, fixed bug where the bot was waiting for a skipped account's object to be populated and more.",
+    "whatsnew": "Added support for commenting in discussions, following users/workshops/curators and setting specific games per account. Added a relogging system with proxy switching support, a multi-language system, fixed a lot of bugs and more. Read the full release notes on GitHub!",
     "timesloggedin": 0,
     "totallogintime": 0
 }

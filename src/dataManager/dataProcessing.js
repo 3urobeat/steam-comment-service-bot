@@ -4,7 +4,7 @@
  * Created Date: 27.03.2023 21:34:45
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:59:57
+ * Last Modified: 05.09.2023 19:05:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -15,7 +15,6 @@
  */
 
 
-const fs              = require("fs");
 const SteamID         = require("steamid");
 const steamIdResolver = require("steamid-resolver"); // My own library, cool right?
 
@@ -161,8 +160,6 @@ DataManager.prototype.processData = async function() {
     // Process all three, then update cache.json
     await Promise.all([yourgroup(), botsgroup(), owners()]);
 
-    fs.writeFile(srcdir + "/data/cache.json", JSON.stringify(this.cachefile, null, 4), err => {
-        if (err) logger("error", `DataManager processData(): Error updating cache.json: ${err}`);
-    });
+    this.writeCachefileToDisk();
 
 };

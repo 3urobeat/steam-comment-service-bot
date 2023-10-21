@@ -4,7 +4,7 @@
  * Created Date: 13.04.2023 17:58:23
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 12:47:30
+ * Last Modified: 19.10.2023 19:00:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -58,7 +58,7 @@ DataManager.prototype.getUserCooldown = function(id) {
             lastReq = Number(Math.round(lastReq+"e"+2)+"e-"+2); // Limit lastReq value to two decimals
 
             // Format untilStr
-            let until = Math.abs(((Date.now() - doc.time) / 1000) - (this.config.commentcooldown * 60));
+            let until = Math.abs(((Date.now() - doc.time) / 1000) - (this.config.requestCooldown * 60));
             let untilUnit = "seconds";
 
             if (until > 60) {
@@ -76,7 +76,7 @@ DataManager.prototype.getUserCooldown = function(id) {
             until = Number(Math.round(until+"e"+2)+"e-"+2); // Limit until value to two decimals
 
             obj.lastRequest    = doc.time;
-            obj.until          = doc.time + (this.config.commentcooldown * 60000);
+            obj.until          = doc.time + (this.config.requestCooldown * 60000);
             obj.lastRequestStr = `${lastReq} ${lastReqUnit}`;
             obj.untilStr       = `${until} ${untilUnit}`;
 

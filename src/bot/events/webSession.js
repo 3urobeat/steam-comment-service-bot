@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 09:33:16
+ * Last Modified: 21.10.2023 13:13:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -28,13 +28,15 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
     this.user.on("webSession", (sessionID, cookies) => { // Get websession (log in to chat)
 
         // Increase progress bar if one is active
-        if (logger.getProgressBar()) logger.increaseProgressBar((100 / Object.keys(this.data.logininfo).length) / 3);
+        if (logger.getProgressBar()) logger.increaseProgressBar((100 / this.data.logininfo.length) / 3);
 
 
         // Set cookies (otherwise the bot is unable to comment)
         this.community.setCookies(cookies);
 
         this.controller._statusUpdateEvent(this, Bot.EStatus.ONLINE); // Set status of this account to online
+
+        this.loginData.relogTries = 0; // Reset relogTries to indicate that this proxy is working should one of the next logOn retries fail
 
 
         if (!this.controller.info.readyAfter) logger("info", `[${this.logPrefix}] Got websession and set cookies. Accepting offline friend & group invites...`, false, true, logger.animation("loading")); // Only print message with animation if the bot was not fully started yet
@@ -63,8 +65,8 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
                     // Log message and send welcome message. Delay msg to avoid AccessDenied and RateLimitExceeded errors
                     logger("info", `[${this.logPrefix}] Added user while I was offline! User: ` + thisfriend);
 
-                    setTimeout(() => {
-                        if (this.index == 0) this.sendChatMessage(this, { userID: String(thisfriend) }, this.controller.data.lang.useradded.replace(/cmdprefix/g, "!"));
+                    setTimeout(async () => {
+                        if (this.index == 0) this.sendChatMessage(this, { userID: String(thisfriend) }, await this.controller.data.getLang("useradded", { "cmdprefix": "!" }, String(thisfriend)));
                             else logger("debug", "Not sending useradded message because this isn't the main user...");
                     }, 1000 * processedFriendRequests);
 
@@ -72,7 +74,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
                     // Add user to lastcomment database
                     let lastcommentobj = {
                         id: thisfriend,
-                        time: Date.now() - (this.controller.data.config.commentcooldown * 60000) // Subtract commentcooldown so that the user is able to use the command instantly
+                        time: Date.now() - (this.controller.data.config.requestCooldown * 60000) // Subtract requestCooldown so that the user is able to use the command instantly
                     };
 
                     this.controller.data.lastCommentDB.remove({ id: thisfriend }, {}, (err) => { if (err) logger("error", "Error removing duplicate steamid from lastcomment.db on offline friend accept! Error: " + err); }); // Remove any old entries
@@ -117,34 +119,40 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
         }
 
 
-        /* ------------ Join botsgroup: ------------ */
-        logger("debug", `[${this.logPrefix}] Checking if bot account is in botsgroup...`, false, true, logger.animation("loading"));
+        // Run the following only on initial login
+        if (this.lastDisconnect.timestamp == 0) {
 
-        if (this.controller.data.cachefile.botsgroupid && (!this.user.myGroups[this.controller.data.cachefile.botsgroupid] || this.user.myGroups[this.controller.data.cachefile.botsgroupid] != 3)) { // If botsgroupid is defined, not in myGroups or in it but not enum 3
-            this.community.joinGroup(new SteamID(this.controller.data.cachefile.botsgroupid));
+            /* ------------ Join botsgroup: ------------ */
+            logger("debug", `[${this.logPrefix}] Checking if bot account is in botsgroup...`);
 
-            logger("info", `[${this.logPrefix}] Joined/Requested to join steam group that has been set as botsgroup.`);
+            if (this.controller.data.cachefile.botsgroupid && (!this.user.myGroups[this.controller.data.cachefile.botsgroupid] || this.user.myGroups[this.controller.data.cachefile.botsgroupid] != 3)) { // If botsgroupid is defined, not in myGroups or in it but not enum 3
+                this.community.joinGroup(new SteamID(this.controller.data.cachefile.botsgroupid));
+
+                logger("info", `[${this.logPrefix}] Joined/Requested to join steam group that has been set as botsgroup.`);
+            }
+
+
+            /* ------------ Set primary group: ------------ */ // TODO: Add further delays? https://github.com/3urobeat/steam-comment-service-bot/issues/165
+            if (this.controller.data.advancedconfig.setPrimaryGroup && this.controller.data.cachefile.configgroup64id) {
+                logger("debug", `[${this.logPrefix}] setPrimaryGroup is enabled and configgroup64id is set, setting '${this.controller.data.cachefile.configgroup64id}' as primary group...`);
+
+                this.community.editProfile({
+                    primaryGroup: new SteamID(this.controller.data.cachefile.configgroup64id)
+                }, (err) => {
+                    if (err) logger("err", `[${this.logPrefix}] Error setting primary group: ${err}`, false, false, null, true);
+                        else logger("info", `[${this.logPrefix}] Successfully set '${this.controller.data.cachefile.configgroup64id}' as primary group...`, false, true, logger.animation("loading"));
+                });
+            }
+
+
+            /* ------------ Check for missing game licenses and start playing: ------------ */
+            this.handleMissingGameLicenses();
+
         }
-
-
-        /* ------------ Set primary group: ------------ */ // TODO: Add further delays? https://github.com/3urobeat/steam-comment-service-bot/issues/165
-        if (this.controller.data.advancedconfig.setPrimaryGroup && this.controller.data.cachefile.configgroup64id) {
-            logger("info", `[${this.logPrefix}] setPrimaryGroup is enabled and configgroup64id is set, setting ${this.controller.data.cachefile.configgroup64id} as primary group...`, false, true, logger.animation("loading"));
-
-            this.community.editProfile({
-                primaryGroup: new SteamID(this.controller.data.cachefile.configgroup64id)
-            }, (err) => {
-                if (err) logger("err", `[${this.logPrefix}] Error setting primary group: ${err}`, true);
-            });
-        }
-
-
-        /* ------------ Check for missing game licenses and start playing: ------------ */
-        this.handleMissingGameLicenses();
 
 
         // Increase progress bar if one is active
-        if (logger.getProgressBar()) logger.increaseProgressBar((100 / Object.keys(this.data.logininfo).length) / 3);
+        if (logger.getProgressBar()) logger.increaseProgressBar((100 / this.data.logininfo.length) / 3);
 
     });
 

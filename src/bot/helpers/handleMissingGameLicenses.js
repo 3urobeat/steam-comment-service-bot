@@ -4,7 +4,7 @@
  * Created Date: 29.06.2023 21:31:53
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 14.10.2023 10:35:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -22,19 +22,31 @@ const Bot = require("../bot.js");
  * Handles checking for missing game licenses, requests them and then starts playing
  */
 Bot.prototype.handleMissingGameLicenses = function() {
-
-    let startPlaying = () => { if (this.index == 0) this.user.gamesPlayed(this.controller.data.config.playinggames); else this.user.gamesPlayed(this.controller.data.config.childaccplayinggames); };
     let data = this.controller.data;
+
+    // Check if user provided games specifically for this account. We only need to check this for child accounts
+    let configChildGames = data.config.childaccplayinggames;
+
+    if (typeof configChildGames[0] == "object") {
+        if (Object.keys(configChildGames[0]).includes(this.loginData.logOnOptions.accountName)) configChildGames = configChildGames[0][this.loginData.logOnOptions.accountName]; // Get the specific settings for this account if included
+            else configChildGames = configChildGames.slice(1);                                                                                                                   // ...otherwise remove object containing acc specific settings to use the generic ones
+
+        logger("debug", `[${this.logPrefix}] Bot handleMissingGameLicenses(): Setting includes specific games, filtered for this account: ${configChildGames.join(", ")}`);
+    }
+
+    // Shorthander for starting to play
+    let startPlaying = () => { if (this.index == 0) this.user.gamesPlayed(this.controller.data.config.playinggames); else this.user.gamesPlayed(configChildGames); };
+
 
     let options = {
         includePlayedFreeGames: true,
-        filterAppids: this.index == 0 ? data.config.playinggames.filter(e => !isNaN(e)) : data.config.childaccplayinggames.filter(e => !isNaN(e)), // We only need to check for these appIDs. Filter custom game string
+        filterAppids: this.index == 0 ? data.config.playinggames.filter(e => !isNaN(e)) : configChildGames.filter(e => !isNaN(e)), // We only need to check for these appIDs. Filter custom game string
         includeFreeSub: false
     };
 
     // Only request owned apps if we are supposed to idle something
     if (options.filterAppids.length > 0) {
-        this.user.getUserOwnedApps(data.cachefile.botaccid[this.index], options, (err, res) => {
+        this.user.getUserOwnedApps(this.user.steamID, options, (err, res) => {
             if (err) {
                 logger("error", `[${this.logPrefix}] Failed to get owned apps! Attempting to play set appIDs anyways...`);
 
@@ -44,7 +56,7 @@ Bot.prototype.handleMissingGameLicenses = function() {
             }
 
             // Check if we are missing a license
-            let missingLicenses = this.data.config.playinggames.filter(e => !isNaN(e) && res.apps.filter(f => f.appid == e).length == 0);
+            let missingLicenses = options.filterAppids.filter(e => !isNaN(e) && res.apps.filter(f => f.appid == e).length == 0);
 
             // Redeem missing licenses or start playing if none are missing. Event will get triggered again on change.
             if (missingLicenses.length > 0) {

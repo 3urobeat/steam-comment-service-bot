@@ -4,7 +4,7 @@
  * Created Date: 09.03.2022 12:58:17
  * Author: 3urobeat
  *
- * Last Modified: 08.07.2023 00:36:23
+ * Last Modified: 26.09.2023 20:52:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -25,9 +25,10 @@ const Controller = require("../controller.js");
 // I'm therefore taking Strings instead of SteamID.Type values for types now.
 
 /**
- * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation
+ * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
+ * Note: You need to provide a full URL for discussions & curators. For discussions only type checking/determination is supported.
  * @param {string} str The profileID argument provided by the user
- * @param {string} expectedIdType The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
+ * @param {string} expectedIdType The type of SteamID expected ("profile", "group", "sharedfile", "discussion" or "curator") or `null` if type should be assumed.
  * @param {function(string|null, string|null, string|null): void} callback Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
  */
 Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) => {
@@ -66,7 +67,15 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
             // My library doesn't have a check if exists function nor returns the steamID64 if I pass it into steamID64ToCustomUrl(). But since I don't want to parse the URL myself here I'm just gonna request the full obj and cut the id out of it
             steamIDResolver.steamID64ToFullInfo(str, (err, obj) => handleResponse(err, obj.steamID64[0]));
 
-        } else if (str.includes("steamcommunity.com/groups/")) {
+        } else if (str.includes("steamcommunity.com/discussions/forum") || /steamcommunity.com\/app\/.+\/discussions/g.test(str) || /steamcommunity.com\/groups\/.+\/discussions/g.test(str)) {
+            logger("debug", "handleSteamIdResolving: User provided discussion link...");
+
+            idType = "discussion";
+
+            if (expectedIdType && idType != expectedIdType) callback(`Received steamID of type ${idType} but expected ${expectedIdType}.`, null, null);
+                else callback(null, str, idType);
+
+        } else if (str.includes("steamcommunity.com/groups/")) { // Must be below the discussion check because of the "groups/abc/discussion" regex above
             logger("debug", "handleSteamIdResolving: User provided group link...");
 
             steamIDResolver.groupUrlToGroupID64(str, handleResponse);
@@ -92,7 +101,22 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
                     else callback(null, str, idType);
             });
 
-        } else { // Doesn't seem to be an URL
+        } else if (str.includes("store.steampowered.com/curator/")) {
+            logger("debug", "handleSteamIdResolving: User provided curator link...");
+
+            // Cut domain away
+            let split = str.replace("/?appid=", "").split("/"); // Remove any trailing app id, we don't exactly know what the user provided
+            if (split[split.length - 1] == "") split.pop();     // Remove trailing slash (which is now a space because of split("/"))
+
+            str = split[split.length - 1].split("-")[0];
+
+            // Update idType
+            idType = "curator";
+
+            if (expectedIdType && idType != expectedIdType) callback(`Received steamID of type ${idType} but expected ${expectedIdType}.`, null, null);
+                else callback(null, str, idType);
+
+        } else { // Doesn't seem to be an URL. We can ignore discussions as we need to provide an URL to SteamCommunity.
 
             // If user just provided the customURL part of the URL then try and figure out from the expected expectedIdType if this could be a profile or group customURL
             if (expectedIdType == "profile") {

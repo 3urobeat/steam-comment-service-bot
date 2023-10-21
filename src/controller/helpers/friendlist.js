@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 13:10:14
+ * Last Modified: 19.10.2023 19:00:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -36,7 +36,7 @@ Controller.prototype.checkLastcommentDB = function(bot) {
 
                 let obj = {
                     id: e,
-                    time: Date.now() - (this.data.config.commentcooldown * 60000) // Subtract commentcooldown so that the user is able to use the command instantly
+                    time: Date.now() - (this.data.config.requestCooldown * 60000) // Subtract requestCooldown so that the user is able to use the command instantly
                 };
 
                 this.data.lastCommentDB.insert(obj, (err) => {
@@ -83,12 +83,12 @@ Controller.prototype.friendListCapacityCheck = function(bot, callback) {
                         docs = docs.sort((a, b) => a.time - b.time);
 
                         // Iterate over all docs until we find someone still on our friendlist that isn't an owner (since this func is called for each bot acc we don't need to iterate over the botobject)
-                        docs.every((e, i) => { // Use every() so we can break with return false
+                        docs.every(async (e, i) => { // Use every() so we can break with return false
                             if (bot.user.myFriends[e.id] == 3 && !this.data.cachefile.ownerid.includes(e.id)) { // Check if friend and not owner
                                 let steamID = new SteamID(e.id);
 
-                                // Unfriend user and send him/her a message // TODO: Maybe only do this from the main bot?
-                                bot.sendChatMessage(bot, { userID: steamID.getSteamID64() }, this.data.lang.userunfriend.replace("forceFriendlistSpaceTime", this.data.advancedconfig.forceFriendlistSpaceTime));
+                                // Unfriend user and send them a message // TODO: Maybe only do this from the main bot?
+                                bot.sendChatMessage(bot, { userID: steamID.getSteamID64() }, await this.data.getLang("userunfriend", { "forceFriendlistSpaceTime": this.data.advancedconfig.forceFriendlistSpaceTime }, steamID.getSteamID64()));
                                 bot.user.removeFriend(steamID);
 
                                 logger("info", `[Bot ${bot.index}] Force-Unfriended ${e.id} after being inactive for ${this.data.advancedconfig.forceFriendlistSpaceTime} days to keep 1 empty slot on the friendlist`);
@@ -131,11 +131,11 @@ Controller.prototype._lastcommentUnfriendCheck = function() {
         docs.forEach((e, i) => { // Take action for all results
             setTimeout(() => {
 
-                this.getBots().forEach((f, j) => {
+                this.getBots().forEach(async (f, j) => {
                     let thisbot = f.user;
 
                     if (thisbot.myFriends[e.id] && thisbot.myFriends[e.id] == 3 && !this.data.cachefile.ownerid.includes(e.id)) { // Check if the targeted user is still friend and not an owner
-                        if (j == 0) this.main.sendChatMessage(this.main, { userID: e.id }, this.data.lang.userforceunfriend.replace("unfriendtime", this.data.config.unfriendtime));
+                        if (j == 0) this.main.sendChatMessage(this.main, { userID: e.id }, await this.data.getLang("userforceunfriend", { "unfriendtime": this.data.config.unfriendtime }, e.id));
 
                         setTimeout(() => {
                             thisbot.removeFriend(new SteamID(e.id)); // Unfriend user with each bot

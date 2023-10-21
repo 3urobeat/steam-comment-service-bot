@@ -3,6 +3,8 @@
 
 You can find setup instructions, documentation for all commands, config files, error messages and much more here!
 
+Are you rather searching for the developer documentation? [Click here to get redirected](../dev#readme)
+
 &nbsp;
 
 ## Table of Contents
@@ -17,6 +19,7 @@ You can find setup instructions, documentation for all commands, config files, e
 - [Steam limitations](./steam_limitations.md)
 - [Integrating into your own application](./integrating_into_your_app.md)
 - [Creating plugins](./creating_plugins.md)
+- [Contributing to the project](./contributing.md)
 - [Version Changelogs](./version_changelogs.md)
 
 &nbsp;

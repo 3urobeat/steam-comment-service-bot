@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 12:43:16
+ * Last Modified: 15.09.2023 16:32:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -14,9 +14,11 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 const Controller = require("../controller/controller.js"); // eslint-disable-line
 const CommandHandler = require("../commands/commandHandler.js"); // eslint-disable-line
 const Bot = require("../../src/bot/bot.js"); // eslint-disable-line
+
 
 /**
  * @typedef Plugin Documentation of the Plugin structure for IntelliSense support
@@ -27,6 +29,7 @@ const Bot = require("../../src/bot/bot.js"); // eslint-disable-line
  * @property {function(Bot, Bot.EStatus, Bot.EStatus): void} statusUpdate Controller statusUpdate event
  * @property {function(Bot, function(string): void): void} steamGuardInput Controller steamGuardInput event
  */
+
 
 /**
  * Constructor - The plugin system loads all plugins and provides functions for plugins to hook into
@@ -58,6 +61,7 @@ const PluginSystem = function (controller) {
 
 // The plugin system loads all plugins and provides functions for plugins to hook into
 module.exports = PluginSystem;
+
 
 /**
  * Reloads all plugins and calls ready event after ~2.5 seconds.
@@ -95,6 +99,7 @@ PluginSystem.prototype.reloadPlugins = function () {
         });
     }, 3000);
 };
+
 
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
 
@@ -160,7 +165,7 @@ PluginSystem.prototype.loadPluginConfig = function (pluginName) {}; // eslint-di
 PluginSystem.prototype.writePluginConfig = function (pluginName, pluginConfig) {}; // eslint-disable-line
 /**
  * Integrates changes made to the config to the users config
- * @param {string} pluginName
+ * @param {string} pluginName Name of your plugin
  * @returns {Record<string,any>} the config
  */
 PluginSystem.prototype.aggregatePluginConfig = function (pluginName) {}; // eslint-disable-line

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 20.10.2023 20:04:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -33,7 +33,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
             logger("", "", true);
             logger("warn", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam! Reason: LogonSessionReplaced. I won't try to relog this account because someone else is using it now.`, false, false, null, true); // Force print this message now
 
-            // Abort or skip account
+            // Abort or skip account. No need to attach handleRelog() here
             if (this.index == 0) {
                 logger("error", `${logger.colors.fgred}Failed account is bot0! Aborting...`, true);
                 return this.controller.stop();
@@ -51,11 +51,15 @@ Bot.prototype._attachSteamErrorEvent = function() {
             logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam. Reason: ${err}`);
             this.controller._statusUpdateEvent(this, Bot.EStatus.OFFLINE); // Set status of this account to offline
 
+            // Store disconnect timestamp & reason
+            this.lastDisconnect.timestamp = Date.now();
+            this.lastDisconnect.reason = err;
+
             // Check if this is an intended logoff
             if (this.controller.info.relogAfterDisconnect && !this.controller.info.skippedaccounts.includes(this.loginData.logOnOptions.accountName)) {
-                logger("info", `${logger.colors.fggreen}[${this.logPrefix}] Initiating a relog in ${this.controller.data.advancedconfig.relogTimeout / 1000} seconds.`); // Announce relog
+                logger("info", `${logger.colors.fggreen}[${this.logPrefix}] Initiating a login retry in ${this.controller.data.advancedconfig.loginRetryTimeout / 1000} seconds.`); // Announce relog
 
-                setTimeout(() => this.controller.login(), this.controller.data.advancedconfig.relogTimeout); // Relog after waiting relogTimeout ms
+                setTimeout(() => this.controller.login(), this.controller.data.advancedconfig.loginRetryTimeout); // Relog after waiting loginRetryTimeout ms
             } else {
                 logger("info", `[${this.logPrefix}] I won't queue myself for a relog because this account was skipped or this is an intended logOff.`);
             }
@@ -66,23 +70,20 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
             // Check if all logOnTries are used or if this is a fatal error
             if (this.loginData.logOnTries > this.controller.data.advancedconfig.maxLogOnRetries || blockedEnumsForRetries.includes(err.eresult)) {
-                logger("", "", true);
-                logger("error", `Couldn't log in bot${this.index} after ${this.loginData.logOnTries} attempt(s). ${err} (${err.eresult})`, true);
+                logger("error", `Couldn't log in bot${this.index} after ${this.loginData.logOnTries} attempt(s). ${err} (${err.eresult})`);
 
-                // Add additional messages for specific errors to hopefully help the user diagnose the cause
-                if (this.loginData.proxy) logger("", `        Is your proxy ${this.proxyIndex} offline or maybe blocked by Steam?`, true);
-
-                // Abort execution if account is bot0
-                if (this.index == 0) {
+                // Abort if bot0 failed on initial login or skip account for now
+                if (this.index == 0 && this.controller.info.readyAfter == 0) {
                     logger("", "", true);
                     logger("error", "Aborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true);
                     return this.controller.stop();
 
-                } else { // Skip account if not bot0
+                } else {
 
-                    logger("info", "Failed account is not bot0. Skipping account...", true);
-                    this.controller._statusUpdateEvent(this, Bot.EStatus.SKIPPED);
-                    this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
+                    //logger("info", "Failed account is not bot0. Skipping account...", true);
+                    //this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
+                    this.controller._statusUpdateEvent(this, Bot.EStatus.ERROR);
+                    this.handleRelog();
                 }
 
             } else { // Got retries left or it is a relog...

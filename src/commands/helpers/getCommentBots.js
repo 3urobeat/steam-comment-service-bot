@@ -4,7 +4,7 @@
  * Created Date: 09.04.2023 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:30:59
+ * Last Modified: 24.09.2023 13:12:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -24,7 +24,7 @@ const { timeToString } = require("../../controller/helpers/misc.js");
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {number} numberOfComments Number of requested comments
  * @param {boolean} canBeLimited If the accounts are allowed to be limited
- * @param {string} idType Type of the request. This can either be "profile", "group" or "sharedfile". This is used to determine if limited accs need to be added first.
+ * @param {string} idType Type of the request. This can either be "profile", "group", "sharedfile" or "discussion". This is used to determine if limited accs need to be added first.
  * @param {string} receiverSteamID Optional: steamID64 of the receiving user. If set, accounts that are friend with the user will be prioritized and accsToAdd will be calculated.
  * @returns {{ accsNeeded: number, availableAccounts: Array.<string>, accsToAdd: Array.<string>, whenAvailable: number, whenAvailableStr: string }} `availableAccounts` contains all account names from bot object, `accsToAdd` account names which are limited and not friend, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
@@ -37,7 +37,7 @@ module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOf
     if (numberOfComments <= commandHandler.controller.getBots().length) accountsNeeded = numberOfComments;
         else accountsNeeded = commandHandler.controller.getBots().length; // Cap accountsNeeded at amount of accounts because if numberOfComments is greater we will start at account 1 again
 
-    // Method 2: Use as few accounts as possible to maximize the amount of parallel requests (Not implemented yet, probably coming in 2.12)
+    // Method 2: Use as few accounts as possible to maximize the amount of parallel requests (Not implemented yet)
     // TODO
 
 

@@ -4,7 +4,7 @@
  * Created Date: 04.06.2023 17:52:51
  * Author: 3urobeat
  *
- * Last Modified: 07.07.2023 15:25:16
+ * Last Modified: 15.09.2023 16:28:07
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -14,9 +14,11 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 const fs = require("fs");
 
 const PluginSystem = require("./pluginSystem.js");
+
 
 /**
  * Gets the path holding all data of a plugin. If no folder exists yet, one will be created
@@ -32,6 +34,7 @@ PluginSystem.prototype.getPluginDataPath = function (pluginName) {
 
     return path;
 };
+
 
 /**
  * Loads a file from your plugin data folder. The data will remain unprocessed. Use `loadPluginConfig()` instead if you want to load your plugin config.
@@ -58,6 +61,7 @@ PluginSystem.prototype.loadPluginData = function (pluginName, filename) {
     });
 };
 
+
 /**
  * Writes a file to your plugin data folder. The data will remain unprocessed. Use `writePluginConfig()` instead if you want to write your plugin config.
  * @param {string} pluginName Name of your plugin
@@ -83,6 +87,7 @@ PluginSystem.prototype.writePluginData = function (pluginName, filename, data) {
         });
     });
 };
+
 
 /**
  * Deletes a file in your plugin data folder if it exists.
@@ -112,6 +117,7 @@ PluginSystem.prototype.deletePluginData = function (pluginName, filename) {
         });
     });
 };
+
 
 /**
  * Loads your plugin config from the filesystem or creates a new one based on the default config provided by your plugin. The JSON data will be processed to an object.

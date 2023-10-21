@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 21:25:57
+ * Last Modified: 10.09.2023 11:51:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -18,6 +18,7 @@
 const fs = require("fs");
 
 const Controller = require("../controller/controller.js"); // eslint-disable-line
+
 
 /**
  * @typedef Command Documentation of the Command structure
@@ -194,7 +195,7 @@ CommandHandler.prototype.unregisterCommand = function(commandName) {
  * @param {resInfo} resInfo Object containing additional information
  * @returns {boolean} `true` if command was found, `false` if not
  */
-CommandHandler.prototype.runCommand = function(name, args, respondModule, context, resInfo) {
+CommandHandler.prototype.runCommand = async function(name, args, respondModule, context, resInfo) {
 
     // Iterate through all command objects in commands array and check if name is included in names array of each command.
     let thisCmd = this.commands.find(e => e.names.includes(name));
@@ -221,7 +222,7 @@ CommandHandler.prototype.runCommand = function(name, args, respondModule, contex
 
     // If command is ownersOnly, check if user is included in owners array. If not, send error msg and return true to avoid caller sending a not found msg
     if (thisCmd.ownersOnly && !owners.includes(resInfo.userID)) { // If no userID was provided this check will also trigger
-        respondModule(context, resInfo, this.data.lang.commandowneronly);
+        respondModule(context, resInfo, await this.data.getLang("commandowneronly", null, resInfo.userID));
         return true;
     }
 

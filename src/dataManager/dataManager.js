@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 26.07.2023 16:37:37
+ * Last Modified: 21.10.2023 12:40:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -14,10 +14,11 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const fs = require("fs");
+
 const { default: Nedb } = require("@seald-io/nedb"); // eslint-disable-line
 
 const Controller = require("../controller/controller.js"); // eslint-disable-line
+
 
 /**
  * Constructor - The dataManager system imports, checks, handles errors and provides a file updating service for all configuration files
@@ -53,9 +54,9 @@ const DataManager = function (controller) {
     this.advancedconfig = {};
 
     /**
-     * Stores all language strings used for responding to a user.
+     * Stores all supported languages and their strings used for responding to a user.
      * All default strings have already been replaced with corresponding matches from `customlang.json`.
-     * @type {{[key: string]: string}}
+     * @type {{[key: string]: {[key: string]: string}}}
      */
     this.lang = {};
 
@@ -67,7 +68,7 @@ const DataManager = function (controller) {
 
     /**
      * Stores all proxies provided via the `proxies.txt` file.
-     * @type {Array.<string>}
+     * @type {Array.<{ proxy: string, proxyIndex: number, isOnline: boolean, lastOnlineCheck: number }>}
      */
     this.proxies = [];
 
@@ -79,55 +80,70 @@ const DataManager = function (controller) {
 
     /**
      * Stores the login information for every bot account provided via the `logininfo.json` or `accounts.txt` files.
-     * @type {{[key: string]: { accountName: string, password: string, sharedSecret?: string, steamGuardCode?: null, machineName?: string, deviceFriendlyName?: string }}}
+     * @type {Array.<{ index: number, accountName: string, password: string, sharedSecret?: string, steamGuardCode?: null, machineName?: string, deviceFriendlyName?: string }>}
      */
-    this.logininfo = {};
+    this.logininfo = [];
 
     /**
      * Database which stores the timestamp of the last request of every user. This is used to enforce `config.unfriendTime`.
-     * Document structure: { id: String, time: Number }
+     * Document structure: { id: string, time: Number }
      * @type {Nedb}
      */
     this.lastCommentDB = {};
 
     /**
-     * Database which stores information about which bot accounts have already voted on which sharedfiles. This allows us to filter without pinging Steam for every account on every request.
-     * Document structure: { id: String, accountName: String, type: String, time: Number }
+     * Database which stores information about which bot accounts have fulfilled one-time requests (vote, fav, follow). This allows us to filter without pinging Steam for every account on every request.
+     * Document structure: { id: string, accountName: string, type: string, time: Number }
      * @type {Nedb}
      */
     this.ratingHistoryDB = {};
 
     /**
      * Database which stores the refreshTokens for all bot accounts.
-     * Document structure: { accountName: String, token: String }
+     * Document structure: { accountName: string, token: string }
      * @type {Nedb}
      */
     this.tokensDB = {};
 
+    /**
+     * Database which stores user specific settings, for example the language set
+     * Document structure: { id: string, lang: string }
+     * @type {Nedb}
+     */
+    this.userSettingsDB = {};
+
     // Stores a reference to the active handleExpiringTokens interval to prevent duplicates on reloads
     this._handleExpiringTokensInterval = null;
 
-    // Dynamically load all helper files
-    const loadHelpersFromFolder = (folder) => {
-        fs.readdirSync(folder).forEach(async (file) => {
-            if (!file.endsWith(".js")) return;
-
-            const path = `${folder}/${file}`;
-            const getFile = await this.checkAndGetFile(path, controller.logger);
-
-            if (!getFile) logger("err", `Error! DataManager: Failed to load '${file}'!`);
-        });
-    };
-
-    loadHelpersFromFolder("./src/dataManager");
-    loadHelpersFromFolder("./src/dataManager/helpers");
 };
+
+
+/**
+ * Loads all DataManager helper files. This is done outside of the constructor to be able to await it.
+ * @returns {Promise.<void>} Resolved when all files have been loaded
+ */
+DataManager.prototype._loadDataManagerFiles = function() {
+    return new Promise((resolve) => {
+        // The files need to be explicitly defined for restoring using checkAndGetFile to work
+        const helperPaths = [
+            "dataCheck.js", "dataExport.js", "dataImport.js", "dataIntegrity.js", "dataProcessing.js",
+            "helpers/checkProxies.js", "helpers/getLang.js", "helpers/getQuote.js", "helpers/handleCooldowns.js", "helpers/handleExpiringTokens.js", "helpers/misc.js", "helpers/refreshCache.js", "helpers/repairFile.js"
+        ];
+
+        helperPaths.forEach(async (e, i) => {
+            const getFile = await this.checkAndGetFile("./src/dataManager/" + e, this.controller.logger);
+            if (!getFile) logger("err", `Error! DataManager: Failed to load '${e}'!`);
+            if (i + 1 == helperPaths.length) resolve();
+        });
+    });
+};
+
 
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
 
 /**
  * Checks currently loaded data for validity and logs some recommendations for a few settings.
- * @returns {Promise.<void>} Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
+ * @returns {Promise.<void>} Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a string specifying the failed check.
  */
 DataManager.prototype.checkData = function () {};
 
@@ -178,21 +194,53 @@ DataManager.prototype.writeQuotesToDisk = function() {};
 DataManager.prototype._importFromDisk = async function () {};
 
 /**
+ * Verifies the data integrity of every source code file in the project by comparing its checksum.
+ * This function is used to verify the integrity of every module loaded AFTER the controller & DataManager. Both of those need manual checkAndGetFile() calls to import, which is handled by the Controller.
+ * If an already loaded file needed to be recovered then the bot will restart to load these changes.
+ * @returns {Promise.<void>} Resolves when all files have been checked and, if necessary, restored. Does not resolve if the bot needs to be restarted.
+ */
+DataManager.prototype.verifyIntegrity = function() {};
+
+/**
  * Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
  */
 DataManager.prototype.processData = async function() {};
 
 /**
+ * Checks if a proxy can reach steamcommunity.com and updates its isOnline and lastOnlineCheck
+ * @param {number} proxyIndex Index of the proxy to check in the DataManager proxies array
+ * @returns {boolean} True if the proxy can reach steamcommunity.com, false otherwise.
+ */
+DataManager.prototype.checkProxy = async function(proxyIndex) {}; // eslint-disable-line
+
+/**
+ * Checks all proxies if they can reach steamcommunity.com and updates their entries
+ * @param {number} [ignoreLastCheckedWithin=0] Ignore proxies that have already been checked in less than `ignoreLastCheckedWithin` ms
+ * @returns {Promise.<void>} Resolves when all proxies have been checked
+ */
+DataManager.prototype.checkAllProxies = async function(ignoreLastCheckedWithin = 0) {}; // eslint-disable-line
+
+/**
+ * Retrieves a language string from one of the available language files and replaces keywords if desired.
+ * If a userID is provided it will lookup which language the user has set. If nothing is set, the default language set in the config will be returned.
+ * @param {string} str Name of the language string to be retrieved
+ * @param {{[key: string]: string}} [replace] Optional: Object containing keywords in the string to replace. Pass the keyword as key and the corresponding value to replace as value.
+ * @param {string} [userIDOrLanguage] Optional: ID of the user to lookup in the userSettings database. You can also pass the name of a supported language like "english" to get a specific language.
+ * @returns {Promise.<string|null>} Returns a promise that resolves with the language string or `null` if it could not be found.
+ */
+DataManager.prototype.getLang = async function(str, replace = null, userIDOrLanguage = "") {}; // eslint-disable-line
+
+/**
  * Gets a random quote
  * @param {Array} quotesArr Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
- * @returns {Promise.<string>} Resolves with `quote` (String)
+ * @returns {Promise.<string>} Resolves with `quote` (string)
  */
 DataManager.prototype.getQuote = function (quotesArr = null) {}; // eslint-disable-line
 
 /**
  * Checks if a user ID is currently on cooldown and formats human readable lastRequestStr and untilStr strings.
  * @param {string} id ID of the user to look up
- * @returns {Promise.<{ lastRequest: number, until: number, lastRequestStr: string, untilStr: string }|null>} Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as String), `untilStr` (Wait until as String). If id wasn't found, `null` will be returned.
+ * @returns {Promise.<{ lastRequest: number, until: number, lastRequestStr: string, untilStr: string }|null>} Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as string), `untilStr` (Wait until as string). If id wasn't found, `null` will be returned.
  */
 DataManager.prototype.getUserCooldown = function (id) {}; // eslint-disable-line
 
@@ -209,7 +257,7 @@ DataManager.prototype.setUserCooldown = function (id, timestamp) {}; // eslint-d
 DataManager.prototype._startExpiringTokensCheckInterval = () => {};
 
 /**
- * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active request was found and relogs them
+ * Internal: Asks user if they want to refresh the tokens of all expiring accounts when no active request was found and relogs them
  * @param {object} expiring Object of botobject entries to ask user for
  */
 DataManager.prototype._askForGetNewToken = function (expiring) {}; // eslint-disable-line
@@ -250,7 +298,8 @@ DataManager.prototype._restoreBackup = function (name, filepath, cacheentry, onl
  * @param {function(any): void} resolve Your promise to resolve when file was pulled
  * @param {boolean} noRequire Optional: Set to true if resolve() should not be called with require(file) as param
  */
-DataManager.prototype._pullNewFile = async function (name, filepath, resolve) {}; // eslint-disable-line
+DataManager.prototype._pullNewFile = async function (name, filepath, resolve, noRequire) {}; // eslint-disable-line
+
 
 // Export our freshly baked bread
 module.exports = DataManager;

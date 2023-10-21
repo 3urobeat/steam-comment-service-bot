@@ -4,7 +4,7 @@
  * Created Date: 20.03.2023 12:46:47
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 13:05:31
+ * Last Modified: 10.09.2023 00:04:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -26,7 +26,7 @@ const lastmessage = {}; // Tracks the last cmd usage of a normal command to appl
  * @param {string} message The message string provided by steam-user friendMessage event
  * @returns {boolean} `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
  */
-Bot.prototype.checkMsgBlock = function(steamID64, message) {
+Bot.prototype.checkMsgBlock = async function(steamID64, message) {
 
     // Check if user is blocked and ignore message
     if (this.user.myFriends[steamID64] == 1 || this.user.myFriends[steamID64] == 6) {
@@ -40,7 +40,7 @@ Bot.prototype.checkMsgBlock = function(steamID64, message) {
     if (lastmessage[steamID64] && lastmessage[steamID64][0] + this.controller.data.advancedconfig.commandCooldown > Date.now() && lastmessage[steamID64][1] > 5) return true; // Just don't respond
 
     if (lastmessage[steamID64] && lastmessage[steamID64][0] + this.controller.data.advancedconfig.commandCooldown > Date.now() && lastmessage[steamID64][1] > 4) { // Inform the user about the cooldown
-        this.sendChatMessage({ userID: steamID64, prefix: "/me" }, this.controller.data.lang.userspamblock);
+        this.sendChatMessage({ userID: steamID64, prefix: "/me" }, await this.controller.data.getLang("userspamblock", null, steamID64));
         logger("info", `${steamID64} has been blocked for 90 seconds for spamming.`);
 
         lastmessage[steamID64][0] += 90000;
@@ -54,7 +54,7 @@ Bot.prototype.checkMsgBlock = function(steamID64, message) {
 
     // Deny non-friends the use of any command
     if (this.user.myFriends[steamID64] != 3) {
-        this.sendChatMessage({ userID: steamID64, prefix: "/me" }, this.controller.data.lang.usernotfriend);
+        this.sendChatMessage({ userID: steamID64, prefix: "/me" }, await this.controller.data.getLang("usernotfriend", null, steamID64));
         return true;
     }
 

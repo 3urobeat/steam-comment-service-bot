@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 08.07.2023 00:36:35
+ * Last Modified: 29.09.2023 16:51:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -24,7 +24,7 @@ const { exec } = require("child_process"); // Wanted to do it with the npm packa
  * @param {function(string, string): void} logger The currently used logger function (real or fake, the caller decides)
  * @param {function(string|null, string|null): void} callback Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
-module.exports.reinstallAll = (logger, callback) => {
+module.exports.reinstallAll = async (logger, callback) => {
     if (!fs.existsSync(srcdir + "/../node_modules")) {
         logger("info", "Creating node_modules folder...");
 
@@ -33,10 +33,14 @@ module.exports.reinstallAll = (logger, callback) => {
         logger("info", "Deleting node_modules folder content...");
     }
 
+    // Check if package.json is missing
+    await require(srcdir + "/starter.js").checkAndGetFile("./package.json", logger, false, false);
+
+    // Delete node_modules folder content
     fs.rm(srcdir + "/../node_modules", { recursive: true }, (err) => {
         if (err) return callback(err, null);
 
-        logger("info", "Running 'npm install --production'...");
+        logger("info", "Running 'npm install --production'. This can take a moment, please wait...");
 
         exec("npm install --production", { cwd: srcdir + "/.." }, (err, stdout) => {
             if (err) return callback(err, null);
@@ -64,12 +68,12 @@ module.exports.update = (callback) => {
  * @param {function(string|null, string|null): void} callback Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
 module.exports.updateFromPath = (path, callback) => {
-    logger("debug", `npminteraction update(): Running 'npm install --production' in '${path}'...`);
+    logger("debug", `npminteraction update(): Running 'npm install --production' in '${path}'. This can take a moment, please wait...`);
 
     exec("npm install --production", { cwd: path }, (err, stdout) => {
         if (err) return callback(err, null);
 
-        // Logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)
+        // Logger("info", `NPM Log:\n${stdout}`, true) // Entire log (not using it rn to avoid possible confusion with vulnerabilities message)
 
         callback(null, stdout);
     });

@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 09:33:30
+ * Last Modified: 21.10.2023 12:55:18
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -15,7 +15,6 @@
  */
 
 
-const fs        = require("fs");
 const SteamUser = require("steam-user");
 
 const Controller = require("../controller");
@@ -34,12 +33,12 @@ Controller.prototype._readyEvent = function() {
 
 
     // Calculate what the max amount of comments per account is and log it
-    let maxCommentsOverall = this.data.config.maxOwnerComments; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
-    if (this.data.config.maxComments > this.data.config.maxOwnerComments) maxCommentsOverall = this.data.config.maxComments;
+    let maxRequestsOverall = this.data.config.maxOwnerRequests; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
+    if (this.data.config.maxRequests > this.data.config.maxOwnerRequests) maxRequestsOverall = this.data.config.maxRequests;
 
     let repeatedCommentsStr;
-    if (maxCommentsOverall > 3) repeatedCommentsStr = `${logger.colors.underscore}${logger.colors.fgred}${round(maxCommentsOverall / this.getBots().length, 2)}`;
-        else repeatedCommentsStr = round(maxCommentsOverall / this.getBots().length, 2);
+    if (maxRequestsOverall > 3) repeatedCommentsStr = `${logger.colors.underscore}${logger.colors.fgred}${round(maxRequestsOverall / this.getBots().length, 2)}`;
+        else repeatedCommentsStr = round(maxRequestsOverall / this.getBots().length, 2);
 
     logger("", `${logger.colors.brfgblue}>${logger.colors.reset} ${this.getBots().length} total account(s) | ${repeatedCommentsStr} comments per account allowed`, true, false, null, false, true);
 
@@ -82,11 +81,11 @@ Controller.prototype._readyEvent = function() {
     if (Object.keys(this.pluginSystem.pluginList).length > 0) logger("", `${logger.colors.fgblack}>${logger.colors.reset} Successfully loaded ${Object.keys(this.pluginSystem.pluginList).length} plugins!`, true, false, null, false, true);
 
 
-    // Log which games the main and child bots are playing
+    // Log which games the main bot is playing
     let playinggames = "";
     if (this.data.config.playinggames[1]) playinggames = `(${this.data.config.playinggames.slice(1, this.data.config.playinggames.length)})`;
 
-    logger("", `${logger.colors.brfgyellow}>${logger.colors.reset} Playing status: ${logger.colors.fggreen}${this.data.config.playinggames[0]}${logger.colors.reset} ${playinggames}`, true, false, null, false, true);
+    logger("", `${logger.colors.brfgyellow}>${logger.colors.reset} Playing status: ${logger.colors.fggreen}${this.data.config.playinggames[0] || "/"}${logger.colors.reset} ${playinggames}`, true, false, null, false, true);
 
 
     // Calculate time the bot took to start
@@ -113,7 +112,7 @@ Controller.prototype._readyEvent = function() {
 
 
     // Log amount of skippedaccounts
-    if (this.info.skippedaccounts.length > 0) logger("info", `Skipped Accounts: ${this.info.skippedaccounts.length}/${Object.keys(this.data.logininfo).length}\n`, true);
+    if (this.info.skippedaccounts.length > 0) logger("info", `Skipped Accounts: ${this.info.skippedaccounts.length}/${this.data.logininfo.length}\n`, true);
 
 
     // Please star my repo :)
@@ -175,13 +174,11 @@ Controller.prototype._readyEvent = function() {
     this.data.datafile.totallogintime = round(this.data.datafile.totallogintime, 2);
     this.data.datafile.firststart = false;
 
-    fs.writeFile(srcdir + "/data/data.json", JSON.stringify(this.data.datafile, null, 4), err => { // Write changes
-        if (err) logger("error", "change this.data.datafile to false error: " + err);
-    });
+    this.data.writeDatafileToDisk();
 
 
     // Set progress bar to 100% if one is active
-    if (logger.getProgressBar()) logger.increaseProgressBar((100 / Object.keys(this.data.logininfo).length) / 3);
+    if (logger.getProgressBar()) logger.increaseProgressBar((100 / this.data.logininfo.length) / 3);
 
 
     // Print startup complete message and erase it after 5 sec

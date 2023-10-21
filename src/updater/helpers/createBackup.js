@@ -4,7 +4,7 @@
  * Created Date: 26.02.2022 16:54:03
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 20:12:39
+ * Last Modified: 02.09.2023 16:28:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -63,7 +63,7 @@ module.exports.run = () => {
                 });
             }
 
-            // Resolve when we are finished and not in a depper recursion level
+            // Resolve when we are finished and not in a deeper recursion level
             if (firstCall) resolve();
         }
 

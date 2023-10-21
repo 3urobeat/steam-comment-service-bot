@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 09:36:42
+ * Last Modified: 19.10.2023 19:34:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -25,7 +25,7 @@ const Bot = require("../bot.js");
  */
 Bot.prototype._attachSteamFriendMessageEvent = function() {
 
-    this.user.chat.on("friendMessage", (msg) => {
+    this.user.chat.on("friendMessage", async (msg) => {
         let message = msg.message_no_bbcode;
         let steamID = msg.steamid_friend;
 
@@ -36,7 +36,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         if (this.friendMessageBlock.includes(steamID64)) return logger("debug", `[${this.logPrefix}] Ignoring friendMessage event from ${steamID64} as user is on friendMessageBlock list.`);
 
         // Check if this event should be handled or if user is blocked
-        let isBlocked = this.checkMsgBlock(steamID64, message);
+        let isBlocked = await this.checkMsgBlock(steamID64, message);
         if (isBlocked) return; // Stop right here if user is blocked, on cooldown or not a friend
 
 
@@ -48,11 +48,11 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         // Sort out any chat messages not sent to the main bot
         if (this.index !== 0) {
             switch(message.toLowerCase()) {
-                case `${resInfo.cmdprefix}about`: // Please don't change this message as it gives credit to me; the person who put really much of his free time into this project. The bot will still refer to you - the operator of this instance.
+                case `${resInfo.cmdprefix}about`: // Please don't change this message as it gives credit to me; the person who put really much of their free time into this project. The bot will still refer to you - the operator of this instance.
                     this.sendChatMessage(this, resInfo, this.controller.data.datafile.aboutstr);
                     break;
                 default:
-                    if (message.startsWith(resInfo.cmdprefix)) this.sendChatMessage(this, resInfo, `${this.controller.data.lang.childbotmessage.replace(/cmdprefix/g, resInfo.cmdprefix)}\nhttps://steamcommunity.com/profiles/${new SteamID(String(this.controller.main.user.steamID)).getSteamID64()}`);
+                    if (message.startsWith(resInfo.cmdprefix)) this.sendChatMessage(this, resInfo, `${await this.controller.data.getLang("childbotmessage", { "cmdprefix": resInfo.cmdprefix }, steamID64)}\nhttps://steamcommunity.com/profiles/${new SteamID(String(this.controller.main.user.steamID)).getSteamID64()}`);
                         else logger("debug", `[${this.logPrefix}] Chat message is not a command, ignoring message.`);
             }
 
@@ -69,7 +69,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
             if (!doc) { // Add user to database if he/she is missing for some reason
                 let lastcommentobj = {
                     id: new SteamID(String(steamID)).getSteamID64(),
-                    time: Date.now() - (this.data.config.commentcooldown * 60000) // Subtract commentcooldown so that the user is able to use the command instantly
+                    time: Date.now() - (this.data.config.requestCooldown * 60000) // Subtract requestCooldown so that the user is able to use the command instantly
                 };
 
                 this.controller.data.lastCommentDB.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err); });
@@ -90,9 +90,9 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         let cont = message.slice(1).split(" "); // Remove prefix and split
         let args = cont.slice(1);               // Remove cmd name to only get arguments
 
-        let success = this.controller.commandHandler.runCommand(cont[0].toLowerCase(), args, this.sendChatMessage, this, resInfo);
+        let success = await this.controller.commandHandler.runCommand(cont[0].toLowerCase(), args, this.sendChatMessage, this, resInfo); // Don't listen to your IDE, this *await is necessary*
 
-        if (!success) this.sendChatMessage(this, resInfo, this.controller.data.lang.commandnotfound.replace(/cmdprefix/g, resInfo.cmdprefix)); // Send cmd not found msg if runCommand() returned false
+        if (!success) this.sendChatMessage(this, resInfo, await this.controller.data.getLang("commandnotfound", { "cmdprefix": resInfo.cmdprefix }, steamID64)); // Send cmd not found msg if runCommand() returned false
     });
 
 };

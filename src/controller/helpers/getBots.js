@@ -4,7 +4,7 @@
  * Created Date: 02.05.2023 13:46:21
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:38:06
+ * Last Modified: 17.10.2023 18:26:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -15,8 +15,9 @@
  */
 
 
+const Bot        = require("../../bot/bot.js");
 const Controller = require("../controller");
-const EStatus    = require("../../bot/EStatus.js");
+const EStatus    = Bot.EStatus;
 
 
 /**
@@ -26,7 +27,7 @@ const EStatus    = require("../../bot/EStatus.js");
  * @returns {Array|object} An array or object if `mapToObject == true` containing all matching bot accounts.
  */
 Controller.prototype.getBots = function(statusFilter, mapToObject) {
-    if (!statusFilter) statusFilter = EStatus.ONLINE;
+    if (statusFilter == null) statusFilter = EStatus.ONLINE; // Explicitly check for null so that filtering for OFFLINE (enum 0) works properly
 
     let accs = Object.values(this.bots); // Mark all bots as candidates
 
@@ -38,4 +39,35 @@ Controller.prototype.getBots = function(statusFilter, mapToObject) {
 
     // Return result
     return accs;
+};
+
+
+/**
+ * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
+ * @param {boolean} [filterOffline=false] Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
+ * @returns {Array.<{ bots: Array.<Bot>, proxy: string, proxyIndex: number, isOnline: boolean, lastOnlineCheck: number }>} Bot accounts mapped to their associated proxy
+ */
+Controller.prototype.getBotsPerProxy = function(filterOffline = false) {
+
+    // Get all bot accounts
+    let accs = this.getBots("*");
+
+    // Prefill mappedProxies
+    let mappedProxies = [];
+
+    this.data.proxies.forEach((e) => mappedProxies.push({ bots: [], ...e }));
+
+    // Find associated proxies
+    accs.forEach((e) => {
+        let associatedProxy = mappedProxies[e.loginData.proxyIndex];
+
+        associatedProxy.bots.push(e);
+    });
+
+    // Filter inactive proxies if desired
+    if (filterOffline) mappedProxies = mappedProxies.filter((e) => e.isOnline);
+
+    // Return result
+    return mappedProxies;
+
 };

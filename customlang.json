@@ -1,3 +1,5 @@
 {
-    "note": "Please read here on how to use this file: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/customlang_doc.md"
+    "english": {
+        "note": "Please read here on how to use this file: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/customlang_doc.md"
+    }
 }

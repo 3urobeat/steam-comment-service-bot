@@ -4,7 +4,7 @@
  * Created Date: 14.10.2022 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 26.07.2023 16:53:28
+ * Last Modified: 23.09.2023 13:06:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -19,69 +19,93 @@ const DataManager = require("../dataManager.js");
 
 
 /**
- * Internal: Checks tokens.db every 24 hours for refreshToken expiration in <=7 days, logs warning and sends botowner a Steam msg
+ * Internal: Checks tokens.db every 24 hours for refreshToken expiration in <=31 days and attempts to renew.
+ * If this fails and the token expires in <=7 days, it logs a warning and sends the botowner a Steam msg
+ *
+ * Note: This function should be redundant as SteamUser now automatically attempts to renew refreshTokens when `renewRefreshTokens` is enabled.
  */
 DataManager.prototype._startExpiringTokensCheckInterval = function() {
     let _this = this;
 
     /* eslint-disable-next-line jsdoc/require-jsdoc */
-    function scanDatabase() {
+    async function scanDatabase() {
         logger("debug", "DataManager detectExpiringTokens(): Scanning tokens.db for expiring tokens...");
 
         let expiring = {};
         let expired  = {};
 
-        _this.tokensDB.find({}, (err, docs) => { // Find all documents
-            docs.forEach((e, i) => {             // Check every document
-                let tokenObj = _this.decodeJWT(e.token);
+        // Get all tokens & bots
+        let docs = await _this.tokensDB.findAsync({});
+        if (docs.length == 0) return;
 
-                // Check acc if no error occurred (Code lookin funky cuz I can't use return here as the last iteration check would otherwise abort)
-                if (tokenObj) {
-                    // Check if token expires in <= 7 days and add it to counter
-                    if (tokenObj.exp * 1000 <= Date.now() + 604800000) {
-                        let thisbot = _this.controller.getBots("*", true)[e.accountName];
+        let bots = _this.controller.getBots("*", true);
 
-                        // Only continue if a bot object and therefore corresponding credentials exists - Another nested check because we still can't use return here.
-                        if (thisbot) {
-                            expiring[e.accountName] = thisbot; // Push the bot object of the expiring account to our object
+        // Loop over all docs and attempt to renew their token. Notify the bot owners if Steam did not issue a new one
+        _this.controller.misc.syncLoop(docs.length, async (loop, i) => {
+            let e        = docs[i];
+            let tokenObj = _this.decodeJWT(e.token);
+            let thisbot  = bots[e.accountName];
 
-                            // Check if token already expired and push to expired obj as well to show separate warning message
-                            if (tokenObj.exp * 1000 <= Date.now()) expired[e.accountName] = thisbot;
-                        }
-                    }
-                } else {
-                    logger("warn", `Failed to check when the login token for account '${e.accountName}' is going to expire!`);
-                }
+            // Check if decoding failed
+            if (!tokenObj) {
+                logger("warn", `Failed to check when the login token for account '${e.accountName}' is going to expire!`);
+                loop.next();
+                return;
+            }
 
-                // Check if this was the last iteration and display message if at least one account was found
-                if (i + 1 == docs.length && Object.keys(expiring).length > 0) {
-                    let msg;
+            // Skip iteration if token does not expire in <=31 days or if the corresponding bot object does not exist (aka no login credentials are currently available)
+            if (tokenObj.exp * 1000 > Date.now() + 2.6784e+6 || !thisbot) return loop.next();
 
-                    // Make it fancy and define different messages depending on how many accs were found
-                    if (Object.keys(expiring).length > 1) msg = `The login tokens of ${Object.keys(expiring).length} accounts are expiring in less than 7 days`;
-                        else msg = `The login token of account '${e.accountName}' is expiring in less than 7 days`;
 
-                    // Mention how many accounts already expired
-                    if (Object.keys(expired).length > 1) msg += ` and ${logger.colors.fgred}${Object.keys(expired).length} accounts have already expired!${logger.colors.reset}\nRestarting will force you to type in their Steam Guard Codes`; // Append
-                        else if (Object.keys(expired).length == 1) msg = `The login token of account '${e.accountName}' ${logger.colors.fgred}has expired!${logger.colors.reset} Restarting will force you to type in the Steam Guard Code`;    // Overwrite
+            // Attempt to renew the token automatically and check if it succeeded
+            let newToken = await thisbot.sessionHandler.attemptTokenRenew();
 
-                    // Log warning and message owners
-                    logger("", `${logger.colors.fgred}Warning:`);
-                    logger("", msg + "!", true);
+            tokenObj = _this.decodeJWT(newToken);
 
-                    _this.cachefile.ownerid.forEach((e, i) => {
-                        setTimeout(() => {
-                            // eslint-disable-next-line no-control-regex
-                            _this.controller.main.sendChatMessage(_this.controller.main, { userID: e }, msg.replace(/\x1B\[[0-9]+m/gm, "") + "!\nHead over to the terminal to refresh the token(s) now if you wish."); // Remove color codes from string
-                        }, 1500 * i);
-                    });
 
-                    // Check for active requests before asking for relog
-                    _this._askForGetNewToken(expiring);
-                }
+            // Check if renew was successful in logindelay ms to avoid multiple fast renewals getting us blocked
+            setTimeout(() => {
+                if (tokenObj.exp * 1000 > Date.now() + 604800000) return loop.next(); // Skip to next iteration if either the renew was successful or if the token is not yet expiring in <=7 days
+
+                // Always push to expiring and also to expired if token already expired
+                expiring[e.accountName] = thisbot;
+
+                if (tokenObj.exp * 1000 <= Date.now()) expired[e.accountName] = thisbot;
+
+                loop.next();
+            }, _this.advancedconfig.logindelay);
+
+        }, () => { // Loop exit function
+
+            // Ignore if all tokens have been automatically renewed
+            if (Object.keys(expiring).length == 0) return;
+
+            let msg;
+
+            // Make it fancy and define different messages depending on how many accs were found
+            if (Object.keys(expiring).length > 1) msg = `The login tokens of ${Object.keys(expiring).length} accounts are expiring in less than 7 days`;
+                else msg = `The login token of account '${Object.values(expiring)[0].accountName}' is expiring in less than 7 days`;
+
+            // Mention how many accounts already expired
+            if (Object.keys(expired).length > 1) msg += ` and ${logger.colors.fgred}${Object.keys(expired).length} accounts have already expired!${logger.colors.reset}\nRestarting will force you to type in their Steam Guard Codes`; // Append
+                else if (Object.keys(expired).length == 1) msg = `The login token of account '${Object.values(expiring)[0].accountName}' ${logger.colors.fgred}has expired!${logger.colors.reset} Restarting will force you to type in the Steam Guard Code`; // Overwrite
+
+            // Log warning and message owners
+            logger("", `${logger.colors.fgred}Warning:`);
+            logger("", msg + "!", true);
+
+            _this.cachefile.ownerid.forEach((e, i) => {
+                setTimeout(() => {
+                    // eslint-disable-next-line no-control-regex
+                    _this.controller.main.sendChatMessage(_this.controller.main, { userID: e }, msg.replace(/\x1B\[[0-9]+m/gm, "") + "!\nHead over to the terminal to refresh the token(s) now if you wish."); // Remove color codes from string
+                }, 1500 * i);
             });
+
+            // Check for active requests before asking for relog
+            _this._askForGetNewToken(expiring);
         });
     }
+
 
     // Clear existing interval if there is one
     if (this._handleExpiringTokensInterval) clearInterval(this._handleExpiringTokensInterval);
@@ -99,7 +123,7 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
 
 
 /**
- * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active request was found and relogs them
+ * Internal: Asks user if they want to refresh the tokens of all expiring accounts when no active request was found and relogs them
  * @param {object} expiring Object of botobject entries to ask user for
  */
 DataManager.prototype._askForGetNewToken = function(expiring) {

@@ -4,7 +4,7 @@
  * Created Date: 09.10.2022 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 08.07.2023 00:36:45
+ * Last Modified: 05.10.2023 19:34:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -108,6 +108,7 @@ SessionHandler.prototype._resolvePromise = function(token) {
     this.bot.loginData.waitingFor2FA = false; // Allow handleLoginTimeout to work again
 
     this.getTokenPromise(token);
+
 };
 
 
@@ -131,6 +132,53 @@ SessionHandler.prototype._attemptCredentialsLogin = function() {
             if (err) this._handleCredentialsLoginError(err); // Let handleCredentialsLoginError helper handle a login error
         });
 
+};
+
+
+/**
+ * Attempts to renew the refreshToken used for the current session. Whether a new token will actually be issued is at the discretion of Steam.
+ * @returns {Promise.<boolean>} Returns a promise which resolves with `true` if Steam issued a new token, `false` otherwise. Rejects if no token is stored in the database.
+ */
+SessionHandler.prototype.attemptTokenRenew = function() {
+    return new Promise((resolve, reject) => {
+
+        // Init new session
+        this.session = new SteamSession.LoginSession(SteamSession.EAuthTokenPlatformType.SteamClient, { httpProxy: this.bot.loginData.proxy });
+
+        // Get and set current refresh token
+        this._getTokenFromStorage(async (storedToken) => {
+            if (!storedToken) return reject(new Error("There is no token stored for this account"));
+
+            this.session.refreshToken = storedToken;
+
+            // Attempt to renew token
+            this.session.renewRefreshToken()
+                .then((res) => {
+                    if (!res) {
+                        logger("warn", `[${this.bot.logPrefix}] Failed to renew refresh token: Steam did not issue a new one`);
+                        resolve(res);
+                        return;
+                    }
+
+                    let newToken      = this.session.refreshToken;
+                    let jwtObj        = this.controller.data.decodeJWT(newToken); // Decode the token we've found
+                    let validUntilStr = `${(new Date(jwtObj.exp * 1000)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)`;
+
+                    logger("info", `[${this.bot.logPrefix}] Successfully renewed refresh token! It is now valid until '${validUntilStr}'!`);
+
+                    // Save token to the database
+                    this._saveTokenToStorage(newToken);
+
+                    resolve(res);
+                })
+                .catch((err) => {
+                    logger("error", `[${this.bot.logPrefix}] Failed to renew refresh token! Error: ${err}`);
+
+                    reject(err);
+                });
+        });
+
+    });
 };
 
 

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 08.07.2023 00:47:49
+ * Last Modified: 15.10.2023 11:13:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -35,7 +35,7 @@ const Controller = function() {
         /**
          * Implementation of a synchronous for loop in JS (Used as reference: https://whitfin.io/handling-synchronous-asynchronous-loops-javascriptnode-js/)
          * @param {number} iterations The amount of iterations
-         * @param {function(): void} func The function to run each iteration (Params: loop, index)
+         * @param {function(object, number): void} func The function to run each iteration (Params: loop, index)
          * @param {function(): void} exit This function will be called when the loop is finished
          */
         syncLoop: (iterations, func, exit) => {}, // eslint-disable-line
@@ -56,12 +56,20 @@ const Controller = function() {
         timeToString: () => {}, // eslint-disable-line
 
         /**
-         * Pings an URL to check if the service and this internet connection is working
+         * Pings a *https* URL to check if the service and this internet connection is working
          * @param {string} url The URL of the service to check
-         * @param {boolean} throwTimeout If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
+         * @param {boolean} [throwTimeout=false] If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
+         * @param {{ ip: string, port: number, username: string, password: string }} [proxy] Provide a proxy if the connection check should be made through a proxy instead of the local connection
          * @returns {Promise.<{ statusMessage: string, statusCode: number|null }>} Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
          */
-        checkConnection: (url, throwTimeout) => {}, // eslint-disable-line
+        checkConnection: (url, throwTimeout = false, proxy) => {}, // eslint-disable-line
+
+        /**
+         * Splits a HTTP proxy URL into its parts
+         * @param {string} url The HTTP proxy URL
+         * @returns {{ ip: string, port: number, username: string, password: string }} Object containing the proxy parts
+         */
+        splitProxyString: (url) => {}, // eslint-disable-line
 
         /**
          * Helper function which attempts to cut Strings intelligently and returns all parts. It will attempt to not cut words & links in half.
@@ -93,7 +101,7 @@ const Controller = function() {
 
 
 /**
- * Internal: Inits the DataManager system, runs the updater and starts all bot accounts
+ * Internal: Initializes the bot by importing data from the disk, running the updater and finally logging in all bot accounts.
  */
 Controller.prototype._start = async function() {
     let checkAndGetFile = require("../starter.js").checkAndGetFile; // Temp var to use checkAndGetFile() before it is referenced in DataManager
@@ -135,9 +143,9 @@ Controller.prototype._start = async function() {
     logger("info", "Checking if Steam is reachable...", false, true, logger.animation("loading"));
 
     if (!await checkAndGetFile("./src/controller/helpers/misc.js", logger, false, false)) return this.stop();
-    this.misc = await require("./helpers/misc.js");
+    this.misc = require("./helpers/misc.js");
 
-    this.misc.checkConnection("https://steamcommunity.com", true)
+    await this.misc.checkConnection("https://steamcommunity.com", true)
         .then((res) => logger("info", `SteamCommunity is up! Status code: ${res.statusCode}`, false, true, logger.animation("loading")))
         .catch((res) => {
             if (!res.statusCode) logger("error", `SteamCommunity seems to be down or your internet isn't working! Check: https://steamstat.us \n        ${res.statusMessage}\n\n        Aborting...\n`, true);
@@ -148,11 +156,12 @@ Controller.prototype._start = async function() {
 
 
     /* ------------ Init dataManager system and import: ------------ */
-    if (!checkAndGetFile("./src/dataManager/dataManager.js", logger, false, false)) return;
+    if (!await checkAndGetFile("./src/dataManager/dataManager.js", logger, false, false)) return;
     let DataManager = require("../dataManager/dataManager.js");
 
     this.data = new DataManager(this); // All functions provided by the DataManager, as well as all imported file data will be accessible here
 
+    await this.data._loadDataManagerFiles();
     await this.data._importFromDisk();
 
     // Call optionsUpdateAfterConfigLoad() to set previously inaccessible options
@@ -185,6 +194,8 @@ Controller.prototype._start = async function() {
 
 
     /* ------------ Check imported data : ------------ */
+    let forceUpdate = false; // Provide forceUpdate var which the following helpers can modify to force a update
+
     global.extdata = this.data.datafile; // This needs to stay for backwards compatibility
 
     // Process imported owner & group ids and update cachefile
@@ -193,10 +204,11 @@ Controller.prototype._start = async function() {
     // Check imported data
     await this.data.checkData().catch(() => this.stop()); // Terminate the bot if some critical check failed
 
+    // Verify integrity of all source code files and restore invalid ones. It is safe to use require() after this function is done!
+    await this.data.verifyIntegrity();
+
 
     /* ------------ Run compatibility feature and updater or start logging in: ------------ */
-    let forceUpdate = false; // Provide forceUpdate var which is passed to updater which runCompatibility can overwrite
-
     let compatibility = await checkAndGetFile("./src/updater/compatibility.js", logger, false, false);
     if (compatibility) forceUpdate = await compatibility.runCompatibility(this); // Don't bother running it if it couldn't be found and just hope the next update will fix it
 
@@ -204,8 +216,7 @@ Controller.prototype._start = async function() {
     let Updater = await checkAndGetFile("./src/updater/updater.js", logger, false, false);
     if (!Updater) {
         logger("error", "Fatal Error: Failed to load updater! Please reinstall the bot manually. Aborting...");
-        this.stop();
-        return;
+        return this.stop();
     }
 
     // Init a new updater object. This will start our auto update checker
@@ -326,7 +337,7 @@ let logger = function(type, str) {
 logger.animation = () => {}; // Just to be sure that no error occurs when trying to call this function without the real logger being present
 
 
-/* ------------ Start the bot: ------------ */ // TODO: Not rewritten yet
+/* ------------ Start the bot: ------------ */
 
 if (parseInt(process.argv[3]) + 2500 > Date.now()) { // Check if this process just got started in the last 2.5 seconds or just required by itself by checking the timestamp attached by starter.js
 
@@ -350,18 +361,27 @@ if (parseInt(process.argv[3]) + 2500 > Date.now()) { // Check if this process ju
 }
 
 
-/* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
+/* ------------ Provide functions for restarting & stopping: ------------ */
 
 /**
  * Restarts the whole application
- * @param {string} data Stringified restartdata object that will be kept through restarts
+ * @param {string} data Optional: Stringified restartdata object that will be kept through restarts
  */
-Controller.prototype.restart = function(data) { process.send(`restart(${data})`); };
+Controller.prototype.restart = function(data) {
+    if (!data) data = JSON.stringify({ skippedaccounts: this.info.skippedaccounts, updateFailed: false });
+
+    process.send(`restart(${data})`);
+};
 
 /**
  * Stops the whole application
  */
-Controller.prototype.stop = function() { process.send("stop()"); };
+Controller.prototype.stop = function() {
+    process.send("stop()");
+};
+
+
+/* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
 
 /**
  * Attempts to log in all bot accounts which are currently offline one after another.
@@ -416,15 +436,23 @@ Controller.prototype._lastcommentUnfriendCheck = function() {} // eslint-disable
 Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObject = false) {}; // eslint-disable-line
 
 /**
+ * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
+ * @param {boolean} [filterOffline=false] Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
+ * @returns {Array.<{ bots: Array.<Bot>, proxy: string, proxyIndex: number, isOnline: boolean, lastOnlineCheck: number }>} Bot accounts mapped to their associated proxy
+ */
+Controller.prototype.getBotsPerProxy = function(filterOffline = false) {}; // eslint-disable-line
+
+/**
  * Internal: Handles process's unhandledRejection & uncaughtException error events.
  * Should a NPM related error be detected it attempts to reinstall all packages using our npminteraction helper function
  */
 Controller.prototype._handleErrors = function() {} // eslint-disable-line
 
 /**
- * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation
+ * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
+ * Note: You need to provide a full URL for discussions & curators. For discussions only type checking/determination is supported.
  * @param {string} str The profileID argument provided by the user
- * @param {string} expectedIdType The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
+ * @param {string} expectedIdType The type of SteamID expected ("profile", "group", "sharedfile", "discussion" or "curator") or `null` if type should be assumed.
  * @param {function(string|null, string|null, string|null): void} callback Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
  */
 Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) => {} // eslint-disable-line

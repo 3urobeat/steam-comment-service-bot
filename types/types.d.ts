@@ -30,9 +30,45 @@ declare class Bot {
      */
     loginData: any;
     /**
+     * Stores the timestamp and reason of the last disconnect. This is used by handleRelog() to take proper action
+     */
+    lastDisconnect: any;
+    /**
      * Calls SteamUser logOn() for this account. This will either trigger the SteamUser loggedOn or error event.
      */
     _loginToSteam(): void;
+    /**
+     * Handles the SteamUser debug events if enabled in advancedconfig
+     */
+    _attachSteamDebugEvent(): void;
+    /**
+     * Handles the SteamUser disconnect event and tries to relog the account
+     */
+    _attachSteamDisconnectedEvent(): void;
+    /**
+     * Handles the SteamUser error event
+     */
+    _attachSteamErrorEvent(): void;
+    /**
+     * Handles messages, cooldowns and executes commands.
+     */
+    _attachSteamFriendMessageEvent(): void;
+    /**
+     * Do some stuff when account is logged in
+     */
+    _attachSteamLoggedOnEvent(): void;
+    /**
+     * Accepts a friend request, adds the user to the lastcomment.db database and invites him to your group
+     */
+    _attachSteamFriendRelationshipEvent(): void;
+    /**
+     * Accepts a group invite if acceptgroupinvites in the config is true
+     */
+    _attachSteamGroupRelationshipEvent(): void;
+    /**
+     * Handles setting cookies and accepting offline friend & group invites
+     */
+    _attachSteamWebSessionEvent(): void;
     /**
      * Checks if user is blocked, has an active cooldown for spamming or isn't a friend
      * @param steamID64 - The steamID64 of the message sender
@@ -48,6 +84,20 @@ declare class Bot {
      * Handles checking for missing game licenses, requests them and then starts playing
      */
     handleMissingGameLicenses(): void;
+    /**
+     * Changes the proxy of this bot account and relogs it.
+     * @param newProxyIndex - Index of the new proxy inside the DataManager.proxies array.
+     */
+    switchProxy(newProxyIndex: number): void;
+    /**
+     * Checks host internet connection, updates the status of all proxies checked >2.5 min ago and switches the proxy of this bot account if necessary.
+     * @returns Resolves with a boolean indicating whether the proxy was switched when done. A relog is triggered when the proxy was switched.
+     */
+    checkAndSwitchMyProxy(): Promise<boolean>;
+    /**
+     * Attempts to get this account, after failing all logOnRetries, back online after some time. Does not apply to initial logins.
+     */
+    handleRelog(): void;
     /**
      * Our commandHandler respondModule implementation - Sends a message to a Steam user
      * @param _this - The Bot object context
@@ -110,6 +160,20 @@ declare class Bot {
      * Handles checking for missing game licenses, requests them and then starts playing
      */
     handleMissingGameLicenses(): void;
+    /**
+     * Changes the proxy of this bot account and relogs it.
+     * @param newProxyIndex - Index of the new proxy inside the DataManager.proxies array.
+     */
+    switchProxy(newProxyIndex: number): void;
+    /**
+     * Checks host internet connection, updates the status of all proxies checked >2.5 min ago and switches the proxy of this bot account if necessary.
+     * @returns Resolves with a boolean indicating whether the proxy was switched when done. A relog is triggered when the proxy was switched.
+     */
+    checkAndSwitchMyProxy(): Promise<boolean>;
+    /**
+     * Attempts to get this account, after failing all logOnRetries, back online after some time. Does not apply to initial logins.
+     */
+    handleRelog(): void;
     /**
      * Our commandHandler respondModule implementation - Sends a message to a Steam user
      * @param _this - The Bot object context
@@ -240,19 +304,19 @@ declare function comment(commandHandler: CommandHandler, resInfo: CommandHandler
  * Retrieves arguments from a comment request. If request is invalid (for example too many comments requested) an error message will be sent
  * @param commandHandler - The commandHandler object
  * @param args - The command arguments
- * @param requesterSteamID64 - The steamID64 of the requesting user
+ * @param requesterID - The steamID64 of the requesting user
  * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @param respond - The shortened respondModule call
  * @returns Resolves promise with object containing all relevant data when done
  */
-declare function getCommentArgs(commandHandler: CommandHandler, args: any[], requesterSteamID64: string, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any): Promise<{ maxRequestAmount: number; commentcmdUsage: string; numberOfComments: number; profileID: string; idType: string; quotesArr: string[]; }>;
+declare function getCommentArgs(commandHandler: CommandHandler, args: any[], requesterID: string, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any): Promise<{ maxRequestAmount: number; commentcmdUsage: string; numberOfComments: number; profileID: string; idType: string; quotesArr: string[]; }>;
 
 /**
  * Finds all needed and currently available bot accounts for a comment request.
  * @param commandHandler - The commandHandler object
  * @param numberOfComments - Number of requested comments
  * @param canBeLimited - If the accounts are allowed to be limited
- * @param idType - Type of the request. This can either be "profile", "group" or "sharedfile". This is used to determine if limited accs need to be added first.
+ * @param idType - Type of the request. This can either be "profile", "group", "sharedfile" or "discussion". This is used to determine if limited accs need to be added first.
  * @param receiverSteamID - Optional: steamID64 of the receiving user. If set, accounts that are friend with the user will be prioritized and accsToAdd will be calculated.
  * @returns `availableAccounts` contains all account names from bot object, `accsToAdd` account names which are limited and not friend, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
@@ -269,7 +333,30 @@ declare function getAvailableBotsForCommenting(commandHandler: CommandHandler, n
 declare function getAvailableBotsForFavorizing(commandHandler: CommandHandler, amount: number | "all", id: string, favType: string): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
 
 /**
- * Retrieves arguments from a vote request. If request is invalid, an error message will be sent
+ * Retrieves arguments from a follow request. If request is invalid, an error message will be sent
+ * @param commandHandler - The commandHandler object
+ * @param args - The command arguments
+ * @param cmd - Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function
+ * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+ * @param respond - The shortened respondModule call
+ * @returns If the user provided a specific amount, amount will be a number. If user provided "all" or "max", it will be returned as an unmodified string for getVoteBots.js to handle
+ */
+declare function getFollowArgs(commandHandler: CommandHandler, args: any[], cmd: string, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any): Promise<{ amount: number | string; id: string; }>;
+
+/**
+ * Finds all needed and currently available bot accounts for a follow request.
+ * @param commandHandler - The commandHandler object
+ * @param amount - Amount of favs requested or "all" to get the max available amount
+ * @param canBeLimited - If the accounts are allowed to be limited
+ * @param id - The user id to follow
+ * @param idType - Either "user" or "curator"
+ * @param favType - Either "follow" or "unfollow", depending on which request this is
+ * @returns Resolves with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
+ */
+declare function getAvailableBotsForFollowing(commandHandler: CommandHandler, amount: number | "all", canBeLimited: boolean, id: string, idType: string, favType: string): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
+
+/**
+ * Retrieves arguments from a favorite/vote request. If request is invalid, an error message will be sent
  * @param commandHandler - The commandHandler object
  * @param args - The command arguments
  * @param cmd - Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function
@@ -321,6 +408,31 @@ declare function sortFailedCommentsObject(failedObj: any): void;
  * @returns String that looks like this: `amount`x - `indices`\n`error message`
  */
 declare function failedCommentsObjToString(obj: any): string;
+
+/**
+ * Checks if the following follow process iteration should be skipped
+ * @param commandHandler - The commandHandler object
+ * @param loop - Object returned by misc.js syncLoop() helper
+ * @param bot - Bot object of the account making this request
+ * @param id - ID of the profile that receives the follow
+ * @returns `true` if iteration should continue, `false` if iteration should be skipped using return
+ */
+declare function handleFollowIterationSkip(commandHandler: CommandHandler, loop: any, bot: Bot, id: string): boolean;
+
+/**
+ * Logs follow errors
+ * @param error - The error string returned by steam-community
+ * @param commandHandler - The commandHandler object
+ * @param bot - Bot object of the account making this request
+ * @param id - ID of the profile that receives the follow
+ */
+declare function logFollowError(error: string, commandHandler: CommandHandler, bot: Bot, id: string): void;
+
+/**
+ * Helper function to sort failed object by comment number so that it is easier to read
+ * @param failedObj - Current state of failed object
+ */
+declare function sortFailedCommentsObject(failedObj: any): void;
 
 /**
  * Checks if the following vote process iteration should be skipped
@@ -376,7 +488,7 @@ declare class Controller {
      */
     misc: any;
     /**
-     * Internal: Inits the DataManager system, runs the updater and starts all bot accounts
+     * Internal: Initializes the bot by importing data from the disk, running the updater and finally logging in all bot accounts.
      */
     _start(): void;
     /**
@@ -405,7 +517,7 @@ declare class Controller {
     pluginSystem: PluginSystem;
     /**
      * Restarts the whole application
-     * @param data - Stringified restartdata object that will be kept through restarts
+     * @param data - Optional: Stringified restartdata object that will be kept through restarts
      */
     restart(data: string): void;
     /**
@@ -456,14 +568,21 @@ declare class Controller {
      */
     getBots(statusFilter?: EStatus | EStatus[] | string, mapToObject: boolean): any[] | any;
     /**
+     * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
+     * @param [filterOffline = false] - Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
+     * @returns Bot accounts mapped to their associated proxy
+     */
+    getBotsPerProxy(filterOffline?: boolean): { bots: Bot[]; proxy: string; proxyIndex: number; isOnline: boolean; lastOnlineCheck: number; }[];
+    /**
      * Internal: Handles process's unhandledRejection & uncaughtException error events.
      * Should a NPM related error be detected it attempts to reinstall all packages using our npminteraction helper function
      */
     _handleErrors(): void;
     /**
-     * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation
+     * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
+     * Note: You need to provide a full URL for discussions & curators. For discussions only type checking/determination is supported.
      * @param str - The profileID argument provided by the user
-     * @param expectedIdType - The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
+     * @param expectedIdType - The type of SteamID expected ("profile", "group", "sharedfile", "discussion" or "curator") or `null` if type should be assumed.
      */
     handleSteamIdResolving(str: string, expectedIdType: string, callback: any): void;
     /**
@@ -524,14 +643,21 @@ declare class Controller {
      */
     getBots(statusFilter?: EStatus | EStatus[] | string, mapToObject: boolean): any[] | any;
     /**
+     * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
+     * @param [filterOffline = false] - Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
+     * @returns Bot accounts mapped to their associated proxy
+     */
+    getBotsPerProxy(filterOffline?: boolean): { bots: Bot[]; proxy: string; proxyIndex: number; isOnline: boolean; lastOnlineCheck: number; }[];
+    /**
      * Internal: Handles process's unhandledRejection & uncaughtException error events.
      * Should a NPM related error be detected it attempts to reinstall all packages using our npminteraction helper function
      */
     _handleErrors(): void;
     /**
-     * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation
+     * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
+     * Note: You need to provide a full URL for discussions & curators. For discussions only type checking/determination is supported.
      * @param str - The profileID argument provided by the user
-     * @param expectedIdType - The type of SteamID expected ("profile", "group" or "sharedfile") or `null` if type should be assumed.
+     * @param expectedIdType - The type of SteamID expected ("profile", "group", "sharedfile", "discussion" or "curator") or `null` if type should be assumed.
      */
     handleSteamIdResolving(str: string, expectedIdType: string, callback: any): void;
     /**
@@ -592,12 +718,20 @@ declare function round(value: number, decimals: number): number;
 declare function timeToString(timestamp: number): string;
 
 /**
- * Pings an URL to check if the service and this internet connection is working
+ * Pings a **https** URL to check if the service and this internet connection is working
  * @param url - The URL of the service to check
- * @param throwTimeout - If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
+ * @param [throwTimeout = false] - If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
+ * @param [proxy] - Provide a proxy if the connection check should be made through a proxy instead of the local connection
  * @returns Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
  */
-declare function checkConnection(url: string, throwTimeout: boolean): Promise<{ statusMessage: string; statusCode: number | null; }>;
+declare function checkConnection(url: string, throwTimeout?: boolean, proxy?: any): Promise<{ statusMessage: string; statusCode: number | null; }>;
+
+/**
+ * Splits a HTTP proxy URL into its parts
+ * @param url - The HTTP proxy URL
+ * @returns Object containing the proxy parts
+ */
+declare function splitProxyString(url: string): any;
 
 /**
  * Helper function which attempts to cut Strings intelligently and returns all parts. It will attempt to not cut words & links in half.
@@ -635,9 +769,9 @@ declare class DataManager {
     constructor(controller: Controller);
     /**
      * Checks currently loaded data for validity and logs some recommendations for a few settings.
-     * @returns Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
+     * @returns Resolves with `null` when all settings have been accepted, or with a string containing reasons if a setting has been reset. On reject you should terminate the application. It is called with a String specifying the failed check.
      */
-    checkData(): Promise<void>;
+    checkData(): Promise<null | string>;
     /**
      * Writes (all) files imported by DataManager back to the disk
      */
@@ -675,6 +809,13 @@ declare class DataManager {
      * @returns Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importFromDisk(): Promise<void>;
+    /**
+     * Verifies the data integrity of every source code file in the project by comparing its checksum.
+     * This function is used to verify the integrity of every module loaded AFTER the controller & DataManager. Both of those need manual checkAndGetFile() calls to import, which is handled by the Controller.
+     * If an already loaded file needed to be recovered then the bot will restart to load these changes.
+     * @returns Resolves when all files have been checked and, if necessary, restored. Does not resolve if the bot needs to be restarted.
+     */
+    verifyIntegrity(): Promise<void>;
     /**
      * Reference to the controller object
      */
@@ -693,7 +834,7 @@ declare class DataManager {
      */
     advancedconfig: any;
     /**
-     * Stores all language strings used for responding to a user.
+     * Stores all supported languages and their strings used for responding to a user.
      * All default strings have already been replaced with corresponding matches from `customlang.json`.
      */
     lang: any;
@@ -704,7 +845,7 @@ declare class DataManager {
     /**
      * Stores all proxies provided via the `proxies.txt` file.
      */
-    proxies: string[];
+    proxies: { proxy: string; proxyIndex: number; isOnline: boolean; lastOnlineCheck: number; }[];
     /**
      * Stores IDs from config files converted at runtime and backups for all config & data files.
      */
@@ -715,24 +856,34 @@ declare class DataManager {
     logininfo: any;
     /**
      * Database which stores the timestamp of the last request of every user. This is used to enforce `config.unfriendTime`.
-     * Document structure: { id: String, time: Number }
+     * Document structure: { id: string, time: Number }
      */
     lastCommentDB: Nedb;
     /**
-     * Database which stores information about which bot accounts have already voted on which sharedfiles. This allows us to filter without pinging Steam for every account on every request.
-     * Document structure: { id: String, accountName: String, type: String, time: Number }
+     * Database which stores information about which bot accounts have fulfilled one-time requests (vote, fav, follow). This allows us to filter without pinging Steam for every account on every request.
+     * Document structure: { id: string, accountName: string, type: string, time: Number }
      */
     ratingHistoryDB: Nedb;
     /**
      * Database which stores the refreshTokens for all bot accounts.
-     * Document structure: { accountName: String, token: String }
+     * Document structure: { accountName: string, token: string }
      */
     tokensDB: Nedb;
     /**
-     * Checks currently loaded data for validity and logs some recommendations for a few settings.
-     * @returns Resolves promise when all checks have finished. If promise is rejected you should terminate the application or reset the changes. Reject is called with a String specifying the failed check.
+     * Database which stores user specific settings, for example the language set
+     * Document structure: { id: string, lang: string }
      */
-    checkData(): Promise<void>;
+    userSettingsDB: Nedb;
+    /**
+     * Loads all DataManager helper files. This is done outside of the constructor to be able to await it.
+     * @returns Resolved when all files have been loaded
+     */
+    _loadDataManagerFiles(): Promise<void>;
+    /**
+     * Checks currently loaded data for validity and logs some recommendations for a few settings.
+     * @returns Resolves with `null` when all settings have been accepted, or with a string containing reasons if a setting has been reset. On reject you should terminate the application. It is called with a String specifying the failed check.
+     */
+    checkData(): Promise<null | string>;
     /**
      * Writes (all) files imported by DataManager back to the disk
      */
@@ -771,19 +922,46 @@ declare class DataManager {
      */
     _importFromDisk(): Promise<void>;
     /**
+     * Verifies the data integrity of every source code file in the project by comparing its checksum.
+     * This function is used to verify the integrity of every module loaded AFTER the controller & DataManager. Both of those need manual checkAndGetFile() calls to import, which is handled by the Controller.
+     * If an already loaded file needed to be recovered then the bot will restart to load these changes.
+     * @returns Resolves when all files have been checked and, if necessary, restored. Does not resolve if the bot needs to be restarted.
+     */
+    verifyIntegrity(): Promise<void>;
+    /**
      * Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
      */
     processData(): void;
     /**
+     * Checks if a proxy can reach steamcommunity.com and updates its isOnline and lastOnlineCheck
+     * @param proxyIndex - Index of the proxy to check in the DataManager proxies array
+     * @returns True if the proxy can reach steamcommunity.com, false otherwise.
+     */
+    checkProxy(proxyIndex: number): boolean;
+    /**
+     * Checks all proxies if they can reach steamcommunity.com and updates their entries
+     * @param [ignoreLastCheckedWithin = 0] - Ignore proxies that have already been checked in less than `ignoreLastCheckedWithin` ms
+     * @returns Resolves when all proxies have been checked
+     */
+    checkAllProxies(ignoreLastCheckedWithin?: number): Promise<void>;
+    /**
+     * Retrieves a language string from one of the available language files and replaces keywords if desired.
+     * If a userID is provided it will lookup which language the user has set. If nothing is set, the default language set in the config will be returned.
+     * @param str - Name of the language string to be retrieved
+     * @param [userIDOrLanguage] - Optional: ID of the user to lookup in the userSettings database. You can also pass the name of a supported language like "english" to get a specific language.
+     * @returns Returns a promise that resolves with the language string or `null` if it could not be found.
+     */
+    getLang(str: string, replace: any, userIDOrLanguage?: string): Promise<string | null>;
+    /**
      * Gets a random quote
      * @param quotesArr - Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
-     * @returns Resolves with `quote` (String)
+     * @returns Resolves with `quote` (string)
      */
     getQuote(quotesArr: any[]): Promise<string>;
     /**
      * Checks if a user ID is currently on cooldown and formats human readable lastRequestStr and untilStr strings.
      * @param id - ID of the user to look up
-     * @returns Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as String), `untilStr` (Wait until as String). If id wasn't found, `null` will be returned.
+     * @returns Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as string), `untilStr` (Wait until as string). If id wasn't found, `null` will be returned.
      */
     getUserCooldown(id: string): Promise<{ lastRequest: number; until: number; lastRequestStr: string; untilStr: string; } | null>;
     /**
@@ -797,7 +975,7 @@ declare class DataManager {
      */
     _startExpiringTokensCheckInterval(): void;
     /**
-     * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active request was found and relogs them
+     * Internal: Asks user if they want to refresh the tokens of all expiring accounts when no active request was found and relogs them
      * @param expiring - Object of botobject entries to ask user for
      */
     _askForGetNewToken(expiring: any): void;
@@ -839,15 +1017,35 @@ declare class DataManager {
      */
     processData(): void;
     /**
+     * Checks if a proxy can reach steamcommunity.com and updates its isOnline and lastOnlineCheck
+     * @param proxyIndex - Index of the proxy to check in the DataManager proxies array
+     * @returns True if the proxy can reach steamcommunity.com, false otherwise.
+     */
+    checkProxy(proxyIndex: number): boolean;
+    /**
+     * Checks all proxies if they can reach steamcommunity.com and updates their entries
+     * @param [ignoreLastCheckedWithin = 0] - Ignore proxies that have already been checked in less than `ignoreLastCheckedWithin` ms
+     * @returns Resolves when all proxies have been checked
+     */
+    checkAllProxies(ignoreLastCheckedWithin?: number): Promise<void>;
+    /**
+     * Retrieves a language string from one of the available language files and replaces keywords if desired.
+     * If a userID is provided it will lookup which language the user has set. If nothing is set, the default language set in the config will be returned.
+     * @param str - Name of the language string to be retrieved
+     * @param [userIDOrLanguage] - Optional: ID of the user to lookup in the userSettings database. You can also pass the name of a supported language like "english" to get a specific language.
+     * @returns Returns a promise that resolves with the language string or `null` if it could not be found.
+     */
+    getLang(str: string, replace: any, userIDOrLanguage?: string): Promise<string | null>;
+    /**
      * Gets a random quote
      * @param quotesArr - Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
-     * @returns Resolves with `quote` (String)
+     * @returns Resolves with `quote` (string)
      */
     getQuote(quotesArr: any[]): Promise<string>;
     /**
      * Checks if a user ID is currently on cooldown and formats human readable lastRequestStr and untilStr strings.
      * @param id - ID of the user to look up
-     * @returns Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as String), `untilStr` (Wait until as String). If id wasn't found, `null` will be returned.
+     * @returns Resolves with object containing `lastRequest` (Unix timestamp of the last interaction received), `until` (Unix timestamp of cooldown end), `lastRequestStr` (How long ago as string), `untilStr` (Wait until as string). If id wasn't found, `null` will be returned.
      */
     getUserCooldown(id: string): Promise<{ lastRequest: number; until: number; lastRequestStr: string; untilStr: string; } | null>;
     /**
@@ -861,7 +1059,7 @@ declare class DataManager {
      */
     _startExpiringTokensCheckInterval(): void;
     /**
-     * Internal: Asks user if he/she wants to refresh the tokens of all expiring accounts when no active request was found and relogs them
+     * Internal: Asks user if they want to refresh the tokens of all expiring accounts when no active request was found and relogs them
      * @param expiring - Object of botobject entries to ask user for
      */
     _askForGetNewToken(expiring: any): void;
@@ -898,6 +1096,43 @@ declare class DataManager {
      * @param noRequire - Optional: Set to true if resolve() should not be called with require(file) as param
      */
     _pullNewFile(name: string, filepath: string, resolve: (...params: any[]) => any, noRequire: boolean): void;
+}
+
+/**
+ * Constructor - Creates a new Discussion object
+ */
+declare class CSteamDiscussion {
+    constructor(community: SteamCommunity, data: any);
+    _community: SteamCommunity;
+    /**
+     * Scrapes a range of comments from this discussion
+     * @param startIndex - Index (0 based) of the first comment to fetch
+     * @param endIndex - Index (0 based) of the last comment to fetch
+     * @param callback - First argument is null/Error, second is array containing the requested comments
+     */
+    getComments(startIndex: number, endIndex: number, callback: (...params: any[]) => any): void;
+    /**
+     * Posts a comment to this discussion's comment section
+     * @param message - Content of the comment to post
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    postComment(message: string, callback: (...params: any[]) => any): void;
+    /**
+     * Delete a comment from this discussion's comment section
+     * @param gidcomment - ID of the comment to delete
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    deleteComment(gidcomment: string, callback: (...params: any[]) => any): void;
+    /**
+     * Subscribes to this discussion's comment section
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    subscribe(callback: (...params: any[]) => any): void;
+    /**
+     * Unsubscribes from this discussion's comment section
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    unsubscribe(callback: (...params: any[]) => any): void;
 }
 
 /**
@@ -1147,6 +1382,11 @@ declare class SessionHandler {
      * Internal - Attempts to log into account with credentials
      */
     _attemptCredentialsLogin(): void;
+    /**
+     * Attempts to renew the refreshToken used for the current session. Whether a new token will actually be issued is at the discretion of Steam.
+     * @returns Returns a promise which resolves with `true` if Steam issued a new token, `false` otherwise. Rejects if no token is stored in the database.
+     */
+    attemptTokenRenew(): Promise<boolean>;
     /**
      * Internal: Attaches listeners to all steam-session events we care about
      */

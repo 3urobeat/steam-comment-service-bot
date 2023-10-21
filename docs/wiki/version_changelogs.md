@@ -26,3 +26,4 @@ Every page contains a 'Go back' link at the top to get redirected back to this o
 - [2.11.x](./changelogs/CHANGELOG_v2.11.md)
 - [2.12.x](./changelogs/CHANGELOG_v2.12.md)
 - [2.13.x](./changelogs/CHANGELOG_v2.13.md)
+- [2.14.x](./changelogs/CHANGELOG_v2.14.md)
