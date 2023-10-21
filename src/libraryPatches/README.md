@@ -20,7 +20,7 @@ These patches have been applied in the past:
 - Add full sharedfiles support: [#306](https://github.com/DoctorMcKay/node-steamcommunity/pull/306)
 - Fix resolving vanity returning error: [#314](https://github.com/DoctorMcKay/node-steamcommunity/pull/314)
 - Re-enable primaryGroup profile setting: [#287](https://github.com/DoctorMcKay/node-steamcommunity/pull/287) & [#307](https://github.com/DoctorMcKay/node-steamcommunity/pull/307)
-- Add user/workshop follow & unfollow support: [#320](https://github.com/DoctorMcKay/node-steamcommunity/pull/320)
+- Add user/workshop & curator follow & unfollow support: [#320](https://github.com/DoctorMcKay/node-steamcommunity/pull/320)
 
 &nbsp;
 

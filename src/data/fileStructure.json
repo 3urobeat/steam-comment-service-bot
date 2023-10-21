@@ -278,12 +278,12 @@
         {
             "path": "package-lock.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package-lock.json",
-            "checksum": "f8b9b1b8725562e47840937f2fce5572"
+            "checksum": "ee2daa9612dd6c5020571b3695a3252f"
         },
         {
             "path": "package.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package.json",
-            "checksum": "b469fc7f41324624b456b0b401cde966"
+            "checksum": "ed5a56e37b5fd20ec75257c5f891c447"
         },
         {
             "path": "scripts/README.md",
@@ -648,7 +648,7 @@
         {
             "path": "src/libraryPatches/README.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/libraryPatches/README.md",
-            "checksum": "16b893837633053d265f3dd6d8de96b8"
+            "checksum": "2c4baad1e1b0fa93057af168d761cab6"
         },
         {
             "path": "src/libraryPatches/discussions.js",
