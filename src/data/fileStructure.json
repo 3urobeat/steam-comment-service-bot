@@ -138,7 +138,7 @@
         {
             "path": "docs/wiki/advancedconfig_doc.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/advancedconfig_doc.md",
-            "checksum": "4842a950740cd5d658637d31161ed1db"
+            "checksum": "880891465a10d7047811413ba80953bf"
         },
         {
             "path": "docs/wiki/changelogs/CHANGELOG_v1.x.md",
@@ -223,7 +223,7 @@
         {
             "path": "docs/wiki/config_doc.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/config_doc.md",
-            "checksum": "3663cc9af21201dbedc6c538c2e60945"
+            "checksum": "aa90b71640a8950d2e12fd39c015f5ea"
         },
         {
             "path": "docs/wiki/contributing.md",
@@ -343,7 +343,7 @@
         {
             "path": "src/bot/events/webSession.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/webSession.js",
-            "checksum": "bea3dcb436c9742093c54ab202ed70c5"
+            "checksum": "5ee6dbedbfbdb48981a0a87ae45fc31e"
         },
         {
             "path": "src/bot/helpers/checkMsgBlock.js",

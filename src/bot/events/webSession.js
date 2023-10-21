@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 21.10.2023 12:28:26
+ * Last Modified: 21.10.2023 13:13:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -123,7 +123,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
         if (this.lastDisconnect.timestamp == 0) {
 
             /* ------------ Join botsgroup: ------------ */
-            logger("debug", `[${this.logPrefix}] Checking if bot account is in botsgroup...`, false, true, logger.animation("loading"));
+            logger("debug", `[${this.logPrefix}] Checking if bot account is in botsgroup...`);
 
             if (this.controller.data.cachefile.botsgroupid && (!this.user.myGroups[this.controller.data.cachefile.botsgroupid] || this.user.myGroups[this.controller.data.cachefile.botsgroupid] != 3)) { // If botsgroupid is defined, not in myGroups or in it but not enum 3
                 this.community.joinGroup(new SteamID(this.controller.data.cachefile.botsgroupid));
@@ -134,12 +134,13 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
             /* ------------ Set primary group: ------------ */ // TODO: Add further delays? https://github.com/3urobeat/steam-comment-service-bot/issues/165
             if (this.controller.data.advancedconfig.setPrimaryGroup && this.controller.data.cachefile.configgroup64id) {
-                logger("info", `[${this.logPrefix}] setPrimaryGroup is enabled and configgroup64id is set, setting ${this.controller.data.cachefile.configgroup64id} as primary group...`, false, true, logger.animation("loading"));
+                logger("debug", `[${this.logPrefix}] setPrimaryGroup is enabled and configgroup64id is set, setting '${this.controller.data.cachefile.configgroup64id}' as primary group...`);
 
                 this.community.editProfile({
                     primaryGroup: new SteamID(this.controller.data.cachefile.configgroup64id)
                 }, (err) => {
-                    if (err) logger("err", `[${this.logPrefix}] Error setting primary group: ${err}`, true);
+                    if (err) logger("err", `[${this.logPrefix}] Error setting primary group: ${err}`, false, false, null, true);
+                        else logger("info", `[${this.logPrefix}] Successfully set '${this.controller.data.cachefile.configgroup64id}' as primary group...`, false, true, logger.animation("loading"));
                 });
             }
 
