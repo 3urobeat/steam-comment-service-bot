@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 20.10.2023 20:17:31
+ * Last Modified: 21.10.2023 12:28:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -28,7 +28,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
     this.user.on("webSession", (sessionID, cookies) => { // Get websession (log in to chat)
 
         // Increase progress bar if one is active
-        if (logger.getProgressBar()) logger.increaseProgressBar((100 / Object.keys(this.data.logininfo).length) / 3);
+        if (logger.getProgressBar()) logger.increaseProgressBar((100 / this.data.logininfo.length) / 3);
 
 
         // Set cookies (otherwise the bot is unable to comment)
@@ -151,7 +151,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
 
         // Increase progress bar if one is active
-        if (logger.getProgressBar()) logger.increaseProgressBar((100 / Object.keys(this.data.logininfo).length) / 3);
+        if (logger.getProgressBar()) logger.increaseProgressBar((100 / this.data.logininfo.length) / 3);
 
     });
 

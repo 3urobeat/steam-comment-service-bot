@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 18.10.2023 23:07:24
+ * Last Modified: 21.10.2023 12:52:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -60,8 +60,8 @@ Controller.prototype.login = function(firstLogin) {
         let estimatedlogintime;
 
         // Only use "intelligent" evaluation method when the bot was started more than 5 times
-        if (this.data.datafile.timesloggedin < 5) estimatedlogintime = ((this.data.advancedconfig.loginDelay * (Object.keys(this.data.logininfo).length - 1 - this.info.skippedaccounts.length)) / 1000) + 5; // 5 seconds tolerance
-            else estimatedlogintime = ((this.data.datafile.totallogintime / this.data.datafile.timesloggedin) + (this.data.advancedconfig.loginDelay / 1000)) * (Object.keys(this.data.logininfo).length - this.info.skippedaccounts.length);
+        if (this.data.datafile.timesloggedin < 5) estimatedlogintime = ((this.data.advancedconfig.loginDelay * (this.data.logininfo.length - 1 - this.info.skippedaccounts.length)) / 1000) + 5; // 5 seconds tolerance
+            else estimatedlogintime = ((this.data.datafile.totallogintime / this.data.datafile.timesloggedin) + (this.data.advancedconfig.loginDelay / 1000)) * (this.data.logininfo.length - this.info.skippedaccounts.length);
 
         let estimatedlogintimeunit = "seconds";
         if (estimatedlogintime > 60) { estimatedlogintime = estimatedlogintime / 60; estimatedlogintimeunit = "minutes"; }
@@ -76,7 +76,7 @@ Controller.prototype.login = function(firstLogin) {
         else logger("debug", "Controller login(): Login requested, checking for any accounts currently offline...");
 
     // Get array of all account names
-    let allAccounts = Object.keys(this.data.logininfo);
+    let allAccounts = this.data.logininfo.map((e) => e.accountName);
 
     // Filter accounts which were skipped
     allAccounts = allAccounts.filter(e => !this.info.skippedaccounts.includes(e));
@@ -93,7 +93,7 @@ Controller.prototype.login = function(firstLogin) {
 
     // Iterate over all accounts, use syncLoop() helper to make our job easier
     misc.syncLoop(allAccounts.length, (loop, i) => {
-        let k = this.data.logininfo[allAccounts[i]]; // Get logininfo for this account name
+        let k = this.data.logininfo.find((e) => e.accountName == allAccounts[i]); // Get logininfo for this account name
 
         // Calculate wait time
         let waitTime = (this.info.lastLoginTimestamp + this.data.advancedconfig.loginDelay) - Date.now();
@@ -108,7 +108,7 @@ Controller.prototype.login = function(firstLogin) {
             if (!this.bots[k.accountName]) {
                 logger("info", `Creating new bot object for ${k.accountName}...`, false, true, logger.animation("loading"));
 
-                this.bots[k.accountName] = new Bot(this, Object.keys(this.data.logininfo).indexOf(k.accountName)); // Create a new bot object for this account and store a reference to it
+                this.bots[k.accountName] = new Bot(this, k.index); // Create a new bot object for this account and store a reference to it
             } else {
                 logger("debug", `Found existing bot object for ${k.accountName}! Reusing it...`, false, true, logger.animation("loading"));
             }
@@ -119,9 +119,9 @@ Controller.prototype.login = function(firstLogin) {
             thisbot.loginData.logOnTries = 0;
 
             // Generate steamGuardCode with shared secret if one was provided
-            if (this.data.logininfo[k.accountName].sharedSecret) {
+            if (k.sharedSecret) {
                 logger("debug", `Found shared_secret for bot${this.bots[k.accountName].index}! Generating AuthCode and adding it to logOnOptions...`);
-                this.data.logininfo[k.accountName].steamGuardCode = SteamTotp.generateAuthCode(this.data.logininfo[k.accountName].sharedSecret);
+                k.steamGuardCode = SteamTotp.generateAuthCode(k.sharedSecret);
             }
 
             // Login!

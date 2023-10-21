@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 14.10.2023 10:43:00
+ * Last Modified: 21.10.2023 12:40:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -80,9 +80,9 @@ const DataManager = function (controller) {
 
     /**
      * Stores the login information for every bot account provided via the `logininfo.json` or `accounts.txt` files.
-     * @type {{[key: string]: { accountName: string, password: string, sharedSecret?: string, steamGuardCode?: null, machineName?: string, deviceFriendlyName?: string }}}
+     * @type {Array.<{ index: number, accountName: string, password: string, sharedSecret?: string, steamGuardCode?: null, machineName?: string, deviceFriendlyName?: string }>}
      */
-    this.logininfo = {};
+    this.logininfo = [];
 
     /**
      * Database which stores the timestamp of the last request of every user. This is used to enforce `config.unfriendTime`.

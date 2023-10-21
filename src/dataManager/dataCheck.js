@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 18.10.2023 23:07:24
+ * Last Modified: 21.10.2023 12:55:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -70,7 +70,7 @@ DataManager.prototype.checkData = function() {
         let maxRequestsOverall = this.config.maxOwnerRequests; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
         if (this.config.maxRequests > this.config.maxOwnerRequests) maxRequestsOverall = this.config.maxRequests;
 
-        if (Object.keys(this.logininfo).length == 0) { // Check real quick if logininfo is empty
+        if (this.logininfo.length == 0) { // Check real quick if logininfo is empty
             logWarn("error", `${logger.colors.fgred}Your accounts.txt or logininfo.json file doesn't seem to contain any valid login credentials! Aborting...`, true);
             return reject(new Error("No logininfo found!"));
         }
@@ -92,7 +92,7 @@ DataManager.prototype.checkData = function() {
             this.config.requestDelay = 15000;
             return reject(new Error("requestDelay times maxRequests exceeds 32bit integer limit!"));
         }
-        if (this.config.randomizeAccounts && Object.keys(this.logininfo).length <= 5 && maxRequestsOverall > Object.keys(this.logininfo).length * 2) {
+        if (this.config.randomizeAccounts && this.logininfo.length <= 5 && maxRequestsOverall > this.logininfo.length * 2) {
             logWarn("warn", `${logger.colors.fgred}I wouldn't recommend using randomizeAccounts with 5 or less accounts when each account can/has to comment multiple times. The chance of an account getting a cooldown is higher.\n       Please make sure your requestDelay is set adequately to reduce the chance of this happening.`, true);
         }
         if (!Object.keys(this.lang).includes(this.config.defaultLanguage.toLowerCase())) {

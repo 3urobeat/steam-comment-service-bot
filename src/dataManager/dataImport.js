@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 17.10.2023 23:12:46
+ * Last Modified: 21.10.2023 13:01:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -138,7 +138,7 @@ DataManager.prototype._importFromDisk = async function () {
 
     function loadLoginInfo() {
         return new Promise((resolve) => {
-            let logininfo = {};
+            let logininfo = [];
 
             // Check accounts.txt first so we can ignore potential syntax errors in logininfo
             if (fs.existsSync("./accounts.txt")) {
@@ -147,22 +147,21 @@ DataManager.prototype._importFromDisk = async function () {
                 if (data.length > 0 && data[0].startsWith("//Comment")) data = data.slice(1); // Remove comment from array
 
                 if (data != "") {
-                    logininfo = {}; // Set empty object
-                    data.forEach((e) => {
+                    data.forEach((e, i) => {
                         if (e.length < 2) return; // If the line is empty ignore it to avoid issues like this: https://github.com/3urobeat/steam-comment-service-bot/issues/80
                         e = e.split(":");
                         e[e.length - 1] = e[e.length - 1].replace("\r", ""); // Remove Windows next line character from last index (which has to be the end of the line)
 
-                        // Format logininfo object and use accountName as key to allow the order to change
-                        logininfo[e[0]] = {
+                        logininfo.push({
+                            index: i,
                             accountName: e[0],
                             password: e[1],
                             sharedSecret: e[2],
                             steamGuardCode: null
-                        };
+                        });
                     });
 
-                    logger("info", `Found ${Object.keys(logininfo).length} accounts in accounts.txt, not checking for logininfo.json...`, false, true, logger.animation("loading"));
+                    logger("info", `Found ${logininfo.length} accounts in accounts.txt, not checking for logininfo.json...`, false, true, logger.animation("loading"));
 
                     return resolve(logininfo);
                 }
@@ -174,22 +173,21 @@ DataManager.prototype._importFromDisk = async function () {
                 if (fs.existsSync("./logininfo.json")) {
                     delete require.cache[require.resolve(srcdir + "/../logininfo.json")]; // Delete cache to enable reloading data
 
-                    logininfo = require(srcdir + "/../logininfo.json");
+                    let logininfoFile = require(srcdir + "/../logininfo.json");
 
-                    // Reformat to use new logininfo object structure and use accountName as key instead of bot0 etc to allow the order to change
-                    Object.keys(logininfo).forEach((k) => {
-                        logininfo[logininfo[k][0]] = {
-                            accountName: logininfo[k][0],
-                            password: logininfo[k][1],
-                            sharedSecret: logininfo[k][2],
+                    // Reformat to use new logininfo object structure
+                    Object.keys(logininfoFile).forEach((k, i) => {
+                        logininfo.push({
+                            index: i,
+                            accountName: logininfoFile[k][0],
+                            password: logininfoFile[k][1],
+                            sharedSecret: logininfoFile[k][2],
                             steamGuardCode: null
-                        };
-
-                        delete logininfo[k]; // Remove old entry
+                        });
                     });
                 }
 
-                logger("info", `Found ${Object.keys(logininfo).length} accounts in logininfo.json...`, false, true, logger.animation("loading"));
+                logger("info", `Found ${logininfo.length} accounts in logininfo.json...`, false, true, logger.animation("loading"));
 
                 resolve(logininfo);
             } catch (err) {

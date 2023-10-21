@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 17.10.2023 23:11:07
+ * Last Modified: 21.10.2023 12:28:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -207,7 +207,7 @@ module.exports.eval = {
             if (typeof evaled !== "string") evaled = require("util").inspect(evaled);
 
             // Sanitize result to filter logindata. This is not 100% safe but should prevent accidental leaks (only owners can use this cmd)
-            Object.values(commandHandler.data.logininfo).forEach((e) => {
+            commandHandler.data.logininfo.forEach((e) => {
                 evaled = evaled.replace(new RegExp(e.password, "g"), "\"censored\"");
             });
 

@@ -4,7 +4,7 @@
  * Created Date: 29.03.2023 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 18.10.2023 23:07:24
+ * Last Modified: 21.10.2023 12:55:18
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -112,7 +112,7 @@ Controller.prototype._readyEvent = function() {
 
 
     // Log amount of skippedaccounts
-    if (this.info.skippedaccounts.length > 0) logger("info", `Skipped Accounts: ${this.info.skippedaccounts.length}/${Object.keys(this.data.logininfo).length}\n`, true);
+    if (this.info.skippedaccounts.length > 0) logger("info", `Skipped Accounts: ${this.info.skippedaccounts.length}/${this.data.logininfo.length}\n`, true);
 
 
     // Please star my repo :)
@@ -178,7 +178,7 @@ Controller.prototype._readyEvent = function() {
 
 
     // Set progress bar to 100% if one is active
-    if (logger.getProgressBar()) logger.increaseProgressBar((100 / Object.keys(this.data.logininfo).length) / 3);
+    if (logger.getProgressBar()) logger.increaseProgressBar((100 / this.data.logininfo.length) / 3);
 
 
     // Print startup complete message and erase it after 5 sec
