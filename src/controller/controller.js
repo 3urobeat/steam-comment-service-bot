@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 15.10.2023 11:13:59
+ * Last Modified: 22.10.2023 12:40:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -180,14 +180,14 @@ Controller.prototype._start = async function() {
     }
 
 
-    // Check for unsupported node.js version (<14.15.0)
+    // Check for unsupported node.js version (<16.0.0)
     let versionarr = process.version.replace("v", "").split(".");
 
     versionarr.forEach((e, i) => { if (e.length == 1 && parseInt(e) < 10) versionarr[i] = `0${e}`; }); // Put 0 in front of single digits
 
-    if (parseInt(versionarr.join("")) < 141500) {
+    if (parseInt(versionarr.join("")) < 160000) {
         logger("", "\n************************************************************************************\n", true);
-        logger("error", `This application requires at least node.js ${logger.colors.reset}v14.15.0${logger.colors.fgred} but you have ${logger.colors.reset}${process.version}${logger.colors.fgred} installed!\n        Please update your node.js installation: ${logger.colors.reset} https://nodejs.org/`, true);
+        logger("error", `This application requires at least node.js ${logger.colors.reset}v16.0.0${logger.colors.fgred} but you have ${logger.colors.reset}${process.version}${logger.colors.fgred} installed!\n        Please update your node.js installation: ${logger.colors.reset} https://nodejs.org/`, true);
         logger("", "\n************************************************************************************\n", true);
         return this.stop();
     }
