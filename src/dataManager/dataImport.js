@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 21.10.2023 13:01:03
+ * Last Modified: 22.10.2023 19:47:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -196,7 +196,7 @@ DataManager.prototype._importFromDisk = async function () {
             }
 
             // Create empty accounts.txt file if neither exist
-            if (!fs.existsSync("./accounts.txt")) _this._pullNewFile("accounts.txt", "./accounts.txt", () => {}, true); // Ignore resolve() param
+            if (!fs.existsSync("./accounts.txt") && !fs.existsSync("./logininfo.json")) _this._pullNewFile("accounts.txt", "./accounts.txt", () => {}, true); // Ignore resolve() param
         });
     }
 

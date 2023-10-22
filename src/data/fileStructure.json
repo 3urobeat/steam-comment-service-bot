@@ -63,7 +63,7 @@
         {
             "path": "docs/dev/bot/bot.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/bot/bot.md",
-            "checksum": "cb6e6d58e0e779126c26575540d9f43b"
+            "checksum": "7070464e4d00d676ce5b1ac5647ad503"
         },
         {
             "path": "docs/dev/bot/events.md",
@@ -93,7 +93,7 @@
         {
             "path": "docs/dev/dataManager/dataManager.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/dataManager/dataManager.md",
-            "checksum": "99f5cc5569781f8d8447a81e089402b1"
+            "checksum": "59fc158f4af273360ae91c4b69ba4e40"
         },
         {
             "path": "docs/dev/introduction.md",
@@ -308,7 +308,7 @@
         {
             "path": "src/bot/bot.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/bot.js",
-            "checksum": "9c696caf975f0362c57ffac73a522665"
+            "checksum": "1372aadfdc9d4d6620be62b2179bce39"
         },
         {
             "path": "src/bot/events/debug.js",
@@ -483,7 +483,7 @@
         {
             "path": "src/controller/controller.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/controller.js",
-            "checksum": "0b73281aafb249bd601d9881d630dc59"
+            "checksum": "f967841a07cec8e05ed6c5d0f99bc64f"
         },
         {
             "path": "src/controller/events/ready.js",
@@ -538,7 +538,7 @@
         {
             "path": "src/controller/login.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/login.js",
-            "checksum": "05987c04879a38d7e91f7a5edacd2084"
+            "checksum": "ba68b70d7325188ba76e8774e5d5cdd3"
         },
         {
             "path": "src/data/ascii.js",
@@ -568,7 +568,7 @@
         {
             "path": "src/dataManager/dataImport.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataImport.js",
-            "checksum": "ce6267ece2a38897e40a5ce64c9dd00b"
+            "checksum": "85a6739d736a4afc460225275111e0bd"
         },
         {
             "path": "src/dataManager/dataIntegrity.js",

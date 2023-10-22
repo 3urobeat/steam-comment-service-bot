@@ -15,6 +15,11 @@ Please check them out using your IntelliSense or by clicking the button in the t
 
 &nbsp;
 
+### logininfo
+Array of objects storing the login information of every bot account.  
+The index property must match to the index of the corresponding bot account.  
+Should you want to modify the account order during runtime, you must also make the same change in this array.
+
 ### lang
 Object storing all supported languages and their strings used for responding to a user.
 

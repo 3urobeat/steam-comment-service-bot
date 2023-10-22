@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 21.10.2023 12:52:52
+ * Last Modified: 22.10.2023 14:17:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -75,14 +75,14 @@ Controller.prototype.login = function(firstLogin) {
     if (this.info.activeLogin) return logger("debug", "Controller login(): Login requested but there is already a login process active. Ignoring...");
         else logger("debug", "Controller login(): Login requested, checking for any accounts currently offline...");
 
-    // Get array of all account names
-    let allAccounts = this.data.logininfo.map((e) => e.accountName);
+    // Get array of all accounts
+    let allAccounts = [ ... this.data.logininfo ];
 
     // Filter accounts which were skipped
-    allAccounts = allAccounts.filter(e => !this.info.skippedaccounts.includes(e));
+    allAccounts = allAccounts.filter((e) => !this.info.skippedaccounts.includes(e.accountName));
 
     // Filter accounts which are not offline
-    allAccounts = allAccounts.filter(e => !this.bots[e] || this.bots[e].status == Bot.EStatus.OFFLINE); // If no bot object exists yet the account must be offline
+    allAccounts = allAccounts.filter((e) => !this.bots[e.accountName] || this.bots[e.accountName].status == Bot.EStatus.OFFLINE); // If no bot object exists yet the account must be offline
 
     logger("debug", `Controller login(): Found ${allAccounts.length} account(s) which aren't logged in and weren't skipped`);
 
@@ -93,7 +93,7 @@ Controller.prototype.login = function(firstLogin) {
 
     // Iterate over all accounts, use syncLoop() helper to make our job easier
     misc.syncLoop(allAccounts.length, (loop, i) => {
-        let k = this.data.logininfo.find((e) => e.accountName == allAccounts[i]); // Get logininfo for this account name
+        let thisAcc = allAccounts[i]; // Get logininfo for this account name
 
         // Calculate wait time
         let waitTime = (this.info.lastLoginTimestamp + this.data.advancedconfig.loginDelay) - Date.now();
@@ -105,23 +105,23 @@ Controller.prototype.login = function(firstLogin) {
         setTimeout(() => {
 
             // Check if no bot object entry exists for this account and create one
-            if (!this.bots[k.accountName]) {
-                logger("info", `Creating new bot object for ${k.accountName}...`, false, true, logger.animation("loading"));
+            if (!this.bots[thisAcc.accountName]) {
+                logger("info", `Creating new bot object for ${thisAcc.accountName}...`, false, true, logger.animation("loading"));
 
-                this.bots[k.accountName] = new Bot(this, k.index); // Create a new bot object for this account and store a reference to it
+                this.bots[thisAcc.accountName] = new Bot(this, thisAcc.index); // Create a new bot object for this account and store a reference to it
             } else {
-                logger("debug", `Found existing bot object for ${k.accountName}! Reusing it...`, false, true, logger.animation("loading"));
+                logger("debug", `Found existing bot object for ${thisAcc.accountName}! Reusing it...`, false, true, logger.animation("loading"));
             }
 
-            let thisbot = this.bots[k.accountName];
+            let thisbot = this.bots[thisAcc.accountName];
 
             // Reset logOnTries (do this here to guarantee a bot object exists for this account)
             thisbot.loginData.logOnTries = 0;
 
             // Generate steamGuardCode with shared secret if one was provided
-            if (k.sharedSecret) {
-                logger("debug", `Found shared_secret for bot${this.bots[k.accountName].index}! Generating AuthCode and adding it to logOnOptions...`);
-                k.steamGuardCode = SteamTotp.generateAuthCode(k.sharedSecret);
+            if (thisAcc.sharedSecret) {
+                logger("debug", `Found shared_secret for bot${this.bots[thisAcc.accountName].index}! Generating AuthCode and adding it to logOnOptions...`);
+                thisAcc.steamGuardCode = SteamTotp.generateAuthCode(thisAcc.sharedSecret);
             }
 
             // Login!
@@ -143,9 +143,9 @@ Controller.prototype.login = function(firstLogin) {
                 this.info.lastLoginTimestamp = Date.now();
 
                 // Populate this.main if we just logged in the first account
-                if (Object.keys(this.bots)[0] == k.accountName) this.main = thisbot;
+                if (Object.keys(this.bots)[0] == thisAcc.accountName) this.main = thisbot;
 
-                logger("debug", `Controller login(): bot${this.bots[k.accountName].index} changed status from OFFLINE to ${Bot.EStatus[thisbot.status]}! Continuing with next account...`);
+                logger("debug", `Controller login(): bot${this.bots[thisAcc.accountName].index} changed status from OFFLINE to ${Bot.EStatus[thisbot.status]}! Continuing with next account...`);
 
                 // Check for last iteration, call again and emit ready event
                 if (i + 1 == allAccounts.length) {
