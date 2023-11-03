@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 10.09.2023 11:51:58
+ * Last Modified: 25.10.2023 21:35:23
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -103,6 +103,7 @@ CommandHandler.prototype._importCoreCommands = function() {
                     resolve();
                 }
             });
+
         });
 
     });

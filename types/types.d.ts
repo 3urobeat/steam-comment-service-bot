@@ -10,7 +10,7 @@ declare class Bot {
      */
     controller: Controller;
     /**
-     * Reference to the controller object
+     * Reference to the DataManager object
      */
     data: DataManager;
     /**

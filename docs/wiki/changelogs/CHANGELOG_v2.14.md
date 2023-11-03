@@ -225,4 +225,6 @@ If you are using a `customlang.json`, make sure to read the language string chan
 
 </details>
 
+Commit: [b4072cf](https://github.com/3urobeat/steam-comment-service-bot/commit/b4072cf)
+
 &nbsp;

@@ -4,7 +4,7 @@
  * Created Date: 21.03.2023 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 21.10.2023 12:40:24
+ * Last Modified: 24.10.2023 20:25:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -26,6 +26,7 @@ const Controller = require("../controller/controller.js"); // eslint-disable-lin
  * @param {Controller} controller Reference to the controller object
  */
 const DataManager = function (controller) {
+
     /**
      * Reference to the controller object
      * @type {Controller}

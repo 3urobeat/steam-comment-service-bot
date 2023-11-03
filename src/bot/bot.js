@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 22.10.2023 18:45:05
+ * Last Modified: 02.11.2023 14:36:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -40,7 +40,7 @@ const Bot = function(controller, index) {
     this.controller = controller;
 
     /**
-     * Reference to the controller object
+     * Reference to the DataManager object
      * @type {DataManager}
      */
     this.data = controller.data;

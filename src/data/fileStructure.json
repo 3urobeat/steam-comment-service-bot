@@ -3,7 +3,7 @@
         {
             "path": ".eslintrc.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/.eslintrc.json",
-            "checksum": "c720367ec1727b2d3af2c42c495d0865"
+            "checksum": "982f55cc4c53137135b87df43bbfe9c8"
         },
         {
             "path": ".github/FUNDING.yml",
@@ -178,7 +178,7 @@
         {
             "path": "docs/wiki/changelogs/CHANGELOG_v2.14.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/changelogs/CHANGELOG_v2.14.md",
-            "checksum": "994078e01b7dba9748f597e7969935b3"
+            "checksum": "0b85da48e0fcdebf3eb1085f59ecae53"
         },
         {
             "path": "docs/wiki/changelogs/CHANGELOG_v2.2.md",
@@ -278,7 +278,7 @@
         {
             "path": "package.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package.json",
-            "checksum": "5d0abc6d4dd621aaa67b4adb1c49d4b2"
+            "checksum": "ec990151dcca7369b279b9d76c08fa50"
         },
         {
             "path": "scripts/README.md",
@@ -308,7 +308,7 @@
         {
             "path": "src/bot/bot.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/bot.js",
-            "checksum": "1372aadfdc9d4d6620be62b2179bce39"
+            "checksum": "40087fc04b8b08b772cb85cc1d410f34"
         },
         {
             "path": "src/bot/events/debug.js",
@@ -373,7 +373,7 @@
         {
             "path": "src/commands/commandHandler.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/commandHandler.js",
-            "checksum": "106babe27b983ea4323ef749e34567bf"
+            "checksum": "5fd2f7c48295766a759aa8e3cc91df76"
         },
         {
             "path": "src/commands/core/block.js",
@@ -578,7 +578,7 @@
         {
             "path": "src/dataManager/dataManager.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataManager.js",
-            "checksum": "b5b8f046cb80752b54c01005b62ec078"
+            "checksum": "51beaf755efbab71e70f5aa6a91c2a15"
         },
         {
             "path": "src/dataManager/dataProcessing.js",
@@ -803,7 +803,7 @@
         {
             "path": "types/types.d.ts",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/types/types.d.ts",
-            "checksum": "9f2514ea4fcc1b47ba530b743e075444"
+            "checksum": "10e64a2b2d1ad53429f979609785134a"
         }
     ]
 }

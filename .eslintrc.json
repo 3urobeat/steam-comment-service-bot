@@ -1,4 +1,9 @@
 {
+    /* 
+        3urobeat's EsLint Config. Requires eslint & eslint-plugin-jsdoc to be installed as devDependencies.
+        https://github.com/3urobeat
+    */
+
     "env": {
         "commonjs": true,
         "es6": true,
