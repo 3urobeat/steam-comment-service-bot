@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 03.11.2023 22:57:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -29,7 +29,7 @@ module.exports.startDownload = (controller) => {
 
         // Start by defining which files we should keep
         const dontDelete = [
-            "./src/data/cache.json", "./src/data/lastcomment.db", "./src/data/tokens.db", "./output.txt", // Data stuff
+            "./src/data/cache.json", "./src/data/lastcomment.db", "./src/data/ratingHistory.db", "./src/data/tokens.db", "./src/data/userSettings.db", "./output.txt", // Data stuff
             "./accounts.txt", "./customlang.json", "./logininfo.json", "./proxies.txt", "./quotes.txt"    // User config stuff
         ];
 
