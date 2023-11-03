@@ -328,7 +328,7 @@
         {
             "path": "src/bot/events/friendMessage.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/friendMessage.js",
-            "checksum": "662a8e4e64ca270f0efcbb688fb517ed"
+            "checksum": "036cdfeba83ab1c9f333c6242866b0d3"
         },
         {
             "path": "src/bot/events/loggedOn.js",
