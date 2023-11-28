@@ -4,7 +4,7 @@
  * Created Date: 10.10.2022 12:53:20
  * Author: 3urobeat
  *
- * Last Modified: 08.07.2023 00:36:49
+ * Last Modified: 21.11.2023 20:23:19
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -53,6 +53,7 @@ SessionHandler.prototype._getTokenFromStorage = function(callback) {
             callback(null);
         }
     });
+
 };
 
 
