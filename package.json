@@ -11,6 +11,7 @@
         "https": "^1.0.0",
         "output-logger": "^2.3.7",
         "request": "^2.88.2",
+        "steam-comment-bot-discord-plugin": "^1.0.1",
         "steam-comment-bot-rest": "^1.1.0",
         "steam-comment-bot-webserver": "file:plugins/steam-comment-bot-webserver-1.0.0.tgz",
         "steam-session": "^1.7.1",

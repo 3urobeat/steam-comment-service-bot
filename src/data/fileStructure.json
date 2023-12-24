@@ -278,7 +278,7 @@
         {
             "path": "package.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/package.json",
-            "checksum": "e696be73d5a1543f28c56e0d9f3fd57d"
+            "checksum": "0582d7859df2f692699a08e9757ed254"
         },
         {
             "path": "scripts/README.md",
