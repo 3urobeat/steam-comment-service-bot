@@ -1238,10 +1238,12 @@ declare class PluginSystem {
      */
     loadPluginConfig(pluginName: string): Promise<object>;
     /**
-     * Integrates changes made to the config to the users config
+     * Internal: Integrates changes made to a plugin's default config into the user's config
+     * @param pluginName - Name of your plugin
+     * @param currentConfig - Config file currently loaded for this plugin
      * @returns the config
      */
-    aggregatePluginConfig(pluginName: string): Record<string, any>;
+    _aggregatePluginConfig(pluginName: string, currentConfig: any): Record<string, any>;
     /**
      * Writes your plugin config changes to the filesystem. The object data will be processed to JSON.
      * @param pluginName - Name of your plugin
@@ -1313,17 +1315,19 @@ declare class PluginSystem {
      */
     loadPluginConfig(pluginName: string): Promise<object>;
     /**
+     * Internal: Integrates changes made to a plugin's default config into the user's config
+     * @param pluginName - Name of your plugin
+     * @param currentConfig - Config file currently loaded for this plugin
+     * @returns the config
+     */
+    _aggregatePluginConfig(pluginName: string, currentConfig: any): Record<string, any>;
+    /**
      * Writes your plugin config changes to the filesystem. The object data will be processed to JSON.
      * @param pluginName - Name of your plugin
      * @param pluginConfig - Config object of your plugin
      * @returns Resolves on success, rejects otherwise with an error
      */
     writePluginConfig(pluginName: string, pluginConfig: any): Promise<void>;
-    /**
-     * Integrates changes made to the config to the users config
-     * @returns the config
-     */
-    aggregatePluginConfig(pluginName: string): Record<string, any>;
 }
 
 /**
