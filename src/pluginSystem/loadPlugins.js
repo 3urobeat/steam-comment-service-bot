@@ -77,9 +77,9 @@ PluginSystem.prototype._loadPlugins = async function () {
 
         if (lastSeenVersion && lastSeenVersion[pluginName] && lastSeenVersion[pluginName] !== pluginJson.version) {
             logger("warn", `Plugin '${pluginName}' is outdated! Updating plugin...`, false, false, null, true); // Force print now
-            pluginConfig = this.aggregatePluginConfig(pluginName);
         } else {
             pluginConfig = await this.loadPluginConfig(pluginName).catch((err) => logger("error", `The config of plugin '${pluginName}' is fucked, skipping plugin. ${err}`));
+            pluginConfig = this._aggregatePluginConfig(pluginName);
         }
 
         // Skip plugin if it is disabled

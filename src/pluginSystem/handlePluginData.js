@@ -4,7 +4,7 @@
  * Created Date: 04.06.2023 17:52:51
  * Author: 3urobeat
  *
- * Last Modified: 15.09.2023 16:28:07
+ * Last Modified: 24.12.2023 13:31:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -156,11 +156,12 @@ PluginSystem.prototype.loadPluginConfig = function (pluginName) {
 
 
 /**
- * Integrates changes made to the config to the users config
- * @param {string} pluginName
+ * Internal: Integrates changes made to the config to the users config
+ * @author JLCD <https://github.com/DerDeathraven/>
+ * @param {string} pluginName Name of your plugin
  * @returns {Record<string,any>} the config
  */
-PluginSystem.prototype.aggregatePluginConfig = function (pluginName) {
+PluginSystem.prototype._aggregatePluginConfig = function (pluginName) {
     let path = this.getPluginDataPath(pluginName);
 
     if (!fs.existsSync(path + "config.json")) return;

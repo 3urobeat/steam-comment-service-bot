@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 15.09.2023 16:32:05
+ * Last Modified: 24.12.2023 13:31:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -168,4 +168,4 @@ PluginSystem.prototype.writePluginConfig = function (pluginName, pluginConfig) {
  * @param {string} pluginName Name of your plugin
  * @returns {Record<string,any>} the config
  */
-PluginSystem.prototype.aggregatePluginConfig = function (pluginName) {}; // eslint-disable-line
+PluginSystem.prototype._aggregatePluginConfig = function (pluginName) {}; // eslint-disable-line
