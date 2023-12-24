@@ -4,7 +4,7 @@
  * Created Date: 04.06.2023 17:52:51
  * Author: 3urobeat
  *
- * Last Modified: 24.12.2023 13:31:33
+ * Last Modified: 24.12.2023 14:19:23
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -156,21 +156,21 @@ PluginSystem.prototype.loadPluginConfig = function (pluginName) {
 
 
 /**
- * Internal: Integrates changes made to the config to the users config
+ * Internal: Integrates changes made to a plugin's default config into the user's config
  * @author JLCD <https://github.com/DerDeathraven/>
  * @param {string} pluginName Name of your plugin
+ * @param {object} currentConfig Config file currently loaded for this plugin
  * @returns {Record<string,any>} the config
  */
-PluginSystem.prototype._aggregatePluginConfig = function (pluginName) {
-    let path = this.getPluginDataPath(pluginName);
-
-    if (!fs.existsSync(path + "config.json")) return;
+PluginSystem.prototype._aggregatePluginConfig = function (pluginName, currentConfig) {
+    if (!pluginName || !currentConfig) return;
     if (!fs.existsSync(`${srcdir}/../node_modules/${pluginName}/config.json`)) return;
 
-    const standardConfig = require(`${srcdir}/../node_modules/${pluginName}/config.json`);
-    const config = require(path + "config.json");
-    const aggregatedConfig = Object.assign(standardConfig, config);
-    fs.writeFileSync(path + "config.json", JSON.stringify(aggregatedConfig, null, 4));
+    const standardConfig   = require(`${srcdir}/../node_modules/${pluginName}/config.json`);
+    const aggregatedConfig = Object.assign(standardConfig, currentConfig);
+
+    this.writePluginConfig(pluginName, aggregatedConfig);
+
     return aggregatedConfig;
 };
 

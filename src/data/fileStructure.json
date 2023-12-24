@@ -663,17 +663,17 @@
         {
             "path": "src/pluginSystem/handlePluginData.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/pluginSystem/handlePluginData.js",
-            "checksum": "ae241fda64252cee0afd36c2f3268903"
+            "checksum": "08486434a3e05dba7e720ab784afa435"
         },
         {
             "path": "src/pluginSystem/loadPlugins.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/pluginSystem/loadPlugins.js",
-            "checksum": "683f03c09451de7a9ef93b8d37996a98"
+            "checksum": "a995e909e83477dcbb697ec5620e70e5"
         },
         {
             "path": "src/pluginSystem/pluginSystem.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/pluginSystem/pluginSystem.js",
-            "checksum": "69c2ae86e0509f67daecdd0ee8953ecf"
+            "checksum": "7ea83dda77da99fba51528f250e14e4a"
         },
         {
             "path": "src/sessions/events/sessionEvents.js",

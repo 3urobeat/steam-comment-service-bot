@@ -4,7 +4,7 @@
  * Created Date: 19.03.2023 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 24.12.2023 13:31:30
+ * Last Modified: 24.12.2023 14:19:18
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -157,15 +157,18 @@ PluginSystem.prototype.deletePluginData = function (pluginName, filename) {}; //
 PluginSystem.prototype.loadPluginConfig = function (pluginName) {}; // eslint-disable-line
 
 /**
+ * Internal: Integrates changes made to a plugin's default config into the user's config
+ * @author JLCD <https://github.com/DerDeathraven/>
+ * @param {string} pluginName Name of your plugin
+ * @param {object} currentConfig Config file currently loaded for this plugin
+ * @returns {Record<string,any>} The updated config
+ */
+PluginSystem.prototype._aggregatePluginConfig = function (pluginName, currentConfig) {}; // eslint-disable-line
+
+/**
  * Writes your plugin config changes to the filesystem. The object data will be processed to JSON.
  * @param {string} pluginName Name of your plugin
  * @param {object} pluginConfig Config object of your plugin
  * @returns {Promise.<void>} Resolves on success, rejects otherwise with an error
  */
 PluginSystem.prototype.writePluginConfig = function (pluginName, pluginConfig) {}; // eslint-disable-line
-/**
- * Integrates changes made to the config to the users config
- * @param {string} pluginName Name of your plugin
- * @returns {Record<string,any>} the config
- */
-PluginSystem.prototype._aggregatePluginConfig = function (pluginName) {}; // eslint-disable-line
