@@ -4,7 +4,7 @@
  * Created Date: 01.04.2023 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 10.07.2023 09:29:15
+ * Last Modified: 25.12.2023 16:45:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -40,6 +40,10 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
     if (typeof txt !== "string") return logger("warn", "sendChatMessage() was called with txt that isn't a string! Ignoring call...");
 
     let steamID64 = resInfo.userID;
+    let username  = _this.user.users[steamID64].player_name;
+
+    let relationshipStatus = SteamUser.EFriendRelationship.None;
+    if (_this.user.myFriends[steamID64]) relationshipStatus = SteamUser.EFriendRelationship[_this.user.myFriends[steamID64]];
 
     // Allow resInfo to overwrite char limit of 750 chars
     let limit = 750;
@@ -57,10 +61,10 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
 
     // Log full message if in debug mode, otherwise log cut down version
     if (_this.controller.data.advancedconfig.printDebug) {
-        logger("debug", `[${_this.logPrefix}] Sending message (${thisPart.length} chars) to ${steamID64} (retry: ${retry}, part: ${part}): "${thisPart.replace(/\n/g, "\\n")}"`);
+        logger("debug", `[${_this.logPrefix}] Sending message (${thisPart.length} chars) to '${username}' (${steamID64}: ${relationshipStatus}) (retry: ${retry}, part: ${part}): "${thisPart.replace(/\n/g, "\\n")}"`);
     } else {
-        if (thisPart.length >= 75) logger("info", `[${_this.logPrefix}] Sending message to ${steamID64}: "${thisPart.slice(0, 75).replace(/\n/g, "\\n") + "..."}"`);
-            else logger("info", `[${_this.logPrefix}] Sending message to ${steamID64}: "${thisPart.replace(/\n/g, "\\n")}"`);
+        if (thisPart.length >= 75) logger("info", `[${_this.logPrefix}] Sending message to '${username}' (${steamID64}: ${relationshipStatus}): "${thisPart.slice(0, 75).replace(/\n/g, "\\n") + "..."}"`);
+            else logger("info", `[${_this.logPrefix}] Sending message to '${username}' (${steamID64}: ${relationshipStatus}): "${thisPart.replace(/\n/g, "\\n")}"`);
     }
 
     // Send part and call function again if this wasn't the last one

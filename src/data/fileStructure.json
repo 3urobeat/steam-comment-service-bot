@@ -328,7 +328,7 @@
         {
             "path": "src/bot/events/friendMessage.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/friendMessage.js",
-            "checksum": "036cdfeba83ab1c9f333c6242866b0d3"
+            "checksum": "b1861a5c2113c5678590a2a3dae2d6e6"
         },
         {
             "path": "src/bot/events/loggedOn.js",
@@ -368,7 +368,7 @@
         {
             "path": "src/bot/helpers/steamChatInteraction.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/helpers/steamChatInteraction.js",
-            "checksum": "8fb070e6107bf3dc30f1655f555ab986"
+            "checksum": "ecdf55038bddfe41abb421ffd3dfd662"
         },
         {
             "path": "src/commands/commandHandler.js",

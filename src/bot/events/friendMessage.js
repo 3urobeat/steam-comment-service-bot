@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 03.11.2023 22:45:43
+ * Last Modified: 25.12.2023 16:54:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -15,7 +15,8 @@
  */
 
 
-const SteamID = require("steamid");
+const SteamUser = require("steam-user");
+const SteamID   = require("steamid");
 
 const Bot = require("../bot.js");
 
@@ -30,9 +31,12 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         let steamID = msg.steamid_friend;
 
         let steamID64 = new SteamID(String(steamID)).getSteamID64();
-        let username = this.user.users[steamID64].player_name;
+        let username  = this.user.users[steamID64].player_name;
 
-        let resInfo   = { userID: steamID64, cmdprefix: "!", fromSteamChat: true }; // Object required for sendChatMessage(), our commandHandler respondModule implementation
+        let relationshipStatus = SteamUser.EFriendRelationship.None;
+        if (this.user.myFriends[steamID64]) relationshipStatus = SteamUser.EFriendRelationship[this.user.myFriends[steamID64]];
+
+        let resInfo = { userID: steamID64, cmdprefix: "!", fromSteamChat: true }; // Object required for sendChatMessage(), our commandHandler respondModule implementation
 
 
         // Check if another friendMessage handler is currently active
@@ -44,8 +48,8 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
 
 
         // Log friend message but cut it if it is >= 75 chars
-        if (message.length >= 75) logger("info", `[${this.logPrefix}] Friend message from '${username}' (${steamID64}): ${message.slice(0, 75) + "..."}`);
-            else logger("info", `[${this.logPrefix}] Friend message from '${username}' (${steamID64}): ${message}`);
+        if (message.length >= 75) logger("info", `[${this.logPrefix}] Message from '${username}' (${steamID64}: ${relationshipStatus}): ${message.slice(0, 75) + "..."}`);
+            else logger("info", `[${this.logPrefix}] Message from '${username}' (${steamID64}: ${relationshipStatus}): ${message}`);
 
 
         // Sort out any chat messages not sent to the main bot
