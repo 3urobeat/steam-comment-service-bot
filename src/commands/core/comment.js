@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 19.10.2023 19:00:06
+ * Last Modified: 25.12.2023 15:41:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -259,8 +259,8 @@ module.exports.comment = {
  * @param {string} receiverSteamID64 steamID64 of the profile to receive the comments
  */
 async function comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64) {
-    let activeReqEntry     = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
-    let requesterID = resInfo.userID;
+    let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
+    let requesterID    = resInfo.userID;
 
 
     // Log request start and give user cooldown on the first iteration

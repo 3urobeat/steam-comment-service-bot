@@ -4,7 +4,7 @@
  * Created Date: 09.04.2023 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 24.09.2023 13:12:26
+ * Last Modified: 25.12.2023 16:56:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+
+const { EFriendRelationship } = require("steam-user");
 
 const CommandHandler   = require("../commandHandler.js"); // eslint-disable-line
 const { timeToString } = require("../../controller/helpers/misc.js");
@@ -93,8 +95,8 @@ module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOf
     // Prioritize accounts the user is friend with
     if (receiverSteamID) {
         allAccounts = [
-            ...allAccounts.filter(e => allAccsOnline[e].user.myFriends[receiverSteamID] == 3), // Cool trick to get every acc with user as friend to the top
-            ...allAccounts.filter(e => allAccsOnline[e].user.myFriends[receiverSteamID] != 3)  // ...and every non-friend acc below
+            ...allAccounts.filter(e => allAccsOnline[e].user.myFriends[receiverSteamID] == EFriendRelationship.Friend), // Cool trick to get every acc with user as friend to the top
+            ...allAccounts.filter(e => allAccsOnline[e].user.myFriends[receiverSteamID] != EFriendRelationship.Friend)  // ...and every non-friend acc below
         ];
     }
 
