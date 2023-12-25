@@ -4,7 +4,7 @@
  * Created Date: 15.01.2020 10:38:00
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:46:02
+ * Last Modified: 25.12.2023 20:38:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -49,7 +49,12 @@ module.exports.restart = (args) => {
 };
 
 
-/* ---------- Get filetostart if it doesn't exist ---------- */
+/* ------------------ Entry point ------------------ */
+
+// Force working directory to fix relative path issues when starting bot using absolute path. Fixes: https://github.com/3urobeat/steam-comment-service-bot/issues/217
+process.chdir(__dirname);
+
+// Get filetostart if it doesn't exist
 let fs = require("fs");
 let extdata = getExtdata();
 

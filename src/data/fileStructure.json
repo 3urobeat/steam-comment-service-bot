@@ -798,7 +798,7 @@
         {
             "path": "start.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/start.js",
-            "checksum": "351e75059b7221227c899256ef706de1"
+            "checksum": "d3504b52fa12ee232ac83dfb6f19f7b1"
         },
         {
             "path": "types/types.d.ts",
