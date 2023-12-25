@@ -4,7 +4,7 @@
  * Created Date: 29.06.2023 21:31:53
  * Author: 3urobeat
  *
- * Last Modified: 14.10.2023 10:35:38
+ * Last Modified: 25.12.2023 22:12:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -27,7 +27,7 @@ Bot.prototype.handleMissingGameLicenses = function() {
     // Check if user provided games specifically for this account. We only need to check this for child accounts
     let configChildGames = data.config.childaccplayinggames;
 
-    if (typeof configChildGames[0] == "object") {
+    if (typeof configChildGames[0] == "object" && configChildGames[0] != null) { // - typeof null == "object"
         if (Object.keys(configChildGames[0]).includes(this.loginData.logOnOptions.accountName)) configChildGames = configChildGames[0][this.loginData.logOnOptions.accountName]; // Get the specific settings for this account if included
             else configChildGames = configChildGames.slice(1);                                                                                                                   // ...otherwise remove object containing acc specific settings to use the generic ones
 
@@ -40,7 +40,7 @@ Bot.prototype.handleMissingGameLicenses = function() {
 
     let options = {
         includePlayedFreeGames: true,
-        filterAppids: this.index == 0 ? data.config.playinggames.filter(e => !isNaN(e)) : configChildGames.filter(e => !isNaN(e)), // We only need to check for these appIDs. Filter custom game string
+        filterAppids: this.index == 0 ? data.config.playinggames.filter(e => !isNaN(e)) : configChildGames.filter(e => !isNaN(e) && e != null), // We only need to check for these appIDs. Filter custom game string and null values
         includeFreeSub: false
     };
 
