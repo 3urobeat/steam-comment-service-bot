@@ -293,7 +293,7 @@
         {
             "path": "scripts/generateFileStructure.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/scripts/generateFileStructure.js",
-            "checksum": "4076a13667f2575b25798a5da75c6adf"
+            "checksum": "5af84cbd22cb5c2c0b14601f13cd41bc"
         },
         {
             "path": "scripts/langStringsChangeDetector.js",
@@ -568,7 +568,7 @@
         {
             "path": "src/dataManager/dataImport.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataImport.js",
-            "checksum": "85a6739d736a4afc460225275111e0bd"
+            "checksum": "d2f04faddbba217807bc8b40834b097f"
         },
         {
             "path": "src/dataManager/dataIntegrity.js",

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 22.10.2023 19:47:50
+ * Last Modified: 26.12.2023 22:33:17
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -172,6 +172,10 @@ DataManager.prototype._importFromDisk = async function () {
                 // Only check if file exists (it is not shipped by default anymore since 2.12.1). If it doesn't an empty obj will be returned, leading to empty logininfo err msg in checkData()
                 if (fs.existsSync("./logininfo.json")) {
                     delete require.cache[require.resolve(srcdir + "/../logininfo.json")]; // Delete cache to enable reloading data
+
+                    // Print deprecation warning once directly at boot and another time on ready
+                    logger("warn", "The usage of 'logininfo.json' is deprecated, please consider moving your accounts to 'accounts.txt' instead!", true);
+                    logger("warn", "The usage of 'logininfo.json' is deprecated, please consider moving your accounts to 'accounts.txt' instead!");
 
                     let logininfoFile = require(srcdir + "/../logininfo.json");
 
