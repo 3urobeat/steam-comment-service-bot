@@ -4,7 +4,7 @@
  * Created Date: 24.09.2023 15:04:33
  * Author: 3urobeat
  *
- * Last Modified: 19.10.2023 19:00:06
+ * Last Modified: 26.12.2023 15:44:23
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -157,8 +157,9 @@ module.exports.follow = {
                     /* --------- Handle errors thrown by this follow attempt or update ratingHistory db and log success message --------- */
                     if (error) {
                         logFollowError(error, commandHandler, bot, id);
+                    }
 
-                    } else {
+                    if (!error || error.eresult == 2) { // Steam returns Enum 2 ("Fail") for duplicate requests
 
                         // Add follow entry
                         commandHandler.data.ratingHistoryDB.insert({ id: id, accountName: activeReqEntry.accounts[i], type: idType + "Follow", time: Date.now() }, (err) => {
@@ -168,6 +169,7 @@ module.exports.follow = {
                         // Log success message
                         if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Sending follow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${idType} ${id} with proxy ${bot.loginData.proxyIndex}...`);
                             else logger("info", `[${bot.logPrefix}] Sending follow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${idType} ${id}...`);
+
                     }
 
                     // Continue with the next iteration
@@ -341,8 +343,9 @@ module.exports.unfollow = {
                     /* --------- Handle errors thrown by this unfollow attempt or update ratingHistory db and log success message --------- */
                     if (error) {
                         logFollowError(error, commandHandler, bot, id);
+                    }
 
-                    } else {
+                    if (!error || error.eresult == 2) { // Steam returns Enum 2 ("Fail") for duplicate requests
 
                         // Remove follow entry
                         commandHandler.data.ratingHistoryDB.remove({ id: id, accountName: activeReqEntry.accounts[i], type: idType + "Follow" }, (err) => {
@@ -352,6 +355,7 @@ module.exports.unfollow = {
                         // Log success message
                         if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Sending unfollow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${idType} ${id} with proxy ${bot.loginData.proxyIndex}...`);
                             else logger("info", `[${bot.logPrefix}] Sending unfollow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${idType} ${id}...`);
+
                     }
 
                     // Continue with the next iteration

@@ -4,7 +4,7 @@
  * Created Date: 28.05.2023 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 19.10.2023 19:00:06
+ * Last Modified: 26.12.2023 15:42:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -157,7 +157,7 @@ module.exports.upvote = {
                     if (!handleVoteIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
                     /* --------- Try to vote --------- */
-                    bot.community.voteUpSharedFile(sharedfile.id, (error) => {
+                    bot.community.voteUpSharedFile(sharedfile.id, (error) => { // Note: Steam does not return an error for a duplicate request here
 
                         /* --------- Handle errors thrown by this vote attempt or update ratingHistory db and log success message --------- */
                         if (error) {
@@ -352,7 +352,7 @@ module.exports.downvote = {
                     if (!handleVoteIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
                     /* --------- Try to vote --------- */
-                    bot.community.voteDownSharedFile(sharedfile.id, (error) => {
+                    bot.community.voteDownSharedFile(sharedfile.id, (error) => { // Note: Steam does not return an error for a duplicate request here
 
                         /* --------- Handle errors thrown by this vote attempt or update ratingHistory db and log success message --------- */
                         if (error) {
