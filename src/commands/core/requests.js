@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 26.12.2023 16:22:51
+ * Last Modified: 26.12.2023 19:33:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -217,26 +217,22 @@ module.exports.sessions = {
     run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
+        // Don't bother if there is no active request
+        if (Object.keys(commandHandler.controller.activeRequests).length == 0) return respond(await commandHandler.data.getLang("sessionscmdnosessions", null, resInfo.userID));
+
+        // Loop through every entry and push it to str
         let str = "";
 
-        if (Object.keys(commandHandler.controller.activeRequests).length > 0) { // Only loop through object if it isn't empty
-            let objlength = Object.keys(commandHandler.controller.activeRequests).length; // Save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering
+        Object.keys(commandHandler.controller.activeRequests).forEach((e, i) => {
+            if (Date.now() < commandHandler.controller.activeRequests[e].until + (commandHandler.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
+                str += `- Status: ${commandHandler.controller.activeRequests[e].status} | ${commandHandler.controller.activeRequests[e].amount} iterations with ${commandHandler.controller.activeRequests[e].accounts.length} accounts by ${commandHandler.controller.activeRequests[e].requestedby} for ${commandHandler.controller.activeRequests[e].type} ${Object.keys(commandHandler.controller.activeRequests)[i]}\n`;
+            } else {
+                delete commandHandler.controller.activeRequests[e]; // Remove entry from object if it is finished to keep the object clean
+            }
+        });
 
-            Object.keys(commandHandler.controller.activeRequests).forEach(async (e, i) => {
-                if (Date.now() < commandHandler.controller.activeRequests[e].until + (commandHandler.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
-                    str += `- Status: ${commandHandler.controller.activeRequests[e].status} | ${commandHandler.controller.activeRequests[e].amount} iterations with ${commandHandler.controller.activeRequests[e].accounts.length} accounts by ${commandHandler.controller.activeRequests[e].requestedby} for ${commandHandler.controller.activeRequests[e].type} ${Object.keys(commandHandler.controller.activeRequests)[i]}\n`;
-                } else {
-                    delete commandHandler.controller.activeRequests[e]; // Remove entry from object if it is finished to keep the object clean
-                }
-
-                if (i == objlength - 1) {
-                    if (Object.keys(commandHandler.controller.activeRequests).length > 0) { // Check if obj is still not empty
-                        respond((await commandHandler.data.getLang("sessionscmdmsg", { "amount": Object.keys(commandHandler.controller.activeRequests).length }, resInfo.userID)) + "\n" + str);
-                    } else {
-                        respond(await commandHandler.data.getLang("sessionscmdnosessions", null, resInfo.userID));
-                    }
-                }
-            });
+        if (Object.keys(commandHandler.controller.activeRequests).length > 0) { // Check if obj is still not empty
+            respond((await commandHandler.data.getLang("sessionscmdmsg", { "amount": Object.keys(commandHandler.controller.activeRequests).length }, resInfo.userID)) + "\n" + str);
         } else {
             respond(await commandHandler.data.getLang("sessionscmdnosessions", null, resInfo.userID));
         }
@@ -260,31 +256,25 @@ module.exports.mySessions = {
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
         let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let str = "";
 
         // Check for no userID as the default behavior might be unavailable when calling from outside of the Steam Chat
         if (!resInfo.userID) return respond(await commandHandler.data.getLang("nouserid")); // In this case the cmd doesn't have an ID param so send this message instead of noidparam
 
-        if (Object.keys(commandHandler.controller.activeRequests).length > 0) { // Only loop through object if it isn't empty
-            let objlength = Object.keys(commandHandler.controller.activeRequests).length; // Save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering
+        if (Object.keys(commandHandler.controller.activeRequests).length == 0) return respond(await commandHandler.data.getLang("mysessionscmdnosessions", null, resInfo.userID));
 
-            Object.keys(commandHandler.controller.activeRequests).forEach(async (e, i) => {
-                if (Date.now() < commandHandler.controller.activeRequests[e].until + (commandHandler.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
-                    if (commandHandler.controller.activeRequests[e].requestedby == resInfo.userID) str += `- Status: ${commandHandler.controller.activeRequests[e].status} | ${commandHandler.controller.activeRequests[e].amount} iterations with ${commandHandler.controller.activeRequests[e].accounts.length} accounts by ${commandHandler.controller.activeRequests[e].requestedby} for ${commandHandler.controller.activeRequests[e].type} ${Object.keys(commandHandler.controller.activeRequests)[i]}`;
-                } else {
-                    delete commandHandler.controller.activeRequests[e]; // Remove entry from object if it is finished to keep the object clean
-                }
+        // Loop through every entry requested by this user and push it to str
+        let str = "";
 
-                if (i == objlength - 1) {
-                    if (i == objlength - 1) {
-                        if (Object.keys(commandHandler.controller.activeRequests).length > 0) { // Check if obj is still not empty
-                            respond((await commandHandler.data.getLang("sessionscmdmsg", { "amount": Object.keys(commandHandler.controller.activeRequests).length }, resInfo.userID)) + "\n" + str);
-                        } else {
-                            respond(await commandHandler.data.getLang("mysessionscmdnosessions", null, resInfo.userID));
-                        }
-                    }
-                }
-            });
+        Object.keys(commandHandler.controller.activeRequests).forEach(async (e, i) => {
+            if (Date.now() < commandHandler.controller.activeRequests[e].until + (commandHandler.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
+                if (commandHandler.controller.activeRequests[e].requestedby == resInfo.userID) str += `- Status: ${commandHandler.controller.activeRequests[e].status} | ${commandHandler.controller.activeRequests[e].amount} iterations with ${commandHandler.controller.activeRequests[e].accounts.length} accounts by ${commandHandler.controller.activeRequests[e].requestedby} for ${commandHandler.controller.activeRequests[e].type} ${Object.keys(commandHandler.controller.activeRequests)[i]}`;
+            } else {
+                delete commandHandler.controller.activeRequests[e]; // Remove entry from object if it is finished to keep the object clean
+            }
+        });
+
+        if (Object.keys(commandHandler.controller.activeRequests).length > 0) { // Check if obj is still not empty
+            respond((await commandHandler.data.getLang("sessionscmdmsg", { "amount": Object.keys(commandHandler.controller.activeRequests).length }, resInfo.userID)) + "\n" + str);
         } else {
             respond(await commandHandler.data.getLang("mysessionscmdnosessions", null, resInfo.userID));
         }

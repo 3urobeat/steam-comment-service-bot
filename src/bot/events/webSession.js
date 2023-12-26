@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 21.10.2023 13:13:22
+ * Last Modified: 26.12.2023 19:09:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -93,11 +93,11 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
                 }
 
             }
+        }
 
-            // Log info msg about ignored friend requests
-            if (i + 1 == Object.keys(this.user.myFriends).length && ignoredFriendRequests > 0) {
-                logger("info", `Ignored ${ignoredFriendRequests} pending friend request(s) because acceptFriendRequests is turned off in advancedconfig.json.`);
-            }
+        // Log info msg about ignored friend requests
+        if (ignoredFriendRequests > 0) {
+            logger("info", `Ignored ${ignoredFriendRequests} pending friend request(s) because acceptFriendRequests is turned off in advancedconfig.json.`);
         }
 
         // Groups:
