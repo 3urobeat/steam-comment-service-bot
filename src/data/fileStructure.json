@@ -413,7 +413,7 @@
         {
             "path": "src/commands/core/requests.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/requests.js",
-            "checksum": "18c4250b933248e4f720d7b26e290194"
+            "checksum": "d1407229e8ab96cd5d1738ede982ca53"
         },
         {
             "path": "src/commands/core/settings.js",
@@ -468,17 +468,17 @@
         {
             "path": "src/commands/helpers/handleCommentSkips.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/handleCommentSkips.js",
-            "checksum": "e655f536e02eb5d49258a175965f103c"
+            "checksum": "63039c3a8984a025af13145e42bf2811"
         },
         {
             "path": "src/commands/helpers/handleFollowErrors.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/handleFollowErrors.js",
-            "checksum": "04b3bd7ca1886a82e188e9f79d650d54"
+            "checksum": "6ab3ae0cdee9023d28c60f81145f02c9"
         },
         {
             "path": "src/commands/helpers/handleSharedfileErrors.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/handleSharedfileErrors.js",
-            "checksum": "f465cd711557a8ce0d5790a969aca793"
+            "checksum": "812dd3a4fbdf1c6577b8d824eb7f78a6"
         },
         {
             "path": "src/controller/controller.js",
@@ -548,7 +548,7 @@
         {
             "path": "src/data/lang/english.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/english.json",
-            "checksum": "609fb752852f8401ba5972668b74aa3c"
+            "checksum": "fdfdd40f94119931dfb91a65736b9c5d"
         },
         {
             "path": "src/data/lang/russian.json",

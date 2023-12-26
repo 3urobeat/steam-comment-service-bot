@@ -4,7 +4,7 @@
  * Created Date: 28.02.2022 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:33:05
+ * Last Modified: 26.12.2023 16:30:42
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -33,7 +33,7 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
 
     // Check if no bot account was found
     if (!bot) {
-        activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b? p?`] = "Skipped because bot account does not exist";
+        activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b? p?`] = "Skipped because bot account does not exist";
 
         logger("error", `[Bot ?] Error posting comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} to ${receiverSteamID64}: Bot account '${activeReqEntry.accounts[loop.index() % activeReqEntry.accounts.length]}' does not exist?! Skipping...`);
         loop.next();
@@ -42,7 +42,7 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
 
     // Check if bot account is offline
     if (bot.status != Bot.EStatus.ONLINE) {
-        activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = "Skipped because bot account is offline";
+        activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = "Skipped because bot account is offline";
 
         logger("error", `[${bot.logPrefix}] Error posting comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} to ${receiverSteamID64}: Skipped because bot account is offline`);
         loop.next();
@@ -58,7 +58,7 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
             for (let i = activeReqEntry.thisIteration; i < activeReqEntry.amount; i++) { // Iterate over all remaining comments by starting with thisIteration till numberOfComments
                 let thisbot = commandHandler.controller.getBots("*", true)[activeReqEntry.accounts[i % activeReqEntry.accounts.length]];
 
-                activeReqEntry.failed[`c${i + 1} b${thisbot.index} p${thisbot.loginData.proxyIndex}`] = "Skipped because comment process was aborted";
+                activeReqEntry.failed[`i${i + 1} b${thisbot.index} p${thisbot.loginData.proxyIndex}`] = "Skipped because comment process was aborted";
             }
         }
 
@@ -86,7 +86,7 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
     }
 
     // Check if this iteration would use a blocked proxy by checking for existing failed obj entry for this iteration
-    if (activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`]) {
+    if (activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`]) {
         logger("debug", "CommandHandler handleIterationSkip(): Iteration would use a failed proxy, skipping...");
         loop.next();
         return false;
@@ -126,7 +126,7 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
 
                 // Add to failed obj if proxies match
                 if (thisbot.loginData.proxyIndex == bot.loginData.proxyIndex) {
-                    activeReqEntry.failed[`c${i + 1} b${thisbot.index} p${thisbot.loginData.proxyIndex}`] = "Skipped because of previous HTTP error 429 on this IP";
+                    activeReqEntry.failed[`i${i + 1} b${thisbot.index} p${thisbot.loginData.proxyIndex}`] = "Skipped because of previous HTTP error 429 on this IP";
                 }
             }
             break;
@@ -166,7 +166,7 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
     // Log error, add it to failed obj and continue with next iteration
     logger("error", `[${bot.logPrefix}] Error posting comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} to ${receiverSteamID64}${proxiesDescription}: ${error}`);
 
-    activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = `${error} [${description}]`;
+    activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = `${error} [${description}]`;
 
 
     // Sort failed object to make it easier to read
@@ -180,7 +180,7 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
  */
 function sortFailedCommentsObject(failedObj) {
     let sortedvals = Object.keys(failedObj).sort((a, b) => {
-        return Number(a.split(" ")[0].replace("c", "")) - Number(b.split(" ")[0].replace("c", ""));
+        return Number(a.split(" ")[0].replace("i", "")) - Number(b.split(" ")[0].replace("i", ""));
     });
 
     // Map sortedvals back to object if array is not empty - Credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/

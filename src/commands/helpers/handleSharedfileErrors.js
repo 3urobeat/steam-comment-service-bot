@@ -4,7 +4,7 @@
  * Created Date: 31.05.2023 16:57:21
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:51:58
+ * Last Modified: 26.12.2023 16:31:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -31,7 +31,7 @@ module.exports.handleVoteIterationSkip = function(commandHandler, loop, bot, id)
 
     // Check if no bot account was found
     if (!bot) {
-        activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b? p?`] = "Skipped because bot account does not exist";
+        activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b? p?`] = "Skipped because bot account does not exist";
 
         logger("error", `[Bot ?] Error while voting ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id}: Bot account '${activeReqEntry.accounts[loop.index() % activeReqEntry.accounts.length]}' does not exist?! Skipping...`);
         loop.next();
@@ -40,7 +40,7 @@ module.exports.handleVoteIterationSkip = function(commandHandler, loop, bot, id)
 
     // Check if bot account is offline
     if (bot.status != Bot.EStatus.ONLINE) {
-        activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = "Skipped because bot account is offline";
+        activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = "Skipped because bot account is offline";
 
         logger("error", `[${bot.logPrefix}] Error while voting ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id}: Skipped because bot account is offline`);
         loop.next();
@@ -65,7 +65,7 @@ module.exports.handleFavoriteIterationSkip = function(commandHandler, loop, bot,
 
     // Check if no bot account was found
     if (!bot) {
-        activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b? p?`] = "Skipped because bot account does not exist";
+        activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b? p?`] = "Skipped because bot account does not exist";
 
         logger("error", `[Bot ?] Error while un-/favorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id}: Bot account '${activeReqEntry.accounts[loop.index() % activeReqEntry.accounts.length]}' does not exist?! Skipping...`);
         loop.next();
@@ -74,7 +74,7 @@ module.exports.handleFavoriteIterationSkip = function(commandHandler, loop, bot,
 
     // Check if bot account is offline
     if (bot.status != Bot.EStatus.ONLINE) {
-        activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = "Skipped because bot account is offline";
+        activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = "Skipped because bot account is offline";
 
         logger("error", `[${bot.logPrefix}] Error while un-/favorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id}: Skipped because bot account is offline`);
         loop.next();
@@ -104,7 +104,7 @@ module.exports.logVoteError = (error, commandHandler, bot, id) => {
     // Log error, add it to failed obj and continue with next iteration
     logger("error", `[${bot.logPrefix}] Error while voting ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id}${proxiesDescription}: ${error}`);
 
-    activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = `${error}`;
+    activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = `${error}`;
 
 
     // Sort failed object to make it easier to read
@@ -130,7 +130,7 @@ module.exports.logFavoriteError = (error, commandHandler, bot, id) => {
     // Log error, add it to failed obj and continue with next iteration
     logger("error", `[${bot.logPrefix}] Error while un-/favorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id}${proxiesDescription}: ${error}`);
 
-    activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = `${error}`;
+    activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = `${error}`;
 
 
     // Sort failed object to make it easier to read
@@ -144,7 +144,7 @@ module.exports.logFavoriteError = (error, commandHandler, bot, id) => {
  */
 function sortFailedCommentsObject(failedObj) {
     let sortedvals = Object.keys(failedObj).sort((a, b) => {
-        return Number(a.split(" ")[0].replace("c", "")) - Number(b.split(" ")[0].replace("c", ""));
+        return Number(a.split(" ")[0].replace("i", "")) - Number(b.split(" ")[0].replace("i", ""));
     });
 
     // Map sortedvals back to object if array is not empty - Credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/

@@ -4,7 +4,7 @@
  * Created Date: 09.07.2021 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 19.10.2023 19:00:06
+ * Last Modified: 26.12.2023 16:22:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
@@ -139,7 +139,7 @@ module.exports.resetCooldown = {
 
 module.exports.failed = {
     names: ["failed"],
-    description: "See the exact errors of the last comment request on your profile or provide an ID to see the errors of the last request you started. Owners can also view errors for requests started by other users",
+    description: "Displays the exact errors of the last request for your profile. Alternatively provide an ID of a request you have started. Owners can also view errors for requests started by other users.",
     args: [
         {
             name: "ID",
@@ -194,7 +194,7 @@ module.exports.failed = {
             let messagestart = await commandHandler.data.getLang("failedcmdmsg", { "steamID64": userID, "requesttime": requestTime }, resInfo.userID);
 
             // Send message and limit to 500 chars as this call can cause many messages to be sent
-            respondModule(context, { prefix: "/pre", charLimit: 500, ...resInfo }, messagestart + "\nc = Comment, b = Bot, p = Proxy\n\n" + failedcommentsstr); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+            respondModule(context, { prefix: "/pre", charLimit: 500, ...resInfo }, messagestart + "\ni = Index, b = Bot, p = Proxy\n\n" + failedcommentsstr); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         });
     }
 };
