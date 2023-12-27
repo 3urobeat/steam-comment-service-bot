@@ -1,13 +1,13 @@
 /*
  * File: general.js
  * Project: steam-comment-service-bot
- * Created Date: 09.07.2021 16:26:00
+ * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 18.10.2023 23:07:24
+ * Last Modified: 2023-12-27 14:07:20
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -77,7 +77,7 @@ module.exports.help = {
             '${resInfo.cmdprefix}abort' - ${await commandHandler.data.getLang("helpabort", null, requesterID)}
             '${resInfo.cmdprefix}about' - ${await commandHandler.data.getLang("helpabout", null, requesterID)}
             '${resInfo.cmdprefix}owner' - ${await commandHandler.data.getLang("helpowner", null, requesterID)}
-        
+
             ${await commandHandler.data.getLang("helpreadothercmdshere", null, requesterID)} ' https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/commands_doc.md '
         `.replace(/^( {4})+/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
     }

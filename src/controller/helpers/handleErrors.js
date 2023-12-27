@@ -1,10 +1,10 @@
 /*
  * File: handleErrors.js
  * Project: steam-comment-service-bot
- * Created Date: 21.03.2023 22:53:37
+ * Created Date: 2023-03-21 22:53:37
  * Author: 3urobeat
  *
- * Last Modified: 05.07.2023 10:48:43
+ * Last Modified: 2023-12-27 14:09:15
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

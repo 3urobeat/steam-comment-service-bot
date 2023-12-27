@@ -1,10 +1,10 @@
 /*
  * File: dataProcessing.js
  * Project: steam-comment-service-bot
- * Created Date: 27.03.2023 21:34:45
+ * Created Date: 2023-03-27 21:34:45
  * Author: 3urobeat
  *
- * Last Modified: 05.09.2023 19:05:06
+ * Last Modified: 2023-12-27 14:12:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

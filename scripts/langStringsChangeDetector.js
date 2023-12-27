@@ -1,10 +1,10 @@
 /*
  * File: langStringsChangeDetector.js
  * Project: steam-comment-service-bot
- * Created Date: 05.06.2023 13:59:22
+ * Created Date: 2023-06-05 13:59:22
  * Author: 3urobeat
  *
- * Last Modified: 09.09.2023 12:47:40
+ * Last Modified: 2023-12-27 13:56:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

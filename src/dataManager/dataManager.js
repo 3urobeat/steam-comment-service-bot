@@ -1,10 +1,10 @@
 /*
  * File: dataManager.js
  * Project: steam-comment-service-bot
- * Created Date: 21.03.2023 22:34:51
+ * Created Date: 2023-03-21 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 24.10.2023 20:25:38
+ * Last Modified: 2023-12-27 14:12:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

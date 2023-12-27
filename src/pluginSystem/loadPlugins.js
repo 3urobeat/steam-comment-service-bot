@@ -1,10 +1,10 @@
 /*
  * File: loadPlugins.js
  * Project: steam-comment-service-bot
- * Created Date: 04.06.2023 15:37:17
+ * Created Date: 2023-06-04 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 24.12.2023 14:34:17
+ * Last Modified: 2023-12-27 14:15:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

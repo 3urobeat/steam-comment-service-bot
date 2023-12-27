@@ -1,10 +1,10 @@
 /*
  * File: commandHandler.js
  * Project: steam-comment-service-bot
- * Created Date: 01.04.2023 21:54:21
+ * Created Date: 2023-04-01 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 26.12.2023 19:27:02
+ * Last Modified: 2023-12-27 14:03:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

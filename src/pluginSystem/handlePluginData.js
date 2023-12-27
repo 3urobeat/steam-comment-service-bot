@@ -1,10 +1,10 @@
 /*
  * File: handlePluginData.js
  * Project: steam-comment-service-bot
- * Created Date: 04.06.2023 17:52:51
+ * Created Date: 2023-06-04 17:52:51
  * Author: 3urobeat
  *
- * Last Modified: 24.12.2023 14:19:23
+ * Last Modified: 2023-12-27 14:15:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

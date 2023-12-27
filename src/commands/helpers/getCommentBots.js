@@ -1,10 +1,10 @@
 /*
  * File: getCommentBots.js
  * Project: steam-comment-service-bot
- * Created Date: 09.04.2023 12:49:53
+ * Created Date: 2023-04-09 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 25.12.2023 16:56:04
+ * Last Modified: 2023-12-27 14:05:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

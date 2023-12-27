@@ -1,10 +1,10 @@
 /*
  * File: steamChatInteraction.js
  * Project: steam-comment-service-bot
- * Created Date: 01.04.2023 21:09:00
+ * Created Date: 2023-04-01 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 25.12.2023 16:45:05
+ * Last Modified: 2023-12-27 13:59:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

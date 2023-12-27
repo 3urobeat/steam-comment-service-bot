@@ -1,10 +1,10 @@
 /*
  * File: compatibility.js
  * Project: steam-comment-service-bot
- * Created Date: 04.05.2023 20:26:42
+ * Created Date: 2023-05-04 20:26:42
  * Author: 3urobeat
  *
- * Last Modified: 28.09.2023 18:33:22
+ * Last Modified: 2023-12-27 14:17:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

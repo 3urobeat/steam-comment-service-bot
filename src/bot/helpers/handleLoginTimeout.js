@@ -1,13 +1,13 @@
 /*
  * File: handleLoginTimeout.js
  * Project: steam-comment-service-bot
- * Created Date: 03.11.2022 12:27:46
+ * Created Date: 2022-11-03 12:27:46
  * Author: 3urobeat
  *
- * Last Modified: 14.10.2023 14:44:01
+ * Last Modified: 2023-12-27 14:00:08
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2023 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.

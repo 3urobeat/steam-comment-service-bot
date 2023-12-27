@@ -1,10 +1,10 @@
 /*
  * File: vote.js
  * Project: steam-comment-service-bot
- * Created Date: 28.05.2023 12:02:24
+ * Created Date: 2023-05-28 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 26.12.2023 15:42:06
+ * Last Modified: 2023-12-27 14:06:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

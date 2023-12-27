@@ -1,10 +1,10 @@
 /*
  * File: misc.js
  * Project: steam-comment-service-bot
- * Created Date: 25.03.2023 14:02:56
+ * Created Date: 2023-03-25 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 08.10.2023 16:59:24
+ * Last Modified: 2023-12-27 14:08:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

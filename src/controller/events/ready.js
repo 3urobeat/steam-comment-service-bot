@@ -1,10 +1,10 @@
 /*
  * File: ready.js
  * Project: steam-comment-service-bot
- * Created Date: 29.03.2023 12:23:29
+ * Created Date: 2023-03-29 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 26.12.2023 19:01:27
+ * Last Modified: 2023-12-27 14:10:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

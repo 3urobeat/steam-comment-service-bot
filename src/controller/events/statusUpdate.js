@@ -1,10 +1,10 @@
 /*
  * File: statusUpdate.js
  * Project: steam-comment-service-bot
- * Created Date: 30.03.2023 21:05:13
+ * Created Date: 2023-03-30 21:05:13
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:36:26
+ * Last Modified: 2023-12-27 14:10:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

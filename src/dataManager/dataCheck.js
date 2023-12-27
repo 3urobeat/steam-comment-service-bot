@@ -1,10 +1,10 @@
 /*
  * File: dataCheck.js
  * Project: steam-comment-service-bot
- * Created Date: 09.07.2021 16:26:00
+ * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 21.10.2023 12:55:46
+ * Last Modified: 2023-12-27 14:13:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

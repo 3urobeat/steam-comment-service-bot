@@ -1,10 +1,10 @@
 /*
  * File: 21300.js
  * Project: steam-comment-service-bot
- * Created Date: 02.06.2023 12:20:00
+ * Created Date: 2023-06-02 12:20:00
  * Author: 3urobeat
  *
- * Last Modified: 29.06.2023 22:35:03
+ * Last Modified: 2023-12-27 14:20:07
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

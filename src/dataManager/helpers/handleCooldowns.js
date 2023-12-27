@@ -1,10 +1,10 @@
 /*
  * File: handleCooldowns.js
  * Project: steam-comment-service-bot
- * Created Date: 13.04.2023 17:58:23
+ * Created Date: 2023-04-13 17:58:23
  * Author: 3urobeat
  *
- * Last Modified: 19.10.2023 19:00:06
+ * Last Modified: 2023-12-27 14:13:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

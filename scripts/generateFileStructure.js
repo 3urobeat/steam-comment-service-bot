@@ -1,10 +1,10 @@
 /*
  * File: generateFileStructure.js
  * Project: steam-comment-service-bot
- * Created Date: 02.09.2023 14:41:54
+ * Created Date: 2023-09-02 14:41:54
  * Author: 3urobeat
  *
- * Last Modified: 26.12.2023 22:33:57
+ * Last Modified: 2023-12-27 13:56:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

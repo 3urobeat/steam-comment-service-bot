@@ -1,13 +1,13 @@
 /*
  * File: customUpdateRules.js
  * Project: steam-comment-service-bot
- * Created Date: 22.02.2022 17:39:21
+ * Created Date: 2022-02-22 17:39:21
  * Author: 3urobeat
  *
- * Last Modified: 19.10.2023 19:14:37
+ * Last Modified: 2023-12-27 14:19:22
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2023 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.

@@ -1,10 +1,10 @@
 /*
  * File: follow.js
  * Project: steam-comment-service-bot
- * Created Date: 24.09.2023 15:04:33
+ * Created Date: 2023-09-24 15:04:33
  * Author: 3urobeat
  *
- * Last Modified: 26.12.2023 15:44:23
+ * Last Modified: 2023-12-27 14:07:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

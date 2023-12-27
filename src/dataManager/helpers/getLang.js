@@ -1,10 +1,10 @@
 /*
  * File: getLang.js
  * Project: steam-comment-service-bot
- * Created Date: 09.09.2023 12:35:10
+ * Created Date: 2023-09-09 12:35:10
  * Author: 3urobeat
  *
- * Last Modified: 10.09.2023 16:56:48
+ * Last Modified: 2023-12-27 14:14:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

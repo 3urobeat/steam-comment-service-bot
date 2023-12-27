@@ -1,10 +1,10 @@
 /*
  * File: pluginSystem.js
  * Project: steam-comment-service-bot
- * Created Date: 19.03.2023 13:34:27
+ * Created Date: 2023-03-19 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 24.12.2023 14:19:18
+ * Last Modified: 2023-12-27 14:15:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
