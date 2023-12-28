@@ -325,7 +325,7 @@ declare function getCommentArgs(commandHandler: CommandHandler, args: any[], req
  * @param commandHandler - The commandHandler object
  * @param numberOfComments - Number of requested comments
  * @param canBeLimited - If the accounts are allowed to be limited
- * @param idType - Type of the request. This can either be "profile", "group", "sharedfile" or "discussion". This is used to determine if limited accs need to be added first.
+ * @param idType - Type of the request. This can either be "profile(PrivacyState)", "group", "sharedfile" or "discussion". This is used to determine if limited accs need to be added first.
  * @param receiverSteamID - Optional: steamID64 of the receiving user. If set, accounts that are friend with the user will be prioritized and accsToAdd will be calculated.
  * @returns `availableAccounts` contains all account names from bot object, `accsToAdd` account names which are limited and not friend, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */

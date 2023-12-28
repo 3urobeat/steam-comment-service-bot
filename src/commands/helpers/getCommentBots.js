@@ -4,7 +4,7 @@
  * Created Date: 2023-04-09 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:05:41
+ * Last Modified: 2023-12-28 22:40:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -26,7 +26,7 @@ const { timeToString } = require("../../controller/helpers/misc.js");
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {number} numberOfComments Number of requested comments
  * @param {boolean} canBeLimited If the accounts are allowed to be limited
- * @param {string} idType Type of the request. This can either be "profile", "group", "sharedfile" or "discussion". This is used to determine if limited accs need to be added first.
+ * @param {string} idType Type of the request. This can either be "profile(PrivacyState)", "group", "sharedfile" or "discussion". This is used to determine if limited accs need to be added first.
  * @param {string} receiverSteamID Optional: steamID64 of the receiving user. If set, accounts that are friend with the user will be prioritized and accsToAdd will be calculated.
  * @returns {{ accsNeeded: number, availableAccounts: Array.<string>, accsToAdd: Array.<string>, whenAvailable: number, whenAvailableStr: string }} `availableAccounts` contains all account names from bot object, `accsToAdd` account names which are limited and not friend, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
@@ -105,12 +105,14 @@ module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOf
     if (allAccounts.length > accountsNeeded) allAccounts = allAccounts.slice(0, accountsNeeded);
 
 
-    // Filter all accounts needed for this request which must be added first if this is of type profile
+    // Filter all accounts needed for this request which must be added first
     let accsToAdd = [];
 
-    if (idType == "profile") {
-        accsToAdd = allAccounts.filter(e => allAccsOnline[e].user.myFriends[receiverSteamID] != 3 && allAccsOnline[e].user.limitations.limited);
-    }
+    if (idType == "profilePublic") {             // On a public profile only limited accounts need to be added
+        accsToAdd = allAccounts.filter(e => allAccsOnline[e].user.myFriends[receiverSteamID] != EFriendRelationship.Friend && allAccsOnline[e].user.limitations.limited);
+    } else if (idType == "profileFriendsonly") { // On a friendsonly profile all accounts need to be added
+        accsToAdd = allAccounts.filter(e => allAccsOnline[e].user.myFriends[receiverSteamID] != EFriendRelationship.Friend);
+    }                                            // Comments on private profiles are already blocked, no need to check for that here
 
 
     // Log debug values

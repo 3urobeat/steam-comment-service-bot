@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-28 18:13:34
+ * Last Modified: 2023-12-28 22:58:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
@@ -90,6 +90,9 @@ module.exports.comment = {
 
         if (!maxRequestAmount && !numberOfComments && !quotesArr) return; // Looks like the helper aborted the request
 
+        // Deny request if profile is private
+        if (idType == "profilePrivate") return respond(await commandHandler.data.getLang("commentuserprofileprivate", null, requesterID));
+
 
         // Update receiverSteamID64 if profileID was returned
         if (profileID && profileID != requesterID) {
@@ -162,7 +165,8 @@ module.exports.comment = {
         let commentArgs = {};
 
         switch (activeRequestsObj.type) {
-            case "profileComment":
+            case "profilePublicComment":
+            case "profileFriendsonlyComment":
                 postComment = commandHandler.controller.main.community.postUserComment; // Context of the correct bot account is applied later
                 commentArgs = { receiverSteamID64: receiverSteamID64, quote: null };
                 break;
@@ -219,32 +223,12 @@ module.exports.comment = {
         }
 
 
-        // Check if profile is private
-        if (idType == "profile") {
-            commandHandler.controller.main.community.getSteamUser(new SteamID(receiverSteamID64), async (err, user) => {
-                if (err) {
-                    logger("warn", `[Main] Failed to check if ${receiverSteamID64} is private: ${err}\n       Trying to comment anyway and hoping no error occurs...`); // This can happen sometimes and most of the times commenting will still work
-                } else {
-                    logger("debug", "Successfully checked privacyState of receiving user: " + user.privacyState);
+        // Register this comment process in activeRequests
+        commandHandler.controller.activeRequests[receiverSteamID64] = activeRequestsObj;
 
-                    if (user.privacyState != "public" && user.privacyState != "friendsonly") return respond(await commandHandler.data.getLang("commentuserprofileprivate", null, requesterID)); // Only check if getting the Steam user's data didn't result in an error
-                }
-
-                // Register this comment process in activeRequests
-                commandHandler.controller.activeRequests[receiverSteamID64] = activeRequestsObj;
-
-                // Start commenting
-                logger("debug", "Made activeRequest entry for user, starting comment loop...");
-                comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64);
-            });
-        } else {
-            // Register this comment process in activeRequests
-            commandHandler.controller.activeRequests[receiverSteamID64] = activeRequestsObj;
-
-            // Start commenting
-            logger("debug", "Made activeRequest entry for user, starting comment loop...");
-            comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64);
-        }
+        // Start commenting
+        logger("debug", "Made activeRequest entry for user, starting comment loop...");
+        comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64);
     }
 };
 
