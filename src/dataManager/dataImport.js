@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:12:47
+ * Last Modified: 2023-12-28 23:22:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
@@ -294,8 +294,8 @@ DataManager.prototype._importFromDisk = async function () {
                     logger("", "", true, true);
 
                     // Pull the file directly from GitHub.
-                    _this._pullNewFile("english.json", "./src/data/lang/english.json", resolve); // Only resolve for the default language
-                    _this._pullNewFile("english.json", "./src/data/lang/russian.json", () => {});
+                    _this._pullNewFile("english.json", "./src/data/lang/english.json", (e) => resolve({ "english": e })); // Only resolve for the default language
+                    _this._pullNewFile("russian.json", "./src/data/lang/russian.json", () => {});
                 }
             }
         });
