@@ -301,6 +301,15 @@ declare type resInfo = {
 declare function comment(commandHandler: CommandHandler, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any, postComment: (...params: any[]) => any, commentArgs: any, receiverSteamID64: string): void;
 
 /**
+ * Helper function: Gets the visibility status of a profile and appends it to idType
+ * @param commandHandler - The commandHandler object
+ * @param steamID64 - The steamID64 of the profile to check
+ * @param type - Type of steamID64, determined by handleSteamIdResolving(). Must be "profile", otherwise callback will be called instantly with this type param, unchanged.
+ * @param callback - Called on completion with your new idType
+ */
+declare function getVisibilityStatus(commandHandler: CommandHandler, steamID64: string, type: string, callback: (...params: any[]) => any): void;
+
+/**
  * Retrieves arguments from a comment request. If request is invalid (for example too many comments requested) an error message will be sent
  * @param commandHandler - The commandHandler object
  * @param args - The command arguments
