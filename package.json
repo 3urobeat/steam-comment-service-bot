@@ -4,7 +4,7 @@
     "description": "The most advanced Steam Multi Account Manager with built-in comment, like & favorite commands and extensive plugin support.",
     "main": "start.js",
     "dependencies": {
-        "@seald-io/nedb": "^4.0.2",
+        "@seald-io/nedb": "^4.0.3",
         "@types/tail": "^2.2.3",
         "download": "^8.0.0",
         "htmlparser2": "^9.0.0",
@@ -23,7 +23,8 @@
     "scripts": {
         "start": "node start.js",
         "dev": "node scripts/generateFileStructure.js && node start",
-        "types": "jsdoc -t node_modules/tsd-jsdoc/dist -r src/. -d types ; node scripts/generateFileStructure.js"
+        "types": "jsdoc -t node_modules/tsd-jsdoc/dist -r src/. -d types ; node scripts/generateFileStructure.js",
+        "deps": "ncu -u && npm update"
     },
     "author": "3urobeat",
     "license": "GPL-3.0",
@@ -33,8 +34,8 @@
     "homepage": "https://github.com/3urobeat",
     "repository": "https://github.com/3urobeat/steam-comment-service-bot",
     "devDependencies": {
-        "eslint": "^8.55.0",
-        "eslint-plugin-jsdoc": "^46.9.0",
+        "eslint": "^8.56.0",
+        "eslint-plugin-jsdoc": "^46.9.1",
         "tsd-jsdoc": "^2.5.0"
     },
     "types": "./types/types.d.ts"
