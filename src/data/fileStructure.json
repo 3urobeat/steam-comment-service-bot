@@ -528,7 +528,7 @@
         {
             "path": "src/controller/helpers/misc.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/misc.js",
-            "checksum": "65dde681cbe3e63ce6c6b6d3327cb2ec"
+            "checksum": "9c67eb0be1e14576747ebec6a7267d9b"
         },
         {
             "path": "src/controller/helpers/npminteraction.js",
