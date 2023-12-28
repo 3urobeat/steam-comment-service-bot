@@ -264,3 +264,5 @@ Commit: [b4072cf](https://github.com/3urobeat/steam-comment-service-bot/commit/b
 - Wiki: Improved `unfriendtime` config key explanation
 - Updated dependencies
 - Minor other changes
+
+Commit: [26caa70](https://github.com/3urobeat/steam-comment-service-bot/commit/26caa70)
