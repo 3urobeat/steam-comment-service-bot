@@ -553,7 +553,7 @@
         {
             "path": "src/data/lang/russian.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/russian.json",
-            "checksum": "44c2754b505bd61026848a9d4a09cbff"
+            "checksum": "878ca00a385d91db0ab9b644c3101512"
         },
         {
             "path": "src/dataManager/dataCheck.js",
