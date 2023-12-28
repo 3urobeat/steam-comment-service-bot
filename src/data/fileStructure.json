@@ -383,7 +383,7 @@
         {
             "path": "src/commands/core/comment.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/comment.js",
-            "checksum": "d1f8f59660fbcf71f1e1af67aae4b040"
+            "checksum": "4f05398cc6cae3b3b12b1d830030c202"
         },
         {
             "path": "src/commands/core/favorite.js",
