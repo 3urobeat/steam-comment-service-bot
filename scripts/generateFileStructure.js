@@ -1,10 +1,10 @@
 /*
  * File: generateFileStructure.js
  * Project: steam-comment-service-bot
- * Created Date: 02.09.2023 14:41:54
+ * Created Date: 2023-09-02 14:41:54
  * Author: 3urobeat
  *
- * Last Modified: 09.09.2023 15:15:20
+ * Last Modified: 2023-12-27 13:56:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -28,9 +28,9 @@ const crypto = require("crypto");
 
 const ignore = [
     ".git", "node_modules", "backup", "plugins", // Folders
-    "accounts.txt", "config.json", "proxies.txt", "quotes.txt", "advancedconfig.json", "config.json", "customlang.json", // Config files
+    "logininfo.json", "accounts.txt", "config.json", "proxies.txt", "quotes.txt", "advancedconfig.json", "config.json", "customlang.json", // Config files
     "output.txt", "src/data/cache.json", "src/data/data.json", "src/data/fileStructure.json", "src/data/lastcomment.db", "src/data/ratingHistory.db", "src/data/tokens.db", "src/data/userSettings.db", // Files changing at runtime
-    "comment-service-bot.code-workspace" // Misc
+    "comment-service-bot.code-workspace", "package-lock.json" // Misc
 ];
 
 const output = [];

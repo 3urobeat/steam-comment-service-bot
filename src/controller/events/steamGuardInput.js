@@ -1,10 +1,10 @@
 /*
  * File: steamGuardInput.js
  * Project: steam-comment-service-bot
- * Created Date: 04.06.2023 12:00:48
+ * Created Date: 2023-06-04 12:00:48
  * Author: 3urobeat
  *
- * Last Modified: 04.07.2023 19:36:34
+ * Last Modified: 2023-12-27 14:09:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

@@ -10,7 +10,7 @@ declare class Bot {
      */
     controller: Controller;
     /**
-     * Reference to the controller object
+     * Reference to the DataManager object
      */
     data: DataManager;
     /**
@@ -301,6 +301,15 @@ declare type resInfo = {
 declare function comment(commandHandler: CommandHandler, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any, postComment: (...params: any[]) => any, commentArgs: any, receiverSteamID64: string): void;
 
 /**
+ * Helper function: Gets the visibility status of a profile and appends it to idType
+ * @param commandHandler - The commandHandler object
+ * @param steamID64 - The steamID64 of the profile to check
+ * @param type - Type of steamID64, determined by handleSteamIdResolving(). Must be "profile", otherwise callback will be called instantly with this type param, unchanged.
+ * @param callback - Called on completion with your new idType
+ */
+declare function getVisibilityStatus(commandHandler: CommandHandler, steamID64: string, type: string, callback: (...params: any[]) => any): void;
+
+/**
  * Retrieves arguments from a comment request. If request is invalid (for example too many comments requested) an error message will be sent
  * @param commandHandler - The commandHandler object
  * @param args - The command arguments
@@ -316,7 +325,7 @@ declare function getCommentArgs(commandHandler: CommandHandler, args: any[], req
  * @param commandHandler - The commandHandler object
  * @param numberOfComments - Number of requested comments
  * @param canBeLimited - If the accounts are allowed to be limited
- * @param idType - Type of the request. This can either be "profile", "group", "sharedfile" or "discussion". This is used to determine if limited accs need to be added first.
+ * @param idType - Type of the request. This can either be "profile(PrivacyState)", "group", "sharedfile" or "discussion". This is used to determine if limited accs need to be added first.
  * @param receiverSteamID - Optional: steamID64 of the receiving user. If set, accounts that are friend with the user will be prioritized and accsToAdd will be calculated.
  * @returns `availableAccounts` contains all account names from bot object, `accsToAdd` account names which are limited and not friend, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
@@ -1238,10 +1247,12 @@ declare class PluginSystem {
      */
     loadPluginConfig(pluginName: string): Promise<object>;
     /**
-     * Integrates changes made to the config to the users config
+     * Internal: Integrates changes made to a plugin's default config into the user's config
+     * @param pluginName - Name of your plugin
+     * @param currentConfig - Config file currently loaded for this plugin
      * @returns the config
      */
-    aggregatePluginConfig(pluginName: string): Record<string, any>;
+    _aggregatePluginConfig(pluginName: string, currentConfig: any): Record<string, any>;
     /**
      * Writes your plugin config changes to the filesystem. The object data will be processed to JSON.
      * @param pluginName - Name of your plugin
@@ -1313,17 +1324,19 @@ declare class PluginSystem {
      */
     loadPluginConfig(pluginName: string): Promise<object>;
     /**
+     * Internal: Integrates changes made to a plugin's default config into the user's config
+     * @param pluginName - Name of your plugin
+     * @param currentConfig - Config file currently loaded for this plugin
+     * @returns the config
+     */
+    _aggregatePluginConfig(pluginName: string, currentConfig: any): Record<string, any>;
+    /**
      * Writes your plugin config changes to the filesystem. The object data will be processed to JSON.
      * @param pluginName - Name of your plugin
      * @param pluginConfig - Config object of your plugin
      * @returns Resolves on success, rejects otherwise with an error
      */
     writePluginConfig(pluginName: string, pluginConfig: any): Promise<void>;
-    /**
-     * Integrates changes made to the config to the users config
-     * @returns the config
-     */
-    aggregatePluginConfig(pluginName: string): Record<string, any>;
 }
 
 /**

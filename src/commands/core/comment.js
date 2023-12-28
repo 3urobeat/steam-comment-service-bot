@@ -1,13 +1,13 @@
 /*
  * File: comment.js
  * Project: steam-comment-service-bot
- * Created Date: 09.07.2021 16:26:00
+ * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 19.10.2023 19:00:06
+ * Last Modified: 2023-12-28 22:58:36
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -90,6 +90,9 @@ module.exports.comment = {
 
         if (!maxRequestAmount && !numberOfComments && !quotesArr) return; // Looks like the helper aborted the request
 
+        // Deny request if profile is private
+        if (idType == "profilePrivate") return respond(await commandHandler.data.getLang("commentuserprofileprivate", null, requesterID));
+
 
         // Update receiverSteamID64 if profileID was returned
         if (profileID && profileID != requesterID) {
@@ -162,7 +165,8 @@ module.exports.comment = {
         let commentArgs = {};
 
         switch (activeRequestsObj.type) {
-            case "profileComment":
+            case "profilePublicComment":
+            case "profileFriendsonlyComment":
                 postComment = commandHandler.controller.main.community.postUserComment; // Context of the correct bot account is applied later
                 commentArgs = { receiverSteamID64: receiverSteamID64, quote: null };
                 break;
@@ -219,32 +223,12 @@ module.exports.comment = {
         }
 
 
-        // Check if profile is private
-        if (idType == "profile") {
-            commandHandler.controller.main.community.getSteamUser(new SteamID(receiverSteamID64), async (err, user) => {
-                if (err) {
-                    logger("warn", `[Main] Failed to check if ${receiverSteamID64} is private: ${err}\n       Trying to comment anyway and hoping no error occurs...`); // This can happen sometimes and most of the times commenting will still work
-                } else {
-                    logger("debug", "Successfully checked privacyState of receiving user: " + user.privacyState);
+        // Register this comment process in activeRequests
+        commandHandler.controller.activeRequests[receiverSteamID64] = activeRequestsObj;
 
-                    if (user.privacyState != "public") return respond(await commandHandler.data.getLang("commentuserprofileprivate", null, requesterID)); // Only check if getting the Steam user's data didn't result in an error
-                }
-
-                // Register this comment process in activeRequests
-                commandHandler.controller.activeRequests[receiverSteamID64] = activeRequestsObj;
-
-                // Start commenting
-                logger("debug", "Made activeRequest entry for user, starting comment loop...");
-                comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64);
-            });
-        } else {
-            // Register this comment process in activeRequests
-            commandHandler.controller.activeRequests[receiverSteamID64] = activeRequestsObj;
-
-            // Start commenting
-            logger("debug", "Made activeRequest entry for user, starting comment loop...");
-            comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64);
-        }
+        // Start commenting
+        logger("debug", "Made activeRequest entry for user, starting comment loop...");
+        comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64);
     }
 };
 
@@ -259,8 +243,8 @@ module.exports.comment = {
  * @param {string} receiverSteamID64 steamID64 of the profile to receive the comments
  */
 async function comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64) {
-    let activeReqEntry     = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
-    let requesterID = resInfo.userID;
+    let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
+    let requesterID    = resInfo.userID;
 
 
     // Log request start and give user cooldown on the first iteration

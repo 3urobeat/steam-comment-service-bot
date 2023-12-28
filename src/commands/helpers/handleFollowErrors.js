@@ -1,10 +1,10 @@
 /*
  * File: handleFollowErrors.js
  * Project: steam-comment-service-bot
- * Created Date: 24.09.2023 22:57:21
+ * Created Date: 2023-09-24 22:57:21
  * Author: 3urobeat
  *
- * Last Modified: 25.09.2023 18:35:20
+ * Last Modified: 2023-12-27 14:04:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -31,7 +31,7 @@ module.exports.handleFollowIterationSkip = function(commandHandler, loop, bot, i
 
     // Check if no bot account was found
     if (!bot) {
-        activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b? p?`] = "Skipped because bot account does not exist";
+        activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b? p?`] = "Skipped because bot account does not exist";
 
         logger("error", `[Bot ?] Error while sending un-/follow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${id}: Bot account '${activeReqEntry.accounts[loop.index() % activeReqEntry.accounts.length]}' does not exist?! Skipping...`);
         loop.next();
@@ -40,7 +40,7 @@ module.exports.handleFollowIterationSkip = function(commandHandler, loop, bot, i
 
     // Check if bot account is offline
     if (bot.status != Bot.EStatus.ONLINE) {
-        activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = "Skipped because bot account is offline";
+        activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = "Skipped because bot account is offline";
 
         logger("error", `[${bot.logPrefix}] Error while sending un-/follow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${id}: Skipped because bot account is offline`);
         loop.next();
@@ -70,7 +70,7 @@ module.exports.logFollowError = (error, commandHandler, bot, id) => {
     // Log error, add it to failed obj and continue with next iteration
     logger("error", `[${bot.logPrefix}] Error while sending un-/follow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${id}${proxiesDescription}: ${error}`);
 
-    activeReqEntry.failed[`c${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = `${error}`;
+    activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = `${error}`;
 
 
     // Sort failed object to make it easier to read
@@ -84,7 +84,7 @@ module.exports.logFollowError = (error, commandHandler, bot, id) => {
  */
 function sortFailedCommentsObject(failedObj) {
     let sortedvals = Object.keys(failedObj).sort((a, b) => {
-        return Number(a.split(" ")[0].replace("c", "")) - Number(b.split(" ")[0].replace("c", ""));
+        return Number(a.split(" ")[0].replace("i", "")) - Number(b.split(" ")[0].replace("i", ""));
     });
 
     // Map sortedvals back to object if array is not empty - Credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/

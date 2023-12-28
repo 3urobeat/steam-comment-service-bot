@@ -1,10 +1,10 @@
 /*
  * File: handleRelog.js
  * Project: steam-comment-service-bot
- * Created Date: 05.10.2023 16:14:46
+ * Created Date: 2023-10-05 16:14:46
  * Author: 3urobeat
  *
- * Last Modified: 15.10.2023 20:15:36
+ * Last Modified: 2023-12-27 13:59:47
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

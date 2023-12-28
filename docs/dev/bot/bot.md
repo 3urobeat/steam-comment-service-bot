@@ -11,3 +11,10 @@ The bot object itself handles events for this specific account (e.g. chat messag
 
 Every function and object property is documented with JsDocs in the implementation file.  
 Please check them out using your IntelliSense or by clicking the button in the top right corner of this page.
+
+&nbsp;
+
+### index
+Each bot account gets an index assigned during the first login.  
+The index property must match to the index of the corresponding entry inside the `data.logininfo` array.  
+Should you want to modify the account order during runtime, you must also make the same change in the logininfo array.

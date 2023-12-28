@@ -1,10 +1,10 @@
 /*
  * File: getFollowBots.js
  * Project: steam-comment-service-bot
- * Created Date: 24.09.2023 18:01:44
+ * Created Date: 2023-09-24 18:01:44
  * Author: 3urobeat
  *
- * Last Modified: 26.09.2023 22:19:34
+ * Last Modified: 2023-12-27 14:05:07
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

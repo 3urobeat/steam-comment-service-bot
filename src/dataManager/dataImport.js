@@ -1,13 +1,13 @@
 /*
  * File: dataImport.js
  * Project: steam-comment-service-bot
- * Created Date: 09.07.2021 16:26:00
+ * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 21.10.2023 13:01:03
+ * Last Modified: 2023-12-28 23:22:59
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -173,6 +173,10 @@ DataManager.prototype._importFromDisk = async function () {
                 if (fs.existsSync("./logininfo.json")) {
                     delete require.cache[require.resolve(srcdir + "/../logininfo.json")]; // Delete cache to enable reloading data
 
+                    // Print deprecation warning once directly at boot and another time on ready
+                    logger("warn", "The usage of 'logininfo.json' is deprecated, please consider moving your accounts to 'accounts.txt' instead!", true);
+                    logger("warn", "The usage of 'logininfo.json' is deprecated, please consider moving your accounts to 'accounts.txt' instead!");
+
                     let logininfoFile = require(srcdir + "/../logininfo.json");
 
                     // Reformat to use new logininfo object structure
@@ -196,7 +200,7 @@ DataManager.prototype._importFromDisk = async function () {
             }
 
             // Create empty accounts.txt file if neither exist
-            if (!fs.existsSync("./accounts.txt")) _this._pullNewFile("accounts.txt", "./accounts.txt", () => {}, true); // Ignore resolve() param
+            if (!fs.existsSync("./accounts.txt") && !fs.existsSync("./logininfo.json")) _this._pullNewFile("accounts.txt", "./accounts.txt", () => {}, true); // Ignore resolve() param
         });
     }
 
@@ -290,8 +294,8 @@ DataManager.prototype._importFromDisk = async function () {
                     logger("", "", true, true);
 
                     // Pull the file directly from GitHub.
-                    _this._pullNewFile("english.json", "./src/data/lang/english.json", resolve); // Only resolve for the default language
-                    _this._pullNewFile("english.json", "./src/data/lang/russian.json", () => {});
+                    _this._pullNewFile("english.json", "./src/data/lang/english.json", (e) => resolve({ "english": e })); // Only resolve for the default language
+                    _this._pullNewFile("russian.json", "./src/data/lang/russian.json", () => {});
                 }
             }
         });

@@ -1,10 +1,10 @@
 /*
  * File: favorite.js
  * Project: steam-comment-service-bot
- * Created Date: 02.06.2023 13:23:01
+ * Created Date: 2023-06-02 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 19.10.2023 19:00:06
+ * Last Modified: 2023-12-27 14:07:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -157,7 +157,7 @@ module.exports.favorite = {
                     if (!handleFavoriteIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
                     /* --------- Try to favorite --------- */
-                    bot.community.favoriteSharedFile(sharedfile.id, sharedfile.appID, (error) => {
+                    bot.community.favoriteSharedFile(sharedfile.id, sharedfile.appID, (error) => { // Note: Steam does not return an error for a duplicate request here
 
                         /* --------- Handle errors thrown by this favorite attempt or update ratingHistory db and log success message --------- */
                         if (error) {

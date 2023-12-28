@@ -1,10 +1,10 @@
 /*
  * File: ready.js
  * Project: steam-comment-service-bot
- * Created Date: 29.03.2023 12:23:29
+ * Created Date: 2023-03-29 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 21.10.2023 12:55:18
+ * Last Modified: 2023-12-27 14:10:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -53,7 +53,7 @@ Controller.prototype._readyEvent = function() {
     let limitedaccs = 0;
     let failedtocheck = 0;
 
-    this.getBots().forEach((e, i) => {
+    this.getBots().forEach((e) => {
         if (e.user.limitations && e.user.limitations.limited) { // Check if limitations obj is populated before accessing limited just to be sure. The ready event should not have been called if limitations is not populated but better safe than sorry
             limitedaccs++;
         } else {
@@ -62,15 +62,12 @@ Controller.prototype._readyEvent = function() {
                 failedtocheck++;
             }
         }
-
-        // Check for last iteration
-        if (i + 1 == this.getBots().length) {
-            let failedtocheckmsg = "";
-            if (failedtocheck > 0) failedtocheckmsg = `(Couldn't check ${failedtocheck} account(s))`;
-
-            logger("", `${logger.colors.brfggreen}>${logger.colors.reset} ${limitedaccs}/${this.getBots().length} account(s) are ${logger.colors.fgred}limited${logger.colors.reset} ${failedtocheckmsg}`, true, false, null, false, true);
-        }
     });
+
+    let failedtocheckmsg = "";
+    if (failedtocheck > 0) failedtocheckmsg = `(Couldn't check ${failedtocheck} account(s))`;
+
+    logger("", `${logger.colors.brfggreen}>${logger.colors.reset} ${limitedaccs}/${this.getBots().length} account(s) are ${logger.colors.fgred}limited${logger.colors.reset} ${failedtocheckmsg}`, true, false, null, false, true);
 
 
     // Log warning message if automatic updater is turned off

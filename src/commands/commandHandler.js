@@ -1,10 +1,10 @@
 /*
  * File: commandHandler.js
  * Project: steam-comment-service-bot
- * Created Date: 01.04.2023 21:54:21
+ * Created Date: 2023-04-01 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 10.09.2023 11:51:58
+ * Last Modified: 2023-12-27 14:03:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -82,7 +82,7 @@ CommandHandler.prototype._importCoreCommands = function() {
             }
 
             // Iterate over all files in this dir
-            files.forEach((e, i) => {
+            files.forEach((e) => {
                 let thisFile;
 
                 // Try to load plugin
@@ -92,17 +92,14 @@ CommandHandler.prototype._importCoreCommands = function() {
 
                     // Push all exported commands in this file into the command list
                     Object.values(thisFile).every(val => this.commands.push(val));
-
                 } catch (err) {
-
                     logger("error", `Error loading core command '${e}'! ${err.stack}`, true);
                 }
-
-                if (i + 1 == files.length) {
-                    logger("info", `CommandHandler: Successfully loaded ${this.commands.length} core commands!`, false, true, logger.animation("loading"));
-                    resolve();
-                }
             });
+
+            logger("info", `CommandHandler: Successfully loaded ${this.commands.length} core commands!`, false, true, logger.animation("loading"));
+            resolve();
+
         });
 
     });

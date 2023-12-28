@@ -1,10 +1,10 @@
 /*
  * File: loadPlugins.js
  * Project: steam-comment-service-bot
- * Created Date: 04.06.2023 15:37:17
+ * Created Date: 2023-06-04 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 05.07.2023 10:31:36
+ * Last Modified: 2023-12-27 14:15:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -67,20 +67,28 @@ PluginSystem.prototype._loadPlugins = async function () {
     for (const plugin of initiatedPlugins) {
         const { pluginName, pluginInstance, pluginJson } = plugin;
 
+        // Skip iteration if plugin couldn't be instantiated
         if (!pluginInstance) {
             logger("warn", `Skipping plugin '${pluginName}'...`, false, false, null, true); // Force print now
             continue;
         }
 
-        let pluginConfig = {};
+        // Attempt to load plugin config, skip in error
+        let pluginConfig = await this.loadPluginConfig(pluginName).catch((err) => logger("error", `The config of plugin '${pluginName}' is fucked, skipping plugin. ${err}`));
+
+        if (!pluginConfig) continue;
+
+        // Handle plugin update by updating config file
         const lastSeenVersion = this.controller.data.cachefile.pluginVersions;
 
         if (lastSeenVersion && lastSeenVersion[pluginName] && lastSeenVersion[pluginName] !== pluginJson.version) {
-            logger("warn", `Plugin '${pluginName}' is outdated! Updating plugin...`, false, false, null, true); // Force print now
-            pluginConfig = this.aggregatePluginConfig(pluginName);
-        } else {
-            pluginConfig = await this.loadPluginConfig(pluginName).catch((err) => logger("error", `The config of plugin '${pluginName}' is fucked, skipping plugin. ${err}`));
+            logger("warn", `Detected version change for plugin '${pluginName}'! Updating config...\n                             You might need to make changes and reload/restart the bot. Please check the plugin's release notes.`, false, false, null, true); // Force print now
+            pluginConfig = this._aggregatePluginConfig(pluginName, pluginConfig);
         }
+
+        // Update last seen version of this plugin
+        if (!lastSeenVersion) this.controller.data.cachefile.pluginVersions = {};
+        this.controller.data.cachefile.pluginVersions[pluginName] = pluginJson.version;
 
         // Skip plugin if it is disabled
         if (!pluginConfig || !pluginConfig.enabled) {
@@ -99,9 +107,5 @@ PluginSystem.prototype._loadPlugins = async function () {
             // eslint-disable-line
             this.controller.events.on(event, (...args) => pluginInstance[event]?.call(pluginInstance, ...args));
         });
-
-        // Update last seen version of this plugin name
-        if (!lastSeenVersion) this.controller.data.cachefile.pluginVersions = {};
-        this.controller.data.cachefile.pluginVersions[pluginName] = pluginJson.version;
     }
 };

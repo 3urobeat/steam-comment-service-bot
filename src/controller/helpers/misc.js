@@ -1,10 +1,10 @@
 /*
  * File: misc.js
  * Project: steam-comment-service-bot
- * Created Date: 25.03.2023 14:02:56
+ * Created Date: 2023-03-25 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 08.10.2023 16:59:24
+ * Last Modified: 2023-12-28 16:36:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -211,22 +211,50 @@ module.exports.cutStringsIntelligently = (txt, limit, cutChars, threshold) => {
     let lastIndex = 0;
     let result    = [];
 
-    // Iterate over string until lastIndex reaches length of input string
+    // Regex-less version - Safe but can cut at places where a link is surrounded by "' " and " '" to avoid embedding in the Steam Chat.
+    // Iterate over string until lastIndex reaches length of input string. This whole algorithm could probably be replicated using RegEx but eeeehhhh
     while (lastIndex < txt.length - 1) {
         let cut = txt.slice(lastIndex, lastIndex + limit); // Get the next part by cutting from lastIndex to limit
 
         // Find the last occurrence of all cutChars and find the most recent one using Math.max()
         let lastOccurrence = Math.max(...cutChars.map(e => cut.lastIndexOf(e)));
 
-        // Check if cut maxes out limit, a last occurrence was found and is within threshold. If so, cut again, push to result and update lastIndex. If not, accept a word cut.
+        // Check if cut maxes out limit (if not we have reached the end and can push as is),
+        // a last occurrence was found and is within threshold. If so, cut again, push to result and update lastIndex.
+        // If not, accept a word cut.
         if (cut.length == limit && lastOccurrence >= 0 && (cut.length - lastOccurrence) < threshold) {
-            result.push(txt.slice(lastIndex, lastIndex + lastOccurrence).trim());
+            result.push(txt.slice(lastIndex, lastIndex + lastOccurrence).trim()); // Does not cut into words
             lastIndex += lastOccurrence;
         } else {
-            result.push(cut.trim());
+            result.push(cut.trim()); // Cuts into words
             lastIndex += limit - 1;
         }
     }
+
+    // Regex version - Only cuts when match is not surrounded by "'" and "URL" but does not (yet) support any other chars and is wonky - therefore disabled
+    /* let re = /(?<!' (https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))) (?!(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)) ')/gm // eslint-disable-line
+
+    // Exec until temp is null, meaning we have reached the end. PrevTemp keeps the value of the previous iteration as it is only updated when temp is !null.
+    let prevTemp, temp;
+    let prevLen = 0;
+
+    while (temp = re.exec(txt)) { // eslint-disable-line no-cond-assign
+
+        // Push prevTemp from last iteration to parts if index from this iteration is greater than limit
+        if (temp && temp.index > prevLen + limit) {
+            result.push(txt.substring(prevLen, prevTemp.index)); // Cut only to index to ignore the space
+            prevLen = prevTemp.index + 1;
+        }
+
+        prevTemp = temp;
+
+    }
+
+    // Push remaining
+    if (prevLen < txt.length) {
+        result.push(txt.substring(prevLen, txt.length));
+    } */
+
 
     // Return result
     return result;

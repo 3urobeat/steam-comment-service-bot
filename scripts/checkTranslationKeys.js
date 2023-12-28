@@ -1,10 +1,10 @@
 /*
  * File: checkTranslationKeys.js
  * Project: steam-comment-service-bot
- * Created Date: 13.09.2023 21:58:32
+ * Created Date: 2023-09-13 21:58:32
  * Author: 3urobeat
  *
- * Last Modified: 13.09.2023 22:30:34
+ * Last Modified: 2023-12-27 13:56:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

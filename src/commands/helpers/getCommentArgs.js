@@ -1,13 +1,13 @@
 /*
  * File: getCommentArgs.js
  * Project: steam-comment-service-bot
- * Created Date: 28.02.2022 11:55:06
+ * Created Date: 2022-02-28 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 18.10.2023 23:07:24
+ * Last Modified: 2023-12-28 21:29:17
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2023 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -15,7 +15,39 @@
  */
 
 
+const SteamID = require("steamid");
+
 const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
+
+
+/**
+ * Helper function: Gets the visibility status of a profile and appends it to idType
+ * @param {CommandHandler} commandHandler The commandHandler object
+ * @param {string} steamID64 The steamID64 of the profile to check
+ * @param {string} type Type of steamID64, determined by handleSteamIdResolving(). Must be "profile", otherwise callback will be called instantly with this type param, unchanged.
+ * @param {function(string): void} callback Called on completion with your new idType
+ */
+function getVisibilityStatus(commandHandler, steamID64, type, callback) {
+    if (steamID64 && type == "profile") {
+        logger("debug", `CommandHandler getVisibilityStatus(): Getting visibility status of profile ${steamID64}...`);
+
+        commandHandler.controller.main.community.getSteamUser(new SteamID(steamID64), async (err, user) => {
+            if (err || !user || !user.privacyState) {
+                logger("warn", `[Main] Failed to check if ${steamID64} is private: ${err}\n       Assuming profile is public and hoping for the best...`); // This can happen sometimes and most of the times commenting will still work
+
+                callback(type + "Public");
+            } else {
+                logger("debug", "CommandHandler getVisibilityStatus(): Successfully checked privacyState of receiving user: " + user.privacyState);
+
+                callback(type + user.privacyState[0].toUpperCase() + user.privacyState.slice(1)); // Append privacy state to type with the first letter capitalized
+            }
+        });
+    } else {
+        logger("debug", `CommandHandler getVisibilityStatus(): Type '${type}' was provided, ignoring request...`);
+
+        callback(type);
+    }
+}
 
 
 /**
@@ -91,8 +123,11 @@ module.exports.getCommentArgs = (commandHandler, args, requesterID, resInfo, res
                                 return resolve(false);
                             }
 
-                            profileID = res; // Will be null on err
-                            idType = type; // Update idType with what handleSteamIdResolving determined
+                            // Get profile visibility status if profile. Resolving at the bottom will wait until profileID is set
+                            getVisibilityStatus(commandHandler, res, type, (newType) => {
+                                profileID = res;     // Will be null on err
+                                idType    = newType; // Update idType with what handleSteamIdResolving determined
+                            });
                         });
 
                     } else {
@@ -104,8 +139,11 @@ module.exports.getCommentArgs = (commandHandler, args, requesterID, resInfo, res
                 } else {
                     logger("debug", "CommandHandler getCommentArgs(): No profileID parameter received, setting profileID to requesterID...");
 
-                    profileID = requesterID;
-                    idType = "profile";
+                    // Get profile visibility status if profile. Resolving at the bottom will wait until profileID is set
+                    getVisibilityStatus(commandHandler, requesterID, "profile", (newType) => {
+                        profileID = requesterID; // Will be null on err
+                        idType    = newType;     // Update idType with what handleSteamIdResolving determined
+                    });
                 }
 
 
@@ -122,7 +160,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterID, resInfo, res
                 if (commandHandler.controller.getBots().length == 1 && maxRequestAmount == 1) {
                     logger("debug", "CommandHandler getCommentArgs(): User didn't provide numberOfComments but maxRequestAmount is 1. Accepting request as numberOfComments = 1.");
 
-                    numberOfComments = 1;     // If only one account is active, set 1 automatically
+                    numberOfComments = 1;    // If only one account is active, set 1 automatically
                     profileID = requesterID; // Define profileID so that the interval below resolves
                 } else {
                     logger("debug", `CommandHandler getCommentArgs(): User didn't provide numberOfComments and maxRequestAmount is ${maxRequestAmount} (> 1). Rejecting request.`);

@@ -1,13 +1,13 @@
 /*
  * File: handleExpiringTokens.js
  * Project: steam-comment-service-bot
- * Created Date: 14.10.2022 14:58:25
+ * Created Date: 2022-10-14 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 23.09.2023 13:06:53
+ * Last Modified: 2023-12-27 14:13:44
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2023 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -139,19 +139,17 @@ DataManager.prototype._askForGetNewToken = function(expiring) {
                 if (input.toLowerCase() == "y") {
 
                     // Invalidate all tokens and log off if still online
-                    Object.values(expiring).forEach((e, i) => {
+                    Object.values(expiring).forEach((e) => {
                         if (e.status == EStatus.ONLINE) e.user.logOff(); // Disconnected event won't trigger because activeLogin is already true
 
                         _this.controller._statusUpdateEvent(e, EStatus.OFFLINE); // Set status of this account to offline
 
                         e.sessionHandler.invalidateTokenInStorage(); // Invalidate token in storage
-
-                        // Check for last iteration and trigger login
-                        if (i + 1 == Object.values(expiring).length) {
-                            _this.controller.info.activeLogin = false; // Quick hack so that login() won't ignore our request, this will be updated again instantly and was only false to block new requests
-                            _this.controller.login();
-                        }
                     });
+
+                    // Trigger login
+                    _this.controller.info.activeLogin = false; // Quick hack so that login() won't ignore our request, this will be updated again instantly and was only false to block new requests
+                    _this.controller.login();
 
                 } else {
                     logger("info", "Asking again in 24 hours...");

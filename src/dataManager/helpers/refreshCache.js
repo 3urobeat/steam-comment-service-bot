@@ -1,10 +1,10 @@
 /*
  * File: refreshCache.js
  * Project: steam-comment-service-bot
- * Created Date: 29.03.2023 17:44:47
+ * Created Date: 2023-03-29 17:44:47
  * Author: 3urobeat
  *
- * Last Modified: 05.09.2023 19:05:14
+ * Last Modified: 2023-12-27 14:13:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>

@@ -1,13 +1,13 @@
 /*
  * File: webSession.js
  * Project: steam-comment-service-bot
- * Created Date: 09.07.2021 16:26:00
+ * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 21.10.2023 13:13:22
+ * Last Modified: 2023-12-28 17:59:22
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -72,13 +72,11 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
 
                     // Add user to lastcomment database
-                    let lastcommentobj = {
-                        id: thisfriend,
-                        time: Date.now() - (this.controller.data.config.requestCooldown * 60000) // Subtract requestCooldown so that the user is able to use the command instantly
-                    };
+                    let time = Date.now() - (this.controller.data.config.requestCooldown * 60000); // Subtract requestCooldown so that the user is able to use the command instantly;
 
-                    this.controller.data.lastCommentDB.remove({ id: thisfriend }, {}, (err) => { if (err) logger("error", "Error removing duplicate steamid from lastcomment.db on offline friend accept! Error: " + err); }); // Remove any old entries
-                    this.controller.data.lastCommentDB.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err); });
+                    this.controller.data.lastCommentDB.update({ id: thisfriend }, { $set: { time: time } }, { upsert: true }, (err) => {
+                        if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err);
+                    });
 
                     // Invite user to yourgroup (and to my to make some stonks)
                     if (this.controller.data.cachefile.configgroup64id && Object.keys(this.user.myGroups).includes(this.controller.data.cachefile.configgroup64id)) {
@@ -93,11 +91,11 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
                 }
 
             }
+        }
 
-            // Log info msg about ignored friend requests
-            if (i + 1 == Object.keys(this.user.myFriends).length && ignoredFriendRequests > 0) {
-                logger("info", `Ignored ${ignoredFriendRequests} pending friend request(s) because acceptFriendRequests is turned off in advancedconfig.json.`);
-            }
+        // Log info msg about ignored friend requests
+        if (ignoredFriendRequests > 0) {
+            logger("info", `Ignored ${ignoredFriendRequests} pending friend request(s) because acceptFriendRequests is turned off in advancedconfig.json.`);
         }
 
         // Groups:

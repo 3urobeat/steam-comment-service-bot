@@ -1,13 +1,13 @@
 /*
  * File: bot.js
  * Project: steam-comment-service-bot
- * Created Date: 09.07.2021 16:26:00
+ * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 21.10.2023 12:26:46
+ * Last Modified: 2023-12-27 13:59:28
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -40,7 +40,7 @@ const Bot = function(controller, index) {
     this.controller = controller;
 
     /**
-     * Reference to the controller object
+     * Reference to the DataManager object
      * @type {DataManager}
      */
     this.data = controller.data;
@@ -69,7 +69,7 @@ const Bot = function(controller, index) {
      * Additional login related information for this bot account
      */
     this.loginData = {
-        logOnOptions:  controller.data.logininfo[index], // TODO: This could be an issue later when the index could change at runtime
+        logOnOptions:  controller.data.logininfo.find((e) => e.index == index), // TODO: This could be an issue later when the index could change at runtime
         logOnTries:    0,
         relogTries:    0, // Amount of times logOns have been retried after relogTimeout. handleRelog() attempts to cycle proxies after enough failures
         waitingFor2FA: false, // Set by sessionHandler's handle2FA helper to prevent handleLoginTimeout from triggering

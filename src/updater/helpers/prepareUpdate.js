@@ -1,13 +1,13 @@
 /*
  * File: prepareUpdate.js
  * Project: steam-comment-service-bot
- * Created Date: 09.07.2021 16:26:00
+ * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 02.09.2023 22:09:01
+ * Last Modified: 2023-12-27 14:18:10
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -51,30 +51,26 @@ module.exports.run = (controller, respondModule, resInfo) => {
                 }, 5000);
             }
 
-
             function filterACPobj() { // Filters activeRequests object
-                let objlength = Object.keys(controller.activeRequests).length; // Save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering
-
-                Object.keys(controller.activeRequests).forEach((e, i) => { // Loop over obj to filter invalid/expired entries
+                // Loop over obj to filter invalid/expired entries
+                Object.keys(controller.activeRequests).forEach((e) => {
                     if (controller.activeRequests[e].status != "active" || Date.now() > controller.activeRequests[e].until + (controller.data.config.botaccountcooldown * 60000)) { // Check if status is not active or if entry is finished (realistically the status can't be active and finished but it won't hurt to check both to avoid a possible bug)
                         delete controller.activeRequests[e]; // Remove entry from object
                     }
-
-                    if (i == objlength - 1) {
-                        if (Object.keys(controller.activeRequests).length > 0) { // Check if obj is still not empty and recursively call this function again
-                            setTimeout(() => { // Wait 2.5 sec and check again
-                                filterACPobj();
-                            }, 2500);
-
-                        } else { // If the obj is now empty then lets continue
-
-                            logger("info", "Active request finished. Starting to log off all accounts...", false, true, logger.animation("loading"));
-                            if (respondModule) respondModule(resInfo, "Active request finished. Starting to log off all accounts...");
-
-                            initiateUpdate();
-                        }
-                    }
                 });
+
+                if (Object.keys(controller.activeRequests).length > 0) { // Check if obj is still not empty and recursively call this function again
+                    setTimeout(() => { // Wait 2.5 sec and check again
+                        filterACPobj();
+                    }, 2500);
+
+                } else { // If the obj is now empty then lets continue
+
+                    logger("info", "Active request finished. Starting to log off all accounts...", false, true, logger.animation("loading"));
+                    if (respondModule) respondModule(resInfo, "Active request finished. Starting to log off all accounts...");
+
+                    initiateUpdate();
+                }
             }
             /* eslint-enable no-inner-declarations, jsdoc/require-jsdoc */
 

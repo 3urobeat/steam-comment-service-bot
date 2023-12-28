@@ -8,7 +8,7 @@
 <div align="center">
 
 [![YouTube](https://img.shields.io/badge/YouTube-Tutorial-red)](https://youtu.be/8J78rC9Z28U)
-[![nodejs](https://img.shields.io/badge/node.js-v14-brightgreen)](https://nodejs.org/)
+[![nodejs](https://img.shields.io/badge/node.js-v16-brightgreen)](https://nodejs.org/)
 [![Star](https://img.shields.io/badge/-Give%20this%20repo%20a%20star!-yellow)](https://github.com/3urobeat/steam-comment-service-bot)
 [![Steam Group](https://img.shields.io/badge/Steam%20Group-Join!-blue)](https://steamcommunity.com/groups/3urobeatGroup)
 [![Donate](https://img.shields.io/badge/Donate-%241-orange)](https://github.com/sponsors/3urobeat)
@@ -18,7 +18,7 @@
 
 <p align="center">
   <a href="#introduction">Introduction</a> •
-  <a href="#setup--config-guide">Setup & Config Guide</a> •
+  <a href="#setup-config-guide">Setup & Configuration Guide</a> •
   <a href="#the-wiki">Wiki</a> •
   <a href="#questions-bugs-issues--betas">Get Help</a> •
   <a href="#license">License</a>
@@ -28,9 +28,12 @@
 
 &nbsp;
 
-## **Introduction**  
+<a id="introduction"></a>
+
+## ✨ **Introduction**  
 <img align="right" width="200" height="200" src="https://3urobeat.com/comment-bot/mesh.png">  
   
+**Features:**
 * Request profile, group, screenshot, artwork, guide or discussion comments directly from the Steam Chat
 * Manage hundreds of Steam accounts with ease and control them from **one** terminal and Steam Chat
 * No need of having a Steam Client installed - perfect for hosting on a server
@@ -46,21 +49,19 @@ If you would like to rather follow a video than these written instructions, clic
 
 &nbsp;
 
-## Setup & Config Guide:
+<a id="setup-config-guide"></a>
+
+## 🚀 Setup & Configuration Guide:
 Follow the Wiki's [**Setup Guide by clicking here**](./docs/wiki/setup_guide.md) to get started!  
 This process is pretty simple and should not take you long!  
 
-**Disclaimer!**  
-> I, 3urobeat (the developer), am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.  
-> By using this application you agree to not misuse it!  
-
 &nbsp;
 
-## Additional Information: <a href="https://youtu.be/8J78rC9Z28U?t=339" target="_blank"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
+## 💡 Additional Information: <a href="https://youtu.be/8J78rC9Z28U?t=339" target="_blank"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
 <div align="center">
 
 [![Sponsor](https://img.shields.io/badge/Sponsor-%241-orange)](https://github.com/sponsors/3urobeat) ![Star](https://img.shields.io/github/stars/3urobeat/steam-comment-service-bot)  
-> If you like this project please consider donating a dollar by clicking on the **Sponsor** badge and by giving this repository a **Star** at the top!  
+> If you like this project please consider donating a dollar by clicking on the **Sponsor** badge and by giving this repository a **Star** at the top! Thank you so much!  
 
 </div>
 

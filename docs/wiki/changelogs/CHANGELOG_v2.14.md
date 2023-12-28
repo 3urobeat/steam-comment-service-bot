@@ -5,6 +5,7 @@
 
 **Current**  
 - [2.14.0](#2.14.0)
+- [2.14.1](#2.14.1)
   
 &nbsp;
 
@@ -225,4 +226,41 @@ If you are using a `customlang.json`, make sure to read the language string chan
 
 </details>
 
+Commit: [b4072cf](https://github.com/3urobeat/steam-comment-service-bot/commit/b4072cf)
+
 &nbsp;
+
+<a id="2.14.1"></a>
+
+## **2023-12-28, Version 2.14.1**
+**Additions:**
+- Added logging of username in friendMessage event
+- Added logging of friend relationship status in friendMessage and steamChatInteraction handlers
+- Added [official discord plugin](https://github.com/3urobeat/steam-comment-bot-discord-plugin) to default package set
+- Added a few emojis to the README.md to visually break up the wall of text
+- Added a deprecation warning to `logininfo.json` import; please use `accounts.txt`
+
+**Fixes:**
+- Fixed data integrity check failing when using an absolute path [#217](https://github.com/3urobeat/steam-comment-service-bot/issues/217) by forcing working dir to `__dirname` in `start.js`
+- Fixed two dependency errors on initial start caused by outdated node.js version
+- Fixed `downloadUpdate()` deleting ratingHistory & userSetting database contents (whoops, sorry!)
+- Fixed plugin config not being updated when plugin data directory of previously installed plugin has been deleted
+- Fixed TypeError and missing license detected when null was provided in `config.json` `childaccplayinggames`
+- Fixed comments not allowed on friendsonly profiles
+  - Profile visibility is now handled better in general
+- Fixed dataImport not resolving language correctly on restore
+
+**Changes:**
+- **Bumped minimum supported node.js version to v16.0.0!**
+  - This fixes the two aforementioned dependency issues on initial start
+- Improved how logininfo object is accessed during login and clarified index -> accountName association in wiki
+- Failed follow request now inserts user into `ratingHistory.db` anyway because enum 2 is also used for a duplicate request
+- Simplified inserting user into `lastcomment.db` database on friend request accept
+- Improved language string `failedcmdnothingfound` to include all request types; russian translation update by [@sashascurtu](https://github.com/sashascurtu)
+- Ignored `package-lock.json` in dataIntegrity check system
+- Removed a few unnecessary last iteration checks when nothing async was happening
+- Made `aggregatePluginConfig()` private
+- Updated every file header to ISO date and update copyright date
+- Wiki: Improved `unfriendtime` config key explanation
+- Updated dependencies
+- Minor other changes

@@ -30,7 +30,7 @@ Every headline on this page also contains a YouTube badge which will take you to
 Click here: [Download](https://github.com/3urobeat/steam-comment-service-bot/archive/master.zip)  
 Extract the zip and open the `steam-comment-service-bot` folder.  
   
-You need to have at least node.js version 14.15.0 installed: [Download](https://nodejs.org)  
+You need to have at least node.js version 16.0.0 installed: [Download](https://nodejs.org)  
 If you already have node installed, check the version number by running `node --version` in your console or terminal.  
 If you need a tutorial for this specific node part, [click here.](https://youtu.be/8J78rC9Z28U?t=60)  
 
