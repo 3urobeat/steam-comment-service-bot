@@ -4,7 +4,7 @@
  * Created Date: 2023-06-05 13:59:22
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 13:56:56
+ * Last Modified: 2023-12-28 21:07:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
@@ -22,7 +22,7 @@
 
 // Load files
 const oldLang = require("./oldLang.json");
-const newLang = require("./newLang.json");
+const newLang = require("../src/data/lang/english.json");
 
 
 // Check for additions

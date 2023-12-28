@@ -228,7 +228,7 @@
         {
             "path": "docs/wiki/config_doc.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/config_doc.md",
-            "checksum": "aa90b71640a8950d2e12fd39c015f5ea"
+            "checksum": "846b5f9f8451895a3c5b013239051497"
         },
         {
             "path": "docs/wiki/contributing.md",
@@ -298,7 +298,7 @@
         {
             "path": "scripts/langStringsChangeDetector.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/scripts/langStringsChangeDetector.js",
-            "checksum": "42376e0c4eeb99da681565189fd0bbc1"
+            "checksum": "94481e3c20d91c1fb37e8de4d0a4c688"
         },
         {
             "path": "src/bot/EStatus.js",
