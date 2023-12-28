@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:00:35
+ * Last Modified: 2023-12-28 17:59:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
@@ -72,13 +72,11 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
 
                     // Add user to lastcomment database
-                    let lastcommentobj = {
-                        id: thisfriend,
-                        time: Date.now() - (this.controller.data.config.requestCooldown * 60000) // Subtract requestCooldown so that the user is able to use the command instantly
-                    };
+                    let time = Date.now() - (this.controller.data.config.requestCooldown * 60000); // Subtract requestCooldown so that the user is able to use the command instantly;
 
-                    this.controller.data.lastCommentDB.remove({ id: thisfriend }, {}, (err) => { if (err) logger("error", "Error removing duplicate steamid from lastcomment.db on offline friend accept! Error: " + err); }); // Remove any old entries
-                    this.controller.data.lastCommentDB.insert(lastcommentobj, (err) => { if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err); });
+                    this.controller.data.lastCommentDB.update({ id: thisfriend }, { $set: { time: time } }, { upsert: true }, (err) => {
+                        if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err);
+                    });
 
                     // Invite user to yourgroup (and to my to make some stonks)
                     if (this.controller.data.cachefile.configgroup64id && Object.keys(this.user.myGroups).includes(this.controller.data.cachefile.configgroup64id)) {
