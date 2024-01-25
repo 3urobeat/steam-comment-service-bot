@@ -228,7 +228,7 @@
         {
             "path": "docs/wiki/config_doc.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/config_doc.md",
-            "checksum": "846b5f9f8451895a3c5b013239051497"
+            "checksum": "17f1fbfbf5cff970d69ad494baaedcf4"
         },
         {
             "path": "docs/wiki/contributing.md",
@@ -546,9 +546,19 @@
             "checksum": "f3e6ac270923895a787d68bf96f0c0ce"
         },
         {
+            "path": "src/data/lang/chinese.json",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/chinese.json",
+            "checksum": "7e871dba1f30fa915cae52d12b16359a"
+        },
+        {
             "path": "src/data/lang/english.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/english.json",
             "checksum": "fdfdd40f94119931dfb91a65736b9c5d"
+        },
+        {
+            "path": "src/data/lang/portuguese.json",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/portuguese.json",
+            "checksum": "29401fe3e568056affeac1c761990c17"
         },
         {
             "path": "src/data/lang/russian.json",
