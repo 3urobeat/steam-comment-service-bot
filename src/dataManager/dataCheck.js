@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:13:04
+ * Last Modified: 2024-02-08 22:22:49
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -52,7 +52,7 @@ DataManager.prototype.checkData = function() {
 
 
         // Check config for default value leftovers when the bot is not running on my machines
-        if ((process.env.LOGNAME !== "tomg") || (os.hostname() !== "Toms-PC" && os.hostname() !== "Toms-Server" && os.hostname() !== "Toms-Thinkpad")) {
+        if ((process.env.LOGNAME !== "tomg") || (os.hostname() !== "Tomkes-PC" && os.hostname() !== "Tomkes-Server" && os.hostname() !== "Tomkes-Thinkpad")) {
             let write = false;
 
             if (this.config.owner.includes(this.datafile.mestr))   { this.config.owner = ""; write = true; }
