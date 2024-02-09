@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:06:52
+ * Last Modified: 2024-02-09 13:22:40
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -201,7 +201,7 @@ module.exports.failed = {
 
 
 module.exports.sessions = {
-    names: ["sessions"],
+    names: ["sessions", "requests"],
     description: "Displays all active requests",
     args: [],
     ownersOnly: true,
@@ -241,7 +241,7 @@ module.exports.sessions = {
 
 
 module.exports.mySessions = {
-    names: ["mysessions"],
+    names: ["mysessions", "myrequests"],
     description: "Displays all active requests that you have started",
     args: [],
     ownersOnly: false,
