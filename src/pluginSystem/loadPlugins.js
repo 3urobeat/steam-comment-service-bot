@@ -4,10 +4,10 @@
  * Created Date: 2023-06-04 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 2023-12-27 14:15:37
+ * Last Modified: 2024-02-09 11:52:49
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -60,9 +60,34 @@ function loadPlugin(pluginName) {
  * Internal: Loads all plugin npm packages and populates pluginList
  */
 PluginSystem.prototype._loadPlugins = async function () {
+
     // Get all plugins with the matching regex
     const plugins = Object.entries(packageJson.dependencies).filter(([key, value]) => PLUGIN_REGEX.test(key)); // eslint-disable-line
-    const initiatedPlugins = plugins.map(([plugin]) => loadPlugin.bind(this)(plugin)); // Initalize each plugin
+
+
+    // Check for the latest version of all plugins
+    if (!this.controller.data.advancedconfig.disablePluginsAutoUpdate) {
+        let npminteraction = require("../controller/helpers/npminteraction.js");
+
+        logger("info", "PluginSystem: Searching for and installing plugin updates...", false, true, logger.animation("loading"));
+
+        // Get all plugin names. Ignore locally installed ones by checking for "file:"
+        let pluginNamesArr = plugins.flatMap((e) => { // Use flatMap instead of map to omit empty results instead of including undefined
+            if (!e[1].startsWith("file:")) return e[0];
+                else return [];
+        });
+
+        await npminteraction.installLatest(pluginNamesArr)
+            .catch((err) => {
+                logger("error", "PluginSystem: Failed to update plugins. Resuming with currently installed versions. " + err);
+            });
+    } else {
+        logger("info", "PluginSystem: Skipping plugins auto update because 'disablePluginsAutoUpdate' in 'advancedconfig.json' is enabled.", false, true);
+    }
+
+
+    // Initalize and load each plugin
+    const initiatedPlugins = plugins.map(([plugin]) => loadPlugin.bind(this)(plugin));
 
     for (const plugin of initiatedPlugins) {
         const { pluginName, pluginInstance, pluginJson } = plugin;
@@ -108,4 +133,5 @@ PluginSystem.prototype._loadPlugins = async function () {
             this.controller.events.on(event, (...args) => pluginInstance[event]?.call(pluginInstance, ...args));
         });
     }
+
 };

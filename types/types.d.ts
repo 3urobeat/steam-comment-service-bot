@@ -771,6 +771,13 @@ declare function update(callback: any): void;
 declare function updateFromPath(path: string, callback: any): void;
 
 /**
+ * Installs the latest version available on NPM for an array of packages. Updating core dependencies might cause untested behavior, be careful.
+ * @param packages - Array of package names to install the latest version of
+ * @returns Resolves when done or rejects on failure
+ */
+declare function installLatest(packages: string[]): Promise<void>;
+
+/**
  * Constructor - The dataManager system imports, checks, handles errors and provides a file updating service for all configuration files
  * @param controller - Reference to the controller object
  */
