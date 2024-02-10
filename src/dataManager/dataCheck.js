@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-10 14:15:49
+ * Last Modified: 2024-02-10 14:23:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -15,8 +15,9 @@
  */
 
 
-const os              = require("os");
-const steamIdResolver = require("steamid-resolver");
+const os                = require("os");
+const steamIdResolver   = require("steamid-resolver");
+const { EPersonaState } = require("steam-user");
 
 const DataManager = require("./dataManager.js");
 
@@ -108,6 +109,14 @@ DataManager.prototype.checkData = function() {
             logWarn("error", `${logger.colors.fgred}I won't allow a logindelay below 500ms as this will probably get you blocked by Steam nearly instantly. I recommend setting it to 2500.\n        If you are using one proxy per account you might try setting it to 500 (on your own risk!). Aborting...`, true);
             this.advancedconfig.loginDelay = 2500;
             return reject(new Error("Logindelay is set below 500ms!"));
+        }
+        if (EPersonaState[this.advancedconfig.onlineStatus] == undefined) { // Explicitly check for undefined because Offline (0) resolves to false
+            logWarn("warn", `You've set an invalid value '${this.advancedconfig.onlineStatus}' as 'onlineStatus' in 'advancedconfig.json'! Defaulting to 'Online'...`);
+            this.advancedconfig.onlineStatus = "Online";
+        }
+        if (!EPersonaState[this.advancedconfig.childAccOnlineStatus] == undefined) { // Explicitly check for undefined because Offline (0) resolves to false
+            logWarn("warn", `You've set an invalid value '${this.advancedconfig.childAccOnlineStatus}' as 'childAccOnlineStatus' in 'advancedconfig.json'! Defaulting to 'Online'...`);
+            this.advancedconfig.childAccOnlineStatus = "Online";
         }
         if (this.advancedconfig.lastQuotesSize >= this.quotes) { // Force clear lastQuotes array if we have less or equal amount of quotes to choose from than lastQuotesSize to avoid infinite loop
             logWarn("warn", "lastQuoteSize in 'advancedconfig.json' is greater or equal than the amount of quotes found in 'quotes.txt'. I'm therefore unable to filter recently used quotes when choosing a new one!", true);

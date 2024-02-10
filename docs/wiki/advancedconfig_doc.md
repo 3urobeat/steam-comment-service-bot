@@ -26,6 +26,8 @@ This is the full documentation to customize your `advancedconfig.json`.
 | acceptFriendRequests | true or false | If the bot should accept friend requests. Default: true |
 | forceFriendlistSpaceTime | Number in days | Amount of days a user hasn't requested something to get unfriended if only one friend slot is left. Set to 0 to disable. Default: 4 |
 | setPrimaryGroup | true or false | If the bot should set `yourgroup` in `config.json` as the primary group of each bot. Default: false |
+| onlineStatus | String | Online status of the main bot account. You can see all valid values [here](https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EPersonaState.js). Default: "Online" |
+| childAccOnlineStatus | String | Online status of all child bot accounts. You can see all valid values [here](https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EPersonaState.js). Default: "Online" |
 | &nbsp; | | |
 | commandCooldown | Number in ms | Timeframe in which a user is allowed to use 5 commands before it is considered as spamming and the user gets blocked for 90 seconds. Default: 12000 (12 seconds) |
 | restrictAdditionalCommandsToOwners | Array with cmd names as strings | Restricts more commands and their aliases to owners only. Default: [] |

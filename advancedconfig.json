@@ -14,6 +14,8 @@
     "acceptFriendRequests": true,
     "forceFriendlistSpaceTime": 4,
     "setPrimaryGroup": false,
+    "onlineStatus": "Online",
+    "childAccOnlineStatus": "Online",
     "dummy2": "------------------- Request Settings: -------------------",
     "commandCooldown": 12000,
     "restrictAdditionalCommandsToOwners": [],

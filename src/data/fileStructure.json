@@ -138,7 +138,7 @@
         {
             "path": "docs/wiki/advancedconfig_doc.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/advancedconfig_doc.md",
-            "checksum": "b33fe4294f723a8fd61c76e10b52b396"
+            "checksum": "87a78aa1dbb6e93ced95f151b9bf8c2c"
         },
         {
             "path": "docs/wiki/changelogs/CHANGELOG_v1.x.md",
@@ -328,7 +328,7 @@
         {
             "path": "src/bot/events/loggedOn.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/loggedOn.js",
-            "checksum": "2d308b00408cde95cfc505e3c56f2e34"
+            "checksum": "b0e36936c50b3efc27dc7fb7255b39eb"
         },
         {
             "path": "src/bot/events/relationship.js",
@@ -563,7 +563,7 @@
         {
             "path": "src/dataManager/dataCheck.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataCheck.js",
-            "checksum": "2192c6e20fd6df72c5283e354e99c346"
+            "checksum": "f6cbee6a4c46ca6dfe4faf4534126233"
         },
         {
             "path": "src/dataManager/dataExport.js",
