@@ -62,6 +62,8 @@
     "idoncooldown": "您最近只开始了一个请求。请等待剩余的 ${remainingcooldown}，然后再启动另一个请求。",
     "requestaborted": "您的活动请求已被您或所有者手动中止。\n成功发送 ${successAmount}/${totalAmount}。",
 
+    "jobscmdregistered": "These jobs are currently registered:",
+    "jobscmdnoneregistered": "There are currently no jobs registered.",
     "reloadcmdreloaded": "重新加载所有命令和插件。",
     "activerelog": "机器人目前正在等待最后一个活动请求完成，以便重新登录帐户。\n请稍等片刻，然后重试。",
     "updatecmdforce": "从分支名分支强制更新...",

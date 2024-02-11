@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:06:22
+ * Last Modified: 2024-02-11 16:54:50
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -18,6 +18,48 @@
 const fs = require("fs");
 
 const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
+
+
+module.exports.jobs = {
+    names: ["jobs"],
+    description: "Lists all currently registered jobs",
+    args: [],
+    ownersOnly: true,
+
+    /**
+     * The jobs command
+     * @param {CommandHandler} commandHandler The commandHandler object
+     * @param {Array} args Array of arguments that will be passed to the command
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     */
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
+        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+
+        // Check if no job is registered and abort
+        if (commandHandler.controller.jobManager.jobs.length == 0) {
+            respond(await commandHandler.data.getLang("jobscmdregistered", null, resInfo.userID));
+            return;
+        }
+
+        // Helper function to convert lastExecTimestamp to human readable format
+        let convertTimestamp = (timestamp) => ((new Date(timestamp)).toISOString().replace(/T/, " ").replace(/\..+/, "")) + " (GMT time)";
+
+        // Construct str to respond with
+        let str = await commandHandler.data.getLang("jobscmdregistered", null, resInfo.userID) + "\n";
+
+        commandHandler.controller.jobManager.jobs.forEach((job) => {
+            let desc              = job.description ? "   " + job.description + "\n" : "";                   // Adds job description if one was specified
+            let intervalFormatted = commandHandler.controller.misc.timeToString(Date.now() + job.interval); // Hack: Add current time to use timeToString for formatting (it's designed to be used in an "until from now" situation)
+
+            str += `- '${job.name}' runs every ${intervalFormatted}, last at '${convertTimestamp(job._lastExecTimestamp)}'\n${desc}\n`;
+        });
+
+        // Send message
+        respond(str);
+    }
+};
 
 
 module.exports.restart = {

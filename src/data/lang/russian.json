@@ -63,6 +63,8 @@
     "idoncooldown": "Вы только недавно начали запрос. Пожалуйста, подождите оставшиеся ${remainingcooldown}, прежде чем начинать другой запрос.",
     "requestaborted": "Ваш активный запрос был вручную прерван вами или владельцем.\n${successAmount}/${totalAmount} были отправлены успешно.",
 
+    "jobscmdregistered": "These jobs are currently registered:",
+    "jobscmdnoneregistered": "There are currently no jobs registered.",
     "reloadcmdreloaded": "Перезагружены все команды и плагины.",
     "activerelog": "В настоящее время бот ожидает завершения последних активных запросов, чтобы заново войти.\nПожалуйста, подождите несколько минут и повторите попытку.",
     "updatecmdforce": "Принудительное обновление из ветки branchname...",

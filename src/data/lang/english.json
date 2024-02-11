@@ -63,6 +63,8 @@
     "idoncooldown": "You only recently started a request. Please wait the remaining ${remainingcooldown} before starting another request.",
     "requestaborted": "Your active request was manually aborted by either yourself or an owner.\n${successAmount}/${totalAmount} have been sent successfully.",
 
+    "jobscmdregistered": "These jobs are currently registered:",
+    "jobscmdnoneregistered": "There are currently no jobs registered.",
     "reloadcmdreloaded": "Reloaded all commands and plugins.",
     "activerelog": "The bot is currently waiting for the last active requests to be finished in order to relog accounts.\nPlease wait a few minutes and try again.",
     "updatecmdforce": "Forcing an update from the branchname branch...",

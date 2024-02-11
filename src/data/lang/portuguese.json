@@ -63,6 +63,8 @@
     "idoncooldown": "Você iniciou recentemente uma solicitação. Aguarde o restante de ${remainingcooldown} antes de iniciar outra solicitação.",
     "requestaborted": "Sua solicitação ativa foi abortada manualmente, seja por você mesmo ou por um proprietário.\n${successAmount}/${totalAmount} foram enviados com sucesso.",
 
+    "jobscmdregistered": "These jobs are currently registered:",
+    "jobscmdnoneregistered": "There are currently no jobs registered.",
     "reloadcmdreloaded": "Recarregou todos os comandos e plugins.",
     "activerelog": "O bot está aguardando as últimas solicitações ativas serem concluídas para reiniciar as contas.\nAguarde alguns minutos e tente novamente.",
     "updatecmdforce": "Forçando uma atualização do branchname...",
