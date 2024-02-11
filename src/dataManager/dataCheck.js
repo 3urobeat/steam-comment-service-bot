@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-10 14:23:26
+ * Last Modified: 2024-02-11 14:24:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -31,11 +31,7 @@ DataManager.prototype.checkData = function() {
         logger("info", "Running datachecks and displaying config recommendations...", false, true, logger.animation("loading"));
 
         // Shorthander for checks below to log warning and count it. Must be an ES6 function to not create a new context for 'this.' to work!
-        let logWarn = ((a, b, c) => { // I originally wanted to use iArguments instead of hardcoding a, b, c but that didn't work out easily so I digress
-            logger(a, b, c, false, null, true); // Log now...
-            logger(a, b, c);                    // ...and once more after ready
-            this.controller.info.startupWarnings++;
-        });
+        let logWarn = ((a, b, c) => { logger(a, b, c); this.controller.info.startupWarnings++; }); // I originally wanted to use iArguments instead of hardcoding a, b, c but that didn't work out easily so I digress
 
         this.controller.info.startupWarnings = 0; // Reset value to start fresh if this module should be integrated into a plugin or something like that
 
@@ -90,7 +86,7 @@ DataManager.prototype.checkData = function() {
             this.config.requestDelay = 15000;
         }
         if (this.config.requestDelay / (maxRequestsOverall / 2) < 1250) {
-            logWarn("warn", `${logger.colors.fgred}You have raised maxRequests or maxOwnerRequests but I would recommend to raise the requestDelay further. Not increasing the requestDelay further raises the probability to get cooldown errors from Steam.`, true);
+            logWarn("warn", `${logger.colors.fgred}You have raised maxRequests or maxOwnerRequests but I would recommend to raise the requestDelay further. Not increasing it raises the probability of getting cooldowns from Steam, leading to failed requests.`, true);
         }
         if (this.config.requestDelay * maxRequestsOverall > 2147483647) { // Check for 32-bit integer limit for commentcmd timeout
             logWarn("error", `${logger.colors.fgred}Your maxRequests and/or maxOwnerRequests and/or requestDelay value in the config are too high.\n        Please lower these values so that 'requestDelay * maxRequests' is not bigger than 2147483647 (32-bit integer limit).\n\nThis will otherwise cause an error when trying to comment. Aborting...\n`, true);
