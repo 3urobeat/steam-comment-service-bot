@@ -4,10 +4,10 @@
  * Created Date: 2023-03-29 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:10:12
+ * Last Modified: 2024-02-11 14:52:04
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -155,14 +155,15 @@ Controller.prototype._readyEvent = function() {
 
     // Check for friends who haven't requested comments in config.unfriendtime days every 60 seconds and unfriend them if unfriendtime is > 0
     if (this.data.config.unfriendtime > 0) {
-        let lastcommentUnfriendCheck = Date.now(); // This is useful because intervals can get imprecise over time
 
-        setInterval(() => {
-            if (lastcommentUnfriendCheck + 60000 > Date.now()) return; // Last check is more recent than 60 seconds
-            lastcommentUnfriendCheck = Date.now();
+        // Register job which runs every 60 seconds
+        this.jobManager.registerJob({
+            name: "unfriendTimeCheck",
+            description: "Unfriends every user who hasn't requested anything in config.unfriendtime days",
+            func: () => { this._lastcommentUnfriendCheck(); },
+            interval: 60000
+        });
 
-            this._lastcommentUnfriendCheck();
-        }, 60000); // 60 seconds
     }
 
 

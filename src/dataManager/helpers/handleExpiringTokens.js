@@ -4,10 +4,10 @@
  * Created Date: 2022-10-14 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:13:44
+ * Last Modified: 2024-02-11 14:49:18
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -110,15 +110,15 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
     // Clear existing interval if there is one
     if (this._handleExpiringTokensInterval) clearInterval(this._handleExpiringTokensInterval);
 
-    // Set interval to scan every 24 hours
-    let lastScanTime = Date.now();
 
-    this._handleExpiringTokensInterval = setInterval(() => {
-        if (lastScanTime + 86400000 > Date.now()) return; // Abort if last run was less than 24h ago
+    // Register job to scan every 24 hours
+    this.controller.jobManager.registerJob({
+        name: "expiringTokensScan",
+        description: "Scans the tokens.db database for expiring tokens every 24 hours",
+        func: () => { scanDatabase(); },
+        interval: 86400000 // 24h in ms
+    });
 
-        scanDatabase();
-        lastScanTime = Date.now(); // Update var tracking timestamp of last execution
-    }, 21600000); // 6h in ms - Intentionally so low to prevent function from only running every 48h should interval get unprecise over time
 };
 
 

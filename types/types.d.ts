@@ -505,6 +505,10 @@ declare class Controller {
      */
     _preLogin(): void;
     /**
+     * The JobManager handles the periodic execution of functions which you can register at runtime
+     */
+    jobManager: JobManager;
+    /**
      * The updater object
      */
     updater: Updater;
@@ -1115,6 +1119,55 @@ declare class DataManager {
 }
 
 /**
+ * @property name - Name of the job
+ * @property [description] - Optional: Description of the job
+ * @property func - Function which will be executed
+ * @property interval - Number in milliseconds to wait between executions of func. Minimum value is 250ms!
+ * @property [runOnRegistration] - Set to true to run the job once instantly after registration
+ * @property [_lastExecTimestamp] - Internal: Timestamp of the last execution of func. Do not set this value, it is managed by the JobManager internally.
+ */
+declare type Job = {
+    name: string;
+    description?: string;
+    func: (...params: any[]) => any;
+    interval: number;
+    runOnRegistration?: boolean;
+    _lastExecTimestamp?: number;
+};
+
+/**
+ * Constructor - The jobManager handles running and managing interval based functions (jobs), like update checks, cleanups, etc.
+ * @param controller - Reference to the controller object
+ */
+declare class JobManager {
+    constructor(controller: Controller);
+    /**
+     * Reference to the controller object
+     */
+    controller: Controller;
+    /**
+     * Collection of all registered jobs
+     */
+    jobs: Job[];
+    /**
+     * Internal: Executes all due jobs.
+     */
+    _runDueJobs(): void;
+    /**
+     * Registers a job
+     * @param job - Object of the job to register
+     * @returns Returns `null` on success or `err` on failure, specifying the reason why.
+     */
+    registerJob(job: Job): Error | null;
+    /**
+     * Unregisters a job
+     * @param name - Name of the job to unregister
+     * @returns Returns `null` on success or `err` on failure, specifying the reason why.
+     */
+    unregisterJob(name: string): Error | null;
+}
+
+/**
  * Constructor - Creates a new Discussion object
  */
 declare class CSteamDiscussion {
@@ -1544,5 +1597,9 @@ declare class Updater {
      * @returns Promise that will be resolved with false when no update was found or with true when the update check or download was completed. Expect a restart when true was returned.
      */
     run(forceUpdate: boolean, respondModule: (...params: any[]) => any, resInfo: any): Promise<boolean>;
+    /**
+     * Registers an update check job. This is called by Controller after the data integrity and startup update check
+     */
+    _registerUpdateChecker(): void;
 }
 

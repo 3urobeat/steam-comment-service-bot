@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 13:39:28
+ * Last Modified: 2024-02-11 14:58:14
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -255,6 +255,9 @@ Controller.prototype._preLogin = async function() {
      */
     this.jobManager = new JobManager(this);
 
+    // Register job to check tokens.db every 24 hours for expired tokens to allow users to refresh them beforehand
+    this.data._startExpiringTokensCheckInterval();
+
 
     // Update Updater IntelliSense without modifying what _start() has already set. Integrity has already been checked
     let Updater = require("../updater/updater.js"); // eslint-disable-line
@@ -266,7 +269,7 @@ Controller.prototype._preLogin = async function() {
     this.updater;
 
     // Register update check job
-    this.updater.registerUpdateChecker();
+    this.updater._registerUpdateChecker();
 
 
     // Check bot.js for errors and load it explicitly again to get IntelliSense support

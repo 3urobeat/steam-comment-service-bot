@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:17:27
+ * Last Modified: 2024-02-11 14:37:30
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -27,17 +27,6 @@ const Updater = function(controller) {
 
     this.controller = controller;
     this.data       = controller.data;
-
-    // Register update checker
-    let lastCheck = Date.now();
-
-    setInterval(() => {
-        if (Date.now() < lastCheck + 21600000) return; // Skip iteration if last check is less than 6 hours ago
-
-        this.run(); // Run the updater
-
-        lastCheck = Date.now(); // Update the last time we checked for an update
-    }, 300000); // 5 min in ms
 
 };
 
@@ -205,4 +194,20 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
 
         })();
     });
+};
+
+
+/**
+ * Registers an update check job. This is called by Controller after the data integrity and startup update check
+ */
+Updater.prototype._registerUpdateChecker = function() {
+
+    this.controller.jobManager.registerJob({
+        name: "updateCheck",
+        description: "Checks for new updates from the GitHub repository every 6 hours",
+        func: () => { this.run(); },
+        interval: 21600000, // 6 hours in ms
+        runOnRegistration: false
+    });
+
 };
