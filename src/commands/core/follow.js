@@ -4,10 +4,10 @@
  * Created Date: 2023-09-24 15:04:33
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:07:48
+ * Last Modified: 2024-02-11 16:10:39
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -151,6 +151,12 @@ module.exports.follow = {
 
                 /* --------- Try to follow --------- */
                 let followFunc = activeReqEntry.type == "curatorFollow" ? bot.community.followCurator : bot.community.followUser; // Get the correct function, depending on if the user provided a curator id or a user id
+
+                // Overwrite followFunc with pure *nothingness* if debug mode is enabled
+                if (commandHandler.data.advancedconfig.disableSendingRequests) {
+                    logger("warn", "Replacing followFunc with nothingness because 'disableSendingRequests' is enabled in 'advancedconfig.json'!");
+                    followFunc = (a, callback) => callback(null);
+                }
 
                 followFunc.call(bot.community, id, (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
 
@@ -337,6 +343,12 @@ module.exports.unfollow = {
 
                 /* --------- Try to unfollow --------- */
                 let followFunc = activeReqEntry.type == "curatorUnfollow" ? bot.community.unfollowCurator : bot.community.unfollowUser; // Get the correct function, depending on if the user provided a curator id or a user id
+
+                // Overwrite followFunc with pure *nothingness* if debug mode is enabled
+                if (commandHandler.data.advancedconfig.disableSendingRequests) {
+                    logger("warn", "Replacing followFunc with nothingness because 'disableSendingRequests' is enabled in 'advancedconfig.json'!");
+                    followFunc = (a, callback) => callback(null);
+                }
 
                 followFunc.call(bot.community, id, (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
 

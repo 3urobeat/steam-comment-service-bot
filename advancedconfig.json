@@ -25,6 +25,7 @@
     "lastQuotesSize": 5,
     "dummy3": "------------------- Debug Settings: -------------------",
     "enableevalcmd": false,
+    "disableSendingRequests": false,
     "printDebug": false,
     "steamUserDebug": false,
     "steamUserDebugVerbose": false,

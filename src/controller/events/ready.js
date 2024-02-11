@@ -4,7 +4,7 @@
  * Created Date: 2023-03-29 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 14:52:04
+ * Last Modified: 2024-02-11 15:38:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -131,6 +131,10 @@ Controller.prototype._readyEvent = function() {
 
     // Log amount of warnings displayed by dataCheck and remind the user to take a look
     if (this.info.startupWarnings > 0) logger("warn", `The bot started with ${this.info.startupWarnings} warning(s)! Please scroll up and read the warnings displayed during startup!\n`, true);
+
+
+    // Display notice if disableSendingRequests is enabled
+    if (this.data.advancedconfig.disableSendingRequests) this.logger("warn", "Notice: Requests will be accepted but not fulfilled because 'disableSendingRequests' is enabled in 'advancedconfig.json'!");
 
 
     // Log extra messages that were suppressed during login

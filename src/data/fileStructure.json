@@ -138,7 +138,7 @@
         {
             "path": "docs/wiki/advancedconfig_doc.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/advancedconfig_doc.md",
-            "checksum": "87a78aa1dbb6e93ced95f151b9bf8c2c"
+            "checksum": "0569182b9efe7a8ac3a122c6fab61ebe"
         },
         {
             "path": "docs/wiki/changelogs/CHANGELOG_v1.x.md",
@@ -378,17 +378,17 @@
         {
             "path": "src/commands/core/comment.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/comment.js",
-            "checksum": "306bd429a323f88c659026174b07a5bb"
+            "checksum": "be00f6ce7bfc9500dd7b4a303401d456"
         },
         {
             "path": "src/commands/core/favorite.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/favorite.js",
-            "checksum": "0ff00460dff9ed1465fd69186839fbc0"
+            "checksum": "23be18afd6a48645d2b9e15a418b5392"
         },
         {
             "path": "src/commands/core/follow.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/follow.js",
-            "checksum": "0f58f7eb6fda41603dc523f3c841b525"
+            "checksum": "df5715befad5dbb4cf5b2e72f4afbe03"
         },
         {
             "path": "src/commands/core/friend.js",
@@ -423,7 +423,7 @@
         {
             "path": "src/commands/core/vote.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/vote.js",
-            "checksum": "63849381edf672f9a3ae6eed39528773"
+            "checksum": "3248afa550e9b17b8ff3170d5022019c"
         },
         {
             "path": "src/commands/helpers/getCommentArgs.js",
@@ -483,7 +483,7 @@
         {
             "path": "src/controller/events/ready.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/events/ready.js",
-            "checksum": "f1e960944c3a99dcc6ef95d2e5f23dd5"
+            "checksum": "1336ad6f1459fad566118e50b207b5e1"
         },
         {
             "path": "src/controller/events/statusUpdate.js",

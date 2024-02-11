@@ -4,10 +4,10 @@
  * Created Date: 2023-05-28 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:06:11
+ * Last Modified: 2024-02-11 15:48:40
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -156,8 +156,16 @@ module.exports.upvote = {
 
                     if (!handleVoteIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
+                    let voteFunc = bot.community.voteUpSharedFile;
+
+                    // Overwrite voteFunc with pure *nothingness* if debug mode is enabled
+                    if (commandHandler.data.advancedconfig.disableSendingRequests) {
+                        logger("warn", "Replacing voteFunc with nothingness because 'disableSendingRequests' is enabled in 'advancedconfig.json'!");
+                        voteFunc = (a, callback) => callback(null);
+                    }
+
                     /* --------- Try to vote --------- */
-                    bot.community.voteUpSharedFile(sharedfile.id, (error) => { // Note: Steam does not return an error for a duplicate request here
+                    voteFunc(sharedfile.id, (error) => { // Note: Steam does not return an error for a duplicate request here
 
                         /* --------- Handle errors thrown by this vote attempt or update ratingHistory db and log success message --------- */
                         if (error) {
@@ -351,8 +359,16 @@ module.exports.downvote = {
 
                     if (!handleVoteIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
+                    let voteFunc = bot.community.voteDownSharedFile;
+
+                    // Overwrite voteFunc with pure *nothingness* if debug mode is enabled
+                    if (commandHandler.data.advancedconfig.disableSendingRequests) {
+                        logger("warn", "Replacing voteFunc with nothingness because 'disableSendingRequests' is enabled in 'advancedconfig.json'!");
+                        voteFunc = (a, callback) => callback(null);
+                    }
+
                     /* --------- Try to vote --------- */
-                    bot.community.voteDownSharedFile(sharedfile.id, (error) => { // Note: Steam does not return an error for a duplicate request here
+                    voteFunc(sharedfile.id, (error) => { // Note: Steam does not return an error for a duplicate request here
 
                         /* --------- Handle errors thrown by this vote attempt or update ratingHistory db and log success message --------- */
                         if (error) {
