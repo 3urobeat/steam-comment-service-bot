@@ -4,7 +4,7 @@
  * Created Date: 2022-10-14 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 14:49:18
+ * Last Modified: 2024-02-11 16:53:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -114,7 +114,7 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
     // Register job to scan every 24 hours
     this.controller.jobManager.registerJob({
         name: "expiringTokensScan",
-        description: "Scans the tokens.db database for expiring tokens every 24 hours",
+        description: "Scans the tokens database for expiring tokens every 24 hours",
         func: () => { scanDatabase(); },
         interval: 86400000 // 24h in ms
     });

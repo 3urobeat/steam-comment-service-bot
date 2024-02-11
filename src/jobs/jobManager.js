@@ -4,7 +4,7 @@
  * Created Date: 2024-02-11 10:48:17
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 13:51:04
+ * Last Modified: 2024-02-11 16:57:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
@@ -24,6 +24,7 @@
  * @property {number} interval Number in milliseconds to wait between executions of func. Minimum value is 250ms!
  * @property {boolean} [runOnRegistration] Set to true to run the job once instantly after registration
  * @property {number} [_lastExecTimestamp] Internal: Timestamp of the last execution of func. Do not set this value, it is managed by the JobManager internally.
+ * @property {number} [_registeredAt] Internal: Timestamp of when this job was registered. Do not set this value, it is managed by the JobManager internally.
  */
 
 
@@ -106,6 +107,8 @@ JobManager.prototype.registerJob = function(job) {
     } else {
         job._lastExecTimestamp = Date.now();
     }
+
+    job._registeredAt = Date.now();
 
     // Register job and return null on success
     this.jobs.push(job);

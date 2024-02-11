@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 16:54:50
+ * Last Modified: 2024-02-11 17:03:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -50,10 +50,13 @@ module.exports.jobs = {
         let str = await commandHandler.data.getLang("jobscmdregistered", null, resInfo.userID) + "\n";
 
         commandHandler.controller.jobManager.jobs.forEach((job) => {
-            let desc              = job.description ? "   " + job.description + "\n" : "";                   // Adds job description if one was specified
+            let desc              = job.description ? "   " + job.description + "\n" : "";                  // Adds job description if one was specified
             let intervalFormatted = commandHandler.controller.misc.timeToString(Date.now() + job.interval); // Hack: Add current time to use timeToString for formatting (it's designed to be used in an "until from now" situation)
 
-            str += `- '${job.name}' runs every ${intervalFormatted}, last at '${convertTimestamp(job._lastExecTimestamp)}'\n${desc}\n`;
+            // Only show lastExecFormatted string if lastExecTimestamp isn't the same as registeredAt (tolerance of unnecessary 100ms) or job ran upon registration. The JobManager sets _lastExecTimestamp to Date.now() on registration if runOnRegistration == false
+            let lastExecFormatted = job._lastExecTimestamp - job._registeredAt > 100 || job.runOnRegistration ? convertTimestamp(job._lastExecTimestamp) : "/";
+
+            str += `- '${job.name}' runs every ${intervalFormatted}, last at '${lastExecFormatted}'\n${desc}\n`;
         });
 
         // Send message

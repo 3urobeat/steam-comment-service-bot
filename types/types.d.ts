@@ -1125,6 +1125,7 @@ declare class DataManager {
  * @property interval - Number in milliseconds to wait between executions of func. Minimum value is 250ms!
  * @property [runOnRegistration] - Set to true to run the job once instantly after registration
  * @property [_lastExecTimestamp] - Internal: Timestamp of the last execution of func. Do not set this value, it is managed by the JobManager internally.
+ * @property [_registeredAt] - Internal: Timestamp of when this job was registered. Do not set this value, it is managed by the JobManager internally.
  */
 declare type Job = {
     name: string;
@@ -1133,6 +1134,7 @@ declare type Job = {
     interval: number;
     runOnRegistration?: boolean;
     _lastExecTimestamp?: number;
+    _registeredAt?: number;
 };
 
 /**
