@@ -478,7 +478,7 @@
         {
             "path": "src/controller/controller.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/controller.js",
-            "checksum": "d9f7edc22f1423165c4356004ddf6541"
+            "checksum": "5074102a43fdb5af1eb10600007f09a6"
         },
         {
             "path": "src/controller/events/ready.js",
@@ -629,6 +629,11 @@
             "path": "src/dataManager/helpers/repairFile.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/helpers/repairFile.js",
             "checksum": "283942ba224a393abde0980f7ab3ef63"
+        },
+        {
+            "path": "src/jobs/jobManager.js",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/jobs/jobManager.js",
+            "checksum": "a55cc1fd44dcd50f297a4c0570a64b10"
         },
         {
             "path": "src/libraryPatches/CSteamDiscussion.js",

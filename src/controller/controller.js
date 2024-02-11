@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:08:35
+ * Last Modified: 2024-02-11 13:39:28
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -246,6 +246,16 @@ Controller.prototype._start = async function() {
  */
 Controller.prototype._preLogin = async function() {
 
+    // Get job manager going
+    let JobManager = require("../jobs/jobManager.js");
+
+    /**
+     * The JobManager handles the periodic execution of functions which you can register at runtime
+     * @type {JobManager}
+     */
+    this.jobManager = new JobManager(this);
+
+
     // Update Updater IntelliSense without modifying what _start() has already set. Integrity has already been checked
     let Updater = require("../updater/updater.js"); // eslint-disable-line
 
@@ -255,9 +265,12 @@ Controller.prototype._preLogin = async function() {
      */
     this.updater;
 
+    // Register update check job
+    this.updater.registerUpdateChecker();
+
 
     // Check bot.js for errors and load it explicitly again to get IntelliSense support
-    if (!await this.checkAndGetFile("./src/bot/bot.js", logger, false, false)) return this.stop();
+    if (!await this.checkAndGetFile("./src/bot/bot.js", logger, false, false)) return this.stop(); // TODO: Is this still necessary when the dataIntegrity check and updater already ran??
     let Bot = require("../bot/bot.js"); // eslint-disable-line
 
     /**
