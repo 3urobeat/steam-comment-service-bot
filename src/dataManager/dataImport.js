@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 14:57:51
+ * Last Modified: 2024-02-12 22:27:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -281,21 +281,43 @@ DataManager.prototype._importFromDisk = async function () {
             try {
                 let obj = {};
 
-                delete require.cache[require.resolve(srcdir + "/data/lang/english.json")]; // Delete cache to enable reloading data
-                delete require.cache[require.resolve(srcdir + "/data/lang/russian.json")]; // Delete cache to enable reloading data
+                // Delete cache so requiring languages again will load new changes
+                Object.keys(require.cache).forEach((key) => {
+                    if (key.includes("src/data/lang")) delete require.cache[key];
+                });
 
-                obj["english"] = require(srcdir + "/data/lang/english.json");
-                obj["russian"] = require(srcdir + "/data/lang/russian.json");
+                // Iterate through all files in lang dir and load them
+                fs.readdir("./src/data/lang", (err, files) => {
+                    files.forEach((e) => {
+                        let thisFile;
 
-                resolve(obj);
+                        // Try to load plugin
+                        try {
+                            // Load the plugin file
+                            thisFile = require(`../data/lang/${e}`);
+
+                            // Add language to obj
+                            obj[e.replace(".json", "")] = thisFile;
+                        } catch (err) {
+                            logger("error", `Error loading language '${e}'! ${err.stack}`, true);
+                        }
+                    });
+
+                    // Resolve with success message or force restore default language
+                    if (Object.keys(obj).length > 0) {
+                        logger("info", `Successfully loaded ${Object.keys(obj).length} languages!`, false, true, logger.animation("loading"));
+                        resolve(obj);
+                    } else {
+                        _this._pullNewFile("english.json", "./src/data/lang/english.json", (e) => resolve({ "english": e })); // Only resolve for the default language
+                    }
+                });
             } catch (err) {
                 if (err) {
                     // Corrupted!
                     logger("", "", true, true);
 
-                    // Pull the file directly from GitHub.
+                    // Pull the default lang file directly from GitHub, the other ones should be handled by the dataIntegrity check
                     _this._pullNewFile("english.json", "./src/data/lang/english.json", (e) => resolve({ "english": e })); // Only resolve for the default language
-                    _this._pullNewFile("russian.json", "./src/data/lang/russian.json", () => {});
                 }
             }
         });
