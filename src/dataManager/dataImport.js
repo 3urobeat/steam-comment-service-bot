@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-12 22:27:52
+ * Last Modified: 2024-02-12 22:36:15
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -281,6 +281,8 @@ DataManager.prototype._importFromDisk = async function () {
             try {
                 let obj = {};
 
+                if (!fs.existsSync("./src/data/lang")) fs.mkdirSync("./src/data/lang");
+
                 // Delete cache so requiring languages again will load new changes
                 Object.keys(require.cache).forEach((key) => {
                     if (key.includes("src/data/lang")) delete require.cache[key];
@@ -304,7 +306,7 @@ DataManager.prototype._importFromDisk = async function () {
                     });
 
                     // Resolve with success message or force restore default language
-                    if (Object.keys(obj).length > 0) {
+                    if (Object.keys(obj).length > 0 && obj["english"]) {
                         logger("info", `Successfully loaded ${Object.keys(obj).length} languages!`, false, true, logger.animation("loading"));
                         resolve(obj);
                     } else {
