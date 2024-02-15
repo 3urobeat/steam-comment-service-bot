@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 14:58:14
+ * Last Modified: 2024-02-15 14:00:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -198,14 +198,14 @@ Controller.prototype._start = async function() {
 
     global.extdata = this.data.datafile; // This needs to stay for backwards compatibility
 
+    // Verify integrity of all source code files and restore invalid ones. It is safe to use require() after this function is done!
+    await this.data.verifyIntegrity();
+
     // Process imported owner & group ids and update cachefile
     await this.data.processData();
 
     // Check imported data
     await this.data.checkData().catch(() => this.stop()); // Terminate the bot if some critical check failed
-
-    // Verify integrity of all source code files and restore invalid ones. It is safe to use require() after this function is done!
-    await this.data.verifyIntegrity();
 
 
     /* ------------ Run compatibility feature and updater or start logging in: ------------ */
