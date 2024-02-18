@@ -378,7 +378,7 @@
         {
             "path": "src/commands/core/comment.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/comment.js",
-            "checksum": "be00f6ce7bfc9500dd7b4a303401d456"
+            "checksum": "89897c0ede8d464f343fba2edf3fc747"
         },
         {
             "path": "src/commands/core/favorite.js",
@@ -428,12 +428,12 @@
         {
             "path": "src/commands/helpers/getCommentArgs.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getCommentArgs.js",
-            "checksum": "430c20fdd211806b73c06668fc1cc0ab"
+            "checksum": "98977b59b9fa0eeeaeb18d668977b350"
         },
         {
             "path": "src/commands/helpers/getCommentBots.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getCommentBots.js",
-            "checksum": "5c0537846a858cfc79754dbfac1c1890"
+            "checksum": "d9cfcc36ffa7b0dabcdb01dbcc727d08"
         },
         {
             "path": "src/commands/helpers/getFavoriteBots.js",
@@ -513,7 +513,7 @@
         {
             "path": "src/controller/helpers/handleSteamIdResolving.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/handleSteamIdResolving.js",
-            "checksum": "6e5b20ebe630b88821bafaf38b020141"
+            "checksum": "db8fabbba457a50221576281a778f830"
         },
         {
             "path": "src/controller/helpers/logger.js",
@@ -548,7 +548,7 @@
         {
             "path": "src/data/lang/english.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/english.json",
-            "checksum": "732d8e7dd3b0dfd7b2f3bb79f5e78628"
+            "checksum": "90e1a97c9d067167906fc5104803ceeb"
         },
         {
             "path": "src/data/lang/portuguese.json",
@@ -823,7 +823,7 @@
         {
             "path": "types/types.d.ts",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/types/types.d.ts",
-            "checksum": "cedac2bc0732199595a6ac96cffa80d3"
+            "checksum": "7545a64fc6fd0f5d0ee7229465b07982"
         }
     ]
 }

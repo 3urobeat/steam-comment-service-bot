@@ -5,12 +5,12 @@
 
     "updaterautoupdatedisabled": "You have disabled the automatic updater. Would you like to update now?\nIf yes, please force an update using the command: ${cmdprefix}update true",
 
-    "commentcmdusageowner": "'${cmdprefix}comment amount/\"all\" id' to request amount many comments (or the max possible amount).\nProvide a profile, group, sharedfile (screenshot, artwork or guide) or discussion ID/URL if you'd like to comment somewhere else instead of on your profile.",
-    "commentcmdusageowner2": "'${cmdprefix}comment 1 id'. Provide a profile, group, sharedfile (screenshot, artwork or guide) or discussion ID/URL if you'd like to comment somewhere else instead of on your profile.",
+    "commentcmdusageowner": "'${cmdprefix}comment amount/\"all\" id' to request amount many comments (or the max possible amount).\nProvide a profile, group, sharedfile (screenshot, artwork or guide), discussion or review ID/URL if you'd like to comment somewhere else instead of on your profile.",
+    "commentcmdusageowner2": "'${cmdprefix}comment 1 id'. Provide a profile, group, sharedfile (screenshot, artwork or guide), discussion or review ID/URL if you'd like to comment somewhere else instead of on your profile.",
     "commentcmdusage": "'${cmdprefix}comment amount/\"all\"' to request amount many comments (or the max possible amount) on your profile.",
     "commentcmdusage2": "'${cmdprefix}comment' to request a comment on your profile!",
     "commentrequesttoohigh": "You can request max. ${maxRequestAmount} comments.\nCommand usage: ${commentcmdusage}",
-    "commentinvalidid": "This does not seem to be a valid profile, group, sharedfile (screenshot, artwork or guide) or discussion ID/URL!\nPlease make sure that you either provide a full link, only the vanity or ID, pointing to an existing element.\n\nCommand usage: ${commentcmdusage}",
+    "commentinvalidid": "This does not seem to be a valid profile, group, sharedfile (screenshot, artwork or guide), discussion or review ID/URL!\nPlease make sure that you either provide a full link, only the vanity or ID, pointing to an existing element.\n\nCommand usage: ${commentcmdusage}",
     "commentprofileidowneronly": "Specifying a ID is only allowed for bot owners.\nIf you are a bot owner, please make sure that you have added your ID to the ownerid setting in the config.json.",
     "commentmissingnumberofcomments": "Please specify how many comments out of ${maxRequestAmount} you would like to request.\nCommand usage: ${commentcmdusage}",
     "commentzeroavailableaccs": "Sorry but there are currently not enough accounts available to fulfill your request. Please wait ${waittime} and try again!",
@@ -18,7 +18,7 @@
     "commentnoaccounts": "Sorry but there are no accounts to fulfill this request. Please contact the bot administrator of this instance.\nUse the ${cmdprefix}owner command to get information about who runs this instance.",
     "commentnounlimitedaccs": "Sorry but there are no unlimited accounts which are needed to fulfill this request. Please contact the bot administrator of this instance.\nUse the ${cmdprefix}owner command to get information about who runs this instance.",
     "commentaddbotaccounts": "Please add these accounts and then request again: (limited accounts)",
-    "commentunsupportedtype": "Sorry but the comment command does not support this type of ID. Please provide a profile, group, sharedfile (screenshot, artwork or guide) or discussion ID/URL.",
+    "commentunsupportedtype": "Sorry but the comment command does not support this type of ID. Please provide a profile, group, sharedfile (screenshot, artwork or guide), discussion or review ID/URL.",
     "commentuserprofileprivate": "Your/the receiving profile seems to be private. Please edit the privacy settings to allow comments and try again!",
     "commenterroroccurred": "Oops, an error occurred! I sadly wasn't able to comment.",
     "commentprocessstarted": "Estimated wait time for ${numberOfComments} comments: ${waittime}.",
@@ -75,8 +75,8 @@
     "helpcommandlist": "Commands:",
     "helpcommentowner": "Request max ${maxOwnerRequests} of comments for your or another profile",
     "helpcommentuser": "Request max ${maxRequests} of comments for your profile",
-    "helpvote": "Request max ${maxRequests} of sharedfile votes",
-    "helpfavorite": "Request max ${maxRequests} of sharedfile favs",
+    "helpvote": "Request max ${maxRequests} of sharedfile/review votes",
+    "helpfavorite": "Request max ${maxRequests} of sharedfile/review favs",
     "helpfollow": "Request max ${maxRequests} of workshop followers",
     "helpinfo": "Information about the bot and you",
     "helpabort": "Abort your own request",
@@ -90,7 +90,7 @@
     "groupcmdnolink": "The botowner of this instance hasn't provided any group or the group doesn't exist.",
     "groupcmdinvitesent": "I sent you an invite! Thanks for joining!",
     "groupcmdinvitelink": "Join my group here: ",
-    "abortcmdnoprocess": "There is no active process running for this ID.\nIf you requested comments for another profile, group or sharedfile then please provide that ID/URL as argument!",
+    "abortcmdnoprocess": "There is no active process running for this ID.\nIf you requested comments for another profile, group, sharedfile, discussion or review then please provide that ID/URL as argument!",
     "abortcmdsuccess": "Aborting an active process for your ID...",
 
     "resetcooldowncmdcooldowndisabled": "The cooldown is disabled in the config!",
@@ -111,7 +111,7 @@
     "settingscmdvaluereset": "The DataManager rejected this change with this warning:",
     "settingscmdvaluechanged": "${targetkey} has been changed from ${oldvalue} to ${newvalue}.\nPlease remember that certain values might need a restart to take effect. You can do that by typing ${cmdprefix}restart.",
 
-    "failedcmdnothingfound": "I can't remember any failed interactions on your/that ID.\nIf you requested something for another profile, group, sharedfile or discussion then please provide that ID/URL as argument!",
+    "failedcmdnothingfound": "I can't remember any failed interactions on your/that ID.\nIf you requested something for another profile, group, sharedfile, discussion or review then please provide that ID/URL as argument!",
     "failedcmdmsg": "Your last request for '${steamID64}' finished at '${requesttime}' (GMT time) had these errors:",
 
     "sessionscmdnosessions": "There are currently no active sessions and no bot accounts on cooldown.",

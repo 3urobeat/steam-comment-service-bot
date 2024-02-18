@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 16:10:17
+ * Last Modified: 2024-02-18 22:27:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -161,6 +161,7 @@ module.exports.comment = {
         // Get the correct postComment function based on type
         let postComment;
         let commentArgs = {};
+        let idArr;
 
         switch (activeRequestsObj.type) {
             case "profilePublicComment":
@@ -214,6 +215,12 @@ module.exports.comment = {
                     });
                 })();
                 break;
+            case "reviewComment":
+                idArr = receiverSteamID64.split("/");
+
+                postComment = commandHandler.controller.main.community.postReviewComment;
+                commentArgs = { receiverSteamID64: idArr[idArr.findIndex((e) => e == "profiles") + 1], appID: idArr[idArr.findIndex((e) => e == "recommended") + 1], quote: null };
+                break;
             default:
                 logger("warn", `[Main] Unsupported comment type '${activeRequestsObj.type}'! Rejecting request...`);
                 respond(await commandHandler.data.getLang("commentunsupportedtype", null, requesterID));
@@ -253,7 +260,7 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
 
 
     // Log request start and give user cooldown on the first iteration
-    let whereStr = activeReqEntry.type == "profileComment" ? `on profile ${receiverSteamID64}` : `in ${activeReqEntry.type.replace("Comment", "")} ${receiverSteamID64}`; // Shortcut to convey more precise information in the 4 log messages below
+    let whereStr = activeReqEntry.type == "profileComment" ? `on profile ${receiverSteamID64}` : `in/on ${activeReqEntry.type.replace("Comment", "")} ${receiverSteamID64}`; // Shortcut to convey more precise information in the 4 log messages below
 
     if (activeReqEntry.thisIteration == -1) {
         logger("info", `${logger.colors.fggreen}[${commandHandler.controller.main.logPrefix}] ${activeReqEntry.amount} Comment(s) requested. Starting to comment ${whereStr}...`);

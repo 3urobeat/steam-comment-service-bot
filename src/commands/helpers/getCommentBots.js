@@ -4,10 +4,10 @@
  * Created Date: 2023-04-09 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-28 22:40:34
+ * Last Modified: 2024-02-18 22:55:53
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -26,7 +26,7 @@ const { timeToString } = require("../../controller/helpers/misc.js");
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {number} numberOfComments Number of requested comments
  * @param {boolean} canBeLimited If the accounts are allowed to be limited
- * @param {string} idType Type of the request. This can either be "profile(PrivacyState)", "group", "sharedfile" or "discussion". This is used to determine if limited accs need to be added first.
+ * @param {string} idType Type of the request. This can either be "profile(PrivacyState)", "group", "sharedfile", "discussion" or "review". This is used to determine if limited accs need to be added first.
  * @param {string} receiverSteamID Optional: steamID64 of the receiving user. If set, accounts that are friend with the user will be prioritized and accsToAdd will be calculated.
  * @returns {{ accsNeeded: number, availableAccounts: Array.<string>, accsToAdd: Array.<string>, whenAvailable: number, whenAvailableStr: string }} `availableAccounts` contains all account names from bot object, `accsToAdd` account names which are limited and not friend, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */

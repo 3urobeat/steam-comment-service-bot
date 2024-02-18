@@ -4,10 +4,10 @@
  * Created Date: 2022-02-28 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-28 21:29:17
+ * Last Modified: 2024-02-18 21:27:05
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -72,7 +72,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterID, resInfo, res
             let quotesArr        = commandHandler.data.quotes;
 
             let profileID;
-            let idType = "profile"; // Set profile as default because that makes sense (because it can only be a group/sharedfile/discussion when param was provided yk)
+            let idType = "profile"; // Set profile as default because that makes sense (because it can only be a group/sharedfile/discussion/review when param was provided yk)
 
 
             /* --------- Define command usage messages & maxRequestAmount for each user's privileges --------- */
