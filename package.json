@@ -15,7 +15,7 @@
         "steam-comment-bot-rest": "^1.1.0",
         "steam-comment-bot-webserver": "file:plugins/steam-comment-bot-webserver-1.0.0.tgz",
         "steam-session": "^1.7.2",
-        "steam-user": "^5.0.7",
+        "steam-user": "^5.0.8",
         "steamcommunity": "^3.48.2",
         "steamid": "^2.0.0",
         "steamid-resolver": "^1.3.4"
@@ -35,7 +35,7 @@
     "repository": "https://github.com/3urobeat/steam-comment-service-bot",
     "devDependencies": {
         "eslint": "^8.56.0",
-        "eslint-plugin-jsdoc": "^48.0.4",
+        "eslint-plugin-jsdoc": "^48.1.0",
         "tsd-jsdoc": "^2.5.0"
     },
     "types": "./types/types.d.ts"
