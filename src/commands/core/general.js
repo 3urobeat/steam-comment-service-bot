@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-18 13:31:01
+ * Last Modified: 2024-02-18 22:52:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -361,7 +361,7 @@ module.exports.test = {
 
         // Test steamcommunity steam reviews implementation
         /* commandHandler.controller.main.community.getSteamReview("76561198260031749", "1902490", (err, res) => {
-            if (err) return logger("error", err, true);
+            if (err) return logger("error", err.stack, true);
 
             logger("", res, true);
 

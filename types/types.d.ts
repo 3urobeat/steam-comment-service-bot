@@ -1256,22 +1256,6 @@ declare class CSteamReview {
      */
     comment(message: string, callback: (...params: any[]) => any): void;
     /**
-     * Deletes a comment from this review
-     * @param gidcomment - ID of the comment to delete
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    deleteComment(gidcomment: string, callback: (...params: any[]) => any): void;
-    /**
-     * Subscribes to this review's comment section
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    subscribe(callback: (...params: any[]) => any): void;
-    /**
-     * Unsubscribes from this review's comment section
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    unsubscribe(callback: (...params: any[]) => any): void;
-    /**
      * Votes on this review as helpful
      * @param callback - Takes only an Error object/null as the first argument
      */
