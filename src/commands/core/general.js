@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 15:10:27
+ * Last Modified: 2024-02-18 13:31:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -357,6 +357,20 @@ module.exports.test = {
         setTimeout(() => { // Unregister after 10 sec
             commandHandler.controller.jobManager.unregisterJob("testjob");
         }, 10000); */
+
+
+        // Test steamcommunity steam reviews implementation
+        /* commandHandler.controller.main.community.getSteamReview("76561198260031749", "1902490", (err, res) => {
+            if (err) return logger("error", err, true);
+
+            logger("", res, true);
+
+            res.comment("test", (err) => { if (err) logger("", err, true); });
+            res.subscribe();
+            res.voteFunny((err) => { if (err) logger("error", "Failed to vote: " + err, true); });
+            res.deleteComment("7434949789831866840", (err) => { if (err) logger("error", "Failed to delete: " + err, true); });
+            res.unsubscribe();
+        }); */
 
     }
 };

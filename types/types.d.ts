@@ -1207,6 +1207,93 @@ declare class CSteamDiscussion {
 }
 
 /**
+ * @property [reviewID] - ID of review, used for voting & reporting. Remains `null` if it is your review or you are not logged in as the buttons are not presented then.
+ * @property steamID - SteamID object of the review author
+ * @property appID - AppID of the associated game
+ * @property postedDate - Date of when the review was posted initially
+ * @property [updatedDate] - Date of when the review was last updated. Remains `null` if review was never updated
+ * @property recommended - True if the author recommends the game, false otherwise.
+ * @property isEarlyAccess - True if the review is an early access review
+ * @property content - Text content of the review
+ * @property [commentsAmount] - Amount of comments reported by Steam. Remains `null` if coments are disabled
+ * @property [comments] - Array of the last 10 comments left on this review
+ * @property recentPlaytimeHours - Amount of hours the author played this game for in the last 2 weeks
+ * @property totalPlaytimeHours - Amount of hours the author played this game for in total
+ * @property [playtimeHoursAtReview] - Amount of hours the author played this game for at the point of review. Remains `null` if Steam does not provide this information.
+ * @property votesHelpful - Amount of 'Review is helpful' votes
+ * @property votesFunny - Amount of 'Review is funny' votes
+ */
+declare type Review = {
+    reviewID?: string;
+    steamID: SteamID;
+    appID: string;
+    postedDate: Date;
+    updatedDate?: Date;
+    recommended: boolean;
+    isEarlyAccess: boolean;
+    content: string;
+    commentsAmount?: number;
+    comments?: { index: number; id: string; authorLink: string; postedDate: Date; content: string; }[];
+    recentPlaytimeHours: number;
+    totalPlaytimeHours: number;
+    playtimeHoursAtReview?: number;
+    votesHelpful: number;
+    votesFunny: number;
+};
+
+/**
+ * Constructor - Creates a new CSteamReview object
+ * @param community - Current SteamCommunity instance
+ * @param data - Review data collected by the scraper
+ */
+declare class CSteamReview {
+    constructor(community: SteamCommunity, data: Review);
+    _community: SteamCommunity;
+    /**
+     * Posts a comment to this review
+     * @param message - Content of the comment to post
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    comment(message: string, callback: (...params: any[]) => any): void;
+    /**
+     * Deletes a comment from this review
+     * @param gidcomment - ID of the comment to delete
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    deleteComment(gidcomment: string, callback: (...params: any[]) => any): void;
+    /**
+     * Subscribes to this review's comment section
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    subscribe(callback: (...params: any[]) => any): void;
+    /**
+     * Unsubscribes from this review's comment section
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    unsubscribe(callback: (...params: any[]) => any): void;
+    /**
+     * Votes on this review as helpful
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    voteHelpful(callback: (...params: any[]) => any): void;
+    /**
+     * Votes on this review as unhelpful
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    voteUnhelpful(callback: (...params: any[]) => any): void;
+    /**
+     * Votes on this review as funny
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    voteFunny(callback: (...params: any[]) => any): void;
+    /**
+     * Removes funny vote from this review
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    voteRemoveFunny(callback: (...params: any[]) => any): void;
+}
+
+/**
  * Constructor - Creates a new SharedFile object
  */
 declare class CSteamSharedFile {
