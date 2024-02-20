@@ -4,7 +4,7 @@
  * Created Date: 2023-05-28 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 15:48:40
+ * Last Modified: 2024-02-20 20:04:47
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -15,11 +15,11 @@
  */
 
 
-const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
-const { getMiscArgs }         = require("../helpers/getMiscArgs.js");
+const CommandHandler  = require("../commandHandler.js"); // eslint-disable-line
+const { getMiscArgs } = require("../helpers/getMiscArgs.js");
 const { getAvailableBotsForVoting } = require("../helpers/getVoteBots.js");
 const { syncLoop, timeToString }    = require("../../controller/helpers/misc.js");
-const { handleVoteIterationSkip, logVoteError } = require("../helpers/handleSharedfileErrors.js");
+const { handleVoteIterationSkip, logVoteError } = require("../helpers/handleMiscErrors.js");
 
 
 module.exports.upvote = {
@@ -127,7 +127,7 @@ module.exports.upvote = {
 
         switch (activeReqEntry.type) {
             case "sharedfileUpvote":
-                voteFunc = bot.community.voteUpSharedFile;
+                voteFunc = commandHandler.controller.main.community.voteUpSharedFile;
                 voteArgs = { id: null };
 
                 // Get sid by scraping sharedfile DOM - Quick hack to await function that only supports callbacks
@@ -146,9 +146,9 @@ module.exports.upvote = {
                 })();
                 break;
             case "reviewUpvote":
-                idArr = receiverSteamID64.split("/");
+                idArr = id.split("/");
 
-                voteFunc = bot.community.voteReviewHelpful;
+                voteFunc = commandHandler.controller.main.community.voteReviewHelpful;
                 voteArgs = { id: null };
 
                 // Get rid by scraping review DOM - Quick hack to await function that only supports callbacks
@@ -224,7 +224,7 @@ module.exports.upvote = {
                     } else {
 
                         // Set or insert entry for this account on this id to upvote
-                        commandHandler.data.ratingHistoryDB.update({ id: id, accountName: activeReqEntry.accounts[i] }, { $set: { type: "upvote", time: Date.now() } }, (err) => {
+                        commandHandler.data.ratingHistoryDB.update({ id: id, accountName: activeReqEntry.accounts[i] }, { $set: { type: "upvote", time: Date.now() } }, { upsert: true }, (err) => {
                             if (err) logger("warn", `Failed to update entry for '${activeReqEntry.accounts[i]}' on '${id}' in ratingHistory database to 'upvote'! Error: ` + err);
                         });
 

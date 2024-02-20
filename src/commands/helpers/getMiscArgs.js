@@ -4,10 +4,10 @@
  * Created Date: 2023-05-28 12:18:49
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:04:57
+ * Last Modified: 2024-02-20 19:53:12
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -25,7 +25,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
  * @param {string} cmd Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function
  * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @param {function(string): void} respond The shortened respondModule call
- * @returns {Promise.<{ err: null|any, amount: number|string, id: string }>} If the user provided a specific amount, amount will be a number. If user provided "all" or "max", it will be returned as an unmodified string for getVoteBots.js to handle
+ * @returns {Promise.<{ err: null|any, amountRaw: number|string, id: string, idType: string }>} If the user provided a specific amount, amount will be a number. If user provided "all" or "max", it will be returned as an unmodified string for getVoteBots.js to handle
  */
 module.exports.getMiscArgs = (commandHandler, args, cmd, resInfo, respond) => {
     return new Promise((resolve) => {
@@ -44,14 +44,14 @@ module.exports.getMiscArgs = (commandHandler, args, cmd, resInfo, respond) => {
             }
 
             // Process input and check if ID is valid
-            commandHandler.controller.handleSteamIdResolving(args[1], null, async (err, id, idType) => { // eslint-disable-line no-unused-vars
+            commandHandler.controller.handleSteamIdResolving(args[1], null, async (err, destParam, idType) => { // eslint-disable-line no-unused-vars
 
-                logger("debug", `CommandHandler getMiscArgs() success. amount: ${amount} | id: ${id}`);
+                logger("debug", `CommandHandler getMiscArgs() success. amount: ${amount} | dest: ${destParam}`);
 
                 resolve({
                     "err": err,
                     "amountRaw": amount,
-                    "id": id,
+                    "id": destParam,
                     "idType": idType
                 });
 
