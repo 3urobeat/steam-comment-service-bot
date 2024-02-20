@@ -17,8 +17,8 @@ This is the full documentation to customize your `config.json`.
 | skipSteamGuard | true or false | When true, the bot will skip all accounts that require a Steam Guard Code to be typed in when logging in. Default: false |
 | requestCooldown | Number in min | Applies this cooldown in minutes to every user after they started a request. Set to 0 to disable. Default: 5 |
 | botaccountcooldown | Number in min | Applies this cooldown to every bot account used in a request to prevent getting a cooldown from Steam. Set to 0 to disable. Default: 10 |
-| maxRequests | Number | Defines how many comments/likes/favs a normal user can request from your bot. Will automatically use accounts multiple times if it is greater than the amount of accounts logged in. |
-| maxOwnerRequests | Number | Defines how many comments/likes/favs owners can request (every user in the ownerid list below). Will automatically use accounts multiple times if it is greater than the amount of accounts logged in. |
+| maxRequests | Number | Defines how many comments a normal user can request from your bot. Will automatically use accounts multiple times for commenting if it is greater than the amount of accounts available. |
+| maxOwnerRequests | Number | Defines how many comments owners can request (every user in the ownerid list below). Will automatically use accounts multiple times if it is greater than the amount of accounts logged in. |
 | randomizeAccounts | true or false | Defines if the order of accounts used to comment/like/fav should be randomized. Default: false |
 | unfriendtime | Days | Amount of days after which the bot will unfriend an inactive user (activity is measured using when they last started a request). Does not unfriend owners. Set to 0 to disable. |
 | playinggames | `["custom game", game id, game id, ...]` | This custom text will be shown on your profile as the name of a game you are playing. The bot will play the set game ids. Don't provide a string to disable the custom game text. |

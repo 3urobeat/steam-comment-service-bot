@@ -58,6 +58,7 @@
     "invalidprofileid": "Похоже, что это не действительный ID или ссылка, или вы указали неправильный тип ID для этой команды!\nПожалуйста, убедитесь, что вы указали либо полную ссылку, либо только пустое значение, либо только ID, указывающий на существующий элемент.",
     "invalidgroupid": "Это не правильный ID группы или ссылка группы! \ngroupid должен выглядеть следующим образом: «103582791464712227» \n...или ссылка группы должна выглядеть следующим образом: «https://steamcommunity.com/groups/3urobeatGroup»",
     "invalidsharedfileid": "Похоже, что это не действительный ID общего файла!\nПожалуйста, убедитесь, что вы указали либо полную ссылку: https://steamcommunity.com/sharedfiles/filedetails/?id=2980913451 ...либо только ID: 2980913451 ...который указывает на существующий скриншот, иллюстрацию или руководство.\n\nИспользование команды: ${cmdusage}",
+    "invalidreviewid": "This does not seem to be a valid review link! Please make sure that you provide the full link to a valid review, like this: https://steamcommunity.com/id/3urobeat/recommended/1902490/\n\nИспользование команды: ${cmdusage}",
     "errloadingsharedfile": "Извините, но при загрузке предоставленного вами файла sharedfile произошла ошибка: ",
     "errloadingreview": "Sorry but an error occurred while loading the review you have provided: ",
     "idisownererror": "Вам не разрешается предоставлять ID владельца!",

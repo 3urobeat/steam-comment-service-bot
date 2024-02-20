@@ -58,6 +58,7 @@
     "invalidprofileid": "This does not seem to be a valid ID or link or you provided the wrong ID type for this command!\nPlease make sure that you either provide a full link, only the vanity or ID, pointing to an existing element.",
     "invalidgroupid": "This is not a valid group id or group url! \nA groupid must look like this: '103582791464712227' \n...or a group url like this: 'https://steamcommunity.com/groups/3urobeatGroup'",
     "invalidsharedfileid": "This does not seem to be a valid sharedfileID!\nPlease make sure that you either provide a full link: https://steamcommunity.com/sharedfiles/filedetails/?id=2980913451 ...or just the ID: 2980913451 ...which points to an existing screenshot, artwork or guide.\n\nCommand usage: ${cmdusage}",
+    "invalidreviewid": "This does not seem to be a valid review link! Please make sure that you provide the full link to a valid review, like this: https://steamcommunity.com/id/3urobeat/recommended/1902490/\n\nCommand usage: ${cmdusage}",
     "errloadingsharedfile": "Sorry but an error occurred while loading the sharedfile you have provided: ",
     "errloadingreview": "Sorry but an error occurred while loading the review you have provided: ",
     "idisownererror": "You are not allowed to provide the ID of an owner!",

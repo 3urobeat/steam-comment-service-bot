@@ -4,10 +4,10 @@
  * Created Date: 2023-04-01 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:03:50
+ * Last Modified: 2024-02-12 22:14:33
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -85,9 +85,9 @@ CommandHandler.prototype._importCoreCommands = function() {
             files.forEach((e) => {
                 let thisFile;
 
-                // Try to load plugin
+                // Try to load command
                 try {
-                    // Load the plugin file
+                    // Load the command file
                     thisFile = require(`./core/${e}`);
 
                     // Push all exported commands in this file into the command list

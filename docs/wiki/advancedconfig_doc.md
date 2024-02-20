@@ -37,7 +37,7 @@ This is the full documentation to customize your `advancedconfig.json`.
 | lastQuotesSize | Number | Amount (minus 1) of different quotes that need to be selected in between before a quote can be used again. Default: 5 |
 | &nbsp; | | |
 | enableevalcmd | true or false | The eval command allows the botowner to run javascript code from the steam chat. **Warning: This can harm your machine! Leave it to false if you don't know what you are doing!** Default: false |
-| disableSendingRequests | true or false | Disables sending comments/likes/favs to Steam. This allows the testing of accepting and handling user requests, without sending them to Steam. Default: false |
+| disableSendingRequests | true or false | Disables sending comments/likes/favs/follows to Steam. This allows the testing of accepting and handling user requests, without sending them to Steam. Default: false |
 | printDebug | true or false | Enables and logs debug messages of the bot. Default: false |
 | steamUserDebug | true or false | Enables and logs debug messages of the steam-user lib. Default: false |
 | steamUserDebugVerbose | true or false | Enables and logs debug-verbose messages of the steam-user lib. Default: false |

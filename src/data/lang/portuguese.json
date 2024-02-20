@@ -58,6 +58,7 @@
     "invalidprofileid": "Isso não parece ser um ID válido ou link, ou você forneceu o tipo de ID errado para este comando!\nCertifique-se de fornecer um link completo, apenas a parte personalizada ou o ID, apontando para um elemento existente.",
     "invalidgroupid": "Este não é um ID de grupo ou URL de grupo válido!\nUm ID de grupo deve parecer assim: '103582791464712227'\n...ou um URL de grupo assim: 'https://steamcommunity.com/groups/3urobeatGroup'",
     "invalidsharedfileid": "Isso não parece ser um sharedfileID válido!\nCertifique-se de fornecer um link completo: https://steamcommunity.com/sharedfiles/filedetails/?id=2980913451 ...ou apenas o ID: 2980913451 ...que aponta para uma captura de tela, obra de arte ou guia existente.\n\nUso do comando: ${cmdusage}",
+    "invalidreviewid": "This does not seem to be a valid review link! Please make sure that you provide the full link to a valid review, like this: https://steamcommunity.com/id/3urobeat/recommended/1902490/\n\nUso do comando: ${cmdusage}",
     "errloadingsharedfile": "Desculpe, mas ocorreu um erro ao carregar o sharedfile fornecido: ",
     "errloadingreview": "Sorry but an error occurred while loading the review you have provided: ",
     "idisownererror": "Você não tem permissão para fornecer o ID de um proprietário!",

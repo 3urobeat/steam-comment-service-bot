@@ -365,7 +365,7 @@ declare function getFollowArgs(commandHandler: CommandHandler, args: any[], cmd:
 declare function getAvailableBotsForFollowing(commandHandler: CommandHandler, amount: number | "all", canBeLimited: boolean, id: string, idType: string, favType: string): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
 
 /**
- * Retrieves arguments from a favorite/vote request. If request is invalid, an error message will be sent
+ * Retrieves arguments from a non-specific request without id processing
  * @param commandHandler - The commandHandler object
  * @param args - The command arguments
  * @param cmd - Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function
@@ -373,7 +373,7 @@ declare function getAvailableBotsForFollowing(commandHandler: CommandHandler, am
  * @param respond - The shortened respondModule call
  * @returns If the user provided a specific amount, amount will be a number. If user provided "all" or "max", it will be returned as an unmodified string for getVoteBots.js to handle
  */
-declare function getSharedfileArgs(commandHandler: CommandHandler, args: any[], cmd: string, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any): Promise<{ amount: number | string; id: string; }>;
+declare function getMiscArgs(commandHandler: CommandHandler, args: any[], cmd: string, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any): Promise<{ err: null | any; amountRaw: number | string; id: string; idType: string; }>;
 
 /**
  * Finds all needed and currently available bot accounts for a vote request.
@@ -468,7 +468,7 @@ declare function handleFavoriteIterationSkip(commandHandler: CommandHandler, loo
  * @param error - The error string returned by steam-community
  * @param commandHandler - The commandHandler object
  * @param bot - Bot object of the account making this request
- * @param id - ID of the sharedfile that receives the votes
+ * @param id - ID that receives the votes
  */
 declare function logVoteError(error: string, commandHandler: CommandHandler, bot: Bot, id: string): void;
 
