@@ -16,7 +16,7 @@
 
 
 const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
-const { getSharedfileArgs }             = require("../helpers/getSharedfileArgs.js");
+const { getMiscArgs }             = require("../helpers/getMiscArgs.js");
 const { getAvailableBotsForFavorizing } = require("../helpers/getFavoriteBots.js");
 const { syncLoop, timeToString }        = require("../../controller/helpers/misc.js");
 const { handleFavoriteIterationSkip, logFavoriteError } = require("../helpers/handleSharedfileErrors.js");
@@ -73,7 +73,7 @@ module.exports.favorite = {
 
 
         // Check and get arguments from user
-        let { amountRaw, id } = await getSharedfileArgs(commandHandler, args, "favorite", resInfo, respond);
+        let { amountRaw, id } = await getMiscArgs(commandHandler, args, "favorite", resInfo, respond);
 
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
@@ -271,7 +271,7 @@ module.exports.unfavorite = {
 
 
         // Check and get arguments from user
-        let { amountRaw, id } = await getSharedfileArgs(commandHandler, args, "unfavorite", resInfo, respond);
+        let { amountRaw, id } = await getMiscArgs(commandHandler, args, "unfavorite", resInfo, respond);
 
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 

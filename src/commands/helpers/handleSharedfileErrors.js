@@ -91,7 +91,7 @@ module.exports.handleFavoriteIterationSkip = function(commandHandler, loop, bot,
  * @param {string} error The error string returned by steam-community
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Bot} bot Bot object of the account making this request
- * @param {string} id ID of the sharedfile that receives the votes
+ * @param {string} id ID that receives the votes
  */
 module.exports.logVoteError = (error, commandHandler, bot, id) => {
     let activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter

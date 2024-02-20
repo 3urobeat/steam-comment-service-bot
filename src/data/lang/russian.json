@@ -32,6 +32,7 @@
     "genericrequestless": "Сейчас для этого запроса на этом ID доступны только ${availablenow} бот-аккаунтов.",
     "genericnotenoughavailableaccs": "Извините, но в настоящее время для этого запроса не хватает аккаунтов на этом ID. Пожалуйста, подождите ${waittime} и повторите попытку, или запросите ${availablenow} доступных сейчас.",
 
+    "voteunsupportedtype": "Sorry but the vote command does not support this type of ID. Please provide a sharedfile ID/link or review link.",
     "voteprocessstarted": "Примерное время ожидания для ${numberOfVotes} голосов: ${waittime}.",
     "votesuccess": "Все голоса были отправлены. Не удалось: ${failedamount}/${numberOfVotes}",
 
@@ -58,6 +59,7 @@
     "invalidgroupid": "Это не правильный ID группы или ссылка группы! \ngroupid должен выглядеть следующим образом: «103582791464712227» \n...или ссылка группы должна выглядеть следующим образом: «https://steamcommunity.com/groups/3urobeatGroup»",
     "invalidsharedfileid": "Похоже, что это не действительный ID общего файла!\nПожалуйста, убедитесь, что вы указали либо полную ссылку: https://steamcommunity.com/sharedfiles/filedetails/?id=2980913451 ...либо только ID: 2980913451 ...который указывает на существующий скриншот, иллюстрацию или руководство.\n\nИспользование команды: ${cmdusage}",
     "errloadingsharedfile": "Извините, но при загрузке предоставленного вами файла sharedfile произошла ошибка: ",
+    "errloadingreview": "Sorry but an error occurred while loading the review you have provided: ",
     "idisownererror": "Вам не разрешается предоставлять ID владельца!",
     "idalreadyreceiving": "У этого пользователя или ID уже есть активный запрос! Пожалуйста, подождите, пока он будет завершён, прежде чем запрашивать снова.",
     "idoncooldown": "Вы только недавно начали запрос. Пожалуйста, подождите оставшиеся ${remainingcooldown}, прежде чем начинать другой запрос.",

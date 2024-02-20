@@ -31,6 +31,8 @@
     "genericnoaccounts": "抱歉，此ID上没有可用的帐户。",
     "genericrequestless": "当前在此ID上仅有 ${availablenow} 个机器人帐户可用于此请求。",
     "genericnotenoughavailableaccs": "抱歉，此ID上当前没有足够的帐户可用于此请求。请等待 ${waittime} 后重试，或仅请求 ${availablenow} 个。",
+
+    "voteunsupportedtype": "Sorry but the vote command does not support this type of ID. Please provide a sharedfile ID/link or review link.",
     "voteprocessstarted": "${numberOfVotes} 票的预计等待时间为 ${waittime}。",
     "votesuccess": "所有票已发送。失败: ${failedamount}/${numberOfVotes}",
 
@@ -57,6 +59,7 @@
     "invalidgroupid": "这不是有效的小组ID或小组URL！\n小组ID必须看起来像这样: '103582791464712227' \n...或小组URL看起来像这样: 'https://steamcommunity.com/groups/3urobeatGroup'",
     "invalidsharedfileid": "这似乎不是有效的sharedfileID！\n请确保您提供了完整的链接: https://steamcommunity.com/sharedfiles/filedetails/?id=2980913451 ...或只提供ID: 2980913451 ...指向现有的截图、艺术品或指南。\n\n命令用法: ${cmdusage}",
     "errloadingsharedfile": "抱歉，加载您提供的sharedfile时发生错误: ",
+    "errloadingreview": "Sorry but an error occurred while loading the review you have provided: ",
     "idisownererror": "您不被允许提供所有者的ID！",
     "idalreadyreceiving": "此用户或ID已有活动请求！请等待它完成后再次请求。",
     "idoncooldown": "您最近只开始了一个请求。请等待剩余的 ${remainingcooldown}，然后再启动另一个请求。",

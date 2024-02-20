@@ -32,6 +32,7 @@
     "genericrequestless": "There are currently only ${availablenow} bot accounts available for this request on this id.",
     "genericnotenoughavailableaccs": "Sorry but there are currently not enough accounts available for this request on this id. Please wait ${waittime} and try again or only request ${availablenow} now.",
 
+    "voteunsupportedtype": "Sorry but the vote command does not support this type of ID. Please provide a sharedfile ID/link or review link.",
     "voteprocessstarted": "Estimated wait time for ${numberOfVotes} votes: ${waittime}.",
     "votesuccess": "All votes have been sent. Failed: ${failedamount}/${numberOfVotes}",
 
@@ -58,6 +59,7 @@
     "invalidgroupid": "This is not a valid group id or group url! \nA groupid must look like this: '103582791464712227' \n...or a group url like this: 'https://steamcommunity.com/groups/3urobeatGroup'",
     "invalidsharedfileid": "This does not seem to be a valid sharedfileID!\nPlease make sure that you either provide a full link: https://steamcommunity.com/sharedfiles/filedetails/?id=2980913451 ...or just the ID: 2980913451 ...which points to an existing screenshot, artwork or guide.\n\nCommand usage: ${cmdusage}",
     "errloadingsharedfile": "Sorry but an error occurred while loading the sharedfile you have provided: ",
+    "errloadingreview": "Sorry but an error occurred while loading the review you have provided: ",
     "idisownererror": "You are not allowed to provide the ID of an owner!",
     "idalreadyreceiving": "This user or id already has an active request! Please wait for it to be completed before requesting again.",
     "idoncooldown": "You only recently started a request. Please wait the remaining ${remainingcooldown} before starting another request.",

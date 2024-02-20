@@ -16,7 +16,7 @@
 
 
 const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
-const { getSharedfileArgs }         = require("../helpers/getSharedfileArgs.js");
+const { getMiscArgs }         = require("../helpers/getMiscArgs.js");
 const { getAvailableBotsForVoting } = require("../helpers/getVoteBots.js");
 const { syncLoop, timeToString }    = require("../../controller/helpers/misc.js");
 const { handleVoteIterationSkip, logVoteError } = require("../helpers/handleSharedfileErrors.js");
@@ -24,7 +24,7 @@ const { handleVoteIterationSkip, logVoteError } = require("../helpers/handleShar
 
 module.exports.upvote = {
     names: ["upvote"],
-    description: "Upvotes a sharedfile with all bot accounts that haven't yet voted on that item. Requires unlimited accounts!",
+    description: "Upvotes a sharedfile/review with all bot accounts that haven't yet voted on that item. Requires unlimited accounts!",
     args: [
         {
             name: "amount",
@@ -73,7 +73,7 @@ module.exports.upvote = {
 
 
         // Check and get arguments from user
-        let { amountRaw, id } = await getSharedfileArgs(commandHandler, args, "upvote", resInfo, respond);
+        let { err, amountRaw, id, idType } = await getMiscArgs(commandHandler, args, "upvote", resInfo, respond);
 
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
@@ -106,120 +106,164 @@ module.exports.upvote = {
         }
 
 
-        // Get the sharedfile
-        commandHandler.controller.main.community.getSteamSharedFile(id, async (err, sharedfile) => {
-            if (err) {
-                respond((await commandHandler.data.getLang("errloadingsharedfile", null, requesterID)) + err);
-                return;
-            }
+        // Register this vote process in activeRequests
+        let activeReqEntry = {
+            status: "active",
+            type: idType + "Upvote",
+            amount: amount,
+            requestedby: requesterID,
+            accounts: availableAccounts,
+            thisIteration: -1, // Set to -1 so that first iteration will increase it to 0
+            retryAttempt: 0,
+            until: Date.now() + ((amount - 1) * commandHandler.data.config.requestDelay), // Calculate estimated wait time (first vote is instant -> remove 1 from numberOfComments)
+            failed: {}
+        };
 
 
-            // Register this vote process in activeRequests
-            commandHandler.controller.activeRequests[id] = {
-                status: "active",
-                type: "upvote",
-                amount: amount,
-                requestedby: requesterID,
-                accounts: availableAccounts,
-                thisIteration: -1, // Set to -1 so that first iteration will increase it to 0
-                retryAttempt: 0,
-                until: Date.now() + ((amount - 1) * commandHandler.data.config.requestDelay), // Calculate estimated wait time (first vote is instant -> remove 1 from numberOfComments)
-                failed: {}
-            };
+        // Get the correct voting function based on type
+        let voteFunc;
+        let voteArgs = { id: null };
+        let idArr;
 
-            let activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
+        switch (activeReqEntry.type) {
+            case "sharedfileUpvote":
+                voteFunc = bot.community.voteUpSharedFile;
+                voteArgs = { id: null };
 
+                // Get sid by scraping sharedfile DOM - Quick hack to await function that only supports callbacks
+                await (() => {
+                    return new Promise((resolve) => {
+                        commandHandler.controller.main.community.getSteamSharedFile(id, async (err, obj) => {
+                            if (err) {
+                                respond((await commandHandler.data.getLang("errloadingsharedfile", null, requesterID)) + err);
+                                return;
+                            }
 
-            // Log request start and give user cooldown on the first iteration
-            if (activeReqEntry.thisIteration == -1) {
-                logger("info", `${logger.colors.fggreen}[${commandHandler.controller.main.logPrefix}] ${activeReqEntry.amount} Upvote(s) requested. Starting to vote on ${id}...`);
-
-                // Only send estimated wait time message for multiple votes
-                if (activeReqEntry.amount > 1) {
-                    let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.requestDelay)); // Amount - 1 because the first vote is instant. Multiply by delay and add to current time to get timestamp when last vote was sent
-
-                    respond(await commandHandler.data.getLang("voteprocessstarted", { "numberOfVotes": activeReqEntry.amount, "waittime": waitTime }, requesterID));
-                }
-
-                // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
-                if (commandHandler.data.config.requestCooldown == 0) commandHandler.data.setUserCooldown(activeReqEntry.requestedby, Date.now());
-                    else commandHandler.data.setUserCooldown(activeReqEntry.requestedby, activeReqEntry.until);
-            }
-
-
-            // Start voting with all available accounts
-            syncLoop(amount, (loop, i) => {
-                setTimeout(() => {
-
-                    let bot = commandHandler.controller.bots[availableAccounts[i]];
-                    activeReqEntry.thisIteration++;
-
-                    if (!handleVoteIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
-
-                    let voteFunc = bot.community.voteUpSharedFile;
-
-                    // Overwrite voteFunc with pure *nothingness* if debug mode is enabled
-                    if (commandHandler.data.advancedconfig.disableSendingRequests) {
-                        logger("warn", "Replacing voteFunc with nothingness because 'disableSendingRequests' is enabled in 'advancedconfig.json'!");
-                        voteFunc = (a, callback) => callback(null);
-                    }
-
-                    /* --------- Try to vote --------- */
-                    voteFunc(sharedfile.id, (error) => { // Note: Steam does not return an error for a duplicate request here
-
-                        /* --------- Handle errors thrown by this vote attempt or update ratingHistory db and log success message --------- */
-                        if (error) {
-                            logVoteError(error, commandHandler, bot, sharedfile.id);
-
-                        } else {
-
-                            // Add upvote entry
-                            commandHandler.data.ratingHistoryDB.insert({ id: id, accountName: activeReqEntry.accounts[i], type: "upvote", time: Date.now() }, (err) => {
-                                if (err) logger("warn", `Failed to insert 'upvote' entry for '${activeReqEntry.accounts[i]}' on '${id}' into ratingHistory database! Error: ` + err);
-                            });
-
-                            // Remove downvote entry
-                            commandHandler.data.ratingHistoryDB.remove({ id: id, accountName: activeReqEntry.accounts[i], type: "downvote" }, (err) => {
-                                if (err) logger("warn", `Failed to remove 'downvote' entry for '${activeReqEntry.accounts[i]}' on '${id}' from ratingHistory database! Error: ` + err);
-                            });
-
-                            // Log success msg
-                            if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Upvoting ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id} with proxy ${bot.loginData.proxyIndex}...`);
-                                else logger("info", `[${bot.logPrefix}] Upvoting ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id}...`);
-                        }
-
-                        // Continue with the next iteration
-                        loop.next();
-
+                            voteArgs.id = obj.id;
+                            resolve();
+                        });
                     });
+                })();
+                break;
+            case "reviewUpvote":
+                idArr = receiverSteamID64.split("/");
 
-                }, commandHandler.data.config.requestDelay * (i > 0));
+                voteFunc = bot.community.voteReviewHelpful;
+                voteArgs = { id: null };
 
-            }, async () => { // Function that will run on exit, aka the last iteration: Respond to the user
+                // Get rid by scraping review DOM - Quick hack to await function that only supports callbacks
+                await (() => {
+                    return new Promise((resolve) => {
+                        let userID = idArr[idArr.findIndex((e) => e == "profiles") + 1];
+                        let appID  = idArr[idArr.findIndex((e) => e == "recommended") + 1];
 
-                /* ------------- Send finished message for corresponding status -------------  */
-                if (activeReqEntry.status == "aborted") {
+                        commandHandler.controller.main.community.getSteamReview(userID, appID, async (err, obj) => {
+                            if (err) {
+                                respond((await commandHandler.data.getLang("errloadingreview", null, requesterID)) + err);
+                                return;
+                            }
 
-                    respond(await commandHandler.data.getLang("requestaborted", { "successAmount": activeReqEntry.amount - Object.keys(activeReqEntry.failed).length, "totalAmount": activeReqEntry.amount }, requesterID));
+                            voteArgs.id = obj.reviewID;
+                            resolve();
+                        });
+                    });
+                })();
+                break;
+            default:
+                logger("warn", `[Main] Unsupported voting type '${activeReqEntry.type}'! Rejecting request...`);
+                respond(await commandHandler.data.getLang("voteunsupportedtype", null, requesterID));
+                return;
+        }
 
-                } else {
+        // Overwrite voteFunc with pure *nothingness* if debug mode is enabled
+        if (commandHandler.data.advancedconfig.disableSendingRequests) {
+            logger("warn", "Replacing voteFunc with nothingness because 'disableSendingRequests' is enabled in 'advancedconfig.json'!");
+            voteFunc = (a, callback) => callback(null);
+            voteArgs = { nothing: null };
+        }
 
-                    // Add reference to !failed command to finished message if at least one vote failed
-                    let failedcmdreference = "";
 
-                    if (Object.keys(commandHandler.controller.activeRequests[id].failed).length > 0) {
-                        failedcmdreference = `\nTo get detailed information why which request failed please type '${resInfo.cmdprefix}failed'. You can read why your error was probably caused here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md`;
+        // Register this voting process
+        commandHandler.controller.activeRequests[id] = activeReqEntry;
+
+
+        // Log request start and give user cooldown on the first iteration
+        if (activeReqEntry.thisIteration == -1) {
+            logger("info", `${logger.colors.fggreen}[${commandHandler.controller.main.logPrefix}] ${activeReqEntry.amount} Upvote(s) requested. Starting to vote on ${id}...`);
+
+            // Only send estimated wait time message for multiple votes
+            if (activeReqEntry.amount > 1) {
+                let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.requestDelay)); // Amount - 1 because the first vote is instant. Multiply by delay and add to current time to get timestamp when last vote was sent
+
+                respond(await commandHandler.data.getLang("voteprocessstarted", { "numberOfVotes": activeReqEntry.amount, "waittime": waitTime }, requesterID));
+            }
+
+            // Give requesting user cooldown. Set timestamp to now if cooldown is disabled to avoid issues when a process is aborted but cooldown can't be cleared
+            if (commandHandler.data.config.requestCooldown == 0) commandHandler.data.setUserCooldown(activeReqEntry.requestedby, Date.now());
+                else commandHandler.data.setUserCooldown(activeReqEntry.requestedby, activeReqEntry.until);
+        }
+
+
+        // Start voting with all available accounts
+        syncLoop(amount, (loop, i) => {
+            setTimeout(() => {
+
+                let bot = commandHandler.controller.bots[availableAccounts[i]];
+                activeReqEntry.thisIteration++;
+
+                if (!handleVoteIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
+
+
+                /* --------- Try to vote --------- */
+                voteFunc.call(bot.community, ...Object.values(voteArgs), (error) => { // Note: Steam does not return an error for a duplicate request here
+
+                    /* --------- Handle errors thrown by this vote attempt or update ratingHistory db and log success message --------- */
+                    if (error) {
+                        logVoteError(error, commandHandler, bot, voteArgs.id);
+
+                    } else {
+
+                        // Set or insert entry for this account on this id to upvote
+                        commandHandler.data.ratingHistoryDB.update({ id: id, accountName: activeReqEntry.accounts[i] }, { $set: { type: "upvote", time: Date.now() } }, (err) => {
+                            if (err) logger("warn", `Failed to update entry for '${activeReqEntry.accounts[i]}' on '${id}' in ratingHistory database to 'upvote'! Error: ` + err);
+                        });
+
+                        // Log success msg
+                        if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Upvoting ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id} with proxy ${bot.loginData.proxyIndex}...`);
+                            else logger("info", `[${bot.logPrefix}] Upvoting ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id}...`);
                     }
 
-                    // Send finished message
-                    respond(`${await commandHandler.data.getLang("votesuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "numberOfVotes": activeReqEntry.amount }, requesterID)}\n${failedcmdreference}`);
+                    // Continue with the next iteration
+                    loop.next();
 
-                    // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
-                    activeReqEntry.status = "cooldown";
+                });
 
+            }, commandHandler.data.config.requestDelay * (i > 0));
+
+        }, async () => { // Function that will run on exit, aka the last iteration: Respond to the user
+
+            /* ------------- Send finished message for corresponding status -------------  */
+            if (activeReqEntry.status == "aborted") {
+
+                respond(await commandHandler.data.getLang("requestaborted", { "successAmount": activeReqEntry.amount - Object.keys(activeReqEntry.failed).length, "totalAmount": activeReqEntry.amount }, requesterID));
+
+            } else {
+
+                // Add reference to !failed command to finished message if at least one vote failed
+                let failedcmdreference = "";
+
+                if (Object.keys(commandHandler.controller.activeRequests[id].failed).length > 0) {
+                    failedcmdreference = `\nTo get detailed information why which request failed please type '${resInfo.cmdprefix}failed'. You can read why your error was probably caused here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md`;
                 }
 
-            });
+                // Send finished message
+                respond(`${await commandHandler.data.getLang("votesuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "numberOfVotes": activeReqEntry.amount }, requesterID)}\n${failedcmdreference}`);
+
+                // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
+                activeReqEntry.status = "cooldown";
+
+            }
+
         });
     }
 };
@@ -276,7 +320,7 @@ module.exports.downvote = {
 
 
         // Check and get arguments from user
-        let { amountRaw, id } = await getSharedfileArgs(commandHandler, args, "downvote", resInfo, respond);
+        let { err, amountRaw, id, idType } = await getMiscArgs(commandHandler, args, "downvote", resInfo, respond);
 
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
@@ -320,7 +364,7 @@ module.exports.downvote = {
             // Register this vote process in activeRequests
             commandHandler.controller.activeRequests[id] = {
                 status: "active",
-                type: "downvote",
+                type: idType + "Downvote",
                 amount: amount,
                 requestedby: requesterID,
                 accounts: availableAccounts,
