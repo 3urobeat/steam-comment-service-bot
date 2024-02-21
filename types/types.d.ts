@@ -392,9 +392,11 @@ declare function getMiscArgs(commandHandler: CommandHandler, args: any[], cmd: s
  * @param amount - Amount of votes requested or "all" to get the max available amount
  * @param id - The sharedfile id to vote on
  * @param voteType - Type of the request
+ * @param requesterID - The steamID64 of the requesting user
+ * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @returns Resolves with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
-declare function getAvailableBotsForVoting(commandHandler: CommandHandler, amount: number | "all", id: string, voteType: "upvote" | "downvote" | "funnyvote"): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
+declare function getAvailableBotsForVoting(commandHandler: CommandHandler, amount: number | "all", id: string, voteType: "upvote" | "downvote" | "funnyvote", requesterID: string, resInfo: CommandHandler.resInfo): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
 
 /**
  * Checks if the following comment process iteration should be skipped
