@@ -4,7 +4,7 @@
  * Created Date: 2023-06-02 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-20 17:20:53
+ * Last Modified: 2024-02-21 21:23:47
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -165,7 +165,7 @@ module.exports.favorite = {
                     }
 
                     /* --------- Try to favorite --------- */
-                    favFunc(sharedfile.id, sharedfile.appID, (error) => { // Note: Steam does not return an error for a duplicate request here
+                    favFunc.call(bot.community, sharedfile.id, sharedfile.appID, (error) => { // Note: Steam does not return an error for a duplicate request here
 
                         /* --------- Handle errors thrown by this favorite attempt or update ratingHistory db and log success message --------- */
                         if (error) {
@@ -363,7 +363,7 @@ module.exports.unfavorite = {
                     }
 
                     /* --------- Try to unfavorite --------- */
-                    favFunc(sharedfile.id, sharedfile.appID, (error) => {
+                    favFunc.call(bot.community, sharedfile.id, sharedfile.appID, (error) => {
 
                         /* --------- Handle errors thrown by this unfavorite attempt or update ratingHistory db and log success message --------- */
                         if (error) {
