@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-18 22:27:12
+ * Last Modified: 2024-02-21 18:33:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -219,7 +219,7 @@ module.exports.comment = {
                 idArr = receiverSteamID64.split("/");
 
                 postComment = commandHandler.controller.main.community.postReviewComment;
-                commentArgs = { receiverSteamID64: idArr[idArr.findIndex((e) => e == "profiles") + 1], appID: idArr[idArr.findIndex((e) => e == "recommended") + 1], quote: null };
+                commentArgs = { receiverSteamID64: idArr[0], appID: idArr[1], quote: null };
                 break;
             default:
                 logger("warn", `[Main] Unsupported comment type '${activeRequestsObj.type}'! Rejecting request...`);

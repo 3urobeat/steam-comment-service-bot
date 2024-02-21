@@ -69,17 +69,21 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
                 logger("debug", "handleSteamIdResolving: User provided review link with customURL...");
 
                 let customURL = strArr[strArr.findIndex((e) => e == "id") + 1]; // Find customURL by searching for id and going to the next element
+                let appID     = strArr[strArr.findIndex((e) => e == "recommended") + 1];
 
                 // Resolve customURL and replace /id/customURL with /profiles/steamID64
                 steamIDResolver.customUrlToSteamID64(customURL, (err, res) => {
                     if (err) return callback(err, null, null);
 
-                    callback(null, str.replace(`id/${customURL}`, `profiles/${res}`), idType);
+                    callback(null, res + "/" + appID, idType);
                 });
             } else {
                 logger("debug", "handleSteamIdResolving: User provided review link with steamID64...");
 
-                callback(null, str, idType); // Instantly callback input
+                let userID = strArr[strArr.findIndex((e) => e == "profiles") + 1];
+                let appID  = strArr[strArr.findIndex((e) => e == "recommended") + 1];
+
+                callback(null, userID + "/" + appID, idType); // Instantly callback input
             }
 
         } else if (str.includes("steamcommunity.com/id/")) {

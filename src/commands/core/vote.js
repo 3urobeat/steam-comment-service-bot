@@ -4,7 +4,7 @@
  * Created Date: 2023-05-28 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-20 20:04:47
+ * Last Modified: 2024-02-21 18:34:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -53,7 +53,7 @@ async function processVoteRequest(origin, commandHandler, args, respondModule, c
 
 
     // Check and get arguments from user
-    let { err, amountRaw, id, idType } = await getMiscArgs(commandHandler, args, origin, resInfo, respond);
+    let { err, amountRaw, id, idType } = await getMiscArgs(commandHandler, args, origin, resInfo, respond); // eslint-disable-line no-unused-vars
 
     if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
@@ -134,10 +134,7 @@ async function processVoteRequest(origin, commandHandler, args, respondModule, c
             // Get rid by scraping review DOM - Quick hack to await function that only supports callbacks
             await (() => {
                 return new Promise((resolve) => {
-                    let userID = idArr[idArr.findIndex((e) => e == "profiles") + 1];
-                    let appID  = idArr[idArr.findIndex((e) => e == "recommended") + 1];
-
-                    commandHandler.controller.main.community.getSteamReview(userID, appID, async (err, obj) => {
+                    commandHandler.controller.main.community.getSteamReview(idArr[0], idArr[1], async (err, obj) => {
                         if (err) {
                             respond((await commandHandler.data.getLang("errloadingreview", null, requesterID)) + err);
                             return;
