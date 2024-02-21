@@ -24,7 +24,7 @@ const { timeToString } = require("../../controller/helpers/misc.js");
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {number|"all"} amount Amount of votes requested or "all" to get the max available amount
  * @param {string} id The sharedfile id to vote on
- * @param {string} voteType "upvote" or "downvote", depending on which request this is
+ * @param {"upvote"|"downvote"|"funnyvote"} voteType Type of the request
  * @returns {Promise.<{ amount: number, availableAccounts: Array.<string>, whenAvailable: number, whenAvailableStr: string }>} Resolves with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
 module.exports.getAvailableBotsForVoting = async (commandHandler, amount, id, voteType) => {
