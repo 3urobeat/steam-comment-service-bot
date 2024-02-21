@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-15 14:00:44
+ * Last Modified: 2024-02-21 20:00:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -465,11 +465,24 @@ Controller.prototype.getBotsPerProxy = function(filterOffline = false) {}; // es
 Controller.prototype._handleErrors = function() {} // eslint-disable-line
 
 /**
+ * ID types supported by this resolver
+ */
+const EIdTypes = { // eslint-disable-line
+    "profile": "profile",
+    "group": "group",
+    "sharedfile": "sharedfile",
+    "discussion": "discussion",
+    "curator": "curator",
+    "review": "review"
+};
+
+/**
  * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
- * Note: You need to provide a full URL for discussions & curators. For discussions only type checking/determination is supported.
+ * Note: You need to provide a full URL for discussions, curators & reviews. For discussions only type checking/determination is supported.
  * @param {string} str The profileID argument provided by the user
- * @param {string} expectedIdType The type of SteamID expected ("profile", "group", "sharedfile", "discussion" or "curator") or `null` if type should be assumed.
- * @param {function(string|null, string|null, string|null): void} callback Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
+ * @param {EIdTypes} expectedIdType The type of SteamID expected or `null` if type should be assumed.
+ * @param {function(string|null, string|null, EIdTypes|null): void} callback
+ * Called with `err` (String or null), `id` (String or null), `idType` (String or null) parameters on completion. The `id` param has the format `userID/appID` for type review and full input url for type discussion.
  */
 Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) => {} // eslint-disable-line
 

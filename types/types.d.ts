@@ -301,6 +301,17 @@ declare type resInfo = {
 declare function comment(commandHandler: CommandHandler, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any, postComment: (...params: any[]) => any, commentArgs: any, receiverSteamID64: string): void;
 
 /**
+ * Processes a up-/down-/funnyvote request
+ * @param origin - Type of vote requested
+ * @param commandHandler - The commandHandler object
+ * @param args - Array of arguments that will be passed to the command
+ * @param respondModule - Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+ * @param context - The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+ * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+ */
+declare function processVoteRequest(origin: "upvote" | "downvote" | "funnyvote", commandHandler: CommandHandler, args: any[], respondModule: (...params: any[]) => any, context: any, resInfo: CommandHandler.resInfo): void;
+
+/**
  * Helper function: Gets the visibility status of a profile and appends it to idType
  * @param commandHandler - The commandHandler object
  * @param steamID64 - The steamID64 of the profile to check
@@ -380,10 +391,10 @@ declare function getMiscArgs(commandHandler: CommandHandler, args: any[], cmd: s
  * @param commandHandler - The commandHandler object
  * @param amount - Amount of votes requested or "all" to get the max available amount
  * @param id - The sharedfile id to vote on
- * @param voteType - "upvote" or "downvote", depending on which request this is
+ * @param voteType - Type of the request
  * @returns Resolves with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
-declare function getAvailableBotsForVoting(commandHandler: CommandHandler, amount: number | "all", id: string, voteType: string): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
+declare function getAvailableBotsForVoting(commandHandler: CommandHandler, amount: number | "all", id: string, voteType: "upvote" | "downvote" | "funnyvote"): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
 
 /**
  * Checks if the following comment process iteration should be skipped
@@ -593,11 +604,11 @@ declare class Controller {
     _handleErrors(): void;
     /**
      * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
-     * Note: You need to provide a full URL for discussions & curators. For discussions only type checking/determination is supported.
+     * Note: You need to provide a full URL for discussions, curators & reviews. For discussions only type checking/determination is supported.
      * @param str - The profileID argument provided by the user
-     * @param expectedIdType - The type of SteamID expected ("profile", "group", "sharedfile", "discussion" or "curator") or `null` if type should be assumed.
+     * @param expectedIdType - The type of SteamID expected or `null` if type should be assumed.
      */
-    handleSteamIdResolving(str: string, expectedIdType: string, callback: any): void;
+    handleSteamIdResolving(str: string, expectedIdType: EIdTypes, callback: any): void;
     /**
      * Logs text to the terminal and appends it to the output.txt file.
      * @param type - String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
@@ -668,11 +679,11 @@ declare class Controller {
     _handleErrors(): void;
     /**
      * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
-     * Note: You need to provide a full URL for discussions & curators. For discussions only type checking/determination is supported.
+     * Note: You need to provide a full URL for discussions, curators & reviews. For discussions only type checking/determination is supported.
      * @param str - The profileID argument provided by the user
-     * @param expectedIdType - The type of SteamID expected ("profile", "group", "sharedfile", "discussion" or "curator") or `null` if type should be assumed.
+     * @param expectedIdType - The type of SteamID expected or `null` if type should be assumed.
      */
-    handleSteamIdResolving(str: string, expectedIdType: string, callback: any): void;
+    handleSteamIdResolving(str: string, expectedIdType: EIdTypes, callback: any): void;
     /**
      * Logs text to the terminal and appends it to the output.txt file.
      * @param type - String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
@@ -706,6 +717,16 @@ declare class Controller {
  * @param data - Stringified data received by previous process
  */
 declare function restartdata(data: string): void;
+
+/**
+ * ID types supported by this resolver
+ */
+declare const EIdTypes: any;
+
+/**
+ * ID types supported by this resolver
+ */
+declare const EIdTypes: any;
 
 /**
  * Implementation of a synchronous for loop in JS (Used as reference: https://whitfin.io/handling-synchronous-asynchronous-loops-javascriptnode-js/)
