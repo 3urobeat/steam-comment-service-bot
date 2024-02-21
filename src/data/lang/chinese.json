@@ -32,7 +32,7 @@
     "genericrequestless": "当前在此ID上仅有 ${availablenow} 个机器人帐户可用于此请求。",
     "genericnotenoughavailableaccs": "抱歉，此ID上当前没有足够的帐户可用于此请求。请等待 ${waittime} 后重试，或仅请求 ${availablenow} 个。",
 
-    "voteunsupportedtype": "Sorry but the vote command does not support this type of ID. Please provide a sharedfile ID/link or review link.",
+    "voteunsupportedtype": "Sorry but this vote command does not support this type of ID. Please provide a sharedfile ID/link (does not support funnyvote) or review link.",
     "voteprocessstarted": "${numberOfVotes} 票的预计等待时间为 ${waittime}。",
     "votesuccess": "所有票已发送。失败: ${failedamount}/${numberOfVotes}",
 

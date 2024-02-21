@@ -32,7 +32,7 @@
     "genericrequestless": "There are currently only ${availablenow} bot accounts available for this request on this id.",
     "genericnotenoughavailableaccs": "Sorry but there are currently not enough accounts available for this request on this id. Please wait ${waittime} and try again or only request ${availablenow} now.",
 
-    "voteunsupportedtype": "Sorry but the vote command does not support this type of ID. Please provide a sharedfile ID/link or review link.",
+    "voteunsupportedtype": "Sorry but this vote command does not support this type of ID. Please provide a sharedfile ID/link (does not support funnyvote) or review link.",
     "voteprocessstarted": "Estimated wait time for ${numberOfVotes} votes: ${waittime}.",
     "votesuccess": "All votes have been sent. Failed: ${failedamount}/${numberOfVotes}",
 
