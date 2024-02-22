@@ -4,7 +4,7 @@
  * Created Date: 2023-05-28 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-21 23:07:12
+ * Last Modified: 2024-02-22 15:01:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -223,30 +223,13 @@ async function processVoteRequest(origin, commandHandler, args, respondModule, c
                 } else {
 
                     // Set or insert entry for this account on this id for this type
-
-                    // Clean upsert method, however overwrites favorite entries, which is bad
-                    /* commandHandler.data.ratingHistoryDB.update({ id: id, accountName: activeReqEntry.accounts[i] }, { $set: { type: origin, time: Date.now() } }, { upsert: true }, (err) => {
-                        if (err) logger("warn", `Failed to update entry for '${activeReqEntry.accounts[i]}' on '${id}' in ratingHistory database to '${origin}'! Error: ` + err);
-                    }); */
-
-                    // Dirty solution for now
-                    switch (origin) {
-                        case "upvote":
-                            commandHandler.data.ratingHistoryDB.insert({ id: id, accountName: activeReqEntry.accounts[i], type: "upvote", time: Date.now() }, () => {});
-                            commandHandler.data.ratingHistoryDB.remove({ id: id, accountName: activeReqEntry.accounts[i], type: "downvote" }, () => {});
-                            commandHandler.data.ratingHistoryDB.remove({ id: id, accountName: activeReqEntry.accounts[i], type: "funnyvote" }, () => {});
-                            break;
-                        case "downvote":
-                            commandHandler.data.ratingHistoryDB.remove({ id: id, accountName: activeReqEntry.accounts[i], type: "upvote" }, () => {});
-                            commandHandler.data.ratingHistoryDB.insert({ id: id, accountName: activeReqEntry.accounts[i], type: "downvote", time: Date.now() }, () => {});
-                            commandHandler.data.ratingHistoryDB.remove({ id: id, accountName: activeReqEntry.accounts[i], type: "funnyvote" }, () => {});
-                            break;
-                        case "funnyvote":
-                            commandHandler.data.ratingHistoryDB.remove({ id: id, accountName: activeReqEntry.accounts[i], type: "upvote" }, () => {});
-                            commandHandler.data.ratingHistoryDB.remove({ id: id, accountName: activeReqEntry.accounts[i], type: "downvote" }, () => {});
-                            commandHandler.data.ratingHistoryDB.insert({ id: id, accountName: activeReqEntry.accounts[i], type: "funnyvote", time: Date.now() }, () => {});
-                            break;
-                    }
+                    commandHandler.data.ratingHistoryDB.update(
+                        { id: id, accountName: activeReqEntry.accounts[i], $or: [{ type: "upvote" }, { type: "downvote" }, { type: "funnyvote" }] }, // Match all records of this account for this id, with one of the three possible types supported by this command,
+                        { $set: { type: origin, time: Date.now() } },                                                                                // ...then update the type to the one of this request
+                        { upsert: true },                                                                                                            // ...or insert a new entry if none was found
+                        (err) => {
+                            if (err) logger("warn", `Failed to update entry for '${activeReqEntry.accounts[i]}' on '${id}' in ratingHistory database to '${origin}'! Error: ` + err);
+                        });
 
                     // Log success msg
                     if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] ${capitilizedOrigin.slice(0, -1)}ing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id} with proxy ${bot.loginData.proxyIndex}...`);
