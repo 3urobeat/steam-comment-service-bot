@@ -43,7 +43,7 @@ Now, clone your fork, for example using the git cli:
 
 Open the folder you cloned to with your code editor and open the package.json file inside.  
 Change the name to the name you gave your fork. For the bot to recognize your plugin, it must have the `steam-comment-bot-` prefix I mentioned above.  
-Populate description, author and version as well. The plugin will be packed into an NPM package later.
+Populate description, author, version and botVersion as well. The plugin will be packed into an NPM package later.
 
 Open the entry file `plugin.js` and edit the PluginSystem import file path at the top.  
 It should point to your `steam-comment-service-bot` installation. This makes sure your code editor's IntelliSense will work.  
@@ -220,6 +220,7 @@ If you have a version that you would like to **pack locally**, follow these step
     -   Increment MINOR if you add new functionality that is backwards compatible, e.g. no direct user interaction is required to update
     -   Increment PATCH if you made bugfixes or other small changes which also do not require user interaction
     -   If you do not have a full release finished yet, e.g. a beta version, start with the version number `0.1.0`. Your first full release `1.0.0` is appropiate when the core functionality has been finished and no major bugs are to be expected
+-   Set `botVersion` in `package.json` to the current version of the steam-comment-service-bot. This allows users to see for which version your plugin was made and tested. A warning will be displayed on plugin load if the bot or your plugin is outdated.
 -   Open a command line/terminal window in your plugin project folder and run `npm pack`. On success a new `.tgz` archive appeared in your folder.
 -   Copy the package archive to your steam-comment-service-bot folder, open a new terminal there and run `npm install ./the-archive-name.tgz`
 
@@ -232,6 +233,7 @@ If you have a finished version of your plugin that you would like to **publish t
 
 -   If this is your first time, create an [NPM account](https://www.npmjs.com/signup), open a command line/terminal in your plugin project folder and run `npm login`. (I assume you have npm installed alongside node)
 -   Once that is done, give your plugin a proper version number in `package.json`. NPM packages use semantic versioning which is explained above.
+-   Set `botVersion` in `package.json` to the current version of the steam-comment-service-bot. This allows users to see for which version your plugin was made and tested. A warning will be displayed on plugin load if the bot or your plugin is outdated.
 -   Run `npm publish` in the command line/terminal window from step 1.
 -   If everything goes well, your package should now be accessible to anyone. Check it out by searching for it [on the npm webpage](https://www.npmjs.com/)!
 
