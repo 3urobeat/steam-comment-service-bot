@@ -4,7 +4,7 @@
  * Created Date: 2023-05-28 12:18:49
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-20 19:53:12
+ * Last Modified: 2024-02-22 17:51:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -43,9 +43,24 @@ module.exports.getMiscArgs = (commandHandler, args, cmd, resInfo, respond) => {
                 return resolve({});
             }
 
+            // Check if user requested more allowed
+            if (amount != "all") {
+                let owners = commandHandler.data.cachefile.ownerid;                             // Get owners
+                if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs; // Overwrite default owners if called from e.g. plugin
+
+                let maxRequestAmount = commandHandler.data.config.maxRequests;                  // Set to default max value for normal users
+                if (owners.includes(resInfo.userID)) maxRequestAmount = commandHandler.data.config.maxOwnerRequests; // Overwrite if owner
+
+                if (amount > maxRequestAmount) {
+                    logger("debug", `CommandHandler getMiscArgs(): User requested ${amount} but is only allowed ${maxRequestAmount} comments. Slicing...`);
+
+                    respond(await commandHandler.data.getLang("requesttoohigh", { "maxRequestAmount": maxRequestAmount, "cmdusage": cmdUsage }, resInfo.userID)); // An empty string will become a 0
+                    return resolve({});
+                }
+            }
+
             // Process input and check if ID is valid
             commandHandler.controller.handleSteamIdResolving(args[1], null, async (err, destParam, idType) => { // eslint-disable-line no-unused-vars
-
                 logger("debug", `CommandHandler getMiscArgs() success. amount: ${amount} | dest: ${destParam}`);
 
                 resolve({
@@ -54,7 +69,6 @@ module.exports.getMiscArgs = (commandHandler, args, cmd, resInfo, respond) => {
                     "id": destParam,
                     "idType": idType
                 });
-
             });
 
         })();

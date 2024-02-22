@@ -4,7 +4,7 @@
  * Created Date: 2023-05-28 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-22 15:01:08
+ * Last Modified: 2024-02-22 16:26:17
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -71,7 +71,7 @@ async function processVoteRequest(origin, commandHandler, args, respondModule, c
 
 
     // Get all available bot accounts
-    let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForVoting(commandHandler, amountRaw, id, origin);
+    let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForVoting(commandHandler, amountRaw, id, origin, resInfo);
 
     if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point.
         if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterID)); // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
