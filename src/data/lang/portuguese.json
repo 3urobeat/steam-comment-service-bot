@@ -9,7 +9,6 @@
     "commentcmdusageowner2": "'${cmdprefix}comment 1 id'. Forneça um perfil, grupo, arquivo compartilhado (captura de tela, arte ou guia) ou ID/URL de discussão se quiser comentar em outro lugar além do seu perfil.",
     "commentcmdusage": "'${cmdprefix}comment quantidade/\"all\"' para solicitar muitos comentários (ou a quantidade máxima possível) no seu perfil.",
     "commentcmdusage2": "'${cmdprefix}comment' para solicitar um comentário no seu perfil!",
-    "commentrequesttoohigh": "Você pode solicitar no máximo ${maxRequestAmount} comentários.\nUso do comando: ${commentcmdusage}",
     "commentinvalidid": "Isso não parece ser um perfil, grupo, arquivo compartilhado (captura de tela, arte ou guia) ou ID/URL de discussão válido!\nCertifique-se de fornecer um link completo, apenas a parte personalizada ou ID, apontando para um elemento existente.\n\nUso do comando: ${commentcmdusage}",
     "commentprofileidowneronly": "Especificar um ID é permitido apenas para os proprietários do bot.\nSe você é um proprietário do bot, certifique-se de ter adicionado seu ID à configuração ownerid no config.json.",
     "commentmissingnumberofcomments": "Por favor, especifique quantos comentários dos ${maxRequestAmount} você gostaria de solicitar.\nUso do comando: ${commentcmdusage}",
@@ -54,6 +53,7 @@
     "nouserid": "O comando foi chamado sem um userID! Bloqueando o comando, pois não consigo aplicar cooldowns ou o comportamento padrão deste comando não pode ser usado sem um. Isso é um problema de codificação que deve ser corrigido por um desenvolvedor.",
     "noidparam": "Por favor, forneça um ID!\nO comportamento padrão deste comando pode estar indisponível neste contexto, por exemplo, quando o comando foi usado fora do Steam Chat ou o desenvolvedor esqueceu de passar um userID para ativá-lo.",
 
+    "requesttoohigh": "You are allowed to request a maximum of ${maxRequestAmount}.\n\nUso do comando: ${cmdusage}",
     "invalidnumber": "Isso não parece ser um número válido!\n\nUso do comando: ${cmdusage}",
     "invalidprofileid": "Isso não parece ser um ID válido ou link, ou você forneceu o tipo de ID errado para este comando!\nCertifique-se de fornecer um link completo, apenas a parte personalizada ou o ID, apontando para um elemento existente.",
     "invalidgroupid": "Este não é um ID de grupo ou URL de grupo válido!\nUm ID de grupo deve parecer assim: '103582791464712227'\n...ou um URL de grupo assim: 'https://steamcommunity.com/groups/3urobeatGroup'",

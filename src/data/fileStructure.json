@@ -378,7 +378,7 @@
         {
             "path": "src/commands/core/comment.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/comment.js",
-            "checksum": "50bcf40d165b38a6ca78b48fa62a45a8"
+            "checksum": "50c0febae310c5209af878a376ce37d3"
         },
         {
             "path": "src/commands/core/favorite.js",
@@ -428,7 +428,7 @@
         {
             "path": "src/commands/helpers/getCommentArgs.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getCommentArgs.js",
-            "checksum": "98977b59b9fa0eeeaeb18d668977b350"
+            "checksum": "5d8a2150bf89d5932d7fe9789d348588"
         },
         {
             "path": "src/commands/helpers/getCommentBots.js",
@@ -543,22 +543,22 @@
         {
             "path": "src/data/lang/chinese.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/chinese.json",
-            "checksum": "0b33d7102180142c46f5a7f4cb84e322"
+            "checksum": "afe81a5bcf36ee475328386e0ad56e9a"
         },
         {
             "path": "src/data/lang/english.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/english.json",
-            "checksum": "9e6e539a64ee9c7e974ba3b55229d4ae"
+            "checksum": "23de10cb72de87152d726e104b3c354b"
         },
         {
             "path": "src/data/lang/portuguese.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/portuguese.json",
-            "checksum": "22125e57173abaa898b57006509ea1db"
+            "checksum": "5fe2c048a5e27eb4e3a981e1ed39851d"
         },
         {
             "path": "src/data/lang/russian.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/russian.json",
-            "checksum": "f105fca3f26b87f30c2b8f998c100bc8"
+            "checksum": "5c75f0a747a6e96ab17d3183b93457e7"
         },
         {
             "path": "src/dataManager/dataCheck.js",

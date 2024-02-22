@@ -4,7 +4,7 @@
  * Created Date: 2022-02-28 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-18 21:27:05
+ * Last Modified: 2024-02-22 17:32:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -54,12 +54,11 @@ function getVisibilityStatus(commandHandler, steamID64, type, callback) {
  * Retrieves arguments from a comment request. If request is invalid (for example too many comments requested) an error message will be sent
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Array} args The command arguments
- * @param {string} requesterID The steamID64 of the requesting user
  * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @param {function(string): void} respond The shortened respondModule call
  * @returns {Promise.<{ maxRequestAmount: number, commentcmdUsage: string, numberOfComments: number, profileID: string, idType: string, quotesArr: Array.<string> }>} Resolves promise with object containing all relevant data when done
  */
-module.exports.getCommentArgs = (commandHandler, args, requesterID, resInfo, respond) => {
+module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
     return new Promise((resolve) => {
         (async () => { // Lets us use await insidea Promise without creating an antipattern
 
@@ -67,6 +66,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterID, resInfo, res
             let owners = commandHandler.data.cachefile.ownerid;
             if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
+            let requesterID      = resInfo.requesterID;
             let maxRequestAmount = commandHandler.data.config.maxRequests; // Set to default value and if the requesting user is an owner it gets changed below
             let numberOfComments = 0;
             let quotesArr        = commandHandler.data.quotes;
@@ -105,7 +105,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterID, resInfo, res
                 if (args[0] > maxRequestAmount) { // Number is greater than maxRequestAmount?
                     logger("debug", `CommandHandler getCommentArgs(): User requested ${args[0]} but is only allowed ${maxRequestAmount} comments. Stopping...`);
 
-                    respond(await commandHandler.data.getLang("commentrequesttoohigh", { "maxRequestAmount": maxRequestAmount, "commentcmdusage": commentcmdUsage }, requesterID));
+                    respond(await commandHandler.data.getLang("requesttoohigh", { "maxRequestAmount": maxRequestAmount, "cmdusage": commentcmdUsage }, requesterID));
                     return resolve(false);
                 }
 

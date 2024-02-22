@@ -9,7 +9,6 @@
     "commentcmdusageowner2": "使用'${cmdprefix}comment 1 id'。如果要在其他地方评论，请提供个人资料、小组、共享文件（截图、艺术品或指南）或讨论ID/URL。",
     "commentcmdusage": "使用'${cmdprefix}comment amount/\"all\"'请求指定数量的评论（或最大可能数量）在您的个人资料上。",
     "commentcmdusage2": "使用'${cmdprefix}comment'请求在您的个人资料上进行评论！",
-    "commentrequesttoohigh": "您最多可以请求${maxRequestAmount}条评论。\n命令用法: ${commentcmdusage}",
     "commentinvalidid": "这似乎不是有效的个人资料、小组、共享文件（截图、艺术品或指南）或讨论ID/URL！\n请确保您提供的是完整链接、只有虚荣或ID，指向现有元素。\n\n命令用法: ${commentcmdusage}",
     "commentprofileidowneronly": "仅允许为机器人所有者指定ID。\n如果您是机器人所有者，请确保已将您的ID添加到config.json中的ownerid设置。",
     "commentmissingnumberofcomments": "请指定要请求的${maxRequestAmount}条评论中的数量。\n命令用法: ${commentcmdusage}",
@@ -54,6 +53,7 @@
     "nouserid": "调用命令时未提供userID！由于无法应用冷却或此命令的默认行为无法在没有userID的情况下使用，因此正在阻止该命令。这是开发人员必须解决的编码问题。",
     "noidparam": "请提供一个ID！此上下文中可能无法使用此命令的默认行为，例如当从Steam Chat外部或开发人员忘记传递userID以启用它时。",
 
+    "requesttoohigh": "You are allowed to request a maximum of ${maxRequestAmount}.\n\n命令用法: ${cmdusage}",
     "invalidnumber": "这似乎不是有效的数字！\n\n命令用法: ${cmdusage}",
     "invalidprofileid": "这似乎不是有效的ID或链接，或者您为此命令提供了错误的ID类型！\n请确保您提供的是完整链接、只有虚荣或ID，指向现有元素。",
     "invalidgroupid": "这不是有效的小组ID或小组URL！\n小组ID必须看起来像这样: '103582791464712227' \n...或小组URL看起来像这样: 'https://steamcommunity.com/groups/3urobeatGroup'",

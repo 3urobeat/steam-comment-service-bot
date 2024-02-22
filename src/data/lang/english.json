@@ -9,7 +9,6 @@
     "commentcmdusageowner2": "'${cmdprefix}comment 1 id'. Provide a profile, group, sharedfile (screenshot, artwork or guide), discussion or review ID/URL if you'd like to comment somewhere else instead of on your profile.",
     "commentcmdusage": "'${cmdprefix}comment amount/\"all\"' to request amount many comments (or the max possible amount) on your profile.",
     "commentcmdusage2": "'${cmdprefix}comment' to request a comment on your profile!",
-    "commentrequesttoohigh": "You can request max. ${maxRequestAmount} comments.\nCommand usage: ${commentcmdusage}",
     "commentinvalidid": "This does not seem to be a valid profile, group, sharedfile (screenshot, artwork or guide), discussion or review ID/URL!\nPlease make sure that you either provide a full link, only the vanity or ID, pointing to an existing element.\n\nCommand usage: ${commentcmdusage}",
     "commentprofileidowneronly": "Specifying a ID is only allowed for bot owners.\nIf you are a bot owner, please make sure that you have added your ID to the ownerid setting in the config.json.",
     "commentmissingnumberofcomments": "Please specify how many comments out of ${maxRequestAmount} you would like to request.\nCommand usage: ${commentcmdusage}",
@@ -54,6 +53,7 @@
     "nouserid": "The command was called without a userID! Blocking the command as I'm either unable to apply cooldowns or the default behavior of this command cannot be used without one. This is a coding issue which must be fixed by a developer.",
     "noidparam": "Please provide an ID!\nThe default behavior of this command might be unavailable in this context, for example when the command was used from outside the Steam Chat or the developer forgot to pass a userID to enable it.",
 
+    "requesttoohigh": "You are allowed to request a maximum of ${maxRequestAmount}.\n\nCommand usage: ${cmdusage}",
     "invalidnumber": "This does not seem to be a valid number!\n\nCommand usage: ${cmdusage}",
     "invalidprofileid": "This does not seem to be a valid ID or link or you provided the wrong ID type for this command!\nPlease make sure that you either provide a full link, only the vanity or ID, pointing to an existing element.",
     "invalidgroupid": "This is not a valid group id or group url! \nA groupid must look like this: '103582791464712227' \n...or a group url like this: 'https://steamcommunity.com/groups/3urobeatGroup'",

@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-21 18:33:58
+ * Last Modified: 2024-02-22 16:25:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -84,7 +84,7 @@ module.exports.comment = {
 
 
         /* --------- Calculate maxRequestAmount and get arguments from comment request --------- */
-        let { maxRequestAmount, numberOfComments, profileID, idType, quotesArr } = await getCommentArgs(commandHandler, args, requesterID, resInfo, respond);
+        let { maxRequestAmount, numberOfComments, profileID, idType, quotesArr } = await getCommentArgs(commandHandler, args, resInfo, respond);
 
         if (!maxRequestAmount && !numberOfComments && !quotesArr) return; // Looks like the helper aborted the request
 
