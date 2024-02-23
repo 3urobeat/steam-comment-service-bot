@@ -11,11 +11,12 @@ This is the full documentation of all commands. Most commands have aliases but s
 | Command       | Usage/Arguments  | Description  |
 | ------------- | ---------------- | ------------ |
 | !help         | No arguments     | Returns a list of commands available to you and a link to this page. |
-| !comment      | User: `amount`<br><br>Owner: `amount ID [custom quotes]` | Request comments from all available bot accounts. Max amount can be defined in `config.json`.<br><br>Owner specific: Provide an ID/url to send comments to a specific profile, group, sharedfile (screenshot, artwork, guide) or discussion (you must provide a full url for discussions). You must always provide `amount` when providing `ID`.<br>A botowner can also provide a custom quote selection in the form of an array [quote1, quote2, ...]. You need to provide all previous arguments.<br><br>When no `ID` has been provided the bot will always use the profile of the requesting user. (You) |
-| !upvote       | `amount ID`      | Upvotes a sharedfile with all bot accounts that haven't yet voted on that item. Requires unlimited accounts! |
-| !downvote     | `amount ID`      | Downvotes a sharedfile with all bot accounts that haven't yet voted on that item. Requires unlimited accounts! (Owner only.) |
-| !favorite     | `amount ID`      | Favorizes a sharedfile with all bot accounts that haven't yet favorized that item. |
-| !unfavorite   | `amount ID`      | Unfavorizes a sharedfile with all bot accounts that have favorized that item. (Owners only.) |
+| !comment      | User: `amount`<br><br>Owner: `amount ID [custom quotes]` | Request comments from all available bot accounts. Max amount can be defined in `config.json`, please see its [documentation page](./config_doc.md) for more information.<br><br>Owner specific: Provide an ID/url to send comments to a specific profile, group, sharedfile (screenshot, artwork, guide), discussion or review (you must provide a full url for discussions & reviews). You must always provide `amount` when providing `ID`.<br>A botowner can also provide a custom quote selection in the form of an array [quote1, quote2, ...]. You need to provide all previous arguments.<br><br>When no `ID` has been provided the bot will always use the profile of the requesting user. (You) |
+| !upvote       | `amount ID`      | Upvotes a sharedfile or review with all bot accounts that haven't yet voted on that item. Requires unlimited accounts! |
+| !downvote     | `amount ID`      | Downvotes a sharedfile or review with all bot accounts that haven't yet voted on that item. Requires unlimited accounts! (Owner only.) |
+| !funnyvote    | `amount link`    | Votes with funny on a review using all bot accounts that haven't yet voted on that item. Requires unlimited accounts! |
+| !favorite     | `amount ID`      | Favorizes a sharedfile with all bot accounts that haven't yet favorized that item. Alias: !fav |
+| !unfavorite   | `amount ID`      | Unfavorizes a sharedfile with all bot accounts that have favorized that item. Alias: !unfav (Owners only.) |
 | !follow       | `amount ID`      | Follows a user's workshop or a curator (you must provide a full url for curators) with all bot accounts that haven't yet done so.<br>Providing an ID/url is owner only, normal users can only request follows for themselves.<br>When no `ID` has been provided the bot will always use the profile of the requesting user. (You) |
 | !unfollow     | `amount ID`      | Unfollows a user's workshop or a curator (you must provide a full url for curators) with all bot accounts that have done so.<br>Providing an ID/url is owner only, normal users can only request unfollows for themselves.<br>When no `ID` has been provided the bot will always use the profile of the requesting user. (You) |
 | !ping         | No arguments     | Returns ping in ms to Steam's servers. Can be used to check if the bot is responsive | 
@@ -27,8 +28,8 @@ This is the full documentation of all commands. Most commands have aliases but s
 | !settings     | `config key` `new value` | Change a value in the config. (Owner only.) |
 | !lang         | `language`       | Set a language which the bot will use to respond to you. This setting is per-user. Provide no argument to get a list of all supported languages. |
 | !failed       | `ID`             | See the exact errors of the last comment request on your profile or provide an ID to see the errors of the last request you started. Owners can also view errors for requests started by other users. | 
-| !sessions     | No arguments     | Displays all active requests. (Owner only.) |
-| !mysessions   | No arguments     | Displays all active requests that you have started. |
+| !sessions     | No arguments     | Displays all active requests. Alias: !requests (Owner only.) |
+| !mysessions   | No arguments     | Displays all active requests that you have started. Alias: !myrequests |
 | !about        | No arguments     | Displays information about this project. The message also contains a disclaimer as well as a link to the owner's profile set in the config.json. |
 | !addfriend    | `profileid`      | Adds the profileid with all bot accounts. Requires unlimited accounts! (Owner only.) |
 | !unfriend     | `profileid`      | Unfriends a user from all logged in accounts. (Owner only.) Providing no argument will let all bots unfriend you. (Available to normal users) | 
@@ -38,6 +39,7 @@ This is the full documentation of all commands. Most commands have aliases but s
 | !leaveallgroups | `"abort"`      | Leaves all groups with all bot accounts. (Owner only.) |
 | !block        | `profileid`      | Blocks a user with all bot accounts on Steam. (Owner only.) |
 | !unblock      | `profileid`      | Unblocks a user with all bot accounts on Steam. Note: The user can still get ignored by Steam for a while. (Owner only.) |
+| !jobs         | No arguments     | Lists all currently registered jobs. (Owner only.) |
 | !reload       | No arguments     | Reloads all commands and plugins without needing to restart. Please only use it for testing/development. Alias: !rl (Owner only.) |
 | !restart      | No arguments     | Restarts the bot and checks for available updates. Alias: !rs (Owner only.) |
 | !stop         | No arguments     | Stops the bot. (Owner only.) |

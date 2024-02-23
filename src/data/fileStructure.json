@@ -223,12 +223,12 @@
         {
             "path": "docs/wiki/commands_doc.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/commands_doc.md",
-            "checksum": "cff834e22781d488cbfe9c63f974f6be"
+            "checksum": "8c2ccbc835e14018bfec283f203962e8"
         },
         {
             "path": "docs/wiki/config_doc.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/config_doc.md",
-            "checksum": "1d8c4c1b3a911680b1c208aedb7374b0"
+            "checksum": "8deb095d763cfe7992ffac61d48918d2"
         },
         {
             "path": "docs/wiki/contributing.md",
