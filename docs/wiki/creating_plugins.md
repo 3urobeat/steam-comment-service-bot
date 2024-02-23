@@ -22,6 +22,7 @@ You should definitely take a look at the developer documentation though, it expl
 - [Plugin System Interface](#pluginsystem)
 - [Controller](#controller)
 - [Command System](#commandhandler)
+- [Job Manager](#jobmanager)
 - [Typescript](#typescript)
 - [Packing and installing your plugin using npm](#npm)
 - [Additional information](#additional-info)
@@ -167,7 +168,7 @@ Take a look at the developer documentation (TODO) for more information about how
 
 Running existing commands is very easy. Let's take a look at how requesting 5 comments for 3urobeat would work:  
 ```js
-this.plugin.commandHandler.runCommand(
+this.sys.commandHandler.runCommand(
     "comment",                                                          // Command Name
     ["5", "3urobeat"],                                                  // Arguments Array
     (x, y, msg) => { logger("info", "Comment Command said: " + msg) },  // Response Function
@@ -186,6 +187,38 @@ This ID is used to uniquely identify the requesting user, for example apply cool
 Failing to provide an ID will result in either unprotected or no access.
 
 This is also where the `ownerIDs` array comes into play: It allows you to overwrite the `ownerid` array set in the config to enable owner privilege checking when using commands from outside the Steam Chat. Very cool, right?
+
+&nbsp;
+
+<a id="jobmanager"></a>
+
+## **JobManager**:
+
+The JobManager is a handy module for managing reoccurring intervals, also called jobs, for you.  
+For example, the updater registers a job by default to handle the update check, which runs every 6 hours.  
+And you can do that too!
+
+If you've got something which needs to run every x seconds/minutes/hours, then register your function like follows:  
+```js
+let myJobFunction = (jobManager) => {
+    logger("info", "Hello, I'm a job! There are currently " + jobManager.jobs.length + " jobs registered.");
+};
+
+this.sys.jobManager.registerJob({ 
+    name: "testjob", 
+    description: "Tests things",
+    interval: 10000, // 10 seconds
+    func: myJobFunction, 
+    runOnRegistration: true 
+});
+```
+This example registers a job which runs instantly upon registration and then every 10 seconds.  
+The job function gets a reference to the jobManager, through which you can access all other parts of the bot, like you are used to.  
+Check out the JsDoc of `registerJob()` using your IntelliSense to see all options - `description` & `runOnRegistration` are optional for example.
+
+When starting the bot, you should see your job actively logging the message and appear in the response of the command `!jobs`.  
+
+Please always use this JobManager instead of registering your own intervals for periodic actions.
 
 &nbsp;
 
