@@ -58,7 +58,7 @@
         {
             "path": "docs/dev/README.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/README.md",
-            "checksum": "6d4f0ed91ea9f2e5ffe84cf6d3d7297e"
+            "checksum": "c695a933015f31edfaf10c3ec768b4ad"
         },
         {
             "path": "docs/dev/bot/bot.md",
@@ -99,6 +99,11 @@
             "path": "docs/dev/introduction.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/introduction.md",
             "checksum": "759da9533bfa9e1ad2c8775858cfbfc1"
+        },
+        {
+            "path": "docs/dev/jobs/jobManager.md",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/jobs/jobManager.md",
+            "checksum": "2a0d8cde7611b7d674874e8d0f8f8433"
         },
         {
             "path": "docs/dev/pluginSystem/pluginSystem.md",
