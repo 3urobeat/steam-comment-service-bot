@@ -370,9 +370,10 @@ declare function getFollowArgs(commandHandler: CommandHandler, args: any[], cmd:
  * @param id - The user id to follow
  * @param idType - Either "user" or "curator"
  * @param favType - Either "follow" or "unfollow", depending on which request this is
+ * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @returns Resolves with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
-declare function getAvailableBotsForFollowing(commandHandler: CommandHandler, amount: number | "all", canBeLimited: boolean, id: string, idType: string, favType: string): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
+declare function getAvailableBotsForFollowing(commandHandler: CommandHandler, amount: number | "all", canBeLimited: boolean, id: string, idType: string, favType: string, resInfo: CommandHandler.resInfo): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
 
 /**
  * Retrieves arguments from a non-specific request without id processing

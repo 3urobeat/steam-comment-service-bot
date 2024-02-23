@@ -4,10 +4,10 @@
  * Created Date: 2023-09-24 16:10:36
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:05:13
+ * Last Modified: 2024-02-23 16:22:52
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -49,6 +49,20 @@ module.exports.getFollowArgs = (commandHandler, args, cmd, resInfo, respond) => 
             if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
             let requesterID = resInfo.userID;
+
+
+            // Check if user requested more allowed
+            if (amount != "all") {
+                let maxRequestAmount = commandHandler.data.config.maxRequests;                  // Set to default max value for normal users
+                if (owners.includes(resInfo.userID)) maxRequestAmount = commandHandler.data.config.maxOwnerRequests; // Overwrite if owner
+
+                if (amount > maxRequestAmount) {
+                    logger("debug", `CommandHandler getFollowArgs(): User requested ${amount} but is only allowed ${maxRequestAmount} comments. Slicing...`);
+
+                    respond(await commandHandler.data.getLang("requesttoohigh", { "maxRequestAmount": maxRequestAmount, "cmdusage": cmdUsage }, resInfo.userID)); // An empty string will become a 0
+                    return resolve({});
+                }
+            }
 
 
             // Check if id was provided and process input

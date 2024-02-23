@@ -233,7 +233,7 @@
         {
             "path": "docs/wiki/config_doc.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/config_doc.md",
-            "checksum": "8deb095d763cfe7992ffac61d48918d2"
+            "checksum": "349d06135cdf4ba4fe99a83978dd7ec0"
         },
         {
             "path": "docs/wiki/contributing.md",
@@ -393,7 +393,7 @@
         {
             "path": "src/commands/core/follow.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/follow.js",
-            "checksum": "df5715befad5dbb4cf5b2e72f4afbe03"
+            "checksum": "f0de6187be266b7f5b5939d4f4fa7b76"
         },
         {
             "path": "src/commands/core/friend.js",
@@ -448,12 +448,12 @@
         {
             "path": "src/commands/helpers/getFollowArgs.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getFollowArgs.js",
-            "checksum": "e50be65b1eb493ef9e4604fcdf6b3482"
+            "checksum": "1721a8875ca32ba707867bb3318952a0"
         },
         {
             "path": "src/commands/helpers/getFollowBots.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getFollowBots.js",
-            "checksum": "0da28b42152314fe118120f15743b38a"
+            "checksum": "dc949626da55dfe87fb1a0dea157deb5"
         },
         {
             "path": "src/commands/helpers/getMiscArgs.js",
@@ -828,7 +828,7 @@
         {
             "path": "types/types.d.ts",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/types/types.d.ts",
-            "checksum": "8fef39f289871fc6eac4a9a8ba9c8e28"
+            "checksum": "af49371a47bd5361432ccfb337de3077"
         }
     ]
 }
