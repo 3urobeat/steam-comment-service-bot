@@ -58,6 +58,18 @@ I'll take a look at it and perhaps suggest or make some minor changes in the fol
 &nbsp;
 
 ## Translating
+**Updating an existing language:**  
+I'm changing or adding new messages nearly every update, so there are often language strings that need to be updated.  
+It'd be great if you could help!  
+
+Open one of the existing languages located in `src/data/lang` (except English, that is the default file which I'm updating myself) with a text editor.  
+Find an untranslated value in the file (the message will be in English) and translate it into the correct language.  
+
+Continue reading [here](#translating-general-info) for information about variables and contributing the changes you just made.
+
+&nbsp;
+
+**Adding a new language:**  
 You know an unsupported language and would like to contribute a translation? Cool!  
 
 Create a new `.json` file in the `src/data/lang/` directory with the name of the language in English (e.g. "german" instead of "deutsch").  
@@ -65,6 +77,13 @@ Please also make sure the filename is lowercase, like the other ones.
 
 Open the file, copy the content of `english.json` into your file and start translating the value of every key (except the key `langname`, it must be the same as the filename).  
 
+Keep on reading [below](#translating-general-info).
+
+&nbsp;
+
+<a id="translating-general-info"></a>
+
+**Applies to both:**  
 Some language strings contain variables which are replaced by the bot with corresponding values at runtime.  
 These are marked with `${variablename}` and must occur like that in your translated string as well.  
 
