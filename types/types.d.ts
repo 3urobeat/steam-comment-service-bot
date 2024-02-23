@@ -1419,14 +1419,21 @@ declare class PluginSystem {
      */
     _loadPlugins(): void;
     /**
-     * Reference to the controller object
+     * Central part of the application and your interface to everything
      */
     controller: Controller;
     /**
      * References to all plugin objects
      */
     pluginList: any;
+    /**
+     * Manages all registered commands and gives you access to them
+     */
     commandHandler: CommandHandler;
+    /**
+     * Manages and runs all jobs and lets you register your own
+     */
+    jobManager: JobManager;
     /**
      * Reloads all plugins and calls ready event after ~2.5 seconds.
      */
