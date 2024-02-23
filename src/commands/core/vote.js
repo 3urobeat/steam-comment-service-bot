@@ -4,7 +4,7 @@
  * Created Date: 2023-05-28 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-22 16:26:17
+ * Last Modified: 2024-02-23 13:16:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -350,17 +350,17 @@ module.exports.funnyvote = {
             description: "The amount of funnyvotes to request",
             type: "string",
             isOptional: false,
-            ownersOnly: true
+            ownersOnly: false
         },
         {
             name: "ID",
             description: "The link of the review to vote on",
             type: "string",
             isOptional: false,
-            ownersOnly: true
+            ownersOnly: false
         }
     ],
-    ownersOnly: true, // I would like to prevent users from abusing this feature to dislike other peoples creations
+    ownersOnly: false,
 
     /**
      * The funnyvote command
