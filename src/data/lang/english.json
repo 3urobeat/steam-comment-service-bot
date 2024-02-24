@@ -41,7 +41,7 @@
     "followprocessstarted": "Estimated wait time for ${totalamount} un-/follows: ${waittime}.",
     "followsuccess": "All un-/follows have been sent. Failed: ${failedamount}/${totalamount}",
 
-    "useradded": "Hello there! Thanks for adding me!\nRequest a free comment with ${cmdprefix}comment\nType ${cmdprefix}help for more commands or ${cmdprefix}about for more information!",
+    "useradded": "Hey! Thanks for adding me!\nRequest a free comment with '${cmdprefix}comment'\nType '${cmdprefix}help' for more commands or '${cmdprefix}about' for more information.\nYou can use the '${cmdprefix}lang' command to switch between ${langcount} languages.",
     "userunfriend": "You have been unfriended for being inactive for ${forceFriendlistSpaceTime} days as the friendlist was running low on space.\nIf you need me again, feel free to add me again!",
     "userforceunfriend": "You have been unfriended for being inactive for ${unfriendtime} days.\nIf you need me again, feel free to add me again!",
 

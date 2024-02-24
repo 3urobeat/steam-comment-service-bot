@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-28 18:01:04
+ * Last Modified: 2024-02-24 11:36:47
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -25,7 +25,7 @@ const Bot = require("../bot.js");
  */
 Bot.prototype._attachSteamFriendRelationshipEvent = function() {
 
-    this.user.on("friendRelationship", async (steamID, relationship) => {
+    this.user.on("friendRelationship", (steamID, relationship) => {
 
         if (relationship == 2) {
             let steamID64 = new SteamID(String(steamID)).getSteamID64();
@@ -36,10 +36,14 @@ Bot.prototype._attachSteamFriendRelationshipEvent = function() {
             this.user.addFriend(steamID);
 
 
-            // Log message and send welcome message
+            // Log message and send welcome message if this is the main bot. Delay message by 2.5 seconds to prevent possible AccessDenied errors
             logger("info", `[${this.logPrefix}] Added User: ` + steamID64);
 
-            if (this.index == 0) this.sendChatMessage(this, { userID: steamID64 }, await this.controller.data.getLang("useradded", { "cmdprefix": "!" }, steamID64));
+            if (this.index == 0) {
+                setTimeout(async () => {
+                    this.sendChatMessage(this, { userID: steamID64 }, await this.controller.data.getLang("useradded", { "cmdprefix": "!", "langcount": Object.keys(this.data.lang).length }, steamID64));
+                }, 2500);
+            }
 
 
             // Add user to lastcomment database
