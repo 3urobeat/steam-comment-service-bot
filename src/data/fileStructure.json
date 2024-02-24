@@ -291,6 +291,11 @@
             "checksum": "7c100ee6a3e88a657fbb02ae1a5717fc"
         },
         {
+            "path": "scripts/duplicateQuotesDetector.js",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/scripts/duplicateQuotesDetector.js",
+            "checksum": "7da53806101a9d10b174638c5367db7d"
+        },
+        {
             "path": "scripts/generateFileStructure.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/scripts/generateFileStructure.js",
             "checksum": "34df68cb56b63515681f021f4ff08840"
