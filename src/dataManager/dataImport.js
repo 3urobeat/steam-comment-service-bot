@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-12 22:36:15
+ * Last Modified: 2024-02-24 12:26:07
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -256,7 +256,7 @@ DataManager.prototype._importFromDisk = async function () {
             quotes.forEach((e, i) => {
                 // Multi line strings that contain \n will get split to \\n -> remove second \ so that node-steamcommunity understands the quote when commenting
                 if (e.length > 999) {
-                    logger("warn", `The quote.txt line ${i} is longer than the limit of 999 characters. This quote will be ignored for now.`, true, false, logger.animation("loading"));
+                    logger("warn", `The quote.txt line ${i + 1} is longer than the limit of 999 characters. This quote will be ignored for now.`, true, false, logger.animation("loading"));
                     quotes.splice(i, 1); // Remove this item from the array
                     return;
                 }
