@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-18 22:52:02
+ * Last Modified: 2024-02-25 18:49:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -70,7 +70,7 @@ module.exports.help = {
         respond(`
             ${commandHandler.data.datafile.mestr}'s Comment Bot | ${await commandHandler.data.getLang("helpcommandlist", null, requesterID)}\n
             ${commentText}
-            '${resInfo.cmdprefix}vote (amount/"all") (id/url)' - ${await commandHandler.data.getLang("helpvote", { "maxRequests": maxTotalComments }, requesterID)}
+            '${resInfo.cmdprefix}upvote (amount/"all") (id/url)' - ${await commandHandler.data.getLang("helpvote", { "maxRequests": maxTotalComments }, requesterID)}
             '${resInfo.cmdprefix}favorite (amount/"all") (id/url)' - ${await commandHandler.data.getLang("helpfavorite", { "maxRequests": maxTotalComments }, requesterID)}
             ${followText} - ${await commandHandler.data.getLang("helpfollow", { "maxRequests": commandHandler.data.config.maxRequests }, requesterID)}\n
             '${resInfo.cmdprefix}info' - ${await commandHandler.data.getLang("helpinfo", null, requesterID)}
