@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-25 20:48:26
+ * Last Modified: 2024-02-25 20:54:42
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -60,9 +60,16 @@ Controller.prototype.login = function(firstLogin) {
         let estimatedlogintime;
 
         // Only use "intelligent" evaluation method when the bot was started more than 5 times
-        if (this.data.datafile.timesloggedin < 5) estimatedlogintime = ((this.data.advancedconfig.loginDelay * (this.data.logininfo.length - 1 - this.info.skippedaccounts.length)) / 1000) + 5; // 5 seconds tolerance
-            else estimatedlogintime = ((this.data.datafile.totallogintime / this.data.datafile.timesloggedin) + (this.data.advancedconfig.loginDelay / 1000)) * (this.data.logininfo.length - this.info.skippedaccounts.length);
+        if (this.data.datafile.timesloggedin < 5) {
+            estimatedlogintime = ((this.data.advancedconfig.loginDelay * (this.data.logininfo.length - 1 - this.info.skippedaccounts.length)) / 1000) + 5; // 5 seconds tolerance
+        } else {
+            estimatedlogintime = ((this.data.datafile.totallogintime / this.data.datafile.timesloggedin) + (this.data.advancedconfig.loginDelay / 1000)) * (this.data.logininfo.length - this.info.skippedaccounts.length);
+        }
 
+        // Divide by amount of proxies
+        estimatedlogintime /= this.data.proxies.length;
+
+        // Get the correct unit
         let estimatedlogintimeunit = "seconds";
         if (estimatedlogintime > 60) { estimatedlogintime = estimatedlogintime / 60; estimatedlogintimeunit = "minutes"; }
         if (estimatedlogintime > 60) { estimatedlogintime = estimatedlogintime / 60; estimatedlogintimeunit = "hours"; }                                                                                                                                                                                                                                                                          // 🥚!
@@ -186,6 +193,7 @@ Controller.prototype.login = function(firstLogin) {
         this.login();
 
         if (this.info.readyAfter == 0) this._readyEvent(); // Only call ready event if this is the first start
+
     }, 250);
 
 };
