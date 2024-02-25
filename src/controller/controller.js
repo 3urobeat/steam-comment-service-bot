@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-21 20:00:13
+ * Last Modified: 2024-02-24 18:08:49
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -86,7 +86,7 @@ const Controller = function() {
 
     this.info = {
         bootStartTimestamp: Date.now(), // Save timestamp to be able to calculate startup time in ready event
-        lastLoginTimestamp: 0,          // Save timestamp of last login attempted by any account to calculate wait time for next account
+        lastLoginTimestamp: {},         // Save timestamp of last login attempted by any account per proxy to calculate wait time for next account
         steamGuardInputTime: 0,         // Tracks time spent waiting for user steamGuardCode input to subtract from startup time
         startupWarnings: 0,             // Counts amount of warnings displayed by dataCheck during startup to display amount in ready event
         activeLogin: false,             // Allows to block new requests when waiting for the last request to finish

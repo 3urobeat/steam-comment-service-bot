@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:08:30
+ * Last Modified: 2024-02-25 20:48:26
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -91,75 +91,101 @@ Controller.prototype.login = function(firstLogin) {
     if (allAccounts.length == 0) return this.info.activeLogin = false;
         else this.info.activeLogin = true;
 
-    // Iterate over all accounts, use syncLoop() helper to make our job easier
-    misc.syncLoop(allAccounts.length, (loop, i) => {
-        let thisAcc = allAccounts[i]; // Get logininfo for this account name
 
-        // Calculate wait time
-        let waitTime = (this.info.lastLoginTimestamp + this.data.advancedconfig.loginDelay) - Date.now();
-        if (waitTime < 0) waitTime = 0; // Cap wait time to positive numbers
+    // Create new bot objects and register them bot accounts which are "new"
+    allAccounts.forEach((e) => {
+        if (!this.bots[e.accountName]) {
+            logger("info", `Creating new bot object for ${e.accountName}...`, false, true, logger.animation("loading"));
 
-        if (waitTime > 0) logger("info", `Waiting ${misc.round(waitTime / 1000, 2)} seconds... (advancedconfig loginDelay)`, false, true, logger.animation("waiting"));
-
-        // Wait before starting to log in
-        setTimeout(() => {
-
-            // Check if no bot object entry exists for this account and create one
-            if (!this.bots[thisAcc.accountName]) {
-                logger("info", `Creating new bot object for ${thisAcc.accountName}...`, false, true, logger.animation("loading"));
-
-                this.bots[thisAcc.accountName] = new Bot(this, thisAcc.index); // Create a new bot object for this account and store a reference to it
-            } else {
-                logger("debug", `Found existing bot object for ${thisAcc.accountName}! Reusing it...`, false, true, logger.animation("loading"));
-            }
-
-            let thisbot = this.bots[thisAcc.accountName];
-
-            // Reset logOnTries (do this here to guarantee a bot object exists for this account)
-            thisbot.loginData.logOnTries = 0;
-
-            // Generate steamGuardCode with shared secret if one was provided
-            if (thisAcc.sharedSecret) {
-                logger("debug", `Found shared_secret for bot${this.bots[thisAcc.accountName].index}! Generating AuthCode and adding it to logOnOptions...`);
-                thisAcc.steamGuardCode = SteamTotp.generateAuthCode(thisAcc.sharedSecret);
-            }
-
-            // Login!
-            thisbot._loginToSteam();
-
-            // Check if this bot is not offline anymore, resolve this iteration and update lastLoginTimestamp
-            let accIsOnlineInterval = setInterval(() => {
-                if (thisbot.status == Bot.EStatus.OFFLINE) return;
-
-                // Keep waiting if we are on the last iteration and user object is not fully populated yet, this takes a few seconds after login. Make sure to check for limitations of last entry in array instead of this iteration to not break when the this last acc got skipped
-                let onlineBots = this.getBots();
-                let lastBot    = onlineBots[onlineBots.length - 1];
-
-                if (i + 1 == Object.keys(this.data.logininfo).length && lastBot && !lastBot.user.limitations) { // Only attempt to check if a lastBot was found, this can otherwise cause an infinite error loop
-                    return logger("info", `Last account logged in, waiting for user object of Bot ${lastBot.index} to populate...`, true, true, logger.animation("waiting"));
-                }
-
-                clearInterval(accIsOnlineInterval);
-                this.info.lastLoginTimestamp = Date.now();
-
-                // Populate this.main if we just logged in the first account
-                if (Object.keys(this.bots)[0] == thisAcc.accountName) this.main = thisbot;
-
-                logger("debug", `Controller login(): bot${this.bots[thisAcc.accountName].index} changed status from OFFLINE to ${Bot.EStatus[thisbot.status]}! Continuing with next account...`);
-
-                // Check for last iteration, call again and emit ready event
-                if (i + 1 == allAccounts.length) {
-                    logger("debug", "Controller login(): Finished logging in all accounts! Calling myself again to check for any new accounts...");
-                    this.info.activeLogin = false;
-                    this.login();
-                    if (this.info.readyAfter == 0) this._readyEvent(); // Only call ready event if this is the first start
-                }
-
-                // Continue with next iteration
-                loop.next();
-            }, 250);
-
-        }, waitTime);
+            this.bots[e.accountName] = new Bot(this, e.index); // Create a new bot object for this account and store a reference to it
+        } else {
+            logger("debug", `Found existing bot object for ${e.accountName}! Reusing it...`, false, true, logger.animation("loading"));
+        }
     });
+
+
+    // Iterate over all proxies and log in all accounts associated to each one
+    this.data.proxies.forEach((proxy) => {
+
+        // Find all queued accounts using this proxy
+        let thisProxyAccs = allAccounts.filter((e) => this.bots[e.accountName].loginData.proxyIndex == proxy.proxyIndex);
+
+        // Make login timestamp entry for this proxy
+        if (!this.info.lastLoginTimestamp[String(proxy.proxy)]) this.info.lastLoginTimestamp[String(proxy.proxy)] = 0;
+
+        // Iterate over all accounts, use syncLoop() helper to make our job easier
+        misc.syncLoop(thisProxyAccs.length, (loop, i) => {
+            let thisAcc = thisProxyAccs[i]; // Get logininfo for this account name
+
+            // Calculate wait time
+            let waitTime = (this.info.lastLoginTimestamp[String(proxy.proxy)] + this.data.advancedconfig.loginDelay) - Date.now();
+            if (waitTime < 0) waitTime = 0; // Cap wait time to positive numbers
+
+            if (waitTime > 0) logger("info", `Waiting ${misc.round(waitTime / 1000, 2)} seconds between bots ${this.bots[thisAcc.accountName].index} & ${this.bots[thisProxyAccs[i - 1].accountName].index}... (advancedconfig loginDelay)`, false, true, logger.animation("waiting"));
+
+            // Wait before starting to log in
+            setTimeout(() => {
+
+                let thisbot = this.bots[thisAcc.accountName];
+
+                // Reset logOnTries (do this here to guarantee a bot object exists for this account)
+                thisbot.loginData.logOnTries = 0;
+
+                // Generate steamGuardCode with shared secret if one was provided
+                if (thisAcc.sharedSecret) {
+                    logger("debug", `Found shared_secret for bot${this.bots[thisAcc.accountName].index}! Generating AuthCode and adding it to logOnOptions...`);
+                    thisAcc.steamGuardCode = SteamTotp.generateAuthCode(thisAcc.sharedSecret);
+                }
+
+                // Login!
+                thisbot._loginToSteam();
+
+                // Check if this bot is not offline anymore, resolve this iteration and update lastLoginTimestamp
+                let accIsOnlineInterval = setInterval(() => {
+                    if (thisbot.status == Bot.EStatus.OFFLINE) return;
+
+                    clearInterval(accIsOnlineInterval);
+                    this.info.lastLoginTimestamp[String(proxy.proxy)] = Date.now();
+
+                    // Populate this.main if we just logged in the first account
+                    if (Object.keys(this.bots)[0] == thisAcc.accountName) this.main = thisbot;
+
+                    logger("debug", `Controller login(): bot${this.bots[thisAcc.accountName].index} changed status from OFFLINE to ${Bot.EStatus[thisbot.status]}! Continuing with the next account on this proxy...`);
+
+                    // Continue with next iteration
+                    loop.next();
+                }, 250);
+
+            }, waitTime);
+        });
+
+    });
+
+
+    // Register interval to check if all accounts have been processed
+    let allAccsOnlineInterval = setInterval(() => {
+
+        // Check if all accounts have been processed
+        let allNotOffline = allAccounts.every((e) => this.bots[e.accountName].status != Bot.EStatus.OFFLINE);
+
+        if (!allNotOffline) return;
+
+        // Check if all accounts have their SteamUser data populated. Ignore accounts that are not online as they will never populate their user object
+        let allAccountsNotPopulated = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.ONLINE && !this.bots[e.accountName].user.limitations);
+
+        if (allAccountsNotPopulated.length > 0) {
+            logger("info", `All accounts logged in, waiting for user object of bot(s) '${allAccountsNotPopulated.flatMap((e) => e.index).join(", ")}' to populate...`, true, true, logger.animation("waiting"));
+            return;
+        }
+
+        clearInterval(allAccsOnlineInterval);
+
+        logger("debug", "Controller login(): Finished logging in all accounts! Calling myself again to check for any new accounts...");
+
+        this.info.activeLogin = false;
+        this.login();
+
+        if (this.info.readyAfter == 0) this._readyEvent(); // Only call ready event if this is the first start
+    }, 250);
 
 };
