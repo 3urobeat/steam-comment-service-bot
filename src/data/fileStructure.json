@@ -438,7 +438,7 @@
         {
             "path": "src/commands/helpers/getCommentArgs.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getCommentArgs.js",
-            "checksum": "5d8a2150bf89d5932d7fe9789d348588"
+            "checksum": "c51407b565b90ae3835f407d4642baec"
         },
         {
             "path": "src/commands/helpers/getCommentBots.js",

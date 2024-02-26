@@ -4,7 +4,7 @@
  * Created Date: 2022-02-28 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-22 17:32:41
+ * Last Modified: 2024-02-26 20:06:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -66,7 +66,7 @@ module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
             let owners = commandHandler.data.cachefile.ownerid;
             if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-            let requesterID      = resInfo.requesterID;
+            let requesterID      = resInfo.userID;
             let maxRequestAmount = commandHandler.data.config.maxRequests; // Set to default value and if the requesting user is an owner it gets changed below
             let numberOfComments = 0;
             let quotesArr        = commandHandler.data.quotes;
