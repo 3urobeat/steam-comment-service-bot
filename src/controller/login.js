@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-25 20:54:42
+ * Last Modified: 2024-02-26 19:35:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -110,6 +110,8 @@ Controller.prototype.login = function(firstLogin) {
         }
     });
 
+    this.main = this.bots[this.data.logininfo[0].accountName];
+
 
     // Iterate over all proxies and log in all accounts associated to each one
     this.data.proxies.forEach((proxy) => {
@@ -153,9 +155,6 @@ Controller.prototype.login = function(firstLogin) {
 
                     clearInterval(accIsOnlineInterval);
                     this.info.lastLoginTimestamp[String(proxy.proxy)] = Date.now();
-
-                    // Populate this.main if we just logged in the first account
-                    if (Object.keys(this.bots)[0] == thisAcc.accountName) this.main = thisbot;
 
                     logger("debug", `Controller login(): bot${this.bots[thisAcc.accountName].index} changed status from OFFLINE to ${Bot.EStatus[thisbot.status]}! Continuing with the next account on this proxy...`);
 
