@@ -523,7 +523,7 @@
         {
             "path": "src/controller/helpers/handleSteamIdResolving.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/handleSteamIdResolving.js",
-            "checksum": "eb03212d06650bef0b0429450f6df12c"
+            "checksum": "5c68e80653e79ae8e5085d892882769e"
         },
         {
             "path": "src/controller/helpers/logger.js",
