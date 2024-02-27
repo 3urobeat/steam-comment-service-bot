@@ -15,7 +15,6 @@
     "commentzeroavailableaccs": "Desculpe, mas atualmente não há contas suficientes disponíveis para atender ao seu pedido. Por favor, aguarde ${waittime} e tente novamente!",
     "commentnotenoughavailableaccs": "Desculpe, mas atualmente não há contas suficientes disponíveis para atender ao seu pedido. Por favor, aguarde ${waittime} e tente novamente ou solicite apenas ${availablenow} comentários agora.",
     "commentnoaccounts": "Desculpe, mas não há contas para atender a este pedido. Entre em contato com o administrador do bot desta instância.\nUse o comando ${cmdprefix}owner para obter informações sobre quem administra esta instância.",
-    "commentnounlimitedaccs": "Desculpe, mas não há contas ilimitadas necessárias para atender a este pedido. Entre em contato com o administrador do bot desta instância.\nUse o comando ${cmdprefix}owner para obter informações sobre quem administra esta instância.",
     "commentaddbotaccounts": "Por favor, adicione essas contas e solicite novamente: (contas limitadas)",
     "commentunsupportedtype": "Desculpe, mas o comando de comentário não suporta este tipo de ID. Forneça um perfil, grupo, arquivo compartilhado (captura de tela, arte ou guia) ou ID/URL de discussão.",
     "commentuserprofileprivate": "Seu perfil/recebendo parece estar privado. Edite as configurações de privacidade para permitir comentários e tente novamente!",
@@ -28,6 +27,7 @@
     "commentsuccess": "Todos os comentários foram enviados. Erros/falhas: ${failedamount}/${numberOfComments}\nSe você é uma pessoa legal, por favor, comente também no meu perfil!",
 
     "genericnoaccounts": "Desculpe, mas não há contas disponíveis para esta solicitação neste ID.",
+    "genericnounlimitedaccs": "Desculpe, mas não há contas ilimitadas necessárias para atender a este pedido. Entre em contato com o administrador do bot desta instância.\nUse o comando ${cmdprefix}owner para obter informações sobre quem administra esta instância.",
     "genericrequestless": "Atualmente, existem apenas ${availablenow} contas de bot disponíveis para esta solicitação neste ID.",
     "genericnotenoughavailableaccs": "Desculpe, mas atualmente não há contas suficientes disponíveis para esta solicitação neste ID. Por favor, aguarde ${waittime} e tente novamente ou solicite apenas ${availablenow} agora.",
 

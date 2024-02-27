@@ -15,7 +15,6 @@
     "commentzeroavailableaccs": "Sorry but there are currently not enough accounts available to fulfill your request. Please wait ${waittime} and try again!",
     "commentnotenoughavailableaccs": "Sorry but there are currently not enough accounts available to fulfill your request. Please wait ${waittime} and try again or only request ${availablenow} comments now.",
     "commentnoaccounts": "Sorry but there are no accounts to fulfill this request. Please contact the bot administrator of this instance.\nUse the ${cmdprefix}owner command to get information about who runs this instance.",
-    "commentnounlimitedaccs": "Sorry but there are no unlimited accounts which are needed to fulfill this request. Please contact the bot administrator of this instance.\nUse the ${cmdprefix}owner command to get information about who runs this instance.",
     "commentaddbotaccounts": "Please add these accounts and then request again: (limited accounts)",
     "commentunsupportedtype": "Sorry but the comment command does not support this type of ID. Please provide a profile, group, sharedfile (screenshot, artwork or guide), discussion or review ID/URL.",
     "commentuserprofileprivate": "Your/the receiving profile seems to be private. Please edit the privacy settings to allow comments and try again!",
@@ -28,6 +27,7 @@
     "commentsuccess": "All comments have been sent. Failed: ${failedamount}/${numberOfComments}\nIf you are a nice person then please comment on my profile too!",
 
     "genericnoaccounts": "Sorry but there are no accounts available for this request on this id.",
+    "genericnounlimitedaccs": "Sorry but there are no unlimited accounts which are needed to fulfill this request. Please contact the bot administrator of this instance.\nUse the ${cmdprefix}owner command to get information about who runs this instance.",
     "genericrequestless": "There are currently only ${availablenow} bot accounts available for this request on this id.",
     "genericnotenoughavailableaccs": "Sorry but there are currently not enough accounts available for this request on this id. Please wait ${waittime} and try again or only request ${availablenow} now.",
 

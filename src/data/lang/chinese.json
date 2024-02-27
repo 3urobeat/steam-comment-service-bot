@@ -15,7 +15,6 @@
     "commentzeroavailableaccs": "抱歉，目前没有足够的帐户来完成您的请求。请等待${waittime}后重试！",
     "commentnotenoughavailableaccs": "抱歉，目前没有足够的帐户来完成您的请求。请等待${waittime}后重试，或仅请求${availablenow}条评论。",
     "commentnoaccounts": "抱歉，没有帐户可以完成此请求。请联系此实例的机器人管理员。\n使用${cmdprefix}owner命令获取有关运行此实例的人的信息。",
-    "commentnounlimitedaccs": "抱歉，没有无限帐户可满足此请求。请联系此实例的机器人管理员。\n使用${cmdprefix}owner命令获取有关运行此实例的人的信息。",
     "commentaddbotaccounts": "请添加这些帐户，然后重新请求: （有限帐户）",
     "commentunsupportedtype": "抱歉，评论命令不支持此类型的ID。请提供个人资料、小组、共享文件（截图、艺术品或指南）或讨论ID/URL。",
     "commentuserprofileprivate": "您/接收方的个人资料似乎是私人的。请编辑隐私设置以允许评论，然后重试！",
@@ -28,6 +27,7 @@
     "commentsuccess": "所有评论已发送。失败: ${failedamount}/${numberOfComments}\n如果您是个好人，请也在我的个人资料上留下评论！",
 
     "genericnoaccounts": "抱歉，此ID上没有可用的帐户。",
+    "genericnounlimitedaccs": "抱歉，没有无限帐户可满足此请求。请联系此实例的机器人管理员。\n使用${cmdprefix}owner命令获取有关运行此实例的人的信息。",
     "genericrequestless": "当前在此ID上仅有 ${availablenow} 个机器人帐户可用于此请求。",
     "genericnotenoughavailableaccs": "抱歉，此ID上当前没有足够的帐户可用于此请求。请等待 ${waittime} 后重试，或仅请求 ${availablenow} 个。",
 
