@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-24 18:08:49
+ * Last Modified: 2024-02-27 17:32:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -405,6 +405,18 @@ Controller.prototype.stop = function() {
  * @param {boolean} firstLogin Is set to true by controller if this is the first login to display more information
  */
 Controller.prototype.login = function(firstLogin) {}; // eslint-disable-line
+
+/**
+ * Internal: Logs in accounts on different proxies synchronously
+ * @param {Array} allAccounts Array of logininfo entries of accounts to log in
+ */
+Controller.prototype._processFastLoginQueue = function(allAccounts) {}; // eslint-disable-line
+
+/**
+ * Internal: Logs in accounts asynchronously to allow for user interaction
+ * @param {Array} allAccounts Array of logininfo entries of accounts to log in
+ */
+Controller.prototype._processSlowLoginQueue = function(allAccounts) {}; // eslint-disable-line
 
 /**
  * Runs internal ready event code and emits ready event for plugins

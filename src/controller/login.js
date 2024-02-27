@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-26 19:35:39
+ * Last Modified: 2024-02-27 21:24:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -28,7 +28,7 @@ const misc       = require("./helpers/misc.js");
  * Creates a new bot object for every new account and reuses existing one if possible
  * @param {boolean} firstLogin Is set to true by controller if this is the first login to display more information
  */
-Controller.prototype.login = function(firstLogin) {
+Controller.prototype.login = async function(firstLogin) {
 
     if (firstLogin) {
         // Update global var
@@ -45,53 +45,31 @@ Controller.prototype.login = function(firstLogin) {
 
         logger("", "", true); // Put one line above everything that will come to make the output cleaner
 
-        /* ------------ Log comment related config settings: ------------ */
-        let maxRequestsOverall = this.data.config.maxOwnerRequests; // Define what the absolute maximum is which the bot is allowed to process. This should make checks shorter
-        if (this.data.config.maxRequests > this.data.config.maxOwnerRequests) maxRequestsOverall = this.data.config.maxRequests;
-        logger("info", `Comment settings: requestDelay: ${this.data.config.requestDelay} | botaccountcooldown: ${this.data.config.botaccountcooldown} | maxRequestsOverall: ${maxRequestsOverall} | randomizeAcc: ${this.data.config.randomizeAccounts}`, false, true, logger.animation("loading"));
-
-
         // Print whatsnew message if this is the first start with this version
         if (this.data.datafile.firststart) logger("", `${logger.colors.reset}What's new: ${this.data.datafile.whatsnew}\n`, false, false, null, true); // Force print message now
 
-
-        // Evaluate estimated wait time for login:
-        logger("debug", "Evaluating estimated login time...");
-        let estimatedlogintime;
-
-        // Only use "intelligent" evaluation method when the bot was started more than 5 times
-        if (this.data.datafile.timesloggedin < 5) {
-            estimatedlogintime = ((this.data.advancedconfig.loginDelay * (this.data.logininfo.length - 1 - this.info.skippedaccounts.length)) / 1000) + 5; // 5 seconds tolerance
-        } else {
-            estimatedlogintime = ((this.data.datafile.totallogintime / this.data.datafile.timesloggedin) + (this.data.advancedconfig.loginDelay / 1000)) * (this.data.logininfo.length - this.info.skippedaccounts.length);
-        }
-
-        // Divide by amount of proxies
-        estimatedlogintime /= this.data.proxies.length;
-
-        // Get the correct unit
-        let estimatedlogintimeunit = "seconds";
-        if (estimatedlogintime > 60) { estimatedlogintime = estimatedlogintime / 60; estimatedlogintimeunit = "minutes"; }
-        if (estimatedlogintime > 60) { estimatedlogintime = estimatedlogintime / 60; estimatedlogintimeunit = "hours"; }                                                                                                                                                                                                                                                                          // 🥚!
-
-        logger("info", `Logging in... Estimated wait time: ${misc.round(estimatedlogintime, 2)} ${estimatedlogintimeunit}.`, false, false, logger.animation("loading"), true);
         if (checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<") this.stop(); // eslint-disable-line
     }
 
-
+    // Ignore login request if another login is running
     if (this.info.activeLogin) return logger("debug", "Controller login(): Login requested but there is already a login process active. Ignoring...");
-        else logger("debug", "Controller login(): Login requested, checking for any accounts currently offline...");
+
+    logger("debug", "Controller login(): Login requested, checking for any accounts currently OFFLINE or POSTPONED...");
+
 
     // Get array of all accounts
     let allAccounts = [ ... this.data.logininfo ];
 
-    // Filter accounts which were skipped
+    // Remove accounts which were skipped
     allAccounts = allAccounts.filter((e) => !this.info.skippedaccounts.includes(e.accountName));
 
-    // Filter accounts which are not offline
-    allAccounts = allAccounts.filter((e) => !this.bots[e.accountName] || this.bots[e.accountName].status == Bot.EStatus.OFFLINE); // If no bot object exists yet the account must be offline
+    // Set all POSTPONED accounts to offline, as they are now going to be processed (this is important so that the allAccsOnlineInterval below doesn't plow through). Ignore acc if it doesn't have a bots entry yet
+    allAccounts.forEach((e) => this.bots[e.accountName] && this.bots[e.accountName].status == Bot.EStatus.POSTPONED ? this.bots[e.accountName].status = Bot.EStatus.OFFLINE : null);
 
-    logger("debug", `Controller login(): Found ${allAccounts.length} account(s) which aren't logged in and weren't skipped`);
+    // Get all new accounts or existing ones that are offline or were postponed
+    allAccounts = allAccounts.filter((e) => !this.bots[e.accountName] || this.bots[e.accountName].status == Bot.EStatus.OFFLINE);
+
+    logger("debug", `Controller login(): Found ${allAccounts.length} login candidate(s)`);
 
 
     // Set activeLogin to true if allAccounts is not empty
@@ -100,18 +78,86 @@ Controller.prototype.login = function(firstLogin) {
 
 
     // Create new bot objects and register them bot accounts which are "new"
-    allAccounts.forEach((e) => {
+    allAccounts.forEach(async (e, i) => {
         if (!this.bots[e.accountName]) {
-            logger("info", `Creating new bot object for ${e.accountName}...`, false, true, logger.animation("loading"));
+            logger("debug", `Creating new bot object for ${e.accountName}...`);
 
             this.bots[e.accountName] = new Bot(this, e.index); // Create a new bot object for this account and store a reference to it
         } else {
-            logger("debug", `Found existing bot object for ${e.accountName}! Reusing it...`, false, true, logger.animation("loading"));
+            logger("debug", `Found existing bot object for ${e.accountName}! Reusing it...`);
         }
+
+        // Check if this acc has a valid token stored to qualify for fastQueue. This async function is awaited below for all accounts at once using Promise.all(). Self-assign result in then() so that the value is accessible, instead of nested inside a fulfilled Promise object.
+        allAccounts[i].hasStorageValidToken = this.bots[e.accountName].sessionHandler.hasStorageValidToken().then((res) => allAccounts[i].hasStorageValidToken = res);
     });
 
+    await Promise.all(allAccounts.map((e) => e.hasStorageValidToken));
+
+    // Populate main with first account in bots object (NOT in allAccounts so that we don't switch the main account when relogging child accounts later)
     this.main = this.bots[this.data.logininfo[0].accountName];
 
+
+    // Split login candidates into a fast queue (sync logins for accs on different proxies) & a slow queue (async logins for accs requiring user interaction)
+    let fastQueue = [ ...allAccounts.filter((e) => e.hasStorageValidToken) ];
+    let slowQueue = [ ...allAccounts.filter((e) => !e.hasStorageValidToken) ];
+
+
+    // Calculate login time
+    let timePerAccount = 5; // 5 seconds per account as default
+    if (this.data.datafile.timesloggedin > 5) timePerAccount = this.data.datafile.totallogintime / this.data.datafile.timesloggedin; // Only use "intelligent" evaluation method when the bot was started more than 5 times
+
+    let estimatedlogintime = (slowQueue.length + (fastQueue / this.data.proxies.length));
+
+    estimatedlogintime = (((fastQueue.length - 1) * ((this.data.advancedconfig.loginDelay / 1000) + timePerAccount)) / this.data.proxies.length) + ((slowQueue.length - 1) * ((this.data.advancedconfig.loginDelay / 1000) + timePerAccount)) + timePerAccount;
+
+    // Get the correct unit
+    let estimatedlogintimeunit = "seconds";
+    if (estimatedlogintime > 60) { estimatedlogintime = estimatedlogintime / 60; estimatedlogintimeunit = "minutes"; }
+    if (estimatedlogintime > 60) { estimatedlogintime = estimatedlogintime / 60; estimatedlogintimeunit = "hours"; }                                                                                                                                                                                                                                                                          // 🥚!
+
+    logger("info", `Logging in ${allAccounts.length} account(s), where ${fastQueue.length} qualify for fast login... Estimated wait time: ${misc.round(estimatedlogintime, 2)} ${estimatedlogintimeunit}`, false, false, logger.animation("loading"), true);
+
+
+    // Start processing the queues
+    this._processFastLoginQueue(fastQueue); // TODO: This might cause issues with accounts logging in at the same time on the same proxy, once in this loop and once in the other
+    this._processSlowLoginQueue(slowQueue);
+
+
+    // Register interval to check if all accounts have been processed
+    let allAccsOnlineInterval = setInterval(() => {
+
+        // Check if all accounts have been processed
+        let allNotOffline = allAccounts.every((e) => this.bots[e.accountName].status != Bot.EStatus.OFFLINE);// && this.bots[e.accountName].status != Bot.EStatus.POSTPONED);
+
+        if (!allNotOffline) return;
+
+        // Check if all accounts have their SteamUser data populated. Ignore accounts that are not online as they will never populate their user object
+        let allAccountsNotPopulated = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.ONLINE && !this.bots[e.accountName].user.limitations);
+
+        if (allAccountsNotPopulated.length > 0) {
+            logger("info", `All accounts logged in, waiting for user object of bot(s) '${allAccountsNotPopulated.flatMap((e) => e.index).join(", ")}' to populate...`, true, true, logger.animation("waiting"));
+            return;
+        }
+
+        clearInterval(allAccsOnlineInterval);
+
+        logger("debug", "Controller login(): Finished logging in all accounts! Calling myself again to check for any new accounts...");
+
+        this.info.activeLogin = false;
+        this.login();
+
+        if (this.info.readyAfter == 0) this._readyEvent(); // Only call ready event if this is the first start
+
+    }, 250);
+
+};
+
+
+/**
+ * Internal: Logs in accounts on different proxies synchronously
+ * @param {Array} allAccounts Array of logininfo entries of accounts to log in
+ */
+Controller.prototype._processFastLoginQueue = function(allAccounts) {
 
     // Iterate over all proxies and log in all accounts associated to each one
     this.data.proxies.forEach((proxy) => {
@@ -130,7 +176,7 @@ Controller.prototype.login = function(firstLogin) {
             let waitTime = (this.info.lastLoginTimestamp[String(proxy.proxy)] + this.data.advancedconfig.loginDelay) - Date.now();
             if (waitTime < 0) waitTime = 0; // Cap wait time to positive numbers
 
-            if (waitTime > 0) logger("info", `Waiting ${misc.round(waitTime / 1000, 2)} seconds between bots ${this.bots[thisAcc.accountName].index} & ${this.bots[thisProxyAccs[i - 1].accountName].index}... (advancedconfig loginDelay)`, false, true, logger.animation("waiting"));
+            if (waitTime > 0) logger("info", `Waiting ${misc.round(waitTime / 1000, 2)} seconds between bots ${this.bots[thisAcc.accountName].index} & ${i > 0 ? this.bots[thisProxyAccs[i - 1].accountName].index : "/"}... (advancedconfig loginDelay)`, false, true, logger.animation("waiting"));
 
             // Wait before starting to log in
             setTimeout(() => {
@@ -156,8 +202,6 @@ Controller.prototype.login = function(firstLogin) {
                     clearInterval(accIsOnlineInterval);
                     this.info.lastLoginTimestamp[String(proxy.proxy)] = Date.now();
 
-                    logger("debug", `Controller login(): bot${this.bots[thisAcc.accountName].index} changed status from OFFLINE to ${Bot.EStatus[thisbot.status]}! Continuing with the next account on this proxy...`);
-
                     // Continue with next iteration
                     loop.next();
                 }, 250);
@@ -167,32 +211,54 @@ Controller.prototype.login = function(firstLogin) {
 
     });
 
+};
 
-    // Register interval to check if all accounts have been processed
-    let allAccsOnlineInterval = setInterval(() => {
 
-        // Check if all accounts have been processed
-        let allNotOffline = allAccounts.every((e) => this.bots[e.accountName].status != Bot.EStatus.OFFLINE);
+/**
+ * Internal: Logs in accounts asynchronously to allow for user interaction
+ * @param {Array} allAccounts Array of logininfo entries of accounts to log in
+ */
+Controller.prototype._processSlowLoginQueue = function(allAccounts) {
 
-        if (!allNotOffline) return;
+    // Iterate over all accounts, use syncLoop() helper to make our job easier
+    misc.syncLoop(allAccounts.length, (loop, i) => {
+        let thisAcc = allAccounts[i]; // Get logininfo for this account name
 
-        // Check if all accounts have their SteamUser data populated. Ignore accounts that are not online as they will never populate their user object
-        let allAccountsNotPopulated = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.ONLINE && !this.bots[e.accountName].user.limitations);
+        // Calculate wait time
+        let waitTime = (this.info.lastLoginTimestamp[String(this.bots[thisAcc.accountName].loginData.proxy)] + this.data.advancedconfig.loginDelay) - Date.now();
+        if (waitTime < 0) waitTime = 0; // Cap wait time to positive numbers
 
-        if (allAccountsNotPopulated.length > 0) {
-            logger("info", `All accounts logged in, waiting for user object of bot(s) '${allAccountsNotPopulated.flatMap((e) => e.index).join(", ")}' to populate...`, true, true, logger.animation("waiting"));
-            return;
-        }
+        if (waitTime > 0) logger("info", `Waiting ${misc.round(waitTime / 1000, 2)} seconds between bots ${this.bots[thisAcc.accountName].index} & ${i > 0 ? this.bots[allAccounts[i - 1].accountName].index : "/"}... (advancedconfig loginDelay)`, false, true, logger.animation("waiting"));
 
-        clearInterval(allAccsOnlineInterval);
+        // Wait before starting to log in
+        setTimeout(() => {
 
-        logger("debug", "Controller login(): Finished logging in all accounts! Calling myself again to check for any new accounts...");
+            let thisbot = this.bots[thisAcc.accountName];
 
-        this.info.activeLogin = false;
-        this.login();
+            // Reset logOnTries (do this here to guarantee a bot object exists for this account)
+            thisbot.loginData.logOnTries = 0;
 
-        if (this.info.readyAfter == 0) this._readyEvent(); // Only call ready event if this is the first start
+            // Generate steamGuardCode with shared secret if one was provided
+            if (thisAcc.sharedSecret) {
+                logger("debug", `Found shared_secret for bot${this.bots[thisAcc.accountName].index}! Generating AuthCode and adding it to logOnOptions...`);
+                thisAcc.steamGuardCode = SteamTotp.generateAuthCode(thisAcc.sharedSecret);
+            }
 
-    }, 250);
+            // Login!
+            thisbot._loginToSteam();
+
+            // Check if this bot is not offline anymore, resolve this iteration and update lastLoginTimestamp
+            let accIsOnlineInterval = setInterval(() => {
+                if (thisbot.status == Bot.EStatus.OFFLINE) return;
+
+                clearInterval(accIsOnlineInterval);
+                this.info.lastLoginTimestamp = Date.now();
+
+                // Continue with next iteration
+                loop.next();
+            }, 250);
+
+        }, waitTime);
+    });
 
 };

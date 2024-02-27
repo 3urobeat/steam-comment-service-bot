@@ -556,6 +556,16 @@ declare class Controller {
      */
     login(firstLogin: boolean): void;
     /**
+     * Internal: Logs in accounts on different proxies synchronously
+     * @param allAccounts - Array of logininfo entries of accounts to log in
+     */
+    _processFastLoginQueue(allAccounts: any[]): void;
+    /**
+     * Internal: Logs in accounts asynchronously to allow for user interaction
+     * @param allAccounts - Array of logininfo entries of accounts to log in
+     */
+    _processSlowLoginQueue(allAccounts: any[]): void;
+    /**
      * Runs internal ready event code and emits ready event for plugins
      */
     _readyEvent(): void;
@@ -711,6 +721,16 @@ declare class Controller {
      * @param firstLogin - Is set to true by controller if this is the first login to display more information
      */
     login(firstLogin: boolean): void;
+    /**
+     * Internal: Logs in accounts on different proxies synchronously
+     * @param allAccounts - Array of logininfo entries of accounts to log in
+     */
+    _processFastLoginQueue(allAccounts: any[]): void;
+    /**
+     * Internal: Logs in accounts asynchronously to allow for user interaction
+     * @param allAccounts - Array of logininfo entries of accounts to log in
+     */
+    _processSlowLoginQueue(allAccounts: any[]): void;
 }
 
 /**
@@ -1531,6 +1551,11 @@ declare class SessionHandler {
      */
     _handleCredentialsLoginError(err: any): void;
     /**
+     * Checks if the database contains a valid token for this account. You can assume that the next login attempt with this token will succeed if `true` is returned.
+     * @returns Resolves with `true` if a valid token was found, `false` otherwise
+     */
+    hasStorageValidToken(): Promise<boolean>;
+    /**
      * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
      */
     _getTokenFromStorage(callback: any): void;
@@ -1585,6 +1610,11 @@ declare class SessionHandler {
      * @param err - Error thrown by startWithCredentials()
      */
     _handleCredentialsLoginError(err: any): void;
+    /**
+     * Checks if the database contains a valid token for this account. You can assume that the next login attempt with this token will succeed if `true` is returned.
+     * @returns Resolves with `true` if a valid token was found, `false` otherwise
+     */
+    hasStorageValidToken(): Promise<boolean>;
     /**
      * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
      */

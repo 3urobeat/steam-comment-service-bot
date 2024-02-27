@@ -49,7 +49,7 @@ You can find all HTTP status codes here: [Wikipedia](https://en.wikipedia.org/wi
 
 | Login Errors | Description |
 | ----- | ----- |
-`Error: AccessDenied` | This can happen if your session got invalidated for some reason. This can often be solved by deleting the `tokens.db` file, located at `src/data/` inside the bot folder, or by only removing the one line of the affected account inside the `tokens.db` file.  
+`Error: AccessDenied` | This can happen if your session got invalidated by Steam for some reason. The bot automatically removes affected tokens, creates a new session and you'll get asked to input your current Steam Guard Code.  
 
 &nbsp;
 

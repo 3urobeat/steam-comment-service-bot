@@ -4,10 +4,10 @@
  * Created Date: 2022-10-09 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:16:05
+ * Last Modified: 2024-02-27 17:27:21
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -211,6 +211,12 @@ SessionHandler.prototype._acceptSteamGuardCode = function(code) {}; // eslint-di
  * @param {*} err Error thrown by startWithCredentials()
  */
 SessionHandler.prototype._handleCredentialsLoginError = function(err) {}; // eslint-disable-line
+
+/**
+ * Checks if the database contains a valid token for this account. You can assume that the next login attempt with this token will succeed if `true` is returned.
+ * @returns {Promise.<boolean>} Resolves with `true` if a valid token was found, `false` otherwise
+ */
+SessionHandler.prototype.hasStorageValidToken = async function() {};
 
 /**
  * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
