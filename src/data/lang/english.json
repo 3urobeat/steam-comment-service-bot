@@ -70,8 +70,8 @@
     "jobscmdnoneregistered": "There are currently no jobs registered.",
     "reloadcmdreloaded": "Reloaded all commands and plugins.",
     "activerelog": "The bot is currently waiting for the last active requests to be finished in order to relog accounts.\nPlease wait a few minutes and try again.",
-    "updatecmdforce": "Forcing an update from the branchname branch...",
-    "updatecmdcheck": "Checking for an update in the branchname branch...",
+    "updatecmdforce": "Forcing an update from the ${branchname} branch...",
+    "updatecmdcheck": "Checking for an update in the ${branchname} branch...",
     "restartcmdrestarting": "Restarting...",
     "stopcmdstopping": "Stopping...",
 

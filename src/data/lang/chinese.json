@@ -70,8 +70,8 @@
     "jobscmdnoneregistered": "There are currently no jobs registered.",
     "reloadcmdreloaded": "重新加载所有命令和插件。",
     "activerelog": "机器人目前正在等待最后一个活动请求完成，以便重新登录帐户。\n请稍等片刻，然后重试。",
-    "updatecmdforce": "从分支名分支强制更新...",
-    "updatecmdcheck": "检查分支名分支的更新...",
+    "updatecmdforce": "Forcing an update from the ${branchname} branch...",
+    "updatecmdcheck": "Checking for an update in the ${branchname} branch...",
     "restartcmdrestarting": "正在重新启动...",
     "stopcmdstopping": "停止中...",
 

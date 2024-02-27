@@ -70,8 +70,8 @@
     "jobscmdnoneregistered": "There are currently no jobs registered.",
     "reloadcmdreloaded": "Перезагружены все команды и плагины.",
     "activerelog": "В настоящее время бот ожидает завершения последних активных запросов, чтобы заново войти.\nПожалуйста, подождите несколько минут и повторите попытку.",
-    "updatecmdforce": "Принудительное обновление из ветки branchname...",
-    "updatecmdcheck": "Проверка наличия обновления в ветке branchname...",
+    "updatecmdforce": "Принудительное обновление из ветки ${branchname}...",
+    "updatecmdcheck": "Проверка наличия обновления в ветке ${branchname}...",
     "restartcmdrestarting": "Перезагрузка...",
     "stopcmdstopping": "Остановка...",
 
