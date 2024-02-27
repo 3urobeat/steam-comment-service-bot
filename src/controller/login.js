@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-27 21:24:27
+ * Last Modified: 2024-02-27 22:14:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -108,7 +108,7 @@ Controller.prototype.login = async function(firstLogin) {
 
     let estimatedlogintime = (slowQueue.length + (fastQueue / this.data.proxies.length));
 
-    estimatedlogintime = (((fastQueue.length - 1) * ((this.data.advancedconfig.loginDelay / 1000) + timePerAccount)) / this.data.proxies.length) + ((slowQueue.length - 1) * ((this.data.advancedconfig.loginDelay / 1000) + timePerAccount)) + timePerAccount;
+    estimatedlogintime = ((Math.max(0, fastQueue.length - 1) * ((this.data.advancedconfig.loginDelay / 1000) + timePerAccount)) / this.data.proxies.length) + (Math.max(0, slowQueue.length - 1) * ((this.data.advancedconfig.loginDelay / 1000) + timePerAccount)) + timePerAccount; // Math.max() caps to positive numbers
 
     // Get the correct unit
     let estimatedlogintimeunit = "seconds";
@@ -176,7 +176,7 @@ Controller.prototype._processFastLoginQueue = function(allAccounts) {
             let waitTime = (this.info.lastLoginTimestamp[String(proxy.proxy)] + this.data.advancedconfig.loginDelay) - Date.now();
             if (waitTime < 0) waitTime = 0; // Cap wait time to positive numbers
 
-            if (waitTime > 0) logger("info", `Waiting ${misc.round(waitTime / 1000, 2)} seconds between bots ${this.bots[thisAcc.accountName].index} & ${i > 0 ? this.bots[thisProxyAccs[i - 1].accountName].index : "/"}... (advancedconfig loginDelay)`, false, true, logger.animation("waiting"));
+            if (waitTime > 0) logger("info", `Waiting ${misc.round(waitTime / 1000, 2)} seconds between bots ${i > 0 ? this.bots[thisProxyAccs[i - 1].accountName].index : "/"} & ${this.bots[thisAcc.accountName].index}... (advancedconfig loginDelay)`, false, true, logger.animation("waiting"));
 
             // Wait before starting to log in
             setTimeout(() => {
@@ -228,7 +228,7 @@ Controller.prototype._processSlowLoginQueue = function(allAccounts) {
         let waitTime = (this.info.lastLoginTimestamp[String(this.bots[thisAcc.accountName].loginData.proxy)] + this.data.advancedconfig.loginDelay) - Date.now();
         if (waitTime < 0) waitTime = 0; // Cap wait time to positive numbers
 
-        if (waitTime > 0) logger("info", `Waiting ${misc.round(waitTime / 1000, 2)} seconds between bots ${this.bots[thisAcc.accountName].index} & ${i > 0 ? this.bots[allAccounts[i - 1].accountName].index : "/"}... (advancedconfig loginDelay)`, false, true, logger.animation("waiting"));
+        if (waitTime > 0) logger("info", `Waiting ${misc.round(waitTime / 1000, 2)} seconds between bots ${i > 0 ? this.bots[allAccounts[i - 1].accountName].index : "/"} & ${this.bots[thisAcc.accountName].index}... (advancedconfig loginDelay)`, false, true, logger.animation("waiting"));
 
         // Wait before starting to log in
         setTimeout(() => {
