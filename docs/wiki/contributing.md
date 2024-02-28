@@ -87,6 +87,10 @@ Keep on reading [below](#translating-general-info).
 Some language strings contain variables which are replaced by the bot with corresponding values at runtime.  
 These are marked with `${variablename}` and must occur like that in your translated string as well.  
 
+Every `\n` is a so called escape character, which in this case represents a line break.  
+At a few points you also see a `\"`. The backslash in this case prevents the `"` from ending the string and instead appearing unmodified in the message later on.  
+Both must occur unedited in the translated string. So just don't think about them and don't worry too much.
+
 Some strings also contain command syntax information which must not be translated, like for example in the key `updaterautoupdatedisabled` at the very end: "update true"  
 These are sadly not 100% obvious but you should be able to recognize them fairly easily.
 
