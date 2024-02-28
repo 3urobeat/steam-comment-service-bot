@@ -4,7 +4,7 @@
  * Created Date: 2022-10-09 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-27 17:27:21
+ * Last Modified: 2024-02-28 22:31:15
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -123,14 +123,24 @@ SessionHandler.prototype._attemptCredentialsLogin = function() {
     // Attach event listeners
     this._attachEvents();
 
-    // Login with credentials supplied in logOnOptions
-    this.session.startWithCredentials(this.logOnOptions)
-        .then((res) => {
-            if (res.actionRequired) this._handle2FA(res); // Let handle2FA helper handle 2FA if a code is requested
-        })
-        .catch((err) => {
-            if (err) this._handleCredentialsLoginError(err); // Let handleCredentialsLoginError helper handle a login error
-        });
+    // Login with QR Code if password is "qrcode", otherwise with normal credentials
+    if (this.logOnOptions.password == "qrcode") {
+        this.session.startWithQR()
+            .then((res) => {
+                if (res.actionRequired) this._handleQRCode(res); // This *should* always be the case
+            })
+            .catch((err) => {
+                if (err) this._handleQrCodeLoginError(err);
+            });
+    } else {
+        this.session.startWithCredentials(this.logOnOptions)
+            .then((res) => {
+                if (res.actionRequired) this._handle2FA(res); // Let handle2FA helper handle 2FA if a code is requested
+            })
+            .catch((err) => {
+                if (err) this._handleCredentialsLoginError(err); // Let handleCredentialsLoginError helper handle a login error
+            });
+    }
 
 };
 
@@ -207,10 +217,22 @@ SessionHandler.prototype._get2FAUserInput = function() {};
 SessionHandler.prototype._acceptSteamGuardCode = function(code) {}; // eslint-disable-line
 
 /**
+ * Handles displaying a QR Code to login using the Steam Mobile App
+ * @param {StartSessionResponse} res Response object from startWithQR() promise
+ */
+SessionHandler.prototype._handleQRCode = function(res) {}; // eslint-disable-line
+
+/**
  * Helper function to make handling login errors easier
  * @param {*} err Error thrown by startWithCredentials()
  */
 SessionHandler.prototype._handleCredentialsLoginError = function(err) {}; // eslint-disable-line
+
+/**
+ * Helper function to make handling login errors easier
+ * @param {*} err Error thrown by startWithQR()
+ */
+SessionHandler.prototype._handleQrCodeLoginError = function(err) {}; // eslint-disable-line
 
 /**
  * Checks if the database contains a valid token for this account. You can assume that the next login attempt with this token will succeed if `true` is returned.

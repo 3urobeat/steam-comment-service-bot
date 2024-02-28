@@ -1535,7 +1535,7 @@ declare class SessionHandler {
      * Internal: Handles submitting 2FA code
      * @param res - Response object from startWithCredentials() promise
      */
-    _handle2FA(res: any): void;
+    _handle2FA(res: StartSessionResponse): void;
     /**
      * Internal: Helper function to get 2FA code from user and passing it to accept function or skipping account if desired
      */
@@ -1546,10 +1546,20 @@ declare class SessionHandler {
      */
     _acceptSteamGuardCode(code: string): void;
     /**
+     * Handles displaying a QR Code to login using the Steam Mobile App
+     * @param res - Response object from startWithQR() promise
+     */
+    _handleQRCode(res: StartSessionResponse): void;
+    /**
      * Helper function to make handling login errors easier
      * @param err - Error thrown by startWithCredentials()
      */
     _handleCredentialsLoginError(err: any): void;
+    /**
+     * Helper function to make handling login errors easier
+     * @param err - Error thrown by startWithQR()
+     */
+    _handleQrCodeLoginError(err: any): void;
     /**
      * Checks if the database contains a valid token for this account. You can assume that the next login attempt with this token will succeed if `true` is returned.
      * @returns Resolves with `true` if a valid token was found, `false` otherwise
@@ -1595,7 +1605,7 @@ declare class SessionHandler {
      * Internal: Handles submitting 2FA code
      * @param res - Response object from startWithCredentials() promise
      */
-    _handle2FA(res: any): void;
+    _handle2FA(res: StartSessionResponse): void;
     /**
      * Internal: Helper function to get 2FA code from user and passing it to accept function or skipping account if desired
      */
@@ -1606,10 +1616,20 @@ declare class SessionHandler {
      */
     _acceptSteamGuardCode(code: string): void;
     /**
+     * Handles displaying a QR Code to login using the Steam Mobile App
+     * @param res - Response object from startWithQR() promise
+     */
+    _handleQRCode(res: StartSessionResponse): void;
+    /**
      * Helper function to make handling login errors easier
      * @param err - Error thrown by startWithCredentials()
      */
     _handleCredentialsLoginError(err: any): void;
+    /**
+     * Helper function to make handling login errors easier
+     * @param err - Error thrown by startWithQR()
+     */
+    _handleQrCodeLoginError(err: any): void;
     /**
      * Checks if the database contains a valid token for this account. You can assume that the next login attempt with this token will succeed if `true` is returned.
      * @returns Resolves with `true` if a valid token was found, `false` otherwise

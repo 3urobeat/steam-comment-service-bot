@@ -4,7 +4,7 @@
  * Created Date: 2022-10-09 13:22:39
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-28 18:42:17
+ * Last Modified: 2024-02-28 22:21:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -61,4 +61,17 @@ SessionHandler.prototype._handleCredentialsLoginError = function(err) {
         }, 5000);
 
     }
+};
+
+
+/**
+ * Helper function to make handling login errors easier
+ * @param {*} err Error thrown by startWithQR()
+ */
+SessionHandler.prototype._handleQrCodeLoginError = function(err) {
+
+    logger("error", `[${this.thisbot}] Failed to start a QR-Code session! Are you having connectivity issues to Steam? ${err}`);
+
+    this._resolvePromise(null); // Skips account. I don't think we need to care about retries here
+
 };
