@@ -823,7 +823,7 @@
         {
             "path": "src/updater/updater.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/updater.js",
-            "checksum": "2e2bf9111b10c1bdc2e4079104b54312"
+            "checksum": "08c78136f2fb25f10ccb2a003a603563"
         },
         {
             "path": "start.js",

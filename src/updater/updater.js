@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 14:37:30
+ * Last Modified: 2024-02-28 21:01:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -184,11 +184,12 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
 
                             if (text.toString().trim() != "y") return resolve(false); // Abort on any answer that isn't yes
 
-                            initiateUpdate();
+                            initiateUpdate(); // No need to wait 2.5 seconds here as the user 100% took longer to input 'y'
                         }
                     });
                 } else {
-                    initiateUpdate();
+                    // Delay calling initiateUpdate() by 2.5 sec if respondModule is defined to give it some time to deliver the messages sent above
+                    setTimeout(() => initiateUpdate(), respondModule != null ? 2500 : 0);
                 }
             });
 
