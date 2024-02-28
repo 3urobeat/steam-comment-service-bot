@@ -599,9 +599,9 @@ declare class Controller {
      * Retrieves all matching bot accounts and returns them.
      * @param [statusFilter = EStatus.ONLINE] - Optional: EStatus or Array of EStatus's including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'EStatus.ONLINE' will be returned.
      * @param mapToObject - Optional: If true, an object will be returned where every bot object is mapped to their accountName.
-     * @returns An array or object if `mapToObject == true` containing all matching bot accounts.
+     * @returns An array or object if `mapToObject == true` containing all matching bot accounts. Note: This JsDoc type param only specifies the default array version to get IntelliSense support.
      */
-    getBots(statusFilter?: EStatus | EStatus[] | string, mapToObject: boolean): any[] | any;
+    getBots(statusFilter?: EStatus | EStatus[] | string, mapToObject: boolean): Bot[];
     /**
      * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
      * @param [filterOffline = false] - Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
@@ -674,9 +674,9 @@ declare class Controller {
      * Retrieves all matching bot accounts and returns them.
      * @param [statusFilter = EStatus.ONLINE] - Optional: EStatus or Array of EStatus's including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'EStatus.ONLINE' will be returned.
      * @param mapToObject - Optional: If true, an object will be returned where every bot object is mapped to their accountName.
-     * @returns An array or object if `mapToObject == true` containing all matching bot accounts.
+     * @returns An array or object if `mapToObject == true` containing all matching bot accounts. Note: This JsDoc type param only specifies the default array version to get IntelliSense support.
      */
-    getBots(statusFilter?: EStatus | EStatus[] | string, mapToObject: boolean): any[] | any;
+    getBots(statusFilter?: EStatus | EStatus[] | string, mapToObject: boolean): Bot[];
     /**
      * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
      * @param [filterOffline = false] - Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
