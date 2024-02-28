@@ -4,10 +4,10 @@
  * Created Date: 2022-10-09 12:59:31
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:16:18
+ * Last Modified: 2024-02-28 18:41:02
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -141,6 +141,14 @@ SessionHandler.prototype._acceptSteamGuardCode = function(code) {
             logger("debug", `[${this.bot.logPrefix}] acceptSteamGuardCode(): User supplied correct code, authenticated event should trigger.`);
         })
         .catch((err) => { // Invalid code, ask again
+            // Skip account if account got temp blocked
+            if (err.eresult == SteamSession.EResult.RateLimitExceeded || err.eresult == SteamSession.EResult.AccountLoginDeniedThrottle || err.eresult == SteamSession.EResult.AccessDenied) {
+                logger("error", `[${this.bot.logPrefix}] Steam rejected our login and applied a temporary login cooldown! ${err}`);
+                this.session.cancelLoginAttempt();
+                this._resolvePromise(null);
+                return;
+            }
+
             // Show different message depending on which account this is
             if (this.bot.index == 0) logger("warn", `Your code seems to be wrong, please try again! ${err}`);
                 else logger("warn", `Your code seems to be wrong, please try again or skip this account! ${err}`);

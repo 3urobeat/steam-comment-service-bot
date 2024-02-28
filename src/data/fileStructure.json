@@ -713,12 +713,12 @@
         {
             "path": "src/sessions/helpers/handle2FA.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/sessions/helpers/handle2FA.js",
-            "checksum": "3fd6447478a9ff8959f08ba5d184ae3b"
+            "checksum": "a43efa5785334b219826ca36ecafb9c7"
         },
         {
             "path": "src/sessions/helpers/handleCredentialsLoginError.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/sessions/helpers/handleCredentialsLoginError.js",
-            "checksum": "09cb820d026ab9a2effa154338d3af98"
+            "checksum": "59ffbe9f16ccf6f5e65dfd70c90f1cb7"
         },
         {
             "path": "src/sessions/helpers/tokenStorageHandler.js",
