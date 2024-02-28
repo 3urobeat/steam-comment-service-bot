@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-27 22:14:52
+ * Last Modified: 2024-02-28 16:37:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -74,7 +74,8 @@ Controller.prototype.login = async function(firstLogin) {
 
     // Set activeLogin to true if allAccounts is not empty
     if (allAccounts.length == 0) return this.info.activeLogin = false;
-        else this.info.activeLogin = true;
+
+    this.info.activeLogin = true;
 
 
     // Create new bot objects and register them bot accounts which are "new"
