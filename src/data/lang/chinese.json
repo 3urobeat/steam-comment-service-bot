@@ -23,7 +23,7 @@
     "commentfailedcmdreference": "要获取有关哪个评论失败的详细信息，请键入'${cmdprefix}failed'。您可以在此处阅读导致错误的可能原因: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md",
 
     "comment429stop": "停止评论流程，因为所有代理都出现HTTP 429（IP冷却）错误。请稍后重试。失败: ${failedamount}/${numberOfComments}",
-    "commentretrying": "${failedamount}/${numberOfComments} 条评论失败。我将在untilStr内重试失败的评论。 (尝试 ${thisattempt}/${maxattempt})",
+    "commentretrying": "${failedamount}/${numberOfComments} 条评论失败。我将在${untilStr}内重试失败的评论。 (尝试 ${thisattempt}/${maxattempt})",
     "commentsuccess": "所有评论已发送。失败: ${failedamount}/${numberOfComments}\n如果您是个好人，请也在我的个人资料上留下评论！",
 
     "genericnoaccounts": "抱歉，此ID上没有可用的帐户。",

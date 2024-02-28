@@ -23,7 +23,7 @@
     "commentfailedcmdreference": "Чтобы получить подробную информацию о том, почему комментарий не сработал, введите «${cmdprefix}failed». Вы можете прочитать, что, вероятно, вызвало вашу ошибку, здесь: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md",
 
     "comment429stop": "Остановлен процесс комментирования, поскольку все прокси-серверы выдали ошибку HTTP 429 (восстановление IP). Пожалуйста, повторите попытку позже. Не удалось: ${failedamount}/${numberOfComments}",
-    "commentretrying": "${failedamount}/${numberOfComments} комментариев были неудачными. Я собираюсь повторить попытку неудачных комментариев в untilStr. (Попытка ${thisattempt}/${maxattempt})",
+    "commentretrying": "${failedamount}/${numberOfComments} комментариев были неудачными. Я собираюсь повторить попытку неудачных комментариев в ${untilStr}. (Попытка ${thisattempt}/${maxattempt})",
     "commentsuccess": "Все комментарии были отправлены. Не удалось: ${failedamount}/${numberOfComments}\nЕсли вы хороший человек, то, пожалуйста, прокомментируйте и мой профиль!",
 
     "genericnoaccounts": "Извините, но для данного запроса нет доступных аккаунтов на этом ID.",

@@ -23,7 +23,7 @@
     "commentfailedcmdreference": "To get detailed information why which comment failed please type '${cmdprefix}failed'. You can read what probably caused your error here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md",
 
     "comment429stop": "Stopped comment process because all proxies had a HTTP 429 (IP cooldown) error. Please try again later. Failed: ${failedamount}/${numberOfComments}",
-    "commentretrying": "${failedamount}/${numberOfComments} comments have failed. I'm going to retry the failed comments in untilStr. (Attempt ${thisattempt}/${maxattempt})",
+    "commentretrying": "${failedamount}/${numberOfComments} comments have failed. I'm going to retry the failed comments in ${untilStr}. (Attempt ${thisattempt}/${maxattempt})",
     "commentsuccess": "All comments have been sent. Failed: ${failedamount}/${numberOfComments}\nIf you are a nice person then please comment on my profile too!",
 
     "genericnoaccounts": "Sorry but there are no accounts available for this request on this id.",
