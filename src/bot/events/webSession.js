@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-24 11:31:30
+ * Last Modified: 2024-02-28 21:24:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -132,13 +132,21 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
             /* ------------ Set primary group: ------------ */ // TODO: Add further delays? https://github.com/3urobeat/steam-comment-service-bot/issues/165
             if (this.controller.data.advancedconfig.setPrimaryGroup && this.controller.data.cachefile.configgroup64id) {
-                logger("debug", `[${this.logPrefix}] setPrimaryGroup is enabled and configgroup64id is set, setting '${this.controller.data.cachefile.configgroup64id}' as primary group...`);
+                logger("debug", `[${this.logPrefix}] setPrimaryGroup is enabled and configgroup64id is set, setting '${this.controller.data.cachefile.configgroup64id}' as primary group if not set already...`);
 
-                this.community.editProfile({
-                    primaryGroup: new SteamID(this.controller.data.cachefile.configgroup64id)
-                }, (err) => {
-                    if (err) logger("err", `[${this.logPrefix}] Error setting primary group: ${err}`, false, false, null, true);
-                        else logger("info", `[${this.logPrefix}] Successfully set '${this.controller.data.cachefile.configgroup64id}' as primary group...`, false, true, logger.animation("loading"));
+                this.community.getSteamUser(this.user.steamID, (err, res) => {
+                    if (err) return logger("err", `[${this.logPrefix}] Failed to get my own profile to check currently set primaryGroup! ${err}`);
+
+                    if (res.primaryGroup.getSteamID64() != this.controller.data.cachefile.configgroup64id) {
+                        this.community.editProfile({
+                            primaryGroup: new SteamID(this.controller.data.cachefile.configgroup64id)
+                        }, (err) => {
+                            if (err) logger("err", `[${this.logPrefix}] Error setting primary group: ${err}`, false, false, null, true);
+                                else logger("info", `[${this.logPrefix}] Successfully set '${this.controller.data.cachefile.configgroup64id}' as primary group!`, false, false, logger.animation("loading"));
+                        });
+                    } else {
+                        logger("debug", `[${this.logPrefix}] Successfully fetched profile and currently set primaryGroup matches configgroup64id, no need to take action`);
+                    }
                 });
             }
 
