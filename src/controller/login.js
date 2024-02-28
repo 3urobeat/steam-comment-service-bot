@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-28 16:37:38
+ * Last Modified: 2024-02-28 20:50:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -145,9 +145,14 @@ Controller.prototype.login = async function(firstLogin) {
         logger("debug", "Controller login(): Finished logging in all accounts! Calling myself again to check for any new accounts...");
 
         this.info.activeLogin = false;
-        this.login();
 
-        if (this.info.readyAfter == 0) this._readyEvent(); // Only call ready event if this is the first start
+        // Emit ready event if this is the first start and no login is pending
+        if (this.info.readyAfter == 0 && !Object.values(this.bots).some((e) => e.status == Bot.EStatus.POSTPONED)) {
+            this._readyEvent();
+        }
+
+        // Call itself again to process any POSTPONED or newly qualified accounts - this has to happen after the ready check above as login() sets every POSTPONED account to OFFLINE
+        this.login();
 
     }, 250);
 
