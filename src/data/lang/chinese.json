@@ -31,7 +31,7 @@
     "genericrequestless": "当前在此ID上仅有 ${availablenow} 个机器人帐户可用于此请求。",
     "genericnotenoughavailableaccs": "抱歉，此ID上当前没有足够的帐户可用于此请求。请等待 ${waittime} 后重试，或仅请求 ${availablenow} 个。",
 
-    "voteunsupportedtype": "Sorry but this vote command does not support this type of ID. Please provide a sharedfile ID/link (does not support funnyvote) or review link.",
+    "voteunsupportedtype": "抱歉，该投票命令不支持这类 ID。请提供共享文件 ID/链接（不支持 funnyvote）或者评论链接",
     "voteprocessstarted": "${numberOfVotes} 票的预计等待时间为 ${waittime}。",
     "votesuccess": "所有票已发送。失败: ${failedamount}/${numberOfVotes}",
 
@@ -41,7 +41,7 @@
     "followprocessstarted": "${totalamount} 个未追随/已追随的预计等待时间为 ${waittime}。",
     "followsuccess": "所有未追随/已追随的操作已发送。失败: ${failedamount}/${totalamount}",
 
-    "useradded": "你好！感谢添加我！\n使用 '${cmdprefix}comment' 请求一条免费评论\n输入 '${cmdprefix}help' 了解更多命令，或 '${cmdprefix}about' 了解更多信息！\nYou can use the '${cmdprefix}lang' command to switch between ${langcount} languages.",
+    "useradded": "你好！感谢添加我！\n使用 '${cmdprefix}comment' 请求一条免费评论\n输入 '${cmdprefix}help' 了解更多命令，或 '${cmdprefix}about' 了解更多信息！\n你可以使用'${cmdprefix}lang'命令在${langcount}语言之间切换。",
     "userunfriend": "由于朋友列表空间不足，您已在 ${forceFriendlistSpaceTime} 天内因不活跃而被解除好友关系。\n如果您需要我，请随时再次添加我！",
     "userforceunfriend": "由于 ${unfriendtime} 天不活跃，您已被解除好友关系。\n如果您需要我，请随时再次添加我！",
 
@@ -53,21 +53,21 @@
     "nouserid": "调用命令时未提供userID！由于无法应用冷却或此命令的默认行为无法在没有userID的情况下使用，因此正在阻止该命令。这是开发人员必须解决的编码问题。",
     "noidparam": "请提供一个ID！此上下文中可能无法使用此命令的默认行为，例如当从Steam Chat外部或开发人员忘记传递userID以启用它时。",
 
-    "requesttoohigh": "You are allowed to request a maximum of ${maxRequestAmount}.\n\n命令用法: ${cmdusage}",
+    "requesttoohigh": "你最多可以請求${maxRequestAmount}。\n\n命令用法: ${cmdusage}",
     "invalidnumber": "这似乎不是有效的数字！\n\n命令用法: ${cmdusage}",
     "invalidprofileid": "这似乎不是有效的ID或链接，或者您为此命令提供了错误的ID类型！\n请确保您提供的是完整链接、只有虚荣或ID，指向现有元素。",
     "invalidgroupid": "这不是有效的小组ID或小组URL！\n小组ID必须看起来像这样: '103582791464712227' \n...或小组URL看起来像这样: 'https://steamcommunity.com/groups/3urobeatGroup'",
     "invalidsharedfileid": "这似乎不是有效的sharedfileID！\n请确保您提供了完整的链接: https://steamcommunity.com/sharedfiles/filedetails/?id=2980913451 ...或只提供ID: 2980913451 ...指向现有的截图、艺术品或指南。\n\n命令用法: ${cmdusage}",
-    "invalidreviewid": "This does not seem to be a valid review link! Please make sure that you provide the full link to a valid review, like this: https://steamcommunity.com/id/3urobeat/recommended/1902490/\n\n命令用法: ${cmdusage}",
+    "invalidreviewid": "这似乎不是一个有效的评论链接！请你提供有效评论的完整链接，比如：https://steamcommunity.com/id/3urobeat/recommended/1902490/\n\n命令用法: ${cmdusage}",
     "errloadingsharedfile": "抱歉，加载您提供的sharedfile时发生错误: ",
-    "errloadingreview": "Sorry but an error occurred while loading the review you have provided: ",
+    "errloadingreview": "很抱歉，在加载你提供的评论时发生了差错: ",
     "idisownererror": "您不被允许提供所有者的ID！",
     "idalreadyreceiving": "此用户或ID已有活动请求！请等待它完成后再次请求。",
     "idoncooldown": "您最近只开始了一个请求。请等待剩余的 ${remainingcooldown}，然后再启动另一个请求。",
     "requestaborted": "您的活动请求已被您或所有者手动中止。\n成功发送 ${successAmount}/${totalAmount}。",
 
-    "jobscmdregistered": "These jobs are currently registered:",
-    "jobscmdnoneregistered": "There are currently no jobs registered.",
+    "jobscmdregistered": "这些作业目前已注册: ",
+    "jobscmdnoneregistered": "目前没有作业注册。",
     "reloadcmdreloaded": "重新加载所有命令和插件。",
     "activerelog": "机器人目前正在等待最后一个活动请求完成，以便重新登录帐户。\n请稍等片刻，然后重试。",
     "updatecmdforce": "Forcing an update from the ${branchname} branch...",

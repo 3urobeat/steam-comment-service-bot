@@ -553,7 +553,7 @@
         {
             "path": "src/data/lang/chinese.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/chinese.json",
-            "checksum": "4060ebdb255c4577a2e92b4186198643"
+            "checksum": "1a210cede6917ea62a875b0a3dfcec55"
         },
         {
             "path": "src/data/lang/english.json",
