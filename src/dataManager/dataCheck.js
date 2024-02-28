@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 14:24:20
+ * Last Modified: 2024-02-28 20:53:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -88,11 +88,11 @@ DataManager.prototype.checkData = function() {
         if (this.config.requestDelay / (maxRequestsOverall / 2) < 1250) {
             logWarn("warn", `${logger.colors.fgred}You have raised maxRequests or maxOwnerRequests but I would recommend to raise the requestDelay further. Not increasing it raises the probability of getting cooldowns from Steam, leading to failed requests.`, true);
         }
-        if (this.config.requestDelay * maxRequestsOverall > 2147483647) { // Check for 32-bit integer limit for commentcmd timeout
+        /* If (this.config.requestDelay * maxRequestsOverall > 2147483647) { // Check for 32-bit integer limit for commentcmd timeout --- Disabled because that calculation got removed during some rework in the past
             logWarn("error", `${logger.colors.fgred}Your maxRequests and/or maxOwnerRequests and/or requestDelay value in the config are too high.\n        Please lower these values so that 'requestDelay * maxRequests' is not bigger than 2147483647 (32-bit integer limit).\n\nThis will otherwise cause an error when trying to comment. Aborting...\n`, true);
             this.config.requestDelay = 15000;
             return reject(new Error("requestDelay times maxRequests exceeds 32bit integer limit!"));
-        }
+        } */
         if (this.config.randomizeAccounts && this.logininfo.length <= 5 && maxRequestsOverall > this.logininfo.length * 2) {
             logWarn("warn", `${logger.colors.fgred}I wouldn't recommend using randomizeAccounts with 5 or less accounts when each account can/has to comment multiple times. The chance of an account getting a cooldown is higher.\n       Please make sure your requestDelay is set adequately to reduce the chance of this happening.`, true);
         }
