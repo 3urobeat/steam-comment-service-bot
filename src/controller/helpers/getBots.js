@@ -4,7 +4,7 @@
  * Created Date: 2023-05-02 13:46:21
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-28 22:36:37
+ * Last Modified: 2024-02-29 17:23:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -23,10 +23,10 @@ const EStatus    = Bot.EStatus;
 /**
  * Retrieves all matching bot accounts and returns them.
  * @param {(EStatus|EStatus[]|string)} [statusFilter=EStatus.ONLINE] Optional: EStatus or Array of EStatus's including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'EStatus.ONLINE' will be returned.
- * @param {boolean} mapToObject Optional: If true, an object will be returned where every bot object is mapped to their accountName.
+ * @param {boolean} [mapToObject=false] Optional: If true, an object will be returned where every bot object is mapped to their accountName.
  * @returns {Array.<Bot>} An array or object if `mapToObject == true` containing all matching bot accounts. Note: This JsDoc type param only specifies the default array version to get IntelliSense support.
  */
-Controller.prototype.getBots = function(statusFilter, mapToObject) {
+Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObject = false) {
     if (statusFilter == null) statusFilter = EStatus.ONLINE; // Explicitly check for null so that filtering for OFFLINE (enum 0) works properly
 
     let accs = Object.values(this.bots); // Mark all bots as candidates

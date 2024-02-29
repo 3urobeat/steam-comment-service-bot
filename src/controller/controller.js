@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-29 16:13:57
+ * Last Modified: 2024-02-29 21:13:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -84,6 +84,9 @@ const Controller = function() {
     };
 
 
+    /**
+     * Collection of various misc parameters
+     */
     this.info = {
         bootStartTimestamp: Date.now(), // Save timestamp to be able to calculate startup time in ready event
         lastLoginTimestamp: {},         // Save timestamp of last login attempted by any account per proxy to calculate wait time for next account
@@ -96,7 +99,11 @@ const Controller = function() {
         commentCounter: 0               // Tracks total amount of comments to display in info command
     };
 
-    this.activeRequests = {}; // Stores active comment, vote etc. requests
+    /**
+     * Stores all recent comment, vote etc. requests
+     * @type {{[key: string]: { status: string, type: string, amount: number, quotesArr?: Array.<string>, requestedby: string, accounts: Array.<Bot>, thisIteration: number, retryAttempt: number, amountBeforeRetry?: number, until: number, failed: object }}}
+     */
+    this.activeRequests = {};
 };
 
 
@@ -465,7 +472,7 @@ Controller.prototype._lastcommentUnfriendCheck = function() {} // eslint-disable
 /**
  * Retrieves all matching bot accounts and returns them.
  * @param {(EStatus|EStatus[]|string)} [statusFilter=EStatus.ONLINE] Optional: EStatus or Array of EStatus's including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'EStatus.ONLINE' will be returned.
- * @param {boolean} mapToObject Optional: If true, an object will be returned where every bot object is mapped to their accountName.
+ * @param {boolean} [mapToObject=false] Optional: If true, an object will be returned where every bot object is mapped to their accountName.
  * @returns {Array.<Bot>} An array or object if `mapToObject == true` containing all matching bot accounts. Note: This JsDoc type param only specifies the default array version to get IntelliSense support.
  */
 Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObject = false) {}; // eslint-disable-line
