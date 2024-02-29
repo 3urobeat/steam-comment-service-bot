@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-29 12:59:07
+ * Last Modified: 2024-02-29 14:16:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -81,8 +81,6 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
                 } else {
 
-                    //logger("info", "Failed account is not bot0. Skipping account...", true);
-                    //this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
                     this.controller._statusUpdateEvent(this, Bot.EStatus.ERROR);
                     this.handleRelog();
                 }
@@ -102,7 +100,12 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
                 } else {
 
-                    logger("warn", `[${this.logPrefix}] ${err} while trying to log in. Retrying in 5 seconds...`, false, false, null, true); // Log error as warning
+                    // Unlock login, but only if not already done by loginTimeout handler to prevent duplicate login requests
+                    if (!this.loginData.pendingLogin) return;
+
+                    this.loginData.pendingLogin = false;
+
+                    logger("warn", `[${this.logPrefix}] '${err}' while trying to log in. Retrying in 5 seconds...`, false, false, null, true); // Log error as warning
 
                     // Try again in 5 sec, Controller's login function waits for any status that is not offline
                     setTimeout(() => this._loginToSteam(), 5000);

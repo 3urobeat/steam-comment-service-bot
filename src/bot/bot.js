@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-29 13:00:08
+ * Last Modified: 2024-02-29 14:12:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -72,6 +72,7 @@ const Bot = function(controller, index) {
         logOnOptions:  controller.data.logininfo.find((e) => e.index == index), // TODO: This could be an issue later when the index could change at runtime
         logOnTries:    0,
         relogTries:    0, // Amount of times logOns have been retried after relogTimeout. handleRelog() attempts to cycle proxies after enough failures
+        pendingLogin:  false,
         waitingFor2FA: false, // Set by sessionHandler's handle2FA helper to prevent handleLoginTimeout from triggering
         proxyIndex:    proxyIndex,
         proxy:         controller.data.proxies[proxyIndex].proxy
@@ -168,11 +169,19 @@ Bot.EStatus = EStatus;
  */
 Bot.prototype._loginToSteam = async function() {
 
+    // Cancel if account is already trying to log on and deny this duplicate request
+    if (this.loginData.pendingLogin) return;
+
+    this.loginData.pendingLogin = true; // Register this attempt and block any further requests
+
     // Count this attempt
     this.loginData.logOnTries++;
 
     // Always call logOff() before logOn() like an idiot to prevent "Already attempting to log on, cannot log on again" errors
     this.user.logOff();
+
+    if (this.sessionHandler.session) this.sessionHandler.session.cancelLoginAttempt(); // TODO: This might cause an error as idk if we are polling. Maybe use the timeout event of steam-session
+
 
     // Find proxyIndex from steam-user object options instead of loginData to get reliable log data
     let thisProxy = this.data.proxies.find((e) => e.proxy == this.user.options.httpProxy);
@@ -184,9 +193,12 @@ Bot.prototype._loginToSteam = async function() {
     // Attach loginTimeout handler
     this.handleLoginTimeout();
 
+
     // Call our steam-session helper to get a valid refresh token for us
     let refreshToken = await this.sessionHandler.getToken();
-    if (!refreshToken) return; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the bot itself
+
+    if (!refreshToken) return this.loginData.pendingLogin = false; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the bot itself
+
 
     // Login with this account using the refreshToken we just obtained using steam-session
     this.user.logOn({ "refreshToken": refreshToken });

@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-28 21:24:41
+ * Last Modified: 2024-02-29 14:10:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -36,7 +36,8 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
         this.controller._statusUpdateEvent(this, Bot.EStatus.ONLINE); // Set status of this account to online
 
-        this.loginData.relogTries = 0; // Reset relogTries to indicate that this proxy is working should one of the next logOn retries fail
+        this.loginData.relogTries = 0;       // Reset relogTries to indicate that this proxy is working should one of the next logOn retries fail
+        this.loginData.pendingLogin = false; // Unlock login again
 
 
         if (!this.controller.info.readyAfter) logger("info", `[${this.logPrefix}] Got websession and set cookies. Accepting offline friend & group invites...`, false, true, logger.animation("loading")); // Only print message with animation if the bot was not fully started yet
