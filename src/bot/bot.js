@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-18 13:26:20
+ * Last Modified: 2024-02-29 13:00:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -170,6 +170,9 @@ Bot.prototype._loginToSteam = async function() {
 
     // Count this attempt
     this.loginData.logOnTries++;
+
+    // Always call logOff() before logOn() like an idiot to prevent "Already attempting to log on, cannot log on again" errors
+    this.user.logOff();
 
     // Find proxyIndex from steam-user object options instead of loginData to get reliable log data
     let thisProxy = this.data.proxies.find((e) => e.proxy == this.user.options.httpProxy);

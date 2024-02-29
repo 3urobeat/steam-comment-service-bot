@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-28 17:16:02
+ * Last Modified: 2024-02-29 12:59:07
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -103,9 +103,6 @@ Bot.prototype._attachSteamErrorEvent = function() {
                 } else {
 
                     logger("warn", `[${this.logPrefix}] ${err} while trying to log in. Retrying in 5 seconds...`, false, false, null, true); // Log error as warning
-
-                    // Make sure to cancel any running login attempt because steam-user will throw an error otherwise
-                    this.user.logOff();
 
                     // Try again in 5 sec, Controller's login function waits for any status that is not offline
                     setTimeout(() => this._loginToSteam(), 5000);
