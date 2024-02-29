@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-28 20:50:34
+ * Last Modified: 2024-02-29 15:18:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -136,13 +136,13 @@ Controller.prototype.login = async function(firstLogin) {
         let allAccountsNotPopulated = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.ONLINE && !this.bots[e.accountName].user.limitations);
 
         if (allAccountsNotPopulated.length > 0) {
-            logger("info", `All accounts logged in, waiting for user object of bot(s) '${allAccountsNotPopulated.flatMap((e) => e.index).join(", ")}' to populate...`, true, true, logger.animation("waiting"));
+            logger("info", `All accounts logged in, waiting for user object of bot(s) '${allAccountsNotPopulated.flatMap((e) => e.index).join(", ")}' to populate...`, true, true, logger.animation("waiting")); // Cannot log with date to prevent log output file spam
             return;
         }
 
         clearInterval(allAccsOnlineInterval);
 
-        logger("debug", "Controller login(): Finished logging in all accounts! Calling myself again to check for any new accounts...");
+        logger("info", "Finished logging in all currently queued accounts! Calling myself again to check for any new accounts...", false, false, logger.animation("loading"));
 
         this.info.activeLogin = false;
 

@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-09 11:52:54
+ * Last Modified: 2024-02-29 15:16:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -28,6 +28,8 @@ const { exec } = require("child_process"); // Wanted to do it with the npm packa
  * @param {function(string|null, string|null): void} callback Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
 module.exports.reinstallAll = async (logger, callback) => {
+    logger("info", "I'm installing packages, which the bot depends on to function, inside this folder. Please wait a moment, this can take up to a minute.");
+
     if (!fs.existsSync(srcdir + "/../node_modules")) {
         logger("info", "Creating node_modules folder...");
 
