@@ -378,7 +378,7 @@
         {
             "path": "src/commands/commandHandler.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/commandHandler.js",
-            "checksum": "a10dd83ef81a5774055ac3e0c8236db4"
+            "checksum": "e4523ce0506976d22a55c938aad4eba9"
         },
         {
             "path": "src/commands/core/block.js",

@@ -4,7 +4,7 @@
  * Created Date: 2023-04-01 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-12 22:14:33
+ * Last Modified: 2024-02-29 20:17:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -200,6 +200,11 @@ CommandHandler.prototype.runCommand = async function(name, args, respondModule, 
     if (!thisCmd) {
         logger("warn", `CommandHandler runCommand(): Command '${name}' was not found!`);
         return false;
+    }
+
+    if (!resInfo) {
+        logger("warn", `CommandHandler runCommand(): Command '${name}' was called without 'resInfo'! Commands might fail because of missing information!`);
+        resInfo = {};
     }
 
     // Set command to ownersOnly if one of its aliases is inlcuded in restrictAdditionalCommandsToOwners
