@@ -4,7 +4,7 @@
  * Created Date: 2022-11-03 12:27:46
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-29 14:15:01
+ * Last Modified: 2024-02-29 14:38:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -40,8 +40,12 @@ Bot.prototype.handleLoginTimeout = function() {
 
         if (currentLogOnTry != newLogOnTry || this.status != Bot.EStatus.OFFLINE) return logger("debug", `Bot handleLoginTimeout(): Timeout for bot${this.index} done, acc not stuck. old/new logOnTries: ${currentLogOnTry}/${newLogOnTry} - acc status: ${this.status}`);
 
-        // Unlock _loginToSteam()
+
+        // Unlock login, but only if not already done by error event handler to prevent duplicate login requests
+        if (!this.loginData.pendingLogin) return logger("debug", `[${this.logPrefix}] Won't handle this login error because 'pendingLogin' is already 'false'; error handler must already have taken action`);
+
         this.loginData.pendingLogin = false;
+
 
         // Check if all logOnRetries are used up and skip account
         if (this.loginData.logOnTries > this.data.advancedconfig.maxLogOnRetries) {
@@ -60,11 +64,6 @@ Bot.prototype.handleLoginTimeout = function() {
             }
 
         } else {
-
-            // Unlock login, but only if not already done by error event handler to prevent duplicate login requests
-            if (!this.loginData.pendingLogin) return;
-
-            this.loginData.pendingLogin = false;
 
             // Force progress if account is stuck
             logger("warn", `Detected timed out login attempt for bot${this.index}! Force progressing login attempt to avoid soft-locking the bot...`, false, false, null, true);

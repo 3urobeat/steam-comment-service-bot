@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-29 14:16:26
+ * Last Modified: 2024-02-29 14:32:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -100,12 +100,12 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
                 } else {
 
+                    logger("warn", `[${this.logPrefix}] '${err}' while trying to log in.${this.loginData.pendingLogin ? " Retrying in 5 seconds..." : ""}`, false, false, null, true); // Log error as warning
+
                     // Unlock login, but only if not already done by loginTimeout handler to prevent duplicate login requests
-                    if (!this.loginData.pendingLogin) return;
+                    if (!this.loginData.pendingLogin) return logger("debug", `[${this.logPrefix}] Won't handle this login error because 'pendingLogin' is already 'false'; handleLoginTimeout must already have taken action`);
 
                     this.loginData.pendingLogin = false;
-
-                    logger("warn", `[${this.logPrefix}] '${err}' while trying to log in. Retrying in 5 seconds...`, false, false, null, true); // Log error as warning
 
                     // Try again in 5 sec, Controller's login function waits for any status that is not offline
                     setTimeout(() => this._loginToSteam(), 5000);

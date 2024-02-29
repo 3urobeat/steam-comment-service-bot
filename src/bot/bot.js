@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-29 14:12:22
+ * Last Modified: 2024-02-29 15:06:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -170,7 +170,13 @@ Bot.EStatus = EStatus;
 Bot.prototype._loginToSteam = async function() {
 
     // Cancel if account is already trying to log on and deny this duplicate request
-    if (this.loginData.pendingLogin) return;
+    if (this.loginData.pendingLogin) return logger("debug", `[${this.logPrefix}] Login requested but there is already a login process active. Ignoring...`);
+
+    // Ignore login attempt if logOnTries are exeeded or if account is currently ONLINE
+    if (this.status == EStatus.ONLINE || this.loginData.logOnTries > this.controller.data.advancedconfig.maxLogOnRetries) {
+        logger("debug", `[${this.logPrefix}] Login requested but account ${this.status == EStatus.ONLINE ? "is ONLINE" : "has exceeded maxLogOnRetries"}. Ignoring...`);
+        return;
+    }
 
     this.loginData.pendingLogin = true; // Register this attempt and block any further requests
 

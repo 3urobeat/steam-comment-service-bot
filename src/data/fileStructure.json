@@ -313,7 +313,7 @@
         {
             "path": "src/bot/bot.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/bot.js",
-            "checksum": "f099ec142831dd9b474002a3b6942626"
+            "checksum": "b7e389341764413ef532241cf3d343aa"
         },
         {
             "path": "src/bot/events/debug.js",
@@ -328,7 +328,7 @@
         {
             "path": "src/bot/events/error.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/error.js",
-            "checksum": "2faf916ba1668a1b7f721cd5f8f02a64"
+            "checksum": "1d9acb9bc2e620a84bb2aaecef3de96b"
         },
         {
             "path": "src/bot/events/friendMessage.js",
@@ -358,7 +358,7 @@
         {
             "path": "src/bot/helpers/handleLoginTimeout.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/helpers/handleLoginTimeout.js",
-            "checksum": "95fe574e26c08406eebef892d7ccd46d"
+            "checksum": "7c26d70db39d80a85eb77309d674c586"
         },
         {
             "path": "src/bot/helpers/handleMissingGameLicenses.js",
