@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-28 22:36:01
+ * Last Modified: 2024-02-29 16:13:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -254,6 +254,13 @@ Controller.prototype._preLogin = async function() {
      * @type {JobManager}
      */
     this.jobManager = new JobManager(this);
+
+
+    /**
+     * The dataManager object
+     * @type {DataManager}
+     */
+    this.data;
 
     // Register job to check tokens.db every 24 hours for expired tokens to allow users to refresh them beforehand
     this.data._startExpiringTokensCheckInterval();

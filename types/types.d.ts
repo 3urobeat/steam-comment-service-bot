@@ -521,6 +521,10 @@ declare class Controller {
      */
     jobManager: JobManager;
     /**
+     * The dataManager object
+     */
+    data: DataManager;
+    /**
      * The updater object
      */
     updater: Updater;
