@@ -33,7 +33,7 @@
         {
             "path": ".gitignore",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/.gitignore",
-            "checksum": "3d4645a3de082c935a60323291a8fe79"
+            "checksum": "97b585a4cf7a7cecd74dc32887b750b7"
         },
         {
             "path": ".prettierrc",
