@@ -34,6 +34,14 @@ declare class Bot {
      */
     lastDisconnect: any;
     /**
+     * This SteamUser instance
+     */
+    user: SteamUser;
+    /**
+     * This SteamCommunity instance
+     */
+    community: SteamCommunity;
+    /**
      * Calls SteamUser logOn() for this account. This will either trigger the SteamUser loggedOn or error event.
      */
     _loginToSteam(): void;

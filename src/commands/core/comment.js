@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-27 21:49:29
+ * Last Modified: 2024-02-29 22:44:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -24,7 +24,7 @@ const { logCommentError, handleIterationSkip } = require("../helpers/handleComme
 
 module.exports.comment = {
     names: ["comment", "gcomment", "groupcomment"],
-    description: "Request comments from all available bot accounts for a profile, group, sharedfile or discussion",
+    description: "Request comments from all available bot accounts for a profile, group, sharedfile, discussion or review",
     args: [
         {
             name: "amount",
@@ -35,7 +35,7 @@ module.exports.comment = {
         },
         {
             name: "ID",
-            description: "The link, steamID64 or vanity of the profile, group, sharedfile or discussion to comment on",
+            description: "The link, steamID64 or vanity of the profile, group, sharedfile, discussion or review to comment on",
             type: "string",
             isOptional: true,
             ownersOnly: true
