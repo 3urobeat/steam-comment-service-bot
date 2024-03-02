@@ -44,13 +44,19 @@ The bot needs at least a few Steam Accounts configured to be effective.
 These accounts are used to do the interactions in the SteamCommunity which you request (e.g. commenting, voting, favorizing, ...).  
 Creating a few accounts manually shouldn't take long. Make sure to give them a username and profile picture so they don't *instantly* look like random Bot accounts.  
 
-Open the `accounts.txt` file with a text editor and provide your accounts in the `username:password:shared_secret` format, one account per line.  
-If you don't want to use a shared_secret just leave it out and only provide the account in the `username:password` format.  
-The first account which you provide in this file will be the one you interact with to run commands to request comments, see info, etc.
+Open the `accounts.txt` file with a text editor and provide your accounts in the `username:password` format, one account per line.  
+If you have a shared secret to bypass Steam Guard, you can provide it in this format: `username:password:shared_secret`. This is completely optional.   
+The first account which you provide in this file will be the one you interact with to run commands to request comments, see info, etc.  
 
-Make sure your accounts have E-Mail Steam Guard activated! This is a requirement from Steam to be able to comment at all!  
+Login using QR-Code:  
+Should an account use Mobile Steam Guard, and you'd like to login by scanning a QR-Code using your phone, then this is possible as well!  
+Just provide "qrcode" as the password, basically like this: `username:qrcode`.  
+The bot will then print a QR-Code to the terminal when logging in, allowing you to scan it using the Steam Mobile App.
+
+Steam Guard info:  
+Make sure your accounts have at least E-Mail Steam Guard activated! This is a requirement from Steam to be able to comment at all!  
 I highly recommend that you take a quick look at the [Steam Limitations wiki page](./steam_limitations.md) to learn more about what you can and cannot do with your accounts.
-  
+
 <details>
   <summary>Another, optional method (not recommended anymore):</summary>
   
