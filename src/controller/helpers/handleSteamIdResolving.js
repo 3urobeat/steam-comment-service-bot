@@ -4,7 +4,7 @@
  * Created Date: 2022-03-09 12:58:17
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-27 21:37:59
+ * Last Modified: 2024-03-02 12:07:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -110,7 +110,7 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
             // My library doesn't have a check if exists function nor returns the steamID64 if I pass it into steamID64ToCustomUrl(). But since I don't want to parse the URL myself here I'm just gonna request the full obj and cut the id out of it
             steamIDResolver.steamID64ToFullInfo(str, (err, obj) => handleResponse(err, obj.steamID64[0]));
 
-        } else if (str.includes("steamcommunity.com/discussions/forum") || /steamcommunity.com\/app\/.+\/discussions/g.test(str) || /steamcommunity.com\/groups\/.+\/discussions/g.test(str)) {
+        } else if (str.includes("steamcommunity.com/discussions/forum") || /steamcommunity.com\/app\/.+\/discussions/g.test(str) || /steamcommunity.com\/groups\/.+\/discussions/g.test(str) || /steamcommunity.com\/app\/.+\/eventcomments/g.test(str)) {
             logger("debug", "handleSteamIdResolving: User provided discussion link...");
 
             idType = "discussion";
