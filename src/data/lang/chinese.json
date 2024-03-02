@@ -1,7 +1,7 @@
 {
     "note": "此文件包含机器人发送给用户的几乎所有消息。如果您想修改消息，请阅读此处: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/customlang_doc.md",
 
-    "langname": "中文",
+    "langname": "chinese",
 
     "updaterautoupdatedisabled": "您已禁用自动更新。您想现在更新吗？\n如果是，请使用以下命令强制更新: ${cmdprefix}update true",
 
@@ -58,7 +58,7 @@
     "invalidprofileid": "这似乎不是有效的ID或链接，或者您为此命令提供了错误的ID类型！\n请确保您提供的是完整链接、只有虚荣或ID，指向现有元素。",
     "invalidgroupid": "这不是有效的小组ID或小组URL！\n小组ID必须看起来像这样: '103582791464712227' \n...或小组URL看起来像这样: 'https://steamcommunity.com/groups/3urobeatGroup'",
     "invalidsharedfileid": "这似乎不是有效的sharedfileID！\n请确保您提供了完整的链接: https://steamcommunity.com/sharedfiles/filedetails/?id=2980913451 ...或只提供ID: 2980913451 ...指向现有的截图、艺术品或指南。\n\n命令用法: ${cmdusage}",
-    "invalidreviewid": "这似乎不是一个有效的评论链接！请你提供有效评论的完整链接，比如：https://steamcommunity.com/id/3urobeat/recommended/1902490/\n\n命令用法: ${cmdusage}",
+    "invalidreviewid": "这似乎不是一个有效的评论链接！\n请你提供有效评论的完整链接，比如：https://steamcommunity.com/id/3urobeat/recommended/1902490/\n\n命令用法: ${cmdusage}",
     "errloadingsharedfile": "抱歉，加载您提供的sharedfile时发生错误: ",
     "errloadingreview": "很抱歉，在加载你提供的评论时发生了差错: ",
     "idisownererror": "您不被允许提供所有者的ID！",
