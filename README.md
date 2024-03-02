@@ -92,3 +92,7 @@ When using this project as a whole you are only allowed to edit the config files
 Thank you [DoctorMcKay](https://github.com/DoctorMcKay) for creating the [steam-user](https://github.com/DoctorMcKay/node-steam-user) and [steamcommunity](https://github.com/DoctorMcKay/node-steamcommunity) libraries which this project heavily depends on!  
 
 Thank you so much to every single one who donated a dollar or two; there are now too many names to list them one by one! ❤️  
+
+&nbsp;
+
+[![Stargazers over time](https://starchart.cc/3urobeat/steam-comment-service-bot.svg?variant=adaptive)](https://starchart.cc/3urobeat/steam-comment-service-bot)
