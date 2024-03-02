@@ -28,6 +28,7 @@ This is the full documentation to customize your `advancedconfig.json`.
 | setPrimaryGroup | true or false | If the bot should set `yourgroup` in `config.json` as the primary group of each bot. Default: false |
 | onlineStatus | String | Online status of the main bot account. You can see all valid values [here](https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EPersonaState.js). Default: "Online" |
 | childAccOnlineStatus | String | Online status of all child bot accounts. You can see all valid values [here](https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EPersonaState.js). Default: "Online" |
+| blockPluginLoadOnMismatchedBotVersion | true or false | If true, plugins not specifically made for this bot version will be blocked from being loaded. Default: false |
 | &nbsp; | | |
 | commandCooldown | Number in ms | Timeframe in which a user is allowed to use 5 commands before it is considered as spamming and the user gets blocked for 90 seconds. Default: 12000 (12 seconds) |
 | restrictAdditionalCommandsToOwners | Array with cmd names as strings | Restricts more commands and their aliases to owners only. Default: [] |

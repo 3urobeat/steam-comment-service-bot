@@ -4,7 +4,7 @@
  * Created Date: 2023-06-04 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 2024-02-22 19:12:52
+ * Last Modified: 2024-03-02 11:24:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -127,12 +127,20 @@ PluginSystem.prototype._loadPlugins = async function () {
         try {
             if (pluginJson.botVersion) {
                 if (pluginJson.botVersion != this.controller.data.datafile.versionstr) {
+                    if (this.controller.data.advancedconfig.blockPluginLoadOnMismatchedBotVersion) {
+                        logger("warn", `Plugin '${pluginName}' wasn't made for this version! Blocking load because 'blockPluginLoadOnMismatchedBotVersion' is enabled.`, true);
+                        continue; // Important: Cannot use return instead as it would break the loop
+                    }
+
                     logger("warn", `Plugin '${pluginName}' was made for v${pluginJson.botVersion} but the bot runs on v${this.controller.data.datafile.versionstr}. This plugin might not function correctly but I'm loading it anyway.`, true); // Log now
-                    logger("warn", `Plugin '${pluginName}' was made for v${pluginJson.botVersion} but the bot runs on v${this.controller.data.datafile.versionstr}. This plugin might not function correctly but it was loaded anyway.`);        // ...and again after ready
                 }
             } else {
+                if (this.controller.data.advancedconfig.blockPluginLoadOnMismatchedBotVersion) {
+                    logger("warn", `Plugin '${pluginName}' does not specify a botVersion! Blocking load because 'blockPluginLoadOnMismatchedBotVersion' is enabled.`, true);
+                    continue; // Important: Cannot use return instead as it would break the loop
+                }
+
                 logger("warn", `Plugin '${pluginName}' does not specify a botVersion in their package.json! This plugin might not function correctly as it could have been made for an outdated version.`, true); // Log now
-                logger("warn", `Plugin '${pluginName}' does not specify a botVersion in their package.json! This plugin might not function correctly as it could have been made for an outdated version.`);       // ...and again after ready
             }
         } catch (err) {
             logger("err", `PluginSystem: Failed to check compatibility of plugin '${pluginName}' by comparing botVersion value. Attempting to load anyway. ${err}`);

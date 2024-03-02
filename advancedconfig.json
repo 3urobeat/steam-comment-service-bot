@@ -16,6 +16,7 @@
     "setPrimaryGroup": false,
     "onlineStatus": "Online",
     "childAccOnlineStatus": "Online",
+    "blockPluginLoadOnMismatchedBotVersion": false,
     "dummy2": "------------------- Request Settings: -------------------",
     "commandCooldown": 12000,
     "restrictAdditionalCommandsToOwners": [],

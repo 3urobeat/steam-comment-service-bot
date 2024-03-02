@@ -143,7 +143,7 @@
         {
             "path": "docs/wiki/advancedconfig_doc.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/advancedconfig_doc.md",
-            "checksum": "f1a56ddde3658214ae1f42a93ddd1013"
+            "checksum": "bca398c7db36e3ad845cafcc31726f64"
         },
         {
             "path": "docs/wiki/changelogs/CHANGELOG_v1.x.md",
@@ -698,7 +698,7 @@
         {
             "path": "src/pluginSystem/loadPlugins.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/pluginSystem/loadPlugins.js",
-            "checksum": "fe12a06367dfa7d0977a30e684757103"
+            "checksum": "e411202cda325c73ce8983f4bc421e20"
         },
         {
             "path": "src/pluginSystem/pluginSystem.js",
