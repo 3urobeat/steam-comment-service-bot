@@ -186,6 +186,11 @@
             "checksum": "f1364fff4c4ba0d00e19e88cc75c372c"
         },
         {
+            "path": "docs/wiki/changelogs/CHANGELOG_v2.15.md",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/changelogs/CHANGELOG_v2.15.md",
+            "checksum": "6c9006e2ac08ed25086e3bc47c6cf86d"
+        },
+        {
             "path": "docs/wiki/changelogs/CHANGELOG_v2.2.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/changelogs/CHANGELOG_v2.2.md",
             "checksum": "08de82dbd4e7e80db454b080727af76e"
@@ -278,7 +283,7 @@
         {
             "path": "docs/wiki/version_changelogs.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/version_changelogs.md",
-            "checksum": "41b3dd13d210e3d1196727eae8b31802"
+            "checksum": "608963ede0ef27d65adcb294666812d3"
         },
         {
             "path": "scripts/README.md",
