@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-29 22:44:57
+ * Last Modified: 2024-03-02 13:48:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -114,7 +114,7 @@ module.exports.comment = {
 
         // Get all currently available bot accounts. Block limited accounts from being eligible from commenting in groups
         let allowLimitedAccounts = (idType != "group");
-        let { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = getAvailableBotsForCommenting(commandHandler, numberOfComments, allowLimitedAccounts, idType, receiverSteamID64);
+        let { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = await getAvailableBotsForCommenting(commandHandler, numberOfComments, allowLimitedAccounts, idType, receiverSteamID64); // Await *has* an effect on this expression you idiot
 
         if (availableAccounts.length == 0 && !whenAvailableStr) { // Check if this bot has no suitable accounts for this request and there won't be any available at any point
             if (!allowLimitedAccounts) respond(await commandHandler.data.getLang("genericnounlimitedaccs", { "cmdprefix": resInfo.cmdprefix }, requesterID)); // Send less generic message for requests which require unlimited accounts
@@ -182,7 +182,7 @@ module.exports.comment = {
                     return new Promise((resolve) => {
                         commandHandler.controller.main.community.getSteamSharedFile(receiverSteamID64, (err, obj) => {
                             if (err) {
-                                logger("error", "Couldn't get sharedfile even though it exists?! Aborting!\n" + err);
+                                logger("error", "Couldn't get sharedfile even though it exists?! Aborting!\n" + err.stack);
                                 respond("Error: Couldn't get sharedfile even though it exists?! Aborting!\n" + err);
                                 return;
                             }
@@ -202,7 +202,7 @@ module.exports.comment = {
                     return new Promise((resolve) => {
                         commandHandler.controller.main.community.getSteamDiscussion(receiverSteamID64, (err, obj) => { // ReceiverSteamID64 is a URL in this case
                             if (err) {
-                                logger("error", "Couldn't get discussion even though it exists?! Aborting!\n" + err);
+                                logger("error", "Couldn't get discussion even though it exists?! Aborting!\n" + err.stack);
                                 respond("Error: Couldn't get discussion even though it exists?! Aborting!\n" + err);
                                 return;
                             }

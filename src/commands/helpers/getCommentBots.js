@@ -4,7 +4,7 @@
  * Created Date: 2023-04-09 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-18 22:55:53
+ * Last Modified: 2024-03-02 14:35:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -30,7 +30,7 @@ const { timeToString } = require("../../controller/helpers/misc.js");
  * @param {string} receiverSteamID Optional: steamID64 of the receiving user. If set, accounts that are friend with the user will be prioritized and accsToAdd will be calculated.
  * @returns {{ accsNeeded: number, availableAccounts: Array.<string>, accsToAdd: Array.<string>, whenAvailable: number, whenAvailableStr: string }} `availableAccounts` contains all account names from bot object, `accsToAdd` account names which are limited and not friend, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
-module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOfComments, canBeLimited, idType, receiverSteamID = null) {
+module.exports.getAvailableBotsForCommenting = async function(commandHandler, numberOfComments, canBeLimited, idType, receiverSteamID = null) {
 
     // Calculate the amount of accounts needed for this request
     let accountsNeeded;
@@ -92,12 +92,43 @@ module.exports.getAvailableBotsForCommenting = function(commandHandler, numberOf
     if (commandHandler.data.config.randomizeAccounts) allAccounts.sort(() => Math.random() - 0.5);
 
 
-    // Prioritize accounts the user is friend with
-    if (receiverSteamID) {
+    // Prioritize accounts the user is friend with if type is profile
+    if (receiverSteamID && idType.startsWith("profile")) {
         allAccounts = [
             ...allAccounts.filter(e => allAccsOnline[e].user.myFriends[receiverSteamID] == EFriendRelationship.Friend), // Cool trick to get every acc with user as friend to the top
             ...allAccounts.filter(e => allAccsOnline[e].user.myFriends[receiverSteamID] != EFriendRelationship.Friend)  // ...and every non-friend acc below
         ];
+    }
+
+
+    // Remove !accountCanComment accounts if type discussion. We need to run getSteamDiscussion for every account, which kind of sucks as it's a ton of requests - but what else are we supposed to do?
+    if (idType == "discussion") {
+        let promises = [];
+
+        allAccounts.forEach((e) => {
+            promises.push((() => {
+                return new Promise((resolve) => {
+                    commandHandler.controller.bots[e].community.getSteamDiscussion(receiverSteamID, (err, obj) => { // ReceiverSteamID64 is a URL in this case
+                        if (err) {
+                            logger("error", "Couldn't check if account can comment on discussion! Resolving with true anyway and hoping for the best...\n" + err.stack);
+                            return resolve({ accountName: e, accountCanComment: true });
+                        }
+
+                        resolve({ accountName: e, accountCanComment: obj.accountCanComment });
+                    });
+                });
+            })());
+        });
+
+        await Promise.all(promises).then((res) => {
+            let previousLength = allAccounts.length;
+
+            res.forEach((e) => {
+                if (!e.accountCanComment) allAccounts.splice(allAccounts.indexOf(e.accountName), 1); // Remove that accountindex from the allAccounts array
+            });
+
+            logger("info", `${previousLength - allAccounts.length} of ${previousLength} bot accounts were removed from available accounts as they are not allowed to comment on this discussion!`);
+        });
     }
 
 
