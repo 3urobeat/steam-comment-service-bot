@@ -34,6 +34,14 @@ declare class Bot {
      */
     lastDisconnect: any;
     /**
+     * This SteamUser instance
+     */
+    user: SteamUser;
+    /**
+     * This SteamCommunity instance
+     */
+    community: SteamCommunity;
+    /**
      * Calls SteamUser logOn() for this account. This will either trigger the SteamUser loggedOn or error event.
      */
     _loginToSteam(): void;
@@ -301,6 +309,17 @@ declare type resInfo = {
 declare function comment(commandHandler: CommandHandler, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any, postComment: (...params: any[]) => any, commentArgs: any, receiverSteamID64: string): void;
 
 /**
+ * Processes a up-/down-/funnyvote request
+ * @param origin - Type of vote requested
+ * @param commandHandler - The commandHandler object
+ * @param args - Array of arguments that will be passed to the command
+ * @param respondModule - Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+ * @param context - The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+ * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+ */
+declare function processVoteRequest(origin: "upvote" | "downvote" | "funnyvote", commandHandler: CommandHandler, args: any[], respondModule: (...params: any[]) => any, context: any, resInfo: CommandHandler.resInfo): void;
+
+/**
  * Helper function: Gets the visibility status of a profile and appends it to idType
  * @param commandHandler - The commandHandler object
  * @param steamID64 - The steamID64 of the profile to check
@@ -313,19 +332,18 @@ declare function getVisibilityStatus(commandHandler: CommandHandler, steamID64: 
  * Retrieves arguments from a comment request. If request is invalid (for example too many comments requested) an error message will be sent
  * @param commandHandler - The commandHandler object
  * @param args - The command arguments
- * @param requesterID - The steamID64 of the requesting user
  * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @param respond - The shortened respondModule call
  * @returns Resolves promise with object containing all relevant data when done
  */
-declare function getCommentArgs(commandHandler: CommandHandler, args: any[], requesterID: string, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any): Promise<{ maxRequestAmount: number; commentcmdUsage: string; numberOfComments: number; profileID: string; idType: string; quotesArr: string[]; }>;
+declare function getCommentArgs(commandHandler: CommandHandler, args: any[], resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any): Promise<{ maxRequestAmount: number; commentcmdUsage: string; numberOfComments: number; profileID: string; idType: string; quotesArr: string[]; }>;
 
 /**
  * Finds all needed and currently available bot accounts for a comment request.
  * @param commandHandler - The commandHandler object
  * @param numberOfComments - Number of requested comments
  * @param canBeLimited - If the accounts are allowed to be limited
- * @param idType - Type of the request. This can either be "profile(PrivacyState)", "group", "sharedfile" or "discussion". This is used to determine if limited accs need to be added first.
+ * @param idType - Type of the request. This can either be "profile(PrivacyState)", "group", "sharedfile", "discussion" or "review". This is used to determine if limited accs need to be added first.
  * @param receiverSteamID - Optional: steamID64 of the receiving user. If set, accounts that are friend with the user will be prioritized and accsToAdd will be calculated.
  * @returns `availableAccounts` contains all account names from bot object, `accsToAdd` account names which are limited and not friend, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
@@ -360,12 +378,13 @@ declare function getFollowArgs(commandHandler: CommandHandler, args: any[], cmd:
  * @param id - The user id to follow
  * @param idType - Either "user" or "curator"
  * @param favType - Either "follow" or "unfollow", depending on which request this is
+ * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @returns Resolves with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
-declare function getAvailableBotsForFollowing(commandHandler: CommandHandler, amount: number | "all", canBeLimited: boolean, id: string, idType: string, favType: string): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
+declare function getAvailableBotsForFollowing(commandHandler: CommandHandler, amount: number | "all", canBeLimited: boolean, id: string, idType: string, favType: string, resInfo: CommandHandler.resInfo): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
 
 /**
- * Retrieves arguments from a favorite/vote request. If request is invalid, an error message will be sent
+ * Retrieves arguments from a non-specific request without id processing
  * @param commandHandler - The commandHandler object
  * @param args - The command arguments
  * @param cmd - Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function
@@ -373,17 +392,18 @@ declare function getAvailableBotsForFollowing(commandHandler: CommandHandler, am
  * @param respond - The shortened respondModule call
  * @returns If the user provided a specific amount, amount will be a number. If user provided "all" or "max", it will be returned as an unmodified string for getVoteBots.js to handle
  */
-declare function getSharedfileArgs(commandHandler: CommandHandler, args: any[], cmd: string, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any): Promise<{ amount: number | string; id: string; }>;
+declare function getMiscArgs(commandHandler: CommandHandler, args: any[], cmd: string, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any): Promise<{ err: null | any; amountRaw: number | string; id: string; idType: string; }>;
 
 /**
  * Finds all needed and currently available bot accounts for a vote request.
  * @param commandHandler - The commandHandler object
  * @param amount - Amount of votes requested or "all" to get the max available amount
  * @param id - The sharedfile id to vote on
- * @param voteType - "upvote" or "downvote", depending on which request this is
+ * @param voteType - Type of the request
+ * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @returns Resolves with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
-declare function getAvailableBotsForVoting(commandHandler: CommandHandler, amount: number | "all", id: string, voteType: string): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
+declare function getAvailableBotsForVoting(commandHandler: CommandHandler, amount: number | "all", id: string, voteType: "upvote" | "downvote" | "funnyvote", resInfo: CommandHandler.resInfo): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
 
 /**
  * Checks if the following comment process iteration should be skipped
@@ -468,7 +488,7 @@ declare function handleFavoriteIterationSkip(commandHandler: CommandHandler, loo
  * @param error - The error string returned by steam-community
  * @param commandHandler - The commandHandler object
  * @param bot - Bot object of the account making this request
- * @param id - ID of the sharedfile that receives the votes
+ * @param id - ID that receives the votes
  */
 declare function logVoteError(error: string, commandHandler: CommandHandler, bot: Bot, id: string): void;
 
@@ -497,6 +517,14 @@ declare class Controller {
      */
     misc: any;
     /**
+     * Collection of various misc parameters
+     */
+    info: any;
+    /**
+     * Stores all recent comment, vote etc. requests
+     */
+    activeRequests: any;
+    /**
      * Internal: Initializes the bot by importing data from the disk, running the updater and finally logging in all bot accounts.
      */
     _start(): void;
@@ -504,6 +532,14 @@ declare class Controller {
      * Internal: Loads all parts of the application to get IntelliSense support after the updater ran and calls login() when done.
      */
     _preLogin(): void;
+    /**
+     * The JobManager handles the periodic execution of functions which you can register at runtime
+     */
+    jobManager: JobManager;
+    /**
+     * The dataManager object
+     */
+    data: DataManager;
     /**
      * The updater object
      */
@@ -540,6 +576,16 @@ declare class Controller {
      */
     login(firstLogin: boolean): void;
     /**
+     * Internal: Logs in accounts on different proxies synchronously
+     * @param allAccounts - Array of logininfo entries of accounts to log in
+     */
+    _processFastLoginQueue(allAccounts: any[]): void;
+    /**
+     * Internal: Logs in accounts asynchronously to allow for user interaction
+     * @param allAccounts - Array of logininfo entries of accounts to log in
+     */
+    _processSlowLoginQueue(allAccounts: any[]): void;
+    /**
      * Runs internal ready event code and emits ready event for plugins
      */
     _readyEvent(): void;
@@ -572,10 +618,10 @@ declare class Controller {
     /**
      * Retrieves all matching bot accounts and returns them.
      * @param [statusFilter = EStatus.ONLINE] - Optional: EStatus or Array of EStatus's including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'EStatus.ONLINE' will be returned.
-     * @param mapToObject - Optional: If true, an object will be returned where every bot object is mapped to their accountName.
-     * @returns An array or object if `mapToObject == true` containing all matching bot accounts.
+     * @param [mapToObject = false] - Optional: If true, an object will be returned where every bot object is mapped to their accountName.
+     * @returns An array or object if `mapToObject == true` containing all matching bot accounts. Note: This JsDoc type param only specifies the default array version to get IntelliSense support.
      */
-    getBots(statusFilter?: EStatus | EStatus[] | string, mapToObject: boolean): any[] | any;
+    getBots(statusFilter?: EStatus | EStatus[] | string, mapToObject?: boolean): Bot[];
     /**
      * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
      * @param [filterOffline = false] - Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
@@ -589,11 +635,11 @@ declare class Controller {
     _handleErrors(): void;
     /**
      * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
-     * Note: You need to provide a full URL for discussions & curators. For discussions only type checking/determination is supported.
+     * Note: You need to provide a full URL for discussions, curators & reviews. For discussions only type checking/determination is supported.
      * @param str - The profileID argument provided by the user
-     * @param expectedIdType - The type of SteamID expected ("profile", "group", "sharedfile", "discussion" or "curator") or `null` if type should be assumed.
+     * @param expectedIdType - The type of SteamID expected or `null` if type should be assumed.
      */
-    handleSteamIdResolving(str: string, expectedIdType: string, callback: any): void;
+    handleSteamIdResolving(str: string, expectedIdType: EIdTypes, callback: any): void;
     /**
      * Logs text to the terminal and appends it to the output.txt file.
      * @param type - String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
@@ -647,10 +693,10 @@ declare class Controller {
     /**
      * Retrieves all matching bot accounts and returns them.
      * @param [statusFilter = EStatus.ONLINE] - Optional: EStatus or Array of EStatus's including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'EStatus.ONLINE' will be returned.
-     * @param mapToObject - Optional: If true, an object will be returned where every bot object is mapped to their accountName.
-     * @returns An array or object if `mapToObject == true` containing all matching bot accounts.
+     * @param [mapToObject = false] - Optional: If true, an object will be returned where every bot object is mapped to their accountName.
+     * @returns An array or object if `mapToObject == true` containing all matching bot accounts. Note: This JsDoc type param only specifies the default array version to get IntelliSense support.
      */
-    getBots(statusFilter?: EStatus | EStatus[] | string, mapToObject: boolean): any[] | any;
+    getBots(statusFilter?: EStatus | EStatus[] | string, mapToObject?: boolean): Bot[];
     /**
      * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
      * @param [filterOffline = false] - Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
@@ -664,11 +710,11 @@ declare class Controller {
     _handleErrors(): void;
     /**
      * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
-     * Note: You need to provide a full URL for discussions & curators. For discussions only type checking/determination is supported.
+     * Note: You need to provide a full URL for discussions, curators & reviews. For discussions only type checking/determination is supported.
      * @param str - The profileID argument provided by the user
-     * @param expectedIdType - The type of SteamID expected ("profile", "group", "sharedfile", "discussion" or "curator") or `null` if type should be assumed.
+     * @param expectedIdType - The type of SteamID expected or `null` if type should be assumed.
      */
-    handleSteamIdResolving(str: string, expectedIdType: string, callback: any): void;
+    handleSteamIdResolving(str: string, expectedIdType: EIdTypes, callback: any): void;
     /**
      * Logs text to the terminal and appends it to the output.txt file.
      * @param type - String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
@@ -695,6 +741,16 @@ declare class Controller {
      * @param firstLogin - Is set to true by controller if this is the first login to display more information
      */
     login(firstLogin: boolean): void;
+    /**
+     * Internal: Logs in accounts on different proxies synchronously
+     * @param allAccounts - Array of logininfo entries of accounts to log in
+     */
+    _processFastLoginQueue(allAccounts: any[]): void;
+    /**
+     * Internal: Logs in accounts asynchronously to allow for user interaction
+     * @param allAccounts - Array of logininfo entries of accounts to log in
+     */
+    _processSlowLoginQueue(allAccounts: any[]): void;
 }
 
 /**
@@ -702,6 +758,16 @@ declare class Controller {
  * @param data - Stringified data received by previous process
  */
 declare function restartdata(data: string): void;
+
+/**
+ * ID types supported by this resolver
+ */
+declare const EIdTypes: any;
+
+/**
+ * ID types supported by this resolver
+ */
+declare const EIdTypes: any;
 
 /**
  * Implementation of a synchronous for loop in JS (Used as reference: https://whitfin.io/handling-synchronous-asynchronous-loops-javascriptnode-js/)
@@ -769,6 +835,13 @@ declare function update(callback: any): void;
  * @param path - Custom path to read package.json from and install packages to
  */
 declare function updateFromPath(path: string, callback: any): void;
+
+/**
+ * Installs the latest version available on NPM for an array of packages. Updating core dependencies might cause untested behavior, be careful.
+ * @param packages - Array of package names to install the latest version of
+ * @returns Resolves when done or rejects on failure
+ */
+declare function installLatest(packages: string[]): Promise<void>;
 
 /**
  * Constructor - The dataManager system imports, checks, handles errors and provides a file updating service for all configuration files
@@ -1108,6 +1181,57 @@ declare class DataManager {
 }
 
 /**
+ * @property name - Name of the job
+ * @property [description] - Optional: Description of the job
+ * @property func - Function which will be executed
+ * @property interval - Number in milliseconds to wait between executions of func. Minimum value is 250ms!
+ * @property [runOnRegistration] - Set to true to run the job once instantly after registration
+ * @property [_lastExecTimestamp] - Internal: Timestamp of the last execution of func. Do not set this value, it is managed by the JobManager internally.
+ * @property [_registeredAt] - Internal: Timestamp of when this job was registered. Do not set this value, it is managed by the JobManager internally.
+ */
+declare type Job = {
+    name: string;
+    description?: string;
+    func: (...params: any[]) => any;
+    interval: number;
+    runOnRegistration?: boolean;
+    _lastExecTimestamp?: number;
+    _registeredAt?: number;
+};
+
+/**
+ * Constructor - The jobManager handles running and managing interval based functions (jobs), like update checks, cleanups, etc.
+ * @param controller - Reference to the controller object
+ */
+declare class JobManager {
+    constructor(controller: Controller);
+    /**
+     * Reference to the controller object
+     */
+    controller: Controller;
+    /**
+     * Collection of all registered jobs
+     */
+    jobs: Job[];
+    /**
+     * Internal: Executes all due jobs.
+     */
+    _runDueJobs(): void;
+    /**
+     * Registers a job
+     * @param job - Object of the job to register
+     * @returns Returns `null` on success or `err` on failure, specifying the reason why.
+     */
+    registerJob(job: Job): Error | null;
+    /**
+     * Unregisters a job
+     * @param name - Name of the job to unregister
+     * @returns Returns `null` on success or `err` on failure, specifying the reason why.
+     */
+    unregisterJob(name: string): Error | null;
+}
+
+/**
  * Constructor - Creates a new Discussion object
  */
 declare class CSteamDiscussion {
@@ -1142,6 +1266,77 @@ declare class CSteamDiscussion {
      * @param callback - Takes only an Error object/null as the first argument
      */
     unsubscribe(callback: (...params: any[]) => any): void;
+}
+
+/**
+ * @property [reviewID] - ID of review, used for voting & reporting. Remains `null` if it is your review or you are not logged in as the buttons are not presented then.
+ * @property steamID - SteamID object of the review author
+ * @property appID - AppID of the associated game
+ * @property postedDate - Date of when the review was posted initially
+ * @property [updatedDate] - Date of when the review was last updated. Remains `null` if review was never updated
+ * @property recommended - True if the author recommends the game, false otherwise.
+ * @property isEarlyAccess - True if the review is an early access review
+ * @property content - Text content of the review
+ * @property [commentsAmount] - Amount of comments reported by Steam. Remains `null` if coments are disabled
+ * @property [comments] - Array of the last 10 comments left on this review
+ * @property recentPlaytimeHours - Amount of hours the author played this game for in the last 2 weeks
+ * @property totalPlaytimeHours - Amount of hours the author played this game for in total
+ * @property [playtimeHoursAtReview] - Amount of hours the author played this game for at the point of review. Remains `null` if Steam does not provide this information.
+ * @property votesHelpful - Amount of 'Review is helpful' votes
+ * @property votesFunny - Amount of 'Review is funny' votes
+ */
+declare type Review = {
+    reviewID?: string;
+    steamID: SteamID;
+    appID: string;
+    postedDate: Date;
+    updatedDate?: Date;
+    recommended: boolean;
+    isEarlyAccess: boolean;
+    content: string;
+    commentsAmount?: number;
+    comments?: { index: number; id: string; authorLink: string; postedDate: Date; content: string; }[];
+    recentPlaytimeHours: number;
+    totalPlaytimeHours: number;
+    playtimeHoursAtReview?: number;
+    votesHelpful: number;
+    votesFunny: number;
+};
+
+/**
+ * Constructor - Creates a new CSteamReview object
+ * @param community - Current SteamCommunity instance
+ * @param data - Review data collected by the scraper
+ */
+declare class CSteamReview {
+    constructor(community: SteamCommunity, data: Review);
+    _community: SteamCommunity;
+    /**
+     * Posts a comment to this review
+     * @param message - Content of the comment to post
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    comment(message: string, callback: (...params: any[]) => any): void;
+    /**
+     * Votes on this review as helpful
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    voteHelpful(callback: (...params: any[]) => any): void;
+    /**
+     * Votes on this review as unhelpful
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    voteUnhelpful(callback: (...params: any[]) => any): void;
+    /**
+     * Votes on this review as funny
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    voteFunny(callback: (...params: any[]) => any): void;
+    /**
+     * Removes funny vote from this review
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    voteRemoveFunny(callback: (...params: any[]) => any): void;
 }
 
 /**
@@ -1265,14 +1460,21 @@ declare class PluginSystem {
      */
     _loadPlugins(): void;
     /**
-     * Reference to the controller object
+     * Central part of the application and your interface to everything
      */
     controller: Controller;
     /**
      * References to all plugin objects
      */
     pluginList: any;
+    /**
+     * Manages all registered commands and gives you access to them
+     */
     commandHandler: CommandHandler;
+    /**
+     * Manages and runs all jobs and lets you register your own
+     */
+    jobManager: JobManager;
     /**
      * Reloads all plugins and calls ready event after ~2.5 seconds.
      */
@@ -1353,7 +1555,7 @@ declare class SessionHandler {
      * Internal: Handles submitting 2FA code
      * @param res - Response object from startWithCredentials() promise
      */
-    _handle2FA(res: any): void;
+    _handle2FA(res: StartSessionResponse): void;
     /**
      * Internal: Helper function to get 2FA code from user and passing it to accept function or skipping account if desired
      */
@@ -1364,10 +1566,25 @@ declare class SessionHandler {
      */
     _acceptSteamGuardCode(code: string): void;
     /**
+     * Handles displaying a QR Code to login using the Steam Mobile App
+     * @param res - Response object from startWithQR() promise
+     */
+    _handleQRCode(res: StartSessionResponse): void;
+    /**
      * Helper function to make handling login errors easier
      * @param err - Error thrown by startWithCredentials()
      */
     _handleCredentialsLoginError(err: any): void;
+    /**
+     * Helper function to make handling login errors easier
+     * @param err - Error thrown by startWithQR()
+     */
+    _handleQrCodeLoginError(err: any): void;
+    /**
+     * Checks if the database contains a valid token for this account. You can assume that the next login attempt with this token will succeed if `true` is returned.
+     * @returns Resolves with `true` if a valid token was found, `false` otherwise
+     */
+    hasStorageValidToken(): Promise<boolean>;
     /**
      * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
      */
@@ -1408,7 +1625,7 @@ declare class SessionHandler {
      * Internal: Handles submitting 2FA code
      * @param res - Response object from startWithCredentials() promise
      */
-    _handle2FA(res: any): void;
+    _handle2FA(res: StartSessionResponse): void;
     /**
      * Internal: Helper function to get 2FA code from user and passing it to accept function or skipping account if desired
      */
@@ -1419,10 +1636,25 @@ declare class SessionHandler {
      */
     _acceptSteamGuardCode(code: string): void;
     /**
+     * Handles displaying a QR Code to login using the Steam Mobile App
+     * @param res - Response object from startWithQR() promise
+     */
+    _handleQRCode(res: StartSessionResponse): void;
+    /**
      * Helper function to make handling login errors easier
      * @param err - Error thrown by startWithCredentials()
      */
     _handleCredentialsLoginError(err: any): void;
+    /**
+     * Helper function to make handling login errors easier
+     * @param err - Error thrown by startWithQR()
+     */
+    _handleQrCodeLoginError(err: any): void;
+    /**
+     * Checks if the database contains a valid token for this account. You can assume that the next login attempt with this token will succeed if `true` is returned.
+     * @returns Resolves with `true` if a valid token was found, `false` otherwise
+     */
+    hasStorageValidToken(): Promise<boolean>;
     /**
      * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
      */
@@ -1537,5 +1769,9 @@ declare class Updater {
      * @returns Promise that will be resolved with false when no update was found or with true when the update check or download was completed. Expect a restart when true was returned.
      */
     run(forceUpdate: boolean, respondModule: (...params: any[]) => any, resInfo: any): Promise<boolean>;
+    /**
+     * Registers an update check job. This is called by Controller after the data integrity and startup update check
+     */
+    _registerUpdateChecker(): void;
 }
 

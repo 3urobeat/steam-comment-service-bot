@@ -1,0 +1,148 @@
+{
+    "note": "Este arquivo contém praticamente todas as mensagens que o bot envia aos usuários. Se você quiser modificar as mensagens, leia aqui: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/customlang_doc.md",
+
+    "langname": "portuguese",
+
+    "updaterautoupdatedisabled": "Você desativou a atualização automática. Gostaria de atualizar agora?\nSe sim, por favor, force uma atualização usando o comando: ${cmdprefix}update true",
+
+    "commentcmdusageowner": "'${cmdprefix}comment quantidade/\"all\" id' para solicitar muitos comentários (ou a quantidade máxima possível).\nForneça um perfil, grupo, arquivo compartilhado (captura de tela, arte ou guia) ou ID/URL de discussão se quiser comentar em outro lugar além do seu perfil.",
+    "commentcmdusageowner2": "'${cmdprefix}comment 1 id'. Forneça um perfil, grupo, arquivo compartilhado (captura de tela, arte ou guia) ou ID/URL de discussão se quiser comentar em outro lugar além do seu perfil.",
+    "commentcmdusage": "'${cmdprefix}comment quantidade/\"all\"' para solicitar muitos comentários (ou a quantidade máxima possível) no seu perfil.",
+    "commentcmdusage2": "'${cmdprefix}comment' para solicitar um comentário no seu perfil!",
+    "commentinvalidid": "Isso não parece ser um perfil, grupo, arquivo compartilhado (captura de tela, arte ou guia) ou ID/URL de discussão válido!\nCertifique-se de fornecer um link completo, apenas a parte personalizada ou ID, apontando para um elemento existente.\n\nUso do comando: ${commentcmdusage}",
+    "commentprofileidowneronly": "Especificar um ID é permitido apenas para os proprietários do bot.\nSe você é um proprietário do bot, certifique-se de ter adicionado seu ID à configuração ownerid no config.json.",
+    "commentmissingnumberofcomments": "Por favor, especifique quantos comentários dos ${maxRequestAmount} você gostaria de solicitar.\nUso do comando: ${commentcmdusage}",
+    "commentzeroavailableaccs": "Desculpe, mas atualmente não há contas suficientes disponíveis para atender ao seu pedido. Por favor, aguarde ${waittime} e tente novamente!",
+    "commentnotenoughavailableaccs": "Desculpe, mas atualmente não há contas suficientes disponíveis para atender ao seu pedido. Por favor, aguarde ${waittime} e tente novamente ou solicite apenas ${availablenow} comentários agora.",
+    "commentnoaccounts": "Desculpe, mas não há contas para atender a este pedido. Entre em contato com o administrador do bot desta instância.\nUse o comando ${cmdprefix}owner para obter informações sobre quem administra esta instância.",
+    "commentaddbotaccounts": "Por favor, adicione essas contas e solicite novamente: (contas limitadas)",
+    "commentunsupportedtype": "Desculpe, mas o comando de comentário não suporta este tipo de ID. Forneça um perfil, grupo, arquivo compartilhado (captura de tela, arte ou guia) ou ID/URL de discussão.",
+    "commentuserprofileprivate": "Seu perfil/recebendo parece estar privado. Edite as configurações de privacidade para permitir comentários e tente novamente!",
+    "commenterroroccurred": "Ops, ocorreu um erro! Infelizmente, não fui capaz de comentar.",
+    "commentprocessstarted": "Tempo estimado de espera para ${numberOfComments} comentários: ${waittime}.",
+    "commentfailedcmdreference": "Para obter informações detalhadas sobre o motivo pelo qual determinado comentário falhou, digite '${cmdprefix}failed'. Você pode ler o que provavelmente causou seu erro aqui: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md",
+
+    "comment429stop": "O processo de enviar comentários foi interrompido porque todos os proxies receberam um erro HTTP 429 (resfriamento de IP). Por favor, tente novamente mais tarde. Erros/falhas: ${failedamount}/${numberOfComments}",
+    "commentretrying": "${failedamount}/${numberOfComments} comentários falharam. Vou tentar novamente os comentários falhados até ${untilStr}. (Tentativa ${thisattempt}/${maxattempt})",
+    "commentsuccess": "Todos os comentários foram enviados. Erros/falhas: ${failedamount}/${numberOfComments}\nSe você é uma pessoa legal, por favor, comente também no meu perfil!",
+
+    "genericnoaccounts": "Desculpe, mas não há contas disponíveis para esta solicitação neste ID.",
+    "genericnounlimitedaccs": "Desculpe, mas não há contas ilimitadas necessárias para atender a este pedido. Entre em contato com o administrador do bot desta instância.\nUse o comando ${cmdprefix}owner para obter informações sobre quem administra esta instância.",
+    "genericrequestless": "Atualmente, existem apenas ${availablenow} contas de bot disponíveis para esta solicitação neste ID.",
+    "genericnotenoughavailableaccs": "Desculpe, mas atualmente não há contas suficientes disponíveis para esta solicitação neste ID. Por favor, aguarde ${waittime} e tente novamente ou solicite apenas ${availablenow} agora.",
+
+    "voteunsupportedtype": "Sorry but this vote command does not support this type of ID. Please provide a sharedfile ID/link (does not support funnyvote) or review link.",
+    "voteprocessstarted": "Tempo estimado de espera para ${numberOfVotes} votos: ${waittime}.",
+    "votesuccess": "Todos os votos foram enviados. Falhou: ${failedamount}/${numberOfVotes}",
+
+    "favoriteprocessstarted": "Tempo estimado de espera para ${numberOfFavs} favoritos/não favoritos: ${waittime}.",
+    "favoritesuccess": "Todos os favoritos/não favoritos foram enviados. Falhou: ${failedamount}/${numberOfFavs}",
+
+    "followprocessstarted": "Tempo estimado de espera para ${totalamount} seguir/deixar de seguir: ${waittime}.",
+    "followsuccess": "Todos os seguir/deixar de seguir foram enviados. Falhou: ${failedamount}/${totalamount}",
+
+    "useradded": "Olá! Obrigado por me adicionar!\nSolicite um comentário gratuito com '${cmdprefix}comment'\nDigite '${cmdprefix}help' para mais comandos ou '${cmdprefix}about' para mais informações!\nYou can use the '${cmdprefix}lang' command to switch between ${langcount} languages.",
+    "userunfriend": "Você foi desfeito como amigo por estar inativo por ${forceFriendlistSpaceTime} dias, pois a lista de amigos estava ficando cheia.\nSe precisar de mim novamente, sinta-se à vontade para me adicionar novamente!",
+    "userforceunfriend": "Você foi desfeito como amigo por estar inativo por ${unfriendtime} dias.\nSe precisar de mim novamente, sinta-se à vontade para me adicionar novamente!",
+
+    "userspamblock": "Você foi bloqueado por 90 segundos por fazer spam.",
+    "usernotfriend": "Por favor, me adicione antes de usar um comando!",
+    "botnotready": "O bot ainda não está completamente iniciado. Por favor, aguarde um momento antes de usar um comando.",
+    "commandnotfound": "Eu não conheço esse comando. Digite ${cmdprefix}help para mais informações.",
+    "commandowneronly": "Este comando está disponível apenas para os proprietários.\nSe você é o proprietário do bot, certifique-se de adicionar seu ownerid ao config.json.\nSe esta solicitação vem de um plug-in, certifique-se de passar os parâmetros userID e ownerIDs.",
+    "nouserid": "O comando foi chamado sem um userID! Bloqueando o comando, pois não consigo aplicar cooldowns ou o comportamento padrão deste comando não pode ser usado sem um. Isso é um problema de codificação que deve ser corrigido por um desenvolvedor.",
+    "noidparam": "Por favor, forneça um ID!\nO comportamento padrão deste comando pode estar indisponível neste contexto, por exemplo, quando o comando foi usado fora do Steam Chat ou o desenvolvedor esqueceu de passar um userID para ativá-lo.",
+
+    "requesttoohigh": "You are allowed to request a maximum of ${maxRequestAmount}.\n\nUso do comando: ${cmdusage}",
+    "invalidnumber": "Isso não parece ser um número válido!\n\nUso do comando: ${cmdusage}",
+    "invalidprofileid": "Isso não parece ser um ID válido ou link, ou você forneceu o tipo de ID errado para este comando!\nCertifique-se de fornecer um link completo, apenas a parte personalizada ou o ID, apontando para um elemento existente.",
+    "invalidgroupid": "Este não é um ID de grupo ou URL de grupo válido!\nUm ID de grupo deve parecer assim: '103582791464712227'\n...ou um URL de grupo assim: 'https://steamcommunity.com/groups/3urobeatGroup'",
+    "invalidsharedfileid": "Isso não parece ser um sharedfileID válido!\nCertifique-se de fornecer um link completo: https://steamcommunity.com/sharedfiles/filedetails/?id=2980913451 ...ou apenas o ID: 2980913451 ...que aponta para uma captura de tela, obra de arte ou guia existente.\n\nUso do comando: ${cmdusage}",
+    "invalidreviewid": "This does not seem to be a valid review link!\nPlease make sure that you provide the full link to a valid review, like this: https://steamcommunity.com/id/3urobeat/recommended/1902490/\n\nUso do comando: ${cmdusage}",
+    "errloadingsharedfile": "Desculpe, mas ocorreu um erro ao carregar o sharedfile fornecido: ",
+    "errloadingreview": "Sorry but an error occurred while loading the review you have provided: ",
+    "idisownererror": "Você não tem permissão para fornecer o ID de um proprietário!",
+    "idalreadyreceiving": "Este usuário ou ID já tem uma solicitação ativa! Aguarde ela ser concluída antes de solicitar novamente.",
+    "idoncooldown": "Você iniciou recentemente uma solicitação. Aguarde o restante de ${remainingcooldown} antes de iniciar outra solicitação.",
+    "requestaborted": "Sua solicitação ativa foi abortada manualmente, seja por você mesmo ou por um proprietário.\n${successAmount}/${totalAmount} foram enviados com sucesso.",
+
+    "jobscmdregistered": "These jobs are currently registered:",
+    "jobscmdnoneregistered": "There are currently no jobs registered.",
+    "reloadcmdreloaded": "Recarregou todos os comandos e plugins.",
+    "activerelog": "O bot está aguardando as últimas solicitações ativas serem concluídas para reiniciar as contas.\nAguarde alguns minutos e tente novamente.",
+    "updatecmdforce": "Forçando uma atualização do ${branchname}...",
+    "updatecmdcheck": "Verificando se há uma atualização no ${branchname}...",
+    "restartcmdrestarting": "Reiniciando...",
+    "stopcmdstopping": "Parando...",
+
+    "helpcommandlist": "Comandos:",
+    "helpcommentowner": "Solicita no máximo ${maxOwnerRequests} de comentários para o seu perfil ou de outro usuário",
+    "helpcommentuser": "Solicita no máximo ${maxRequests} de comentários para o seu perfil",
+    "helpvote": "Solicita no máximo ${maxRequests} de votos em sharedfiles",
+    "helpfavorite": "Solicita no máximo ${maxRequests} de favoritos em sharedfiles",
+    "helpfollow": "Solicita no máximo ${maxRequests} de seguidores de oficina",
+    "helpinfo": "Informações sobre o bot e você",
+    "helpabort": "Aborta sua própria solicitação",
+    "helpabout": "Informações sobre este projeto",
+    "helpowner": "Informações sobre quem administra esta instância do bot",
+    "helpreadothercmdshere": "Mais de 30 comandos adicionais estão listados aqui:",
+
+    "pingcmdmessage": "Pong! 🏓\nTempo de resposta steamcommunity.com/ping: ${pingtime}ms",
+    "ownercmdnolink": "O operador deste bot não incluiu um link para si mesmo.)",
+    "ownercmdmsg": "Confira o perfil do meu proprietário: (para mais informações sobre o bot digite ${cmdprefix}about)",
+    "groupcmdnolink": "O dono deste bot não forneceu nenhum grupo ou o grupo não existe.",
+    "groupcmdinvitesent": "Eu enviei um convite! Obrigado por participar!",
+    "groupcmdinvitelink": "Junte-se ao meu grupo aqui: ",
+    "abortcmdnoprocess": "Não há nenhum processo ativo em execução para este ID.\nSe você solicitou comentários para outro perfil, grupo ou arquivo compartilhado, forneça esse ID/URL como argumento!",
+    "abortcmdsuccess": "Abortando um processo ativo para o seu ID...",
+
+    "resetcooldowncmdcooldowndisabled": "O tempo de espera está desativado na configuração!",
+    "resetcooldowncmdglobalreset": "O tempo de espera de todas as contas do bot foi redefinido.",
+    "resetcooldowncmdsuccess": "O tempo de espera de ${profileid} foi limpo.",
+
+    "langcmdsupported": "O bot suporta esses idiomas:",
+    "langcmdnotsupported": "Infelizmente, este idioma não é suportado. Por favor, escolha um idioma desta lista: ${supportedlangs}\n\nGostaria de contribuir com um idioma não suportado? Leia aqui: ' https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/contributing.md#translating '",
+    "langcmdsuccess": "Seu idioma foi alterado!",
+
+    "settingscmdfailedread": "Falha ao ler configuração para exibir as configurações atuais: ",
+    "settingscmdcurrentsettings": "Configurações atuais:",
+    "settingscmdblockedvalues": "enableevalcmd, ownerid e owner não podem ser alterados via comando de configurações por motivos de segurança. Por favor, faça isso diretamente no arquivo de configuração.",
+    "settingscmdcouldnotconvert": "Não consegui converter sua entrada. Certifique-se de que a sintaxe está correta.\nErro: ",
+    "settingscmdkeynotfound": "Não consigo encontrar esta chave na configuração.",
+    "settingscmdsamevalue": "A chave solicitada já está ${value}.",
+    "settingscmdvaluetoobig": "Seu novo valor é muito grande. (limite de inteiro de 32 bits)\nPor favor, escolha um valor menor.",
+    "settingscmdvaluereset": "O DataManager rejeitou essa alteração com este aviso:",
+    "settingscmdvaluechanged": "${targetkey} foi alterado de ${oldvalue} para ${newvalue}.\nLembre-se de que certos valores podem exigir uma reinicialização para entrar em vigor. Você pode fazer isso digitando ${cmdprefix}restart.",
+
+    "failedcmdnothingfound": "Não consigo lembrar de nenhuma interação mal sucedida no seu/esse ID.\nSe você solicitou algo para outro perfil, grupo, arquivo compartilhado ou discussão, forneça esse ID/URL como argumento!",
+    "failedcmdmsg": "Sua última solicitação para '${steamID64}' concluída em '${requesttime}' (horário GMT) teve esses erros:",
+
+    "sessionscmdnosessions": "Atualmente não há sessões ativas e nenhuma conta do bot em espera.",
+    "sessionscmdmsg": "Atualmente há ${amount} sessão(ões) ativa(s):",
+    "mysessionscmdnosessions": "Atualmente não há sessões ativas que você iniciou.",
+
+    "addfriendcmdacclimited": "Não é possível adicionar o amigo ${profileid} com o bot0 porque a conta do bot está limitada.",
+    "addfriendcmdsuccess": "Adicionando amigo ${profileid} com todas as contas de bot... Isso levará aproximadamente ~estimatedtime segundos. Por favor, verifique o log para possíveis erros.",
+    "unfriendcmdsuccess": "Estou cancelando a amizade com você em todas as contas de bot. Isso levará um momento...\nVocê pode me enviar um pedido de amizade novamente a qualquer momento.",
+    "unfriendidcmdsuccess": "Removido o amigo ${profileid} de todas as contas de bot.",
+
+    "unfriendallcmdabort": "Abortando o processo de cancelamento de amizade se estiver ativo...",
+    "unfriendallcmdpending": "Cancelando a amizade de todas as pessoas (exceto proprietários) com todas as contas de bot em 30 segundos...\nDigite '${cmdprefix}unfriendall abort' para abortar/parar o processo.",
+    "unfriendallcmdstart": "Iniciando o cancelamento de amizade com todos...",
+
+    "joingroupcmdsuccess": "Entrando no grupo '${groupid}' com todas as contas de bot...",
+
+    "leavegroupcmdsuccess": "Saindo do grupo '${groupid}' com todas as contas de bot...",
+
+    "leaveallgroupscmdabort": "Abortando o processo de saída de todos os grupos se estiver ativo...",
+    "leaveallgroupscmdpending": "Saindo de todos os grupos (exceto seu grupo e grupos de bots) com todas as contas de bot em 15 segundos...\nDigite '${cmdprefix}leaveallgroups abort' para abortar/parar o processo.",
+    "leaveallgroupscmdstart": "Iniciando a saída de todos os grupos...",
+
+    "blockcmdsuccess": "Bloqueado ${profileid} com todas as contas de bot.",
+    "unblockcmdsuccess": "Desbloqueado ${profileid} com todas as contas de bot.",
+
+    "evalcmdturnedoff": "O comando eval foi desativado!",
+    "evalcmdlogininfoblock": "Seu código inclui 'logininfo'. Para proteger senhas, isso não é permitido.",
+
+    "childbotmessage": "Esta é uma conta em execução em um cluster de bots.\nPor favor, adicione o bot principal e envie a ele uma mensagem ${cmdprefix}help.\nSe quiser saber do que se trata, digite: ${cmdprefix}about\nEsta é a conta principal do bot:"
+}

@@ -1,6 +1,6 @@
 {
-    "version": "21401",
-    "versionstr": "2.14.1",
+    "version": "21500",
+    "versionstr": "2.15.0",
     "branch": "master",
     "filetostart": "./src/starter.js",
     "filetostarturl": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/src/starter.js",
@@ -8,7 +8,7 @@
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/3urobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://github.com/sponsors/3urobeat",
     "firststart": true,
     "compatibilityfeaturedone": false,
-    "whatsnew": "Fixed a bunch of bugs and made a few minor improvements, for more details read the release notes on GitHub.",
+    "whatsnew": "Added support for commenting & voting on reviews, drastically reduced startup time for large instances with many proxies, added QR-Code login support, added JobManager, improved PluginSystem and fixed some bugs. Read the full release notes: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/changelogs/CHANGELOG_v2.15.md",
     "timesloggedin": 0,
     "totallogintime": 0
 }

@@ -4,10 +4,10 @@
  * Created Date: 2022-02-28 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-28 21:29:17
+ * Last Modified: 2024-02-26 20:06:16
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -54,12 +54,11 @@ function getVisibilityStatus(commandHandler, steamID64, type, callback) {
  * Retrieves arguments from a comment request. If request is invalid (for example too many comments requested) an error message will be sent
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Array} args The command arguments
- * @param {string} requesterID The steamID64 of the requesting user
  * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @param {function(string): void} respond The shortened respondModule call
  * @returns {Promise.<{ maxRequestAmount: number, commentcmdUsage: string, numberOfComments: number, profileID: string, idType: string, quotesArr: Array.<string> }>} Resolves promise with object containing all relevant data when done
  */
-module.exports.getCommentArgs = (commandHandler, args, requesterID, resInfo, respond) => {
+module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
     return new Promise((resolve) => {
         (async () => { // Lets us use await insidea Promise without creating an antipattern
 
@@ -67,12 +66,13 @@ module.exports.getCommentArgs = (commandHandler, args, requesterID, resInfo, res
             let owners = commandHandler.data.cachefile.ownerid;
             if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
+            let requesterID      = resInfo.userID;
             let maxRequestAmount = commandHandler.data.config.maxRequests; // Set to default value and if the requesting user is an owner it gets changed below
             let numberOfComments = 0;
             let quotesArr        = commandHandler.data.quotes;
 
             let profileID;
-            let idType = "profile"; // Set profile as default because that makes sense (because it can only be a group/sharedfile/discussion when param was provided yk)
+            let idType = "profile"; // Set profile as default because that makes sense (because it can only be a group/sharedfile/discussion/review when param was provided yk)
 
 
             /* --------- Define command usage messages & maxRequestAmount for each user's privileges --------- */
@@ -105,7 +105,7 @@ module.exports.getCommentArgs = (commandHandler, args, requesterID, resInfo, res
                 if (args[0] > maxRequestAmount) { // Number is greater than maxRequestAmount?
                     logger("debug", `CommandHandler getCommentArgs(): User requested ${args[0]} but is only allowed ${maxRequestAmount} comments. Stopping...`);
 
-                    respond(await commandHandler.data.getLang("commentrequesttoohigh", { "maxRequestAmount": maxRequestAmount, "commentcmdusage": commentcmdUsage }, requesterID));
+                    respond(await commandHandler.data.getLang("requesttoohigh", { "maxRequestAmount": maxRequestAmount, "cmdusage": commentcmdUsage }, requesterID));
                     return resolve(false);
                 }
 

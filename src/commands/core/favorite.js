@@ -4,10 +4,10 @@
  * Created Date: 2023-06-02 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:07:57
+ * Last Modified: 2024-02-21 21:23:47
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -16,10 +16,10 @@
 
 
 const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
-const { getSharedfileArgs }             = require("../helpers/getSharedfileArgs.js");
+const { getMiscArgs }             = require("../helpers/getMiscArgs.js");
 const { getAvailableBotsForFavorizing } = require("../helpers/getFavoriteBots.js");
 const { syncLoop, timeToString }        = require("../../controller/helpers/misc.js");
-const { handleFavoriteIterationSkip, logFavoriteError } = require("../helpers/handleSharedfileErrors.js");
+const { handleFavoriteIterationSkip, logFavoriteError } = require("../helpers/handleMiscErrors.js");
 
 
 module.exports.favorite = {
@@ -73,7 +73,7 @@ module.exports.favorite = {
 
 
         // Check and get arguments from user
-        let { amountRaw, id } = await getSharedfileArgs(commandHandler, args, "favorite", resInfo, respond);
+        let { amountRaw, id } = await getMiscArgs(commandHandler, args, "favorite", resInfo, respond);
 
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
@@ -156,8 +156,16 @@ module.exports.favorite = {
 
                     if (!handleFavoriteIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
+                    let favFunc = bot.community.favoriteSharedFile;
+
+                    // Overwrite favFunc with pure *nothingness* if debug mode is enabled
+                    if (commandHandler.data.advancedconfig.disableSendingRequests) {
+                        logger("warn", "Replacing favFunc with nothingness because 'disableSendingRequests' is enabled in 'advancedconfig.json'!");
+                        favFunc = (a, b, callback) => callback(null);
+                    }
+
                     /* --------- Try to favorite --------- */
-                    bot.community.favoriteSharedFile(sharedfile.id, sharedfile.appID, (error) => { // Note: Steam does not return an error for a duplicate request here
+                    favFunc.call(bot.community, sharedfile.id, sharedfile.appID, (error) => { // Note: Steam does not return an error for a duplicate request here
 
                         /* --------- Handle errors thrown by this favorite attempt or update ratingHistory db and log success message --------- */
                         if (error) {
@@ -263,7 +271,7 @@ module.exports.unfavorite = {
 
 
         // Check and get arguments from user
-        let { amountRaw, id } = await getSharedfileArgs(commandHandler, args, "unfavorite", resInfo, respond);
+        let { amountRaw, id } = await getMiscArgs(commandHandler, args, "unfavorite", resInfo, respond);
 
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
@@ -346,8 +354,16 @@ module.exports.unfavorite = {
 
                     if (!handleFavoriteIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
+                    let favFunc = bot.community.unfavoriteSharedFile;
+
+                    // Overwrite favFunc with pure *nothingness* if debug mode is enabled
+                    if (commandHandler.data.advancedconfig.disableSendingRequests) {
+                        logger("warn", "Replacing favFunc with nothingness because 'disableSendingRequests' is enabled in 'advancedconfig.json'!");
+                        favFunc = (a, b, callback) => callback(null);
+                    }
+
                     /* --------- Try to unfavorite --------- */
-                    bot.community.unfavoriteSharedFile(sharedfile.id, sharedfile.appID, (error) => {
+                    favFunc.call(bot.community, sharedfile.id, sharedfile.appID, (error) => {
 
                         /* --------- Handle errors thrown by this unfavorite attempt or update ratingHistory db and log success message --------- */
                         if (error) {

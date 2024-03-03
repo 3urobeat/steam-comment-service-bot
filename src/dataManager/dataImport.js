@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-28 23:22:59
+ * Last Modified: 2024-02-24 12:26:07
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -256,7 +256,7 @@ DataManager.prototype._importFromDisk = async function () {
             quotes.forEach((e, i) => {
                 // Multi line strings that contain \n will get split to \\n -> remove second \ so that node-steamcommunity understands the quote when commenting
                 if (e.length > 999) {
-                    logger("warn", `The quote.txt line ${i} is longer than the limit of 999 characters. This quote will be ignored for now.`, true, false, logger.animation("loading"));
+                    logger("warn", `The quote.txt line ${i + 1} is longer than the limit of 999 characters. This quote will be ignored for now.`, true, false, logger.animation("loading"));
                     quotes.splice(i, 1); // Remove this item from the array
                     return;
                 }
@@ -281,21 +281,45 @@ DataManager.prototype._importFromDisk = async function () {
             try {
                 let obj = {};
 
-                delete require.cache[require.resolve(srcdir + "/data/lang/english.json")]; // Delete cache to enable reloading data
-                delete require.cache[require.resolve(srcdir + "/data/lang/russian.json")]; // Delete cache to enable reloading data
+                if (!fs.existsSync("./src/data/lang")) fs.mkdirSync("./src/data/lang");
 
-                obj["english"] = require(srcdir + "/data/lang/english.json");
-                obj["russian"] = require(srcdir + "/data/lang/russian.json");
+                // Delete cache so requiring languages again will load new changes
+                Object.keys(require.cache).forEach((key) => {
+                    if (key.includes("src/data/lang")) delete require.cache[key];
+                });
 
-                resolve(obj);
+                // Iterate through all files in lang dir and load them
+                fs.readdir("./src/data/lang", (err, files) => {
+                    files.forEach((e) => {
+                        let thisFile;
+
+                        // Try to load plugin
+                        try {
+                            // Load the plugin file
+                            thisFile = require(`../data/lang/${e}`);
+
+                            // Add language to obj
+                            obj[e.replace(".json", "")] = thisFile;
+                        } catch (err) {
+                            logger("error", `Error loading language '${e}'! ${err.stack}`, true);
+                        }
+                    });
+
+                    // Resolve with success message or force restore default language
+                    if (Object.keys(obj).length > 0 && obj["english"]) {
+                        logger("info", `Successfully loaded ${Object.keys(obj).length} languages!`, false, true, logger.animation("loading"));
+                        resolve(obj);
+                    } else {
+                        _this._pullNewFile("english.json", "./src/data/lang/english.json", (e) => resolve({ "english": e })); // Only resolve for the default language
+                    }
+                });
             } catch (err) {
                 if (err) {
                     // Corrupted!
                     logger("", "", true, true);
 
-                    // Pull the file directly from GitHub.
+                    // Pull the default lang file directly from GitHub, the other ones should be handled by the dataIntegrity check
                     _this._pullNewFile("english.json", "./src/data/lang/english.json", (e) => resolve({ "english": e })); // Only resolve for the default language
-                    _this._pullNewFile("russian.json", "./src/data/lang/russian.json", () => {});
                 }
             }
         });
@@ -375,8 +399,5 @@ DataManager.prototype._importFromDisk = async function () {
     this.ratingHistoryDB = new nedb({ filename: srcdir + "/data/ratingHistory.db", autoload: true });
     this.tokensDB        = new nedb({ filename: srcdir + "/data/tokens.db", autoload: true });
     this.userSettingsDB  = new nedb({ filename: srcdir + "/data/userSettings.db", autoload: true });
-
-    // Check tokens.db every 24 hours for expired tokens to allow users to refresh them beforehand
-    this._startExpiringTokensCheckInterval();
 
 };

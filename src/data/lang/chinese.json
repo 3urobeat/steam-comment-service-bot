@@ -1,0 +1,148 @@
+{
+    "note": "此文件包含机器人发送给用户的几乎所有消息。如果您想修改消息，请阅读此处: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/customlang_doc.md",
+
+    "langname": "chinese",
+
+    "updaterautoupdatedisabled": "您已禁用自动更新。您想现在更新吗？\n如果是，请使用以下命令强制更新: ${cmdprefix}update true",
+
+    "commentcmdusageowner": "使用'${cmdprefix}comment amount/\"all\" id'请求指定数量的评论（或最大可能数量）。\n如果要在其他地方评论，请提供个人资料、小组、共享文件（截图、艺术品或指南）或讨论ID/URL，而不是在您的个人资料上评论。",
+    "commentcmdusageowner2": "使用'${cmdprefix}comment 1 id'。如果要在其他地方评论，请提供个人资料、小组、共享文件（截图、艺术品或指南）或讨论ID/URL。",
+    "commentcmdusage": "使用'${cmdprefix}comment amount/\"all\"'请求指定数量的评论（或最大可能数量）在您的个人资料上。",
+    "commentcmdusage2": "使用'${cmdprefix}comment'请求在您的个人资料上进行评论！",
+    "commentinvalidid": "这似乎不是有效的个人资料、小组、共享文件（截图、艺术品或指南）或讨论ID/URL！\n请确保您提供的是完整链接、只有虚荣或ID，指向现有元素。\n\n命令用法: ${commentcmdusage}",
+    "commentprofileidowneronly": "仅允许为机器人所有者指定ID。\n如果您是机器人所有者，请确保已将您的ID添加到config.json中的ownerid设置。",
+    "commentmissingnumberofcomments": "请指定要请求的${maxRequestAmount}条评论中的数量。\n命令用法: ${commentcmdusage}",
+    "commentzeroavailableaccs": "抱歉，目前没有足够的帐户来完成您的请求。请等待${waittime}后重试！",
+    "commentnotenoughavailableaccs": "抱歉，目前没有足够的帐户来完成您的请求。请等待${waittime}后重试，或仅请求${availablenow}条评论。",
+    "commentnoaccounts": "抱歉，没有帐户可以完成此请求。请联系此实例的机器人管理员。\n使用${cmdprefix}owner命令获取有关运行此实例的人的信息。",
+    "commentaddbotaccounts": "请添加这些帐户，然后重新请求: （有限帐户）",
+    "commentunsupportedtype": "抱歉，评论命令不支持此类型的ID。请提供个人资料、小组、共享文件（截图、艺术品或指南）或讨论ID/URL。",
+    "commentuserprofileprivate": "您/接收方的个人资料似乎是私人的。请编辑隐私设置以允许评论，然后重试！",
+    "commenterroroccurred": "糟糕，出现错误！很抱歉，我无法评论。",
+    "commentprocessstarted": "${numberOfComments} 条评论的预计等待时间为 ${waittime}。",
+    "commentfailedcmdreference": "要获取有关哪个评论失败的详细信息，请键入'${cmdprefix}failed'。您可以在此处阅读导致错误的可能原因: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md",
+
+    "comment429stop": "停止评论流程，因为所有代理都出现HTTP 429（IP冷却）错误。请稍后重试。失败: ${failedamount}/${numberOfComments}",
+    "commentretrying": "${failedamount}/${numberOfComments} 条评论失败。我将在${untilStr}内重试失败的评论。 (尝试 ${thisattempt}/${maxattempt})",
+    "commentsuccess": "所有评论已发送。失败: ${failedamount}/${numberOfComments}\n如果您是个好人，请也在我的个人资料上留下评论！",
+
+    "genericnoaccounts": "抱歉，此ID上没有可用的帐户。",
+    "genericnounlimitedaccs": "抱歉，没有无限帐户可满足此请求。请联系此实例的机器人管理员。\n使用${cmdprefix}owner命令获取有关运行此实例的人的信息。",
+    "genericrequestless": "当前在此ID上仅有 ${availablenow} 个机器人帐户可用于此请求。",
+    "genericnotenoughavailableaccs": "抱歉，此ID上当前没有足够的帐户可用于此请求。请等待 ${waittime} 后重试，或仅请求 ${availablenow} 个。",
+
+    "voteunsupportedtype": "抱歉，该投票命令不支持这类 ID。请提供共享文件 ID/链接（不支持 funnyvote）或者评论链接",
+    "voteprocessstarted": "${numberOfVotes} 票的预计等待时间为 ${waittime}。",
+    "votesuccess": "所有票已发送。失败: ${failedamount}/${numberOfVotes}",
+
+    "favoriteprocessstarted": "${numberOfFavs} 个未收藏/已收藏的预计等待时间为 ${waittime}。",
+    "favoritesuccess": "所有未收藏/已收藏的操作已发送。失败: ${failedamount}/${numberOfFavs}",
+
+    "followprocessstarted": "${totalamount} 个未追随/已追随的预计等待时间为 ${waittime}。",
+    "followsuccess": "所有未追随/已追随的操作已发送。失败: ${failedamount}/${totalamount}",
+
+    "useradded": "你好！感谢添加我！\n使用 '${cmdprefix}comment' 请求一条免费评论\n输入 '${cmdprefix}help' 了解更多命令，或 '${cmdprefix}about' 了解更多信息！\n你可以使用'${cmdprefix}lang'命令在${langcount}语言之间切换。",
+    "userunfriend": "由于朋友列表空间不足，您已在 ${forceFriendlistSpaceTime} 天内因不活跃而被解除好友关系。\n如果您需要我，请随时再次添加我！",
+    "userforceunfriend": "由于 ${unfriendtime} 天不活跃，您已被解除好友关系。\n如果您需要我，请随时再次添加我！",
+
+    "userspamblock": "由于垃圾信息，您已被封锁 90 秒。",
+    "usernotfriend": "请在使用命令之前先添加我为好友！",
+    "botnotready": "机器人尚未完全启动。在使用命令之前，请稍等片刻。",
+    "commandnotfound": "我不知道那个命令。输入 ${cmdprefix}help 以获取更多信息。",
+    "commandowneronly": "此命令仅供所有者使用。\n如果您是机器人所有者，请确保已将您的ownerid添加到config.json中。\n如果此请求来自插件，请确保传递userID和ownerIDs参数。",
+    "nouserid": "调用命令时未提供userID！由于无法应用冷却或此命令的默认行为无法在没有userID的情况下使用，因此正在阻止该命令。这是开发人员必须解决的编码问题。",
+    "noidparam": "请提供一个ID！此上下文中可能无法使用此命令的默认行为，例如当从Steam Chat外部或开发人员忘记传递userID以启用它时。",
+
+    "requesttoohigh": "你最多可以請求${maxRequestAmount}。\n\n命令用法: ${cmdusage}",
+    "invalidnumber": "这似乎不是有效的数字！\n\n命令用法: ${cmdusage}",
+    "invalidprofileid": "这似乎不是有效的ID或链接，或者您为此命令提供了错误的ID类型！\n请确保您提供的是完整链接、只有虚荣或ID，指向现有元素。",
+    "invalidgroupid": "这不是有效的小组ID或小组URL！\n小组ID必须看起来像这样: '103582791464712227' \n...或小组URL看起来像这样: 'https://steamcommunity.com/groups/3urobeatGroup'",
+    "invalidsharedfileid": "这似乎不是有效的sharedfileID！\n请确保您提供了完整的链接: https://steamcommunity.com/sharedfiles/filedetails/?id=2980913451 ...或只提供ID: 2980913451 ...指向现有的截图、艺术品或指南。\n\n命令用法: ${cmdusage}",
+    "invalidreviewid": "这似乎不是一个有效的评论链接！\n请你提供有效评论的完整链接，比如：https://steamcommunity.com/id/3urobeat/recommended/1902490/\n\n命令用法: ${cmdusage}",
+    "errloadingsharedfile": "抱歉，加载您提供的sharedfile时发生错误: ",
+    "errloadingreview": "很抱歉，在加载你提供的评论时发生了差错: ",
+    "idisownererror": "您不被允许提供所有者的ID！",
+    "idalreadyreceiving": "此用户或ID已有活动请求！请等待它完成后再次请求。",
+    "idoncooldown": "您最近只开始了一个请求。请等待剩余的 ${remainingcooldown}，然后再启动另一个请求。",
+    "requestaborted": "您的活动请求已被您或所有者手动中止。\n成功发送 ${successAmount}/${totalAmount}。",
+
+    "jobscmdregistered": "这些作业目前已注册: ",
+    "jobscmdnoneregistered": "目前没有作业注册。",
+    "reloadcmdreloaded": "重新加载所有命令和插件。",
+    "activerelog": "机器人目前正在等待最后一个活动请求完成，以便重新登录帐户。\n请稍等片刻，然后重试。",
+    "updatecmdforce": "Forcing an update from the ${branchname} branch...",
+    "updatecmdcheck": "Checking for an update in the ${branchname} branch...",
+    "restartcmdrestarting": "正在重新启动...",
+    "stopcmdstopping": "停止中...",
+
+    "helpcommandlist": "命令:",
+    "helpcommentowner": "为您或其他个人资料请求最多 ${maxOwnerRequests} 条评论",
+    "helpcommentuser": "为您的个人资料请求最多 ${maxRequests} 条评论",
+    "helpvote": "请求最多 ${maxRequests} 个共享文件投票",
+    "helpfavorite": "请求最多 ${maxRequests} 个共享文件收藏",
+    "helpfollow": "请求最多 ${maxRequests} 个创意工坊关注者",
+    "helpinfo": "有关机器人和您的信息",
+    "helpabort": "中止您自己的请求",
+    "helpabout": "有关此项目的信息",
+    "helpowner": "有关运行此机器人实例的人的信息",
+    "helpreadothercmdshere": "这里列出了其他 30 多个命令:",
+
+    "pingcmdmessage": "砰！🏓\n到steamcommunity.com/ping响应的时间: ${pingtime}ms",
+    "ownercmdnolink": "此机器人的操作员没有包含链接。）",
+    "ownercmdmsg": "查看我的所有者个人资料:（有关机器人的更多信息，请键入 ${cmdprefix}about)",
+    "groupcmdnolink": "此实例的机器人所有者未提供任何小组或小组不存在。",
+    "groupcmdinvitesent": "我向您发送了邀请！感谢您加入！",
+    "groupcmdinvitelink": "在此处加入我的小组: ",
+    "abortcmdnoprocess": "此ID没有正在运行的活动进程。\n如果您为其他个人资料、小组、共享文件或讨论请求了评论，请提供该ID/URL作为参数！",
+    "abortcmdsuccess": "中止您的ID的活动进程...",
+
+    "resetcooldowncmdcooldowndisabled": "在配置中禁用了冷却！",
+    "resetcooldowncmdglobalreset": "已重置所有机器人帐户的冷却。",
+    "resetcooldowncmdsuccess": "${profileid}'s 冷却已清除。",
+
+    "langcmdsupported": "该机器人支持以下语言：",
+    "langcmdnotsupported": "抱歉，不支持此语言。请从此列表中选择一种语言：${supportedlangs}\n\n您想贡献一个不受支持的语言吗？请阅读此处：' https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/contributing.md#translating '",
+    "langcmdsuccess": "您的语言已更改！",
+
+    "settingscmdfailedread": "无法读取配置以输出当前设置：",
+    "settingscmdcurrentsettings": "当前设置：",
+    "settingscmdblockedvalues": "由于安全原因，无法通过设置命令更改enableevalcmd、ownerid和owner。请直接在配置文件中执行。",
+    "settingscmdcouldnotconvert": "我无法转换您的输入。请确保您的语法正确。\n错误：",
+    "settingscmdkeynotfound": "我在配置中找不到此键。",
+    "settingscmdsamevalue": "请求的键已经是${value}。",
+    "settingscmdvaluetoobig": "您的新值太大（32位整数限制）。\n请选择一个较小的值。",
+    "settingscmdvaluereset": "DataManager拒绝了此更改，并附带以下警告：",
+    "settingscmdvaluechanged": "${targetkey}已从${oldvalue}更改为${newvalue}。\n请记住，某些值可能需要重新启动才能生效。您可以通过键入${cmdprefix}restart来执行此操作。",
+
+    "failedcmdnothingfound": "我无法记住您/该ID上的任何失败的交互。\n如果您为另一个配置文件、组、共享文件或讨论请求了某些内容，请提供该ID/URL作为参数！",
+    "failedcmdmsg": "您上次对'${steamID64}'的请求于'${requesttime}'（GMT时间）完成，出现了以下错误：",
+
+    "sessionscmdnosessions": "目前没有活动会话和没有机器人帐户在冷却中。",
+    "sessionscmdmsg": "目前有${amount}个活动会话：",
+    "mysessionscmdnosessions": "目前没有您启动的活动会话。",
+
+    "addfriendcmdacclimited": "无法使用bot0添加${profileid}为好友，因为机器人账户受限。",
+    "addfriendcmdsuccess": "正在使用所有机器人帐户添加好友${profileid}...这将花费约${estimatedtime}秒。请检查日志以查看潜在错误。",
+    "unfriendcmdsuccess": "我正在使用所有机器人帐户取消与您的好友关系。这将需要一些时间...\n您随时可以再次向我发送好友请求。",
+    "unfriendidcmdsuccess": "已从所有机器人帐户中移除好友${profileid}。",
+
+    "unfriendallcmdabort": "如果有活动的unfriendall过程，正在中止...",
+    "unfriendallcmdpending": "在30秒内使用所有机器人帐户取消所有人（除所有者之外）的好友关系...\n键入'${cmdprefix}unfriendall abort'以中止/停止过程。",
+    "unfriendallcmdstart": "开始取消所有人的好友关系...",
+
+    "joingroupcmdsuccess": "使用所有机器人帐户加入组'${groupid}'...",
+
+    "leavegroupcmdsuccess": "使用所有机器人帐户退出组'${groupid}'...",
+
+    "leaveallgroupscmdabort": "如果有活动的leaveallgroups过程，正在中止...",
+    "leaveallgroupscmdpending": "在15秒内使用所有机器人帐户退出所有组（除了yourgroup和botsgroup）...\n键入'${cmdprefix}leaveallgroups abort'以中止/停止过程。",
+    "leaveallgroupscmdstart": "开始退出所有组...",
+
+    "blockcmdsuccess": "使用所有机器人帐户屏蔽${profileid}。",
+    "unblockcmdsuccess": "使用所有机器人帐户取消屏蔽${profileid}。",
+
+    "evalcmdturnedoff": "eval命令已关闭！",
+    "evalcmdlogininfoblock": "您的代码包含'logininfo'。为了保护密码，这是不允许的。",
+
+    "childbotmessage": "这是一个运行在机器人群集中的帐户。\n请添加主要的机器人并发送给他一个${cmdprefix}help消息。\n如果您想了解这是什么，请键入：${cmdprefix}about\n这是主要的机器人账户："
+}

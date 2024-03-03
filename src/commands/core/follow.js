@@ -4,10 +4,10 @@
  * Created Date: 2023-09-24 15:04:33
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:07:48
+ * Last Modified: 2024-02-27 22:02:30
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -92,11 +92,15 @@ module.exports.follow = {
 
         // Get all available bot accounts. Block limited accounts from following curators
         let allowLimitedAccounts = (idType != "curator");
-        let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFollowing(commandHandler, amountRaw, allowLimitedAccounts, id, idType, "follow");
+        let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFollowing(commandHandler, amountRaw, allowLimitedAccounts, id, idType, "follow", resInfo);
 
-        if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point.
-            if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterID)); // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
-                else respond(await commandHandler.data.getLang("genericrequestless", { "availablenow": availableAccounts.length }, requesterID));
+        if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point. The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
+            if (availableAccounts.length == 0) {
+                if (!allowLimitedAccounts) respond(await commandHandler.data.getLang("genericnounlimitedaccs", { "cmdprefix": resInfo.cmdprefix }, requesterID));
+                    else respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterID));
+            } else {
+                respond(await commandHandler.data.getLang("genericrequestless", { "availablenow": availableAccounts.length }, requesterID));
+            }
 
             return;
         }
@@ -151,6 +155,12 @@ module.exports.follow = {
 
                 /* --------- Try to follow --------- */
                 let followFunc = activeReqEntry.type == "curatorFollow" ? bot.community.followCurator : bot.community.followUser; // Get the correct function, depending on if the user provided a curator id or a user id
+
+                // Overwrite followFunc with pure *nothingness* if debug mode is enabled
+                if (commandHandler.data.advancedconfig.disableSendingRequests) {
+                    logger("warn", "Replacing followFunc with nothingness because 'disableSendingRequests' is enabled in 'advancedconfig.json'!");
+                    followFunc = (a, callback) => callback(null);
+                }
 
                 followFunc.call(bot.community, id, (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
 
@@ -278,11 +288,15 @@ module.exports.unfollow = {
 
         // Get all available bot accounts. Block limited accounts from following curators
         let allowLimitedAccounts = (idType != "curator");
-        let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFollowing(commandHandler, amountRaw, allowLimitedAccounts, id, idType, "unfollow");
+        let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFollowing(commandHandler, amountRaw, allowLimitedAccounts, id, idType, "unfollow", resInfo);
 
-        if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point.
-            if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterID)); // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
-                else respond(await commandHandler.data.getLang("genericrequestless", { "availablenow": availableAccounts.length }, requesterID));
+        if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point. The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
+            if (availableAccounts.length == 0) {
+                if (!allowLimitedAccounts) respond(await commandHandler.data.getLang("genericnounlimitedaccs", { "cmdprefix": resInfo.cmdprefix }, requesterID));
+                    else respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterID));
+            } else {
+                respond(await commandHandler.data.getLang("genericrequestless", { "availablenow": availableAccounts.length }, requesterID));
+            }
 
             return;
         }
@@ -337,6 +351,12 @@ module.exports.unfollow = {
 
                 /* --------- Try to unfollow --------- */
                 let followFunc = activeReqEntry.type == "curatorUnfollow" ? bot.community.unfollowCurator : bot.community.unfollowUser; // Get the correct function, depending on if the user provided a curator id or a user id
+
+                // Overwrite followFunc with pure *nothingness* if debug mode is enabled
+                if (commandHandler.data.advancedconfig.disableSendingRequests) {
+                    logger("warn", "Replacing followFunc with nothingness because 'disableSendingRequests' is enabled in 'advancedconfig.json'!");
+                    followFunc = (a, callback) => callback(null);
+                }
 
                 followFunc.call(bot.community, id, (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
 

@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:01:11
+ * Last Modified: 2024-02-11 16:21:12
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -31,7 +31,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         let steamID = msg.steamid_friend;
 
         let steamID64 = new SteamID(String(steamID)).getSteamID64();
-        let username  = this.user.users[steamID64].player_name;
+        let username  = this.user.users[steamID64] ? this.user.users[steamID64].player_name : ""; // Set username to nothing in case they are not cached yet to avoid errors
 
         let relationshipStatus = SteamUser.EFriendRelationship.None;
         if (this.user.myFriends[steamID64]) relationshipStatus = SteamUser.EFriendRelationship[this.user.myFriends[steamID64]];

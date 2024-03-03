@@ -4,18 +4,16 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-28 22:58:36
+ * Last Modified: 2024-03-02 13:48:36
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
-const SteamID = require("steamid");
 
 const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 const { getCommentArgs }                       = require("../helpers/getCommentArgs.js");
@@ -26,7 +24,7 @@ const { logCommentError, handleIterationSkip } = require("../helpers/handleComme
 
 module.exports.comment = {
     names: ["comment", "gcomment", "groupcomment"],
-    description: "Request comments from all available bot accounts for a profile, group, sharedfile or discussion",
+    description: "Request comments from all available bot accounts for a profile, group, sharedfile, discussion or review",
     args: [
         {
             name: "amount",
@@ -37,7 +35,7 @@ module.exports.comment = {
         },
         {
             name: "ID",
-            description: "The link, steamID64 or vanity of the profile, group, sharedfile or discussion to comment on",
+            description: "The link, steamID64 or vanity of the profile, group, sharedfile, discussion or review to comment on",
             type: "string",
             isOptional: true,
             ownersOnly: true
@@ -86,7 +84,7 @@ module.exports.comment = {
 
 
         /* --------- Calculate maxRequestAmount and get arguments from comment request --------- */
-        let { maxRequestAmount, numberOfComments, profileID, idType, quotesArr } = await getCommentArgs(commandHandler, args, requesterID, resInfo, respond);
+        let { maxRequestAmount, numberOfComments, profileID, idType, quotesArr } = await getCommentArgs(commandHandler, args, resInfo, respond);
 
         if (!maxRequestAmount && !numberOfComments && !quotesArr) return; // Looks like the helper aborted the request
 
@@ -116,10 +114,10 @@ module.exports.comment = {
 
         // Get all currently available bot accounts. Block limited accounts from being eligible from commenting in groups
         let allowLimitedAccounts = (idType != "group");
-        let { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = getAvailableBotsForCommenting(commandHandler, numberOfComments, allowLimitedAccounts, idType, receiverSteamID64);
+        let { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = await getAvailableBotsForCommenting(commandHandler, numberOfComments, allowLimitedAccounts, idType, receiverSteamID64); // Await *has* an effect on this expression you idiot
 
         if (availableAccounts.length == 0 && !whenAvailableStr) { // Check if this bot has no suitable accounts for this request and there won't be any available at any point
-            if (!allowLimitedAccounts) respond(await commandHandler.data.getLang("commentnounlimitedaccs", { "cmdprefix": resInfo.cmdprefix }, requesterID)); // Send less generic message for requests which require unlimited accounts
+            if (!allowLimitedAccounts) respond(await commandHandler.data.getLang("genericnounlimitedaccs", { "cmdprefix": resInfo.cmdprefix }, requesterID)); // Send less generic message for requests which require unlimited accounts
                 else respond(await commandHandler.data.getLang("commentnoaccounts", { "cmdprefix": resInfo.cmdprefix }, requesterID));
 
             return;
@@ -163,6 +161,7 @@ module.exports.comment = {
         // Get the correct postComment function based on type
         let postComment;
         let commentArgs = {};
+        let idArr;
 
         switch (activeRequestsObj.type) {
             case "profilePublicComment":
@@ -183,7 +182,7 @@ module.exports.comment = {
                     return new Promise((resolve) => {
                         commandHandler.controller.main.community.getSteamSharedFile(receiverSteamID64, (err, obj) => {
                             if (err) {
-                                logger("error", "Couldn't get sharedfile even though it exists?! Aborting!\n" + err);
+                                logger("error", "Couldn't get sharedfile even though it exists?! Aborting!\n" + err.stack);
                                 respond("Error: Couldn't get sharedfile even though it exists?! Aborting!\n" + err);
                                 return;
                             }
@@ -203,7 +202,7 @@ module.exports.comment = {
                     return new Promise((resolve) => {
                         commandHandler.controller.main.community.getSteamDiscussion(receiverSteamID64, (err, obj) => { // ReceiverSteamID64 is a URL in this case
                             if (err) {
-                                logger("error", "Couldn't get discussion even though it exists?! Aborting!\n" + err);
+                                logger("error", "Couldn't get discussion even though it exists?! Aborting!\n" + err.stack);
                                 respond("Error: Couldn't get discussion even though it exists?! Aborting!\n" + err);
                                 return;
                             }
@@ -216,10 +215,23 @@ module.exports.comment = {
                     });
                 })();
                 break;
+            case "reviewComment":
+                idArr = receiverSteamID64.split("/");
+
+                postComment = commandHandler.controller.main.community.postReviewComment;
+                commentArgs = { receiverSteamID64: idArr[0], appID: idArr[1], quote: null };
+                break;
             default:
                 logger("warn", `[Main] Unsupported comment type '${activeRequestsObj.type}'! Rejecting request...`);
                 respond(await commandHandler.data.getLang("commentunsupportedtype", null, requesterID));
                 return;
+        }
+
+        // Overwrite postComment with pure *nothingness* if debug mode is enabled
+        if (commandHandler.data.advancedconfig.disableSendingRequests) {
+            logger("warn", "Replacing postComment with nothingness because 'disableSendingRequests' is enabled in 'advancedconfig.json'!");
+            postComment = (a, callback) => callback(null);
+            commentArgs = { quote: null };
         }
 
 
@@ -248,7 +260,7 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
 
 
     // Log request start and give user cooldown on the first iteration
-    let whereStr = activeReqEntry.type == "profileComment" ? `on profile ${receiverSteamID64}` : `in ${activeReqEntry.type.replace("Comment", "")} ${receiverSteamID64}`; // Shortcut to convey more precise information in the 4 log messages below
+    let whereStr = activeReqEntry.type == "profileComment" ? `on profile ${receiverSteamID64}` : `in/on ${activeReqEntry.type.replace("Comment", "")} ${receiverSteamID64}`; // Shortcut to convey more precise information in the 4 log messages below
 
     if (activeReqEntry.thisIteration == -1) {
         logger("info", `${logger.colors.fggreen}[${commandHandler.controller.main.logPrefix}] ${activeReqEntry.amount} Comment(s) requested. Starting to comment ${whereStr}...`);

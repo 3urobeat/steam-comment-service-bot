@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 13:58:54
+ * Last Modified: 2024-02-29 14:32:11
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -43,6 +43,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
                 // Set status to error so it won't be used for anything anymore
                 this.controller._statusUpdateEvent(this, Bot.EStatus.ERROR);
             }
+
             return;
         }
 
@@ -53,7 +54,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
             // Store disconnect timestamp & reason
             this.lastDisconnect.timestamp = Date.now();
-            this.lastDisconnect.reason = err;
+            this.lastDisconnect.reason    = err;
 
             // Check if this is an intended logoff
             if (this.controller.info.relogAfterDisconnect && !this.controller.info.skippedaccounts.includes(this.loginData.logOnOptions.accountName)) {
@@ -80,27 +81,35 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
                 } else {
 
-                    //logger("info", "Failed account is not bot0. Skipping account...", true);
-                    //this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
                     this.controller._statusUpdateEvent(this, Bot.EStatus.ERROR);
                     this.handleRelog();
                 }
 
             } else { // Got retries left or it is a relog...
 
-                logger("warn", `${err} while trying to log in bot${this.index}. Retrying in 5 seconds...`, false, false, null, true); // Log error as warning
-
                 // Invalidate token to get a new session if this error was caused by an invalid refreshToken
                 if (err.eresult == EResult.InvalidPassword || err.eresult == EResult.AccessDenied || err == "Error: InvalidSignature") { // These are the most likely enums that will occur when an invalid token was used I guess (Checking via String here as it seems like there are EResults missing)
                     logger("debug", "Token login error: Calling SessionHandler's _invalidateTokenInStorage() function to get a new session when retrying this login attempt");
 
-                    if (err.eresult == EResult.AccessDenied) logger("warn", `[${this.logPrefix}] Detected an AccessDenied login error! This is usually caused by an invalid login token. Deleting login token, please re-submit your Steam Guard code.`, false, false, null, true); // Force print this message now
+                    logger("warn", `[${this.logPrefix}] ${err} - This is usually caused by an invalid session. Deleting login token, please re-submit your Steam Guard code after the current login queue has been processed.`, false, false, null, true); // Force print this message now
 
                     this.sessionHandler.invalidateTokenInStorage();
-                }
 
-                // Try again in 5 sec, Controller's login function waits for any status that is not offline
-                setTimeout(() => this._loginToSteam(), 5000);
+                    // Set status to POSTPONED to transfer acc to the slowQueue which will be picked up in the next login() request (login() calls itself after being done with the current queue)
+                    this.controller._statusUpdateEvent(this, Bot.EStatus.POSTPONED);
+
+                } else {
+
+                    logger("warn", `[${this.logPrefix}] '${err}' while trying to log in.${this.loginData.pendingLogin ? " Retrying in 5 seconds..." : ""}`, false, false, null, true); // Log error as warning
+
+                    // Unlock login, but only if not already done by loginTimeout handler to prevent duplicate login requests
+                    if (!this.loginData.pendingLogin) return logger("debug", `[${this.logPrefix}] Won't handle this login error because 'pendingLogin' is already 'false'; handleLoginTimeout must already have taken action`);
+
+                    this.loginData.pendingLogin = false;
+
+                    // Try again in 5 sec, Controller's login function waits for any status that is not offline
+                    setTimeout(() => this._loginToSteam(), 5000);
+                }
             }
         }
 

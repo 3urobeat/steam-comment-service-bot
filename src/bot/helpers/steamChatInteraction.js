@@ -4,10 +4,10 @@
  * Created Date: 2023-04-01 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 13:59:39
+ * Last Modified: 2024-02-11 16:19:27
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -40,7 +40,7 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
     if (typeof txt !== "string") return logger("warn", "sendChatMessage() was called with txt that isn't a string! Ignoring call...");
 
     let steamID64 = resInfo.userID;
-    let username  = _this.user.users[steamID64].player_name;
+    let username  = _this.user.users[steamID64] ? _this.user.users[steamID64].player_name : ""; // Set username to nothing in case they are not cached yet to avoid errors
 
     let relationshipStatus = SteamUser.EFriendRelationship.None;
     if (_this.user.myFriends[steamID64]) relationshipStatus = SteamUser.EFriendRelationship[_this.user.myFriends[steamID64]];

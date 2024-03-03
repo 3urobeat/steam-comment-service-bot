@@ -9,9 +9,11 @@ This process usually takes around 5-10 minutes.
 If you would like to rather follow a video than these written instructions, click: <a href="https://youtu.be/8J78rC9Z28U" target="_blank"><img src="https://img.shields.io/badge/YouTube-Tutorial-red"></a>  
 Every headline on this page also contains a YouTube badge which will take you to the corresponding video part when clicked!  
 
-**Disclaimer!**  
+&nbsp;
+
+> [!WARNING]
 > I, 3urobeat (the developer), am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.  
-> By using this application you agree to not misuse it!  
+> By using this application, you agree to using it responsibly!  
 
 &nbsp;
 
@@ -42,13 +44,19 @@ The bot needs at least a few Steam Accounts configured to be effective.
 These accounts are used to do the interactions in the SteamCommunity which you request (e.g. commenting, voting, favorizing, ...).  
 Creating a few accounts manually shouldn't take long. Make sure to give them a username and profile picture so they don't *instantly* look like random Bot accounts.  
 
-Open the `accounts.txt` file with a text editor and provide your accounts in the `username:password:shared_secret` format, one account per line.  
-If you don't want to use a shared_secret just leave it out and only provide the account in the `username:password` format.  
-The first account which you provide in this file will be the one you interact with to run commands to request comments, see info, etc.
+Open the `accounts.txt` file with a text editor and provide your accounts in the `username:password` format, one account per line.  
+If you have a shared secret to bypass Steam Guard, you can provide it in this format: `username:password:shared_secret`. This is completely optional.   
+The first account which you provide in this file will be the one you interact with to run commands to request comments, see info, etc.  
 
-Make sure your accounts have E-Mail Steam Guard activated! This is a requirement from Steam to be able to comment at all!  
+Login using QR-Code:  
+Should an account use Mobile Steam Guard, and you'd like to login by scanning a QR-Code using your phone, then this is possible as well!  
+Just provide "qrcode" as the password, basically like this: `username:qrcode`.  
+The bot will then print a QR-Code to the terminal when logging in, allowing you to scan it using the Steam Mobile App.
+
+Steam Guard info:  
+Make sure your accounts have at least E-Mail Steam Guard activated! This is a requirement from Steam to be able to comment at all!  
 I highly recommend that you take a quick look at the [Steam Limitations wiki page](./steam_limitations.md) to learn more about what you can and cannot do with your accounts.
-  
+
 <details>
   <summary>Another, optional method (not recommended anymore):</summary>
   
@@ -115,7 +123,8 @@ The bot is now ready to be started! Do not modify any of the other files.
 ## Usage: <a href="https://youtu.be/8J78rC9Z28U?t=239" target="_blank"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
 Open up a power shell/terminal in this folder and type `node start.js`.  
 
-> **Important Disclaimer:** Do not start the bot with a tool that restarts on changes (like nodemon etc)! Only use normal `node`.  
+> [!IMPORTANT]
+> Do not start the bot with a tool that restarts on changes, like for example 'nodemon'! Always use plain `node`.  
 
 Head over to your Steam client, add the main bot (the first account in your accounts.txt) as friend and send him the chat message `!help`.  
 It should respond with a list of commands available to you.  

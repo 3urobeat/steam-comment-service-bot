@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-28 17:59:22
+ * Last Modified: 2024-02-29 14:10:29
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -36,7 +36,8 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
         this.controller._statusUpdateEvent(this, Bot.EStatus.ONLINE); // Set status of this account to online
 
-        this.loginData.relogTries = 0; // Reset relogTries to indicate that this proxy is working should one of the next logOn retries fail
+        this.loginData.relogTries = 0;       // Reset relogTries to indicate that this proxy is working should one of the next logOn retries fail
+        this.loginData.pendingLogin = false; // Unlock login again
 
 
         if (!this.controller.info.readyAfter) logger("info", `[${this.logPrefix}] Got websession and set cookies. Accepting offline friend & group invites...`, false, true, logger.animation("loading")); // Only print message with animation if the bot was not fully started yet
@@ -66,7 +67,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
                     logger("info", `[${this.logPrefix}] Added user while I was offline! User: ` + thisfriend);
 
                     setTimeout(async () => {
-                        if (this.index == 0) this.sendChatMessage(this, { userID: String(thisfriend) }, await this.controller.data.getLang("useradded", { "cmdprefix": "!" }, String(thisfriend)));
+                        if (this.index == 0) this.sendChatMessage(this, { userID: String(thisfriend) }, await this.controller.data.getLang("useradded", { "cmdprefix": "!", "langcount": Object.keys(this.data.lang).length }, String(thisfriend)));
                             else logger("debug", "Not sending useradded message because this isn't the main user...");
                     }, 1000 * processedFriendRequests);
 
@@ -132,13 +133,21 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
             /* ------------ Set primary group: ------------ */ // TODO: Add further delays? https://github.com/3urobeat/steam-comment-service-bot/issues/165
             if (this.controller.data.advancedconfig.setPrimaryGroup && this.controller.data.cachefile.configgroup64id) {
-                logger("debug", `[${this.logPrefix}] setPrimaryGroup is enabled and configgroup64id is set, setting '${this.controller.data.cachefile.configgroup64id}' as primary group...`);
+                logger("debug", `[${this.logPrefix}] setPrimaryGroup is enabled and configgroup64id is set, setting '${this.controller.data.cachefile.configgroup64id}' as primary group if not set already...`);
 
-                this.community.editProfile({
-                    primaryGroup: new SteamID(this.controller.data.cachefile.configgroup64id)
-                }, (err) => {
-                    if (err) logger("err", `[${this.logPrefix}] Error setting primary group: ${err}`, false, false, null, true);
-                        else logger("info", `[${this.logPrefix}] Successfully set '${this.controller.data.cachefile.configgroup64id}' as primary group...`, false, true, logger.animation("loading"));
+                this.community.getSteamUser(this.user.steamID, (err, res) => {
+                    if (err) return logger("err", `[${this.logPrefix}] Failed to get my own profile to check currently set primaryGroup! ${err}`);
+
+                    if (res.primaryGroup.getSteamID64() != this.controller.data.cachefile.configgroup64id) {
+                        this.community.editProfile({
+                            primaryGroup: new SteamID(this.controller.data.cachefile.configgroup64id)
+                        }, (err) => {
+                            if (err) logger("err", `[${this.logPrefix}] Error setting primary group: ${err}`, false, false, null, true);
+                                else logger("info", `[${this.logPrefix}] Successfully set '${this.controller.data.cachefile.configgroup64id}' as primary group!`, false, false, logger.animation("loading"));
+                        });
+                    } else {
+                        logger("debug", `[${this.logPrefix}] Successfully fetched profile and currently set primaryGroup matches configgroup64id, no need to take action`);
+                    }
                 });
             }
 

@@ -4,10 +4,10 @@
  * Created Date: 2022-11-03 12:27:46
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:00:08
+ * Last Modified: 2024-02-29 14:38:11
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -40,6 +40,13 @@ Bot.prototype.handleLoginTimeout = function() {
 
         if (currentLogOnTry != newLogOnTry || this.status != Bot.EStatus.OFFLINE) return logger("debug", `Bot handleLoginTimeout(): Timeout for bot${this.index} done, acc not stuck. old/new logOnTries: ${currentLogOnTry}/${newLogOnTry} - acc status: ${this.status}`);
 
+
+        // Unlock login, but only if not already done by error event handler to prevent duplicate login requests
+        if (!this.loginData.pendingLogin) return logger("debug", `[${this.logPrefix}] Won't handle this login error because 'pendingLogin' is already 'false'; error handler must already have taken action`);
+
+        this.loginData.pendingLogin = false;
+
+
         // Check if all logOnRetries are used up and skip account
         if (this.loginData.logOnTries > this.data.advancedconfig.maxLogOnRetries) {
             logger("error", `Couldn't log in bot${this.index} after ${this.loginData.logOnTries} attempt(s). Error: Login attempt timed out and all available logOnRetries were used.`);
@@ -52,8 +59,6 @@ Bot.prototype.handleLoginTimeout = function() {
 
             } else { // Skip account if not bot0
 
-                //logger("info", "Failed account is not bot0. Skipping account...", true);
-                //this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
                 this.controller._statusUpdateEvent(this, Bot.EStatus.ERROR);
                 this.handleRelog();
             }
@@ -62,9 +67,6 @@ Bot.prototype.handleLoginTimeout = function() {
 
             // Force progress if account is stuck
             logger("warn", `Detected timed out login attempt for bot${this.index}! Force progressing login attempt to avoid soft-locking the bot...`, false, false, null, true);
-
-            this.user.logOff(); // Call logOff() just to be sure
-            if (this.sessionHandler.session) this.sessionHandler.session.cancelLoginAttempt(); // TODO: This might cause an error as idk if we are polling. Maybe use the timeout event of steam-session
 
             setTimeout(() => this._loginToSteam(), 5000); // Attempt another login as we still have attempts left. Delay it a bit to avoid any "Already logged on" errors, steam-user uses a 4s timeout before setting steamID = null
         }

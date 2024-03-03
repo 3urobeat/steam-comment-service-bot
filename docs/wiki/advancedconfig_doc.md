@@ -13,7 +13,8 @@ This is the full documentation to customize your `advancedconfig.json`.
 | ------------- | ---------------- | ------------ |
 | \_disclaimer\_ | String | No functionality. Just a comment pointing to the normal config. |
 | \_help\_ | String | No functionality. Links directly to here to provide easily accessible explanations. |
-| disableautoupdate | true or false | Disables auto updates. **Setting to true is not recommended!** Default: false | 
+| disableAutoUpdate | true or false | Disables auto updates. **Setting to true is not recommended!** Default: false | 
+| disablePluginsAutoUpdate | true or false | Disables the automatic updating of all installed plugins upon start. Default: false |
 | &nbsp; | | |
 | loginDelay  | Number in ms | Time the bot will wait between logging in each account to prevent an IP ban. Default: 2500 (2.5 seconds) |
 | loginTimeout | Number in ms | Time after which an active login attempt will be considered as timed out and failed. It will be retried or skipped when maxLogOnRetries is exceeded. Set to 0 to disable. Default: 60000 (60 seconds) |
@@ -25,6 +26,9 @@ This is the full documentation to customize your `advancedconfig.json`.
 | acceptFriendRequests | true or false | If the bot should accept friend requests. Default: true |
 | forceFriendlistSpaceTime | Number in days | Amount of days a user hasn't requested something to get unfriended if only one friend slot is left. Set to 0 to disable. Default: 4 |
 | setPrimaryGroup | true or false | If the bot should set `yourgroup` in `config.json` as the primary group of each bot. Default: false |
+| onlineStatus | String | Online status of the main bot account. You can see all valid values [here](https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EPersonaState.js). Default: "Online" |
+| childAccOnlineStatus | String | Online status of all child bot accounts. You can see all valid values [here](https://github.com/DoctorMcKay/node-steam-user/blob/master/enums/EPersonaState.js). Default: "Online" |
+| blockPluginLoadOnMismatchedBotVersion | true or false | If true, plugins not specifically made for this bot version will be blocked from being loaded. Default: false |
 | &nbsp; | | |
 | commandCooldown | Number in ms | Timeframe in which a user is allowed to use 5 commands before it is considered as spamming and the user gets blocked for 90 seconds. Default: 12000 (12 seconds) |
 | restrictAdditionalCommandsToOwners | Array with cmd names as strings | Restricts more commands and their aliases to owners only. Default: [] |
@@ -34,6 +38,7 @@ This is the full documentation to customize your `advancedconfig.json`.
 | lastQuotesSize | Number | Amount (minus 1) of different quotes that need to be selected in between before a quote can be used again. Default: 5 |
 | &nbsp; | | |
 | enableevalcmd | true or false | The eval command allows the botowner to run javascript code from the steam chat. **Warning: This can harm your machine! Leave it to false if you don't know what you are doing!** Default: false |
+| disableSendingRequests | true or false | Disables sending comments/likes/favs/follows to Steam. This allows the testing of accepting and handling user requests, without sending them to Steam. Default: false |
 | printDebug | true or false | Enables and logs debug messages of the bot. Default: false |
 | steamUserDebug | true or false | Enables and logs debug messages of the steam-user lib. Default: false |
 | steamUserDebugVerbose | true or false | Enables and logs debug-verbose messages of the steam-user lib. Default: false |

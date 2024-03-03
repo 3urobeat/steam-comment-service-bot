@@ -4,10 +4,10 @@
  * Created Date: 2022-10-09 12:59:31
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:16:18
+ * Last Modified: 2024-02-28 22:28:46
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -16,13 +16,15 @@
 
 
 const SteamSession = require("steam-session"); // Only needed for the enum definitions below
+const qrcode       = require("qrcode");
+const { StartSessionResponse } = require("steam-session/dist/interfaces-external.js"); // eslint-disable-line
 
 const SessionHandler = require("../sessionHandler.js");
 
 
 /**
  * Internal: Handles submitting 2FA code
- * @param {object} res Response object from startWithCredentials() promise
+ * @param {StartSessionResponse} res Response object from startWithCredentials() promise
  */
 SessionHandler.prototype._handle2FA = function(res) {
 
@@ -141,6 +143,14 @@ SessionHandler.prototype._acceptSteamGuardCode = function(code) {
             logger("debug", `[${this.bot.logPrefix}] acceptSteamGuardCode(): User supplied correct code, authenticated event should trigger.`);
         })
         .catch((err) => { // Invalid code, ask again
+            // Skip account if account got temp blocked
+            if (err.eresult == SteamSession.EResult.RateLimitExceeded || err.eresult == SteamSession.EResult.AccountLoginDeniedThrottle || err.eresult == SteamSession.EResult.AccessDenied) {
+                logger("error", `[${this.bot.logPrefix}] Steam rejected our login and applied a temporary login cooldown! ${err}`);
+                this.session.cancelLoginAttempt();
+                this._resolvePromise(null);
+                return;
+            }
+
             // Show different message depending on which account this is
             if (this.bot.index == 0) logger("warn", `Your code seems to be wrong, please try again! ${err}`);
                 else logger("warn", `Your code seems to be wrong, please try again or skip this account! ${err}`);
@@ -148,5 +158,27 @@ SessionHandler.prototype._acceptSteamGuardCode = function(code) {
             // Ask user again
             this._get2FAUserInput();
         });
+
+};
+
+
+/**
+ * Handles displaying a QR Code to login using the Steam Mobile App
+ * @param {StartSessionResponse} res Response object from startWithQR() promise
+ */
+SessionHandler.prototype._handleQRCode = function(res) {
+
+    // Display QR Code using qrcode library
+    qrcode.toString(res.qrChallengeUrl, (err, string) => {
+        if (err) {
+            logger("error", `[${this.thisbot}] Failed to display QR Code! Is the URL '${res.qrChallengeUrl}' invalid? ${err}`);
+            return this._resolvePromise(null);
+        }
+
+        logger("info", `[${this.logOnOptions.accountName}] Scan the following QR Code using your Steam Mobile App to start a new session:\n${string}`, true);
+
+        // Quick hack to prevent other messages from logging and pushing the QRCode up - start an empty readInput request which will be stopped by the authenticated event handler
+        logger.readInput("", 90000, () => {});
+    });
 
 };

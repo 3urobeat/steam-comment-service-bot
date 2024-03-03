@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:13:04
+ * Last Modified: 2024-02-28 20:53:59
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -15,8 +15,9 @@
  */
 
 
-const os              = require("os");
-const steamIdResolver = require("steamid-resolver");
+const os                = require("os");
+const steamIdResolver   = require("steamid-resolver");
+const { EPersonaState } = require("steam-user");
 
 const DataManager = require("./dataManager.js");
 
@@ -52,7 +53,7 @@ DataManager.prototype.checkData = function() {
 
 
         // Check config for default value leftovers when the bot is not running on my machines
-        if ((process.env.LOGNAME !== "tomg") || (os.hostname() !== "Toms-PC" && os.hostname() !== "Toms-Server" && os.hostname() !== "Toms-Thinkpad")) {
+        if ((process.env.LOGNAME !== "tomg") || (os.hostname() !== "Tomkes-PC" && os.hostname() !== "Tomkes-Server" && os.hostname() !== "Tomkes-Thinkpad")) {
             let write = false;
 
             if (this.config.owner.includes(this.datafile.mestr))   { this.config.owner = ""; write = true; }
@@ -85,13 +86,13 @@ DataManager.prototype.checkData = function() {
             this.config.requestDelay = 15000;
         }
         if (this.config.requestDelay / (maxRequestsOverall / 2) < 1250) {
-            logWarn("warn", `${logger.colors.fgred}You have raised maxRequests or maxOwnerRequests but I would recommend to raise the requestDelay further. Not increasing the requestDelay further raises the probability to get cooldown errors from Steam.`, true);
+            logWarn("warn", `${logger.colors.fgred}You have raised maxRequests or maxOwnerRequests but I would recommend to raise the requestDelay further. Not increasing it raises the probability of getting cooldowns from Steam, leading to failed requests.`, true);
         }
-        if (this.config.requestDelay * maxRequestsOverall > 2147483647) { // Check for 32-bit integer limit for commentcmd timeout
+        /* If (this.config.requestDelay * maxRequestsOverall > 2147483647) { // Check for 32-bit integer limit for commentcmd timeout --- Disabled because that calculation got removed during some rework in the past
             logWarn("error", `${logger.colors.fgred}Your maxRequests and/or maxOwnerRequests and/or requestDelay value in the config are too high.\n        Please lower these values so that 'requestDelay * maxRequests' is not bigger than 2147483647 (32-bit integer limit).\n\nThis will otherwise cause an error when trying to comment. Aborting...\n`, true);
             this.config.requestDelay = 15000;
             return reject(new Error("requestDelay times maxRequests exceeds 32bit integer limit!"));
-        }
+        } */
         if (this.config.randomizeAccounts && this.logininfo.length <= 5 && maxRequestsOverall > this.logininfo.length * 2) {
             logWarn("warn", `${logger.colors.fgred}I wouldn't recommend using randomizeAccounts with 5 or less accounts when each account can/has to comment multiple times. The chance of an account getting a cooldown is higher.\n       Please make sure your requestDelay is set adequately to reduce the chance of this happening.`, true);
         }
@@ -104,6 +105,14 @@ DataManager.prototype.checkData = function() {
             logWarn("error", `${logger.colors.fgred}I won't allow a logindelay below 500ms as this will probably get you blocked by Steam nearly instantly. I recommend setting it to 2500.\n        If you are using one proxy per account you might try setting it to 500 (on your own risk!). Aborting...`, true);
             this.advancedconfig.loginDelay = 2500;
             return reject(new Error("Logindelay is set below 500ms!"));
+        }
+        if (EPersonaState[this.advancedconfig.onlineStatus] == undefined) { // Explicitly check for undefined because Offline (0) resolves to false
+            logWarn("warn", `You've set an invalid value '${this.advancedconfig.onlineStatus}' as 'onlineStatus' in 'advancedconfig.json'! Defaulting to 'Online'...`);
+            this.advancedconfig.onlineStatus = "Online";
+        }
+        if (!EPersonaState[this.advancedconfig.childAccOnlineStatus] == undefined) { // Explicitly check for undefined because Offline (0) resolves to false
+            logWarn("warn", `You've set an invalid value '${this.advancedconfig.childAccOnlineStatus}' as 'childAccOnlineStatus' in 'advancedconfig.json'! Defaulting to 'Online'...`);
+            this.advancedconfig.childAccOnlineStatus = "Online";
         }
         if (this.advancedconfig.lastQuotesSize >= this.quotes) { // Force clear lastQuotes array if we have less or equal amount of quotes to choose from than lastQuotesSize to avoid infinite loop
             logWarn("warn", "lastQuoteSize in 'advancedconfig.json' is greater or equal than the amount of quotes found in 'quotes.txt'. I'm therefore unable to filter recently used quotes when choosing a new one!", true);

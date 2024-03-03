@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:07:36
+ * Last Modified: 2024-02-28 22:37:55
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -77,7 +77,7 @@ module.exports.addFriend = {
                         });
 
                         commandHandler.controller.friendListCapacityCheck(e, (remaining) => { // Check remaining friendlist space
-                            if (remaining < 25) logger("warn", `The friendlist space of bot${e.index} is running low! (${remaining} remaining)`);
+                            if (remaining < 25) logger("warn", `[${e.logPrefix}] Friendlist space is running low! There are ${remaining} spots remaining.`);
                         });
                     }, 5000 * i);
                 } else {

@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 13:59:28
+ * Last Modified: 2024-03-01 17:59:47
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -72,6 +72,7 @@ const Bot = function(controller, index) {
         logOnOptions:  controller.data.logininfo.find((e) => e.index == index), // TODO: This could be an issue later when the index could change at runtime
         logOnTries:    0,
         relogTries:    0, // Amount of times logOns have been retried after relogTimeout. handleRelog() attempts to cycle proxies after enough failures
+        pendingLogin:  false,
         waitingFor2FA: false, // Set by sessionHandler's handle2FA helper to prevent handleLoginTimeout from triggering
         proxyIndex:    proxyIndex,
         proxy:         controller.data.proxies[proxyIndex].proxy
@@ -111,7 +112,16 @@ const Bot = function(controller, index) {
     logger("debug", `[${this.logPrefix}] Using proxy ${this.loginData.proxyIndex} "${this.loginData.proxy}" to log in to Steam and SteamCommunity...`);
 
     // Force protocol for now: https://dev.doctormckay.com/topic/4187-disconnect-due-to-encryption-error-causes-relog-to-break-error-already-logged-on/?do=findComment&comment=10917
-    this.user      = new SteamUser({ autoRelogin: false, renewRefreshTokens: true, httpProxy: this.loginData.proxy, protocol: SteamUser.EConnectionProtocol.WebSocket });
+    /**
+     * This SteamUser instance
+     * @type {SteamUser}
+     */
+    this.user = new SteamUser({ autoRelogin: false, renewRefreshTokens: true, httpProxy: this.loginData.proxy, protocol: SteamUser.EConnectionProtocol.WebSocket });
+
+    /**
+     * This SteamCommunity instance
+     * @type {SteamCommunity}
+     */
     this.community = new SteamCommunity({ request: request.defaults({ "proxy": this.loginData.proxy }) }); // Pass proxy to community library as well
 
     // Load my library patches
@@ -120,6 +130,8 @@ const Bot = function(controller, index) {
     require("../libraryPatches/helpers.js");
     require("../libraryPatches/CSteamDiscussion.js");
     require("../libraryPatches/discussions.js");
+    require("../libraryPatches/CSteamReviews.js");
+    require("../libraryPatches/reviews.js");
 
     if (global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<") this.controller.stop(); // eslint-disable-line
 
@@ -134,6 +146,11 @@ const Bot = function(controller, index) {
     this._attachSteamGroupRelationshipEvent();
     this._attachSteamWebSessionEvent();
 
+    this.user.on("refreshToken", (newToken) => { // Emitted when refreshToken is auto-renewed by SteamUser
+        logger("info", `[${this.logPrefix}] SteamUser auto renewed this refresh token, updating database entry...`);
+        this.sessionHandler._saveTokenToStorage(newToken);
+    });
+
 
     // Get new websession as sometimes the this.user would relog after a lost connection but wouldn't get a websession. Read more about cookies & expiration: https://dev.doctormckay.com/topic/365-cookies/
     let lastWebSessionRefresh = Date.now(); // Track when the last refresh was to avoid spamming webLogOn() on sessionExpired
@@ -145,6 +162,7 @@ const Bot = function(controller, index) {
         lastWebSessionRefresh = Date.now(); // Update time
         this.user.webLogOn();
     });
+
 };
 
 
@@ -160,8 +178,25 @@ Bot.EStatus = EStatus;
  */
 Bot.prototype._loginToSteam = async function() {
 
+    // Cancel if account is already trying to log on and deny this duplicate request
+    if (this.loginData.pendingLogin) return logger("debug", `[${this.logPrefix}] Login requested but there is already a login process active. Ignoring...`);
+
+    // Ignore login attempt if logOnTries are exeeded or if account is currently ONLINE
+    if (this.status == EStatus.ONLINE || this.loginData.logOnTries > this.controller.data.advancedconfig.maxLogOnRetries) {
+        logger("debug", `[${this.logPrefix}] Login requested but account ${this.status == EStatus.ONLINE ? "is ONLINE" : "has exceeded maxLogOnRetries"}. Ignoring...`);
+        return;
+    }
+
+    this.loginData.pendingLogin = true; // Register this attempt and block any further requests
+
     // Count this attempt
     this.loginData.logOnTries++;
+
+    // Always call logOff() before logOn() like an idiot to prevent "Already attempting to log on, cannot log on again" errors
+    this.user.logOff();
+
+    if (this.sessionHandler.session) this.sessionHandler.session.cancelLoginAttempt(); // TODO: This might cause an error as idk if we are polling. Maybe use the timeout event of steam-session
+
 
     // Find proxyIndex from steam-user object options instead of loginData to get reliable log data
     let thisProxy = this.data.proxies.find((e) => e.proxy == this.user.options.httpProxy);
@@ -173,9 +208,12 @@ Bot.prototype._loginToSteam = async function() {
     // Attach loginTimeout handler
     this.handleLoginTimeout();
 
+
     // Call our steam-session helper to get a valid refresh token for us
     let refreshToken = await this.sessionHandler.getToken();
-    if (!refreshToken) return; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the bot itself
+
+    if (!refreshToken) return this.loginData.pendingLogin = false; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the bot itself
+
 
     // Login with this account using the refreshToken we just obtained using steam-session
     this.user.logOn({ "refreshToken": refreshToken });

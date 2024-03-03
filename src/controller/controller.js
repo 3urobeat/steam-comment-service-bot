@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:08:35
+ * Last Modified: 2024-02-29 21:13:33
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -84,9 +84,12 @@ const Controller = function() {
     };
 
 
+    /**
+     * Collection of various misc parameters
+     */
     this.info = {
         bootStartTimestamp: Date.now(), // Save timestamp to be able to calculate startup time in ready event
-        lastLoginTimestamp: 0,          // Save timestamp of last login attempted by any account to calculate wait time for next account
+        lastLoginTimestamp: {},         // Save timestamp of last login attempted by any account per proxy to calculate wait time for next account
         steamGuardInputTime: 0,         // Tracks time spent waiting for user steamGuardCode input to subtract from startup time
         startupWarnings: 0,             // Counts amount of warnings displayed by dataCheck during startup to display amount in ready event
         activeLogin: false,             // Allows to block new requests when waiting for the last request to finish
@@ -96,7 +99,11 @@ const Controller = function() {
         commentCounter: 0               // Tracks total amount of comments to display in info command
     };
 
-    this.activeRequests = {}; // Stores active comment, vote etc. requests
+    /**
+     * Stores all recent comment, vote etc. requests
+     * @type {{[key: string]: { status: string, type: string, amount: number, quotesArr?: Array.<string>, requestedby: string, accounts: Array.<Bot>, thisIteration: number, retryAttempt: number, amountBeforeRetry?: number, until: number, failed: object }}}
+     */
+    this.activeRequests = {};
 };
 
 
@@ -198,14 +205,14 @@ Controller.prototype._start = async function() {
 
     global.extdata = this.data.datafile; // This needs to stay for backwards compatibility
 
+    // Verify integrity of all source code files and restore invalid ones. It is safe to use require() after this function is done!
+    await this.data.verifyIntegrity();
+
     // Process imported owner & group ids and update cachefile
     await this.data.processData();
 
     // Check imported data
     await this.data.checkData().catch(() => this.stop()); // Terminate the bot if some critical check failed
-
-    // Verify integrity of all source code files and restore invalid ones. It is safe to use require() after this function is done!
-    await this.data.verifyIntegrity();
 
 
     /* ------------ Run compatibility feature and updater or start logging in: ------------ */
@@ -246,6 +253,26 @@ Controller.prototype._start = async function() {
  */
 Controller.prototype._preLogin = async function() {
 
+    // Get job manager going
+    let JobManager = require("../jobs/jobManager.js");
+
+    /**
+     * The JobManager handles the periodic execution of functions which you can register at runtime
+     * @type {JobManager}
+     */
+    this.jobManager = new JobManager(this);
+
+
+    /**
+     * The dataManager object
+     * @type {DataManager}
+     */
+    this.data;
+
+    // Register job to check tokens.db every 24 hours for expired tokens to allow users to refresh them beforehand
+    this.data._startExpiringTokensCheckInterval();
+
+
     // Update Updater IntelliSense without modifying what _start() has already set. Integrity has already been checked
     let Updater = require("../updater/updater.js"); // eslint-disable-line
 
@@ -255,9 +282,12 @@ Controller.prototype._preLogin = async function() {
      */
     this.updater;
 
+    // Register update check job
+    this.updater._registerUpdateChecker();
+
 
     // Check bot.js for errors and load it explicitly again to get IntelliSense support
-    if (!await this.checkAndGetFile("./src/bot/bot.js", logger, false, false)) return this.stop();
+    if (!await this.checkAndGetFile("./src/bot/bot.js", logger, false, false)) return this.stop(); // TODO: Is this still necessary when the dataIntegrity check and updater already ran??
     let Bot = require("../bot/bot.js"); // eslint-disable-line
 
     /**
@@ -391,6 +421,18 @@ Controller.prototype.stop = function() {
 Controller.prototype.login = function(firstLogin) {}; // eslint-disable-line
 
 /**
+ * Internal: Logs in accounts on different proxies synchronously
+ * @param {Array} allAccounts Array of logininfo entries of accounts to log in
+ */
+Controller.prototype._processFastLoginQueue = function(allAccounts) {}; // eslint-disable-line
+
+/**
+ * Internal: Logs in accounts asynchronously to allow for user interaction
+ * @param {Array} allAccounts Array of logininfo entries of accounts to log in
+ */
+Controller.prototype._processSlowLoginQueue = function(allAccounts) {}; // eslint-disable-line
+
+/**
  * Runs internal ready event code and emits ready event for plugins
  */
 Controller.prototype._readyEvent = function() {};
@@ -430,8 +472,8 @@ Controller.prototype._lastcommentUnfriendCheck = function() {} // eslint-disable
 /**
  * Retrieves all matching bot accounts and returns them.
  * @param {(EStatus|EStatus[]|string)} [statusFilter=EStatus.ONLINE] Optional: EStatus or Array of EStatus's including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'EStatus.ONLINE' will be returned.
- * @param {boolean} mapToObject Optional: If true, an object will be returned where every bot object is mapped to their accountName.
- * @returns {Array|object} An array or object if `mapToObject == true` containing all matching bot accounts.
+ * @param {boolean} [mapToObject=false] Optional: If true, an object will be returned where every bot object is mapped to their accountName.
+ * @returns {Array.<Bot>} An array or object if `mapToObject == true` containing all matching bot accounts. Note: This JsDoc type param only specifies the default array version to get IntelliSense support.
  */
 Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObject = false) {}; // eslint-disable-line
 
@@ -449,11 +491,24 @@ Controller.prototype.getBotsPerProxy = function(filterOffline = false) {}; // es
 Controller.prototype._handleErrors = function() {} // eslint-disable-line
 
 /**
+ * ID types supported by this resolver
+ */
+const EIdTypes = { // eslint-disable-line
+    "profile": "profile",
+    "group": "group",
+    "sharedfile": "sharedfile",
+    "discussion": "discussion",
+    "curator": "curator",
+    "review": "review"
+};
+
+/**
  * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
- * Note: You need to provide a full URL for discussions & curators. For discussions only type checking/determination is supported.
+ * Note: You need to provide a full URL for discussions, curators & reviews. For discussions only type checking/determination is supported.
  * @param {string} str The profileID argument provided by the user
- * @param {string} expectedIdType The type of SteamID expected ("profile", "group", "sharedfile", "discussion" or "curator") or `null` if type should be assumed.
- * @param {function(string|null, string|null, string|null): void} callback Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
+ * @param {EIdTypes} expectedIdType The type of SteamID expected or `null` if type should be assumed.
+ * @param {function(string|null, string|null, EIdTypes|null): void} callback
+ * Called with `err` (String or null), `id` (String or null), `idType` (String or null) parameters on completion. The `id` param has the format `userID/appID` for type review and full input url for type discussion.
  */
 Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) => {} // eslint-disable-line
 

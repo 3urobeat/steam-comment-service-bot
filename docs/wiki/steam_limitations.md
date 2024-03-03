@@ -3,7 +3,8 @@
 
 &nbsp;
 
-Steam has some strict restrictions for commenting.  
+Steam applies more restrictions to limited accounts, to reduce the amount of fraudulent actions by newly created accounts.  
+
 This page attempts to explain what you can and cannot do with limited & unlimited accounts.  
 Steam also has their own page [which you can view here](https://help.steampowered.com/en/faqs/view/71D3-35C2-AD96-AA3A).  
 
@@ -11,7 +12,8 @@ Steam also has their own page [which you can view here](https://help.steampowere
 
 **Steam Guard:**  
 Most interactions in the community need you to have Steam Guard enabled, especially for commenting.  
-Please make sure that all your bot accounts have at least E-Mail Steam Guard enabled.
+Please make sure that all your bot accounts have at least E-Mail Steam Guard enabled.  
+I don't think Mobile Steam Guard has any benefits over E-Mail Steam Guard.
 
 &nbsp;
 
@@ -24,12 +26,15 @@ They have stricter limitations and ratelimits to reduce the amount of spam and s
 If your account is **limited**, you can:
 - ...comment on profiles of friends
 - ...comment on sharedfiles (screenshots, artworks & guides)
+- ...comment on discussions
+- ...comment on reviews
 - ...favorize and unfavorize sharedfiles
+- ...follow other users and their workshop
 
 If your account is **unlimited**, you can do all of the above and additionally:
 - ...comment on non-friend profiles
 - ...comment in groups
-- ...upvote and downvote sharedfiles
+- ...upvote, downvote and funnyvote sharedfiles
 - ...add other users as friends
 
 &nbsp;

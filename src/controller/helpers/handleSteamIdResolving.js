@@ -4,10 +4,10 @@
  * Created Date: 2022-03-09 12:58:17
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:09:07
+ * Last Modified: 2024-03-02 12:07:21
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -21,33 +21,46 @@ const steamIDResolver = require("steamid-resolver");
 const Controller = require("../controller.js");
 
 
-// Note: I tried extending the SteamID Type enum to support sharedfiles but that didn't work out because of TypeScript reasons.
-// I'm therefore taking Strings instead of SteamID.Type values for types now.
+/**
+ * ID types supported by this resolver
+ */
+const EIdTypes = {
+    "profile": "profile",
+    "group": "group",
+    "sharedfile": "sharedfile",
+    "discussion": "discussion",
+    "curator": "curator",
+    "review": "review"
+};
+
 
 /**
  * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
- * Note: You need to provide a full URL for discussions & curators. For discussions only type checking/determination is supported.
- * @param {string} str The profileID argument provided by the user
- * @param {string} expectedIdType The type of SteamID expected ("profile", "group", "sharedfile", "discussion" or "curator") or `null` if type should be assumed.
- * @param {function(string|null, string|null, string|null): void} callback Called with `err` (String or null), `steamID64` (String or null), `idType` (String or null) parameters on completion
+ * Note: You need to provide a full URL for discussions, curators & reviews. For discussions only type checking/determination is supported.
+ * @param {string} str The profileID argument provided by the user. If `null` the function will instantly callback with `null`.
+ * @param {EIdTypes} expectedIdType The type of SteamID expected or `null` if type should be assumed.
+ * @param {function(string|null, string|null, EIdTypes|null): void} callback
+ * Called with `err` (String or null), `id` (String or null), `idType` (String or null) parameters on completion. The `id` param has the format `userID/appID` for type review and full input url for type discussion.
  */
 Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) => {
 
     // Instantly callback nothing if nothing was provided
-    if (!str) return callback(null, null);
+    if (!str) return callback(null, null, null);
 
-    // "profile", "group" or "sharedfile" - Is populated before making callback
+    // Check for invalid type. Explicitly check for null
+    if (expectedIdType !== null && !EIdTypes[expectedIdType]) return callback(new Error("Unsupported expectedIdType, must be one of these: " + Object.values(EIdTypes).join(", ")), null, null);
+
     let idType;
 
     // Function to handle steamIDResolver callbacks as they are always roughly the same. Only call for profile & group!
     function handleResponse(err, res) { //eslint-disable-line
-        logger("debug", `handleSteamIdResolving: handleResponse(): Received callback from steamid-resolver. err: ${err} | res: ${res}`);
+        logger("debug", `handleSteamIdResolving: handleResponse(): Received resolving result. err: ${err} | res: ${res}`);
 
         // Check if resolving failed
         if (err) return callback(err, null, null);
 
-        // Quickly determine type. We know that the ID here must be valid and of type profile or group as sharedfile is recognized as invalid by SteamID
-        idType = new SteamID(res).type == SteamID.Type.INDIVIDUAL ? "profile" : "group";
+        // Quickly determine type if not already done. We know that the ID here must be valid and of type profile or group as sharedfile is recognized as invalid by SteamID
+        if (!idType) idType = new SteamID(res).type == SteamID.Type.INDIVIDUAL ? "profile" : "group";
 
         // Quickly check if the response has the expected type
         if (expectedIdType && idType != expectedIdType) callback(`Received steamID of type ${idType} but expected ${expectedIdType}.`, null, null);
@@ -56,7 +69,37 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
 
     // Try to figure out if user provided an steamID64 or a customURL or a whole profile link
     if (isNaN(str) || !new SteamID(str).isValid()) { // If not a number or invalid SteamID. Note: Sharedfile IDs are considered invalid.
-        if (str.includes("steamcommunity.com/id/")) {
+        if (/steamcommunity.com\/.+\/recommended\/\d+/g.test(str)) { // This check *must* run before the /id/ & /profiles/ checks below because they would always trigger. The URLs start the same, with reviews having /recommended/ at the end
+            let strArr = str.split("/");
+
+            // Update idType
+            idType = "review";
+
+            if (expectedIdType && idType != expectedIdType) return callback(`Received steamID of type ${idType} but expected ${expectedIdType}.`, null, null);
+
+            // Find out if we need to resolve the userID
+            if (str.includes("steamcommunity.com/id/")) {
+                logger("debug", "handleSteamIdResolving: User provided review link with customURL...");
+
+                let customURL = strArr[strArr.findIndex((e) => e == "id") + 1]; // Find customURL by searching for id and going to the next element
+                let appID     = strArr[strArr.findIndex((e) => e == "recommended") + 1];
+
+                // Resolve customURL and replace /id/customURL with /profiles/steamID64
+                steamIDResolver.customUrlToSteamID64(customURL, (err, res) => {
+                    if (err) return callback(err, null, null);
+
+                    callback(null, res + "/" + appID, idType);
+                });
+            } else {
+                logger("debug", "handleSteamIdResolving: User provided review link with steamID64...");
+
+                let userID = strArr[strArr.findIndex((e) => e == "profiles") + 1];
+                let appID  = strArr[strArr.findIndex((e) => e == "recommended") + 1];
+
+                callback(null, userID + "/" + appID, idType); // Instantly callback input
+            }
+
+        } else if (str.includes("steamcommunity.com/id/")) {
             logger("debug", "handleSteamIdResolving: User provided customURL profile link...");
 
             steamIDResolver.customUrlToSteamID64(str, handleResponse);
@@ -67,7 +110,7 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
             // My library doesn't have a check if exists function nor returns the steamID64 if I pass it into steamID64ToCustomUrl(). But since I don't want to parse the URL myself here I'm just gonna request the full obj and cut the id out of it
             steamIDResolver.steamID64ToFullInfo(str, (err, obj) => handleResponse(err, obj.steamID64[0]));
 
-        } else if (str.includes("steamcommunity.com/discussions/forum") || /steamcommunity.com\/app\/.+\/discussions/g.test(str) || /steamcommunity.com\/groups\/.+\/discussions/g.test(str)) {
+        } else if (str.includes("steamcommunity.com/discussions/forum") || /steamcommunity.com\/app\/.+\/discussions/g.test(str) || /steamcommunity.com\/groups\/.+\/discussions/g.test(str) || /steamcommunity.com\/app\/.+\/eventcomments/g.test(str)) {
             logger("debug", "handleSteamIdResolving: User provided discussion link...");
 
             idType = "discussion";
@@ -116,7 +159,7 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
             if (expectedIdType && idType != expectedIdType) callback(`Received steamID of type ${idType} but expected ${expectedIdType}.`, null, null);
                 else callback(null, str, idType);
 
-        } else { // Doesn't seem to be an URL. We can ignore discussions as we need to provide an URL to SteamCommunity.
+        } else { // Doesn't seem to be an URL. We can ignore discussions & reviews as we need expect the user to provide the full URL.
 
             // If user just provided the customURL part of the URL then try and figure out from the expected expectedIdType if this could be a profile or group customURL
             if (expectedIdType == "profile") {

@@ -15,6 +15,7 @@ These are the patches being applied:
 - Fix sharedfile data scraping failing as a non-english page was returned by Steam: [#316](https://github.com/DoctorMcKay/node-steamcommunity/pull/316)
 - Fix scraping sharedfile type failing when incomplete breadcrumb was returned: [#316](https://github.com/DoctorMcKay/node-steamcommunity/pull/316)
 - Add discussions support: [#319](https://github.com/DoctorMcKay/node-steamcommunity/pull/319)
+- Add reviews support: [#335](https://github.com/DoctorMcKay/node-steamcommunity/pull/335)
 
 These patches have been applied in the past:  
 - Add full sharedfiles support: [#306](https://github.com/DoctorMcKay/node-steamcommunity/pull/306)

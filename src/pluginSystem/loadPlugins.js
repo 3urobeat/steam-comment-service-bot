@@ -4,10 +4,10 @@
  * Created Date: 2023-06-04 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 2023-12-27 14:15:37
+ * Last Modified: 2024-03-02 11:24:28
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -60,9 +60,34 @@ function loadPlugin(pluginName) {
  * Internal: Loads all plugin npm packages and populates pluginList
  */
 PluginSystem.prototype._loadPlugins = async function () {
+
     // Get all plugins with the matching regex
     const plugins = Object.entries(packageJson.dependencies).filter(([key, value]) => PLUGIN_REGEX.test(key)); // eslint-disable-line
-    const initiatedPlugins = plugins.map(([plugin]) => loadPlugin.bind(this)(plugin)); // Initalize each plugin
+
+
+    // Check for the latest version of all plugins
+    if (!this.controller.data.advancedconfig.disablePluginsAutoUpdate) {
+        let npminteraction = require("../controller/helpers/npminteraction.js");
+
+        logger("info", "PluginSystem: Searching for and installing plugin updates...", false, true, logger.animation("loading"));
+
+        // Get all plugin names. Ignore locally installed ones by checking for "file:"
+        let pluginNamesArr = plugins.flatMap((e) => { // Use flatMap instead of map to omit empty results instead of including undefined
+            if (!e[1].startsWith("file:")) return e[0];
+                else return [];
+        });
+
+        await npminteraction.installLatest(pluginNamesArr)
+            .catch((err) => {
+                logger("error", "PluginSystem: Failed to update plugins. Resuming with currently installed versions. " + err);
+            });
+    } else {
+        logger("info", "PluginSystem: Skipping plugins auto update because 'disablePluginsAutoUpdate' in 'advancedconfig.json' is enabled.", false, true);
+    }
+
+
+    // Initalize and load each plugin
+    const initiatedPlugins = plugins.map(([plugin]) => loadPlugin.bind(this)(plugin));
 
     for (const plugin of initiatedPlugins) {
         const { pluginName, pluginInstance, pluginJson } = plugin;
@@ -96,7 +121,30 @@ PluginSystem.prototype._loadPlugins = async function () {
             continue;
         }
 
-        logger("info", `PluginSystem: Loading plugin '${pluginName}' v${pluginJson.version} by ${pluginJson.author}...`, false, true, logger.animation("loading"));
+        logger("info", `PluginSystem: Loading plugin '${pluginName}' v${pluginJson.version} by ${pluginJson.author} made for v${pluginJson.botVersion}...`, false, true, logger.animation("loading"));
+
+        // Display warning if bot version mismatches plugin's botVersion
+        try {
+            if (pluginJson.botVersion) {
+                if (pluginJson.botVersion != this.controller.data.datafile.versionstr) {
+                    if (this.controller.data.advancedconfig.blockPluginLoadOnMismatchedBotVersion) {
+                        logger("warn", `Plugin '${pluginName}' wasn't made for this version! Blocking load because 'blockPluginLoadOnMismatchedBotVersion' is enabled.`, true);
+                        continue; // Important: Cannot use return instead as it would break the loop
+                    }
+
+                    logger("warn", `Plugin '${pluginName}' was made for v${pluginJson.botVersion} but the bot runs on v${this.controller.data.datafile.versionstr}. This plugin might not function correctly but I'm loading it anyway.`, true); // Log now
+                }
+            } else {
+                if (this.controller.data.advancedconfig.blockPluginLoadOnMismatchedBotVersion) {
+                    logger("warn", `Plugin '${pluginName}' does not specify a botVersion! Blocking load because 'blockPluginLoadOnMismatchedBotVersion' is enabled.`, true);
+                    continue; // Important: Cannot use return instead as it would break the loop
+                }
+
+                logger("warn", `Plugin '${pluginName}' does not specify a botVersion in their package.json! This plugin might not function correctly as it could have been made for an outdated version.`, true); // Log now
+            }
+        } catch (err) {
+            logger("err", `PluginSystem: Failed to check compatibility of plugin '${pluginName}' by comparing botVersion value. Attempting to load anyway. ${err}`);
+        }
 
         // Add plugin reference to pluginList and call load function
         this.pluginList[pluginName] = pluginInstance;
@@ -108,4 +156,5 @@ PluginSystem.prototype._loadPlugins = async function () {
             this.controller.events.on(event, (...args) => pluginInstance[event]?.call(pluginInstance, ...args));
         });
     }
+
 };

@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:07:20
+ * Last Modified: 2024-02-25 18:49:13
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -70,7 +70,7 @@ module.exports.help = {
         respond(`
             ${commandHandler.data.datafile.mestr}'s Comment Bot | ${await commandHandler.data.getLang("helpcommandlist", null, requesterID)}\n
             ${commentText}
-            '${resInfo.cmdprefix}vote (amount/"all") (id/url)' - ${await commandHandler.data.getLang("helpvote", { "maxRequests": maxTotalComments }, requesterID)}
+            '${resInfo.cmdprefix}upvote (amount/"all") (id/url)' - ${await commandHandler.data.getLang("helpvote", { "maxRequests": maxTotalComments }, requesterID)}
             '${resInfo.cmdprefix}favorite (amount/"all") (id/url)' - ${await commandHandler.data.getLang("helpfavorite", { "maxRequests": maxTotalComments }, requesterID)}
             ${followText} - ${await commandHandler.data.getLang("helpfollow", { "maxRequests": commandHandler.data.config.maxRequests }, requesterID)}\n
             '${resInfo.cmdprefix}info' - ${await commandHandler.data.getLang("helpinfo", null, requesterID)}
@@ -344,5 +344,33 @@ module.exports.test = {
         // We already provide the correct id
         handleSteamIdResolving("76561198260031749", null, console.log);
         handleSteamIdResolving("103582791464712227", null, console.log); */
+
+
+        // Job registration and unregistration test:
+        /* let testfunc = (jobManager) => {
+            logger("info", "Hello, I'm a job");
+            logger("", jobManager.jobs.length); // Test if jobManager reference works
+        };
+
+        commandHandler.controller.jobManager.registerJob({ name: "testjob", interval: 2500, func: testfunc, runOnRegistration: true });
+
+        setTimeout(() => { // Unregister after 10 sec
+            commandHandler.controller.jobManager.unregisterJob("testjob");
+        }, 10000); */
+
+
+        // Test steamcommunity steam reviews implementation
+        /* commandHandler.controller.main.community.getSteamReview("76561198260031749", "1902490", (err, res) => {
+            if (err) return logger("error", err.stack, true);
+
+            logger("", res, true);
+
+            res.comment("test", (err) => { if (err) logger("", err, true); });
+            res.subscribe();
+            res.voteFunny((err) => { if (err) logger("error", "Failed to vote: " + err, true); });
+            res.deleteComment("7434949789831866840", (err) => { if (err) logger("error", "Failed to delete: " + err, true); });
+            res.unsubscribe();
+        }); */
+
     }
 };

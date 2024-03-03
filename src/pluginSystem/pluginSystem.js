@@ -4,10 +4,10 @@
  * Created Date: 2023-03-19 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:15:25
+ * Last Modified: 2024-02-23 14:42:19
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -15,9 +15,10 @@
  */
 
 
-const Controller = require("../controller/controller.js"); // eslint-disable-line
+const Controller     = require("../controller/controller.js");   // eslint-disable-line
 const CommandHandler = require("../commands/commandHandler.js"); // eslint-disable-line
-const Bot = require("../../src/bot/bot.js"); // eslint-disable-line
+const JobManager     = require("../jobs/jobManager.js");         // eslint-disable-line
+const Bot            = require("../bot/bot.js");                 // eslint-disable-line
 
 
 /**
@@ -38,7 +39,7 @@ const Bot = require("../../src/bot/bot.js"); // eslint-disable-line
  */
 const PluginSystem = function (controller) {
     /**
-     * Reference to the controller object
+     * Central part of the application and your interface to everything
      * @type {Controller}
      */
     this.controller = controller;
@@ -50,9 +51,16 @@ const PluginSystem = function (controller) {
     this.pluginList = {};
 
     /**
+     * Manages all registered commands and gives you access to them
      * @type {CommandHandler}
      */
     this.commandHandler = controller.commandHandler;
+
+    /**
+     * Manages and runs all jobs and lets you register your own
+     * @type {JobManager}
+     */
+    this.jobManager = controller.jobManager;
 
     // Load helper files
     require("./loadPlugins.js");

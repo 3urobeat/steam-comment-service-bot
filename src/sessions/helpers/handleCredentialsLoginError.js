@@ -4,10 +4,10 @@
  * Created Date: 2022-10-09 13:22:39
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:16:15
+ * Last Modified: 2024-02-28 22:21:51
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -26,7 +26,7 @@ const SessionHandler = require("../sessionHandler.js");
 SessionHandler.prototype._handleCredentialsLoginError = function(err) {
 
     // Define a few enums on which we won't bother to relog
-    let blockedEnumsForRetries = [EResult.InvalidPassword, EResult.LoggedInElsewhere, EResult.InvalidName, EResult.InvalidEmail, EResult.Banned, EResult.AccountNotFound];
+    let blockedEnumsForRetries = [EResult.InvalidPassword, EResult.LoggedInElsewhere, EResult.InvalidName, EResult.InvalidEmail, EResult.Banned, EResult.AccountNotFound, EResult.AccountLoginDeniedThrottle, EResult.RateLimitExceeded];
 
     // Check if this is a blocked enum or if all retries are used
     if (this.bot.loginData.logOnTries > this.controller.data.advancedconfig.maxLogOnRetries || blockedEnumsForRetries.includes(err.eresult)) { // Skip account
@@ -61,4 +61,17 @@ SessionHandler.prototype._handleCredentialsLoginError = function(err) {
         }, 5000);
 
     }
+};
+
+
+/**
+ * Helper function to make handling login errors easier
+ * @param {*} err Error thrown by startWithQR()
+ */
+SessionHandler.prototype._handleQrCodeLoginError = function(err) {
+
+    logger("error", `[${this.thisbot}] Failed to start a QR-Code session! Are you having connectivity issues to Steam? ${err}`);
+
+    this._resolvePromise(null); // Skips account. I don't think we need to care about retries here
+
 };
