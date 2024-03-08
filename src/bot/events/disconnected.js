@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 13:58:37
+ * Last Modified: 2024-03-08 17:40:03
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -28,8 +28,6 @@ Bot.prototype._attachSteamDisconnectedEvent = function() {
 
         if (this.status == Bot.EStatus.OFFLINE && this.controller.info.activeLogin) return; // Ignore if account is already marked as offline and a login process is active
 
-        logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam. Message: ${msg} | Check: https://steamstat.us`);
-
         // Store disconnect timestamp & reason
         this.lastDisconnect.timestamp = Date.now();
         this.lastDisconnect.reason = msg;
@@ -38,11 +36,11 @@ Bot.prototype._attachSteamDisconnectedEvent = function() {
 
         // Don't relog if account is in skippedaccounts array or if relogAfterDisconnect is false
         if (!this.controller.info.skippedaccounts.includes(this.loginData.logOnOptions.accountName) && this.controller.info.relogAfterDisconnect) {
-            logger("info", `${logger.colors.fggreen}[${this.logPrefix}] Initiating a login retry in ${this.controller.data.advancedconfig.loginRetryTimeout / 1000} seconds.`); // Announce relog
+            logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam: '${msg}'. Initiating a login retry in ${this.controller.data.advancedconfig.loginRetryTimeout / 1000} seconds.`); // Announce relog
 
             setTimeout(() => this.controller.login(), this.controller.data.advancedconfig.loginRetryTimeout); // Relog in loginRetryTimeout ms
         } else {
-            logger("info", `[${this.logPrefix}] I won't queue myself for a relog because this account is either already being relogged, was skipped or this is an intended logOff.`);
+            logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam: '${msg}'. I won't queue for a relog because this account is either already being relogged, was skipped or this is an intended logOff.`);
         }
 
     });

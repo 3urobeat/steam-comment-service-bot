@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-10 14:08:02
+ * Last Modified: 2024-03-08 17:49:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -28,7 +28,7 @@ Bot.prototype._attachSteamLoggedOnEvent = function() {
     this.user.on("loggedOn", () => {
 
         // Print message and set status to online
-        logger("info", `[${this.logPrefix}] Account logged in! Waiting for websession...`, false, true, logger.animation("loading"));
+        logger("debug", `[${this.logPrefix}] Account logged in! Public IP of this account: ${this.user.publicIP}`, false, true);
 
         if (this.index == 0) {
             logger("debug", `[${this.logPrefix}] Setting online status '${this.data.advancedconfig.onlineStatus}' as enum '${EPersonaState[this.data.advancedconfig.onlineStatus]}'`);
@@ -37,9 +37,6 @@ Bot.prototype._attachSteamLoggedOnEvent = function() {
             logger("debug", `[${this.logPrefix}] Setting online status '${this.data.advancedconfig.childAccOnlineStatus}' as enum '${EPersonaState[this.data.advancedconfig.childAccOnlineStatus]}'`);
             this.user.setPersona(EPersonaState[this.data.advancedconfig.childAccOnlineStatus]); // Set child acc online status
         }
-
-        logger("debug", `[${this.logPrefix}] Public IP of this account: ${this.user.publicIP}`);
-
 
         // Increase progress bar if one is active
         if (logger.getProgressBar()) logger.increaseProgressBar((100 / this.data.logininfo.length) / 3);

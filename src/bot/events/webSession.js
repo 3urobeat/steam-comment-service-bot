@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-29 14:10:29
+ * Last Modified: 2024-03-08 16:21:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -39,9 +39,12 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
         this.loginData.relogTries = 0;       // Reset relogTries to indicate that this proxy is working should one of the next logOn retries fail
         this.loginData.pendingLogin = false; // Unlock login again
 
-
-        if (!this.controller.info.readyAfter) logger("info", `[${this.logPrefix}] Got websession and set cookies. Accepting offline friend & group invites...`, false, true, logger.animation("loading")); // Only print message with animation if the bot was not fully started yet
-            else logger("info", `[${this.logPrefix}] Got websession and set cookies. Accepting offline friend & group invites...`, false, true);
+        // Print logged in message with animation on initial login, otherwise without
+        if (!this.controller.info.readyAfter) {
+            logger("info", `[${this.logPrefix}] Logged in! Accepting pending friend requests & group invites...`, false, true, logger.animation("loading"));
+        } else {
+            logger("info", `[${this.logPrefix}] Logged in! Accepting pending friend requests & group invites...`, false, true);
+        }
 
 
         // Run check if all friends are in lastcomment.db database for main bot account

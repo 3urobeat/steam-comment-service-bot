@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-08 13:00:16
+ * Last Modified: 2024-03-08 17:44:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -49,7 +49,6 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
         // Check if this is a connection loss and not a login error (because disconnects are thrown here when SteamUser's autoRelogin is false)
         if (this.status == Bot.EStatus.ONLINE) { // It must be a fresh connection loss if status has not changed yet
-            logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam. Reason: '${err}'`);
             this.controller._statusUpdateEvent(this, Bot.EStatus.OFFLINE); // Set status of this account to offline
 
             // Store disconnect timestamp & reason
@@ -58,11 +57,11 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
             // Check if this is an intended logoff
             if (this.controller.info.relogAfterDisconnect && !this.controller.info.skippedaccounts.includes(this.loginData.logOnOptions.accountName)) {
-                logger("info", `${logger.colors.fggreen}[${this.logPrefix}] Initiating a login retry in ${this.controller.data.advancedconfig.loginRetryTimeout / 1000} seconds.`); // Announce relog
+                logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam: '${err}'. Initiating a login retry in ${this.controller.data.advancedconfig.loginRetryTimeout / 1000} seconds.`); // Announce relog
 
                 setTimeout(() => this.controller.login(), this.controller.data.advancedconfig.loginRetryTimeout); // Relog after waiting loginRetryTimeout ms
             } else {
-                logger("info", `[${this.logPrefix}] I won't queue myself for a relog because this account was skipped or this is an intended logOff.`);
+                logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam: '${err}'. I won't queue for a relog because this account was skipped or this is an intended logOff.`);
             }
 
         } else { // Actual error during login
@@ -106,7 +105,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
                 } else {
 
-                    logger("warn", `[${this.logPrefix}] '${err}' while trying to log in. Retrying in 5 seconds..."}`, false, false, null, true); // Log error as warning
+                    logger("warn", `[${this.logPrefix}] '${err}' while trying to log in. Retrying in 5 seconds...`, false, false, null, true); // Log error as warning
 
                     // Try again in 5 sec, Controller's login function waits for any status that is not offline
                     setTimeout(() => this._loginToSteam(), 5000);
