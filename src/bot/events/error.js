@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-29 14:32:11
+ * Last Modified: 2024-03-08 13:00:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -31,7 +31,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
         // Custom behavior for LogonSessionReplaced error
         if (err.eresult == EResult.LogonSessionReplaced) {
             logger("", "", true);
-            logger("warn", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam! Reason: LogonSessionReplaced. I won't try to relog this account because someone else is using it now.`, false, false, null, true); // Force print this message now
+            logger("warn", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam! Reason: 'Error: LogonSessionReplaced'. I won't try to relog this account because someone else is using it now.`, false, false, null, true); // Force print this message now
 
             // Abort or skip account. No need to attach handleRelog() here
             if (this.index == 0) {
@@ -49,7 +49,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
         // Check if this is a connection loss and not a login error (because disconnects are thrown here when SteamUser's autoRelogin is false)
         if (this.status == Bot.EStatus.ONLINE) { // It must be a fresh connection loss if status has not changed yet
-            logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam. Reason: ${err}`);
+            logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam. Reason: '${err}'`);
             this.controller._statusUpdateEvent(this, Bot.EStatus.OFFLINE); // Set status of this account to offline
 
             // Store disconnect timestamp & reason
@@ -67,9 +67,15 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
         } else { // Actual error during login
 
-            let blockedEnumsForRetries = [EResult.Banned, EResult.AccountNotFound]; // No need to block InvalidPassword anymore as the SessionHandler handles credentials
+            // Unlock login, but only if not already done by loginTimeout handler to prevent duplicate login requests
+            if (!this.loginData.pendingLogin) return logger("debug", `[${this.logPrefix}] Won't handle this login error because 'pendingLogin' is already 'false'; handleLoginTimeout must already have taken action`);
+
+            this.loginData.pendingLogin = false;
+
 
             // Check if all logOnTries are used or if this is a fatal error
+            let blockedEnumsForRetries = [EResult.Banned, EResult.AccountNotFound]; // No need to block InvalidPassword anymore as the SessionHandler handles credentials
+
             if (this.loginData.logOnTries > this.controller.data.advancedconfig.maxLogOnRetries || blockedEnumsForRetries.includes(err.eresult)) {
                 logger("error", `Couldn't log in bot${this.index} after ${this.loginData.logOnTries} attempt(s). ${err} (${err.eresult})`);
 
@@ -100,12 +106,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
                 } else {
 
-                    logger("warn", `[${this.logPrefix}] '${err}' while trying to log in.${this.loginData.pendingLogin ? " Retrying in 5 seconds..." : ""}`, false, false, null, true); // Log error as warning
-
-                    // Unlock login, but only if not already done by loginTimeout handler to prevent duplicate login requests
-                    if (!this.loginData.pendingLogin) return logger("debug", `[${this.logPrefix}] Won't handle this login error because 'pendingLogin' is already 'false'; handleLoginTimeout must already have taken action`);
-
-                    this.loginData.pendingLogin = false;
+                    logger("warn", `[${this.logPrefix}] '${err}' while trying to log in. Retrying in 5 seconds..."}`, false, false, null, true); // Log error as warning
 
                     // Try again in 5 sec, Controller's login function waits for any status that is not offline
                     setTimeout(() => this._loginToSteam(), 5000);
