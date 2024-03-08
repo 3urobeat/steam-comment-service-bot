@@ -1,6 +1,6 @@
 {
-    "version": "21500",
-    "versionstr": "2.15.0",
+    "version": "21501",
+    "versionstr": "2.15.1",
     "branch": "master",
     "filetostart": "./src/starter.js",
     "filetostarturl": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/src/starter.js",
@@ -8,7 +8,7 @@
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/3urobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://github.com/sponsors/3urobeat",
     "firststart": true,
     "compatibilityfeaturedone": false,
-    "whatsnew": "Added support for commenting & voting on reviews, drastically reduced startup time for large instances with many proxies, added QR-Code login support, added JobManager, improved PluginSystem and fixed some bugs. Read the full release notes: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/changelogs/CHANGELOG_v2.15.md",
+    "whatsnew": "Fixed softlocked login process after proxy switch, fixed vote & fav error logging throwing an error and reduced amount of log messages logged during startup, login, disconnect & relog.",
     "timesloggedin": 0,
     "totallogintime": 0
 }

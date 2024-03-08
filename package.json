@@ -1,6 +1,6 @@
 {
     "name": "steam-comment-service-bot",
-    "version": "2.15.0",
+    "version": "2.15.1",
     "description": "The most advanced Steam Multi Account Manager with built-in comment, like & favorite commands and extensive plugin support.",
     "main": "start.js",
     "dependencies": {
@@ -13,7 +13,7 @@
         "qrcode": "^1.5.3",
         "request": "^2.88.2",
         "steam-comment-bot-discord-plugin": "^1.0.2",
-        "steam-comment-bot-rest": "^1.1.0",
+        "steam-comment-bot-rest": "^1.2.1",
         "steam-comment-bot-webserver": "^1.0.1",
         "steam-session": "^1.7.2",
         "steam-user": "^5.0.8",
@@ -36,7 +36,7 @@
     "repository": "https://github.com/3urobeat/steam-comment-service-bot",
     "devDependencies": {
         "eslint": "^8.57.0",
-        "eslint-plugin-jsdoc": "^48.2.0",
+        "eslint-plugin-jsdoc": "^48.2.1",
         "tsd-jsdoc": "^2.5.0"
     },
     "types": "./types/types.d.ts"

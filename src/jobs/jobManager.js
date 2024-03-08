@@ -4,7 +4,7 @@
  * Created Date: 2024-02-11 10:48:17
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 16:57:53
+ * Last Modified: 2024-03-08 18:17:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
@@ -113,7 +113,7 @@ JobManager.prototype.registerJob = function(job) {
     // Register job and return null on success
     this.jobs.push(job);
 
-    logger("info", `JobManager: Registered job '${job.name}' which executes ${job.runOnRegistration ? "now and then " : ""}every ${job.interval}ms`, false, true);
+    logger("debug", `JobManager: Registered job '${job.name}' which executes ${job.runOnRegistration ? "now and then " : ""}every ${job.interval}ms`);
 
     return null;
 
@@ -137,7 +137,7 @@ JobManager.prototype.unregisterJob = function(name) {
 
     this.jobs.splice(index, 1);
 
-    logger("info", `JobManager: Unregistered job '${name}'!`);
+    logger("debug", `JobManager: Unregistered job '${name}'!`);
 
     return null;
 

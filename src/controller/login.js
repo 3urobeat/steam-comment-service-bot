@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-29 15:18:34
+ * Last Modified: 2024-03-08 18:20:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -39,8 +39,8 @@ Controller.prototype.login = async function(firstLogin) {
 
         // Print ASCII art
         logger("", "", true);
-        if (Math.floor(Math.random() * 100) <= 2) logger("", ascii.hellothereascii + "\n", true, false, null, false, true); // 2% chance
-            else if (Math.floor(Math.random() * 100) <= 5) logger("", ascii.binaryascii + "\n", true, false, null, false, true); // 5% chance
+        if (Math.floor(Math.random() * 100) <= 1) logger("", ascii.hellothereascii + "\n", true, false, null, false, true); // 1% chance
+            else if (Math.floor(Math.random() * 100) <= 2) logger("", ascii.binaryascii + "\n", true, false, null, false, true); // 2% chance
             else logger("", ascii.ascii[Math.floor(Math.random() * ascii.ascii.length)] + "\n", true, false, null, false, true); // Last param makes sure to cut the width
 
         logger("", "", true); // Put one line above everything that will come to make the output cleaner
@@ -142,7 +142,7 @@ Controller.prototype.login = async function(firstLogin) {
 
         clearInterval(allAccsOnlineInterval);
 
-        logger("info", "Finished logging in all currently queued accounts! Calling myself again to check for any new accounts...", false, false, logger.animation("loading"));
+        logger("info", "Finished logging in all currently queued accounts! Checking for any new accounts...", false, false, logger.animation("loading"));
 
         this.info.activeLogin = false;
 

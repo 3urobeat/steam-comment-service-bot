@@ -4,10 +4,10 @@
  * Created Date: 2023-10-05 16:14:46
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 13:59:47
+ * Last Modified: 2024-03-08 11:48:23
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -106,7 +106,7 @@ Bot.prototype.checkAndSwitchMyProxy = async function() {
 
         // Switch proxy and relog, no need for handleRelog() to do something
         this.switchProxy(leastUsedProxy.proxyIndex);
-        this.status = Bot.EStatus.OFFLINE;
+        this.controller._statusUpdateEvent(this, Bot.EStatus.OFFLINE);
         this.controller.login();
         return true;
 

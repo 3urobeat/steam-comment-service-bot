@@ -4,7 +4,7 @@
  * Created Date: 2023-06-02 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-21 21:23:47
+ * Last Modified: 2024-03-08 19:20:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -169,7 +169,7 @@ module.exports.favorite = {
 
                         /* --------- Handle errors thrown by this favorite attempt or update ratingHistory db and log success message --------- */
                         if (error) {
-                            logFavoriteError(error, commandHandler, bot, sharedfile.id);
+                            logFavoriteError(error, commandHandler, bot, id);
 
                         } else {
 
@@ -367,7 +367,7 @@ module.exports.unfavorite = {
 
                         /* --------- Handle errors thrown by this unfavorite attempt or update ratingHistory db and log success message --------- */
                         if (error) {
-                            logFavoriteError(error, commandHandler, bot, sharedfile.id);
+                            logFavoriteError(error, commandHandler, bot, id);
 
                         } else {
 

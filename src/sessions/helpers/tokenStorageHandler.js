@@ -4,7 +4,7 @@
  * Created Date: 2022-10-10 12:53:20
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-27 17:27:32
+ * Last Modified: 2024-03-08 17:49:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -61,7 +61,7 @@ SessionHandler.prototype._getTokenFromStorage = function(callback) {
 
             // Compare expire value (unix timestamp in seconds) to current date
             if (jwtObj.exp * 1000 > Date.now()) {
-                logger("info", `[${this.bot.logPrefix}] Found valid token until '${validUntilStr}' in tokens.db! Logging in with it to reuse session...`, false, true, logger.animation("loading"));
+                logger("debug", `[${this.bot.logPrefix}] Found valid token until '${validUntilStr}' in tokens.db! Logging in with it to reuse session...`, false, true);
                 callback(doc.token);
             } else {
                 logger("info", `[${this.bot.logPrefix}] Found invalid token in tokens.db. It was valid till '${validUntilStr}'. Logging in with credentials to get a new session...`, false, true, logger.animation("loading"));

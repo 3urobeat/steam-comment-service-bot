@@ -4,7 +4,7 @@
  * Created Date: 2023-06-04 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 2024-03-02 11:24:28
+ * Last Modified: 2024-03-08 18:19:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -121,7 +121,7 @@ PluginSystem.prototype._loadPlugins = async function () {
             continue;
         }
 
-        logger("info", `PluginSystem: Loading plugin '${pluginName}' v${pluginJson.version} by ${pluginJson.author} made for v${pluginJson.botVersion}...`, false, true, logger.animation("loading"));
+        logger("info", `PluginSystem: Loading plugin '${pluginName}' v${pluginJson.version} by '${pluginJson.author}' made for v${pluginJson.botVersion}...`, false, true, logger.animation("loading"));
 
         // Display warning if bot version mismatches plugin's botVersion
         try {

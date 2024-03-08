@@ -4,7 +4,7 @@
  * Created Date: 2023-04-01 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-29 20:17:33
+ * Last Modified: 2024-03-08 18:18:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -67,7 +67,7 @@ const CommandHandler = function(controller) {
 CommandHandler.prototype._importCoreCommands = function() {
     return new Promise((resolve) => {
 
-        logger("info", "CommandHandler: Loading all core commands...", false, true, logger.animation("loading"));
+        logger("debug", "CommandHandler: Loading all core commands...");
 
         fs.readdir("./src/commands/core", (err, files) => {
 
