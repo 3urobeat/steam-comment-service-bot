@@ -4,10 +4,10 @@
  * Created Date: 2023-03-29 17:44:47
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:13:26
+ * Last Modified: 2024-03-08 18:27:14
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -46,7 +46,7 @@ DataManager.prototype.refreshCache = function () {
     });
 
     // Update Backups
-    logger("debug", "Writing backups to cache.json...", false, true, logger.animation("loading"));
+    logger("debug", "Writing backups to cache.json...");
     this.cachefile["configjson"] = this.config;
     this.cachefile["advancedconfigjson"] = this.advancedconfig;
     this.cachefile["datajson"] = this.datafile;

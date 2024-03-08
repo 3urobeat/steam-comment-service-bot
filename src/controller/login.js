@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-07 18:03:14
+ * Last Modified: 2024-03-08 18:20:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -142,7 +142,7 @@ Controller.prototype.login = async function(firstLogin) {
 
         clearInterval(allAccsOnlineInterval);
 
-        logger("info", "Finished logging in all currently queued accounts! Calling myself again to check for any new accounts...", false, false, logger.animation("loading"));
+        logger("info", "Finished logging in all currently queued accounts! Checking for any new accounts...", false, false, logger.animation("loading"));
 
         this.info.activeLogin = false;
 

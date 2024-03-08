@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-24 12:26:07
+ * Last Modified: 2024-03-08 18:26:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -161,7 +161,7 @@ DataManager.prototype._importFromDisk = async function () {
                         });
                     });
 
-                    logger("info", `Found ${logininfo.length} accounts in accounts.txt, not checking for logininfo.json...`, false, true, logger.animation("loading"));
+                    logger("debug", `DataManager _importFromDisk(): Found ${logininfo.length} accounts in accounts.txt, not checking for logininfo.json...`);
 
                     return resolve(logininfo);
                 }
@@ -191,7 +191,7 @@ DataManager.prototype._importFromDisk = async function () {
                     });
                 }
 
-                logger("info", `Found ${logininfo.length} accounts in logininfo.json...`, false, true, logger.animation("loading"));
+                logger("debug", `Found ${logininfo.length} accounts in logininfo.json...`);
 
                 resolve(logininfo);
             } catch (err) {
@@ -268,8 +268,6 @@ DataManager.prototype._importFromDisk = async function () {
                 // Check if quotes.txt is empty to avoid errors further down when trying to comment
                 logger("error", `${logger.colors.fgred}You haven't put any comment quotes into the quotes.txt file! Aborting...`, true);
                 return _this.controller.stop();
-            } else {
-                logger("info", `Successfully loaded ${quotes.length} quotes from quotes.txt...`, false, true, logger.animation("loading"));
             }
 
             resolve(quotes);
@@ -290,6 +288,8 @@ DataManager.prototype._importFromDisk = async function () {
 
                 // Iterate through all files in lang dir and load them
                 fs.readdir("./src/data/lang", (err, files) => {
+                    logger("debug", `DataManager _importFromDisk(): Found these languages in the lang folder: '${files.toString()}'`);
+
                     files.forEach((e) => {
                         let thisFile;
 
@@ -307,7 +307,6 @@ DataManager.prototype._importFromDisk = async function () {
 
                     // Resolve with success message or force restore default language
                     if (Object.keys(obj).length > 0 && obj["english"]) {
-                        logger("info", `Successfully loaded ${Object.keys(obj).length} languages!`, false, true, logger.animation("loading"));
                         resolve(obj);
                     } else {
                         _this._pullNewFile("english.json", "./src/data/lang/english.json", (e) => resolve({ "english": e })); // Only resolve for the default language
@@ -375,7 +374,7 @@ DataManager.prototype._importFromDisk = async function () {
                     if (langIteration == Object.keys(customlang).length - 1) resolve(_this.lang);
                 });
             } else {
-                logger("info", "No customlang.json file found...", false, true, logger.animation("loading"));
+                logger("debug", "DataManager _importFromDisk(): No customlang.json file found");
                 resolve(_this.lang); // Resolve with default lang object
             }
         });
@@ -399,5 +398,7 @@ DataManager.prototype._importFromDisk = async function () {
     this.ratingHistoryDB = new nedb({ filename: srcdir + "/data/ratingHistory.db", autoload: true });
     this.tokensDB        = new nedb({ filename: srcdir + "/data/tokens.db", autoload: true });
     this.userSettingsDB  = new nedb({ filename: srcdir + "/data/userSettings.db", autoload: true });
+
+    logger("info", `Successfully loaded ${this.logininfo.length} accounts, ${this.proxies.length} proxies, ${this.quotes.length} quotes, ${Object.keys(this.lang).length} languages and 4 databases!`, false, true, logger.animation("loading"));
 
 };

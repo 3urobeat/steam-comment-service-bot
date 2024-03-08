@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-28 22:37:55
+ * Last Modified: 2024-03-08 18:24:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -212,7 +212,7 @@ module.exports.unfriendall = {
                                 logger("info", `Removing friend ${friendSteamID.getSteamID64()} from all bot accounts...`, false, false, logger.animation("loading"));
                                 commandHandler.controller.getBots()[i].user.removeFriend(friendSteamID);
                             } else {
-                                logger("debug", `unfriendAll(): Friend ${friendSteamID.getSteamID64()} seems to be an owner, skipping...`, false, false, logger.animation("loading"));
+                                logger("debug", `unfriendAll(): Friend ${friendSteamID.getSteamID64()} seems to be an owner, skipping...`);
                             }
                         }, 1000 * i); // Delay every iteration so that we don't make a ton of requests at once
                     } catch (err) {
