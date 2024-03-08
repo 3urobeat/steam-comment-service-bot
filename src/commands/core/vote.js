@@ -4,7 +4,7 @@
  * Created Date: 2023-05-28 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-27 22:00:43
+ * Last Modified: 2024-03-08 18:36:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -218,7 +218,7 @@ async function processVoteRequest(origin, commandHandler, args, respondModule, c
 
                 /* --------- Handle errors thrown by this vote attempt or update ratingHistory db and log success message --------- */
                 if (error) {
-                    logVoteError(error, commandHandler, bot, voteArgs.id);
+                    logVoteError(error, commandHandler, bot, id);
 
                 } else {
 

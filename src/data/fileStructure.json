@@ -398,7 +398,7 @@
         {
             "path": "src/commands/core/favorite.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/favorite.js",
-            "checksum": "9d4660400dd151196fa2b39d0ce353b6"
+            "checksum": "9dc47165909fdf357c25ba775129e74a"
         },
         {
             "path": "src/commands/core/follow.js",
@@ -438,7 +438,7 @@
         {
             "path": "src/commands/core/vote.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/vote.js",
-            "checksum": "5c856ea5d20db8355061a2c277178bea"
+            "checksum": "f69c2827cc333b67d34075a14d8b40e4"
         },
         {
             "path": "src/commands/helpers/getCommentArgs.js",
