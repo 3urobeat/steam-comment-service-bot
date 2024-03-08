@@ -158,3 +158,5 @@ Commit: [be41d68](https://github.com/3urobeat/steam-comment-service-bot/commit/b
 - Reduced chances of startup ascii art showing an easter egg ascii art
 - Updated dependencies
 - Minor other changes
+
+Commit: [a8a04eb](https://github.com/3urobeat/steam-comment-service-bot/commit/a8a04eb)
