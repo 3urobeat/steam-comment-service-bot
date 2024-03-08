@@ -5,6 +5,7 @@
 
 **Current**  
 - [2.15.0](#2.15.0)
+- [2.15.1](#2.15.1)
   
 &nbsp;
 
@@ -141,3 +142,19 @@ If you've made a plugin, check the 'Creating Plugins' wiki page and add the `bot
 </details>
 
 Commit: [be41d68](https://github.com/3urobeat/steam-comment-service-bot/commit/be41d68)
+
+&nbsp;
+
+<a id="2.15.1"></a>
+
+## **2024-03-08, Version 2.15.1**
+**Fixes:**
+- Fixed login process being softlocked after an account attempted to switch from their faulty proxy
+- Fixed failed vote & fav requests throwing an error when trying to log the error
+
+**Changes:**
+- Reduced amount of log messages logged during login, disconnect and relog
+- Reduced amount of log messages logged during the general startup
+- Reduced chances of startup ascii art showing an easter egg ascii art
+- Updated dependencies
+- Minor other changes
