@@ -13,17 +13,17 @@
         {
             "path": ".github/ISSUE_TEMPLATE/bug_report.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/.github/ISSUE_TEMPLATE/bug_report.md",
-            "checksum": "324472c36f99a41a0eb39f6875e11a56"
+            "checksum": "0427a2bb62d2775fbf47795461d343b5"
         },
         {
             "path": ".github/ISSUE_TEMPLATE/feature_request.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/.github/ISSUE_TEMPLATE/feature_request.md",
-            "checksum": "434308eeb7670ecc4fa63908eb6f9f56"
+            "checksum": "23a660d1130154f12b20168de15e264b"
         },
         {
             "path": ".github/ISSUE_TEMPLATE/help-wanted-question.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/.github/ISSUE_TEMPLATE/help-wanted-question.md",
-            "checksum": "d341d7c8a2428d5c4a495508d5400b7d"
+            "checksum": "081c0421394521c2fafe5c518f2023a2"
         },
         {
             "path": ".github/workflows/codeql-analysis.yml",
@@ -243,7 +243,7 @@
         {
             "path": "docs/wiki/contributing.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/contributing.md",
-            "checksum": "7719bb31fc5180a04362a5d71e93f9bf"
+            "checksum": "bf2726a14d91675dd6b530da720aabab"
         },
         {
             "path": "docs/wiki/creating_plugins.md",

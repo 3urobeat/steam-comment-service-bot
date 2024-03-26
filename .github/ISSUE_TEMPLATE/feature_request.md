@@ -1,5 +1,5 @@
 ---
-name: Feature request
+name: Feature Request
 about: Suggest a feature idea
 title: ''
 labels: Enhancement
@@ -11,4 +11,4 @@ assignees: ''
 A clear description of what should happen.
 
 **Additional context**
-Add any other context or screenshots about the feature request here.
+Please add any other information here, if you have some.

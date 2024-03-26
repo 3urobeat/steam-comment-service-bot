@@ -1,17 +1,17 @@
 ---
-name: Bug report
-about: Report an error/a problem you experienced
+name: Bug Report
+about: Report an error or problem you've experienced
 title: ''
 labels: Bug
 assignees: ''
 
 ---
 
-**Describe the bug**
+**Please describe the bug**
 What happened?
 
-**Full error**
-Please post the **complete** error here!
+**Full error stack trace**
+If you've got an error, please post the **entire** error stack trace here!
 
 **Additional context**
-Please add any other information here if you have some.
+Please add any other information here, if you have some.
