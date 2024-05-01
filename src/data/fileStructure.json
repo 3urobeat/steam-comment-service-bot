@@ -83,7 +83,7 @@
         {
             "path": "docs/dev/controller/events.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/dev/controller/events.md",
-            "checksum": "cab6f4fe3d8b9fa0374bf9aaa33c965d"
+            "checksum": "8c1a3cfb9b911e2fc61c77ae4251db38"
         },
         {
             "path": "docs/dev/controller/helpers.md",
@@ -248,7 +248,7 @@
         {
             "path": "docs/wiki/creating_plugins.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/creating_plugins.md",
-            "checksum": "11ea6f29f4c9591b6a00c637e4ab928b"
+            "checksum": "11b8d3b398f638581f260ff5cf64d95c"
         },
         {
             "path": "docs/wiki/customlang_doc.md",

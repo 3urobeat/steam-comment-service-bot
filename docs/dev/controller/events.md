@@ -49,3 +49,10 @@ The event is emitted with the parameters
 The `submitCode` function allows users to implement accepting Steam Guard Codes from users into their plugins. This is very cool.  
 Check out how the [template plugin](https://github.com/3urobeat/steam-comment-bot-template-plugin/blob/main/plugin.js) implements the 
 `steamGuardInput` event function (which is called by the PluginSystem when the event is emitted, instead of listening directly to it).
+
+## steamGuardQrCode <a href="/src/controller/events/steamGuardQrCode.js" target="_blank"><img align="right" src="https://img.shields.io/badge/<%2F>%20Source-darkcyan"></a>
+This event is emitted when any bot account is trying to log in using a QR-Code. A user needs to scan this QR-Code using their Steam Mobile App to confirm the login request.
+
+The event is emitted with the parameters
+- `bot` ([Bot](../bot/bot.md)) - Bot instance of the affected account
+- `challengeUrl` (string) - The QrCode Challenge URL supplied by Steam. Display this value using a QR-Code parser and let a user scan it using their Steam Mobile App.
