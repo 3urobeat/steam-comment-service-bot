@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-08 18:24:40
+ * Last Modified: 2024-05-01 13:54:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -21,7 +21,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 
 module.exports.addFriend = {
-    names: ["addfriend"],
+    names: ["addfriend", "add"],
     description: "Adds the ID with all bot accounts. Requires unlimited accounts!",
     args: [
         {

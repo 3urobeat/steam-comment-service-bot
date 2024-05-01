@@ -408,7 +408,7 @@
         {
             "path": "src/commands/core/friend.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/friend.js",
-            "checksum": "26800bddf4e1c79331dca96c43e38fea"
+            "checksum": "449892dc37e25ac64e3ef97e4925d63f"
         },
         {
             "path": "src/commands/core/general.js",
