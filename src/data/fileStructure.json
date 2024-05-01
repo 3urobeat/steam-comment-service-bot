@@ -576,9 +576,14 @@
             "checksum": "9f93de745e5596791a2bdef226ee1b6b"
         },
         {
+            "path": "src/data/lang/traditional-chinese.json",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/traditional-chinese.json",
+            "checksum": "77dac08416877be42feade0473810c13"
+        },
+        {
             "path": "src/dataManager/dataCheck.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataCheck.js",
-            "checksum": "04f630fd31ef721c9748bd4f680cb9c3"
+            "checksum": "12dce4d35da119566ef427ab5b6d49c5"
         },
         {
             "path": "src/dataManager/dataExport.js",

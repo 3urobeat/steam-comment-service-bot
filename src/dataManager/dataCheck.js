@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-28 20:53:59
+ * Last Modified: 2024-05-01 13:38:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -53,7 +53,7 @@ DataManager.prototype.checkData = function() {
 
 
         // Check config for default value leftovers when the bot is not running on my machines
-        if ((process.env.LOGNAME !== "tomg") || (os.hostname() !== "Tomkes-PC" && os.hostname() !== "Tomkes-Server" && os.hostname() !== "Tomkes-Thinkpad")) {
+        if ((process.env.LOGNAME !== "tomg") || (!["Tomkes-PC", "Tomkes-Server", "Tomkes-Thinkpad", "Tomkes-Thinkpad-Z13"].includes(os.hostname()))) {
             let write = false;
 
             if (this.config.owner.includes(this.datafile.mestr))   { this.config.owner = ""; write = true; }
