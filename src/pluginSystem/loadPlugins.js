@@ -4,7 +4,7 @@
  * Created Date: 2023-06-04 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 2024-03-08 18:19:31
+ * Last Modified: 2024-05-01 14:54:49
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -24,6 +24,7 @@ const PLUGIN_EVENTS = {
     READY: "ready",
     STATUS_UPDATE: "statusUpdate",
     steamGuardInput: "steamGuardInput",
+    steamGuardQrCode: "steamGuardQrCode"
 };
 
 

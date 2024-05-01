@@ -307,6 +307,7 @@ Controller.prototype._preLogin = async function() {
     require("./events/ready.js");
     require("./events/statusUpdate.js");
     require("./events/steamGuardInput.js");
+    require("./events/steamGuardQrCode.js");
     require("./helpers/friendlist.js");
     require("./helpers/getBots.js");
     require("./helpers/handleSteamIdResolving.js");
@@ -450,6 +451,13 @@ Controller.prototype._statusUpdateEvent = function(bot, newStatus) {}; // eslint
  * @param {function(string): void} submitCode Function to submit a code. Pass an empty string to skip the account.
  */
 Controller.prototype._steamGuardInputEvent = function(bot, submitCode) {}; // eslint-disable-line
+
+/**
+ * Emits steamGuardQrCode event for bot & plugins
+ * @param {Bot} bot Bot instance of the affected account
+ * @param {string} challengeUrl The QrCode Challenge URL supplied by Steam. Display this value using a QR-Code parser and let a user scan it using their Steam Mobile App.
+ */
+Controller.prototype._steamGuardQrCodeEvent = function(bot, challengeUrl) {}; // eslint-disable-line
 
 /**
  * Check if all friends are in lastcomment database

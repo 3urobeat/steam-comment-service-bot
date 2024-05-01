@@ -493,7 +493,7 @@
         {
             "path": "src/controller/controller.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/controller.js",
-            "checksum": "031c4ada6d2ed4e366773d5af1da359b"
+            "checksum": "fd28817485832dadb454cef17b782c51"
         },
         {
             "path": "src/controller/events/ready.js",
@@ -509,6 +509,11 @@
             "path": "src/controller/events/steamGuardInput.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/events/steamGuardInput.js",
             "checksum": "df33797c6bf867a52adb5d7e39315e73"
+        },
+        {
+            "path": "src/controller/events/steamGuardQrCode.js",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/events/steamGuardQrCode.js",
+            "checksum": "37910bd18328ada639373d8373c664a4"
         },
         {
             "path": "src/controller/helpers/friendlist.js",
@@ -708,12 +713,12 @@
         {
             "path": "src/pluginSystem/loadPlugins.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/pluginSystem/loadPlugins.js",
-            "checksum": "236e11079a89df528f4e609eb68e784e"
+            "checksum": "a2889cdf46fa8876a767ab272356b3f9"
         },
         {
             "path": "src/pluginSystem/pluginSystem.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/pluginSystem/pluginSystem.js",
-            "checksum": "15f035879c2247ab7372644e21398344"
+            "checksum": "577b44eae6d3c22fcbf40bde95b99fc1"
         },
         {
             "path": "src/sessions/events/sessionEvents.js",
@@ -723,7 +728,7 @@
         {
             "path": "src/sessions/helpers/handle2FA.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/sessions/helpers/handle2FA.js",
-            "checksum": "14641de1b2895cbea783b4264a7bd489"
+            "checksum": "60163e6e65c01443a28269937ed69261"
         },
         {
             "path": "src/sessions/helpers/handleCredentialsLoginError.js",
