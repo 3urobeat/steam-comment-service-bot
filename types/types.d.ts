@@ -93,7 +93,7 @@ declare class Bot {
      */
     handleMissingGameLicenses(): void;
     /**
-     * Changes the proxy of this bot account and relogs it.
+     * Changes the proxy of this bot account.
      * @param newProxyIndex - Index of the new proxy inside the DataManager.proxies array.
      */
     switchProxy(newProxyIndex: number): void;
@@ -169,7 +169,7 @@ declare class Bot {
      */
     handleMissingGameLicenses(): void;
     /**
-     * Changes the proxy of this bot account and relogs it.
+     * Changes the proxy of this bot account.
      * @param newProxyIndex - Index of the new proxy inside the DataManager.proxies array.
      */
     switchProxy(newProxyIndex: number): void;
@@ -602,6 +602,12 @@ declare class Controller {
      */
     _steamGuardInputEvent(bot: Bot, submitCode: (...params: any[]) => any): void;
     /**
+     * Emits steamGuardQrCode event for bot & plugins
+     * @param bot - Bot instance of the affected account
+     * @param challengeUrl - The QrCode Challenge URL supplied by Steam. Display this value using a QR-Code parser and let a user scan it using their Steam Mobile App.
+     */
+    _steamGuardQrCodeEvent(bot: Bot, challengeUrl: string): void;
+    /**
      * Check if all friends are in lastcomment database
      * @param bot - Bot object of the account to check
      */
@@ -676,6 +682,12 @@ declare class Controller {
      * @param submitCode - Function to submit a code. Pass an empty string to skip the account.
      */
     _steamGuardInputEvent(bot: Bot, submitCode: (...params: any[]) => any): void;
+    /**
+     * Emits steamGuardQrCode event for bot & plugins
+     * @param bot - Bot instance of the affected account
+     * @param challengeUrl - The QrCode Challenge URL supplied by Steam. Display this value using a QR-Code parser and let a user scan it using their Steam Mobile App.
+     */
+    _steamGuardQrCodeEvent(bot: Bot, challengeUrl: string): void;
     /**
      * Check if all friends are in lastcomment database
      * @param bot - Bot object of the account to check
@@ -1392,6 +1404,7 @@ declare function loadPlugin(pluginName: string): any;
  * @property ready - Controller ready event
  * @property statusUpdate - Controller statusUpdate event
  * @property steamGuardInput - Controller steamGuardInput event
+ * @property steamGuardQrCode - Controller steamGuardQrCode event
  */
 declare type Plugin = {
     load: (...params: any[]) => any;
@@ -1399,6 +1412,7 @@ declare type Plugin = {
     ready: (...params: any[]) => any;
     statusUpdate: (...params: any[]) => any;
     steamGuardInput: (...params: any[]) => any;
+    steamGuardQrCode: (...params: any[]) => any;
 };
 
 /**
