@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-01 17:59:47
+ * Last Modified: 2024-05-02 10:51:07
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -286,7 +286,7 @@ Bot.prototype.handleLoginTimeout = function() {};
 Bot.prototype.handleMissingGameLicenses = function() {};
 
 /**
- * Changes the proxy of this bot account and relogs it.
+ * Changes the proxy of this bot account.
  * @param {number} newProxyIndex Index of the new proxy inside the DataManager.proxies array.
  */
 Bot.prototype.switchProxy = function(newProxyIndex) {}; // eslint-disable-line

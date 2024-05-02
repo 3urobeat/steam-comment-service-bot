@@ -4,7 +4,7 @@
  * Created Date: 2023-10-05 16:14:46
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-08 11:48:23
+ * Last Modified: 2024-05-02 10:54:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -22,12 +22,12 @@ const Bot = require("../bot");
 
 
 /**
- * Changes the proxy of this bot account and relogs it.
+ * Changes the proxy of this bot account.
  * @param {number} newProxyIndex Index of the new proxy inside the DataManager.proxies array.
  */
 Bot.prototype.switchProxy = function(newProxyIndex) {
 
-    if (!newProxyIndex) return new Error("newProxyIndex is undefined");
+    if (newProxyIndex == undefined) return new Error("newProxyIndex is undefined"); // Explicitly check for undefined to prevent the value 0 from triggering this check
 
     logger("info", `[${this.logPrefix}] Switching proxy from ${this.loginData.proxyIndex} to ${newProxyIndex}. The bot account will relog in a moment...`);
 
@@ -101,7 +101,7 @@ Bot.prototype.checkAndSwitchMyProxy = async function() {
         // Find proxy with least amount of associated bots
         let leastUsedProxy = activeProxies.reduce((a, b) => a.bots.length < b.bots.length ? a : b);
 
-        logger("warn", `[${this.logPrefix}] Failed to ping Steam using proxy ${this.loginData.proxyIndex}! Switched to proxy ${leastUsedProxy.proxyIndex} which currently has the least amount of usage and appears to be online.`);
+        logger("warn", `[${this.logPrefix}] Failed to ping Steam using proxy ${this.loginData.proxyIndex}! Switching to proxy ${leastUsedProxy.proxyIndex} which currently has the least amount of usage and appears to be online.`);
 
 
         // Switch proxy and relog, no need for handleRelog() to do something
