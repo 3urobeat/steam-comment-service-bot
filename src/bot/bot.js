@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-02 10:51:07
+ * Last Modified: 2024-05-03 12:46:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -133,7 +133,7 @@ const Bot = function(controller, index) {
     require("../libraryPatches/CSteamReviews.js");
     require("../libraryPatches/reviews.js");
 
-    if (global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<") this.controller.stop(); // eslint-disable-line
+    if (global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<") this.controller.stop();
 
 
     // Attach all SteamUser event listeners we need

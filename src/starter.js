@@ -4,10 +4,10 @@
  * Created Date: 2021-07-10 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:17:17
+ * Last Modified: 2024-05-03 12:51:33
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -264,7 +264,7 @@ module.exports.checkAndGetFile = (file, logger, norequire = false, force = false
 
             try {
                 branch = require("./data/data.json").branch; // Try to read from data.json
-            } catch (err) {
+            } catch {
                 try {
                     let otherdata = require("./data.json"); // Then try to get the other, "compatibility" data file to check if versionstr includes the word BETA
 
@@ -335,7 +335,7 @@ module.exports.checkAndGetFile = (file, logger, norequire = false, force = false
                     let fileToLoad = require("." + file);
 
                     resolve(fileToLoad); // Seems to be fine, otherwise we would already be in the catch block
-                } catch (err) {
+                } catch {
                     logger("warn", `It looks like file ${file} is corrupted. Trying to pull new file from GitHub...`, false, true);
 
                     getNewFile();

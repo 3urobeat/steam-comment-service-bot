@@ -4,7 +4,7 @@
  * Created Date: 2022-10-09 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-28 22:31:15
+ * Last Modified: 2024-05-03 12:51:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -15,7 +15,7 @@
  */
 
 
-const SteamSession = require("steam-session"); // eslint-disable-line
+const SteamSession = require("steam-session");
 
 const Bot     = require("../bot/bot.js"); // eslint-disable-line
 const EStatus = require("../bot/EStatus.js");

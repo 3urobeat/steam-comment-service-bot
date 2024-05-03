@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 17:03:32
+ * Last Modified: 2024-05-03 13:08:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -233,7 +233,7 @@ module.exports.eval = {
             return;
         }
 
-        const clean = text => { // eslint-disable-line no-case-declarations
+        const clean = text => {
             if (typeof(text) === "string") return text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
                 else return text;
         };

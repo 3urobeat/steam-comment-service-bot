@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-02 13:48:36
+ * Last Modified: 2024-05-03 13:08:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -279,7 +279,7 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
 
 
     // Comment numberOfComments times using our syncLoop helper
-    syncLoop(activeReqEntry.amount - (activeReqEntry.thisIteration + 1), (loop, i) => { // eslint-disable-line no-unused-vars
+    syncLoop(activeReqEntry.amount - (activeReqEntry.thisIteration + 1), (loop, i) => {
 
         setTimeout(async () => {
 

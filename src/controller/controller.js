@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-01 15:19:41
+ * Last Modified: 2024-05-03 13:07:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -53,7 +53,7 @@ const Controller = function() {
          * @param {number} timestamp UNIX timestamp to convert
          * @returns {string} "x seconds/minutes/hours/days"
          */
-        timeToString: () => {}, // eslint-disable-line
+        timeToString: () => {},
 
         /**
          * Pings a *https* URL to check if the service and this internet connection is working
@@ -541,4 +541,4 @@ Controller.prototype._loggerOptionsUpdateAfterConfigLoad = function(advancedconf
 /**
  * Internal: Logs all held back messages from logAfterReady array
  */
-Controller.prototype._loggerLogAfterReady = function() {}; // eslint-disable-line
+Controller.prototype._loggerLogAfterReady = function() {};

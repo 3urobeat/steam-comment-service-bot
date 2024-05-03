@@ -4,7 +4,7 @@
  * Created Date: 2023-06-04 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 2024-05-01 14:54:49
+ * Last Modified: 2024-05-03 12:52:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -153,7 +153,6 @@ PluginSystem.prototype._loadPlugins = async function () {
 
         // Call the exposed event functions if they exist
         Object.entries(PLUGIN_EVENTS).forEach(([eventName, event]) => { // eslint-disable-line no-unused-vars
-            // eslint-disable-line
             this.controller.events.on(event, (...args) => pluginInstance[event]?.call(pluginInstance, ...args));
         });
     }

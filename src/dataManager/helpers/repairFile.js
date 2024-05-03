@@ -4,10 +4,10 @@
  * Created Date: 2023-03-22 12:35:01
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:13:14
+ * Last Modified: 2024-05-03 12:59:23
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -43,7 +43,7 @@ DataManager.prototype._restoreBackup = function(name, filepath, cacheentry, onli
             .replace(/\]"/g, "]")
             .replace(/\\"/g, '"')
             .replace(/""/g, '""');
-    } catch (err) {
+    } catch {
         stringified = JSON.stringify(cacheentry, null, 4);
     }
 
@@ -63,7 +63,7 @@ DataManager.prototype._restoreBackup = function(name, filepath, cacheentry, onli
             logger("info", `Successfully restored backup of '${name}'!\n`, true);
             resolve(require(filepath));
 
-        } catch (err) { // Worst case, even the backup seems to be broken (seems like this can't happen anymore since 2.11 because cache.json will get cleared before we get here if it contains an error)
+        } catch { // Worst case, even the backup seems to be broken (seems like this can't happen anymore since 2.11 because cache.json will get cleared before we get here if it contains an error)
 
             this._pullNewFile(name, filepath, resolve);
         }

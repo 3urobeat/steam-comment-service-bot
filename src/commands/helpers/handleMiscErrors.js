@@ -4,7 +4,7 @@
  * Created Date: 2023-05-31 16:57:21
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-20 17:19:26
+ * Last Modified: 2024-05-03 13:07:47
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -15,7 +15,7 @@
  */
 
 
-const Bot = require("../../bot/bot.js"); // eslint-disable-line
+const Bot = require("../../bot/bot.js");
 
 
 /**

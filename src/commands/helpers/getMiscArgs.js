@@ -4,7 +4,7 @@
  * Created Date: 2023-05-28 12:18:49
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-22 17:51:02
+ * Last Modified: 2024-05-03 13:08:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -60,7 +60,7 @@ module.exports.getMiscArgs = (commandHandler, args, cmd, resInfo, respond) => {
             }
 
             // Process input and check if ID is valid
-            commandHandler.controller.handleSteamIdResolving(args[1], null, async (err, destParam, idType) => { // eslint-disable-line no-unused-vars
+            commandHandler.controller.handleSteamIdResolving(args[1], null, async (err, destParam, idType) => {
                 logger("debug", `CommandHandler getMiscArgs() success. amount: ${amount} | dest: ${destParam}`);
 
                 resolve({

@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:18:10
+ * Last Modified: 2024-05-03 12:51:26
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -34,7 +34,7 @@ module.exports.run = (controller, respondModule, resInfo) => {
             logger("info", "Bot is logged in. Checking for active requests...", false, true, logger.animation("loading"));
 
 
-            /* eslint-disable no-inner-declarations, jsdoc/require-jsdoc */
+            /* eslint-disable jsdoc/require-jsdoc */
             function initiateUpdate() { // Make initiating the update a function to simplify the activerequest check below
                 controller.info.relogAfterDisconnect = false; // Prevents disconnect event (which will be called by logOff) to relog accounts
 
@@ -72,7 +72,7 @@ module.exports.run = (controller, respondModule, resInfo) => {
                     initiateUpdate();
                 }
             }
-            /* eslint-enable no-inner-declarations, jsdoc/require-jsdoc */
+            /* eslint-enable jsdoc/require-jsdoc */
 
 
             // Check for active request process. If obj not empty then first sort out all invalid/expired entries.
