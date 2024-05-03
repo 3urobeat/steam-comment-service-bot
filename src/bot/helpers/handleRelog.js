@@ -4,7 +4,7 @@
  * Created Date: 2023-10-05 16:14:46
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-02 10:54:36
+ * Last Modified: 2024-05-03 18:56:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -139,7 +139,7 @@ Bot.prototype.handleRelog = async function() {
     setTimeout(() => {
 
         // Abort if account is online again for some reason
-        if (this.status == Bot.EStatus.ONLINE) return logger("debug", `Bot handleRelog(): Timeout elapsed but bot${this.index} is not offline anymore. Ignoring...`);
+        if (this.status == Bot.EStatus.ONLINE) return logger("info", `[${this.logPrefix}] Relog timeout elapsed, however the account is already online again?! Ignoring relog request...`);
 
         // Update status to offline and call login again
         this.status = Bot.EStatus.OFFLINE;

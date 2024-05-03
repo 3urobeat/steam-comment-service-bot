@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-08 18:20:05
+ * Last Modified: 2024-05-03 19:55:19
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -52,7 +52,7 @@ Controller.prototype.login = async function(firstLogin) {
     }
 
     // Ignore login request if another login is running
-    if (this.info.activeLogin) return logger("debug", "Controller login(): Login requested but there is already a login process active. Ignoring...");
+    if (this.info.activeLogin) return logger("info", "Login for all offline accounts requested but there is already one process running. Ignoring request for now, it will be handled after this process is done.", false, true);
 
     logger("debug", "Controller login(): Login requested, checking for any accounts currently OFFLINE or POSTPONED...");
 
