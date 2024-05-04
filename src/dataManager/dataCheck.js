@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-03 13:00:04
+ * Last Modified: 2024-05-04 11:28:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -110,7 +110,7 @@ DataManager.prototype.checkData = function() {
             logWarn("warn", `You've set an invalid value '${this.advancedconfig.onlineStatus}' as 'onlineStatus' in 'advancedconfig.json'! Defaulting to 'Online'...`);
             this.advancedconfig.onlineStatus = "Online";
         }
-        if (EPersonaState[this.advancedconfig.childAccOnlineStatus] != undefined) { // Explicitly check for undefined because Offline (0) resolves to false
+        if (EPersonaState[this.advancedconfig.childAccOnlineStatus] == undefined) { // Explicitly check for undefined because Offline (0) resolves to false
             logWarn("warn", `You've set an invalid value '${this.advancedconfig.childAccOnlineStatus}' as 'childAccOnlineStatus' in 'advancedconfig.json'! Defaulting to 'Online'...`);
             this.advancedconfig.childAccOnlineStatus = "Online";
         }
