@@ -4,7 +4,7 @@
  * Created Date: 2023-10-05 16:14:46
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-04 12:14:19
+ * Last Modified: 2024-05-04 21:12:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -141,8 +141,8 @@ Bot.prototype.handleRelog = async function() {
         // Abort if account is online again for some reason
         if (this.status == Bot.EStatus.ONLINE) return logger("info", `[${this.logPrefix}] Relog timeout elapsed, however the account is already online again?! Ignoring relog request...`);
 
-        // Update status to offline and call login again
-        this.status = Bot.EStatus.OFFLINE;
+        // Update status and call login again
+        this.controller._statusUpdateEvent(this, Bot.EStatus.POSTPONED); // Important: Set to POSTPONED to let the current login request, which this acc is queued in, resolve. The following request will process it. This fixes a softlock where the current login process would never resolve.
         this.controller.login();
 
     }, this.controller.data.advancedconfig.relogTimeout);
