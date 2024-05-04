@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-04 21:53:58
+ * Last Modified: 2024-05-04 22:46:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -22,6 +22,8 @@ const Bot        = require("../bot/bot.js");
 const ascii      = require("../data/ascii.js");
 const misc       = require("./helpers/misc.js");
 
+
+let postponedRetries = 0; // Tracks the amount of reruns caused by accounts with POSTPONED status
 
 /**
  * Attempts to log in all bot accounts which are currently offline one after another.
@@ -137,8 +139,12 @@ Controller.prototype.login = async function(firstLogin) {
             this.info.activeLogin = false;
 
             // Emit ready event if this is the first start and no login is pending
-            if (this.info.readyAfter == 0 && !Object.values(this.bots).some((e) => e.status == Bot.EStatus.POSTPONED)) {
-                this._readyEvent();
+            if (this.info.readyAfter == 0) {
+                if (!Object.values(this.bots).some((e) => e.status == Bot.EStatus.POSTPONED) || postponedRetries > 0) { // Emit ready event either way if we are already on a rerun to make the bot usable
+                    this._readyEvent();
+                }
+
+                postponedRetries++;
             }
 
             // Call itself again to process any POSTPONED or newly qualified accounts - this has to happen after the ready check above as login() sets every POSTPONED account to OFFLINE
