@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-04 12:57:57
+ * Last Modified: 2024-05-04 21:53:58
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -66,7 +66,7 @@ Controller.prototype.login = async function(firstLogin) {
     // Set all POSTPONED accounts to offline, as they are now going to be processed (this is important so that the allAccsOnlineInterval below doesn't plow through). Ignore acc if it doesn't have a bots entry yet
     allAccounts.forEach((e) => this.bots[e.accountName] && this.bots[e.accountName].status == Bot.EStatus.POSTPONED ? this.bots[e.accountName].status = Bot.EStatus.OFFLINE : null);
 
-    // Get all new accounts or existing ones that are offline or were postponed
+    // Get all new accounts or existing ones that are offline
     allAccounts = allAccounts.filter((e) => !this.bots[e.accountName] || this.bots[e.accountName].status == Bot.EStatus.OFFLINE);
 
     logger("debug", `Controller login(): Found ${allAccounts.length} login candidate(s)`);
@@ -125,11 +125,74 @@ Controller.prototype.login = async function(firstLogin) {
 
 
     // Register interval to check if all accounts have been processed
+    let lastAmountUpdateTimestamp = Date.now();
+    let waitingForAmountAccounts  = 0;
+
     let allAccsOnlineInterval = setInterval(() => {
 
-        // Check if all accounts in this login request have changed their status to not OFFLINE
+        // Shorthander that resolves this login process
+        const loginFinished = () => {
+            clearInterval(allAccsOnlineInterval);
+
+            this.info.activeLogin = false;
+
+            // Emit ready event if this is the first start and no login is pending
+            if (this.info.readyAfter == 0 && !Object.values(this.bots).some((e) => e.status == Bot.EStatus.POSTPONED)) {
+                this._readyEvent();
+            }
+
+            // Call itself again to process any POSTPONED or newly qualified accounts - this has to happen after the ready check above as login() sets every POSTPONED account to OFFLINE
+            this.login();
+        };
+
+
+        // Process various checks before deeming this login process to be finished
+
+        /**
+         * Get all accounts which have not yet switched their status
+         * @type {{ index: number, accountName: string }[]} Array of loginInfo objects, which among other things have these props
+         */
         let allAccountsOffline = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.OFFLINE);
 
+        // Update waitingForAmountAccounts & lastAmountUpdateTimestamp on change
+        if (waitingForAmountAccounts != allAccountsOffline.length) {
+            waitingForAmountAccounts  = allAccountsOffline.length;
+            lastAmountUpdateTimestamp = Date.now();
+        }
+
+        // Check if this login process might be softlocked. Display warning after 5 minutes, abort process after 15 minutes
+        if (Date.now() - lastAmountUpdateTimestamp > 300000) {     // 300000 ms = 5  min
+            if (Date.now() - lastAmountUpdateTimestamp > 900000) { // 900000 ms = 15 min
+                logger("warn", `Detected softlocked login process! Setting status of bot(s) '${allAccountsOffline.flatMap((e) => e.index).join(", ")}' to ERROR and calling handleRelog!`, true, false, null, true);
+
+                // Check if main account is involved and this is the initial login and terminate the bot
+                if (allAccountsOffline.find((e) => e.index == 0) && this.info.readyAfter == 0) {
+                    logger("", "", true);
+                    logger("error", "Aborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true);
+                    return this.stop();
+                }
+
+                // Set status of every account to OFFLINE and call handleRelog to let it figure this out
+                allAccountsOffline.forEach((e) => {
+                    let thisBot = this.bots[e.accountName];
+
+                    this._statusUpdateEvent(thisBot, Bot.EStatus.ERROR);
+                    thisBot.handleRelog();
+                    thisBot.loginData.pendingLogin = false;
+                });
+
+                loginFinished();
+                return;
+            }
+
+            let cancelingInMinutes = Math.ceil(((lastAmountUpdateTimestamp + 900000) - Date.now()) / 60000);
+
+            logger("warn", `Detected inactivity in current login process! I'm waiting for bot(s) '${allAccountsOffline.flatMap((e) => e.index).join(", ")}' to change their status & become populated since >5 minutes! Canceling this login process in ~${cancelingInMinutes} minutes to prevent a softlock.`, true, true);
+
+            if (allAccountsOffline.length > 0) return; // Prevents debug msg below from logging, should reduce log spam in debug mode
+        }
+
+        // Abort if we are still waiting for accounts to become not OFFLINE
         if (allAccountsOffline.length > 0) {
             logger("debug", `Controller login(): Waiting for bot(s) '${allAccountsOffline.flatMap((e) => e.index).join(", ")}' to switch status to not OFFLINE before resolving...`, true, true); // Cannot log with date to prevent log output file spam
             return;
@@ -143,19 +206,11 @@ Controller.prototype.login = async function(firstLogin) {
             return;
         }
 
-        clearInterval(allAccsOnlineInterval);
 
+        // Everything looks good, resolve this login process!
         logger("info", "Finished logging in all currently queued accounts! Checking for any new accounts...", false, false, logger.animation("loading"));
 
-        this.info.activeLogin = false;
-
-        // Emit ready event if this is the first start and no login is pending
-        if (this.info.readyAfter == 0 && !Object.values(this.bots).some((e) => e.status == Bot.EStatus.POSTPONED)) {
-            this._readyEvent();
-        }
-
-        // Call itself again to process any POSTPONED or newly qualified accounts - this has to happen after the ready check above as login() sets every POSTPONED account to OFFLINE
-        this.login();
+        loginFinished();
 
     }, 250);
 
