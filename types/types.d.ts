@@ -406,6 +406,12 @@ declare function getMiscArgs(commandHandler: CommandHandler, args: any[], cmd: s
 declare function getAvailableBotsForVoting(commandHandler: CommandHandler, amount: number | "all", id: string, voteType: "upvote" | "downvote" | "funnyvote", resInfo: CommandHandler.resInfo): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
 
 /**
+ * Helper function to sort failed object by comment number so that it is easier to read
+ * @param failedObj - Current state of failed object
+ */
+declare function sortFailedCommentsObject(failedObj: any): void;
+
+/**
  * Checks if the following comment process iteration should be skipped
  * Aborts comment process on critical error.
  * @param commandHandler - The commandHandler object
@@ -426,17 +432,17 @@ declare function handleIterationSkip(commandHandler: CommandHandler, loop: any, 
 declare function logCommentError(error: string, commandHandler: CommandHandler, bot: Bot, receiverSteamID64: string): void;
 
 /**
- * Helper function to sort failed object by comment number so that it is easier to read
- * @param failedObj - Current state of failed object
- */
-declare function sortFailedCommentsObject(failedObj: any): void;
-
-/**
  * Groups same error messages together, counts amount, lists affected bots and converts it to a String.
  * @param obj - failedcomments object that should be converted
  * @returns String that looks like this: `amount`x - `indices`\n`error message`
  */
 declare function failedCommentsObjToString(obj: any): string;
+
+/**
+ * Helper function to sort failed object by comment number so that it is easier to read
+ * @param failedObj - Current state of failed object
+ */
+declare function sortFailedCommentsObject(failedObj: any): void;
 
 /**
  * Checks if the following follow process iteration should be skipped
@@ -500,12 +506,6 @@ declare function logVoteError(error: string, commandHandler: CommandHandler, bot
  * @param id - ID of the sharedfile that receives the favorites
  */
 declare function logFavoriteError(error: string, commandHandler: CommandHandler, bot: Bot, id: string): void;
-
-/**
- * Helper function to sort failed object by comment number so that it is easier to read
- * @param failedObj - Current state of failed object
- */
-declare function sortFailedCommentsObject(failedObj: any): void;
 
 /**
  * Constructor - Initializes the controller and starts all bot accounts
@@ -1685,15 +1685,15 @@ declare class SessionHandler {
 }
 
 /**
+ * Provide function to detach parent process event listeners
+ */
+declare function detachParentListeners(): void;
+
+/**
  * Provide function to only once attach listeners to parent process
  * @param callback - Called on completion
  */
 declare function attachParentListeners(callback: (...params: any[]) => any): void;
-
-/**
- * Provide function to detach parent process event listeners
- */
-declare function detachParentListeners(): void;
 
 /**
  * Provide function to attach listeners to make communicating with child possible

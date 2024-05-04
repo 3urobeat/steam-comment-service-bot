@@ -34,7 +34,7 @@ Controller.prototype.checkLastcommentDB = function(bot) {
             if (bot.user.myFriends[e] == 3 && !docs.find(el => el.id == e)) {
                 logger("info", `Inserting user ${e} into lastcomment.db...`, false, true);
 
-                let obj = {
+                const obj = {
                     id: e,
                     time: Date.now() - (this.data.config.requestCooldown * 60000) // Subtract requestCooldown so that the user is able to use the command instantly
                 };
@@ -59,11 +59,11 @@ Controller.prototype.friendListCapacityCheck = function(bot, callback) {
         bot.user.getSteamLevels([bot.user.steamID], (err, users) => { // Check steam level of botindex account with bot0
             if (!users) return; // Users was undefined one time (I hope this will (hopefully) suppress an error?)
 
-            let friendlistlimit = Object.values(users)[0] * 5 + 250; // Profile Level * 5 + 250
-            let friends         = Object.values(bot.user.myFriends);
-            let friendsamount   = friends.length - friends.filter(val => val == 0).length - friends.filter(val => val == 5).length; // Subtract friend enums 0 & 5
+            const friendlistlimit = Object.values(users)[0] * 5 + 250; // Profile Level * 5 + 250
+            const friends         = Object.values(bot.user.myFriends);
+            const friendsamount   = friends.length - friends.filter(val => val == 0).length - friends.filter(val => val == 5).length; // Subtract friend enums 0 & 5
 
-            let remaining = friendlistlimit - friendsamount;
+            const remaining = friendlistlimit - friendsamount;
 
             logger("debug", `Controller friendListCapacityCheck(): bot${bot.index} has ${friendsamount}/${friendlistlimit} friends`);
 
@@ -85,7 +85,7 @@ Controller.prototype.friendListCapacityCheck = function(bot, callback) {
                         // Iterate over all docs until we find someone still on our friendlist that isn't an owner (since this func is called for each bot acc we don't need to iterate over the botobject)
                         docs.every(async (e, i) => { // Use every() so we can break with return false
                             if (bot.user.myFriends[e.id] == 3 && !this.data.cachefile.ownerid.includes(e.id)) { // Check if friend and not owner
-                                let steamID = new SteamID(e.id);
+                                const steamID = new SteamID(e.id);
 
                                 // Unfriend user and send them a message // TODO: Maybe only do this from the main bot?
                                 bot.sendChatMessage(bot, { userID: steamID.getSteamID64() }, await this.data.getLang("userunfriend", { "forceFriendlistSpaceTime": this.data.advancedconfig.forceFriendlistSpaceTime }, steamID.getSteamID64()));
@@ -132,7 +132,7 @@ Controller.prototype._lastcommentUnfriendCheck = function() {
             setTimeout(() => {
 
                 this.getBots().forEach(async (f, j) => {
-                    let thisbot = f.user;
+                    const thisbot = f.user;
 
                     if (thisbot.myFriends[e.id] && thisbot.myFriends[e.id] == 3 && !this.data.cachefile.ownerid.includes(e.id)) { // Check if the targeted user is still friend and not an owner
                         if (j == 0) this.main.sendChatMessage(this.main, { userID: e.id }, await this.data.getLang("userforceunfriend", { "unfriendtime": this.data.config.unfriendtime }, e.id));

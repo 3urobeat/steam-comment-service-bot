@@ -4,7 +4,7 @@
  * Created Date: 2022-02-28 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-03 13:08:38
+ * Last Modified: 2024-05-04 22:02:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -20,6 +20,22 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 
 /**
+ * Helper function to sort failed object by comment number so that it is easier to read
+ * @param {object} failedObj Current state of failed object
+ */
+function sortFailedCommentsObject(failedObj) {
+    const sortedvals = Object.keys(failedObj).sort((a, b) => {
+        return Number(a.split(" ")[0].replace("i", "")) - Number(b.split(" ")[0].replace("i", ""));
+    });
+
+    // Map sortedvals back to object if array is not empty - Credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
+    if (sortedvals.length > 0) failedObj = Object.assign(...sortedvals.map(k => ({ [k]: failedObj[k] })));
+
+    return failedObj;
+}
+
+
+/**
  * Checks if the following comment process iteration should be skipped
  * Aborts comment process on critical error.
  * @param {CommandHandler} commandHandler The commandHandler object
@@ -29,7 +45,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
  * @returns {boolean} true if iteration should continue, false if iteration should be skipped using return
  */
 module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID64) => {
-    let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
+    const activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
 
     // Check if no bot account was found
     if (!bot) {
@@ -56,7 +72,7 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
         // Add failed entry for all skipped iterations only if request was aborted
         if (activeReqEntry.status == "aborted") {
             for (let i = activeReqEntry.thisIteration; i < activeReqEntry.amount; i++) { // Iterate over all remaining comments by starting with thisIteration till numberOfComments
-                let thisbot = commandHandler.controller.getBots("*", true)[activeReqEntry.accounts[i % activeReqEntry.accounts.length]];
+                const thisbot = commandHandler.controller.getBots("*", true)[activeReqEntry.accounts[i % activeReqEntry.accounts.length]];
 
                 activeReqEntry.failed[`i${i + 1} b${thisbot.index} p${thisbot.loginData.proxyIndex}`] = "Skipped because comment process was aborted";
             }
@@ -105,7 +121,7 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
  * @param {string} receiverSteamID64 steamID64 of the receiving user/group
  */
 module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64) => {
-    let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
+    const activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
     let description    = "";
 
 
@@ -122,7 +138,7 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
             logger("warn", "Skipping all other comments on this proxy as well because they will fail too!");
 
             for (let i = activeReqEntry.thisIteration + 1; i < activeReqEntry.amount; i++) { // Iterate over all remaining comments by starting with next iteration till numberOfComments
-                let thisbot = commandHandler.controller.getBots(null, true)[activeReqEntry.accounts[i % activeReqEntry.accounts.length]];
+                const thisbot = commandHandler.controller.getBots(null, true)[activeReqEntry.accounts[i % activeReqEntry.accounts.length]];
 
                 // Add to failed obj if proxies match
                 if (thisbot.loginData.proxyIndex == bot.loginData.proxyIndex) {
@@ -175,32 +191,16 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
 
 
 /**
- * Helper function to sort failed object by comment number so that it is easier to read
- * @param {object} failedObj Current state of failed object
- */
-function sortFailedCommentsObject(failedObj) {
-    let sortedvals = Object.keys(failedObj).sort((a, b) => {
-        return Number(a.split(" ")[0].replace("i", "")) - Number(b.split(" ")[0].replace("i", ""));
-    });
-
-    // Map sortedvals back to object if array is not empty - Credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
-    if (sortedvals.length > 0) failedObj = Object.assign(...sortedvals.map(k => ({ [k]: failedObj[k] })));
-
-    return failedObj;
-}
-
-
-/**
  * Groups same error messages together, counts amount, lists affected bots and converts it to a String.
  * @param {object} obj failedcomments object that should be converted
  * @returns {string} String that looks like this: `amount`x - `indices`\n`error message`
  */
 module.exports.failedCommentsObjToString = (obj) => {
     // Count amount of each string
-    let grouped = {};
+    const grouped = {};
 
     Object.keys(obj).forEach((e) => {
-        let err = obj[e];
+        const err = obj[e];
 
         // Check if entry for this err msg already exists and increment amount
         if (Object.keys(grouped).includes(err)) {
@@ -218,7 +218,7 @@ module.exports.failedCommentsObjToString = (obj) => {
     });
 
     // Sort object descending
-    let sortedArr = Object.values(grouped).sort((a, b) => {
+    const sortedArr = Object.values(grouped).sort((a, b) => {
         return b.amount - a.amount;
     });
 

@@ -63,7 +63,7 @@ const Bot = function(controller, index) {
      */
     this.friendMessageBlock = [];
 
-    let proxyIndex = this.index % controller.data.proxies.length; // Spread all accounts equally with a simple modulo calculation
+    const proxyIndex = this.index % controller.data.proxies.length; // Spread all accounts equally with a simple modulo calculation
 
     /**
      * Additional login related information for this bot account
@@ -207,7 +207,7 @@ Bot.prototype._loginToSteam = async function() {
                 this.user.logOff();
                 if (this.sessionHandler.session) this.sessionHandler.session.cancelLoginAttempt(); // TODO: This might cause an error as idk if we are polling. Maybe use the timeout event of steam-session
 
-                let logOffInterval = setInterval(() => {
+                const logOffInterval = setInterval(() => {
                     logger("warn", `[${this.logPrefix}] Login requested but account seems to be logged in! Attempting log off before continuing...`, true, true); // Cannot log with date to prevent log output file spam
 
                     // Resolve when logged off or when logOnTries has changed (handleLoginTimeout has probably taken action)
@@ -226,7 +226,7 @@ Bot.prototype._loginToSteam = async function() {
 
 
     // Find proxyIndex from steam-user object options instead of loginData to get reliable log data
-    let thisProxy = this.data.proxies.find((e) => e.proxy == this.user.options.httpProxy);
+    const thisProxy = this.data.proxies.find((e) => e.proxy == this.user.options.httpProxy);
 
     // Log login message for this account, with mentioning proxies or without
     if (!thisProxy.proxy) logger("info", `[${this.logPrefix}] Trying to log in without proxy... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
@@ -234,7 +234,7 @@ Bot.prototype._loginToSteam = async function() {
 
 
     // Call our steam-session helper to get a valid refresh token for us
-    let refreshToken = await this.sessionHandler.getToken();
+    const refreshToken = await this.sessionHandler.getToken();
 
     if (!refreshToken) return this.loginData.pendingLogin = false; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the bot itself
 

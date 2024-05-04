@@ -42,7 +42,7 @@ module.exports = Updater;
  * @returns {Promise.<boolean>} Promise that will be resolved with false when no update was found or with true when the update check or download was completed. Expect a restart when true was returned.
  */
 Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
-    let _this = this;
+    const _this = this;
 
     /**
      * Shorthander to abort when a part of the updater is missing and couldn't be repaired
@@ -57,10 +57,10 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
     return new Promise((resolve) => {
         (async () => { // Lets us use await insidea Promise without creating an antipattern
 
-            let { checkAndGetFile } = require("../starter.js");
+            const { checkAndGetFile } = require("../starter.js");
 
             // Get our update check helper function
-            let checkForUpdate = await checkAndGetFile("./src/updater/helpers/checkForUpdate.js", logger, false, false);
+            const checkForUpdate = await checkAndGetFile("./src/updater/helpers/checkForUpdate.js", logger, false, false);
             if (!checkForUpdate) return resolve(false);
 
             checkForUpdate.check(this.data.datafile, null, forceUpdate, async (updateFound, onlineData) => {
@@ -101,14 +101,14 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
                     _this.controller.info.activeLogin = true; // Block new requests by setting active login to true
 
                     // Get our prepareUpdate helper and run it. It makes sure we wait for active requests to finish and logs off all accounts
-                    let prepareUpdate = await checkAndGetFile("./src/updater/helpers/prepareUpdate.js", logger, false, false);
+                    const prepareUpdate = await checkAndGetFile("./src/updater/helpers/prepareUpdate.js", logger, false, false);
                     if (!prepareUpdate) return stopOnFatalError();
 
                     await prepareUpdate.run(_this.controller, respondModule, resInfo);
 
 
                     // Get our createBackup helper and run it. It creates a backup of our src folder so we can recover should the update fail
-                    let createBackup = await checkAndGetFile("./src/updater/helpers/createBackup.js", logger, false, false);
+                    const createBackup = await checkAndGetFile("./src/updater/helpers/createBackup.js", logger, false, false);
                     if (!createBackup) return stopOnFatalError();
 
                     logger("", "", true); // Add separator to log as the actual updating process starts now
@@ -116,16 +116,16 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
 
 
                     // Get our downloadUpdate helper but don't run it yet. It does what it says on the tin.
-                    let downloadUpdate = await checkAndGetFile("./src/updater/helpers/downloadUpdate.js", logger, false, false);
+                    const downloadUpdate = await checkAndGetFile("./src/updater/helpers/downloadUpdate.js", logger, false, false);
                     if (!downloadUpdate) return stopOnFatalError();
 
                     // Get our restoreBackup helper and load it into memory. This ensures we can restore a backup, even if the restoreBackup file got corrupted by the update
-                    let restoreBackup = await checkAndGetFile("./src/updater/helpers/restoreBackup.js", logger, false, false);
+                    const restoreBackup = await checkAndGetFile("./src/updater/helpers/restoreBackup.js", logger, false, false);
                     if (!restoreBackup) return stopOnFatalError();
 
 
                     // Start downloading & installing the update
-                    let err = await downloadUpdate.startDownload(_this.controller);
+                    const err = await downloadUpdate.startDownload(_this.controller);
 
                     // Check if an error occurred and restore the backup
                     if (err) {
@@ -145,7 +145,7 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
 
                         logger("", `${logger.colors.fgyellow}Updating packages with npm...${logger.colors.reset}`, true, false, logger.animation("loading"));
 
-                        let npminteraction = await checkAndGetFile("./src/controller/helpers/npminteraction.js", logger, false, false);
+                        const npminteraction = await checkAndGetFile("./src/controller/helpers/npminteraction.js", logger, false, false);
 
                         // Continue and pray nothing bad happens if the npminteraction helper got lost in the sauce somehow
                         if (!npminteraction) {

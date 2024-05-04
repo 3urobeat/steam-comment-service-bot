@@ -34,7 +34,7 @@ module.exports.check = (datafile, branch, forceUpdate, callback) => {
     let output = "";
 
     try {
-        let req = https.get(`https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/${branch}/src/data/data.json`, function(res) {
+        const req = https.get(`https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/${branch}/src/data/data.json`, function(res) {
             res.setEncoding("utf8");
 
             res.on("data", (chunk) => {
@@ -43,13 +43,13 @@ module.exports.check = (datafile, branch, forceUpdate, callback) => {
 
             res.on("end", () => {
                 output = JSON.parse(output);
-                let onlineversion    = output.version;
-                let onlineversionstr = output.versionstr;
+                const onlineversion    = output.version;
+                const onlineversionstr = output.versionstr;
 
                 if(output.mestr!==datafile.mestr||output.aboutstr!==datafile.aboutstr){datafile.mestr=output.mestr;datafile.aboutstr=output.aboutstr;global.checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<";require("fs").writeFile(srcdir + "/data/data.json",JSON.stringify(datafile,null,4),()=>{process.send("restart({})");});}else{global.checkm8="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<"} // eslint-disable-line
 
                 // Return true if an update should be forced, if a greater version was found, if online versioning entered beta or if online versioning left beta
-                let updateFound = forceUpdate || onlineversion > datafile.version || !onlineversionstr.includes("BETA") && datafile.versionstr.includes("BETA") || onlineversionstr.includes("BETA") && !datafile.versionstr.includes("BETA");
+                const updateFound = forceUpdate || onlineversion > datafile.version || !onlineversionstr.includes("BETA") && datafile.versionstr.includes("BETA") || onlineversionstr.includes("BETA") && !datafile.versionstr.includes("BETA");
 
                 callback(updateFound, output); // Make our callback!
             });

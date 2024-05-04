@@ -35,13 +35,13 @@ module.exports.startDownload = (controller) => {
 
         // Process dontDelete array to include parent folders of each entry
         dontDelete.forEach((e) => {
-            let str = e.split("/");
+            const str = e.split("/");
             str.splice(0, 1); // Remove '.'
 
             str.forEach((k, j) => {
                 if (j == 0) return; // The path './' won't deleted either way so we can ignore it
 
-                let pathToPush = "./" + str.slice(0, j).join("/");
+                const pathToPush = "./" + str.slice(0, j).join("/");
                 if (!dontDelete.includes(pathToPush)) dontDelete.push(pathToPush); // Construct path from first part of the path until this iteration
             });
         });
@@ -59,14 +59,14 @@ module.exports.startDownload = (controller) => {
         download(`https://github.com/3urobeat/steam-comment-service-bot/archive/${controller.data.datafile.branch}.zip`, "./", { extract: true }).then(() => { // The download library makes downloading and extracting much easier
             try {
                 // Helper function to scan directory recursively to get an array of all paths in this directory
-                let scandir = function(dir) { // Credit for this function before I modified it: https://stackoverflow.com/a/16684530/12934162
+                const scandir = function(dir) { // Credit for this function before I modified it: https://stackoverflow.com/a/16684530/12934162
                     let results = [];
-                    let list = fs.readdirSync(dir);
+                    const list = fs.readdirSync(dir);
 
                     list.forEach(function(file) {
                         file = dir + "/" + file;
 
-                        let stat = fs.statSync(file);
+                        const stat = fs.statSync(file);
 
                         results.push(file); // Push the file and folder in order to avoid an ENOTEMPTY error and push it before the recursive part in order to have the folder above its files in the array to avoid ENOENT error
 
@@ -75,7 +75,7 @@ module.exports.startDownload = (controller) => {
                     return results;
                 };
 
-                let files = scandir("."); // Scan the directory of this installation
+                const files = scandir("."); // Scan the directory of this installation
 
                 // Delete old files
                 logger("", `${logger.colors.fgyellow}Deleting old files...${logger.colors.reset}`, true, false, logger.animation("loading"));
@@ -95,12 +95,12 @@ module.exports.startDownload = (controller) => {
                     if (files.length == i + 1) {
 
                         // Move new files out of directory created by download() into our working directory
-                        let newfiles = scandir(`./steam-comment-service-bot-${controller.data.datafile.branch}`);
+                        const newfiles = scandir(`./steam-comment-service-bot-${controller.data.datafile.branch}`);
 
                         logger("", `${logger.colors.fgyellow}Moving new files...${logger.colors.reset}`, true, false, logger.animation("loading"));
 
                         newfiles.forEach(async (e, i) => {
-                            let eCut = e.replace(`steam-comment-service-bot-${controller.data.datafile.branch}/`, ""); // ECut should resemble the same path but how it would look like in the base directory
+                            const eCut = e.replace(`steam-comment-service-bot-${controller.data.datafile.branch}/`, ""); // ECut should resemble the same path but how it would look like in the base directory
 
                             if (fs.statSync(e).isDirectory() && !fs.existsSync(eCut)) fs.mkdirSync(eCut);                                       // Create directory if it doesn't exist
                             if (!fs.existsSync(eCut) || !fs.statSync(eCut).isDirectory() && !dontDelete.includes(eCut)) fs.renameSync(e, eCut); // Only rename if not directory and not in dontDelete. We need to check first if it exists to avoid a file not found error with isDirectory()

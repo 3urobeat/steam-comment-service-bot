@@ -28,7 +28,7 @@ const PluginSystem = require("./pluginSystem.js");
 PluginSystem.prototype.getPluginDataPath = function (pluginName) {
     if (!pluginName) throw new Error("Plugin name parameter is missing!");
 
-    let path = `${srcdir}/../plugins/${pluginName}/`;
+    const path = `${srcdir}/../plugins/${pluginName}/`;
 
     if (!fs.existsSync(path)) fs.mkdirSync(path);
 
@@ -48,7 +48,7 @@ PluginSystem.prototype.loadPluginData = function (pluginName, filename) {
         if (!pluginName || !filename) return reject(new Error("Plugin name or file name parameter is missing!"));
 
         // Get path
-        let path = this.getPluginDataPath(pluginName);
+        const path = this.getPluginDataPath(pluginName);
 
         fs.readFile(path + filename, (err, data) => {
             if (err) {
@@ -75,7 +75,7 @@ PluginSystem.prototype.writePluginData = function (pluginName, filename, data) {
         if (!pluginName || !filename || !data) return reject(new Error("Plugin name, file name or data parameter is missing!"));
 
         // Get path
-        let path = this.getPluginDataPath(pluginName);
+        const path = this.getPluginDataPath(pluginName);
 
         fs.writeFile(path + filename, data, null, (err) => {
             if (err) {
@@ -101,7 +101,7 @@ PluginSystem.prototype.deletePluginData = function (pluginName, filename) {
         if (!pluginName || !filename) return reject(new Error("Plugin name or file name parameter is missing!"));
 
         // Get path
-        let path = this.getPluginDataPath(pluginName);
+        const path = this.getPluginDataPath(pluginName);
 
         // Check if file exists
         if (!fs.existsSync(path + filename)) return reject(new Error("File does not exist"));
@@ -130,7 +130,7 @@ PluginSystem.prototype.loadPluginConfig = function (pluginName) {
         if (!pluginName) return reject(new Error("Plugin name parameter is missing!"));
 
         // Get path
-        let path = this.getPluginDataPath(pluginName);
+        const path = this.getPluginDataPath(pluginName);
 
         // Check if no config exists yet
         if (!fs.existsSync(path + "config.json")) {
@@ -145,7 +145,7 @@ PluginSystem.prototype.loadPluginConfig = function (pluginName) {
         }
 
         try {
-            let config = require(path + "config.json");
+            const config = require(path + "config.json");
             resolve(config);
         } catch (err) {
             logger("error", `PluginSystem: Failed to load config for plugin '${pluginName}': ${err.stack}`);
@@ -187,10 +187,10 @@ PluginSystem.prototype.writePluginConfig = function (pluginName, pluginConfig) {
         if (!pluginName || !pluginConfig) return reject(new Error("Plugin name or plugin config parameter is missing!"));
 
         // Get path
-        let path = this.getPluginDataPath(pluginName);
+        const path = this.getPluginDataPath(pluginName);
 
         try {
-            let stringified = JSON.stringify(pluginConfig, null, 4);
+            const stringified = JSON.stringify(pluginConfig, null, 4);
 
             fs.writeFileSync(path + "config.json", stringified);
             resolve();

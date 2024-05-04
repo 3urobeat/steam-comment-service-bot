@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-03 13:08:59
+ * Last Modified: 2024-05-04 22:02:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -59,15 +59,15 @@ module.exports.comment = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // Get the correct ownerid array for this request
         let owners = commandHandler.data.cachefile.ownerid;
         if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-        let requesterID        = resInfo.userID;
+        const requesterID        = resInfo.userID;
         let receiverSteamID64  = requesterID;
-        let ownercheck         = owners.includes(requesterID);
+        const ownercheck         = owners.includes(requesterID);
 
 
         /* --------- Various checks  --------- */
@@ -84,7 +84,7 @@ module.exports.comment = {
 
 
         /* --------- Calculate maxRequestAmount and get arguments from comment request --------- */
-        let { maxRequestAmount, numberOfComments, profileID, idType, quotesArr } = await getCommentArgs(commandHandler, args, resInfo, respond);
+        const { maxRequestAmount, numberOfComments, profileID, idType, quotesArr } = await getCommentArgs(commandHandler, args, resInfo, respond);
 
         if (!maxRequestAmount && !numberOfComments && !quotesArr) return; // Looks like the helper aborted the request
 
@@ -101,20 +101,20 @@ module.exports.comment = {
 
 
         // Check if user is already receiving comments right now
-        let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64];
+        const activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64];
 
         if (activeReqEntry && activeReqEntry.status == "active") return respond(await commandHandler.data.getLang("idalreadyreceiving", null, requesterID));
 
 
         // Check if user has cooldown
-        let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterID);
+        const { until, untilStr } = await commandHandler.data.getUserCooldown(requesterID);
 
         if (until > Date.now()) return respond(await commandHandler.data.getLang("idoncooldown", { "remainingcooldown": untilStr }, requesterID));
 
 
         // Get all currently available bot accounts. Block limited accounts from being eligible from commenting in groups
-        let allowLimitedAccounts = (idType != "group");
-        let { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = await getAvailableBotsForCommenting(commandHandler, numberOfComments, allowLimitedAccounts, idType, receiverSteamID64); // Await *has* an effect on this expression you idiot
+        const allowLimitedAccounts = (idType != "group");
+        const { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = await getAvailableBotsForCommenting(commandHandler, numberOfComments, allowLimitedAccounts, idType, receiverSteamID64); // Await *has* an effect on this expression you idiot
 
         if (availableAccounts.length == 0 && !whenAvailableStr) { // Check if this bot has no suitable accounts for this request and there won't be any available at any point
             if (!allowLimitedAccounts) respond(await commandHandler.data.getLang("genericnounlimitedaccs", { "cmdprefix": resInfo.cmdprefix }, requesterID)); // Send less generic message for requests which require unlimited accounts
@@ -143,7 +143,7 @@ module.exports.comment = {
 
 
         // Prepare activeRequests entry
-        let activeRequestsObj = {
+        const activeRequestsObj = {
             status: "active",
             type: idType + "Comment", // Add "Comment" to the end of type to differentiate a comment process from other requests
             amount: numberOfComments,
@@ -240,7 +240,7 @@ module.exports.comment = {
 
         // Start commenting
         logger("debug", "Made activeRequest entry for user, starting comment loop...");
-        comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64);
+        comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64); // eslint-disable-line no-use-before-define
     }
 };
 
@@ -255,19 +255,19 @@ module.exports.comment = {
  * @param {string} receiverSteamID64 steamID64 of the profile to receive the comments
  */
 async function comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64) {
-    let activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
-    let requesterID    = resInfo.userID;
+    const activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
+    const requesterID    = resInfo.userID;
 
 
     // Log request start and give user cooldown on the first iteration
-    let whereStr = activeReqEntry.type == "profileComment" ? `on profile ${receiverSteamID64}` : `in/on ${activeReqEntry.type.replace("Comment", "")} ${receiverSteamID64}`; // Shortcut to convey more precise information in the 4 log messages below
+    const whereStr = activeReqEntry.type == "profileComment" ? `on profile ${receiverSteamID64}` : `in/on ${activeReqEntry.type.replace("Comment", "")} ${receiverSteamID64}`; // Shortcut to convey more precise information in the 4 log messages below
 
     if (activeReqEntry.thisIteration == -1) {
         logger("info", `${logger.colors.fggreen}[${commandHandler.controller.main.logPrefix}] ${activeReqEntry.amount} Comment(s) requested. Starting to comment ${whereStr}...`);
 
         // Only send estimated wait time message for multiple comments
         if (activeReqEntry.amount > 1) {
-            let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.requestDelay)); // Amount - 1 because the first comment is instant. Multiply by delay and add to current time to get timestamp when last comment was sent
+            const waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.requestDelay)); // Amount - 1 because the first comment is instant. Multiply by delay and add to current time to get timestamp when last comment was sent
 
             respond(await commandHandler.data.getLang("commentprocessstarted", { "numberOfComments": activeReqEntry.amount, "waittime": waitTime }, requesterID));
         }
@@ -284,7 +284,7 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
         setTimeout(async () => {
 
             /* --------- Get the correct account for this iteration and update iteration in activeRequests obj --------- */
-            let bot = commandHandler.controller.getBots("*", true)[activeReqEntry.accounts[i % activeReqEntry.accounts.length]]; // Iteration modulo amount of accounts gives us index of account to use inside the accounts array. This returns the bot account name which we can lookup in the bots object.
+            const bot = commandHandler.controller.getBots("*", true)[activeReqEntry.accounts[i % activeReqEntry.accounts.length]]; // Iteration modulo amount of accounts gives us index of account to use inside the accounts array. This returns the bot account name which we can lookup in the bots object.
             activeReqEntry.thisIteration++;
 
 
@@ -293,7 +293,7 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
 
 
             /* --------- Try to comment --------- */
-            let quote = await commandHandler.data.getQuote(activeReqEntry.quotesArr); // Get a random quote to comment with
+            const quote = await commandHandler.data.getQuote(activeReqEntry.quotesArr); // Get a random quote to comment with
             commentArgs["quote"] = quote; // Replace key "quote" in args obj
 
             postComment.call(bot.community, ...Object.values(commentArgs), (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
@@ -336,7 +336,7 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
             activeReqEntry.retryAttempt++;
 
             // Log and notify user about retry attempt starting in retryFailedCommentsDelay ms
-            let untilStr = timeToString(Date.now() + commandHandler.data.advancedconfig.retryFailedCommentsDelay);
+            const untilStr = timeToString(Date.now() + commandHandler.data.advancedconfig.retryFailedCommentsDelay);
 
             respond(await commandHandler.data.getLang("commentretrying", { "failedamount": Object.keys(activeReqEntry.failed).length, "numberOfComments": activeReqEntry.amount - activeReqEntry.amountBeforeRetry, "untilStr": untilStr, "thisattempt": activeReqEntry.retryAttempt, "maxattempt": commandHandler.data.advancedconfig.retryFailedCommentsAttempts }, requesterID));
             logger("info", `${Object.keys(activeReqEntry.failed).length}/${activeReqEntry.amount - activeReqEntry.amountBeforeRetry} comments failed for ${receiverSteamID64}. Retrying in ${untilStr} (Attempt ${activeReqEntry.retryAttempt}/${commandHandler.data.advancedconfig.retryFailedCommentsAttempts})`, false, false, logger.animation("waiting"));

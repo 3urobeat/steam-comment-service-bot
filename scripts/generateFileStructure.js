@@ -48,7 +48,7 @@ function searchFolderRecursiveSync(src, firstCall) {
     if (fs.lstatSync(src).isDirectory()) {
         files = fs.readdirSync(src);
 
-        let targetFolder = path.join("./", src);
+        const targetFolder = path.join("./", src);
 
         files.forEach(async (file) => {
             let filepath = targetFolder + "/" + file;
@@ -59,7 +59,7 @@ function searchFolderRecursiveSync(src, firstCall) {
             // Ignore this file/folder if name is in ignore array
             if (ignore.includes(filepath)) return;
 
-            let curSource = path.join(src, file);
+            const curSource = path.join(src, file);
 
             // Recursively call this function again if this is a dir
             if (fs.lstatSync(curSource).isDirectory()) {
@@ -68,8 +68,8 @@ function searchFolderRecursiveSync(src, firstCall) {
             } else {
 
                 // Construct URL and calculate checksum
-                let fileurl  = "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/" + filepath;
-                let filesum  = crypto.createHash("md5").update(fs.readFileSync(filepath)).digest("hex");
+                const fileurl  = "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/" + filepath;
+                const filesum  = crypto.createHash("md5").update(fs.readFileSync(filepath)).digest("hex");
 
                 // Add file to output array
                 output.push({ "path": filepath, "url": fileurl, "checksum": filesum });

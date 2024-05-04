@@ -25,7 +25,7 @@ const Controller = require("../controller");
  * @param {Bot.EStatus} newStatus The new status of this bot
  */
 Controller.prototype._statusUpdateEvent = function(bot, newStatus) {
-    let oldStatus = bot.status;
+    const oldStatus = bot.status;
 
     // Update status of bot
     bot.status = newStatus;

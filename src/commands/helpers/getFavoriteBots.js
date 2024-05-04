@@ -32,13 +32,13 @@ module.exports.getAvailableBotsForFavorizing = async (commandHandler, amount, id
     /* --------- Get all bots which haven't favorized this id yet and aren't currently in another favorite request --------- */
     let whenAvailable; // We will save the until value of the account that the user has to wait for here
     let whenAvailableStr;
-    let allAccsOnline = commandHandler.controller.getBots(null, true);
+    const allAccsOnline = commandHandler.controller.getBots(null, true);
     let allAccounts = [ ... Object.keys(allAccsOnline) ]; // Clone keys array (bot usernames) of bots object
 
 
     // Remove bot accounts from allAccounts which have already favorized this id, or only allow them for type unfavorite
-    let previousLengthFavorized = allAccounts.length;
-    let alreadyFavorized        = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: "favorite" }, {});
+    const previousLengthFavorized = allAccounts.length;
+    const alreadyFavorized        = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: "favorite" }, {});
 
     if (favType == "favorite") {
         alreadyFavorized.forEach((e) => {

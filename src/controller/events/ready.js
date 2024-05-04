@@ -121,7 +121,7 @@ Controller.prototype._readyEvent = function() {
 
 
     // Check if an owner is not friend with the main bot account
-    let nonFriendOwners = this.data.cachefile.ownerid.filter(e => !this.main.user.myFriends[e] || this.main.user.myFriends[e] != SteamUser.EFriendRelationship.Friend); // Get all ownerids that either aren't even in the myFriends obj or are with code != 3
+    const nonFriendOwners = this.data.cachefile.ownerid.filter(e => !this.main.user.myFriends[e] || this.main.user.myFriends[e] != SteamUser.EFriendRelationship.Friend); // Get all ownerids that either aren't even in the myFriends obj or are with code != 3
 
     if (nonFriendOwners.length > 0) {
         logger("warn", `The owner(s) '${nonFriendOwners.map((e, i) => this.data.config.ownerid[i]).join(", ")}' are not friend with the main bot account!\n       Please send the main account a friend request now: https://steamcommunity.com/profiles/${this.data.cachefile.botaccid[0]}\n`, true);

@@ -81,7 +81,7 @@ SessionHandler.prototype._handle2FA = function(res) {
 SessionHandler.prototype._get2FAUserInput = function() {
 
     // Start timer to subtract it later from readyafter time
-    let steamGuardInputStart = Date.now(); // Measure time to subtract it later from readyafter time
+    const steamGuardInputStart = Date.now(); // Measure time to subtract it later from readyafter time
 
     // Define different question and timeout for main account as it can't be skipped
     let question;

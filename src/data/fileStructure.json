@@ -283,7 +283,7 @@
         {
             "path": "eslint.config.mjs",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/eslint.config.mjs",
-            "checksum": "390ba7cd47f19e134891ad93f9e42918"
+            "checksum": "b0f1fa7925dfdfc2b6abef8af2128f60"
         },
         {
             "path": "scripts/README.md",
@@ -293,7 +293,7 @@
         {
             "path": "scripts/checkTranslationKeys.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/scripts/checkTranslationKeys.js",
-            "checksum": "7c100ee6a3e88a657fbb02ae1a5717fc"
+            "checksum": "75c120983219fc44c90e7b72c71ebb4e"
         },
         {
             "path": "scripts/duplicateQuotesDetector.js",
@@ -303,7 +303,7 @@
         {
             "path": "scripts/generateFileStructure.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/scripts/generateFileStructure.js",
-            "checksum": "34df68cb56b63515681f021f4ff08840"
+            "checksum": "635d19551c1ffdd6567a9385fc72e065"
         },
         {
             "path": "scripts/langStringsChangeDetector.js",
@@ -318,7 +318,7 @@
         {
             "path": "src/bot/bot.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/bot.js",
-            "checksum": "f5ffdab3eaaaeed3035b76200c932c47"
+            "checksum": "0e94cc19c9d3b541b4645e28ed535322"
         },
         {
             "path": "src/bot/events/debug.js",
@@ -333,12 +333,12 @@
         {
             "path": "src/bot/events/error.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/error.js",
-            "checksum": "8415adcfa88700af656c85657a3c05c3"
+            "checksum": "d0ff306a25e58b9c910c77ffd994df08"
         },
         {
             "path": "src/bot/events/friendMessage.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/friendMessage.js",
-            "checksum": "614384a783b6076f5bd29c233fd64b44"
+            "checksum": "8d0dafd89118e2ae214db6e4d2745dc7"
         },
         {
             "path": "src/bot/events/loggedOn.js",
@@ -348,12 +348,12 @@
         {
             "path": "src/bot/events/relationship.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/relationship.js",
-            "checksum": "0ad301527df201620e549dfb9c495b68"
+            "checksum": "9cf313aa7818ae27640a6ad0848da290"
         },
         {
             "path": "src/bot/events/webSession.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/webSession.js",
-            "checksum": "23ffa55367ac713ce9ce6c2ec4c3d913"
+            "checksum": "37a078ce9bc892c1506c0653b145663f"
         },
         {
             "path": "src/bot/helpers/checkMsgBlock.js",
@@ -363,147 +363,147 @@
         {
             "path": "src/bot/helpers/handleLoginTimeout.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/helpers/handleLoginTimeout.js",
-            "checksum": "7c26d70db39d80a85eb77309d674c586"
+            "checksum": "e587049d71f7eca6e32f46309edc2f59"
         },
         {
             "path": "src/bot/helpers/handleMissingGameLicenses.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/helpers/handleMissingGameLicenses.js",
-            "checksum": "972d35acb19963f5dd6519e3393ebd57"
+            "checksum": "6c23ba7c9d898e4d7637809248df452e"
         },
         {
             "path": "src/bot/helpers/handleRelog.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/helpers/handleRelog.js",
-            "checksum": "36d245d8d1b4e08e8e1953b53e5042d7"
+            "checksum": "5a5e47dbbd2cdf30200ff1b841b700ed"
         },
         {
             "path": "src/bot/helpers/steamChatInteraction.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/helpers/steamChatInteraction.js",
-            "checksum": "0e9c4608f652586d0d3328698cfc7770"
+            "checksum": "6de2730efaeef305abbe8a5f24ca5265"
         },
         {
             "path": "src/commands/commandHandler.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/commandHandler.js",
-            "checksum": "a39e912f50969e3b13cbc45d0823d14e"
+            "checksum": "ea2f27cb304a393dc82347ec1798a89d"
         },
         {
             "path": "src/commands/core/block.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/block.js",
-            "checksum": "c8faefabe22526fee5443c0498199a93"
+            "checksum": "02d2da4f42f8f267660e9beb46885251"
         },
         {
             "path": "src/commands/core/comment.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/comment.js",
-            "checksum": "c2b6ae8c06b983194d100754c65ccb61"
+            "checksum": "90f2032edf170fcda4a3bcc9ae7f52d6"
         },
         {
             "path": "src/commands/core/favorite.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/favorite.js",
-            "checksum": "9dc47165909fdf357c25ba775129e74a"
+            "checksum": "bcda38e982870e452fc469cba356ffed"
         },
         {
             "path": "src/commands/core/follow.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/follow.js",
-            "checksum": "b6317db43d9e1591fc1d61663d45c5fe"
+            "checksum": "57ac961637cb74bdda66a312e3c1e760"
         },
         {
             "path": "src/commands/core/friend.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/friend.js",
-            "checksum": "449892dc37e25ac64e3ef97e4925d63f"
+            "checksum": "011a6386096ab3260049b00cf045abab"
         },
         {
             "path": "src/commands/core/general.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/general.js",
-            "checksum": "2f06633d9d51ef6be103b89742e6c8c3"
+            "checksum": "a3017332fef9c3269d0a41fda1598025"
         },
         {
             "path": "src/commands/core/group.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/group.js",
-            "checksum": "a952ab3fae5ebd4fb7c6c1c01a520888"
+            "checksum": "4867499cb856539c981bc241d3b070d6"
         },
         {
             "path": "src/commands/core/requests.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/requests.js",
-            "checksum": "5bbf1eff2f6c23dba05f5841a83a47b0"
+            "checksum": "97eac183e28c839e442dc5ecdccfbf2a"
         },
         {
             "path": "src/commands/core/settings.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/settings.js",
-            "checksum": "556c368995dfc46f1407dac4b97503d7"
+            "checksum": "d1e9b04a501471b5fb6ab5f0880f9580"
         },
         {
             "path": "src/commands/core/system.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/system.js",
-            "checksum": "f32dc19d1466840cce5ecc7703b4c569"
+            "checksum": "b37fd364b9aa9f00d47b3a0d8094c700"
         },
         {
             "path": "src/commands/core/vote.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/vote.js",
-            "checksum": "f69c2827cc333b67d34075a14d8b40e4"
+            "checksum": "25d1259442bf63366a991a09246629cb"
         },
         {
             "path": "src/commands/helpers/getCommentArgs.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getCommentArgs.js",
-            "checksum": "c51407b565b90ae3835f407d4642baec"
+            "checksum": "8a42a107359cdef43f7b4706509e4097"
         },
         {
             "path": "src/commands/helpers/getCommentBots.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getCommentBots.js",
-            "checksum": "a3f54c2cea9d6482226fa4d64a3a4522"
+            "checksum": "64b43f3d326c560cf79764e96e69d043"
         },
         {
             "path": "src/commands/helpers/getFavoriteBots.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getFavoriteBots.js",
-            "checksum": "93d8d331be02808c8b4c008428e01529"
+            "checksum": "5ab5687eef590b6191d4349da4aa2f65"
         },
         {
             "path": "src/commands/helpers/getFollowArgs.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getFollowArgs.js",
-            "checksum": "1721a8875ca32ba707867bb3318952a0"
+            "checksum": "0dbb185c9a4b22691e60dffdf5d1160c"
         },
         {
             "path": "src/commands/helpers/getFollowBots.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getFollowBots.js",
-            "checksum": "dc949626da55dfe87fb1a0dea157deb5"
+            "checksum": "4bd2c335e4a5b8a49e516ba378d1f8b4"
         },
         {
             "path": "src/commands/helpers/getMiscArgs.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getMiscArgs.js",
-            "checksum": "9d36d31af5fa1930d4d16cefe026bfc2"
+            "checksum": "50ffb768fca4a19e3548c6dd5fd25f57"
         },
         {
             "path": "src/commands/helpers/getVoteBots.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getVoteBots.js",
-            "checksum": "8ab53da00eef05147f8aba1405b55ac3"
+            "checksum": "ce701d131eb4473d213467ee4c0d514d"
         },
         {
             "path": "src/commands/helpers/handleCommentSkips.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/handleCommentSkips.js",
-            "checksum": "65c29b579867daa47fb59dc921c17827"
+            "checksum": "1391d03159a67310f007736d0cb499d8"
         },
         {
             "path": "src/commands/helpers/handleFollowErrors.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/handleFollowErrors.js",
-            "checksum": "f0901c92f89131bec0c990c0d1b553ae"
+            "checksum": "eddda0b8cc1fb2647bfd638916c8f9e1"
         },
         {
             "path": "src/commands/helpers/handleMiscErrors.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/handleMiscErrors.js",
-            "checksum": "8069eda53d2ce41b38aeded139a80904"
+            "checksum": "42a299d803b936ec6c839447a6941452"
         },
         {
             "path": "src/controller/controller.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/controller.js",
-            "checksum": "a55c0f566ada510e247bd9d45322279b"
+            "checksum": "fc45d9b90330a9d80f4da19cbd6ca695"
         },
         {
             "path": "src/controller/events/ready.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/events/ready.js",
-            "checksum": "d911f1d901cf1bd4541fc0855e46d5ca"
+            "checksum": "94ef5412b7186a976e63b525e16712de"
         },
         {
             "path": "src/controller/events/statusUpdate.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/events/statusUpdate.js",
-            "checksum": "fa1f97966de3948e186e025ce13c1495"
+            "checksum": "33f3b07680d7a031938973f7d159a823"
         },
         {
             "path": "src/controller/events/steamGuardInput.js",
@@ -518,12 +518,12 @@
         {
             "path": "src/controller/helpers/friendlist.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/friendlist.js",
-            "checksum": "4c63ef25e986890ece07f01d61d40faa"
+            "checksum": "0e116bb6b2e761d1fc802ceb8a300082"
         },
         {
             "path": "src/controller/helpers/getBots.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/getBots.js",
-            "checksum": "5c86225dc66f901cce50aada3c8d8562"
+            "checksum": "1e4ac2683dc039d92f4fecc2aef6347b"
         },
         {
             "path": "src/controller/helpers/handleErrors.js",
@@ -533,7 +533,7 @@
         {
             "path": "src/controller/helpers/handleSteamIdResolving.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/handleSteamIdResolving.js",
-            "checksum": "5562fb7b13b156a0710ebbff6193025b"
+            "checksum": "fb244bbc5397cd1ccf6e2c4451053492"
         },
         {
             "path": "src/controller/helpers/logger.js",
@@ -543,7 +543,7 @@
         {
             "path": "src/controller/helpers/misc.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/misc.js",
-            "checksum": "9c67eb0be1e14576747ebec6a7267d9b"
+            "checksum": "70fb4a03d2e7b2f251685d04d3557ea5"
         },
         {
             "path": "src/controller/helpers/npminteraction.js",
@@ -553,7 +553,7 @@
         {
             "path": "src/controller/login.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/login.js",
-            "checksum": "df4e7dc2a92eb948cadcb398965a3824"
+            "checksum": "ca44fdc848b159d90a0c4dfba43037ae"
         },
         {
             "path": "src/data/ascii.js",
@@ -588,22 +588,22 @@
         {
             "path": "src/dataManager/dataCheck.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataCheck.js",
-            "checksum": "2da9cc1f31ac3ab7b4e07e60be1991c2"
+            "checksum": "033e061d02f24f00e8c0da2c02cc458f"
         },
         {
             "path": "src/dataManager/dataExport.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataExport.js",
-            "checksum": "2d82e0053f351a7d6c7fa854909a3dba"
+            "checksum": "0e7c63573628c0771abd857567c153c2"
         },
         {
             "path": "src/dataManager/dataImport.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataImport.js",
-            "checksum": "16091447de2f8daa460e9bba67d38e4a"
+            "checksum": "45749a6c541a0426734d9f97f13bb908"
         },
         {
             "path": "src/dataManager/dataIntegrity.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataIntegrity.js",
-            "checksum": "48cb100ddf80bc4dd1b8abf963219d78"
+            "checksum": "fd6dd7e5acb7e13340a9eed6bb271231"
         },
         {
             "path": "src/dataManager/dataManager.js",
@@ -613,52 +613,52 @@
         {
             "path": "src/dataManager/dataProcessing.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataProcessing.js",
-            "checksum": "af2612047ec965f8531699cc287bf2c3"
+            "checksum": "3f135d96f163062b6bd90043bcda5420"
         },
         {
             "path": "src/dataManager/helpers/checkProxies.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/helpers/checkProxies.js",
-            "checksum": "357670340be40f10eb1692a1f001881f"
+            "checksum": "cd61d354f2726df6edc0ea37cd560ba1"
         },
         {
             "path": "src/dataManager/helpers/getLang.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/helpers/getLang.js",
-            "checksum": "5f5ce750442ab1411544ddbedb03d2b7"
+            "checksum": "a60effdfafc102c701e621af39a8597b"
         },
         {
             "path": "src/dataManager/helpers/getQuote.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/helpers/getQuote.js",
-            "checksum": "7b626a62ea9d40a524b4616d01b8fd97"
+            "checksum": "3b2de6a63bc2ea00ab534369a520bafd"
         },
         {
             "path": "src/dataManager/helpers/handleCooldowns.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/helpers/handleCooldowns.js",
-            "checksum": "9b35a82aa2b29e9e8d566db0d406b13a"
+            "checksum": "2a5fb950648c3c8a9c14611df7718ec9"
         },
         {
             "path": "src/dataManager/helpers/handleExpiringTokens.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/helpers/handleExpiringTokens.js",
-            "checksum": "0c4c8bae5b9bae91a9e7f220c7b73e53"
+            "checksum": "567753a572fbf016c3eab339d749fc89"
         },
         {
             "path": "src/dataManager/helpers/misc.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/helpers/misc.js",
-            "checksum": "32544368771121102a46f2a75c3f5f41"
+            "checksum": "fe0c9a0b17c21ecb66ea4cbd94885867"
         },
         {
             "path": "src/dataManager/helpers/refreshCache.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/helpers/refreshCache.js",
-            "checksum": "45511a56fb61cd18f36f89e215881722"
+            "checksum": "851f1c267621dc71efd1e58c7c12d800"
         },
         {
             "path": "src/dataManager/helpers/repairFile.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/helpers/repairFile.js",
-            "checksum": "94a83348ebe8e20c70d5c16cf77f8689"
+            "checksum": "68d8b080bc5874de309dae0657825e25"
         },
         {
             "path": "src/jobs/jobManager.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/jobs/jobManager.js",
-            "checksum": "37dec9dd3507e1c98903722391115944"
+            "checksum": "2e33bc746f98bd75184f514fcd04b310"
         },
         {
             "path": "src/libraryPatches/CSteamDiscussion.js",
@@ -708,12 +708,12 @@
         {
             "path": "src/pluginSystem/handlePluginData.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/pluginSystem/handlePluginData.js",
-            "checksum": "c580d836d41f1fc4da1389d9c52242b9"
+            "checksum": "d5dcfaa89d76d4ea569ccada4b7f12e6"
         },
         {
             "path": "src/pluginSystem/loadPlugins.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/pluginSystem/loadPlugins.js",
-            "checksum": "035ff994c7c3c3b13009f74bea2b390c"
+            "checksum": "beb8b4bbe7299207bf2ac008670a1ed4"
         },
         {
             "path": "src/pluginSystem/pluginSystem.js",
@@ -728,27 +728,27 @@
         {
             "path": "src/sessions/helpers/handle2FA.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/sessions/helpers/handle2FA.js",
-            "checksum": "60163e6e65c01443a28269937ed69261"
+            "checksum": "cfb93f71d65c40fc47529ce7ab129ba2"
         },
         {
             "path": "src/sessions/helpers/handleCredentialsLoginError.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/sessions/helpers/handleCredentialsLoginError.js",
-            "checksum": "5e1317e28ca6649eeec919921a773236"
+            "checksum": "fec98edb7233d0511c81812985f190b7"
         },
         {
             "path": "src/sessions/helpers/tokenStorageHandler.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/sessions/helpers/tokenStorageHandler.js",
-            "checksum": "3b7bee517850238ba69d7e369cd0950b"
+            "checksum": "f5894f15254e7d921564fa9023845719"
         },
         {
             "path": "src/sessions/sessionHandler.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/sessions/sessionHandler.js",
-            "checksum": "6c09b6570a353148cd222757f3592118"
+            "checksum": "64352a0da4144cae87b737f70158862b"
         },
         {
             "path": "src/starter.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/starter.js",
-            "checksum": "49fb8d6713e069dddade6761a1ba03bc"
+            "checksum": "54256633c339c5ba046c73f592fb582f"
         },
         {
             "path": "src/updater/compatibility/2060.js",
@@ -778,52 +778,52 @@
         {
             "path": "src/updater/compatibility/2104.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/compatibility/2104.js",
-            "checksum": "0e52117c2a3c2a8d854de384d4a94722"
+            "checksum": "3957635683fa37196684da72881445fc"
         },
         {
             "path": "src/updater/compatibility/21100.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/compatibility/21100.js",
-            "checksum": "3bb4455ad0a9ab426cd34cf5536c03aa"
+            "checksum": "3726dfdb7a86e4795581e73d8abac12d"
         },
         {
             "path": "src/updater/compatibility/21200.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/compatibility/21200.js",
-            "checksum": "41a0f507b86b1f4afa7cc99eff44b6cf"
+            "checksum": "e21271bc17e7d8ee1e9489981a3cffbf"
         },
         {
             "path": "src/updater/compatibility/21300.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/compatibility/21300.js",
-            "checksum": "e2e86c05da9fc16db4e91d63a5176576"
+            "checksum": "c1ab944ad8cf3518ddf952f5a3b68b30"
         },
         {
             "path": "src/updater/compatibility/21400.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/compatibility/21400.js",
-            "checksum": "b6040d97f7a09ad5e6fc91167e486e4b"
+            "checksum": "cb31edb8d74306c46391bbebfc24a52e"
         },
         {
             "path": "src/updater/compatibility.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/compatibility.js",
-            "checksum": "b8a36866188ae4304dfbcb4ebe8f3d80"
+            "checksum": "cc47bba386329fbd26a678d2ae911b71"
         },
         {
             "path": "src/updater/helpers/checkForUpdate.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/helpers/checkForUpdate.js",
-            "checksum": "240bcc17d4c2019006184942b9a53169"
+            "checksum": "e3cc99d51cc90f6d6cb14c0f37eac7d2"
         },
         {
             "path": "src/updater/helpers/createBackup.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/helpers/createBackup.js",
-            "checksum": "d767af9c5ae397bdfa7b386c2e4e49eb"
+            "checksum": "7904c42e9ec01fbfd2244ee5f546b8fa"
         },
         {
             "path": "src/updater/helpers/customUpdateRules.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/helpers/customUpdateRules.js",
-            "checksum": "2148b6eb0164503c3d0b4adbe8bfe757"
+            "checksum": "a9be187001621bdcdf582179845c9f68"
         },
         {
             "path": "src/updater/helpers/downloadUpdate.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/helpers/downloadUpdate.js",
-            "checksum": "9be735b19ef5b1e73df74cae8c4fedc4"
+            "checksum": "873cc86d178a03bd0b2bf5578aec6456"
         },
         {
             "path": "src/updater/helpers/prepareUpdate.js",
@@ -833,22 +833,22 @@
         {
             "path": "src/updater/helpers/restoreBackup.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/helpers/restoreBackup.js",
-            "checksum": "aee115164a1dd4bd9842af5644094e3b"
+            "checksum": "9f35a7f4e9852a4fa5e02ba6c294decd"
         },
         {
             "path": "src/updater/updater.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/updater.js",
-            "checksum": "08c78136f2fb25f10ccb2a003a603563"
+            "checksum": "a686cac45e3bc58503fc3319ef47c893"
         },
         {
             "path": "start.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/start.js",
-            "checksum": "3a2434b53fdb63ce224c0dfdfd7df04c"
+            "checksum": "96209b84adbdf4f7ee7f3da7e59d2ec6"
         },
         {
             "path": "types/types.d.ts",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/types/types.d.ts",
-            "checksum": "06b9211181ac917533ce3917b20926fc"
+            "checksum": "9363ec344f32f27c4437a0ee3edacdb1"
         }
     ]
 }

@@ -55,14 +55,14 @@ module.exports.restart = (args) => {
 process.chdir(__dirname);
 
 // Get filetostart if it doesn't exist
-let fs = require("fs");
-let extdata = getExtdata();
+const fs = require("fs");
+const extdata = getExtdata();
 
 if (!fs.existsSync(extdata.filetostart)) { // Function that downloads filetostart if it doesn't exist (file location change etc.)
     let output = "";
 
     try {
-        let https = require("https");
+        const https = require("https");
 
         if (!fs.existsSync("./src")) fs.mkdirSync("./src"); // Create src dir if it doesn't exist
 

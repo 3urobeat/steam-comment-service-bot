@@ -70,7 +70,7 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
     // Try to figure out if user provided an steamID64 or a customURL or a whole profile link
     if (isNaN(str) || !new SteamID(str).isValid()) { // If not a number or invalid SteamID. Note: Sharedfile IDs are considered invalid.
         if (/steamcommunity.com\/.+\/recommended\/\d+/g.test(str)) { // This check *must* run before the /id/ & /profiles/ checks below because they would always trigger. The URLs start the same, with reviews having /recommended/ at the end
-            let strArr = str.split("/");
+            const strArr = str.split("/");
 
             // Update idType
             idType = "review";
@@ -81,8 +81,8 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
             if (str.includes("steamcommunity.com/id/")) {
                 logger("debug", "handleSteamIdResolving: User provided review link with customURL...");
 
-                let customURL = strArr[strArr.findIndex((e) => e == "id") + 1]; // Find customURL by searching for id and going to the next element
-                let appID     = strArr[strArr.findIndex((e) => e == "recommended") + 1];
+                const customURL = strArr[strArr.findIndex((e) => e == "id") + 1]; // Find customURL by searching for id and going to the next element
+                const appID     = strArr[strArr.findIndex((e) => e == "recommended") + 1];
 
                 // Resolve customURL and replace /id/customURL with /profiles/steamID64
                 steamIDResolver.customUrlToSteamID64(customURL, (err, res) => {
@@ -93,8 +93,8 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
             } else {
                 logger("debug", "handleSteamIdResolving: User provided review link with steamID64...");
 
-                let userID = strArr[strArr.findIndex((e) => e == "profiles") + 1];
-                let appID  = strArr[strArr.findIndex((e) => e == "recommended") + 1];
+                const userID = strArr[strArr.findIndex((e) => e == "profiles") + 1];
+                const appID  = strArr[strArr.findIndex((e) => e == "recommended") + 1];
 
                 callback(null, userID + "/" + appID, idType); // Instantly callback input
             }
@@ -132,7 +132,7 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
                 if (!res) return callback("The specified sharedfile could not be found", null, null);
 
                 // Cut domain away
-                let split = str.split("/");
+                const split = str.split("/");
                 if (split[split.length - 1] == "") split.pop(); // Remove trailing slash (which is now a space because of split("/"))
 
                 str = split[split.length - 1].replace("?id=", "");
@@ -148,7 +148,7 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
             logger("debug", "handleSteamIdResolving: User provided curator link...");
 
             // Cut domain away
-            let split = str.replace("/?appid=", "").split("/"); // Remove any trailing app id, we don't exactly know what the user provided
+            const split = str.replace("/?appid=", "").split("/"); // Remove any trailing app id, we don't exactly know what the user provided
             if (split[split.length - 1] == "") split.pop();     // Remove trailing slash (which is now a space because of split("/"))
 
             str = split[split.length - 1].split("-")[0];
@@ -209,7 +209,7 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
                                         logger("debug", "handleSteamIdResolving: the provided id seems to be a sharedfile id! Returning sharedfileID...");
 
                                         if (str.includes("steamcommunity.com/")) { // Check if full URL was provided and cut domain away
-                                            let split = str.split("/");
+                                            const split = str.split("/");
                                             if (split[split.length - 1] == "") split.pop(); // Remove trailing slash (which is now a space because of split("/"))
 
                                             str = split[split.length - 1].replace("?id=", "");

@@ -23,12 +23,12 @@ const SessionHandler = require("../sessionHandler.js");
  * @returns {Promise.<boolean>} Resolves with `true` if a valid token was found, `false` otherwise
  */
 SessionHandler.prototype.hasStorageValidToken = async function() {
-    let res = await this.tokensdb.findOneAsync({ accountName: this.logOnOptions.accountName }, {});
+    const res = await this.tokensdb.findOneAsync({ accountName: this.logOnOptions.accountName }, {});
 
     if (!res) return false;
 
     // Check if token is still valid
-    let jwtObj = this.controller.data.decodeJWT(res.token);
+    const jwtObj = this.controller.data.decodeJWT(res.token);
 
     if (!jwtObj) return false;
     if (jwtObj.exp * 1000 <= Date.now()) return false;
@@ -53,11 +53,11 @@ SessionHandler.prototype._getTokenFromStorage = function(callback) {
         // If we still have a token stored then check if it is still valid
         if (doc) {
             // Decode the token we've found
-            let jwtObj = this.controller.data.decodeJWT(doc.token);
+            const jwtObj = this.controller.data.decodeJWT(doc.token);
             if (!jwtObj) return callback(null); // Get new session if _decodeJWT() failed
 
             // Define valid until str to use it in log msg
-            let validUntilStr = `${(new Date(jwtObj.exp * 1000)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)`;
+            const validUntilStr = `${(new Date(jwtObj.exp * 1000)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)`;
 
             // Compare expire value (unix timestamp in seconds) to current date
             if (jwtObj.exp * 1000 > Date.now()) {

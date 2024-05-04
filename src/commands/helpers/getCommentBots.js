@@ -44,7 +44,7 @@ module.exports.getAvailableBotsForCommenting = async function(commandHandler, nu
 
 
     // Sort activeRequests by highest until value, decreasing, so that we can tell the user how long he/she has to wait if not enough accounts were found
-    let sortedvals = Object.keys(commandHandler.controller.activeRequests).sort((a, b) => {
+    const sortedvals = Object.keys(commandHandler.controller.activeRequests).sort((a, b) => {
         return commandHandler.controller.activeRequests[b].until - commandHandler.controller.activeRequests[a].until;
     });
 
@@ -53,13 +53,13 @@ module.exports.getAvailableBotsForCommenting = async function(commandHandler, nu
 
     let whenAvailable; // We will save the until value of the account that the user has to wait for here
     let whenAvailableStr;
-    let allAccsOnline = commandHandler.controller.getBots(null, true);
+    const allAccsOnline = commandHandler.controller.getBots(null, true);
     let allAccounts = [ ... Object.keys(allAccsOnline) ]; // Clone keys array (bot usernames) of bots object
 
 
     // Remove limited accounts from allAccounts array if desired
     if (!canBeLimited) {
-        let previousLength = allAccounts.length;
+        const previousLength = allAccounts.length;
         allAccounts = allAccounts.filter(e => allAccsOnline[e].user.limitations && !allAccsOnline[e].user.limitations.limited);
 
         if (previousLength - allAccounts.length > 0) logger("info", `${previousLength - allAccounts.length} of ${previousLength} bot accounts were removed from available accounts as they are limited and can't be used for this request!`);
@@ -103,7 +103,7 @@ module.exports.getAvailableBotsForCommenting = async function(commandHandler, nu
 
     // Remove !accountCanComment accounts if type discussion. We need to run getSteamDiscussion for every account, which kind of sucks as it's a ton of requests - but what else are we supposed to do?
     if (idType == "discussion") {
-        let promises = [];
+        const promises = [];
 
         allAccounts.forEach((e) => {
             promises.push((() => {
@@ -121,7 +121,7 @@ module.exports.getAvailableBotsForCommenting = async function(commandHandler, nu
         });
 
         await Promise.all(promises).then((res) => {
-            let previousLength = allAccounts.length;
+            const previousLength = allAccounts.length;
 
             res.forEach((e) => {
                 if (!e.accountCanComment) allAccounts.splice(allAccounts.indexOf(e.accountName), 1); // Remove that accountindex from the allAccounts array

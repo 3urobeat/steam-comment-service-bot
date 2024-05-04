@@ -25,7 +25,7 @@ module.exports.run = (controller, resolve) => {
     controller.data.config.maxOwnerComments = controller.data.config.maxComments; // Set max comments allowed for owners to the same value - user can configure it differently later if he/she/it wishes to
     delete controller.data.config.repeatedComments; // Remove value from config as it got removed with 2.10.4
 
-    let stringifiedconfig = JSON.stringify(controller.data.config, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
+    const stringifiedconfig = JSON.stringify(controller.data.config, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
         if (v instanceof Array) return JSON.stringify(v);
         return v;
     }, 4)

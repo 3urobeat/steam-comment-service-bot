@@ -49,12 +49,12 @@ DataManager.prototype.getLastCommentRequest = function(steamID64 = null) {
  * @returns {object|null} JWT object on success, `null` on failure
  */
 DataManager.prototype.decodeJWT = function(token) {
-    let payload = token.split(".")[1];            // Remove header and signature as we only care about the payload
-    let decoded = Buffer.from(payload, "base64"); // Decode
+    const payload = token.split(".")[1];            // Remove header and signature as we only care about the payload
+    const decoded = Buffer.from(payload, "base64"); // Decode
 
     // Try to parse json object
     try {
-        let parsed = JSON.parse(decoded.toString());
+        const parsed = JSON.parse(decoded.toString());
         return parsed;
     } catch (err) {
         logger("err", `Failed to decode JWT! Error: ${err}`, true);

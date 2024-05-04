@@ -33,19 +33,19 @@ module.exports.getAvailableBotsForVoting = async (commandHandler, amount, id, vo
     /* --------- Get all bots which haven't voted on this id yet and aren't currently in another vote request --------- */
     let whenAvailable; // We will save the until value of the account that the user has to wait for here
     let whenAvailableStr;
-    let allAccsOnline = commandHandler.controller.getBots(null, true);
+    const allAccsOnline = commandHandler.controller.getBots(null, true);
     let allAccounts = [ ... Object.keys(allAccsOnline) ]; // Clone keys array (bot usernames) of bots object
 
     // Remove limited accounts from allAccounts array as they are unable to vote
-    let previousLengthLimited = allAccounts.length;
+    const previousLengthLimited = allAccounts.length;
     allAccounts               = allAccounts.filter(e => allAccsOnline[e].user.limitations && !allAccsOnline[e].user.limitations.limited);
 
     if (previousLengthLimited - allAccounts.length > 0) logger("info", `${previousLengthLimited - allAccounts.length} of ${previousLengthLimited} bot accounts were removed from available accounts as they are limited and can't be used for this request!`);
 
 
     // Remove bot accounts from allAccounts which have already voted on this id with this voteType
-    let previousLengthVoted = allAccounts.length;
-    let alreadyVoted        = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: voteType }, {});
+    const previousLengthVoted = allAccounts.length;
+    const alreadyVoted        = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: voteType }, {});
 
     alreadyVoted.forEach((e) => {
         if (allAccounts.indexOf(e.accountName) != -1) allAccounts.splice(allAccounts.indexOf(e.accountName), 1);

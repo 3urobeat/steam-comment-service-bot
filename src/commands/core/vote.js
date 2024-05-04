@@ -32,14 +32,14 @@ const { handleVoteIterationSkip, logVoteError } = require("../helpers/handleMisc
  * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  */
 async function processVoteRequest(origin, commandHandler, args, respondModule, context, resInfo) {
-    let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+    const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
     // Get the correct ownerid array for this request
     let owners = commandHandler.data.cachefile.ownerid;
     if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-    let requesterID = resInfo.userID;
-    let ownercheck  = owners.includes(requesterID);
+    const requesterID = resInfo.userID;
+    const ownercheck  = owners.includes(requesterID);
 
 
     /* --------- Various checks  --------- */
@@ -53,25 +53,25 @@ async function processVoteRequest(origin, commandHandler, args, respondModule, c
 
 
     // Check and get arguments from user
-    let { err, amountRaw, id, idType } = await getMiscArgs(commandHandler, args, origin, resInfo, respond); // eslint-disable-line no-unused-vars
+    const { err, amountRaw, id, idType } = await getMiscArgs(commandHandler, args, origin, resInfo, respond); // eslint-disable-line no-unused-vars
 
     if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
 
     // Check if this id is already receiving something right now
-    let idReq = commandHandler.controller.activeRequests[id];
+    const idReq = commandHandler.controller.activeRequests[id];
 
     if (idReq && idReq.status == "active") return respond(await commandHandler.data.getLang("idalreadyreceiving", null, requesterID)); // Note: No need to check for user as that is supposed to be handled by a cooldown
 
 
     // Check if user has cooldown
-    let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterID);
+    const { until, untilStr } = await commandHandler.data.getUserCooldown(requesterID);
 
     if (until > Date.now()) return respond(await commandHandler.data.getLang("idoncooldown", { "remainingcooldown": untilStr }, requesterID));
 
 
     // Get all available bot accounts
-    let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForVoting(commandHandler, amountRaw, id, origin, resInfo);
+    const { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForVoting(commandHandler, amountRaw, id, origin, resInfo);
 
     if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point. The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
         if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnounlimitedaccs", { "cmdprefix": resInfo.cmdprefix }, requesterID)); // Send specific nounlimitedaccs message as we always need unlimited accs and to let users know this situation won't change
@@ -87,9 +87,9 @@ async function processVoteRequest(origin, commandHandler, args, respondModule, c
 
 
     // Register this vote process in activeRequests
-    let capitilizedOrigin = origin.charAt(0).toUpperCase() + origin.slice(1); // Capitilize first char of origin to achieve camelCase
+    const capitilizedOrigin = origin.charAt(0).toUpperCase() + origin.slice(1); // Capitilize first char of origin to achieve camelCase
 
-    let activeReqEntry = {
+    const activeReqEntry = {
         status: "active",
         type: idType + capitilizedOrigin,
         amount: amount,
@@ -192,7 +192,7 @@ async function processVoteRequest(origin, commandHandler, args, respondModule, c
 
         // Only send estimated wait time message for multiple votes
         if (activeReqEntry.amount > 1) {
-            let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.requestDelay)); // Amount - 1 because the first vote is instant. Multiply by delay and add to current time to get timestamp when last vote was sent
+            const waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.requestDelay)); // Amount - 1 because the first vote is instant. Multiply by delay and add to current time to get timestamp when last vote was sent
 
             respond(await commandHandler.data.getLang("voteprocessstarted", { "numberOfVotes": activeReqEntry.amount, "waittime": waitTime }, requesterID));
         }
@@ -207,7 +207,7 @@ async function processVoteRequest(origin, commandHandler, args, respondModule, c
     syncLoop(amount, (loop, i) => {
         setTimeout(() => {
 
-            let bot = commandHandler.controller.bots[availableAccounts[i]];
+            const bot = commandHandler.controller.bots[availableAccounts[i]];
             activeReqEntry.thisIteration++;
 
             if (!handleVoteIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned

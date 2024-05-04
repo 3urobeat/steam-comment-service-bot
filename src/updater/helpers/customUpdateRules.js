@@ -34,7 +34,7 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
         logger("", `${logger.colors.fgyellow}Transferring your changes to new config.json...`, true, false, logger.animation("loading"));
 
         delete require.cache[require.resolve(srcdir + "/../config.json")]; // Delete cache
-        let newconfig = require(srcdir + "/../config.json");
+        const newconfig = require(srcdir + "/../config.json");
 
         // Transfer every setting to the new config
         Object.keys(newconfig).forEach((e) => {
@@ -47,7 +47,7 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
         });
 
         // Get arrays on one line
-        let stringifiedconfig = JSON.stringify(newconfig, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
+        const stringifiedconfig = JSON.stringify(newconfig, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
             if (v instanceof Array) return JSON.stringify(v);
             return v;
         }, 4)
@@ -66,7 +66,7 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
         logger("", `${logger.colors.fgyellow}Transferring your changes to new advancedconfig.json...`, true, false, logger.animation("loading"));
 
         delete require.cache[require.resolve(srcdir + "/../advancedconfig.json")]; // Delete cache
-        let newadvancedconfig = require(srcdir + "/../advancedconfig.json");
+        const newadvancedconfig = require(srcdir + "/../advancedconfig.json");
 
         // Transfer every setting to the new advancedconfig
         Object.keys(newadvancedconfig).forEach((e) => {
@@ -79,7 +79,7 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
         });
 
         // Get arrays on one line
-        let stringifiedadvancedconfig = JSON.stringify(newadvancedconfig, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
+        const stringifiedadvancedconfig = JSON.stringify(newadvancedconfig, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
             if(v instanceof Array) return JSON.stringify(v);
             return v;
         }, 4)
@@ -98,7 +98,7 @@ module.exports.customUpdateRules = (compatibilityfeaturedone, oldconfig, oldadva
         logger("", `${logger.colors.fgyellow}Transferring changes to new data.json...${logger.colors.reset}`, true, false, logger.animation("loading"));
 
         delete require.cache[require.resolve(srcdir + "/data/data.json")]; // Delete cache
-        let newextdata = require(srcdir + "/data/data.json");
+        const newextdata = require(srcdir + "/data/data.json");
 
         // Transfer a few specific values to the new datafile if they exist to avoid errors
         if (olddatafile.timesloggedin)  newextdata.timesloggedin  = olddatafile.timesloggedin;

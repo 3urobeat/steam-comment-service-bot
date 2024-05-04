@@ -33,19 +33,19 @@ DataManager.prototype.verifyIntegrity = function() {
         (async () => { // Lets us use await insidea Promise without creating an antipattern
 
             // Store all files which needed to be recovered to determine if we need to restart the bot
-            let invalidFiles = [];
+            const invalidFiles = [];
 
             // Get fileStructure.json
             const fileStructure = await this.checkAndGetFile("./src/data/fileStructure.json", logger, false, false); // Always forcing the latest version will lead to false-positives when user uses an older version
 
             // Generate a checksum for every file in fileStructure and compare them
-            let startDate = Date.now();
+            const startDate = Date.now();
 
             this.controller.misc.syncLoop(fileStructure.files.length, async (loop, i) => {
-                let e = fileStructure.files[i];
+                const e = fileStructure.files[i];
 
                 // Generate checksum for file if it exists, otherwise default to null
-                let filesum = fs.existsSync(e.path) ? crypto.createHash("md5").update(fs.readFileSync(e.path)).digest("hex") : null;
+                const filesum = fs.existsSync(e.path) ? crypto.createHash("md5").update(fs.readFileSync(e.path)).digest("hex") : null;
 
                 if (filesum != e.checksum) {
                     logger("warn", `Checksum of file '${e.path}' does not match expectations! Restoring file...`, false, false, null, true); // Force print now

@@ -38,7 +38,7 @@ module.exports.run = (controller, resolve) => {
     }
 
 
-    let { config, advancedconfig } = controller.data;
+    const { config, advancedconfig } = controller.data;
 
 
     // Config commentdelay, commentcooldown, maxComments & maxOwnerComments -> requestDelay, requestCooldown, maxRequests & maxOwnerRequests

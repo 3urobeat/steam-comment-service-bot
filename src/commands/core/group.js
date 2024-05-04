@@ -35,7 +35,7 @@ module.exports.group = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         if (commandHandler.data.config.yourgroup.length < 1 || !commandHandler.data.cachefile.configgroup64id) return respond(await commandHandler.data.getLang("groupcmdnolink", null, resInfo.userID)); // No group info at all? stop.
 
@@ -78,8 +78,8 @@ module.exports.joinGroup = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterID = resInfo.userID;
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const requesterID = resInfo.userID;
 
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
@@ -124,8 +124,8 @@ module.exports.leaveGroup = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterID = resInfo.userID;
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const requesterID = resInfo.userID;
 
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
@@ -170,8 +170,8 @@ module.exports.leaveAllGroups = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterID = resInfo.userID;
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const requesterID = resInfo.userID;
 
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
@@ -192,7 +192,7 @@ module.exports.leaveAllGroups = {
             logger("info", "Starting to leave all groups...");
 
             for (let i = 0; i < commandHandler.controller.getBots().length; i++) {
-                for (let group in commandHandler.controller.getBots()[i].user.myGroups) {
+                for (const group in commandHandler.controller.getBots()[i].user.myGroups) {
                     try {
                         setTimeout(() => {
                             if (commandHandler.controller.getBots()[i].user.myGroups[group] == 3) {

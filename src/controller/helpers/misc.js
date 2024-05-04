@@ -30,7 +30,7 @@ module.exports.syncLoop = (iterations, func, exit) => {
     let done         = false;
 
     // Construct loop object
-    let loop = {
+    const loop = {
         next: function () { // Run next iteration
             process.nextTick(() => { // Delay by one tick to fix weird infinite loop crash bug
                 // Check if the next iteration is still allowed to run, otherwise stop by calling break
@@ -111,7 +111,7 @@ module.exports.checkConnection = (url, throwTimeout = false, proxy) => {
 
         // Use http and provide a proxy if requested - Credit: https://stackoverflow.com/a/49611762
         if (proxy) {                                                                                     // TODO: Missing authentication could perhaps cause errors here
-            let auth = "Basic " + Buffer.from(proxy.username + ":" + proxy.password).toString("base64"); // Construct autentication
+            const auth = "Basic " + Buffer.from(proxy.username + ":" + proxy.password).toString("base64"); // Construct autentication
 
             url = url.replace("https://", ""); // Remove preceding https:// from url
 
@@ -167,7 +167,7 @@ module.exports.checkConnection = (url, throwTimeout = false, proxy) => {
  */
 module.exports.splitProxyString = (url) => { // TODO: Missing authentication could perhaps cause errors here
 
-    let obj = { ip: "", port: 0, username: "", password: "" };
+    const obj = { ip: "", port: 0, username: "", password: "" };
 
     if (!url) return obj;
 
@@ -178,8 +178,8 @@ module.exports.splitProxyString = (url) => { // TODO: Missing authentication cou
     url = url.split("@");
 
     // Split both parts at : to separate the 4 different elements
-    let usernamePassword = url[0].split(":");
-    let ipPort           = url[1].split(":");
+    const usernamePassword = url[0].split(":");
+    const ipPort           = url[1].split(":");
 
     // Extract ip and port from ipPort and username and password from usernamePassword
     obj.ip   = ipPort[0];
@@ -209,15 +209,15 @@ module.exports.cutStringsIntelligently = (txt, limit, cutChars, threshold) => {
     if (txt.length <= limit) return [txt];         // Instantly return string as element 0 if it is already less than limit
 
     let lastIndex = 0;
-    let result    = [];
+    const result    = [];
 
     // Regex-less version - Safe but can cut at places where a link is surrounded by "' " and " '" to avoid embedding in the Steam Chat.
     // Iterate over string until lastIndex reaches length of input string. This whole algorithm could probably be replicated using RegEx but eeeehhhh
     while (lastIndex < txt.length - 1) {
-        let cut = txt.slice(lastIndex, lastIndex + limit); // Get the next part by cutting from lastIndex to limit
+        const cut = txt.slice(lastIndex, lastIndex + limit); // Get the next part by cutting from lastIndex to limit
 
         // Find the last occurrence of all cutChars and find the most recent one using Math.max()
-        let lastOccurrence = Math.max(...cutChars.map(e => cut.lastIndexOf(e)));
+        const lastOccurrence = Math.max(...cutChars.map(e => cut.lastIndexOf(e)));
 
         // Check if cut maxes out limit (if not we have reached the end and can push as is),
         // a last occurrence was found and is within threshold. If so, cut again, push to result and update lastIndex.

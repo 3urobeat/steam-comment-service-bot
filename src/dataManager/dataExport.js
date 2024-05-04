@@ -65,7 +65,7 @@ DataManager.prototype.writeConfigToDisk = function() {
     logger("debug", "DataManager dataExport: Writing to config.json...");
 
     // Get arrays on one line
-    let stringifiedconfig = JSON.stringify(this.config, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
+    const stringifiedconfig = JSON.stringify(this.config, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
         if (v instanceof Array) return JSON.stringify(v);
         return v;
     }, 4)
@@ -87,7 +87,7 @@ DataManager.prototype.writeAdvancedconfigToDisk = function() {
     logger("debug", "DataManager dataExport: Writing to advancedconfig.json...");
 
     // Get arrays on one line
-    let stringifiedadvancedconfig = JSON.stringify(this.advancedconfig, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
+    const stringifiedadvancedconfig = JSON.stringify(this.advancedconfig, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
         if (v instanceof Array) return JSON.stringify(v);
         return v;
     }, 4)
@@ -110,15 +110,15 @@ DataManager.prototype.writeLogininfoToDisk = function() {
     if (fs.existsSync(srcdir + "/../logininfo.json")) {
         logger("debug", "DataManager dataExport: Writing to logininfo.json...");
 
-        let logininfojson = {};
+        const logininfojson = {};
 
         // Re-Construct logininfo object. Iterate over bots instead of logininfo to retain a changed bots hierarchy
-        for (let e of this.controller.getBots("*")) {
+        for (const e of this.controller.getBots("*")) {
             logininfojson[`bot${e.index}`] = [ e.loginData.logOnOptions.accountName, e.loginData.logOnOptions.password, e.loginData.logOnOptions.sharedSecret ];
         }
 
         // Get arrays on one line
-        let stringifiedlogininfo = JSON.stringify(logininfojson, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
+        const stringifiedlogininfo = JSON.stringify(logininfojson, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
             if (v instanceof Array) return JSON.stringify(v);
             return v;
         }, 4)
@@ -135,10 +135,10 @@ DataManager.prototype.writeLogininfoToDisk = function() {
     if (fs.existsSync(srcdir + "/../accounts.txt")) {
         logger("debug", "DataManager dataExport: Writing to accounts.txt...");
 
-        let accountstxt = [ "//Comment: This file is used to provide your bot accounts in the form of username:password. Read the instructions here: https://github.com/3urobeat/steam-comment-service-bot#accounts" ]; // Re-add comment
+        const accountstxt = [ "//Comment: This file is used to provide your bot accounts in the form of username:password. Read the instructions here: https://github.com/3urobeat/steam-comment-service-bot#accounts" ]; // Re-add comment
 
         // Re-construct accounts.txt string. Iterate over bots instead of logininfo to retain a changed bots hierarchy
-        for (let e of this.controller.getBots("*")) {
+        for (const e of this.controller.getBots("*")) {
             if (e.loginData.logOnOptions.sharedSecret) accountstxt.push(`${e.loginData.logOnOptions.accountName}:${e.loginData.logOnOptions.password}:${e.loginData.logOnOptions.sharedSecret}`);
                 else accountstxt.push(`${e.loginData.logOnOptions.accountName}:${e.loginData.logOnOptions.password}`);
         }
@@ -157,7 +157,7 @@ DataManager.prototype.writeLogininfoToDisk = function() {
 DataManager.prototype.writeProxiesToDisk = function() {
     logger("debug", "DataManager dataExport: Writing to proxies.txt...");
 
-    let comment = "//Comment: This file is used to provide proxies to spread your accounts over multiple IPs. Read the instructions here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/adding_proxies.md";
+    const comment = "//Comment: This file is used to provide proxies to spread your accounts over multiple IPs. Read the instructions here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/adding_proxies.md";
 
     fs.writeFile(srcdir + "/../proxies.txt", comment + this.proxies.join("\n"), (err) => {
         if (err) logger("error", "DataManager: Error writing proxies to proxies.txt: " + err);
@@ -170,7 +170,7 @@ DataManager.prototype.writeProxiesToDisk = function() {
  */
 DataManager.prototype.writeQuotesToDisk = function() {
     logger("debug", "DataManager dataExport: Writing to quotes.txt...");
-    let quotesArr = [];
+    const quotesArr = [];
 
     // Replace every \n with \\n so that writeFile won't parse them to actual newlines
     this.quotes.forEach(e => quotesArr.push(e.replace(/\n/g, "\\n")));

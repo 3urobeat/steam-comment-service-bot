@@ -43,8 +43,8 @@ module.exports.addFriend = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterID = resInfo.userID;
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const requesterID = resInfo.userID;
 
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
@@ -112,8 +112,8 @@ module.exports.unfriend = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterID = resInfo.userID;
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const requesterID = resInfo.userID;
 
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
@@ -181,8 +181,8 @@ module.exports.unfriendall = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterID = resInfo.userID;
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const requesterID = resInfo.userID;
 
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
@@ -203,10 +203,10 @@ module.exports.unfriendall = {
             logger("info", "Starting to unfriend everyone...");
 
             for (let i = 0; i < commandHandler.controller.getBots().length; i++) {
-                for (let friend in commandHandler.controller.getBots()[i].user.myFriends) {
+                for (const friend in commandHandler.controller.getBots()[i].user.myFriends) {
                     try {
                         setTimeout(() => {
-                            let friendSteamID = new SteamID(String(friend));
+                            const friendSteamID = new SteamID(String(friend));
 
                             if (!commandHandler.data.cachefile.ownerid.includes(friend)) { // Check for the "original" ownerid array here, we don't care about non Steam IDs
                                 logger("info", `Removing friend ${friendSteamID.getSteamID64()} from all bot accounts...`, false, false, logger.animation("loading"));

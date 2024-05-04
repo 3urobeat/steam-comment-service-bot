@@ -25,7 +25,7 @@ const eng = require("../src/data/lang/english.json");
 
 
 // Find all translations inside the same directory
-let translations = fs.readdirSync("./src/data/lang/");
+const translations = fs.readdirSync("./src/data/lang/");
 
 console.log(`Checking ${translations.length - 1} translation(s). If the script exits with no further messages, all translations contain the same keys.`);
 
@@ -44,8 +44,8 @@ translations.forEach((name) => {
 
 
     // Get key arrays of both translations
-    let engKeys  = Object.keys(eng);
-    let langKeys = Object.keys(lang);
+    const engKeys  = Object.keys(eng);
+    const langKeys = Object.keys(lang);
 
 
     // Check lang for missing keys

@@ -31,7 +31,7 @@ DataManager.prototype.checkData = function() {
         logger("info", "Running datachecks and displaying config recommendations...", false, true, logger.animation("loading"));
 
         // Shorthander for checks below to log warning and count it. Must be an ES6 function to not create a new context for 'this.' to work!
-        let logWarn = ((a, b, c) => { logger(a, b, c); this.controller.info.startupWarnings++; }); // I originally wanted to use iArguments instead of hardcoding a, b, c but that didn't work out easily so I digress
+        const logWarn = ((a, b, c) => { logger(a, b, c); this.controller.info.startupWarnings++; }); // I originally wanted to use iArguments instead of hardcoding a, b, c but that didn't work out easily so I digress
 
         this.controller.info.startupWarnings = 0; // Reset value to start fresh if this module should be integrated into a plugin or something like that
 

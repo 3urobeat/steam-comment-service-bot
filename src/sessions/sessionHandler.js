@@ -170,9 +170,9 @@ SessionHandler.prototype.attemptTokenRenew = function() {
                         return;
                     }
 
-                    let newToken      = this.session.refreshToken;
-                    let jwtObj        = this.controller.data.decodeJWT(newToken); // Decode the token we've found
-                    let validUntilStr = `${(new Date(jwtObj.exp * 1000)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)`;
+                    const newToken      = this.session.refreshToken;
+                    const jwtObj        = this.controller.data.decodeJWT(newToken); // Decode the token we've found
+                    const validUntilStr = `${(new Date(jwtObj.exp * 1000)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)`;
 
                     logger("info", `[${this.bot.logPrefix}] Successfully renewed refresh token! It is now valid until '${validUntilStr}'!`);
 

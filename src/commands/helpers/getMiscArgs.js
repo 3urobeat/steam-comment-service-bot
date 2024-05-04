@@ -32,11 +32,11 @@ module.exports.getMiscArgs = (commandHandler, args, cmd, resInfo, respond) => {
         (async () => { // Lets us use await insidea Promise without creating an antipattern
 
             // Check for missing params
-            let cmdUsage = `'${resInfo.cmdprefix}${cmd} amount/"all" id/link'`;
+            const cmdUsage = `'${resInfo.cmdprefix}${cmd} amount/"all" id/link'`;
 
             if (args[0]) args[0] = args[0].toLowerCase();
             if (args[0] == "max") args[0] = "all";                     // Convert "all" alias
-            let amount = args[0] == "all" ? args[0] : Number(args[0]); // If user provides "all" then keep it as is and update it later to how many accounts are available, otherwise convert it to a number
+            const amount = args[0] == "all" ? args[0] : Number(args[0]); // If user provides "all" then keep it as is and update it later to how many accounts are available, otherwise convert it to a number
 
             if (args.length == 0 || (amount != "all" && isNaN(amount)) || amount == 0) {
                 respond(await commandHandler.data.getLang("invalidnumber", { "cmdusage": cmdUsage }, resInfo.userID)); // An empty string will become a 0

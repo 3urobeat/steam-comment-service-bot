@@ -22,7 +22,7 @@ const Bot = require("../bot.js");
  * Handles checking for missing game licenses, requests them and then starts playing
  */
 Bot.prototype.handleMissingGameLicenses = function() {
-    let data = this.controller.data;
+    const data = this.controller.data;
 
     // Check if user provided games specifically for this account. We only need to check this for child accounts
     let configChildGames = data.config.childaccplayinggames;
@@ -35,10 +35,10 @@ Bot.prototype.handleMissingGameLicenses = function() {
     }
 
     // Shorthander for starting to play
-    let startPlaying = () => { if (this.index == 0) this.user.gamesPlayed(this.controller.data.config.playinggames); else this.user.gamesPlayed(configChildGames); };
+    const startPlaying = () => { if (this.index == 0) this.user.gamesPlayed(this.controller.data.config.playinggames); else this.user.gamesPlayed(configChildGames); };
 
 
-    let options = {
+    const options = {
         includePlayedFreeGames: true,
         filterAppids: this.index == 0 ? data.config.playinggames.filter(e => !isNaN(e)) : configChildGames.filter(e => !isNaN(e) && e != null), // We only need to check for these appIDs. Filter custom game string and null values
         includeFreeSub: false

@@ -35,13 +35,13 @@ module.exports.getAvailableBotsForFollowing = async (commandHandler, amount, can
     /* --------- Get all bots which haven't followed this id yet and aren't currently in another follow request --------- */
     let whenAvailable; // We will save the until value of the account that the user has to wait for here
     let whenAvailableStr;
-    let allAccsOnline = commandHandler.controller.getBots(null, true);
+    const allAccsOnline = commandHandler.controller.getBots(null, true);
     let allAccounts = [ ... Object.keys(allAccsOnline) ]; // Clone keys array (bot usernames) of bots object
 
 
     // Remove limited accounts from allAccounts array if desired
     if (!canBeLimited) {
-        let previousLength = allAccounts.length;
+        const previousLength = allAccounts.length;
         allAccounts = allAccounts.filter(e => allAccsOnline[e].user.limitations && !allAccsOnline[e].user.limitations.limited);
 
         if (previousLength - allAccounts.length > 0) logger("info", `${previousLength - allAccounts.length} of ${previousLength} bot accounts were removed from available accounts as they are limited and can't be used for this request!`);
@@ -49,8 +49,8 @@ module.exports.getAvailableBotsForFollowing = async (commandHandler, amount, can
 
 
     // Remove bot accounts from allAccounts which have already followed this id, or only allow them for type unfollow
-    let previousLength = allAccounts.length;
-    let alreadyUsed    = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: idType + "Follow" }, {});
+    const previousLength = allAccounts.length;
+    const alreadyUsed    = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: idType + "Follow" }, {});
 
     if (favType == "follow") {
         alreadyUsed.forEach((e) => {

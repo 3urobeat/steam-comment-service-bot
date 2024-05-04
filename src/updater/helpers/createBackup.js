@@ -41,7 +41,7 @@ module.exports.run = () => {
             let files = [];
 
             // Check if folder needs to be created
-            let targetFolder = path.join(dest, path.basename(src));
+            const targetFolder = path.join(dest, path.basename(src));
 
             if (!fs.existsSync(targetFolder)) fs.mkdirSync(targetFolder);
 
@@ -51,7 +51,7 @@ module.exports.run = () => {
 
                 files.forEach((file) => {
                     if (dontCopy.includes(file)) return; // Ignore this file/folder if name is in dontCopy
-                    let curSource = path.join(src, file);
+                    const curSource = path.join(src, file);
 
                     if (fs.lstatSync(curSource).isDirectory()) {
                         copyFolderRecursiveSync(curSource, targetFolder, false);

@@ -152,7 +152,7 @@ CommandHandler.prototype.registerCommand = function(command) {
 CommandHandler.prototype.unregisterCommand = function(commandName) {
 
     // Iterate through all command objects in commands array and check if name is included in names array of each command.
-    let thisCmd = this.commands.find(e => e.names.includes(commandName));
+    const thisCmd = this.commands.find(e => e.names.includes(commandName));
 
     if (!thisCmd) {
         logger("warn", `CommandHandler unregisterCommand(): Command '${commandName}' was not found!`);
@@ -160,7 +160,7 @@ CommandHandler.prototype.unregisterCommand = function(commandName) {
     }
 
     // Remove command from commands array
-    let index = this.commands.indexOf(thisCmd);
+    const index = this.commands.indexOf(thisCmd);
 
     this.commands.splice(index, index + 1);
 
@@ -195,7 +195,7 @@ CommandHandler.prototype.unregisterCommand = function(commandName) {
 CommandHandler.prototype.runCommand = async function(name, args, respondModule, context, resInfo) {
 
     // Iterate through all command objects in commands array and check if name is included in names array of each command.
-    let thisCmd = this.commands.find(e => e.names.includes(name));
+    const thisCmd = this.commands.find(e => e.names.includes(name));
 
     if (!thisCmd) {
         logger("warn", `CommandHandler runCommand(): Command '${name}' was not found!`);

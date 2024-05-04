@@ -82,7 +82,7 @@ DataManager.prototype._restoreBackup = function(name, filepath, cacheentry, onli
 DataManager.prototype._pullNewFile = async function(name, filepath, resolve, noRequire) {
     logger("warn", "Backup seems to be broken/not available! Pulling file from GitHub...", true);
 
-    let file = await this.checkAndGetFile(filepath, logger, true, true);
+    const file = await this.checkAndGetFile(filepath, logger, true, true);
     if (!file) return this.controller.stop(); // Stop bot if file can't be restored
 
     // Only tell user to reconfigure config.json

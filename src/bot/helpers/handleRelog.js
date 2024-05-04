@@ -62,7 +62,7 @@ Bot.prototype.switchProxy = function(newProxyIndex) {
 Bot.prototype.checkAndSwitchMyProxy = async function() {
 
     // Attempt to ping github.com (basically any non steamcommunity url) without a proxy to determine if the internet connection is not working
-    let hostConnectionRes = await this.controller.misc.checkConnection("https://github.com/3urobeat/steam-comment-service-bot", true)
+    const hostConnectionRes = await this.controller.misc.checkConnection("https://github.com/3urobeat/steam-comment-service-bot", true)
         .catch((err) => {
             if (this.index == 0) logger("info", `[Main] Your internet connection seems to be down. ${err.statusMessage}`); // Only log message for main acc to reduce clutter
         });
@@ -86,10 +86,10 @@ Bot.prototype.checkAndSwitchMyProxy = async function() {
 
 
     // Check if our proxy is down
-    let thisProxy = this.data.proxies.find((e) => e.proxyIndex == this.loginData.proxyIndex);
+    const thisProxy = this.data.proxies.find((e) => e.proxyIndex == this.loginData.proxyIndex);
 
     if (!thisProxy.isOnline) {
-        let activeProxies = this.controller.getBotsPerProxy(true); // Get all online proxies and their associated bot accounts
+        const activeProxies = this.controller.getBotsPerProxy(true); // Get all online proxies and their associated bot accounts
 
         // Check if no available proxy was found (exclude host) and return false
         if (activeProxies.length == 0) {
@@ -99,7 +99,7 @@ Bot.prototype.checkAndSwitchMyProxy = async function() {
 
 
         // Find proxy with least amount of associated bots
-        let leastUsedProxy = activeProxies.reduce((a, b) => a.bots.length < b.bots.length ? a : b);
+        const leastUsedProxy = activeProxies.reduce((a, b) => a.bots.length < b.bots.length ? a : b);
 
         logger("warn", `[${this.logPrefix}] Failed to ping Steam using proxy ${this.loginData.proxyIndex}! Switching to proxy ${leastUsedProxy.proxyIndex} which currently has the least amount of usage and appears to be online.`);
 
@@ -127,7 +127,7 @@ Bot.prototype.handleRelog = async function() {
     this.loginData.relogTries++;
 
     // Check if proxy might be offline
-    let proxySwitched = await this.checkAndSwitchMyProxy();
+    const proxySwitched = await this.checkAndSwitchMyProxy();
 
     if (proxySwitched) return; // Stop execution if proxy was switched and bot is getting relogged
 

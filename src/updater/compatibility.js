@@ -44,12 +44,12 @@ module.exports.runCompatibility = async (controller) => {
             if (fs.existsSync("./src/updater/compatibility")) list = fs.readdirSync("./src/updater/compatibility");
 
             // Try to find this version in list
-            let match = list.find(e => e == controller.data.datafile.version.replace(/b[0-9]+/g, "") + ".js"); // Remove beta build from version so it still matches on every beta build | Old check used this regex pattern: str.match(/21200b[0-9]+/g)
+            const match = list.find(e => e == controller.data.datafile.version.replace(/b[0-9]+/g, "") + ".js"); // Remove beta build from version so it still matches on every beta build | Old check used this regex pattern: str.match(/21200b[0-9]+/g)
 
 
             // If we found a match test its integrity and execute it
             if (match) {
-                let file = await require("../starter.js").checkAndGetFile(`./src/updater/compatibility/${match}`, logger, false, false); // Check integrity
+                const file = await require("../starter.js").checkAndGetFile(`./src/updater/compatibility/${match}`, logger, false, false); // Check integrity
                 if (!file) return resolve();
 
                 logger("info", `Running compatibility feature ${match}...`, true);

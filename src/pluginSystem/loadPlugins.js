@@ -68,12 +68,12 @@ PluginSystem.prototype._loadPlugins = async function () {
 
     // Check for the latest version of all plugins
     if (!this.controller.data.advancedconfig.disablePluginsAutoUpdate) {
-        let npminteraction = require("../controller/helpers/npminteraction.js");
+        const npminteraction = require("../controller/helpers/npminteraction.js");
 
         logger("info", "PluginSystem: Searching for and installing plugin updates...", false, true, logger.animation("loading"));
 
         // Get all plugin names. Ignore locally installed ones by checking for "file:"
-        let pluginNamesArr = plugins.flatMap((e) => { // Use flatMap instead of map to omit empty results instead of including undefined
+        const pluginNamesArr = plugins.flatMap((e) => { // Use flatMap instead of map to omit empty results instead of including undefined
             if (!e[1].startsWith("file:")) return e[0];
                 else return [];
         });

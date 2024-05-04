@@ -4,7 +4,7 @@
  * Created Date: 2024-05-03 12:17:16
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-03 12:58:49
+ * Last Modified: 2024-05-04 22:00:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
@@ -64,6 +64,8 @@ export default [
             "no-tabs": "error",
             "no-trailing-spaces": "error",
             "no-extra-semi": "error",
+            "no-use-before-define": "error",
+            "prefer-const": "error",
             "semi": ["error", "always"],
             "semi-spacing": "error",
             "semi-style": ["error", "last"],

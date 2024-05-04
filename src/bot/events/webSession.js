@@ -60,7 +60,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
             if (this.user.myFriends[Object.keys(this.user.myFriends)[i]] == 2) {
 
                 if (this.controller.data.advancedconfig.acceptFriendRequests) {
-                    let thisfriend = Object.keys(this.user.myFriends)[i];
+                    const thisfriend = Object.keys(this.user.myFriends)[i];
 
                     // Accept friend request
                     this.user.addFriend(thisfriend);
@@ -76,7 +76,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
 
                     // Add user to lastcomment database
-                    let time = Date.now() - (this.controller.data.config.requestCooldown * 60000); // Subtract requestCooldown so that the user is able to use the command instantly;
+                    const time = Date.now() - (this.controller.data.config.requestCooldown * 60000); // Subtract requestCooldown so that the user is able to use the command instantly;
 
                     this.controller.data.lastCommentDB.update({ id: thisfriend }, { $set: { time: time } }, { upsert: true }, (err) => {
                         if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err);
@@ -105,7 +105,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
         // Groups:
         for (let i = 0; i < Object.keys(this.user.myGroups).length; i++) {
             if (this.user.myGroups[Object.keys(this.user.myGroups)[i]] == 2) {
-                let thisgroup = Object.keys(this.user.myGroups)[i];
+                const thisgroup = Object.keys(this.user.myGroups)[i];
 
                 // Check if acceptgroupinvites is set to false and only allow botsgroup invite to be accepted
                 if (!this.controller.data.config.acceptgroupinvites) {

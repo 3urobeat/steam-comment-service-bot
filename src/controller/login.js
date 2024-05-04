@@ -99,8 +99,8 @@ Controller.prototype.login = async function(firstLogin) {
 
 
     // Split login candidates into a fast queue (sync logins for accs on different proxies) & a slow queue (async logins for accs requiring user interaction)
-    let fastQueue = [ ...allAccounts.filter((e) => e.hasStorageValidToken) ];
-    let slowQueue = [ ...allAccounts.filter((e) => !e.hasStorageValidToken) ];
+    const fastQueue = [ ...allAccounts.filter((e) => e.hasStorageValidToken) ];
+    const slowQueue = [ ...allAccounts.filter((e) => !e.hasStorageValidToken) ];
 
 
     // Calculate login time
@@ -128,7 +128,7 @@ Controller.prototype.login = async function(firstLogin) {
     let lastAmountUpdateTimestamp = Date.now();
     let waitingForAmountAccounts  = 0;
 
-    let allAccsOnlineInterval = setInterval(() => {
+    const allAccsOnlineInterval = setInterval(() => {
 
         // Shorthander that resolves this login process
         const loginFinished = () => {
@@ -152,7 +152,7 @@ Controller.prototype.login = async function(firstLogin) {
          * Get all accounts which have not yet switched their status
          * @type {{ index: number, accountName: string }[]} Array of loginInfo objects, which among other things have these props
          */
-        let allAccountsOffline = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.OFFLINE);
+        const allAccountsOffline = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.OFFLINE);
 
         // Update waitingForAmountAccounts & lastAmountUpdateTimestamp on change
         if (waitingForAmountAccounts != allAccountsOffline.length) {
@@ -174,7 +174,7 @@ Controller.prototype.login = async function(firstLogin) {
 
                 // Set status of every account to OFFLINE and call handleRelog to let it figure this out
                 allAccountsOffline.forEach((e) => {
-                    let thisBot = this.bots[e.accountName];
+                    const thisBot = this.bots[e.accountName];
 
                     this._statusUpdateEvent(thisBot, Bot.EStatus.ERROR);
                     thisBot.handleRelog();
@@ -185,7 +185,7 @@ Controller.prototype.login = async function(firstLogin) {
                 return;
             }
 
-            let cancelingInMinutes = Math.ceil(((lastAmountUpdateTimestamp + 900000) - Date.now()) / 60000);
+            const cancelingInMinutes = Math.ceil(((lastAmountUpdateTimestamp + 900000) - Date.now()) / 60000);
 
             logger("warn", `Detected inactivity in current login process! I'm waiting for bot(s) '${allAccountsOffline.flatMap((e) => e.index).join(", ")}' to change their status & become populated since >5 minutes! Canceling this login process in ~${cancelingInMinutes} minutes to prevent a softlock.`, true, true);
 
@@ -199,7 +199,7 @@ Controller.prototype.login = async function(firstLogin) {
         }
 
         // Check if all accounts have their SteamUser data populated. Ignore accounts that are not online as they will never populate their user object
-        let allAccountsNotPopulated = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.ONLINE && !this.bots[e.accountName].user.limitations);
+        const allAccountsNotPopulated = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.ONLINE && !this.bots[e.accountName].user.limitations);
 
         if (allAccountsNotPopulated.length > 0) {
             logger("info", `All accounts logged in, waiting for user object of bot(s) '${allAccountsNotPopulated.flatMap((e) => e.index).join(", ")}' to populate...`, true, true, logger.animation("waiting")); // Cannot log with date to prevent log output file spam
@@ -227,14 +227,14 @@ Controller.prototype._processFastLoginQueue = function(allAccounts) {
     this.data.proxies.forEach((proxy) => {
 
         // Find all queued accounts using this proxy
-        let thisProxyAccs = allAccounts.filter((e) => this.bots[e.accountName].loginData.proxyIndex == proxy.proxyIndex);
+        const thisProxyAccs = allAccounts.filter((e) => this.bots[e.accountName].loginData.proxyIndex == proxy.proxyIndex);
 
         // Make login timestamp entry for this proxy
         if (!this.info.lastLoginTimestamp[String(proxy.proxy)]) this.info.lastLoginTimestamp[String(proxy.proxy)] = 0;
 
         // Iterate over all accounts, use syncLoop() helper to make our job easier
         misc.syncLoop(thisProxyAccs.length, (loop, i) => {
-            let thisAcc = thisProxyAccs[i]; // Get logininfo for this account name
+            const thisAcc = thisProxyAccs[i]; // Get logininfo for this account name
 
             // Calculate wait time
             let waitTime = (this.info.lastLoginTimestamp[String(proxy.proxy)] + this.data.advancedconfig.loginDelay) - Date.now();
@@ -245,7 +245,7 @@ Controller.prototype._processFastLoginQueue = function(allAccounts) {
             // Wait before starting to log in
             setTimeout(() => {
 
-                let thisbot = this.bots[thisAcc.accountName];
+                const thisbot = this.bots[thisAcc.accountName];
 
                 // Reset logOnTries (do this here to guarantee a bot object exists for this account)
                 thisbot.loginData.logOnTries = 0;
@@ -260,7 +260,7 @@ Controller.prototype._processFastLoginQueue = function(allAccounts) {
                 thisbot._loginToSteam();
 
                 // Check if this bot is not offline anymore, resolve this iteration and update lastLoginTimestamp
-                let accIsOnlineInterval = setInterval(() => {
+                const accIsOnlineInterval = setInterval(() => {
                     if (thisbot.status == Bot.EStatus.OFFLINE) return;
 
                     clearInterval(accIsOnlineInterval);
@@ -286,7 +286,7 @@ Controller.prototype._processSlowLoginQueue = function(allAccounts) {
 
     // Iterate over all accounts, use syncLoop() helper to make our job easier
     misc.syncLoop(allAccounts.length, (loop, i) => {
-        let thisAcc = allAccounts[i]; // Get logininfo for this account name
+        const thisAcc = allAccounts[i]; // Get logininfo for this account name
 
         // Calculate wait time
         let waitTime = (this.info.lastLoginTimestamp[String(this.bots[thisAcc.accountName].loginData.proxy)] + this.data.advancedconfig.loginDelay) - Date.now();
@@ -297,7 +297,7 @@ Controller.prototype._processSlowLoginQueue = function(allAccounts) {
         // Wait before starting to log in
         setTimeout(() => {
 
-            let thisbot = this.bots[thisAcc.accountName];
+            const thisbot = this.bots[thisAcc.accountName];
 
             // Reset logOnTries (do this here to guarantee a bot object exists for this account)
             thisbot.loginData.logOnTries = 0;
@@ -312,7 +312,7 @@ Controller.prototype._processSlowLoginQueue = function(allAccounts) {
             thisbot._loginToSteam();
 
             // Check if this bot is not offline anymore, resolve this iteration and update lastLoginTimestamp
-            let accIsOnlineInterval = setInterval(() => {
+            const accIsOnlineInterval = setInterval(() => {
                 if (thisbot.status == Bot.EStatus.OFFLINE) return;
 
                 clearInterval(accIsOnlineInterval);
