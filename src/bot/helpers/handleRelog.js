@@ -4,7 +4,7 @@
  * Created Date: 2023-10-05 16:14:46
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-03 18:56:32
+ * Last Modified: 2024-05-04 12:14:19
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -27,7 +27,7 @@ const Bot = require("../bot");
  */
 Bot.prototype.switchProxy = function(newProxyIndex) {
 
-    if (newProxyIndex == undefined) return new Error("newProxyIndex is undefined"); // Explicitly check for undefined to prevent the value 0 from triggering this check
+    if (newProxyIndex == undefined) return new Error("Parameter newProxyIndex must not be undefined"); // Explicitly check for undefined to prevent the value 0 from triggering this check
 
     logger("info", `[${this.logPrefix}] Switching proxy from ${this.loginData.proxyIndex} to ${newProxyIndex}. The bot account will relog in a moment...`);
 

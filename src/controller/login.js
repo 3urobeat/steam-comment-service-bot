@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-03 19:55:19
+ * Last Modified: 2024-05-04 12:57:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -127,10 +127,13 @@ Controller.prototype.login = async function(firstLogin) {
     // Register interval to check if all accounts have been processed
     let allAccsOnlineInterval = setInterval(() => {
 
-        // Check if all accounts have been processed
-        let allNotOffline = allAccounts.every((e) => this.bots[e.accountName].status != Bot.EStatus.OFFLINE);// && this.bots[e.accountName].status != Bot.EStatus.POSTPONED);
+        // Check if all accounts in this login request have changed their status to not OFFLINE
+        let allAccountsOffline = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.OFFLINE);
 
-        if (!allNotOffline) return;
+        if (allAccountsOffline.length > 0) {
+            logger("debug", `Controller login(): Waiting for bot(s) '${allAccountsOffline.flatMap((e) => e.index).join(", ")}' to switch status to not OFFLINE before resolving...`, true, true); // Cannot log with date to prevent log output file spam
+            return;
+        }
 
         // Check if all accounts have their SteamUser data populated. Ignore accounts that are not online as they will never populate their user object
         let allAccountsNotPopulated = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.ONLINE && !this.bots[e.accountName].user.limitations);
