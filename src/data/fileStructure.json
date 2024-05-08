@@ -518,7 +518,7 @@
         {
             "path": "src/controller/helpers/friendlist.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/friendlist.js",
-            "checksum": "0753c10e9b2e55388014a005b8a21eed"
+            "checksum": "b2440b26ecd6ebba5cc54ac823e35c14"
         },
         {
             "path": "src/controller/helpers/getBots.js",
@@ -563,27 +563,27 @@
         {
             "path": "src/data/lang/chinese.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/chinese.json",
-            "checksum": "b6b4d96c7eb14d097904163336dc3da2"
+            "checksum": "4cd2509c0e0125fa2166901c03ae960b"
         },
         {
             "path": "src/data/lang/english.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/english.json",
-            "checksum": "a6f26ae844583175e729ced992b433ce"
+            "checksum": "6d888d188a93c91d6226fa75f576503a"
         },
         {
             "path": "src/data/lang/portuguese.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/portuguese.json",
-            "checksum": "0a83249bb51bfb36b1c2e4ed4887fe37"
+            "checksum": "2049d7f916c4cdd8687b6d014aa940b5"
         },
         {
             "path": "src/data/lang/russian.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/russian.json",
-            "checksum": "acca87a864e611aaaa6733e0964ce4fc"
+            "checksum": "63fa3da42a0e915a1f0e5c1ee60a0358"
         },
         {
             "path": "src/data/lang/traditional-chinese.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/traditional-chinese.json",
-            "checksum": "77dac08416877be42feade0473810c13"
+            "checksum": "ff9dab1c2b225c5f6b360aae9a9f91ac"
         },
         {
             "path": "src/dataManager/dataCheck.js",

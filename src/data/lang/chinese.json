@@ -42,8 +42,8 @@
     "followsuccess": "所有未追随/已追随的操作已发送。失败: ${failedamount}/${totalamount}",
 
     "useradded": "你好！感谢添加我！\n使用 '${cmdprefix}comment' 请求一条免费评论\n输入 '${cmdprefix}help' 了解更多命令，或 '${cmdprefix}about' 了解更多信息！\n你可以使用'${cmdprefix}lang'命令在${langcount}语言之间切换。",
-    "userunfriend": "由于朋友列表空间不足，您已在 ${forceFriendlistSpaceTime} 天内因不活跃而被解除好友关系。\n如果您需要我，请随时再次添加我！",
-    "userforceunfriend": "由于 ${unfriendtime} 天不活跃，您已被解除好友关系。\n如果您需要我，请随时再次添加我！",
+    "userforceunfriend": "由于朋友列表空间不足，您已在 ${forceFriendlistSpaceTime} 天内因不活跃而被解除好友关系。\n如果您需要我，请随时再次添加我！",
+    "userunfriend": "由于 ${unfriendtime} 天不活跃，您已被解除好友关系。\n如果您需要我，请随时再次添加我！",
 
     "userspamblock": "由于垃圾信息，您已被封锁 90 秒。",
     "usernotfriend": "请在使用命令之前先添加我为好友！",

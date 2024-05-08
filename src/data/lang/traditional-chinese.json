@@ -25,7 +25,7 @@
     "commentretrying": "${failedamount}/${numberOfComments}條評論失敗。開始重試 ${untilStr}. (Attempt ${thisattempt}/${maxattempt})",
     "commentsuccess": "全部評論已發送。 無法傳送數量: ${failedamount}/${numberOfComments}\n如果你覺得這個還不錯的話，在我的留言區底下留下好評，讓更多人知道!",
     "genericnoaccounts": "對不起，你輸入無效的ID了。",
-    
+
     "genericnounlimitedaccs": "對不起，目前帳號沒貨。請聯繫開發者\n${cmdprefix}owner",
     "genericrequestless": "目前只有${availablenow}個可以使用。",
     "genericnotenoughavailableaccs": "對不起，目前沒有足夠的帳號可用於提供的ID資料。請等待 ${waittime} and try again or only request ${availablenow} now.",
@@ -41,8 +41,8 @@
     "followsuccess": "未追蹤已追蹤已發送成功。無法傳送數量: ${failedamount}/${totalamount}",
 
     "useradded": "你好哇^w^ 謝謝你添加我為你的好友\n我是一個免費服務有: '${cmdprefix}comment' - 評論\n'${cmdprefix}help' - 菜單\n'${cmdprefix}about' - 關於\n'${cmdprefix}lang' - 切換語言",
-    "userunfriend": "由於使用者太多，你${forceFriendlistSpaceTime}天沒使用我\n如果還有需要繼續使用請添加。",
-    "userforceunfriend": "你${unfriendtime}天沒使用我\n如果還有需要繼續使用請添加。",
+    "userforceunfriend": "由於使用者太多，你${forceFriendlistSpaceTime}天沒使用我\n如果還有需要繼續使用請添加。",
+    "userunfriend": "你${unfriendtime}天沒使用我\n如果還有需要繼續使用請添加。",
 
     "userspamblock": "已封鎖90秒\n原因 : 刷屏",
     "usernotfriend": "請在使用我之前添加好友。",
