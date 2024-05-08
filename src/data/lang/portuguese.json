@@ -122,7 +122,7 @@
     "mysessionscmdnosessions": "Atualmente não há sessões ativas que você iniciou.",
 
     "addfriendcmdacclimited": "Não é possível adicionar o amigo ${profileid} com o bot0 porque a conta do bot está limitada.",
-    "addfriendcmdsuccess": "Adicionando amigo ${profileid} com todas as contas de bot... Isso levará aproximadamente ~estimatedtime segundos. Por favor, verifique o log para possíveis erros.",
+    "addfriendcmdsuccess": "Adicionando amigo ${profileid} com todas as contas de bot... Isso levará aproximadamente ~${estimatedtime} segundos. Por favor, verifique o log para possíveis erros.",
     "unfriendcmdsuccess": "Estou cancelando a amizade com você em todas as contas de bot. Isso levará um momento...\nVocê pode me enviar um pedido de amizade novamente a qualquer momento.",
     "unfriendidcmdsuccess": "Removido o amigo ${profileid} de todas as contas de bot.",
 

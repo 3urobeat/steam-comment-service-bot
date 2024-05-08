@@ -122,7 +122,7 @@
     "mysessionscmdnosessions": "There are currently no active sessions that you have started.",
 
     "addfriendcmdacclimited": "Can't add friend ${profileid} with bot0 because the bot account is limited.",
-    "addfriendcmdsuccess": "Adding friend ${profileid} with all bot accounts... This will take ~estimatedtime seconds. Please check the log for potential errors.",
+    "addfriendcmdsuccess": "Adding friend ${profileid} with all bot accounts... This will take ~${estimatedtime} seconds. Please check the log for potential errors.",
     "unfriendcmdsuccess": "I am unfriending you with all bot accounts. This will take a moment...\nYou can send me a friend request again at any time.",
     "unfriendidcmdsuccess": "Removed friend ${profileid} from all bot accounts.",
 

@@ -568,17 +568,17 @@
         {
             "path": "src/data/lang/english.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/english.json",
-            "checksum": "05de5a7d2da79c40834733f124427980"
+            "checksum": "a6f26ae844583175e729ced992b433ce"
         },
         {
             "path": "src/data/lang/portuguese.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/portuguese.json",
-            "checksum": "1afec7300ee8f6fd729422e55994405f"
+            "checksum": "0a83249bb51bfb36b1c2e4ed4887fe37"
         },
         {
             "path": "src/data/lang/russian.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/russian.json",
-            "checksum": "9f93de745e5596791a2bdef226ee1b6b"
+            "checksum": "acca87a864e611aaaa6733e0964ce4fc"
         },
         {
             "path": "src/data/lang/traditional-chinese.json",
