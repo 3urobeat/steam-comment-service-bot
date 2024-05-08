@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-01 13:54:40
+ * Last Modified: 2024-05-08 20:49:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -60,7 +60,7 @@ module.exports.addFriend = {
             }
 
             respond(await commandHandler.data.getLang("addfriendcmdsuccess", { "profileid": res, "estimatedtime": 5 * commandHandler.controller.getBots().length }, requesterID));
-            logger("info", `Adding friend ${res} with all bot accounts... This will take ~${5 * commandHandler.controller.getBots().length} seconds.`);
+            logger("info", `Adding friend '${res}' with all bot accounts... This will take ~${5 * commandHandler.controller.getBots().length} seconds.`);
 
             commandHandler.controller.getBots().forEach((e, i) => {
                 // Check if this bot account is limited
@@ -72,8 +72,8 @@ module.exports.addFriend = {
                 if (e.user.myFriends[res] != 3 && e.user.myFriends[res] != 1) { // Check if provided user is not friend and not blocked
                     setTimeout(() => {
                         e.user.addFriend(new SteamID(res), (err) => {
-                            if (err) logger("error", `Error adding ${res} with bot${e.index}: ${err}`);
-                                else logger("info", `Added ${res} with bot${e.index} as friend.`);
+                            if (err) logger("error", `Error adding '${res}' with bot${e.index}: ${err}`);
+                                else logger("info", `Added '${res}' with bot${e.index} as friend.`);
                         });
 
                         commandHandler.controller.friendListCapacityCheck(e, (remaining) => { // Check remaining friendlist space
@@ -123,7 +123,7 @@ module.exports.unfriend = {
         // Unfriend message sender with all bot accounts if no id was provided and the command was called from the steam chat
         if (!args[0] && resInfo.userID && resInfo.fromSteamChat) {
             respond(commandHandler.data.getLang("unfriendcmdsuccess", null, requesterID));
-            logger("info", `Removing friend ${resInfo.userID} from all bot accounts...`);
+            logger("info", `Removing friend '${resInfo.userID}' from all bot accounts...`);
 
             commandHandler.controller.getBots().forEach((e, i) => {
                 setTimeout(() => {
@@ -151,7 +151,7 @@ module.exports.unfriend = {
                 });
 
                 respond(await commandHandler.data.getLang("unfriendidcmdsuccess", { "profileid": res }, requesterID));
-                logger("info", `Removed friend ${res} from all bot accounts.`);
+                logger("info", `Removed friend '${res}' from all bot accounts.`);
             });
         }
     }
@@ -204,19 +204,21 @@ module.exports.unfriendall = {
 
             for (let i = 0; i < commandHandler.controller.getBots().length; i++) {
                 for (const friend in commandHandler.controller.getBots()[i].user.myFriends) {
+                    const thisBot = commandHandler.controller.getBots()[i];
+
                     try {
                         setTimeout(() => {
                             const friendSteamID = new SteamID(String(friend));
 
                             if (!commandHandler.data.cachefile.ownerid.includes(friend)) { // Check for the "original" ownerid array here, we don't care about non Steam IDs
-                                logger("info", `Removing friend ${friendSteamID.getSteamID64()} from all bot accounts...`, false, false, logger.animation("loading"));
-                                commandHandler.controller.getBots()[i].user.removeFriend(friendSteamID);
+                                logger("info", `Removing friend '${friendSteamID.getSteamID64()}' from all bot accounts...`, false, false, logger.animation("loading"));
+                                thisBot.user.removeFriend(friendSteamID);
                             } else {
                                 logger("debug", `unfriendAll(): Friend ${friendSteamID.getSteamID64()} seems to be an owner, skipping...`);
                             }
                         }, 1000 * i); // Delay every iteration so that we don't make a ton of requests at once
                     } catch (err) {
-                        logger("error", `[Bot ${i}] unfriendall error unfriending ${friend}: ${err}`);
+                        logger("error", `[${thisBot.logPrefix}] unfriendall error unfriending ${friend}: ${err}`);
                     }
                 }
             }

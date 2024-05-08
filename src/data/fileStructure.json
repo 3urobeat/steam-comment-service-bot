@@ -388,7 +388,7 @@
         {
             "path": "src/commands/core/block.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/block.js",
-            "checksum": "02d2da4f42f8f267660e9beb46885251"
+            "checksum": "cae3d0d707509089dba88c42e19844ca"
         },
         {
             "path": "src/commands/core/comment.js",
@@ -408,7 +408,7 @@
         {
             "path": "src/commands/core/friend.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/friend.js",
-            "checksum": "011a6386096ab3260049b00cf045abab"
+            "checksum": "c57ca2eaabfb88383d37ea6d3506dd4f"
         },
         {
             "path": "src/commands/core/general.js",
@@ -418,7 +418,7 @@
         {
             "path": "src/commands/core/group.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/group.js",
-            "checksum": "4867499cb856539c981bc241d3b070d6"
+            "checksum": "dc04c054f927211c18a61913c06d5c15"
         },
         {
             "path": "src/commands/core/requests.js",
@@ -518,7 +518,7 @@
         {
             "path": "src/controller/helpers/friendlist.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/friendlist.js",
-            "checksum": "0e116bb6b2e761d1fc802ceb8a300082"
+            "checksum": "0753c10e9b2e55388014a005b8a21eed"
         },
         {
             "path": "src/controller/helpers/getBots.js",

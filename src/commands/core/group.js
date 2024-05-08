@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:07:07
+ * Last Modified: 2024-05-08 20:40:33
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -193,14 +193,16 @@ module.exports.leaveAllGroups = {
 
             for (let i = 0; i < commandHandler.controller.getBots().length; i++) {
                 for (const group in commandHandler.controller.getBots()[i].user.myGroups) {
+                    const thisBot = commandHandler.controller.getBots()[i];
+
                     try {
                         setTimeout(() => {
-                            if (commandHandler.controller.getBots()[i].user.myGroups[group] == 3) {
+                            if (thisBot.user.myGroups[group] == 3) {
                                 if (group != commandHandler.data.cachefile.botsgroupid && group != commandHandler.data.cachefile.configgroup64id) commandHandler.controller.getBots()[i].community.leaveGroup(String(group));
                             }
                         }, 1000 * i); // Delay every iteration so that we don't make a ton of requests at once
                     } catch (err) {
-                        logger("error", `[Bot ${i}] leaveallgroups error leaving ${group}: ${err}`);
+                        logger("error", `[${thisBot.logPrefix}] leaveallgroups error leaving ${group}: ${err}`);
                     }
                 }
             }
