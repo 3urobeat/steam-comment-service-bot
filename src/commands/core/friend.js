@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-08 20:49:09
+ * Last Modified: 2024-05-08 21:10:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -65,15 +65,15 @@ module.exports.addFriend = {
             commandHandler.controller.getBots().forEach((e, i) => {
                 // Check if this bot account is limited
                 if (e.user.limitations && e.user.limitations.limited == true) {
-                    logger("error", `Can't add friend ${res} with bot${e.index} because the bot account is limited.`);
+                    logger("error", `[${e.logPrefix}] Can't add user '${res}' as a friend because the bot account is limited.`);
                     return;
                 }
 
                 if (e.user.myFriends[res] != 3 && e.user.myFriends[res] != 1) { // Check if provided user is not friend and not blocked
                     setTimeout(() => {
                         e.user.addFriend(new SteamID(res), (err) => {
-                            if (err) logger("error", `Error adding '${res}' with bot${e.index}: ${err}`);
-                                else logger("info", `Added '${res}' with bot${e.index} as friend.`);
+                            if (err) logger("error", `[${e.logPrefix}] Failed to add '${res}' as a friend: ${err}`);
+                                else logger("info", `[${e.logPrefix}] Added '${res}' as a friend.`);
                         });
 
                         commandHandler.controller.friendListCapacityCheck(e, (remaining) => { // Check remaining friendlist space
@@ -81,7 +81,7 @@ module.exports.addFriend = {
                         });
                     }, 5000 * i);
                 } else {
-                    logger("warn", `bot${e.index} is already friend with ${res} or the account was blocked/blocked you.`); // Somehow logs steamIDs in separate row?!
+                    logger("warn", `[${e.logPrefix}] This bot account is already friend with '${res}' or the account was blocked/blocked you.`);
                 }
             });
         });
@@ -202,10 +202,8 @@ module.exports.unfriendall = {
             respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("unfriendallcmdstart", null, requesterID)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
             logger("info", "Starting to unfriend everyone...");
 
-            for (let i = 0; i < commandHandler.controller.getBots().length; i++) {
-                for (const friend in commandHandler.controller.getBots()[i].user.myFriends) {
-                    const thisBot = commandHandler.controller.getBots()[i];
-
+            commandHandler.controller.getBots().forEach((thisBot, i) => {
+                for (const friend in thisBot.user.myFriends) {
                     try {
                         setTimeout(() => {
                             const friendSteamID = new SteamID(String(friend));
@@ -221,7 +219,7 @@ module.exports.unfriendall = {
                         logger("error", `[${thisBot.logPrefix}] unfriendall error unfriending ${friend}: ${err}`);
                     }
                 }
-            }
+            });
         }, 30000);
     }
 };
