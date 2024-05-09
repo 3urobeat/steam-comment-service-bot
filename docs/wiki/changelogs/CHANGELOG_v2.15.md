@@ -6,6 +6,7 @@
 **Current**  
 - [2.15.0](#2.15.0)
 - [2.15.1](#2.15.1)
+- [2.15.2](#2.15.2)
   
 &nbsp;
 
@@ -160,3 +161,38 @@ Commit: [be41d68](https://github.com/3urobeat/steam-comment-service-bot/commit/b
 - Minor other changes
 
 Commit: [a8a04eb](https://github.com/3urobeat/steam-comment-service-bot/commit/a8a04eb)
+
+&nbsp;
+
+<a id="2.15.2"></a>
+
+## **2024-05-09, Version 2.15.2**
+**Additions:**
+- Added traditional chinese translation [@Tira-tw](https://github.com/Tira-tw) in [#242](https://github.com/3urobeat/steam-comment-service-bot/pull/242)
+- Added !add alias to !addfriend command
+- Added steamGuardQrCode event to enable plugins to resolve Steam Guard QR-Code requests
+- Added more login related log messages to default log level
+- Added more login related debug log messages to improve ability to debug login process resolving issues
+- Added (experimental) force-resolve feature to login process when inactivity is detected
+- Added setting 'enableRelogOnLogOnSessionReplaced' to `advancedconfig.json` to control whether the bot should relog accounts that have lost their connection with the error 'LogOnSessionReplaced'. Default value is `true`. To retain the same behavior as previously, where the bot would skip those accounts, set the value to `false`.
+
+**Fixes:**
+- Fixed login starting faster than plugin load, making it unable for them to handle steamGuardCode events
+- Fixed proxy switcher not switching to proxy 0
+- Fixed default quotes file containing a political entry
+- (Potentially) finally fixed 'Already logged on, cannot log on again' errors when relogging for good
+- Fixed potential login softlock when account switches proxy while a login process is active, with that account queued in it
+- Fixed wrong syntax of variable in language string 'addfriendcmdsuccess'
+- Fixed 'userunfriend' & 'userforceunfriend' language strings being flipped internally
+
+**Changes:**
+- The bot will now always emit the ready event on the second login rerun even if POSTPONED accounts still exist
+- Refactored some code to use the proper log prefix more consistently instead of sometimes switching to bot index
+- Refactored some code to surround userIDs more consistently with quotation marks
+- Refactored some code to simplify the unfriendall command
+- Improved contributing page
+- Improved issue templates
+- Migrated eslint config for eslint v9 and added & enforced two more rules
+- Updated hostname check
+- Updated dependencies
+- Minor other changes
