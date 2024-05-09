@@ -26,7 +26,7 @@ const DataManager = require("./dataManager.js");
  * @returns {Promise.<void>} Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importFromDisk = async function () {
-    let _this = this; // Make this accessible within the functions below
+    const _this = this; // Make this accessible within the functions below
 
     /* eslint-disable jsdoc/require-jsdoc */
     function loadCache() {
@@ -138,7 +138,7 @@ DataManager.prototype._importFromDisk = async function () {
 
     function loadLoginInfo() {
         return new Promise((resolve) => {
-            let logininfo = [];
+            const logininfo = [];
 
             // Check accounts.txt first so we can ignore potential syntax errors in logininfo
             if (fs.existsSync("./accounts.txt")) {
@@ -177,7 +177,7 @@ DataManager.prototype._importFromDisk = async function () {
                     logger("warn", "The usage of 'logininfo.json' is deprecated, please consider moving your accounts to 'accounts.txt' instead!", true);
                     logger("warn", "The usage of 'logininfo.json' is deprecated, please consider moving your accounts to 'accounts.txt' instead!");
 
-                    let logininfoFile = require(srcdir + "/../logininfo.json");
+                    const logininfoFile = require(srcdir + "/../logininfo.json");
 
                     // Reformat to use new logininfo object structure
                     Object.keys(logininfoFile).forEach((k, i) => {
@@ -277,7 +277,7 @@ DataManager.prototype._importFromDisk = async function () {
     function loadLanguage() {
         return new Promise((resolve) => {
             try {
-                let obj = {};
+                const obj = {};
 
                 if (!fs.existsSync("./src/data/lang")) fs.mkdirSync("./src/data/lang");
 

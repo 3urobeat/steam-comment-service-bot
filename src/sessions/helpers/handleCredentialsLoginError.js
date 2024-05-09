@@ -26,7 +26,7 @@ const SessionHandler = require("../sessionHandler.js");
 SessionHandler.prototype._handleCredentialsLoginError = function(err) {
 
     // Define a few enums on which we won't bother to relog
-    let blockedEnumsForRetries = [EResult.InvalidPassword, EResult.LoggedInElsewhere, EResult.InvalidName, EResult.InvalidEmail, EResult.Banned, EResult.AccountNotFound, EResult.AccountLoginDeniedThrottle, EResult.RateLimitExceeded];
+    const blockedEnumsForRetries = [EResult.InvalidPassword, EResult.LoggedInElsewhere, EResult.InvalidName, EResult.InvalidEmail, EResult.Banned, EResult.AccountNotFound, EResult.AccountLoginDeniedThrottle, EResult.RateLimitExceeded];
 
     // Check if this is a blocked enum or if all retries are used
     if (this.bot.loginData.logOnTries > this.controller.data.advancedconfig.maxLogOnRetries || blockedEnumsForRetries.includes(err.eresult)) { // Skip account

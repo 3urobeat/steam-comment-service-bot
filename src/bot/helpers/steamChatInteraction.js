@@ -39,8 +39,8 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
     if (!txt) return logger("warn", "sendChatMessage() was called without any message content! Ignoring call...");
     if (typeof txt !== "string") return logger("warn", "sendChatMessage() was called with txt that isn't a string! Ignoring call...");
 
-    let steamID64 = resInfo.userID;
-    let username  = _this.user.users[steamID64] ? _this.user.users[steamID64].player_name : ""; // Set username to nothing in case they are not cached yet to avoid errors
+    const steamID64 = resInfo.userID;
+    const username  = _this.user.users[steamID64] ? _this.user.users[steamID64].player_name : ""; // Set username to nothing in case they are not cached yet to avoid errors
 
     let relationshipStatus = SteamUser.EFriendRelationship.None;
     if (_this.user.myFriends[steamID64]) relationshipStatus = SteamUser.EFriendRelationship[_this.user.myFriends[steamID64]];
@@ -50,14 +50,14 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
     if (resInfo.charLimit) limit = resInfo.charLimit;
 
     // Allow resInfo to overwrite cutStringsIntelligently's cutChars
-    let cutChars = resInfo.cutChars || null;
+    const cutChars = resInfo.cutChars || null;
 
     // Check if message should be sent without a prefix and set it to an empty string
     if (!resInfo.prefix) resInfo.prefix = "";
         else resInfo.prefix += " "; // Add whitespace between prefix and message content
 
     // Get the correct part to send without breaking links and add prefix infront
-    let thisPart = resInfo.prefix + cutStringsIntelligently(txt, limit, cutChars)[part];
+    const thisPart = resInfo.prefix + cutStringsIntelligently(txt, limit, cutChars)[part];
 
     // Log full message if in debug mode, otherwise log cut down version
     if (_this.controller.data.advancedconfig.printDebug) {
@@ -133,8 +133,8 @@ Bot.prototype.readChatMessage = function(steamID64, timeout) {
         this.friendMessageBlock.push(steamID64);
 
         // Provide function to handle event
-        let handleEvent = (steamID, message) => { // ES6 function to keep previous context
-            let msgSteamID64 = new SteamID(String(steamID)).getSteamID64();
+        const handleEvent = (steamID, message) => { // ES6 function to keep previous context
+            const msgSteamID64 = new SteamID(String(steamID)).getSteamID64();
 
             if (msgSteamID64 != steamID64) return; // Ignore if not from our user
 

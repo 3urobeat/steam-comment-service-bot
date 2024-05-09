@@ -4,7 +4,7 @@
  * Created Date: 2022-10-09 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-28 22:31:15
+ * Last Modified: 2024-05-03 12:51:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -15,7 +15,7 @@
  */
 
 
-const SteamSession = require("steam-session"); // eslint-disable-line
+const SteamSession = require("steam-session");
 
 const Bot     = require("../bot/bot.js"); // eslint-disable-line
 const EStatus = require("../bot/EStatus.js");
@@ -170,9 +170,9 @@ SessionHandler.prototype.attemptTokenRenew = function() {
                         return;
                     }
 
-                    let newToken      = this.session.refreshToken;
-                    let jwtObj        = this.controller.data.decodeJWT(newToken); // Decode the token we've found
-                    let validUntilStr = `${(new Date(jwtObj.exp * 1000)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)`;
+                    const newToken      = this.session.refreshToken;
+                    const jwtObj        = this.controller.data.decodeJWT(newToken); // Decode the token we've found
+                    const validUntilStr = `${(new Date(jwtObj.exp * 1000)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)`;
 
                     logger("info", `[${this.bot.logPrefix}] Successfully renewed refresh token! It is now valid until '${validUntilStr}'!`);
 

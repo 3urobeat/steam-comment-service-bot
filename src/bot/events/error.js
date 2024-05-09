@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-08 17:44:50
+ * Last Modified: 2024-05-09 14:05:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -28,22 +28,14 @@ Bot.prototype._attachSteamErrorEvent = function() {
     // Handle errors that were caused during logOn
     this.user.on("error", (err) => {
 
-        // Custom behavior for LogonSessionReplaced error
-        if (err.eresult == EResult.LogonSessionReplaced) {
-            logger("", "", true);
-            logger("warn", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam! Reason: 'Error: LogonSessionReplaced'. I won't try to relog this account because someone else is using it now.`, false, false, null, true); // Force print this message now
+        // Do not relog on LogOnSessionReplaced if feature is disabled in advancedconfig
+        if (err.eresult == EResult.LogonSessionReplaced && !this.data.advancedconfig.enableRelogOnLogOnSessionReplaced) {
+            logger("warn", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam! Reason: 'Error: LogonSessionReplaced'. I won't try to relog this account because 'enableRelogOnLogOnSessionReplaced' is disabled in 'advancedconfig.json'.`, false, false, null, true); // Force print this message now
 
-            // Abort or skip account. No need to attach handleRelog() here
-            if (this.index == 0) {
-                logger("error", `${logger.colors.fgred}Failed account is bot0! Aborting...`, true);
-                return this.controller.stop();
-            } else {
-                this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
+            // Skip account and set status to ERROR so the account won't be used anymore
+            this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
 
-                // Set status to error so it won't be used for anything anymore
-                this.controller._statusUpdateEvent(this, Bot.EStatus.ERROR);
-            }
-
+            this.controller._statusUpdateEvent(this, Bot.EStatus.ERROR);
             return;
         }
 
@@ -73,7 +65,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
 
 
             // Check if all logOnTries are used or if this is a fatal error
-            let blockedEnumsForRetries = [EResult.Banned, EResult.AccountNotFound]; // No need to block InvalidPassword anymore as the SessionHandler handles credentials
+            const blockedEnumsForRetries = [EResult.Banned, EResult.AccountNotFound]; // No need to block InvalidPassword anymore as the SessionHandler handles credentials
 
             if (this.loginData.logOnTries > this.controller.data.advancedconfig.maxLogOnRetries || blockedEnumsForRetries.includes(err.eresult)) {
                 logger("error", `Couldn't log in bot${this.index} after ${this.loginData.logOnTries} attempt(s). ${err} (${err.eresult})`);

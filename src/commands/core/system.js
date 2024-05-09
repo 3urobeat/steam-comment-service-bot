@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 17:03:32
+ * Last Modified: 2024-05-03 13:08:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -35,7 +35,7 @@ module.exports.jobs = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // Check if no job is registered and abort
         if (commandHandler.controller.jobManager.jobs.length == 0) {
@@ -44,17 +44,17 @@ module.exports.jobs = {
         }
 
         // Helper function to convert lastExecTimestamp to human readable format
-        let convertTimestamp = (timestamp) => ((new Date(timestamp)).toISOString().replace(/T/, " ").replace(/\..+/, "")) + " (GMT time)";
+        const convertTimestamp = (timestamp) => ((new Date(timestamp)).toISOString().replace(/T/, " ").replace(/\..+/, "")) + " (GMT time)";
 
         // Construct str to respond with
         let str = await commandHandler.data.getLang("jobscmdregistered", null, resInfo.userID) + "\n";
 
         commandHandler.controller.jobManager.jobs.forEach((job) => {
-            let desc              = job.description ? "   " + job.description + "\n" : "";                  // Adds job description if one was specified
-            let intervalFormatted = commandHandler.controller.misc.timeToString(Date.now() + job.interval); // Hack: Add current time to use timeToString for formatting (it's designed to be used in an "until from now" situation)
+            const desc              = job.description ? "   " + job.description + "\n" : "";                  // Adds job description if one was specified
+            const intervalFormatted = commandHandler.controller.misc.timeToString(Date.now() + job.interval); // Hack: Add current time to use timeToString for formatting (it's designed to be used in an "until from now" situation)
 
             // Only show lastExecFormatted string if lastExecTimestamp isn't the same as registeredAt (tolerance of unnecessary 100ms) or job ran upon registration. The JobManager sets _lastExecTimestamp to Date.now() on registration if runOnRegistration == false
-            let lastExecFormatted = job._lastExecTimestamp - job._registeredAt > 100 || job.runOnRegistration ? convertTimestamp(job._lastExecTimestamp) : "/";
+            const lastExecFormatted = job._lastExecTimestamp - job._registeredAt > 100 || job.runOnRegistration ? convertTimestamp(job._lastExecTimestamp) : "/";
 
             str += `- '${job.name}' runs every ${intervalFormatted}, last at '${lastExecFormatted}'\n${desc}\n`;
         });
@@ -164,10 +164,10 @@ module.exports.update = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((modResInfo, txt) => respondModule(context, modResInfo, txt)); // Shorten each call. Updater takes resInfo as param and can modify it, so we need to pass the modified resInfo object here
+        const respond = ((modResInfo, txt) => respondModule(context, modResInfo, txt)); // Shorten each call. Updater takes resInfo as param and can modify it, so we need to pass the modified resInfo object here
 
         // If the first argument is "true" or "force" then we shall force an update
-        let force = (args[0] == "true" || args[0] == "force");
+        const force = (args[0] == "true" || args[0] == "force");
 
         // Use the correct message depending on if force is true or false with a ternary operator
         respond({ prefix: "/me", ...resInfo }, await commandHandler.data.getLang(force ? "updatecmdforce" : "updatecmdcheck", { "branchname": commandHandler.data.datafile.branch }, resInfo.userID));
@@ -226,14 +226,14 @@ module.exports.eval = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         if (!commandHandler.data.advancedconfig.enableevalcmd) {
             respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("evalcmdturnedoff", null, resInfo.userID)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
             return;
         }
 
-        const clean = text => { // eslint-disable-line no-case-declarations
+        const clean = text => {
             if (typeof(text) === "string") return text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
                 else return text;
         };
@@ -257,7 +257,7 @@ module.exports.eval = {
             });
 
             // Check for character limit and cut message
-            let chatResult = clean(evaled);
+            const chatResult = clean(evaled);
 
             if (chatResult.length >= 500) respond(`Code executed. Result:\n\n${chatResult.slice(0, 500)}.......\n\nResult too long for chat.`);
                 else respond(`Code executed. Result:\n\n${chatResult}`);

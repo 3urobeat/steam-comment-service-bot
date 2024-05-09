@@ -133,7 +133,7 @@ JobManager.prototype.unregisterJob = function(name) {
     }
 
     // Remove job and return null on success
-    let index = this.jobs.findIndex((e) => e.name === name);
+    const index = this.jobs.findIndex((e) => e.name === name);
 
     this.jobs.splice(index, 1);
 

@@ -20,7 +20,7 @@ const DataManager = require("../dataManager.js");
 
 const randomstring = arr => arr[Math.floor(Math.random() * arr.length)]; // Smol function to get random string from array
 
-let lastQuotes = []; // Tracks recently used quotes to avoid duplicates
+const lastQuotes = []; // Tracks recently used quotes to avoid duplicates
 
 
 /**

@@ -4,7 +4,7 @@
  * Created Date: 2023-05-28 12:18:49
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-22 17:51:02
+ * Last Modified: 2024-05-03 13:08:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -32,11 +32,11 @@ module.exports.getMiscArgs = (commandHandler, args, cmd, resInfo, respond) => {
         (async () => { // Lets us use await insidea Promise without creating an antipattern
 
             // Check for missing params
-            let cmdUsage = `'${resInfo.cmdprefix}${cmd} amount/"all" id/link'`;
+            const cmdUsage = `'${resInfo.cmdprefix}${cmd} amount/"all" id/link'`;
 
             if (args[0]) args[0] = args[0].toLowerCase();
             if (args[0] == "max") args[0] = "all";                     // Convert "all" alias
-            let amount = args[0] == "all" ? args[0] : Number(args[0]); // If user provides "all" then keep it as is and update it later to how many accounts are available, otherwise convert it to a number
+            const amount = args[0] == "all" ? args[0] : Number(args[0]); // If user provides "all" then keep it as is and update it later to how many accounts are available, otherwise convert it to a number
 
             if (args.length == 0 || (amount != "all" && isNaN(amount)) || amount == 0) {
                 respond(await commandHandler.data.getLang("invalidnumber", { "cmdusage": cmdUsage }, resInfo.userID)); // An empty string will become a 0
@@ -60,7 +60,7 @@ module.exports.getMiscArgs = (commandHandler, args, cmd, resInfo, respond) => {
             }
 
             // Process input and check if ID is valid
-            commandHandler.controller.handleSteamIdResolving(args[1], null, async (err, destParam, idType) => { // eslint-disable-line no-unused-vars
+            commandHandler.controller.handleSteamIdResolving(args[1], null, async (err, destParam, idType) => {
                 logger("debug", `CommandHandler getMiscArgs() success. amount: ${amount} | dest: ${destParam}`);
 
                 resolve({

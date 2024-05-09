@@ -25,26 +25,26 @@ const DataManager = require("../dataManager.js");
  * Note: This function should be redundant as SteamUser now automatically attempts to renew refreshTokens when `renewRefreshTokens` is enabled.
  */
 DataManager.prototype._startExpiringTokensCheckInterval = function() {
-    let _this = this;
+    const _this = this;
 
     /* eslint-disable-next-line jsdoc/require-jsdoc */
     async function scanDatabase() {
         logger("debug", "DataManager detectExpiringTokens(): Scanning tokens.db for expiring tokens...");
 
-        let expiring = {};
-        let expired  = {};
+        const expiring = {};
+        const expired  = {};
 
         // Get all tokens & bots
-        let docs = await _this.tokensDB.findAsync({});
+        const docs = await _this.tokensDB.findAsync({});
         if (docs.length == 0) return;
 
-        let bots = _this.controller.getBots("*", true);
+        const bots = _this.controller.getBots("*", true);
 
         // Loop over all docs and attempt to renew their token. Notify the bot owners if Steam did not issue a new one
         _this.controller.misc.syncLoop(docs.length, async (loop, i) => {
-            let e        = docs[i];
+            const e        = docs[i];
             let tokenObj = _this.decodeJWT(e.token);
-            let thisbot  = bots[e.accountName];
+            const thisbot  = bots[e.accountName];
 
             // Check if decoding failed
             if (!tokenObj) {
@@ -58,7 +58,7 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
 
 
             // Attempt to renew the token automatically and check if it succeeded
-            let newToken = await thisbot.sessionHandler.attemptTokenRenew();
+            const newToken = await thisbot.sessionHandler.attemptTokenRenew();
 
             tokenObj = _this.decodeJWT(newToken);
 
@@ -127,8 +127,8 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
  * @param {object} expiring Object of botobject entries to ask user for
  */
 DataManager.prototype._askForGetNewToken = function(expiring) {
-    let EStatus = require("../../bot/EStatus.js"); // Import not at top scope as this can be undefined because this helper file gets loaded before updater ran
-    let _this   = this;
+    const EStatus = require("../../bot/EStatus.js"); // Import not at top scope as this can be undefined because this helper file gets loaded before updater ran
+    const _this   = this;
 
     /* eslint-disable-next-line jsdoc/require-jsdoc */
     function askForRelog() { // TODO: Add support for asking in steam chat
@@ -172,7 +172,7 @@ DataManager.prototype._askForGetNewToken = function(expiring) {
     // Check for an active request before asking user for relog
     logger("debug", "DataManager _askForGetNewToken(): Checking for active requests...");
 
-    let objlength = Object.keys(this.controller.activeRequests).length; // Save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering
+    const objlength = Object.keys(this.controller.activeRequests).length; // Save this before the loop as deleting entries will change this number and lead to the loop finished check never triggering
 
     if (Object.keys(this.controller.activeRequests).length == 0) askForRelog(); // Don't bother with loop below if obj is empty
 

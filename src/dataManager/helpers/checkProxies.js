@@ -24,9 +24,9 @@ const DataManager = require("../dataManager");
  * @returns {boolean} True if the proxy can reach steamcommunity.com, false otherwise.
  */
 DataManager.prototype.checkProxy = async function(proxyIndex) {
-    let { checkConnection, splitProxyString } = this.controller.misc;
+    const { checkConnection, splitProxyString } = this.controller.misc;
 
-    let thisProxy = this.proxies[proxyIndex];
+    const thisProxy = this.proxies[proxyIndex];
 
     // Check connection using checkConnection helper
     await checkConnection("https://steamcommunity.com", true, thisProxy.proxy != null ? splitProxyString(thisProxy.proxy) : null) // Quick ternary to only split non-hosts
@@ -50,7 +50,7 @@ DataManager.prototype.checkProxy = async function(proxyIndex) {
  * @returns {Promise.<void>} Resolves when all proxies have been checked
  */
 DataManager.prototype.checkAllProxies = async function(ignoreLastCheckedWithin = 0) {
-    let promiseArr = [];
+    const promiseArr = [];
 
     // Iterate over all proxies and call this.checkProxies(). We don't need any delay here as all requests go over different IPs
     this.proxies.forEach((e) => {

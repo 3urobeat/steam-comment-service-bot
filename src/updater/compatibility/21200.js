@@ -20,7 +20,7 @@ const fs = require("fs");
 
 // Compatibility feature for upgrading to 2.12.0
 module.exports.run = (controller, resolve) => {
-    let cache = controller.data.cachefile;
+    const cache = controller.data.cachefile;
 
     // Only do something if at least one of the two values exists
     if (cache.configjson && (cache.configjson.globalcommentcooldown || cache.configjson.allowcommentcmdusage != undefined)) { // Intentionally checking specifically for undefined
@@ -32,7 +32,7 @@ module.exports.run = (controller, resolve) => {
         delete controller.data.config.globalcommentcooldown;
 
         // Format and write new config
-        let stringifiedconfig = JSON.stringify(controller.data.config, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
+        const stringifiedconfig = JSON.stringify(controller.data.config, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
             if (v instanceof Array) return JSON.stringify(v);
             return v;
         }, 4)

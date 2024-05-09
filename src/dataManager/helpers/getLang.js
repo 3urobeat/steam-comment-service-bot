@@ -39,7 +39,7 @@ DataManager.prototype.getLang = async function(str, replace = null, userIDOrLang
 
         } else { // Search for user in database if this is an ID
 
-            let res = await this.userSettingsDB.findOneAsync({ "id": userIDOrLanguage }, {});
+            const res = await this.userSettingsDB.findOneAsync({ "id": userIDOrLanguage }, {});
 
             if (res) {
                 lang = this.lang[res.lang];
@@ -65,13 +65,13 @@ DataManager.prototype.getLang = async function(str, replace = null, userIDOrLang
     if (replace) {
         Object.keys(replace).forEach((e) => {
             // Add ${ prefix and } suffix to e
-            let rawPattern = "${" + e + "}";
+            const rawPattern = "${" + e + "}";
 
             // Skip iteration and display warning if the string does not contain the specified keyword
             if (!langStr.includes(rawPattern)) return logger("warn", `getLang(): The string '${str}' of language '${lang.langname}' does not contain the provided keyword '${rawPattern}'!`);
 
             // Build regex pattern to dynamically replace all occurrences below. Escape rawPattern before concatenating to avoid special char issues later on
-            let regex = new RegExp(rawPattern.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"), "g"); // Regex credit: https://stackoverflow.com/a/17886301
+            const regex = new RegExp(rawPattern.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"), "g"); // Regex credit: https://stackoverflow.com/a/17886301
 
             langStr = langStr.replace(regex, replace[e]);
         });

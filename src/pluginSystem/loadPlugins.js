@@ -4,7 +4,7 @@
  * Created Date: 2023-06-04 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 2024-03-08 18:19:31
+ * Last Modified: 2024-05-03 12:52:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -24,6 +24,7 @@ const PLUGIN_EVENTS = {
     READY: "ready",
     STATUS_UPDATE: "statusUpdate",
     steamGuardInput: "steamGuardInput",
+    steamGuardQrCode: "steamGuardQrCode"
 };
 
 
@@ -67,12 +68,12 @@ PluginSystem.prototype._loadPlugins = async function () {
 
     // Check for the latest version of all plugins
     if (!this.controller.data.advancedconfig.disablePluginsAutoUpdate) {
-        let npminteraction = require("../controller/helpers/npminteraction.js");
+        const npminteraction = require("../controller/helpers/npminteraction.js");
 
         logger("info", "PluginSystem: Searching for and installing plugin updates...", false, true, logger.animation("loading"));
 
         // Get all plugin names. Ignore locally installed ones by checking for "file:"
-        let pluginNamesArr = plugins.flatMap((e) => { // Use flatMap instead of map to omit empty results instead of including undefined
+        const pluginNamesArr = plugins.flatMap((e) => { // Use flatMap instead of map to omit empty results instead of including undefined
             if (!e[1].startsWith("file:")) return e[0];
                 else return [];
         });
@@ -152,7 +153,6 @@ PluginSystem.prototype._loadPlugins = async function () {
 
         // Call the exposed event functions if they exist
         Object.entries(PLUGIN_EVENTS).forEach(([eventName, event]) => { // eslint-disable-line no-unused-vars
-            // eslint-disable-line
             this.controller.events.on(event, (...args) => pluginInstance[event]?.call(pluginInstance, ...args));
         });
     }

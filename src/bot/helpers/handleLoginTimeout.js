@@ -27,7 +27,7 @@ Bot.prototype.handleLoginTimeout = function() {
     if (this.data.advancedconfig.loginTimeout == 0) return logger("debug", `Bot handleLoginTimeout(): Ignoring timeout attach request for bot${this.index} because loginTimeout is disabled in advancedconfig!`);
         else logger("debug", `Bot handleLoginTimeout(): Attached ${this.data.advancedconfig.loginTimeout / 1000} seconds timeout for bot${this.index}...`);
 
-    let currentLogOnTry = this.loginData.logOnTries;
+    const currentLogOnTry = this.loginData.logOnTries;
 
     // Check if account is still offline with the same logOnTries value 60 seconds later and force progress
     setTimeout(() => {
@@ -36,7 +36,7 @@ Bot.prototype.handleLoginTimeout = function() {
         if (this.loginData.waitingFor2FA) return setTimeout(() => this.handleLoginTimeout(), 5000);
 
         // Ignore timeout if account progressed since then
-        let newLogOnTry = this.loginData.logOnTries;
+        const newLogOnTry = this.loginData.logOnTries;
 
         if (currentLogOnTry != newLogOnTry || this.status != Bot.EStatus.OFFLINE) return logger("debug", `Bot handleLoginTimeout(): Timeout for bot${this.index} done, acc not stuck. old/new logOnTries: ${currentLogOnTry}/${newLogOnTry} - acc status: ${this.status}`);
 

@@ -42,8 +42,8 @@
     "followsuccess": "Todos os seguir/deixar de seguir foram enviados. Falhou: ${failedamount}/${totalamount}",
 
     "useradded": "Olá! Obrigado por me adicionar!\nSolicite um comentário gratuito com '${cmdprefix}comment'\nDigite '${cmdprefix}help' para mais comandos ou '${cmdprefix}about' para mais informações!\nYou can use the '${cmdprefix}lang' command to switch between ${langcount} languages.",
-    "userunfriend": "Você foi desfeito como amigo por estar inativo por ${forceFriendlistSpaceTime} dias, pois a lista de amigos estava ficando cheia.\nSe precisar de mim novamente, sinta-se à vontade para me adicionar novamente!",
-    "userforceunfriend": "Você foi desfeito como amigo por estar inativo por ${unfriendtime} dias.\nSe precisar de mim novamente, sinta-se à vontade para me adicionar novamente!",
+    "userforceunfriend": "Você foi desfeito como amigo por estar inativo por ${forceFriendlistSpaceTime} dias, pois a lista de amigos estava ficando cheia.\nSe precisar de mim novamente, sinta-se à vontade para me adicionar novamente!",
+    "userunfriend": "Você foi desfeito como amigo por estar inativo por ${unfriendtime} dias.\nSe precisar de mim novamente, sinta-se à vontade para me adicionar novamente!",
 
     "userspamblock": "Você foi bloqueado por 90 segundos por fazer spam.",
     "usernotfriend": "Por favor, me adicione antes de usar um comando!",
@@ -122,7 +122,7 @@
     "mysessionscmdnosessions": "Atualmente não há sessões ativas que você iniciou.",
 
     "addfriendcmdacclimited": "Não é possível adicionar o amigo ${profileid} com o bot0 porque a conta do bot está limitada.",
-    "addfriendcmdsuccess": "Adicionando amigo ${profileid} com todas as contas de bot... Isso levará aproximadamente ~estimatedtime segundos. Por favor, verifique o log para possíveis erros.",
+    "addfriendcmdsuccess": "Adicionando amigo ${profileid} com todas as contas de bot... Isso levará aproximadamente ~${estimatedtime} segundos. Por favor, verifique o log para possíveis erros.",
     "unfriendcmdsuccess": "Estou cancelando a amizade com você em todas as contas de bot. Isso levará um momento...\nVocê pode me enviar um pedido de amizade novamente a qualquer momento.",
     "unfriendidcmdsuccess": "Removido o amigo ${profileid} de todas as contas de bot.",
 

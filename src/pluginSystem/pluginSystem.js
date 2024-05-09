@@ -4,7 +4,7 @@
  * Created Date: 2023-03-19 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-23 14:42:19
+ * Last Modified: 2024-05-01 15:19:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -29,6 +29,7 @@ const Bot            = require("../bot/bot.js");                 // eslint-disab
  * @property {function(): void} ready Controller ready event
  * @property {function(Bot, Bot.EStatus, Bot.EStatus): void} statusUpdate Controller statusUpdate event
  * @property {function(Bot, function(string): void): void} steamGuardInput Controller steamGuardInput event
+ * @property {function(Bot, string): void} steamGuardQrCode Controller steamGuardQrCode event
  */
 
 
@@ -114,7 +115,7 @@ PluginSystem.prototype.reloadPlugins = function () {
 /**
  * Internal: Loads all plugin npm packages and populates pluginList
  */
-PluginSystem.prototype._loadPlugins = function () {};
+PluginSystem.prototype._loadPlugins = async function () {};
 
 /**
  * Internal: Checks a plugin, displays relevant warnings and decides whether the plugin is allowed to be loaded

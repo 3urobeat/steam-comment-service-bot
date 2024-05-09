@@ -4,7 +4,7 @@
  * Created Date: 2023-10-05 16:14:46
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-08 11:48:23
+ * Last Modified: 2024-05-04 21:12:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -22,12 +22,12 @@ const Bot = require("../bot");
 
 
 /**
- * Changes the proxy of this bot account and relogs it.
+ * Changes the proxy of this bot account.
  * @param {number} newProxyIndex Index of the new proxy inside the DataManager.proxies array.
  */
 Bot.prototype.switchProxy = function(newProxyIndex) {
 
-    if (!newProxyIndex) return new Error("newProxyIndex is undefined");
+    if (newProxyIndex == undefined) return new Error("Parameter newProxyIndex must not be undefined"); // Explicitly check for undefined to prevent the value 0 from triggering this check
 
     logger("info", `[${this.logPrefix}] Switching proxy from ${this.loginData.proxyIndex} to ${newProxyIndex}. The bot account will relog in a moment...`);
 
@@ -62,7 +62,7 @@ Bot.prototype.switchProxy = function(newProxyIndex) {
 Bot.prototype.checkAndSwitchMyProxy = async function() {
 
     // Attempt to ping github.com (basically any non steamcommunity url) without a proxy to determine if the internet connection is not working
-    let hostConnectionRes = await this.controller.misc.checkConnection("https://github.com/3urobeat/steam-comment-service-bot", true)
+    const hostConnectionRes = await this.controller.misc.checkConnection("https://github.com/3urobeat/steam-comment-service-bot", true)
         .catch((err) => {
             if (this.index == 0) logger("info", `[Main] Your internet connection seems to be down. ${err.statusMessage}`); // Only log message for main acc to reduce clutter
         });
@@ -86,10 +86,10 @@ Bot.prototype.checkAndSwitchMyProxy = async function() {
 
 
     // Check if our proxy is down
-    let thisProxy = this.data.proxies.find((e) => e.proxyIndex == this.loginData.proxyIndex);
+    const thisProxy = this.data.proxies.find((e) => e.proxyIndex == this.loginData.proxyIndex);
 
     if (!thisProxy.isOnline) {
-        let activeProxies = this.controller.getBotsPerProxy(true); // Get all online proxies and their associated bot accounts
+        const activeProxies = this.controller.getBotsPerProxy(true); // Get all online proxies and their associated bot accounts
 
         // Check if no available proxy was found (exclude host) and return false
         if (activeProxies.length == 0) {
@@ -99,9 +99,9 @@ Bot.prototype.checkAndSwitchMyProxy = async function() {
 
 
         // Find proxy with least amount of associated bots
-        let leastUsedProxy = activeProxies.reduce((a, b) => a.bots.length < b.bots.length ? a : b);
+        const leastUsedProxy = activeProxies.reduce((a, b) => a.bots.length < b.bots.length ? a : b);
 
-        logger("warn", `[${this.logPrefix}] Failed to ping Steam using proxy ${this.loginData.proxyIndex}! Switched to proxy ${leastUsedProxy.proxyIndex} which currently has the least amount of usage and appears to be online.`);
+        logger("warn", `[${this.logPrefix}] Failed to ping Steam using proxy ${this.loginData.proxyIndex}! Switching to proxy ${leastUsedProxy.proxyIndex} which currently has the least amount of usage and appears to be online.`);
 
 
         // Switch proxy and relog, no need for handleRelog() to do something
@@ -127,7 +127,7 @@ Bot.prototype.handleRelog = async function() {
     this.loginData.relogTries++;
 
     // Check if proxy might be offline
-    let proxySwitched = await this.checkAndSwitchMyProxy();
+    const proxySwitched = await this.checkAndSwitchMyProxy();
 
     if (proxySwitched) return; // Stop execution if proxy was switched and bot is getting relogged
 
@@ -139,10 +139,10 @@ Bot.prototype.handleRelog = async function() {
     setTimeout(() => {
 
         // Abort if account is online again for some reason
-        if (this.status == Bot.EStatus.ONLINE) return logger("debug", `Bot handleRelog(): Timeout elapsed but bot${this.index} is not offline anymore. Ignoring...`);
+        if (this.status == Bot.EStatus.ONLINE) return logger("info", `[${this.logPrefix}] Relog timeout elapsed, however the account is already online again?! Ignoring relog request...`);
 
-        // Update status to offline and call login again
-        this.status = Bot.EStatus.OFFLINE;
+        // Update status and call login again
+        this.controller._statusUpdateEvent(this, Bot.EStatus.POSTPONED); // Important: Set to POSTPONED to let the current login request, which this acc is queued in, resolve. The following request will process it. This fixes a softlock where the current login process would never resolve.
         this.controller.login();
 
     }, this.controller.data.advancedconfig.relogTimeout);

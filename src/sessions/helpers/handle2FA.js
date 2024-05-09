@@ -4,7 +4,7 @@
  * Created Date: 2022-10-09 12:59:31
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-28 22:28:46
+ * Last Modified: 2024-05-01 14:56:23
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -81,7 +81,7 @@ SessionHandler.prototype._handle2FA = function(res) {
 SessionHandler.prototype._get2FAUserInput = function() {
 
     // Start timer to subtract it later from readyafter time
-    let steamGuardInputStart = Date.now(); // Measure time to subtract it later from readyafter time
+    const steamGuardInputStart = Date.now(); // Measure time to subtract it later from readyafter time
 
     // Define different question and timeout for main account as it can't be skipped
     let question;
@@ -180,5 +180,8 @@ SessionHandler.prototype._handleQRCode = function(res) {
         // Quick hack to prevent other messages from logging and pushing the QRCode up - start an empty readInput request which will be stopped by the authenticated event handler
         logger.readInput("", 90000, () => {});
     });
+
+    // Emit steamGuardQrCode event from our controller so that plugins can handle this event too
+    this.controller._steamGuardQrCodeEvent(this.bot, res.qrChallengeUrl);
 
 };

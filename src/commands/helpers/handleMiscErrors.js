@@ -4,7 +4,7 @@
  * Created Date: 2023-05-31 16:57:21
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-20 17:19:26
+ * Last Modified: 2024-05-04 22:04:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -15,7 +15,23 @@
  */
 
 
-const Bot = require("../../bot/bot.js"); // eslint-disable-line
+const Bot = require("../../bot/bot.js");
+
+
+/**
+ * Helper function to sort failed object by number so that it is easier to read
+ * @param {object} failedObj Current state of failed object
+ */
+function sortFailedCommentsObject(failedObj) {
+    const sortedvals = Object.keys(failedObj).sort((a, b) => {
+        return Number(a.split(" ")[0].replace("i", "")) - Number(b.split(" ")[0].replace("i", ""));
+    });
+
+    // Map sortedvals back to object if array is not empty - Credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
+    if (sortedvals.length > 0) failedObj = Object.assign(...sortedvals.map(k => ({ [k]: failedObj[k] })));
+
+    return failedObj;
+}
 
 
 /**
@@ -27,7 +43,7 @@ const Bot = require("../../bot/bot.js"); // eslint-disable-line
  * @returns {boolean} `true` if iteration should continue, `false` if iteration should be skipped using return
  */
 module.exports.handleVoteIterationSkip = function(commandHandler, loop, bot, id) {
-    let activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
+    const activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
 
     // Check if no bot account was found
     if (!bot) {
@@ -61,7 +77,7 @@ module.exports.handleVoteIterationSkip = function(commandHandler, loop, bot, id)
  * @returns {boolean} `true` if iteration should continue, `false` if iteration should be skipped using return
  */
 module.exports.handleFavoriteIterationSkip = function(commandHandler, loop, bot, id) {
-    let activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
+    const activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
 
     // Check if no bot account was found
     if (!bot) {
@@ -94,7 +110,7 @@ module.exports.handleFavoriteIterationSkip = function(commandHandler, loop, bot,
  * @param {string} id ID that receives the votes
  */
 module.exports.logVoteError = (error, commandHandler, bot, id) => {
-    let activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
+    const activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
 
     // Add proxy information if one was used for this account
     let proxiesDescription = "";
@@ -120,7 +136,7 @@ module.exports.logVoteError = (error, commandHandler, bot, id) => {
  * @param {string} id ID of the sharedfile that receives the favorites
  */
 module.exports.logFavoriteError = (error, commandHandler, bot, id) => {
-    let activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
+    const activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
 
     // Add proxy information if one was used for this account
     let proxiesDescription = "";
@@ -136,19 +152,3 @@ module.exports.logFavoriteError = (error, commandHandler, bot, id) => {
     // Sort failed object to make it easier to read
     activeReqEntry.failed = sortFailedCommentsObject(activeReqEntry.failed);
 };
-
-
-/**
- * Helper function to sort failed object by number so that it is easier to read
- * @param {object} failedObj Current state of failed object
- */
-function sortFailedCommentsObject(failedObj) {
-    let sortedvals = Object.keys(failedObj).sort((a, b) => {
-        return Number(a.split(" ")[0].replace("i", "")) - Number(b.split(" ")[0].replace("i", ""));
-    });
-
-    // Map sortedvals back to object if array is not empty - Credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
-    if (sortedvals.length > 0) failedObj = Object.assign(...sortedvals.map(k => ({ [k]: failedObj[k] })));
-
-    return failedObj;
-}

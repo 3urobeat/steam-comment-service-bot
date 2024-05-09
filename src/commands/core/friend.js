@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-08 18:24:40
+ * Last Modified: 2024-05-08 21:10:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -21,7 +21,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 
 module.exports.addFriend = {
-    names: ["addfriend"],
+    names: ["addfriend", "add"],
     description: "Adds the ID with all bot accounts. Requires unlimited accounts!",
     args: [
         {
@@ -43,8 +43,8 @@ module.exports.addFriend = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterID = resInfo.userID;
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const requesterID = resInfo.userID;
 
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
@@ -60,20 +60,20 @@ module.exports.addFriend = {
             }
 
             respond(await commandHandler.data.getLang("addfriendcmdsuccess", { "profileid": res, "estimatedtime": 5 * commandHandler.controller.getBots().length }, requesterID));
-            logger("info", `Adding friend ${res} with all bot accounts... This will take ~${5 * commandHandler.controller.getBots().length} seconds.`);
+            logger("info", `Adding friend '${res}' with all bot accounts... This will take ~${5 * commandHandler.controller.getBots().length} seconds.`);
 
             commandHandler.controller.getBots().forEach((e, i) => {
                 // Check if this bot account is limited
                 if (e.user.limitations && e.user.limitations.limited == true) {
-                    logger("error", `Can't add friend ${res} with bot${e.index} because the bot account is limited.`);
+                    logger("error", `[${e.logPrefix}] Can't add user '${res}' as a friend because the bot account is limited.`);
                     return;
                 }
 
                 if (e.user.myFriends[res] != 3 && e.user.myFriends[res] != 1) { // Check if provided user is not friend and not blocked
                     setTimeout(() => {
                         e.user.addFriend(new SteamID(res), (err) => {
-                            if (err) logger("error", `Error adding ${res} with bot${e.index}: ${err}`);
-                                else logger("info", `Added ${res} with bot${e.index} as friend.`);
+                            if (err) logger("error", `[${e.logPrefix}] Failed to add '${res}' as a friend: ${err}`);
+                                else logger("info", `[${e.logPrefix}] Added '${res}' as a friend.`);
                         });
 
                         commandHandler.controller.friendListCapacityCheck(e, (remaining) => { // Check remaining friendlist space
@@ -81,7 +81,7 @@ module.exports.addFriend = {
                         });
                     }, 5000 * i);
                 } else {
-                    logger("warn", `bot${e.index} is already friend with ${res} or the account was blocked/blocked you.`); // Somehow logs steamIDs in separate row?!
+                    logger("warn", `[${e.logPrefix}] This bot account is already friend with '${res}' or the account was blocked/blocked you.`);
                 }
             });
         });
@@ -112,8 +112,8 @@ module.exports.unfriend = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterID = resInfo.userID;
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const requesterID = resInfo.userID;
 
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
@@ -123,7 +123,7 @@ module.exports.unfriend = {
         // Unfriend message sender with all bot accounts if no id was provided and the command was called from the steam chat
         if (!args[0] && resInfo.userID && resInfo.fromSteamChat) {
             respond(commandHandler.data.getLang("unfriendcmdsuccess", null, requesterID));
-            logger("info", `Removing friend ${resInfo.userID} from all bot accounts...`);
+            logger("info", `Removing friend '${resInfo.userID}' from all bot accounts...`);
 
             commandHandler.controller.getBots().forEach((e, i) => {
                 setTimeout(() => {
@@ -151,7 +151,7 @@ module.exports.unfriend = {
                 });
 
                 respond(await commandHandler.data.getLang("unfriendidcmdsuccess", { "profileid": res }, requesterID));
-                logger("info", `Removed friend ${res} from all bot accounts.`);
+                logger("info", `Removed friend '${res}' from all bot accounts.`);
             });
         }
     }
@@ -181,8 +181,8 @@ module.exports.unfriendall = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterID = resInfo.userID;
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const requesterID = resInfo.userID;
 
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
@@ -202,24 +202,24 @@ module.exports.unfriendall = {
             respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("unfriendallcmdstart", null, requesterID)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
             logger("info", "Starting to unfriend everyone...");
 
-            for (let i = 0; i < commandHandler.controller.getBots().length; i++) {
-                for (let friend in commandHandler.controller.getBots()[i].user.myFriends) {
+            commandHandler.controller.getBots().forEach((thisBot, i) => {
+                for (const friend in thisBot.user.myFriends) {
                     try {
                         setTimeout(() => {
-                            let friendSteamID = new SteamID(String(friend));
+                            const friendSteamID = new SteamID(String(friend));
 
                             if (!commandHandler.data.cachefile.ownerid.includes(friend)) { // Check for the "original" ownerid array here, we don't care about non Steam IDs
-                                logger("info", `Removing friend ${friendSteamID.getSteamID64()} from all bot accounts...`, false, false, logger.animation("loading"));
-                                commandHandler.controller.getBots()[i].user.removeFriend(friendSteamID);
+                                logger("info", `Removing friend '${friendSteamID.getSteamID64()}' from all bot accounts...`, false, false, logger.animation("loading"));
+                                thisBot.user.removeFriend(friendSteamID);
                             } else {
                                 logger("debug", `unfriendAll(): Friend ${friendSteamID.getSteamID64()} seems to be an owner, skipping...`);
                             }
                         }, 1000 * i); // Delay every iteration so that we don't make a ton of requests at once
                     } catch (err) {
-                        logger("error", `[Bot ${i}] unfriendall error unfriending ${friend}: ${err}`);
+                        logger("error", `[${thisBot.logPrefix}] unfriendall error unfriending ${friend}: ${err}`);
                     }
                 }
-            }
+            });
         }, 30000);
     }
 };

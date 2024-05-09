@@ -27,7 +27,7 @@ DataManager.prototype.refreshCache = function () {
     logger("info", "Refreshing data backups in cache.json...", false, true, logger.animation("loading"));
 
     // Refresh cache of bot account ids, check if they inflict with owner settings
-    let tempArr = [];
+    const tempArr = [];
 
     this.controller.getBots().forEach((e, i) => {
         // Get all online accounts

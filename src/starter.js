@@ -4,10 +4,10 @@
  * Created Date: 2021-07-10 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:17:17
+ * Last Modified: 2024-05-04 22:04:33
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -48,11 +48,25 @@ const execArgs = [ "--max-old-space-size=2048", "--optimize-for-size", /* "--ins
 /* -------- Now, provide functions for attaching/detaching event listeners to the parent and child process -------- */
 
 /**
+ * Provide function to detach parent process event listeners
+ */
+function detachParentListeners() {
+    logger("info", "Detaching parent's event listeners...", false, true);
+
+    logger.detachEventListeners();
+
+    if (handleUnhandledRejection) process.removeListener("unhandledRejection", handleUnhandledRejection);
+    if (handleUncaughtException)  process.removeListener("uncaughtException", handleUncaughtException);
+    if (parentExitEvent)          process.removeListener("exit", parentExitEvent);
+}
+
+
+/**
  * Provide function to only once attach listeners to parent process
  * @param {function(): void} callback Called on completion
  */
 function attachParentListeners(callback) {
-    let logafterrestart = [];
+    const logafterrestart = [];
 
 
     /* ------------ Make a fake logger to use when the lib isn't loaded yet: ------------ */
@@ -165,20 +179,6 @@ function attachParentListeners(callback) {
 
 
 /**
- * Provide function to detach parent process event listeners
- */
-function detachParentListeners() {
-    logger("info", "Detaching parent's event listeners...", false, true);
-
-    logger.detachEventListeners();
-
-    if (handleUnhandledRejection) process.removeListener("unhandledRejection", handleUnhandledRejection);
-    if (handleUncaughtException)  process.removeListener("uncaughtException", handleUncaughtException);
-    if (parentExitEvent)          process.removeListener("exit", parentExitEvent);
-}
-
-
-/**
  * Provide function to attach listeners to make communicating with child possible
  */
 function attachChildListeners() {
@@ -193,7 +193,7 @@ function attachChildListeners() {
 
             if (msg == "") msg = "{}"; // Set msg to empty object if no object was provided to hopefully prevent the parsing from failing
 
-            let argsobject = JSON.parse(msg); // Convert stringified args object back to JS object
+            const argsobject = JSON.parse(msg); // Convert stringified args object back to JS object
             argsobject["pid"] = childpid; // Add pid to object
 
             detachParentListeners();
@@ -264,9 +264,9 @@ module.exports.checkAndGetFile = (file, logger, norequire = false, force = false
 
             try {
                 branch = require("./data/data.json").branch; // Try to read from data.json
-            } catch (err) {
+            } catch {
                 try {
-                    let otherdata = require("./data.json"); // Then try to get the other, "compatibility" data file to check if versionstr includes the word BETA
+                    const otherdata = require("./data.json"); // Then try to get the other, "compatibility" data file to check if versionstr includes the word BETA
 
                     if (otherdata.versionstr.includes("BETA")) branch = "beta-testing";
                 } catch (err) {} //eslint-disable-line
@@ -274,7 +274,7 @@ module.exports.checkAndGetFile = (file, logger, norequire = false, force = false
 
 
             // Construct URL for restoring a file from GitHub
-            let fileurl = `https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/${branch}/${file.slice(2, file.length)}`; // Remove the dot at the beginning of the file string
+            const fileurl = `https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/${branch}/${file.slice(2, file.length)}`; // Remove the dot at the beginning of the file string
 
             logger("info", "Pulling: " + fileurl, false, true);
 
@@ -332,10 +332,10 @@ module.exports.checkAndGetFile = (file, logger, norequire = false, force = false
                     // Don't log debug msg for package, logger, handleErrors & npminteraction as they get loaded before the actual logger is loaded. This looks bad in the terminal, is kinda irrelevant and is logged even when logDebug is off
                     if (!file.includes("package.json") && !file.includes("logger.js") && !file.includes("handleErrors.js") && !file.includes("npminteraction.js")) logger("debug", `checkAndGetFile(): file ${file} exists, force and norequire are false. Testing integrity by requiring...`); // Ignore message for logger.js as it won't use the real logger yet
 
-                    let fileToLoad = require("." + file);
+                    const fileToLoad = require("." + file);
 
                     resolve(fileToLoad); // Seems to be fine, otherwise we would already be in the catch block
-                } catch (err) {
+                } catch {
                     logger("warn", `It looks like file ${file} is corrupted. Trying to pull new file from GitHub...`, false, true);
 
                     getNewFile();
@@ -359,7 +359,7 @@ module.exports.run = () => {
         logger("info", "Starting process...");
 
         // Get file to start
-        let file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false); // We can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
+        const file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false); // We can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
         if (!file) return;
 
         forkedprocess = cp.fork("./src/controller/controller.js", [__dirname, Date.now()], { execArgv: execArgs }); // Create new process and provide srcdir and timestamp as argv parameters
@@ -385,7 +385,7 @@ module.exports.restart = async (args) => {
 
         setTimeout(async () => {
             // Get file to start
-            let file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false); // We can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
+            const file = await this.checkAndGetFile("./src/controller/controller.js", logger, false, false); // We can call without norequire as process.argv[3] is set to 0 (see top of this file) to check controller.js for errors as well
             if (!file) return;
 
             forkedprocess = cp.fork("./src/controller/controller.js", [__dirname, Date.now(), JSON.stringify(args)], { execArgv: execArgs }); // Create new process and provide srcdir, timestamp and restartargs as argv parameters

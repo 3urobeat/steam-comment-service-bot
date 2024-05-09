@@ -1,13 +1,13 @@
 /*
- * File: statusUpdate.js
+ * File: steamGuardQrCode.js
  * Project: steam-comment-service-bot
- * Created Date: 2023-03-30 21:05:13
+ * Created Date: 2024-05-01 14:44:36
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-03 13:00:59
+ * Last Modified: 2024-05-01 14:48:33
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -15,24 +15,21 @@
  */
 
 
-const Bot        = require("../../bot/bot.js");
+const Bot        = require("../../bot/bot.js"); // eslint-disable-line
 const Controller = require("../controller");
 
 
 /**
- * Runs internal statusUpdate event code and emits statusUpdate event for plugins
- * @param {Bot} bot Bot instance
- * @param {Bot.EStatus} newStatus The new status of this bot
+ * Emits steamGuardQrCode event for bot & plugins
+ * @param {Bot} bot Bot instance of the affected account
+ * @param {string} challengeUrl The QrCode Challenge URL supplied by Steam. Display this value using a QR-Code parser and let a user scan it using their Steam Mobile App.
  */
-Controller.prototype._statusUpdateEvent = function(bot, newStatus) {
-    const oldStatus = bot.status;
-
-    // Update status of bot
-    bot.status = newStatus;
+Controller.prototype._steamGuardQrCodeEvent = function(bot, challengeUrl) {
 
     // Log debug message
-    logger("debug", `[${bot.logPrefix}] Event statusUpdate: Changed status from ${Bot.EStatus[oldStatus]} to ${Bot.EStatus[newStatus]}`, false, true);
+    logger("debug", `Controller steamGuardQrCodeEvent: Emitting event for bot${bot.index} so plugins can display the QR-Code...`);
 
     // Emit event
-    this.events.emit("statusUpdate", bot, oldStatus, newStatus);
+    this.events.emit("steamGuardQrCode", bot, challengeUrl);
+
 };

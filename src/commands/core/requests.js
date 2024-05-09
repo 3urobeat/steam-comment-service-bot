@@ -42,8 +42,8 @@ module.exports.abort = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterID = resInfo.userID;
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const requesterID = resInfo.userID;
 
         if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
 
@@ -54,7 +54,7 @@ module.exports.abort = {
 
         commandHandler.controller.handleSteamIdResolving(args[0], null, async (err, res) => {
             if (res) {
-                let activeReqEntry = commandHandler.controller.activeRequests[res];
+                const activeReqEntry = commandHandler.controller.activeRequests[res];
 
                 // Get the correct ownerid array for this request
                 let owners = commandHandler.data.cachefile.ownerid;
@@ -102,8 +102,8 @@ module.exports.resetCooldown = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterID = resInfo.userID;
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const requesterID = resInfo.userID;
 
         if (args[0] && args[0] == "global") { // Check if user wants to reset the global cooldown (will reset all until entries in activeRequests)
             if (commandHandler.data.config.botaccountcooldown == 0) return respond(await commandHandler.data.getLang("resetcooldowncmdcooldowndisabled", null, requesterID)); // Is the global cooldown enabled?
@@ -160,7 +160,7 @@ module.exports.failed = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         let userID = resInfo.userID;
 
@@ -169,7 +169,7 @@ module.exports.failed = {
 
         commandHandler.controller.handleSteamIdResolving(args[0], null, async (err, res) => {
             if (res) {
-                let activeReqEntry = commandHandler.controller.activeRequests[res];
+                const activeReqEntry = commandHandler.controller.activeRequests[res];
 
                 // Get the correct ownerid array for this request
                 let owners = commandHandler.data.cachefile.ownerid;
@@ -185,13 +185,13 @@ module.exports.failed = {
             if (!commandHandler.controller.activeRequests[userID] || Object.keys(commandHandler.controller.activeRequests[userID].failed).length < 1) return respond(await commandHandler.data.getLang("failedcmdnothingfound", null, resInfo.userID));
 
             // Get timestamp of request
-            let requestTime = new Date(commandHandler.controller.activeRequests[userID].until).toISOString().replace(/T/, " ").replace(/\..+/, "");
+            const requestTime = new Date(commandHandler.controller.activeRequests[userID].until).toISOString().replace(/T/, " ").replace(/\..+/, "");
 
             // Group errors and convert them to string using helper function
-            let failedcommentsstr = failedCommentsObjToString(commandHandler.controller.activeRequests[userID].failed);
+            const failedcommentsstr = failedCommentsObjToString(commandHandler.controller.activeRequests[userID].failed);
 
             // Get start of message from lang file and add data
-            let messagestart = await commandHandler.data.getLang("failedcmdmsg", { "steamID64": userID, "requesttime": requestTime }, resInfo.userID);
+            const messagestart = await commandHandler.data.getLang("failedcmdmsg", { "steamID64": userID, "requesttime": requestTime }, resInfo.userID);
 
             // Send message and limit to 500 chars as this call can cause many messages to be sent
             respondModule(context, { prefix: "/pre", charLimit: 500, ...resInfo }, messagestart + "\ni = Index, b = Bot, p = Proxy\n\n" + failedcommentsstr); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
@@ -215,7 +215,7 @@ module.exports.sessions = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // Don't bother if there is no active request
         if (Object.keys(commandHandler.controller.activeRequests).length == 0) return respond(await commandHandler.data.getLang("sessionscmdnosessions", null, resInfo.userID));
@@ -255,7 +255,7 @@ module.exports.mySessions = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // Check for no userID as the default behavior might be unavailable when calling from outside of the Steam Chat
         if (!resInfo.userID) return respond(await commandHandler.data.getLang("nouserid")); // In this case the cmd doesn't have an ID param so send this message instead of noidparam

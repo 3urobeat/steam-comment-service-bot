@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-28 20:53:59
+ * Last Modified: 2024-05-04 11:28:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -31,7 +31,7 @@ DataManager.prototype.checkData = function() {
         logger("info", "Running datachecks and displaying config recommendations...", false, true, logger.animation("loading"));
 
         // Shorthander for checks below to log warning and count it. Must be an ES6 function to not create a new context for 'this.' to work!
-        let logWarn = ((a, b, c) => { logger(a, b, c); this.controller.info.startupWarnings++; }); // I originally wanted to use iArguments instead of hardcoding a, b, c but that didn't work out easily so I digress
+        const logWarn = ((a, b, c) => { logger(a, b, c); this.controller.info.startupWarnings++; }); // I originally wanted to use iArguments instead of hardcoding a, b, c but that didn't work out easily so I digress
 
         this.controller.info.startupWarnings = 0; // Reset value to start fresh if this module should be integrated into a plugin or something like that
 
@@ -53,7 +53,7 @@ DataManager.prototype.checkData = function() {
 
 
         // Check config for default value leftovers when the bot is not running on my machines
-        if ((process.env.LOGNAME !== "tomg") || (os.hostname() !== "Tomkes-PC" && os.hostname() !== "Tomkes-Server" && os.hostname() !== "Tomkes-Thinkpad")) {
+        if ((process.env.LOGNAME !== "tomg") || (!["Tomkes-PC", "Tomkes-Server", "Tomkes-Thinkpad", "Tomkes-Thinkpad-Z13"].includes(os.hostname()))) {
             let write = false;
 
             if (this.config.owner.includes(this.datafile.mestr))   { this.config.owner = ""; write = true; }
@@ -110,7 +110,7 @@ DataManager.prototype.checkData = function() {
             logWarn("warn", `You've set an invalid value '${this.advancedconfig.onlineStatus}' as 'onlineStatus' in 'advancedconfig.json'! Defaulting to 'Online'...`);
             this.advancedconfig.onlineStatus = "Online";
         }
-        if (!EPersonaState[this.advancedconfig.childAccOnlineStatus] == undefined) { // Explicitly check for undefined because Offline (0) resolves to false
+        if (EPersonaState[this.advancedconfig.childAccOnlineStatus] == undefined) { // Explicitly check for undefined because Offline (0) resolves to false
             logWarn("warn", `You've set an invalid value '${this.advancedconfig.childAccOnlineStatus}' as 'childAccOnlineStatus' in 'advancedconfig.json'! Defaulting to 'Online'...`);
             this.advancedconfig.childAccOnlineStatus = "Online";
         }

@@ -66,7 +66,7 @@ module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
             let owners = commandHandler.data.cachefile.ownerid;
             if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-            let requesterID      = resInfo.userID;
+            const requesterID      = resInfo.userID;
             let maxRequestAmount = commandHandler.data.config.maxRequests; // Set to default value and if the requesting user is an owner it gets changed below
             let numberOfComments = 0;
             let quotesArr        = commandHandler.data.quotes;
@@ -115,7 +115,7 @@ module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
                 /* --------- Check profileid argument if it was provided --------- */
                 if (args[1]) {
                     if (owners.includes(requesterID) || args[1] == requesterID) { // Check if user is a bot owner or if they provided their own profile id
-                        let arg = args[1];
+                        const arg = args[1];
 
                         commandHandler.controller.handleSteamIdResolving(arg, null, async (err, res, type) => {
                             if (err) {
@@ -172,7 +172,7 @@ module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
 
 
             /* --------- Resolve promise with calculated values when profileID is defined --------- */
-            let profileIDDefinedInterval = setInterval(() => { // Check if profileID is defined every 250ms and only then return values
+            const profileIDDefinedInterval = setInterval(() => { // Check if profileID is defined every 250ms and only then return values
                 if (profileID != undefined) {
                     clearInterval(profileIDDefinedInterval);
 

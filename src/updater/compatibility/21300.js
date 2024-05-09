@@ -29,7 +29,7 @@ module.exports.run = (controller, resolve) => {
     // Disable new webserver plugin if old one was disabled
     if (!controller.data.advancedconfig.enableurltocomment && fs.existsSync(srcdir + "/../node_modules/steam-comment-bot-webserver/config.json")) {
         try {
-            let plugin = require(srcdir + "/../node_modules/steam-comment-bot-webserver/config.json");
+            const plugin = require(srcdir + "/../node_modules/steam-comment-bot-webserver/config.json");
             plugin.enabled = false;
 
             if (!fs.existsSync(srcdir + "/../plugins/steam-comment-bot-webserver")) fs.mkdirSync(srcdir + "/../plugins/steam-comment-bot-webserver");
@@ -51,7 +51,7 @@ module.exports.run = (controller, resolve) => {
     delete controller.data.advancedconfig.enableurltocomment;
     delete controller.data.advancedconfig.disableCommentCmd;
 
-    let stringifiedAdvancedconfig = JSON.stringify(controller.data.advancedconfig, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
+    const stringifiedAdvancedconfig = JSON.stringify(controller.data.advancedconfig, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
         if (v instanceof Array) return JSON.stringify(v);
         return v;
     }, 4)

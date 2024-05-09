@@ -32,11 +32,11 @@ module.exports.getFollowArgs = (commandHandler, args, cmd, resInfo, respond) => 
         (async () => { // Lets us use await insidea Promise without creating an antipattern
 
             // Check for missing params
-            let cmdUsage = `'${resInfo.cmdprefix}${cmd} amount/"all" id/link'`;
+            const cmdUsage = `'${resInfo.cmdprefix}${cmd} amount/"all" id/link'`;
 
             if (args[0]) args[0] = args[0].toLowerCase();
             if (args[0] == "max") args[0] = "all";                     // Convert "all" alias
-            let amount = args[0] == "all" ? args[0] : Number(args[0]); // If user provides "all" then keep it as is and update it later to how many accounts are available, otherwise convert it to a number
+            const amount = args[0] == "all" ? args[0] : Number(args[0]); // If user provides "all" then keep it as is and update it later to how many accounts are available, otherwise convert it to a number
 
             if (args.length == 0 || (amount != "all" && isNaN(amount)) || amount == 0) {
                 respond(await commandHandler.data.getLang("invalidnumber", { "cmdusage": cmdUsage }, resInfo.userID)); // An empty string will become a 0
@@ -48,7 +48,7 @@ module.exports.getFollowArgs = (commandHandler, args, cmd, resInfo, respond) => 
             let owners = commandHandler.data.cachefile.ownerid;
             if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-            let requesterID = resInfo.userID;
+            const requesterID = resInfo.userID;
 
 
             // Check if user requested more allowed
@@ -68,7 +68,7 @@ module.exports.getFollowArgs = (commandHandler, args, cmd, resInfo, respond) => 
             // Check if id was provided and process input
             if (args[1]) {
                 if (owners.includes(requesterID) || args[1] == requesterID) { // Check if user is a bot owner or if they provided their own profile id
-                    let arg = args[1];
+                    const arg = args[1];
 
                     commandHandler.controller.handleSteamIdResolving(arg, null, async (err, res, idType) => {
                         if (err || (idType != "profile" && idType != "curator")) {

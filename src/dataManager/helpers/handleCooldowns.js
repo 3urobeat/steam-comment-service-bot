@@ -26,7 +26,7 @@ const DataManager = require("../dataManager");
 DataManager.prototype.getUserCooldown = function(id) {
     return new Promise((resolve) => {
 
-        let obj = {
+        const obj = {
             "lastRequest": 0,
             "until": 0,
             "lastRequestStr": "",

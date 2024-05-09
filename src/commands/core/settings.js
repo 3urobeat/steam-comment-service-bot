@@ -41,7 +41,7 @@ module.exports.lang = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // List all supported languages by joining the keys of the data lang object with a line break and -
         if (!args[0]) {
@@ -49,7 +49,7 @@ module.exports.lang = {
             return;
         }
 
-        let suppliedLang = args[0].toLowerCase();
+        const suppliedLang = args[0].toLowerCase();
 
         // Check if the supplied language is supported
         if (!Object.keys(commandHandler.data.lang).includes(suppliedLang)) {
@@ -107,12 +107,12 @@ module.exports.settings = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let config  = commandHandler.data.config;
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const config  = commandHandler.data.config;
 
         // Only send current settings if no arguments were provided
         if (!args[0]) {
-            let stringifiedconfig = JSON.stringify(commandHandler.data.config, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
+            const stringifiedconfig = JSON.stringify(commandHandler.data.config, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
                 if (v instanceof Array) return JSON.stringify(v);
                 return v;
             }, 4)
@@ -122,7 +122,7 @@ module.exports.settings = {
                 .replace(/""/g, '""');
 
             // Remove first and last character which are brackets and remove leading and trailing whitespaces from all lines
-            let currentsettingsarr = stringifiedconfig.toString().slice(1, -1).split("\n").map(s => s.trim());
+            const currentsettingsarr = stringifiedconfig.toString().slice(1, -1).split("\n").map(s => s.trim());
 
             // Send message with code prefix and only allow cuts at newlines
             respondModule(context, { prefix: "/code", cutChars: ["\n"], ...resInfo }, (await commandHandler.data.getLang("settingscmdcurrentsettings", null, resInfo.userID)) + "\n" + currentsettingsarr.join("\n")); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
@@ -140,13 +140,13 @@ module.exports.settings = {
             return;
         }
 
-        let keyvalue = config[args[0]]; // Save old value to be able to reset changes
+        const keyvalue = config[args[0]]; // Save old value to be able to reset changes
 
 
         // Convert array-like string into usable array
         if (Array.isArray(keyvalue)) {
             try {
-                let newValue = args.slice(1).join(" "); // Remove first element, which is the key name and join the rest
+                const newValue = args.slice(1).join(" "); // Remove first element, which is the key name and join the rest
 
                 args[1] = JSON.parse(newValue); // Attempt to parse user input
 

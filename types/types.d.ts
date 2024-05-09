@@ -93,7 +93,7 @@ declare class Bot {
      */
     handleMissingGameLicenses(): void;
     /**
-     * Changes the proxy of this bot account and relogs it.
+     * Changes the proxy of this bot account.
      * @param newProxyIndex - Index of the new proxy inside the DataManager.proxies array.
      */
     switchProxy(newProxyIndex: number): void;
@@ -169,7 +169,7 @@ declare class Bot {
      */
     handleMissingGameLicenses(): void;
     /**
-     * Changes the proxy of this bot account and relogs it.
+     * Changes the proxy of this bot account.
      * @param newProxyIndex - Index of the new proxy inside the DataManager.proxies array.
      */
     switchProxy(newProxyIndex: number): void;
@@ -406,6 +406,12 @@ declare function getMiscArgs(commandHandler: CommandHandler, args: any[], cmd: s
 declare function getAvailableBotsForVoting(commandHandler: CommandHandler, amount: number | "all", id: string, voteType: "upvote" | "downvote" | "funnyvote", resInfo: CommandHandler.resInfo): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
 
 /**
+ * Helper function to sort failed object by comment number so that it is easier to read
+ * @param failedObj - Current state of failed object
+ */
+declare function sortFailedCommentsObject(failedObj: any): void;
+
+/**
  * Checks if the following comment process iteration should be skipped
  * Aborts comment process on critical error.
  * @param commandHandler - The commandHandler object
@@ -426,17 +432,17 @@ declare function handleIterationSkip(commandHandler: CommandHandler, loop: any, 
 declare function logCommentError(error: string, commandHandler: CommandHandler, bot: Bot, receiverSteamID64: string): void;
 
 /**
- * Helper function to sort failed object by comment number so that it is easier to read
- * @param failedObj - Current state of failed object
- */
-declare function sortFailedCommentsObject(failedObj: any): void;
-
-/**
  * Groups same error messages together, counts amount, lists affected bots and converts it to a String.
  * @param obj - failedcomments object that should be converted
  * @returns String that looks like this: `amount`x - `indices`\n`error message`
  */
 declare function failedCommentsObjToString(obj: any): string;
+
+/**
+ * Helper function to sort failed object by comment number so that it is easier to read
+ * @param failedObj - Current state of failed object
+ */
+declare function sortFailedCommentsObject(failedObj: any): void;
 
 /**
  * Checks if the following follow process iteration should be skipped
@@ -500,12 +506,6 @@ declare function logVoteError(error: string, commandHandler: CommandHandler, bot
  * @param id - ID of the sharedfile that receives the favorites
  */
 declare function logFavoriteError(error: string, commandHandler: CommandHandler, bot: Bot, id: string): void;
-
-/**
- * Helper function to sort failed object by comment number so that it is easier to read
- * @param failedObj - Current state of failed object
- */
-declare function sortFailedCommentsObject(failedObj: any): void;
 
 /**
  * Constructor - Initializes the controller and starts all bot accounts
@@ -602,6 +602,12 @@ declare class Controller {
      */
     _steamGuardInputEvent(bot: Bot, submitCode: (...params: any[]) => any): void;
     /**
+     * Emits steamGuardQrCode event for bot & plugins
+     * @param bot - Bot instance of the affected account
+     * @param challengeUrl - The QrCode Challenge URL supplied by Steam. Display this value using a QR-Code parser and let a user scan it using their Steam Mobile App.
+     */
+    _steamGuardQrCodeEvent(bot: Bot, challengeUrl: string): void;
+    /**
      * Check if all friends are in lastcomment database
      * @param bot - Bot object of the account to check
      */
@@ -676,6 +682,12 @@ declare class Controller {
      * @param submitCode - Function to submit a code. Pass an empty string to skip the account.
      */
     _steamGuardInputEvent(bot: Bot, submitCode: (...params: any[]) => any): void;
+    /**
+     * Emits steamGuardQrCode event for bot & plugins
+     * @param bot - Bot instance of the affected account
+     * @param challengeUrl - The QrCode Challenge URL supplied by Steam. Display this value using a QR-Code parser and let a user scan it using their Steam Mobile App.
+     */
+    _steamGuardQrCodeEvent(bot: Bot, challengeUrl: string): void;
     /**
      * Check if all friends are in lastcomment database
      * @param bot - Bot object of the account to check
@@ -1392,6 +1404,7 @@ declare function loadPlugin(pluginName: string): any;
  * @property ready - Controller ready event
  * @property statusUpdate - Controller statusUpdate event
  * @property steamGuardInput - Controller steamGuardInput event
+ * @property steamGuardQrCode - Controller steamGuardQrCode event
  */
 declare type Plugin = {
     load: (...params: any[]) => any;
@@ -1399,6 +1412,7 @@ declare type Plugin = {
     ready: (...params: any[]) => any;
     statusUpdate: (...params: any[]) => any;
     steamGuardInput: (...params: any[]) => any;
+    steamGuardQrCode: (...params: any[]) => any;
 };
 
 /**
@@ -1671,15 +1685,15 @@ declare class SessionHandler {
 }
 
 /**
+ * Provide function to detach parent process event listeners
+ */
+declare function detachParentListeners(): void;
+
+/**
  * Provide function to only once attach listeners to parent process
  * @param callback - Called on completion
  */
 declare function attachParentListeners(callback: (...params: any[]) => any): void;
-
-/**
- * Provide function to detach parent process event listeners
- */
-declare function detachParentListeners(): void;
 
 /**
  * Provide function to attach listeners to make communicating with child possible

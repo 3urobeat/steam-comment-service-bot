@@ -27,23 +27,23 @@ const Bot = require("../bot.js");
 Bot.prototype._attachSteamFriendMessageEvent = function() {
 
     this.user.chat.on("friendMessage", async (msg) => {
-        let message = msg.message_no_bbcode;
-        let steamID = msg.steamid_friend;
+        const message = msg.message_no_bbcode;
+        const steamID = msg.steamid_friend;
 
-        let steamID64 = new SteamID(String(steamID)).getSteamID64();
-        let username  = this.user.users[steamID64] ? this.user.users[steamID64].player_name : ""; // Set username to nothing in case they are not cached yet to avoid errors
+        const steamID64 = new SteamID(String(steamID)).getSteamID64();
+        const username  = this.user.users[steamID64] ? this.user.users[steamID64].player_name : ""; // Set username to nothing in case they are not cached yet to avoid errors
 
         let relationshipStatus = SteamUser.EFriendRelationship.None;
         if (this.user.myFriends[steamID64]) relationshipStatus = SteamUser.EFriendRelationship[this.user.myFriends[steamID64]];
 
-        let resInfo = { userID: steamID64, cmdprefix: "!", fromSteamChat: true }; // Object required for sendChatMessage(), our commandHandler respondModule implementation
+        const resInfo = { userID: steamID64, cmdprefix: "!", fromSteamChat: true }; // Object required for sendChatMessage(), our commandHandler respondModule implementation
 
 
         // Check if another friendMessage handler is currently active
         if (this.friendMessageBlock.includes(steamID64)) return logger("debug", `[${this.logPrefix}] Ignoring friendMessage event from ${steamID64} as user is on friendMessageBlock list.`);
 
         // Check if this event should be handled or if user is blocked
-        let isBlocked = await this.checkMsgBlock(steamID64, message);
+        const isBlocked = await this.checkMsgBlock(steamID64, message);
         if (isBlocked) return; // Stop right here if user is blocked, on cooldown or not a friend
 
 
@@ -74,7 +74,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
             if (err) logger("error", "Database error on friendMessage. This is weird. Error: " + err);
 
             if (!doc) { // Add user to database if he/she is missing for some reason
-                let lastcommentobj = {
+                const lastcommentobj = {
                     id: new SteamID(String(steamID)).getSteamID64(),
                     time: Date.now() - (this.data.config.requestCooldown * 60000) // Subtract requestCooldown so that the user is able to use the command instantly
                 };
@@ -94,10 +94,10 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
 
 
         // Ask command handler to figure out things for us when a message with prefix was sent
-        let cont = message.slice(1).split(" "); // Remove prefix and split
-        let args = cont.slice(1);               // Remove cmd name to only get arguments
+        const cont = message.slice(1).split(" "); // Remove prefix and split
+        const args = cont.slice(1);               // Remove cmd name to only get arguments
 
-        let success = await this.controller.commandHandler.runCommand(cont[0].toLowerCase(), args, this.sendChatMessage, this, resInfo); // Don't listen to your IDE, this *await is necessary*
+        const success = await this.controller.commandHandler.runCommand(cont[0].toLowerCase(), args, this.sendChatMessage, this, resInfo); // Don't listen to your IDE, this *await is necessary*
 
         if (!success) this.sendChatMessage(this, resInfo, await this.controller.data.getLang("commandnotfound", { "cmdprefix": resInfo.cmdprefix }, steamID64)); // Send cmd not found msg if runCommand() returned false
     });

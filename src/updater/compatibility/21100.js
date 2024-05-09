@@ -28,7 +28,7 @@ module.exports.run = (controller, resolve) => { //eslint-disable-line
     // Data.json
     try {
         if (fs.existsSync(srcdir + "/data.json")) {
-            let oldextdata = require("../../data.json");
+            const oldextdata = require("../../data.json");
 
             // Check if this file still contains the 3 values to transfer in order to ensure ./src/data/data.json doesn't loose this data
             if (Object.keys(oldextdata).includes("urlrequestsecretkey") && Object.keys(oldextdata).includes("timesloggedin") && Object.keys(oldextdata).includes("totallogintime")) {

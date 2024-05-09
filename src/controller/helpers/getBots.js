@@ -50,7 +50,7 @@ Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObje
 Controller.prototype.getBotsPerProxy = function(filterOffline = false) {
 
     // Get all bot accounts
-    let accs = this.getBots("*");
+    const accs = this.getBots("*");
 
     // Prefill mappedProxies
     let mappedProxies = [];
@@ -59,7 +59,7 @@ Controller.prototype.getBotsPerProxy = function(filterOffline = false) {
 
     // Find associated proxies
     accs.forEach((e) => {
-        let associatedProxy = mappedProxies[e.loginData.proxyIndex];
+        const associatedProxy = mappedProxies[e.loginData.proxyIndex];
 
         associatedProxy.bots.push(e);
     });

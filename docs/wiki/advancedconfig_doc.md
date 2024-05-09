@@ -22,6 +22,7 @@ This is the full documentation to customize your `advancedconfig.json`.
 | relogTimeout | Number in ms | Time the bot will wait after failing all reconnect attempts before trying again. Default: 900000 (15 minutes) |
 | maxLogOnRetries | Number | Amount of times the bot will retry logging in to an account if the first try fails. Default: 1 |
 | useLocalIP | true or false | If the bot should use your real IP as well when using proxies. Default: true |
+| enableRelogOnLogOnSessionReplaced | true or false | If the bot should relog accounts when they loose connection with the error message 'LogOnSessionReplaced'. This error is usually caused when someone logs into an account from somewhere else. Default: true |
 | &nbsp; | | |
 | acceptFriendRequests | true or false | If the bot should accept friend requests. Default: true |
 | forceFriendlistSpaceTime | Number in days | Amount of days a user hasn't requested something to get unfriended if only one friend slot is left. Set to 0 to disable. Default: 4 |

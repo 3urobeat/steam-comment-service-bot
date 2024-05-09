@@ -25,7 +25,7 @@ const DataManager = require("./dataManager");
  * Converts owners and groups imported from config.json to steam ids and updates cachefile. (Call this after dataImport and before dataCheck)
  */
 DataManager.prototype.processData = async function() {
-    let _this = this;
+    const _this = this;
 
     /* eslint-disable jsdoc/require-jsdoc */
     function yourgroup() {
@@ -115,7 +115,7 @@ DataManager.prototype.processData = async function() {
     function owners() {
         return new Promise((resolve) => {
 
-            let tempArr = [];
+            const tempArr = [];
             logger("debug", `DataManager processData(): Converting ${_this.config.ownerid.length} owner(s)...`);
 
             // Check for last iteration, update cache and resolve Promise

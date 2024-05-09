@@ -37,8 +37,8 @@ module.exports.help = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let requesterID = resInfo.userID;
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const requesterID = resInfo.userID;
 
         // Get the correct ownerid array for this request
         let owners = commandHandler.data.cachefile.ownerid;
@@ -99,14 +99,14 @@ module.exports.info = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // Get the correct ownerid array for this request
         let owners = commandHandler.data.cachefile.ownerid;
         if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
         commandHandler.data.lastCommentDB.findOne({ id: resInfo.userID }, async (err, doc) => {
-            let lastReq = await commandHandler.data.getLastCommentRequest();
+            const lastReq = await commandHandler.data.getLastCommentRequest();
 
             let userLastReq = "Never";
             if (doc) userLastReq = ((new Date(doc.time)).toISOString().replace(/T/, " ").replace(/\..+/, "")) + " (GMT time)";
@@ -146,8 +146,8 @@ module.exports.ping = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, respondModule, context, resInfo) => {
-        let respond   = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
-        let pingStart = Date.now();
+        const respond   = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const pingStart = Date.now();
 
         https.get("https://steamcommunity.com/ping", (res) => { // Ping steamcommunity.com/ping and measure time
             res.setEncoding("utf8");
@@ -173,7 +173,7 @@ module.exports.about = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         respond(commandHandler.data.datafile.aboutstr);
     }
@@ -195,7 +195,7 @@ module.exports.owner = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // Check if no owner link is set
         if (commandHandler.data.config.owner.length < 1) return respond(await commandHandler.data.getLang("ownercmdnolink", null, resInfo.userID));

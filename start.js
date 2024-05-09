@@ -4,10 +4,10 @@
  * Created Date: 2020-01-15 10:38:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 13:57:29
+ * Last Modified: 2024-05-03 12:51:07
  * Modified By: 3urobeat
  *
- * Copyright (c) 2020 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2020 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -29,7 +29,7 @@
 function getExtdata() {
     try { // Just try to require, if it should fail then the actual restoring process will be handled later
         return require("./src/data/data.json");
-    } catch (err) {
+    } catch {
         return { filetostart: "./src/starter.js", filetostarturl: "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/starter.js" };
     }
 }
@@ -55,14 +55,14 @@ module.exports.restart = (args) => {
 process.chdir(__dirname);
 
 // Get filetostart if it doesn't exist
-let fs = require("fs");
-let extdata = getExtdata();
+const fs = require("fs");
+const extdata = getExtdata();
 
 if (!fs.existsSync(extdata.filetostart)) { // Function that downloads filetostart if it doesn't exist (file location change etc.)
     let output = "";
 
     try {
-        let https = require("https");
+        const https = require("https");
 
         if (!fs.existsSync("./src")) fs.mkdirSync("./src"); // Create src dir if it doesn't exist
 

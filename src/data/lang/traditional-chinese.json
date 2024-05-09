@@ -1,0 +1,147 @@
+{
+    "note": "此檔案關於機器人所有訊息 如果想要修改請閱讀: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/customlang_doc.md",
+
+    "langname": "traditional-chinese",
+
+    "updaterautoupdatedisabled": "已停用自動更新，是否需要啟動\n如果需要請填入這個指令: ${cmdprefix}update true",
+
+    "commentcmdusageowner": "'${cmdprefix}comment amount/\"all\" id' 發送你想要的數量評論(也可以發送最多評論).\n如果想在其他地方發送評論，你需要提供對方的個人檔案連結、群組連結、螢幕擷圖連結、指南、藝術作品連結。",
+    "commentcmdusageowner2": "'${cmdprefix}comment 1 id'. 如果想在其他地方發送評論，你需要提供對方的個人檔案連結、群組連結、螢幕擷圖連結、指南、藝術作品連結。",
+    "commentcmdusage": "'${cmdprefix}comment amount/\"all\"' 提供想要評論的數量。",
+    "commentcmdusage2": "'${cmdprefix}comment' 發送評論到你的個人檔案。",
+    "commentinvalidid": "錯誤的連結\n請確認該連結是否正確\n\n正確使用: ${commentcmdusage}",
+    "commentprofileidowneronly": "指令只提供開發者使用\n如果你是開發者請添加你的Steam ID到config.json。",
+    "commentmissingnumberofcomments": "請填寫你需要${maxRequestAmount}條評論的數量\n正確使用: ${commentcmdusage}",
+    "commentzeroavailableaccs": "對不起，目前的機器人正在冷卻中。 請等待${waittime}秒然後再試一次",
+    "commentnotenoughavailableaccs": "對不起，目前的機器人正在冷卻中。 請等待${waittime}秒然後再試一次，或者是發送${availablenow}條評論",
+    "commentnoaccounts": "對不起，目前沒有帳號可以幫助你，不過你可以聯絡開發者\n請使用${cmdprefix}owner聯絡開發者。",
+    "commentaddbotaccounts": "請添加這些帳號，然後再試一次: (limited accounts)",
+    "commentunsupportedtype": "對不起，這個指令不適合用於這個類型ID。請貼上個人檔案連結、群組連結、螢幕擷圖連結、指南、藝術作品連結。",
+    "commentuserprofileprivate": "訪問的連結私人的!，請修改我的個人檔案、能在我的個人檔案發表留言為公開。",
+    "commenterroroccurred": "無法發送評論",
+    "commentprocessstarted": "接受評論到的有${numberOfComments}條評論\n請等待${waittime}完成。",
+    "commentfailedcmdreference": "如果想獲得傳送失敗資訊，請貼上'${cmdprefix}failed'\n如果看不懂錯誤原因請查看: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md",
+    "comment429stop": "已停止，所有的代理出現HTTP 429 (IP cooldown) error。請稍後再試\n失敗: ${failedamount}/${numberOfComments}",
+    "commentretrying": "${failedamount}/${numberOfComments}條評論失敗。開始重試 ${untilStr}. (Attempt ${thisattempt}/${maxattempt})",
+    "commentsuccess": "全部評論已發送。 無法傳送數量: ${failedamount}/${numberOfComments}\n如果你覺得這個還不錯的話，在我的留言區底下留下好評，讓更多人知道!",
+    "genericnoaccounts": "對不起，你輸入無效的ID了。",
+
+    "genericnounlimitedaccs": "對不起，目前帳號沒貨。請聯繫開發者\n${cmdprefix}owner",
+    "genericrequestless": "目前只有${availablenow}個可以使用。",
+    "genericnotenoughavailableaccs": "對不起，目前沒有足夠的帳號可用於提供的ID資料。請等待 ${waittime} and try again or only request ${availablenow} now.",
+
+    "voteunsupportedtype": "對不起，投票指令不支援你所提供這個類型的ID。 請提供投票連結(不支援funnyvote)或查看連結。",
+    "voteprocessstarted": "接受投票到的有${numberOfVotes} 投票時間: ${waittime}",
+    "votesuccess": "全部投票已發送。 無法傳送數量: ${failedamount}/${numberOfVotes}",
+
+    "favoriteprocessstarted": "${numberOfFavs} 個未收藏/已收藏發送，請等待時間: ${waittime}",
+    "favoritesuccess": "未收藏/已收藏發送成功。 無法傳送數量: ${failedamount}/${numberOfFavs}",
+
+    "followprocessstarted": "${totalamount} 未追蹤已追蹤已發送，請等待: ${waittime}",
+    "followsuccess": "未追蹤已追蹤已發送成功。無法傳送數量: ${failedamount}/${totalamount}",
+
+    "useradded": "你好哇^w^ 謝謝你添加我為你的好友\n我是一個免費服務有: '${cmdprefix}comment' - 評論\n'${cmdprefix}help' - 菜單\n'${cmdprefix}about' - 關於\n'${cmdprefix}lang' - 切換語言",
+    "userforceunfriend": "由於使用者太多，你${forceFriendlistSpaceTime}天沒使用我\n如果還有需要繼續使用請添加。",
+    "userunfriend": "你${unfriendtime}天沒使用我\n如果還有需要繼續使用請添加。",
+
+    "userspamblock": "已封鎖90秒\n原因 : 刷屏",
+    "usernotfriend": "請在使用我之前添加好友。",
+    "botnotready": "尚未完全啟動\n請等待。",
+    "commandnotfound": "資料庫尚未沒有這個功能\n請查看 ${cmdprefix}help",
+    "commandowneronly": "指令只提供開發者使用\n如果你是開發者請添加你的Steam ID到config.json。",
+    "nouserid": "在沒有用戶ID的情況下被調用\n阻止該指令\n這是一個編碼問題\n請聯繫開發者 : ${cmdprefix}owner",
+    "noidparam": "請提供ID",
+
+    "requesttoohigh": "最多可以發送 ${maxRequestAmount}\n\n正確使用: ${cmdusage}",
+    "invalidnumber": "這不是數字\n\n正確使用: ${cmdusage}",
+    "invalidprofileid": "請輸入正確的ID",
+    "invalidgroupid": "請輸入正確的ID \n示範群組ID: '103582791464712227' \n示範群組連結: 'https://steamcommunity.com/groups/3urobeatGroup'",
+    "invalidsharedfileid": "這不是一個正確的檔案ID\n示範共享檔案連結: https://steamcommunity.com/sharedfiles/filedetails/?id=2980913451 \n 示範共享檔案ID: 2980913451\n群組連結、螢幕擷圖連結、指南、藝術作品連結。\n\n正確使用: ${cmdusage}",
+    "invalidreviewid": "這不是一個正確的檔案ID\n請確認是否填入正確，示範: https://steamcommunity.com/id/3urobeat/recommended/1902490/\n\n正確使用: ${cmdusage}",
+    "errloadingsharedfile": "發生錯誤: ",
+    "errloadingreview": "發生錯誤: ",
+    "idisownererror": "你不能提供開發者ID",
+    "idalreadyreceiving": "提供的用戶以前已提交，請等待完成後重試",
+    "idoncooldown": "最近才剛提交，請等待 ${remainingcooldown} 再次提交",
+    "requestaborted": "你提交的訊息已停止\n${successAmount}/${totalAmount} 已發送成功",
+
+    "jobscmdregistered": "已註冊:",
+    "jobscmdnoneregistered": "未註冊",
+    "reloadcmdreloaded": "已重新讀取所有功能 / 插件",
+    "activerelog": "目前正等待最後一個活動完成，以便重新登入帳戶。",
+    "updatecmdforce": "強制更新 ${branchname}",
+    "updatecmdcheck": "檢查更新 ${branchname}",
+    "restartcmdrestarting": "重啟中",
+    "stopcmdstopping": "已停止",
+
+    "helpcommandlist": "功能:",
+    "helpcommentowner": "最大值 ${maxOwnerRequests} 到您/其他個人檔案的評論",
+    "helpcommentuser": "最大值 ${maxRequests} 到您的個人檔案評論",
+    "helpvote": "最大值 ${maxRequests} 共享檔案/投票數量",
+    "helpfavorite": "最大值 ${maxRequests} 共享檔案/收藏數量",
+    "helpfollow": "最大值 ${maxRequests} 工作坊追蹤數量",
+    "helpinfo": "關於機器人/您的訊息",
+    "helpabort": "關於您的發送",
+    "helpabout": "關於機器人資訊",
+    "helpowner": "關於開發者資訊",
+    "helpreadothercmdshere": "30個功能列表在這邊:",
+
+    "pingcmdmessage": "/me ${pingtime}ms",
+    "ownercmdnolink": "沒有連結",
+    "ownercmdmsg": "以下是開發者的連結: (更多資訊請貼上 ${cmdprefix}about)",
+    "groupcmdnolink": "沒有連結",
+    "groupcmdinvitesent": "已發送群組連結，歡迎加入",
+    "groupcmdinvitelink": "我的群組: ",
+    "abortcmdnoprocess": "請提供ID/連結",
+    "abortcmdsuccess": "正在停止你所提供的ID資訊",
+
+    "resetcooldowncmdcooldowndisabled": "已停用冷卻時間",
+    "resetcooldowncmdglobalreset": "機器人帳號的冷卻時間已重置",
+    "resetcooldowncmdsuccess": "${profileid}冷卻時間已清除",
+
+    "langcmdsupported": "以下語言名字:",
+    "langcmdnotsupported": "尚未提供你想要的語言。 請查看語言列表: ${supportedlangs}\n\n想要製作語言嗎?請查看: ' https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/contributing.md#translating '",
+    "langcmdsuccess": "已讀取語言",
+
+    "settingscmdfailedread": "無法讀取目前設定: ",
+    "settingscmdcurrentsettings": "目前設定:",
+    "settingscmdblockedvalues": "無法透過設定指令修改enableevalcmd / ownerid / owner\n請設定Config檔案",
+    "settingscmdcouldnotconvert": "我無法切換您的輸入， 請確定您的順序是對的。\nError: ",
+    "settingscmdkeynotfound": "Config找不到這個key",
+    "settingscmdsamevalue": "Key已存在 ${value}.",
+    "settingscmdvaluetoobig": "新的數值太大 (32-bit 限制)\n請更改比較小一點的數值",
+    "settingscmdvaluereset": "檔案管理拒絕此要求 並且向你發出警告訊息:",
+    "settingscmdvaluechanged": "${targetkey} 已更改為 ${oldvalue}到${newvalue}\n請記住，某些值可能需要重啟。 你可以寫這個 ${cmdprefix}restart.",
+
+    "failedcmdnothingfound": "沒有任何失敗的結果",
+    "failedcmdmsg": "你發送 '${steamID64}'已結束，在'${requesttime}' (GMT time) 出現問題:",
+
+    "sessionscmdnosessions": "在沒有活耀的情況下是冷卻的狀態",
+    "sessionscmdmsg": "目前有 ${amount}個活耀秒(s):",
+    "mysessionscmdnosessions": "目前沒有",
+
+    "addfriendcmdacclimited": "無法添加 ${profileid} bot0可能不是課金帳號",
+    "addfriendcmdsuccess": "正在添加 ${profileid} 所有機器人同時添加，這可能需要一點時間",
+    "unfriendcmdsuccess": "所有機器人同時解除好友，這可能需要一點時間。",
+    "unfriendidcmdsuccess": "所有機器人已解除${profileid}好友",
+
+    "unfriendallcmdabort": "如果正在進行解除全部好友處於活耀狀態會停止",
+    "unfriendallcmdpending": "除了開發者，我需要30秒時間解除所有好友\n填寫 '${cmdprefix}unfriendall abort' abort/stop 可停止",
+    "unfriendallcmdstart": "開始解除所有好友",
+
+    "joingroupcmdsuccess": "所有的機器人正在加入'${groupid}'",
+
+    "leavegroupcmdsuccess": "所有的機器人正在退出'${groupid}'",
+
+    "leaveallgroupscmdabort": "如果正在進行離開全部群組處於活耀狀態會停止",
+    "leaveallgroupscmdpending": "除了開發者，我需要30秒時間離開全部群組\n填寫 '${cmdprefix}leaveallgroups abort' abort/stop 可停止",
+    "leaveallgroupscmdstart": "開始離開全部群組",
+
+    "blockcmdsuccess": "所有機器人同時封鎖 ${profileid}",
+    "unblockcmdsuccess": "所有機器人同時解除封鎖 ${profileid}",
+
+    "evalcmdturnedoff": "eval指令已關閉",
+    "evalcmdlogininfoblock": "您的程式碼包含'logininfo'這是保護密碼的\n請使用其他的",
+
+    "childbotmessage": "這是接收支援的機器人\n請使用以下機器人:"
+}

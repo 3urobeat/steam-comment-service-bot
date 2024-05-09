@@ -4,10 +4,10 @@
  * Created Date: 2022-02-26 20:16:44
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:18:01
+ * Last Modified: 2024-05-03 12:49:17
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -38,11 +38,11 @@ module.exports.run = () => {
              * @param {string} dest To path
              * @param {boolean} firstCall Set to `true` on first call, will be set to `false` on recursive call
              */
-            function copyFolderRecursiveSync(src, dest, firstCall) { // eslint-disable-line no-inner-declarations
+            function copyFolderRecursiveSync(src, dest, firstCall) {
                 let files = [];
 
                 // Check if folder needs to be created
-                let targetFolder = path.join(dest, path.basename(src));
+                const targetFolder = path.join(dest, path.basename(src));
 
                 if (!fs.existsSync(targetFolder)) fs.mkdirSync(targetFolder);
 
@@ -52,12 +52,12 @@ module.exports.run = () => {
 
                     files.forEach((file) => {
                         if (dontCopy.includes(file)) return; // Ignore this file/folder if name is in dontCopy
-                        let curSource = path.join(src, file);
+                        const curSource = path.join(src, file);
 
                         if (fs.lstatSync(curSource).isDirectory()) {
                             copyFolderRecursiveSync(curSource, targetFolder, false);
                         } else {
-                            let tempStr = (targetFolder + "/" + file).replace("backup/", "");
+                            const tempStr = (targetFolder + "/" + file).replace("backup/", "");
                             logger("debug", `Copying "${curSource}" to "${tempStr}"...`, true);
 
                             fs.copyFileSync(curSource, (targetFolder + "/" + file).replace("backup/", ""));

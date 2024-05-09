@@ -52,14 +52,14 @@ module.exports.favorite = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // Get the correct ownerid array for this request
         let owners = commandHandler.data.cachefile.ownerid;
         if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-        let requesterID = resInfo.userID;
-        let ownercheck  = owners.includes(requesterID);
+        const requesterID = resInfo.userID;
+        const ownercheck  = owners.includes(requesterID);
 
 
         /* --------- Various checks  --------- */
@@ -73,25 +73,25 @@ module.exports.favorite = {
 
 
         // Check and get arguments from user
-        let { amountRaw, id } = await getMiscArgs(commandHandler, args, "favorite", resInfo, respond);
+        const { amountRaw, id } = await getMiscArgs(commandHandler, args, "favorite", resInfo, respond);
 
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
 
         // Check if this id is already receiving something right now
-        let idReq = commandHandler.controller.activeRequests[id];
+        const idReq = commandHandler.controller.activeRequests[id];
 
         if (idReq && idReq.status == "active") return respond(await commandHandler.data.getLang("idalreadyreceiving", null, requesterID)); // Note: No need to check for user as that is supposed to be handled by a cooldown
 
 
         // Check if user has cooldown
-        let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterID);
+        const { until, untilStr } = await commandHandler.data.getUserCooldown(requesterID);
 
         if (until > Date.now()) return respond(await commandHandler.data.getLang("idoncooldown", { "remainingcooldown": untilStr }, requesterID));
 
 
         // Get all available bot accounts
-        let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFavorizing(commandHandler, amountRaw, id, "favorite");
+        const { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFavorizing(commandHandler, amountRaw, id, "favorite");
 
         if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point.
             if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterID)); // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
@@ -127,7 +127,7 @@ module.exports.favorite = {
                 failed: {}
             };
 
-            let activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
+            const activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
 
 
             // Log request start and give user cooldown on the first iteration
@@ -136,7 +136,7 @@ module.exports.favorite = {
 
                 // Only send estimated wait time message for multiple favorites
                 if (activeReqEntry.amount > 1) {
-                    let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.requestDelay)); // Amount - 1 because the first fav is instant. Multiply by delay and add to current time to get timestamp when last fav was sent
+                    const waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.requestDelay)); // Amount - 1 because the first fav is instant. Multiply by delay and add to current time to get timestamp when last fav was sent
 
                     respond(await commandHandler.data.getLang("favoriteprocessstarted", { "numberOfFavs": activeReqEntry.amount, "waittime": waitTime }, requesterID));
                 }
@@ -151,7 +151,7 @@ module.exports.favorite = {
             syncLoop(amount, (loop, i) => {
                 setTimeout(() => {
 
-                    let bot = commandHandler.controller.bots[availableAccounts[i]];
+                    const bot = commandHandler.controller.bots[availableAccounts[i]];
                     activeReqEntry.thisIteration++;
 
                     if (!handleFavoriteIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
@@ -250,14 +250,14 @@ module.exports.unfavorite = {
      * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      */
     run: async (commandHandler, args, respondModule, context, resInfo) => {
-        let respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
 
         // Get the correct ownerid array for this request
         let owners = commandHandler.data.cachefile.ownerid;
         if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-        let requesterID = resInfo.userID;
-        let ownercheck  = owners.includes(requesterID);
+        const requesterID = resInfo.userID;
+        const ownercheck  = owners.includes(requesterID);
 
 
         /* --------- Various checks  --------- */
@@ -271,25 +271,25 @@ module.exports.unfavorite = {
 
 
         // Check and get arguments from user
-        let { amountRaw, id } = await getMiscArgs(commandHandler, args, "unfavorite", resInfo, respond);
+        const { amountRaw, id } = await getMiscArgs(commandHandler, args, "unfavorite", resInfo, respond);
 
         if (!amountRaw && !id) return; // Looks like the helper aborted the request
 
 
         // Check if this id is already receiving something right now
-        let idReq = commandHandler.controller.activeRequests[id];
+        const idReq = commandHandler.controller.activeRequests[id];
 
         if (idReq && idReq.status == "active") return respond(await commandHandler.data.getLang("idalreadyreceiving", null, requesterID)); // Note: No need to check for user as that is supposed to be handled by a cooldown
 
 
         // Check if user has cooldown
-        let { until, untilStr } = await commandHandler.data.getUserCooldown(requesterID);
+        const { until, untilStr } = await commandHandler.data.getUserCooldown(requesterID);
 
         if (until > Date.now()) return respond(await commandHandler.data.getLang("idoncooldown", { "remainingcooldown": untilStr }, requesterID));
 
 
         // Get all available bot accounts
-        let { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFavorizing(commandHandler, amountRaw, id, "unfavorite");
+        const { amount, availableAccounts, whenAvailableStr } = await getAvailableBotsForFavorizing(commandHandler, amountRaw, id, "unfavorite");
 
         if ((availableAccounts.length < amount || availableAccounts.length == 0) && !whenAvailableStr) { // Check if this bot has not enough accounts suitable for this request and there won't be more available at any point.
             if (availableAccounts.length == 0) respond(await commandHandler.data.getLang("genericnoaccounts", null, requesterID));     // The < || == 0 check is intentional, as providing "all" will set amount to 0 if 0 accounts have been found
@@ -325,7 +325,7 @@ module.exports.unfavorite = {
                 failed: {}
             };
 
-            let activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
+            const activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
 
 
             // Log request start and give user cooldown on the first iteration
@@ -334,7 +334,7 @@ module.exports.unfavorite = {
 
                 // Only send estimated wait time message for multiple favorites
                 if (activeReqEntry.amount > 1) {
-                    let waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.requestDelay)); // Amount - 1 because the first fav is instant. Multiply by delay and add to current time to get timestamp when last fav was sent
+                    const waitTime = timeToString(Date.now() + ((activeReqEntry.amount - 1) * commandHandler.data.config.requestDelay)); // Amount - 1 because the first fav is instant. Multiply by delay and add to current time to get timestamp when last fav was sent
 
                     respond(await commandHandler.data.getLang("favoriteprocessstarted", { "numberOfFavs": activeReqEntry.amount, "waittime": waitTime }, requesterID));
                 }
@@ -349,7 +349,7 @@ module.exports.unfavorite = {
             syncLoop(amount, (loop, i) => {
                 setTimeout(() => {
 
-                    let bot = commandHandler.controller.bots[availableAccounts[i]];
+                    const bot = commandHandler.controller.bots[availableAccounts[i]];
                     activeReqEntry.thisIteration++;
 
                     if (!handleFavoriteIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned

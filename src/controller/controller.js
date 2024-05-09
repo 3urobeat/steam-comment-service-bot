@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-29 21:13:33
+ * Last Modified: 2024-05-04 22:08:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -53,7 +53,7 @@ const Controller = function() {
          * @param {number} timestamp UNIX timestamp to convert
          * @returns {string} "x seconds/minutes/hours/days"
          */
-        timeToString: () => {}, // eslint-disable-line
+        timeToString: () => {},
 
         /**
          * Pings a *https* URL to check if the service and this internet connection is working
@@ -107,11 +107,62 @@ const Controller = function() {
 };
 
 
+/* ------------ Handle restart data: ------------ */
+
+/* eslint-disable no-use-before-define */
+
+/**
+ * Process data that should be kept over restarts
+ * @param {string} data Stringified data received by previous process
+ */
+function restartdata(data) {
+    data = JSON.parse(data); // Convert the stringified object back to an object
+
+    if (data.oldconfig) oldconfig = data.oldconfig // eslint-disable-line
+    if (data.logafterrestart) logafterrestart = data.logafterrestart; // We can't print now since the logger function isn't imported yet.
+    if (data.skippedaccounts) skippedaccounts = data.skippedaccounts;
+    if (data.updateFailed) updateFailed = data.updateFailed;
+}
+
+// Make a "fake" logger backup function to use when no npm packages were installed
+let logger = function(type, str) {
+    logafterrestart.push(`${type} | ${str}`); // Push message to array that will be carried through restart
+    console.log(`${type} | ${str}`);
+};
+logger.animation = () => {}; // Just to be sure that no error occurs when trying to call this function without the real logger being present
+
+/* eslint-enable no-use-before-define */
+
+
+/* ------------ Start the bot: ------------ */
+
+if (parseInt(process.argv[3]) + 2500 > Date.now()) { // Check if this process just got started in the last 2.5 seconds or just required by itself by checking the timestamp attached by starter.js
+
+    // Variables to keep data through restarts. These need to be var's as they need to be accessible from the top scope, sorry eslint!
+    var oldconfig       = {};    // eslint-disable-line
+    var logafterrestart = [];    // eslint-disable-line
+    var updateFailed    = false; // eslint-disable-line
+    var skippedaccounts = [];    // eslint-disable-line
+
+    // Yes, I know, global variables are bad. But I need a few multiple times in different files and it would be a pain in the ass to import them every time and ensure that I don't create a circular dependency and what not.
+    global.botisloggedin = false;
+    global.srcdir        = process.argv[2];
+
+    // Start the bot through the restartdata function if this is a restart to keep some data or start the bot directly
+    if (process.argv[4]) restartdata(process.argv[4]);
+
+    // Start the bot
+    const controller = new Controller();
+
+    setTimeout(() => controller._start(), 50); // Wanna hear something stupid? The error catch in handleErrors.js does not work without this delay. Why? Because the empty function for JsDoc below overwrites the real one. Even though the real one is loaded after the fake one.
+}
+
+
 /**
  * Internal: Initializes the bot by importing data from the disk, running the updater and finally logging in all bot accounts.
  */
 Controller.prototype._start = async function() {
-    let checkAndGetFile = require("../starter.js").checkAndGetFile; // Temp var to use checkAndGetFile() before it is referenced in DataManager
+    const checkAndGetFile = require("../starter.js").checkAndGetFile; // Temp var to use checkAndGetFile() before it is referenced in DataManager
     this.checkAndGetFile = checkAndGetFile;
 
     /* ------------ Init error handler: ------------ */
@@ -164,7 +215,7 @@ Controller.prototype._start = async function() {
 
     /* ------------ Init dataManager system and import: ------------ */
     if (!await checkAndGetFile("./src/dataManager/dataManager.js", logger, false, false)) return;
-    let DataManager = require("../dataManager/dataManager.js");
+    const DataManager = require("../dataManager/dataManager.js");
 
     this.data = new DataManager(this); // All functions provided by the DataManager, as well as all imported file data will be accessible here
 
@@ -188,7 +239,7 @@ Controller.prototype._start = async function() {
 
 
     // Check for unsupported node.js version (<16.0.0)
-    let versionarr = process.version.replace("v", "").split(".");
+    const versionarr = process.version.replace("v", "").split(".");
 
     versionarr.forEach((e, i) => { if (e.length == 1 && parseInt(e) < 10) versionarr[i] = `0${e}`; }); // Put 0 in front of single digits
 
@@ -216,11 +267,11 @@ Controller.prototype._start = async function() {
 
 
     /* ------------ Run compatibility feature and updater or start logging in: ------------ */
-    let compatibility = await checkAndGetFile("./src/updater/compatibility.js", logger, false, false);
+    const compatibility = await checkAndGetFile("./src/updater/compatibility.js", logger, false, false);
     if (compatibility) forceUpdate = await compatibility.runCompatibility(this); // Don't bother running it if it couldn't be found and just hope the next update will fix it
 
     // Attempt to load updater to activate the auto update checker. If this fails we are properly "fucked" as we can't repair ourselves
-    let Updater = await checkAndGetFile("./src/updater/updater.js", logger, false, false);
+    const Updater = await checkAndGetFile("./src/updater/updater.js", logger, false, false);
     if (!Updater) {
         logger("error", "Fatal Error: Failed to load updater! Please reinstall the bot manually. Aborting...");
         return this.stop();
@@ -238,7 +289,7 @@ Controller.prototype._start = async function() {
     } else {
 
         // Let the updater run and check for any available updates
-        let { updateFound } = await this.updater.run(forceUpdate);
+        const { updateFound } = await this.updater.run(forceUpdate);
 
         // Continue if no update was found. If an update was found and installed the updater will restart the bot itself.
         if (!updateFound) {
@@ -254,7 +305,7 @@ Controller.prototype._start = async function() {
 Controller.prototype._preLogin = async function() {
 
     // Get job manager going
-    let JobManager = require("../jobs/jobManager.js");
+    const JobManager = require("../jobs/jobManager.js");
 
     /**
      * The JobManager handles the periodic execution of functions which you can register at runtime
@@ -307,6 +358,7 @@ Controller.prototype._preLogin = async function() {
     require("./events/ready.js");
     require("./events/statusUpdate.js");
     require("./events/steamGuardInput.js");
+    require("./events/steamGuardQrCode.js");
     require("./helpers/friendlist.js");
     require("./helpers/getBots.js");
     require("./helpers/handleSteamIdResolving.js");
@@ -314,7 +366,7 @@ Controller.prototype._preLogin = async function() {
 
 
     // Load commandHandler
-    let CommandHandler = require("../commands/commandHandler.js");
+    const CommandHandler = require("../commands/commandHandler.js");
 
     /**
      * The commandHandler object
@@ -325,14 +377,14 @@ Controller.prototype._preLogin = async function() {
 
 
     // Load pluginSystem
-    let PluginSystem = require("../pluginSystem/pluginSystem.js");
+    const PluginSystem = require("../pluginSystem/pluginSystem.js");
 
     /**
      * The pluginSystem handler
      * @type {PluginSystem}
      */
     this.pluginSystem = new PluginSystem(this);
-    this.pluginSystem._loadPlugins(); // Load all plugins now
+    await this.pluginSystem._loadPlugins(); // Load all plugins now. Await to hopefully give plugins enough time to catch Steam Guard events
 
 
     // Start logging in
@@ -343,52 +395,6 @@ Controller.prototype._preLogin = async function() {
 
 module.exports = Controller;
 
-
-/* ------------ Handle restart data: ------------ */
-
-/**
- * Process data that should be kept over restarts
- * @param {string} data Stringified data received by previous process
- */
-function restartdata(data) {
-    data = JSON.parse(data); // Convert the stringified object back to an object
-
-    if (data.oldconfig) oldconfig = data.oldconfig //eslint-disable-line
-    if (data.logafterrestart) logafterrestart = data.logafterrestart; // We can't print now since the logger function isn't imported yet.
-    if (data.skippedaccounts) skippedaccounts = data.skippedaccounts;
-    if (data.updateFailed) updateFailed = data.updateFailed;
-}
-
-// Make a "fake" logger backup function to use when no npm packages were installed
-let logger = function(type, str) {
-    logafterrestart.push(`${type} | ${str}`); // Push message to array that will be carried through restart
-    console.log(`${type} | ${str}`);
-};
-logger.animation = () => {}; // Just to be sure that no error occurs when trying to call this function without the real logger being present
-
-
-/* ------------ Start the bot: ------------ */
-
-if (parseInt(process.argv[3]) + 2500 > Date.now()) { // Check if this process just got started in the last 2.5 seconds or just required by itself by checking the timestamp attached by starter.js
-
-    // Variables to keep data through restarts. These need to be var's as they need to be accessible from the top scope, sorry eslint!
-    var oldconfig       = {};    // eslint-disable-line
-    var logafterrestart = [];    // eslint-disable-line
-    var updateFailed    = false; // eslint-disable-line
-    var skippedaccounts = [];    // eslint-disable-line
-
-    // Yes, I know, global variables are bad. But I need a few multiple times in different files and it would be a pain in the ass to import them every time and ensure that I don't create a circular dependency and what not.
-    global.botisloggedin = false;
-    global.srcdir        = process.argv[2];
-
-    // Start the bot through the restartdata function if this is a restart to keep some data or start the bot directly
-    if (process.argv[4]) restartdata(process.argv[4]);
-
-    // Start the bot
-    let controller = new Controller();
-
-    setTimeout(() => controller._start(), 50); // Wanna hear something stupid? The error catch in handleErrors.js does not work without this delay. Why? Because the empty function for JsDoc below overwrites the real one. Even though the real one is loaded after the fake one.
-}
 
 
 /* ------------ Provide functions for restarting & stopping: ------------ */
@@ -450,6 +456,13 @@ Controller.prototype._statusUpdateEvent = function(bot, newStatus) {}; // eslint
  * @param {function(string): void} submitCode Function to submit a code. Pass an empty string to skip the account.
  */
 Controller.prototype._steamGuardInputEvent = function(bot, submitCode) {}; // eslint-disable-line
+
+/**
+ * Emits steamGuardQrCode event for bot & plugins
+ * @param {Bot} bot Bot instance of the affected account
+ * @param {string} challengeUrl The QrCode Challenge URL supplied by Steam. Display this value using a QR-Code parser and let a user scan it using their Steam Mobile App.
+ */
+Controller.prototype._steamGuardQrCodeEvent = function(bot, challengeUrl) {}; // eslint-disable-line
 
 /**
  * Check if all friends are in lastcomment database
@@ -533,4 +546,4 @@ Controller.prototype._loggerOptionsUpdateAfterConfigLoad = function(advancedconf
 /**
  * Internal: Logs all held back messages from logAfterReady array
  */
-Controller.prototype._loggerLogAfterReady = function() {}; // eslint-disable-line
+Controller.prototype._loggerLogAfterReady = function() {};

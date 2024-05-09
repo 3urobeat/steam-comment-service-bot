@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-28 22:24:32
+ * Last Modified: 2024-05-09 14:23:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -28,7 +28,7 @@ Bot.prototype._attachSteamFriendRelationshipEvent = function() {
     this.user.on("friendRelationship", (steamID, relationship) => {
 
         if (relationship == 2) {
-            let steamID64 = new SteamID(String(steamID)).getSteamID64();
+            const steamID64 = new SteamID(String(steamID)).getSteamID64();
 
             if (!this.data.advancedconfig.acceptFriendRequests) return logger("info", `[${this.logPrefix}] Received friend request from ${steamID64} but acceptFriendRequests is turned off in advancedconfig.json`);
 
@@ -47,7 +47,7 @@ Bot.prototype._attachSteamFriendRelationshipEvent = function() {
 
 
             // Add user to lastcomment database
-            let time = Date.now() - (this.controller.data.config.requestCooldown * 60000); // Subtract requestCooldown so that the user is able to use the command instantly;
+            const time = Date.now() - (this.controller.data.config.requestCooldown * 60000); // Subtract requestCooldown so that the user is able to use the comment command instantly;
 
             this.controller.data.lastCommentDB.update({ id: steamID64 }, { $set: { time: time } }, { upsert: true }, (err) => {
                 if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err);
@@ -86,7 +86,7 @@ Bot.prototype._attachSteamGroupRelationshipEvent = function() {
     this.user.on("groupRelationship", (steamID, relationship) => {
 
         if (relationship == 2) { // Ignore if relationship type is not "Invited"
-            let steamID64 = new SteamID(String(steamID)).getSteamID64();
+            const steamID64 = new SteamID(String(steamID)).getSteamID64();
 
             // Check if acceptgroupinvites is set to false and only allow botsgroup invite to be accepted
             if (!this.controller.data.config.acceptgroupinvites) {
