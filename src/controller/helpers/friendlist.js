@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-08 21:33:43
+ * Last Modified: 2024-05-09 15:04:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -19,6 +19,7 @@ const SteamID = require("steamid");
 
 const Controller = require("../../controller/controller.js");
 const Bot        = require("../../bot/bot.js"); // eslint-disable-line
+const { EFriendRelationship } = require("steam-user");
 
 
 /**
@@ -134,7 +135,7 @@ Controller.prototype._lastcommentUnfriendCheck = function() {
                 this.getBots().forEach(async (thisBot, j) => {
                     const thisUser = thisBot.user;
 
-                    if (thisUser.myFriends[e.id] && thisUser.myFriends[e.id] == 3 && !this.data.cachefile.ownerid.includes(e.id)) { // Check if the targeted user is still friend and not an owner
+                    if (thisUser.myFriends[e.id] && thisUser.myFriends[e.id] == EFriendRelationship.Friend && !this.data.cachefile.ownerid.includes(e.id)) { // Check if the targeted user is still friend and not an owner
                         if (j == 0) this.main.sendChatMessage(this.main, { userID: e.id }, await this.data.getLang("userunfriend", { "unfriendtime": this.data.config.unfriendtime }, e.id));
 
                         setTimeout(() => {

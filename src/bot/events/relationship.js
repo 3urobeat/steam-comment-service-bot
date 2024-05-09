@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-28 22:24:32
+ * Last Modified: 2024-05-09 14:23:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -47,7 +47,7 @@ Bot.prototype._attachSteamFriendRelationshipEvent = function() {
 
 
             // Add user to lastcomment database
-            const time = Date.now() - (this.controller.data.config.requestCooldown * 60000); // Subtract requestCooldown so that the user is able to use the command instantly;
+            const time = Date.now() - (this.controller.data.config.requestCooldown * 60000); // Subtract requestCooldown so that the user is able to use the comment command instantly;
 
             this.controller.data.lastCommentDB.update({ id: steamID64 }, { $set: { time: time } }, { upsert: true }, (err) => {
                 if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err);
