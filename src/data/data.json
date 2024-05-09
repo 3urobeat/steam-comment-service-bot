@@ -1,14 +1,14 @@
 {
-    "version": "21501",
-    "versionstr": "2.15.1",
-    "branch": "beta-testing",
+    "version": "21502",
+    "versionstr": "2.15.2",
+    "branch": "master",
     "filetostart": "./src/starter.js",
-    "filetostarturl": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/starter.js",
+    "filetostarturl": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/src/starter.js",
     "mestr": "3urobeat",
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/3urobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://github.com/sponsors/3urobeat",
     "firststart": true,
     "compatibilityfeaturedone": false,
-    "whatsnew": "Fixed softlocked login process after proxy switch, fixed vote & fav error logging throwing an error and reduced amount of log messages logged during startup, login, disconnect & relog.",
+    "whatsnew": "Added traditional-chinese translation, added steamGuardQrCode event, fixed login starting faster than plugins could catch related events, fixed multiple login/relog bugs and made some more changes.",
     "timesloggedin": 0,
     "totallogintime": 0
 }
