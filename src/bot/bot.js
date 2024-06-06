@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-04 15:27:37
+ * Last Modified: 2024-06-06 11:03:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -236,7 +236,10 @@ Bot.prototype._loginToSteam = async function() {
     // Call our steam-session helper to get a valid refresh token for us
     const refreshToken = await this.sessionHandler.getToken();
 
-    if (!refreshToken) return this.loginData.pendingLogin = false; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the bot itself
+    if (!refreshToken) {
+        this.loginData.pendingLogin = false; // Stop execution if getRefreshToken aborted login attempt, it either skipped this account or stopped the bot itself
+        return;
+    }
 
 
     // Login with this account using the refreshToken we just obtained using steam-session
