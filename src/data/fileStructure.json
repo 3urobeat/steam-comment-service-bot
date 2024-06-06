@@ -133,7 +133,7 @@
         {
             "path": "docs/wiki/adding_proxies.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/docs/wiki/adding_proxies.md",
-            "checksum": "30ea0432eff5f6da2db6ac924f7ed17d"
+            "checksum": "39b297fbbe02e4c41e3cc16ea1b8243e"
         },
         {
             "path": "docs/wiki/advancedconfig_doc.md",
@@ -373,7 +373,7 @@
         {
             "path": "src/bot/helpers/handleRelog.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/helpers/handleRelog.js",
-            "checksum": "5a5e47dbbd2cdf30200ff1b841b700ed"
+            "checksum": "56aff3e9e74421b1a891479d6da8e18f"
         },
         {
             "path": "src/bot/helpers/steamChatInteraction.js",

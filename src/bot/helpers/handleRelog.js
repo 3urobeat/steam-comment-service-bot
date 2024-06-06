@@ -4,7 +4,7 @@
  * Created Date: 2023-10-05 16:14:46
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-04 21:12:25
+ * Last Modified: 2024-06-06 17:51:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -29,7 +29,7 @@ Bot.prototype.switchProxy = function(newProxyIndex) {
 
     if (newProxyIndex == undefined) return new Error("Parameter newProxyIndex must not be undefined"); // Explicitly check for undefined to prevent the value 0 from triggering this check
 
-    logger("info", `[${this.logPrefix}] Switching proxy from ${this.loginData.proxyIndex} to ${newProxyIndex}. The bot account will relog in a moment...`);
+    logger("info", `[${this.logPrefix}] Switching proxy from ${this.loginData.proxyIndex} to ${newProxyIndex}. The bot account will relog in a moment...`, false, false, logger.animation("waiting"));
 
     // Update proxy usage
     this.loginData.proxy      = this.data.proxies[newProxyIndex].proxy;
@@ -64,7 +64,7 @@ Bot.prototype.checkAndSwitchMyProxy = async function() {
     // Attempt to ping github.com (basically any non steamcommunity url) without a proxy to determine if the internet connection is not working
     const hostConnectionRes = await this.controller.misc.checkConnection("https://github.com/3urobeat/steam-comment-service-bot", true)
         .catch((err) => {
-            if (this.index == 0) logger("info", `[Main] Your internet connection seems to be down. ${err.statusMessage}`); // Only log message for main acc to reduce clutter
+            if (this.index == 0) logger("warn", `[Main] Your internet connection seems to be down. ${err.statusMessage}`, false, false, null, true); // Only log message for main acc to reduce clutter
         });
 
     if (!hostConnectionRes || !hostConnectionRes.statusCode) return false; // Return false if catch from above was triggered
@@ -72,7 +72,7 @@ Bot.prototype.checkAndSwitchMyProxy = async function() {
 
     // Return false if connection is up but Steam cannot be reached as the proxy is not at fault
     if (!(hostConnectionRes.statusCode >= 200 && hostConnectionRes.statusCode < 300)) {
-        if (this.index == 0) logger("info", "[Main] Steam is unreachable but your internet connection seems to work."); // Only log message for main acc to reduce clutter
+        if (this.index == 0) logger("info", "[Main] Steam is unreachable but your internet connection seems to work.", false, false, null, true); // Only log message for main acc to reduce clutter
         return false;
     }
 
@@ -93,7 +93,7 @@ Bot.prototype.checkAndSwitchMyProxy = async function() {
 
         // Check if no available proxy was found (exclude host) and return false
         if (activeProxies.length == 0) {
-            logger("warn", `[${this.logPrefix}] Failed to ping Steam using proxy ${this.loginData.proxyIndex} but no other available proxy was found! Continuing to try with this proxy...`);
+            logger("warn", `[${this.logPrefix}] Failed to ping Steam using proxy ${this.loginData.proxyIndex} but no other available proxy was found! Continuing to try with this proxy...`, false, false, null, true);
             return false;
         }
 
@@ -101,7 +101,7 @@ Bot.prototype.checkAndSwitchMyProxy = async function() {
         // Find proxy with least amount of associated bots
         const leastUsedProxy = activeProxies.reduce((a, b) => a.bots.length < b.bots.length ? a : b);
 
-        logger("warn", `[${this.logPrefix}] Failed to ping Steam using proxy ${this.loginData.proxyIndex}! Switching to proxy ${leastUsedProxy.proxyIndex} which currently has the least amount of usage and appears to be online.`);
+        logger("warn", `[${this.logPrefix}] Failed to ping Steam using proxy ${this.loginData.proxyIndex}! Switching to proxy ${leastUsedProxy.proxyIndex} which currently has the least amount of usage and appears to be online.`, false, false, null, true);
 
 
         // Switch proxy and relog, no need for handleRelog() to do something
@@ -112,7 +112,7 @@ Bot.prototype.checkAndSwitchMyProxy = async function() {
 
     } else {
 
-        logger("info", `[${this.logPrefix}] Successfully pinged Steam using proxy ${this.loginData.proxyIndex}. I'll keep using this proxy.`);
+        logger("info", `[${this.logPrefix}] Successfully pinged Steam using proxy ${this.loginData.proxyIndex}. I'll keep using this proxy.`, false, false, null, true);
         return false;
     }
 
