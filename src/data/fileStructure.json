@@ -373,7 +373,7 @@
         {
             "path": "src/bot/helpers/handleRelog.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/helpers/handleRelog.js",
-            "checksum": "56aff3e9e74421b1a891479d6da8e18f"
+            "checksum": "bfdca2b6488b9a3f1b05040ad5b7f8d0"
         },
         {
             "path": "src/bot/helpers/steamChatInteraction.js",

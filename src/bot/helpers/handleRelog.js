@@ -4,7 +4,7 @@
  * Created Date: 2023-10-05 16:14:46
  * Author: 3urobeat
  *
- * Last Modified: 2024-06-06 17:51:26
+ * Last Modified: 2024-06-06 18:04:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -106,7 +106,7 @@ Bot.prototype.checkAndSwitchMyProxy = async function() {
 
         // Switch proxy and relog, no need for handleRelog() to do something
         this.switchProxy(leastUsedProxy.proxyIndex);
-        this.controller._statusUpdateEvent(this, Bot.EStatus.OFFLINE);
+        this.controller._statusUpdateEvent(this, Bot.EStatus.POSTPONED); // Important: Set to POSTPONED to let the current login request, which this acc is queued in, resolve. The following request will process it. This fixes a softlock where the current login process would never resolve.
         this.controller.login();
         return true;
 
