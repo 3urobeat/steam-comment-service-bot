@@ -138,4 +138,4 @@ You can see all commands and their usage [here in the wiki](./commands_doc.md).
 
 ## That's it! 🎉
 Congrats, you've successfully set up the bot!  
-Head back to the README by [clicking here](../..#setup--config-guide)!
+Head back to the README by [clicking here](../..#setup-config-guide)!
