@@ -108,10 +108,12 @@ For now you can ignore all the other settings, however if you'd like to customiz
   Make sure to not leave a line empty as it can otherwise lead to errors.   
   The bot will choose a random quote for **every** comment. If you only provide one quote, the bot will only use that one for all comments.  
 
-  You can also use comments that go over multiple lines (ASCII-Art, etc.).  
+  You can also set comments that go over multiple lines (ASCII-Art, etc.).  
   To do that, just put a `\n` at the end of each line of the multi-line comment. Then move the next line of your comment behind the `\n` so that your multi line comment is **only one line** in your quotes.txt, with each line of the actual comment seperated by a `\n`.  
 
   > Example: `My cool comment: \nline1\nline2\nline3`  
+
+  > Note: If your comment contains `\n` that should not get converted to a line break, you need to escape the backslash like this: `\\n`
 </details>
   
 &nbsp;
