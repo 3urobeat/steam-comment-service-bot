@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-08 18:26:36
+ * Last Modified: 2024-08-10 16:11:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -250,18 +250,19 @@ DataManager.prototype._importFromDisk = async function () {
                 return _this._pullNewFile("quotes.txt", "./quotes.txt", async () => { resolve(await loadQuotes()); }, true);
             }
 
-            quotes = fs.readFileSync(srcdir + "/../quotes.txt", "utf8").split("\n"); // Get all quotes from the quotes.txt file into an array
+            quotes = fs.readFileSync(srcdir + "/../quotes.txt", "utf8").split(/\r?\n/); // Get all quotes from the quotes.txt file into an array
             quotes = quotes.filter((str) => str != ""); // Remove empty quotes
 
             quotes.forEach((e, i) => {
-                // Multi line strings that contain \n will get split to \\n -> remove second \ so that node-steamcommunity understands the quote when commenting
+                // Remove quotes that are too long for a SteamCommunity comment
                 if (e.length > 999) {
                     logger("warn", `The quote.txt line ${i + 1} is longer than the limit of 999 characters. This quote will be ignored for now.`, true, false, logger.animation("loading"));
                     quotes.splice(i, 1); // Remove this item from the array
                     return;
                 }
 
-                quotes[i] = e.replace(/\\n/g, "\n").replace("\\n", "\n");
+                // Reverse added backslashes by readFileSync that break newline characters, but make sure an original "\\n" stays "\\n"
+                quotes[i] = e.replace(/\\n/g, "\n").replace(/\\\n/g, "\\n");
             });
 
             if (quotes.length == 0) {
