@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-04 22:08:30
+ * Last Modified: 2024-08-10 22:36:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -101,7 +101,7 @@ const Controller = function() {
 
     /**
      * Stores all recent comment, vote etc. requests
-     * @type {{[key: string]: { status: string, type: string, amount: number, quotesArr?: Array.<string>, requestedby: string, accounts: Array.<Bot>, thisIteration: number, retryAttempt: number, amountBeforeRetry?: number, until: number, failed: object }}}
+     * @type {{[key: string]: { status: string, type: string, amount: number, quotesArr?: Array.<string>, requestedby: string, accounts: Array.<Bot>, thisIteration: number, retryAttempt: number, amountBeforeRetry?: number, until: number, ipCooldownPenaltyAdded?: boolean, failed: object }}}
      */
     this.activeRequests = {};
 };
