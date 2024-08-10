@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:06:35
+ * Last Modified: 2024-08-10 19:13:29
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -197,7 +197,7 @@ module.exports.settings = {
                             let configChildGames = config.childaccplayinggames;
 
                             if (typeof configChildGames[0] == "object") {
-                                if (Object.keys(configChildGames[0]).includes(e.loginData.logOnOptions.accountName)) configChildGames = configChildGames[0][e.loginData.logOnOptions.accountName]; // Get the specific settings for this account if included
+                                if (Object.keys(configChildGames[0]).includes(e.accountName)) configChildGames = configChildGames[0][e.accountName]; // Get the specific settings for this account if included
                                     else configChildGames = configChildGames.slice(1);                                                                                                             // ...otherwise remove object containing acc specific settings to use the generic ones
 
                                 logger("debug", `settings: Setting includes specific games for ${e.logPrefix}, filtered for this account: ${configChildGames.join(", ")}`);

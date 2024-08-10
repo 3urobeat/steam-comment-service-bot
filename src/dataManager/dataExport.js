@@ -4,10 +4,10 @@
  * Created Date: 2023-07-04 21:29:42
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:12:57
+ * Last Modified: 2024-08-10 19:13:29
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -114,7 +114,7 @@ DataManager.prototype.writeLogininfoToDisk = function() {
 
         // Re-Construct logininfo object. Iterate over bots instead of logininfo to retain a changed bots hierarchy
         for (const e of this.controller.getBots("*")) {
-            logininfojson[`bot${e.index}`] = [ e.loginData.logOnOptions.accountName, e.loginData.logOnOptions.password, e.loginData.logOnOptions.sharedSecret ];
+            logininfojson[`bot${e.index}`] = [ e.accountName, e.loginData.logOnOptions.password, e.loginData.logOnOptions.sharedSecret ];
         }
 
         // Get arrays on one line
@@ -139,8 +139,8 @@ DataManager.prototype.writeLogininfoToDisk = function() {
 
         // Re-construct accounts.txt string. Iterate over bots instead of logininfo to retain a changed bots hierarchy
         for (const e of this.controller.getBots("*")) {
-            if (e.loginData.logOnOptions.sharedSecret) accountstxt.push(`${e.loginData.logOnOptions.accountName}:${e.loginData.logOnOptions.password}:${e.loginData.logOnOptions.sharedSecret}`);
-                else accountstxt.push(`${e.loginData.logOnOptions.accountName}:${e.loginData.logOnOptions.password}`);
+            if (e.loginData.logOnOptions.sharedSecret) accountstxt.push(`${e.accountName}:${e.loginData.logOnOptions.password}:${e.loginData.logOnOptions.sharedSecret}`);
+                else accountstxt.push(`${e.accountName}:${e.loginData.logOnOptions.password}`);
         }
 
         fs.writeFile(srcdir + "/../accounts.txt", accountstxt.join("\n"), (err) => {

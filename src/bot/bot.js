@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-06-06 11:03:39
+ * Last Modified: 2024-08-10 19:13:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -77,6 +77,12 @@ const Bot = function(controller, index) {
         proxyIndex:    proxyIndex,
         proxy:         controller.data.proxies[proxyIndex].proxy
     };
+
+    /**
+     * Username of this bot account
+     * @type {string}
+     */
+    this.accountName = this.loginData.logOnOptions.accountName;
 
     /**
      * Stores the timestamp and reason of the last disconnect. This is used by handleRelog() to take proper action
