@@ -288,7 +288,7 @@
         {
             "path": "src/controller/helpers/friendlist.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/friendlist.js",
-            "checksum": "6ca8db673bf51a60a2be39e574451bfd"
+            "checksum": "56d6010b1fb28a78077a47db89afc7ff"
         },
         {
             "path": "src/controller/helpers/getBots.js",
@@ -618,7 +618,7 @@
         {
             "path": "types/types.d.ts",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/types/types.d.ts",
-            "checksum": "9363ec344f32f27c4437a0ee3edacdb1"
+            "checksum": "5f05f6f8859ae7d6a3d71ea1422f8d48"
         }
     ]
 }
