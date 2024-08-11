@@ -4,7 +4,7 @@
  * Created Date: 2022-02-28 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 2024-08-11 11:51:28
+ * Last Modified: 2024-08-11 19:27:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -124,7 +124,7 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
  */
 module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64) => {
     const activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
-    let description    = "";
+    let   description    = "";
 
 
     // Add description to errors to make it easier to understand for users. Add extra cooldown for certain errors
@@ -135,10 +135,10 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
             // Add 5 minutes of extra cooldown to all bot accounts that are also using this proxy by adding them to the accounts list of this request
             activeReqEntry.accounts = activeReqEntry.accounts.concat(Object.keys(commandHandler.controller.getBots(null, true)).filter(e => commandHandler.controller.getBots(null, true)[e].loginData.proxyIndex == bot.loginData.proxyIndex && !activeReqEntry.accounts.includes(e))); // Append all accounts with the same proxy which aren't included yet
 
-            if (activeReqEntry.ipCooldownPenaltyAdded === false) {  // Explicitly check for false to avoid triggering on undefined
-                activeReqEntry.until += 300000;                     // Add 5 minutes of cooldown
+            if (activeReqEntry.ipCooldownPenaltyAdded === false) {                          // Explicitly check for false to avoid triggering on undefined
+                activeReqEntry.until += bot.data.advancedconfig.commentsIpCooldownPenalty;  // Add to cooldown
                 activeReqEntry.ipCooldownPenaltyAdded = true;
-                logger("debug", `${logger.colors.fgred}IP cooldown error detected${logger.colors.reset} - Increased until value of this request by 5 minutes`);
+                logger("debug", `${logger.colors.fgred}IP cooldown error detected${logger.colors.reset} - Increased until value of this request by ${bot.data.advancedconfig.commentsIpCooldownPenalty / 60000} minutes`);
             }
 
             // Add failed obj entry for all iterations that would use this proxy
@@ -162,10 +162,10 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
         case "error: you've been posting too frequently, and can't make another post right now":
             description = "This account has commented too often recently. Please wait a few minutes and try again";
 
-            if (activeReqEntry.ipCooldownPenaltyAdded === false) {  // Explicitly check for false to avoid triggering on undefined
-                activeReqEntry.until += 300000;                     // Add 5 minutes of cooldown
+            if (activeReqEntry.ipCooldownPenaltyAdded === false) {                          // Explicitly check for false to avoid triggering on undefined
+                activeReqEntry.until += bot.data.advancedconfig.commentsIpCooldownPenalty;  // Add to cooldown
                 activeReqEntry.ipCooldownPenaltyAdded = true;
-                logger("debug", `${logger.colors.fgred}IP cooldown error detected${logger.colors.reset} - Increased until value of this request by 5 minutes`);
+                logger("debug", `${logger.colors.fgred}IP cooldown error detected${logger.colors.reset} - Increased until value of this request by ${bot.data.advancedconfig.commentsIpCooldownPenalty / 60000} minutes`);
             }
             break;
         case "error: there was a problem posting your comment. please try again":
