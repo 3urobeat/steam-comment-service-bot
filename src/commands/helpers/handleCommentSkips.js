@@ -4,7 +4,7 @@
  * Created Date: 2022-02-28 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 2024-08-10 22:42:13
+ * Last Modified: 2024-08-11 11:51:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -86,9 +86,11 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
         return false;
     }
 
-    // Check if all proxies have failed and break loop by checking if all remaining comments have been declared as failed if we are not on the last iteration
-    if (Object.values(activeReqEntry.failed).filter(e => e.toLowerCase().includes("http error 429")).length + activeReqEntry.thisIteration + 1 >= activeReqEntry.amount && activeReqEntry.thisIteration + 1 != activeReqEntry.amount) {
-        logger("debug", "CommandHandler handleIterationSkip(): All proxies failed, breaking comment loop...");
+    // Check if all proxies have failed (logCommentError() has pre-filled the failed array on IP cooldown) and break loop unless this is the last iteration
+    const ipCooldownsAmount = Object.values(activeReqEntry.failed).filter((e) => e.toLowerCase().includes("http error 429")).length;
+
+    if (ipCooldownsAmount >= activeReqEntry.amount && activeReqEntry.thisIteration + 1 != activeReqEntry.amount) {
+        logger("warn", "Detected error for all remaining comments, aborting request!");
 
         // Sort failed object to make it easier to read
         activeReqEntry.failed = sortFailedCommentsObject(activeReqEntry.failed);

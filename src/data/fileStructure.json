@@ -243,7 +243,7 @@
         {
             "path": "src/commands/helpers/handleCommentSkips.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/handleCommentSkips.js",
-            "checksum": "44963d07eefa94b18b13e1a832692a7e"
+            "checksum": "a677d3a7c61f51264e0998ba867b3f04"
         },
         {
             "path": "src/commands/helpers/handleFollowErrors.js",
