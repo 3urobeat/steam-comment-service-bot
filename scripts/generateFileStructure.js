@@ -4,7 +4,7 @@
  * Created Date: 2023-09-02 14:41:54
  * Author: 3urobeat
  *
- * Last Modified: 2024-08-04 11:43:47
+ * Last Modified: 2024-08-11 10:57:07
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -30,7 +30,7 @@ const ignore = [
     ".git", "node_modules", "backup", "plugins", "docs", // Folders
     "logininfo.json", "accounts.txt", "config.json", "proxies.txt", "quotes.txt", "advancedconfig.json", "config.json", "customlang.json", // Config files
     "output.txt", "src/data/cache.json", "src/data/data.json", "src/data/fileStructure.json", "src/data/lastcomment.db", "src/data/ratingHistory.db", "src/data/tokens.db", "src/data/userSettings.db", // Files changing at runtime
-    "comment-service-bot.code-workspace", "package.json", "package-lock.json" // Misc
+    ".gitignore", "steam-comment-service-bot.code-workspace", "package.json", "package-lock.json" // Misc
 ];
 
 const output = [];
