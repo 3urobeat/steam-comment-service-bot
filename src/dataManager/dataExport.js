@@ -4,7 +4,7 @@
  * Created Date: 2023-07-04 21:29:42
  * Author: 3urobeat
  *
- * Last Modified: 2024-08-10 19:13:29
+ * Last Modified: 2024-08-12 17:48:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -135,7 +135,7 @@ DataManager.prototype.writeLogininfoToDisk = function() {
     if (fs.existsSync(srcdir + "/../accounts.txt")) {
         logger("debug", "DataManager dataExport: Writing to accounts.txt...");
 
-        const accountstxt = [ "//Comment: This file is used to provide your bot accounts in the form of username:password. Read the instructions here: https://github.com/3urobeat/steam-comment-service-bot#accounts" ]; // Re-add comment
+        const accountstxt = [ "//Comment: Provide login information in the form of username:password. Read instructions here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/setup_guide.md#accounts" ]; // Re-add comment
 
         // Re-construct accounts.txt string. Iterate over bots instead of logininfo to retain a changed bots hierarchy
         for (const e of this.controller.getBots("*")) {
