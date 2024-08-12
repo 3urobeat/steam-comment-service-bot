@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-08-10 19:13:43
+ * Last Modified: 2024-08-12 20:21:19
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -232,7 +232,9 @@ Bot.prototype._loginToSteam = async function() {
 
 
     // Find proxyIndex from steam-user object options instead of loginData to get reliable log data
-    const thisProxy = this.data.proxies.find((e) => e.proxy == this.user.options.httpProxy);
+    const thisProxy = this.data.proxies.find((e) =>
+        String(this.user.options.httpProxy).includes(String(e.proxy)) // The steam-user lib precedes httpProxy with http:// if it is missing, so we use includes() to avoid mismatch
+    );
 
     // Log login message for this account, with mentioning proxies or without
     if (!thisProxy.proxy) logger("info", `[${this.logPrefix}] Trying to log in without proxy... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
