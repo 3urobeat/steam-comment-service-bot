@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-08-10 16:11:10
+ * Last Modified: 2024-08-12 22:04:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -226,6 +226,8 @@ DataManager.prototype._importFromDisk = async function () {
 
                 // Restructure array into array of objects
                 proxies.forEach((e, i) => {
+                    if (typeof e == "string" && !e.includes("://")) e = "http://" + e; // Precede proxy with http if user did not to prevent SteamCommunity requests from failing
+
                     proxies[i] = { proxyIndex: i, proxy: e, isOnline: true, lastOnlineCheck: 0 };
                 });
 
