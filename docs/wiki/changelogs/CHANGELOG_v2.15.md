@@ -7,6 +7,7 @@
 - [2.15.0](#2.15.0)
 - [2.15.1](#2.15.1)
 - [2.15.2](#2.15.2)
+- [2.15.3](#2.15.3)
   
 &nbsp;
 
@@ -198,3 +199,37 @@ Commit: [a8a04eb](https://github.com/3urobeat/steam-comment-service-bot/commit/a
 - Minor other changes
 
 Commit: [df92d84](https://github.com/3urobeat/steam-comment-service-bot/commit/df92d84)
+
+&nbsp;
+
+<a id="2.15.3"></a>
+
+## **2024-08-13, Version 2.15.3**
+**Additions:**
+- Added a few new default quotes
+- Added note about escaping newline in quotes to setup guide
+- Added commentsIpCooldownPenalty setting to advancedconfig [#250](https://github.com/3urobeat/steam-comment-service-bot/issues/250)
+- Added VsCodium project file to remote repository to store command for starting debug session 
+- Rest-API Plugin: Added support for subscribing to PluginSystem events. See the Pull Request [#10](https://github.com/DerDeathraven/steam-comment-bot-rest-api/pull/10) for more info.
+
+**Fixes:**
+- Fixed IP cooldown error penalty in comment requests stacking when using proxies [#250](https://github.com/3urobeat/steam-comment-service-bot/issues/250)
+- Fixed all proxies failed detection in comment processes triggering too soon, leading to aborted request with functioning proxies still left
+- Fixed Unhandled Rejection error when logging proxy used to login when proxy provided in proxies.txt did not include 'http://' [#248](https://github.com/3urobeat/steam-comment-service-bot/issues/248)
+- Fixed SteamCommunity requests failing when using proxies not preceded by 'http://' [#248](https://github.com/3urobeat/steam-comment-service-bot/issues/248)
+- Fixed proxy switcher logging suppressed messages during startup
+- Fixed proxy error on initial login causing a softlock
+- Fixed friend commands not prefixing success messages with `/me`
+- Fixed intentionally escaped newline characters in quotes getting 'activated'
+- Docs: Fixed broken link in setup guide
+- Docs: Fixed broken link in accounts.txt comment
+- Docs: Fixed missing reference to unload function in plugin documentation
+- Discord Plugin: Fixed registerCommands failing when a command does not provide any args and added a check to avoid an Unhandled Rejection when using an outdated node.js version
+
+**Changes:**
+- Drastically reduced complexity of getting bot accountName by making it a top-layer property
+- Refactored unfriendCheck handler
+- Docs: Reworked adding proxies page
+- Removed docs directory from file checksum check
+- Updated dependencies
+- Minor other changes
