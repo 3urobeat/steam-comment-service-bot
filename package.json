@@ -1,6 +1,6 @@
 {
     "name": "steam-comment-service-bot",
-    "version": "2.15.2",
+    "version": "2.15.3",
     "description": "The most advanced Steam Multi Account Manager with built-in comment, like & favorite commands and extensive plugin support.",
     "main": "start.js",
     "dependencies": {
