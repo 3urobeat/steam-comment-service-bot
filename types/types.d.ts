@@ -30,6 +30,10 @@ declare class Bot {
      */
     loginData: any;
     /**
+     * Username of this bot account
+     */
+    accountName: string;
+    /**
      * Stores the timestamp and reason of the last disconnect. This is used by handleRelog() to take proper action
      */
     lastDisconnect: any;

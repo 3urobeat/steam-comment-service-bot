@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-08 21:10:22
+ * Last Modified: 2024-08-10 15:09:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -59,7 +59,7 @@ module.exports.addFriend = {
                 return;
             }
 
-            respond(await commandHandler.data.getLang("addfriendcmdsuccess", { "profileid": res, "estimatedtime": 5 * commandHandler.controller.getBots().length }, requesterID));
+            respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("addfriendcmdsuccess", { "profileid": res, "estimatedtime": 5 * commandHandler.controller.getBots().length }, requesterID));
             logger("info", `Adding friend '${res}' with all bot accounts... This will take ~${5 * commandHandler.controller.getBots().length} seconds.`);
 
             commandHandler.controller.getBots().forEach((e, i) => {
@@ -150,7 +150,7 @@ module.exports.unfriend = {
                     }, 1000 * i); // Delay every iteration so that we don't make a ton of requests at once
                 });
 
-                respond(await commandHandler.data.getLang("unfriendidcmdsuccess", { "profileid": res }, requesterID));
+                respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("unfriendidcmdsuccess", { "profileid": res }, requesterID));
                 logger("info", `Removed friend '${res}' from all bot accounts.`);
             });
         }

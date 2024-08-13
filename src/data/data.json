@@ -1,6 +1,6 @@
 {
-    "version": "21502",
-    "versionstr": "2.15.2",
+    "version": "21503",
+    "versionstr": "2.15.3",
     "branch": "master",
     "filetostart": "./src/starter.js",
     "filetostarturl": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/src/starter.js",
@@ -8,7 +8,7 @@
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/3urobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://github.com/sponsors/3urobeat",
     "firststart": true,
     "compatibilityfeaturedone": false,
-    "whatsnew": "Added traditional-chinese translation, added steamGuardQrCode event, fixed login starting faster than plugins could catch related events, fixed multiple login/relog bugs and made some more changes.",
+    "whatsnew": "Fixed a lot of proxy related bugs, added a commentsIpCooldownPenalty setting, added events support to REST API plugin and made a few more QoL changes. Read the full changelog on GitHub.",
     "timesloggedin": 0,
     "totallogintime": 0
 }

@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-04 22:02:28
+ * Last Modified: 2024-08-10 22:44:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -154,6 +154,7 @@ module.exports.comment = {
             retryAttempt: 0,
             amountBeforeRetry: 0, // Saves the amount of requested comments before the most recent retry attempt was made to send a correct finished message
             until: Date.now() + ((numberOfComments - 1) * commandHandler.data.config.requestDelay), // Calculate estimated wait time (first comment is instant -> remove 1 from numberOfComments)
+            ipCooldownPenaltyAdded: false, // Whether a penalty was already added to until for having triggered an IP cooldown (e.g. HTTP error 429)
             failed: {}
         };
 

@@ -4,10 +4,10 @@
  * Created Date: 2023-09-02 14:41:54
  * Author: 3urobeat
  *
- * Last Modified: 09.02.2024 08:56:13
+ * Last Modified: 2024-08-11 10:57:07
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -27,10 +27,10 @@ const path = require("path");
 const crypto = require("crypto");
 
 const ignore = [
-    ".git", "node_modules", "backup", "plugins", // Folders
+    ".git", "node_modules", "backup", "plugins", "docs", // Folders
     "logininfo.json", "accounts.txt", "config.json", "proxies.txt", "quotes.txt", "advancedconfig.json", "config.json", "customlang.json", // Config files
     "output.txt", "src/data/cache.json", "src/data/data.json", "src/data/fileStructure.json", "src/data/lastcomment.db", "src/data/ratingHistory.db", "src/data/tokens.db", "src/data/userSettings.db", // Files changing at runtime
-    "comment-service-bot.code-workspace", "package.json", "package-lock.json" // Misc
+    ".gitignore", "steam-comment-service-bot.code-workspace", "package.json", "package-lock.json" // Misc
 ];
 
 const output = [];

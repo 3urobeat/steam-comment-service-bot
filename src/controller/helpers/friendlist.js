@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-09 15:04:39
+ * Last Modified: 2024-08-10 21:39:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -124,32 +124,40 @@ Controller.prototype.friendListCapacityCheck = function(bot, callback) {
  * Check for friends who haven't requested comments in config.unfriendtime days and unfriend them
  */
 Controller.prototype._lastcommentUnfriendCheck = function() {
-    // Logger("debug", "Controller lastcommentUnfriendCheck(): 60 seconds passed, checking for users to unfriend..."); // This debug call annoys me
-
     this.data.lastCommentDB.find({ time: { $lte: Date.now() - (this.data.config.unfriendtime * 86400000) } }, (err, docs) => { // Until is a date in ms, so we check if it is less than right now
-        if (docs.length < 1) return; // Nothing found
 
-        docs.forEach((e, i) => { // Take action for all results
-            setTimeout(() => {
+        // Filter owners
+        docs = docs.filter((e) => !this.data.cachefile.ownerid.includes(e.id));
 
-                this.getBots().forEach(async (thisBot, j) => {
-                    const thisUser = thisBot.user;
+        // Abort right here if docs does not contain any entries to be processed
+        if (docs.length < 1) return;
 
-                    if (thisUser.myFriends[e.id] && thisUser.myFriends[e.id] == EFriendRelationship.Friend && !this.data.cachefile.ownerid.includes(e.id)) { // Check if the targeted user is still friend and not an owner
+        // Process every entry by unfriending it from every bot account
+        docs.forEach((e) => {
+            this.getBots().forEach((thisBot, j) => {
+                const thisUser = thisBot.user;
+
+                // This.logger("debug", "UnfriendCheck processing " + e.id + " for " + thisBot.accountName);
+
+                // Check if the targeted user is still friend
+                if (thisUser.myFriends[e.id] && thisUser.myFriends[e.id] == EFriendRelationship.Friend) {
+
+                    // Delay every iteration so that we don't make a ton of requests at once (IP)
+                    setTimeout(async () => {
+                        thisUser.removeFriend(new SteamID(e.id)); // Unfriend user with each bot
+
+                        // Notify user about unfriend if this is the main account
                         if (j == 0) this.main.sendChatMessage(this.main, { userID: e.id }, await this.data.getLang("userunfriend", { "unfriendtime": this.data.config.unfriendtime }, e.id));
 
-                        setTimeout(() => {
-                            thisUser.removeFriend(new SteamID(e.id)); // Unfriend user with each bot
-                            logger("info", `[${thisBot.logPrefix}] Unfriended '${e.id}' after ${this.data.config.unfriendtime} days of inactivity.`);
-                        }, 1000 * j); // Delay every iteration so that we don't make a ton of requests at once (IP)
-                    }
+                        logger("info", `[${thisBot.logPrefix}] Unfriended '${e.id}' after ${this.data.config.unfriendtime} days of inactivity.`);
+                    }, 1000 * j);
 
-                    // Disabled db cleanup as entries from plugins would be deleted as well. SteamID does not recognize Discord IDs for example as invalid so we cannot check for that
-                    // if (!this.data.cachefile.ownerid.includes(e.id)) this.data.lastCommentDB.remove({ id: e.id }); // Entry gets removed no matter what but we are nice and let the owner stay. Thank me later! <3
-                });
+                }
 
-            }, 1000 * i); // Delay every iteration so that we don't make a ton of requests at once (account)
-
+                // Disabled db cleanup as entries from plugins would be deleted as well. SteamID does not recognize Discord IDs for example as invalid so we cannot check for that
+                // if (!this.data.cachefile.ownerid.includes(e.id)) this.data.lastCommentDB.remove({ id: e.id });
+            });
         });
+
     });
 };

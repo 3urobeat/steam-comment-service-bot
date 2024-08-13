@@ -4,7 +4,7 @@
  * Created Date: 2023-05-02 13:46:21
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-29 17:23:53
+ * Last Modified: 2024-08-10 19:13:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -35,7 +35,7 @@ Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObje
     if (statusFilter != "*")         accs = accs.filter(e => statusFilter == e.status);        // Filter after one specified status
 
     // Map values back to an accountName as key object if mapToObject == true
-    if (mapToObject && accs.length > 0) accs = Object.assign(...accs.map(k => ( { [k.loginData.logOnOptions.accountName]: k } ) ));
+    if (mapToObject && accs.length > 0) accs = Object.assign(...accs.map(k => ( { [k.accountName]: k } ) ));
 
     // Return result
     return accs;

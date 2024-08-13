@@ -24,6 +24,7 @@
     "retryFailedComments": false,
     "retryFailedCommentsDelay": 300000,
     "retryFailedCommentsAttempts": 1,
+    "commentsIpCooldownPenalty": 300000,
     "lastQuotesSize": 5,
     "dummy3": "------------------- Debug Settings: -------------------",
     "enableevalcmd": false,

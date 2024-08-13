@@ -100,6 +100,14 @@ If a session was started by logging in using a QrCode instead of a password, the
 
 To check from your plugin if the Steam Guard Code/QrCode request has been resolved, wait for the statusUpdate event to announce a change.
 
+**Unload function:**  
+The unload function is being called before the plugin object is deleted or the bot exits.  
+
+Please make sure to store any pending data and stop any running instances (for example like a webserver).  
+This ensures that your plugin supports reloading (using the '!reload' command) and does not create duplicate instances or other weird behavior.
+
+If this function is not implemented, a warning will be emitted upon load.
+
 &nbsp;
 
 <a id="logging"></a>

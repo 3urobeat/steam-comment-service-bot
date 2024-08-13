@@ -4,7 +4,7 @@
  * Created Date: 2022-10-09 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-03 12:51:51
+ * Last Modified: 2024-08-10 19:13:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -61,7 +61,7 @@ module.exports = SessionHandler;
  */
 SessionHandler.prototype.getToken = function() { // I'm not allowed to use arrow styled functions here... (https://stackoverflow.com/questions/59344601/javascript-nodejs-typeerror-cannot-set-property-validation-of-undefined)
     return new Promise((resolve) => {
-        logger("debug", `[${this.bot.logPrefix}] getToken(): Attempting to find token for '${this.bot.loginData.logOnOptions.accountName}' in tokens.db...`);
+        logger("debug", `[${this.bot.logPrefix}] getToken(): Attempting to find token for '${this.bot.accountName}' in tokens.db...`);
 
         // Save promise resolve function so any other function of this object can resolve the promise itself
         this.getTokenPromise = resolve;
@@ -96,7 +96,7 @@ SessionHandler.prototype._resolvePromise = function(token) {
             logger("info", `[${this.bot.logPrefix}] Skipping account '${this.logOnOptions.accountName}'...`, true);
 
             this.controller._statusUpdateEvent(this.bot, EStatus.SKIPPED);
-            this.controller.info.skippedaccounts.push(this.bot.loginData.logOnOptions.accountName);
+            this.controller.info.skippedaccounts.push(this.bot.accountName);
 
             // Don't call cancelLoginAttempt() as this would result in an error because we aren't polling yet (https://github.com/DoctorMcKay/node-steam-session#polling)
         }

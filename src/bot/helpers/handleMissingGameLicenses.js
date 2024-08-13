@@ -4,10 +4,10 @@
  * Created Date: 2023-06-29 21:31:53
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 13:59:59
+ * Last Modified: 2024-08-10 19:13:29
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -28,7 +28,7 @@ Bot.prototype.handleMissingGameLicenses = function() {
     let configChildGames = data.config.childaccplayinggames;
 
     if (typeof configChildGames[0] == "object" && configChildGames[0] != null) { // - typeof null == "object"
-        if (Object.keys(configChildGames[0]).includes(this.loginData.logOnOptions.accountName)) configChildGames = configChildGames[0][this.loginData.logOnOptions.accountName]; // Get the specific settings for this account if included
+        if (Object.keys(configChildGames[0]).includes(this.accountName)) configChildGames = configChildGames[0][this.accountName]; // Get the specific settings for this account if included
             else configChildGames = configChildGames.slice(1);                                                                                                                   // ...otherwise remove object containing acc specific settings to use the generic ones
 
         logger("debug", `[${this.logPrefix}] Bot handleMissingGameLicenses(): Setting includes specific games, filtered for this account: ${configChildGames.join(", ")}`);

@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-08 17:40:03
+ * Last Modified: 2024-08-10 19:13:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -35,7 +35,7 @@ Bot.prototype._attachSteamDisconnectedEvent = function() {
         this.controller._statusUpdateEvent(this, Bot.EStatus.OFFLINE); // Set status of this account to offline
 
         // Don't relog if account is in skippedaccounts array or if relogAfterDisconnect is false
-        if (!this.controller.info.skippedaccounts.includes(this.loginData.logOnOptions.accountName) && this.controller.info.relogAfterDisconnect) {
+        if (!this.controller.info.skippedaccounts.includes(this.accountName) && this.controller.info.relogAfterDisconnect) {
             logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam: '${msg}'. Initiating a login retry in ${this.controller.data.advancedconfig.loginRetryTimeout / 1000} seconds.`); // Announce relog
 
             setTimeout(() => this.controller.login(), this.controller.data.advancedconfig.loginRetryTimeout); // Relog in loginRetryTimeout ms

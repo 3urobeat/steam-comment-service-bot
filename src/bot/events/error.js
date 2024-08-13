@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-09 14:05:33
+ * Last Modified: 2024-08-10 19:13:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -33,7 +33,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
             logger("warn", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam! Reason: 'Error: LogonSessionReplaced'. I won't try to relog this account because 'enableRelogOnLogOnSessionReplaced' is disabled in 'advancedconfig.json'.`, false, false, null, true); // Force print this message now
 
             // Skip account and set status to ERROR so the account won't be used anymore
-            this.controller.info.skippedaccounts.push(this.loginData.logOnOptions.accountName);
+            this.controller.info.skippedaccounts.push(this.accountName);
 
             this.controller._statusUpdateEvent(this, Bot.EStatus.ERROR);
             return;
@@ -48,7 +48,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
             this.lastDisconnect.reason    = err;
 
             // Check if this is an intended logoff
-            if (this.controller.info.relogAfterDisconnect && !this.controller.info.skippedaccounts.includes(this.loginData.logOnOptions.accountName)) {
+            if (this.controller.info.relogAfterDisconnect && !this.controller.info.skippedaccounts.includes(this.accountName)) {
                 logger("info", `${logger.colors.fgred}[${this.logPrefix}] Lost connection to Steam: '${err}'. Initiating a login retry in ${this.controller.data.advancedconfig.loginRetryTimeout / 1000} seconds.`); // Announce relog
 
                 setTimeout(() => this.controller.login(), this.controller.data.advancedconfig.loginRetryTimeout); // Relog after waiting loginRetryTimeout ms
@@ -68,7 +68,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
             const blockedEnumsForRetries = [EResult.Banned, EResult.AccountNotFound]; // No need to block InvalidPassword anymore as the SessionHandler handles credentials
 
             if (this.loginData.logOnTries > this.controller.data.advancedconfig.maxLogOnRetries || blockedEnumsForRetries.includes(err.eresult)) {
-                logger("error", `Couldn't log in bot${this.index} after ${this.loginData.logOnTries} attempt(s). ${err} (${err.eresult})`);
+                logger("error", `[${this.logPrefix}] Couldn't log in bot${this.index} after ${this.loginData.logOnTries} attempt(s). ${err} (${err.eresult})`);
 
                 // Abort if bot0 failed on initial login or skip account for now
                 if (this.index == 0 && this.controller.info.readyAfter == 0) {
