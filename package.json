@@ -15,8 +15,8 @@
         "steam-comment-bot-discord-plugin": "^1.0.3",
         "steam-comment-bot-rest": "^1.3.0",
         "steam-comment-bot-webserver": "^1.0.1",
-        "steam-session": "^1.7.2",
-        "steam-user": "^5.0.10",
+        "steam-session": "^1.9.0",
+        "steam-user": "^5.2.0",
         "steamcommunity": "^3.48.3",
         "steamid": "^2.1.0",
         "steamid-resolver": "^1.3.4"
@@ -35,9 +35,9 @@
     "homepage": "https://github.com/3urobeat",
     "repository": "https://github.com/3urobeat/steam-comment-service-bot",
     "devDependencies": {
-        "@eslint/js": "^9.9.0",
-        "eslint": "^9.9.0",
-        "eslint-plugin-jsdoc": "^50.2.0",
+        "@eslint/js": "^9.9.1",
+        "eslint": "^9.9.1",
+        "eslint-plugin-jsdoc": "^50.2.2",
         "tsd-jsdoc": "^2.5.0"
     },
     "types": "./types/types.d.ts"
