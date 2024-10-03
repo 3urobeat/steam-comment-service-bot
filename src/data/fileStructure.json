@@ -488,7 +488,7 @@
         {
             "path": "src/sessions/events/sessionEvents.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/sessions/events/sessionEvents.js",
-            "checksum": "154d157d344f48a24fe86fec2feef611"
+            "checksum": "46abbc39e9dd11850ece7e15244d2246"
         },
         {
             "path": "src/sessions/helpers/handle2FA.js",
