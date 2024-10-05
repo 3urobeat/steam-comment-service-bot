@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-04 22:46:20
+ * Last Modified: 2024-10-05 12:36:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -75,7 +75,11 @@ Controller.prototype.login = async function(firstLogin) {
 
 
     // Set activeLogin to true if allAccounts is not empty
-    if (allAccounts.length == 0) return this.info.activeLogin = false;
+    if (allAccounts.length == 0) {
+        logger("info", "Login queue is empty, all eligible accounts are logged in."); // Kills animation started by "Rechecking login queue for any new entries..." message
+        this.info.activeLogin = false;
+        return;
+    }
 
     this.info.activeLogin = true;
 
@@ -214,7 +218,7 @@ Controller.prototype.login = async function(firstLogin) {
 
 
         // Everything looks good, resolve this login process!
-        logger("info", "Finished logging in all currently queued accounts! Checking for any new accounts...", false, false, logger.animation("loading"));
+        logger("info", "Finished logging in all currently queued accounts! Rechecking login queue for any new entries...", false, true, logger.animation("loading"));
 
         loginFinished();
 
