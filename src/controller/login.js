@@ -176,25 +176,25 @@ Controller.prototype.login = async function(firstLogin) {
 
 
         // Update waitingForAmountAccounts & lastAmountUpdateTimestamp on change
-        if (waitingForAmountAccounts != allAccountsOffline.length) {
-            waitingForAmountAccounts  = allAccountsOffline.length;
+        if (waitingForAmountAccounts != allAccountsWaitingFor.length) {
+            waitingForAmountAccounts  = allAccountsWaitingFor.length;
             lastAmountUpdateTimestamp = Date.now();
         }
 
         // Check if this login process might be softlocked. Display warning after 5 minutes, abort process after 15 minutes
         if (Date.now() - lastAmountUpdateTimestamp > 300000) {     // 300000 ms = 5  min
             if (Date.now() - lastAmountUpdateTimestamp > 900000) { // 900000 ms = 15 min
-                logger("warn", `Detected softlocked login process! Setting status of bot(s) '${allAccountsOffline.flatMap((e) => e.index).join(", ")}' to ERROR and calling handleRelog!`, false, false, null, true);
+                logger("warn", `Detected softlocked login process! Setting status of bot(s) '${allAccountsWaitingFor.flatMap((e) => e.index).join(", ")}' to ERROR and calling handleRelog!`, false, false, null, true);
 
                 // Check if main account is involved and this is the initial login and terminate the bot
-                if (allAccountsOffline.find((e) => e.index == 0) && this.info.readyAfter == 0) {
+                if (allAccountsWaitingFor.find((e) => e.index == 0) && this.info.readyAfter == 0) {
                     logger("", "", true);
                     logger("error", "Aborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true);
                     return this.stop();
                 }
 
                 // Set status of every account to OFFLINE and call handleRelog to let it figure this out
-                allAccountsOffline.forEach((e) => {
+                allAccountsWaitingFor.forEach((e) => {
                     const thisBot = this.bots[e.accountName];
 
                     this._statusUpdateEvent(thisBot, Bot.EStatus.ERROR);
