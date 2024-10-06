@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-06 10:33:34
+ * Last Modified: 2024-10-06 11:29:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -202,9 +202,11 @@ Controller.prototype.login = async function(firstLogin) {
                 return;
             }
 
+            // Create an array of all account indices !OFFLINE || (!OFFLINE && !populated) and deduplicate it using a Set
+            const waitingFor         = [ ...new Set([ ...allAccountsOffline.flatMap((e) => e.index), ...allAccountsNotPopulated.flatMap((e) => e.index) ]) ];
             const cancelingInMinutes = Math.ceil(((lastAmountUpdateTimestamp + 900000) - Date.now()) / 60000);
 
-            logger("warn", `Detected inactivity in current login process! I'm waiting for bot(s) '${allAccountsOffline.flatMap((e) => e.index).join(", ")}' to change their status & become populated since >5 minutes! Canceling this login process in ~${cancelingInMinutes} minutes to prevent a softlock.`, false, true);
+            logger("warn", `Detected inactivity in current login process! I'm waiting for bot(s) '${waitingFor.join(", ")}' to change their status & become populated since >5 minutes! Canceling this login process in ~${cancelingInMinutes} minutes to prevent a softlock.`, false, true);
 
             if (allAccountsOffline.length > 0) return; // Prevents debug msg below from logging, should reduce log spam in debug mode
         }
