@@ -132,6 +132,7 @@ Controller.prototype.login = async function(firstLogin) {
 
     // Register interval to check if all accounts have been processed
     let lastAmountUpdateTimestamp = Date.now();
+    let lastCancelingInMsgMinute  = 0;          // Last minute value logged in "Canceling this login process in [...]" message used to prevent duplicate messages
     let waitingForAmountAccounts  = 0;
 
     const allAccsOnlineInterval = setInterval(() => {
@@ -170,6 +171,9 @@ Controller.prototype.login = async function(firstLogin) {
          */
         const allAccountsNotPopulated = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.ONLINE && !this.bots[e.accountName].user.limitations);
 
+        // Create an array of all account indices !OFFLINE || !populatep and deduplicate it using a Set
+        const allAccountsWaitingFor   = [ ...new Set([ ...allAccountsOffline.flatMap((e) => e.index), ...allAccountsNotPopulated.flatMap((e) => e.index) ]) ];
+
 
         // Update waitingForAmountAccounts & lastAmountUpdateTimestamp on change
         if (waitingForAmountAccounts != allAccountsOffline.length) {
@@ -202,11 +206,12 @@ Controller.prototype.login = async function(firstLogin) {
                 return;
             }
 
-            // Create an array of all account indices !OFFLINE || (!OFFLINE && !populated) and deduplicate it using a Set
-            const waitingFor         = [ ...new Set([ ...allAccountsOffline.flatMap((e) => e.index), ...allAccountsNotPopulated.flatMap((e) => e.index) ]) ];
             const cancelingInMinutes = Math.ceil(((lastAmountUpdateTimestamp + 900000) - Date.now()) / 60000);
 
-            logger("warn", `Detected inactivity in current login process! I'm waiting for bot(s) '${waitingFor.join(", ")}' to change their status & become populated since >5 minutes! Canceling this login process in ~${cancelingInMinutes} minutes to prevent a softlock.`, false, true);
+            if (lastCancelingInMsgMinute != cancelingInMinutes) {
+                logger("warn", `Detected inactivity in current login process! I'm waiting for bot(s) '${allAccountsWaitingFor.join(", ")}' to change their status & become populated since >5 minutes! Canceling this login process in ~${cancelingInMinutes} minutes to prevent a softlock.`, false, true, logger.animation("waiting"));
+                lastCancelingInMsgMinute = cancelingInMinutes;
+            }
 
             if (allAccountsOffline.length > 0) return; // Prevents debug msg below from logging, should reduce log spam in debug mode
         }
