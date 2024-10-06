@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-05 12:36:09
+ * Last Modified: 2024-10-06 10:33:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -164,6 +164,13 @@ Controller.prototype.login = async function(firstLogin) {
          */
         const allAccountsOffline = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.OFFLINE);
 
+        /**
+         * Get all accounts which have not yet fully been populated. Ignore accounts that are not online as they will never populate their user object
+         * @type {{ index: number, accountName: string }[]} Array of loginInfo objects, which among other things have these props
+         */
+        const allAccountsNotPopulated = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.ONLINE && !this.bots[e.accountName].user.limitations);
+
+
         // Update waitingForAmountAccounts & lastAmountUpdateTimestamp on change
         if (waitingForAmountAccounts != allAccountsOffline.length) {
             waitingForAmountAccounts  = allAccountsOffline.length;
@@ -173,7 +180,7 @@ Controller.prototype.login = async function(firstLogin) {
         // Check if this login process might be softlocked. Display warning after 5 minutes, abort process after 15 minutes
         if (Date.now() - lastAmountUpdateTimestamp > 300000) {     // 300000 ms = 5  min
             if (Date.now() - lastAmountUpdateTimestamp > 900000) { // 900000 ms = 15 min
-                logger("warn", `Detected softlocked login process! Setting status of bot(s) '${allAccountsOffline.flatMap((e) => e.index).join(", ")}' to ERROR and calling handleRelog!`, true, false, null, true);
+                logger("warn", `Detected softlocked login process! Setting status of bot(s) '${allAccountsOffline.flatMap((e) => e.index).join(", ")}' to ERROR and calling handleRelog!`, false, false, null, true);
 
                 // Check if main account is involved and this is the initial login and terminate the bot
                 if (allAccountsOffline.find((e) => e.index == 0) && this.info.readyAfter == 0) {
@@ -197,22 +204,20 @@ Controller.prototype.login = async function(firstLogin) {
 
             const cancelingInMinutes = Math.ceil(((lastAmountUpdateTimestamp + 900000) - Date.now()) / 60000);
 
-            logger("warn", `Detected inactivity in current login process! I'm waiting for bot(s) '${allAccountsOffline.flatMap((e) => e.index).join(", ")}' to change their status & become populated since >5 minutes! Canceling this login process in ~${cancelingInMinutes} minutes to prevent a softlock.`, true, true);
+            logger("warn", `Detected inactivity in current login process! I'm waiting for bot(s) '${allAccountsOffline.flatMap((e) => e.index).join(", ")}' to change their status & become populated since >5 minutes! Canceling this login process in ~${cancelingInMinutes} minutes to prevent a softlock.`, false, true);
 
             if (allAccountsOffline.length > 0) return; // Prevents debug msg below from logging, should reduce log spam in debug mode
         }
 
         // Abort if we are still waiting for accounts to become not OFFLINE
         if (allAccountsOffline.length > 0) {
-            logger("debug", `Controller login(): Waiting for bot(s) '${allAccountsOffline.flatMap((e) => e.index).join(", ")}' to switch status to not OFFLINE before resolving...`, true, true); // Cannot log with date to prevent log output file spam
+            logger("debug", `Controller login(): Waiting for bot(s) '${allAccountsOffline.flatMap((e) => e.index).join(", ")}' to switch status to not OFFLINE before resolving...`, false, true); // Cannot log with date to prevent log output file spam
             return;
         }
 
-        // Check if all accounts have their SteamUser data populated. Ignore accounts that are not online as they will never populate their user object
-        const allAccountsNotPopulated = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.ONLINE && !this.bots[e.accountName].user.limitations);
-
+        // Check if all accounts have their SteamUser data populated.
         if (allAccountsNotPopulated.length > 0) {
-            logger("info", `All accounts logged in, waiting for user object of bot(s) '${allAccountsNotPopulated.flatMap((e) => e.index).join(", ")}' to populate...`, true, true, logger.animation("waiting")); // Cannot log with date to prevent log output file spam
+            logger("info", `All accounts logged in, waiting for user object of bot(s) '${allAccountsNotPopulated.flatMap((e) => e.index).join(", ")}' to populate...`, false, true, logger.animation("waiting")); // Cannot log with date to prevent log output file spam
             return;
         }
 
