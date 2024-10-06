@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-06 11:29:54
+ * Last Modified: 2024-10-06 13:59:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -133,6 +133,7 @@ Controller.prototype.login = async function(firstLogin) {
     // Register interval to check if all accounts have been processed
     let lastAmountUpdateTimestamp = Date.now();
     let lastCancelingInMsgMinute  = 0;          // Last minute value logged in "Canceling this login process in [...]" message used to prevent duplicate messages
+    let lastWaitingForMsgAmount   = 0;          // Last amount of accounts logged in "[...] waiting for user object [...] to populate" message used to prevent duplicate messages
     let waitingForAmountAccounts  = 0;
 
     const allAccsOnlineInterval = setInterval(() => {
@@ -224,7 +225,11 @@ Controller.prototype.login = async function(firstLogin) {
 
         // Check if all accounts have their SteamUser data populated.
         if (allAccountsNotPopulated.length > 0) {
-            logger("info", `All accounts logged in, waiting for user object of bot(s) '${allAccountsNotPopulated.flatMap((e) => e.index).join(", ")}' to populate...`, false, true, logger.animation("waiting")); // Cannot log with date to prevent log output file spam
+            // Only reprint this log message when the amount of accounts has changed to prevent spam
+            if (lastWaitingForMsgAmount != allAccountsNotPopulated.length) {
+                logger("info", `All accounts logged in, waiting for user object of bot(s) '${allAccountsNotPopulated.flatMap((e) => e.index).join(", ")}' to populate...`, false, true, logger.animation("waiting")); // Cannot log with date to prevent log output file spam
+                lastWaitingForMsgAmount = allAccountsNotPopulated.length;
+            }
             return;
         }
 
