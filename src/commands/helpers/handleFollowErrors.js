@@ -4,7 +4,7 @@
  * Created Date: 2023-09-24 22:57:21
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-04 22:03:25
+ * Last Modified: 2024-10-07 22:04:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -13,9 +13,6 @@
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
-
-const Bot = require("../../bot/bot.js");
 
 
 /**
@@ -32,40 +29,6 @@ function sortFailedCommentsObject(failedObj) {
 
     return failedObj;
 }
-
-
-/**
- * Checks if the following follow process iteration should be skipped
- * @param {CommandHandler} commandHandler The commandHandler object
- * @param {{ next: function(): void, break: function(): void, index: function(): number }} loop Object returned by misc.js syncLoop() helper
- * @param {Bot} bot Bot object of the account making this request
- * @param {string} id ID of the profile that receives the follow
- * @returns {boolean} `true` if iteration should continue, `false` if iteration should be skipped using return
- */
-module.exports.handleFollowIterationSkip = function(commandHandler, loop, bot, id) {
-    const activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
-
-    // Check if no bot account was found
-    if (!bot) {
-        activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b? p?`] = "Skipped because bot account does not exist";
-
-        logger("error", `[Bot ?] Error while sending un-/follow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${id}: Bot account '${activeReqEntry.accounts[loop.index() % activeReqEntry.accounts.length]}' does not exist?! Skipping...`);
-        loop.next();
-        return false;
-    }
-
-    // Check if bot account is offline
-    if (bot.status != Bot.EStatus.ONLINE) {
-        activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = "Skipped because bot account is offline";
-
-        logger("error", `[${bot.logPrefix}] Error while sending un-/follow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${id}: Skipped because bot account is offline`);
-        loop.next();
-        return false;
-    }
-
-    // If nothing above terminated the function then return true to let the vote loop continue
-    return true;
-};
 
 
 /**

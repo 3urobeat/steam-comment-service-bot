@@ -416,17 +416,6 @@ declare function getAvailableBotsForVoting(commandHandler: CommandHandler, amoun
 declare function sortFailedCommentsObject(failedObj: any): void;
 
 /**
- * Checks if the following comment process iteration should be skipped
- * Aborts comment process on critical error.
- * @param commandHandler - The commandHandler object
- * @param loop - Object returned by misc.js syncLoop() helper
- * @param bot - Bot object of the account posting this comment
- * @param receiverSteamID64 - steamID64 of the receiving user/group
- * @returns true if iteration should continue, false if iteration should be skipped using return
- */
-declare function handleIterationSkip(commandHandler: CommandHandler, loop: any, bot: Bot, receiverSteamID64: string): boolean;
-
-/**
  * Adds a description to comment errors and applies additional cooldowns for certain errors
  * @param error - The error string returned by steamcommunity
  * @param commandHandler - The commandHandler object
@@ -449,16 +438,6 @@ declare function failedCommentsObjToString(obj: any): string;
 declare function sortFailedCommentsObject(failedObj: any): void;
 
 /**
- * Checks if the following follow process iteration should be skipped
- * @param commandHandler - The commandHandler object
- * @param loop - Object returned by misc.js syncLoop() helper
- * @param bot - Bot object of the account making this request
- * @param id - ID of the profile that receives the follow
- * @returns `true` if iteration should continue, `false` if iteration should be skipped using return
- */
-declare function handleFollowIterationSkip(commandHandler: CommandHandler, loop: any, bot: Bot, id: string): boolean;
-
-/**
  * Logs follow errors
  * @param error - The error string returned by steam-community
  * @param commandHandler - The commandHandler object
@@ -472,26 +451,6 @@ declare function logFollowError(error: string, commandHandler: CommandHandler, b
  * @param failedObj - Current state of failed object
  */
 declare function sortFailedCommentsObject(failedObj: any): void;
-
-/**
- * Checks if the following vote process iteration should be skipped
- * @param commandHandler - The commandHandler object
- * @param loop - Object returned by misc.js syncLoop() helper
- * @param bot - Bot object of the account making this request
- * @param id - ID of the sharedfile that receives the votes
- * @returns `true` if iteration should continue, `false` if iteration should be skipped using return
- */
-declare function handleVoteIterationSkip(commandHandler: CommandHandler, loop: any, bot: Bot, id: string): boolean;
-
-/**
- * Checks if the following favorite process iteration should be skipped
- * @param commandHandler - The commandHandler object
- * @param loop - Object returned by misc.js syncLoop() helper
- * @param bot - Bot object of the account making this request
- * @param id - ID of the sharedfile that receives the votes
- * @returns `true` if iteration should continue, `false` if iteration should be skipped using return
- */
-declare function handleFavoriteIterationSkip(commandHandler: CommandHandler, loop: any, bot: Bot, id: string): boolean;
 
 /**
  * Logs vote errors
@@ -510,6 +469,22 @@ declare function logVoteError(error: string, commandHandler: CommandHandler, bot
  * @param id - ID of the sharedfile that receives the favorites
  */
 declare function logFavoriteError(error: string, commandHandler: CommandHandler, bot: Bot, id: string): void;
+
+/**
+ * Helper function to sort failed object by number so that it is easier to read
+ * @param failedObj - Current state of failed object
+ */
+declare function sortFailedObject(failedObj: any): void;
+
+/**
+ * Checks if the following request process iteration should be skipped
+ * @param commandHandler - The commandHandler object
+ * @param loop - Object returned by syncLoop() to control request loop
+ * @param bot - Bot object of the account fulfilling this interaction
+ * @param receiverSteamID64 - steamID64 of the receiving user/group
+ * @returns true if iteration should continue, false if iteration should be skipped using return
+ */
+declare function handleIterationSkip(commandHandler: CommandHandler, loop: any, bot: Bot, receiverSteamID64: string): boolean;
 
 /**
  * Constructor - Initializes the controller and starts all bot accounts

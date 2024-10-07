@@ -4,7 +4,7 @@
  * Created Date: 2023-09-24 15:04:33
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-27 22:02:30
+ * Last Modified: 2024-10-07 22:07:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -19,7 +19,8 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 const { getFollowArgs }                 = require("../helpers/getFollowArgs.js");
 const { getAvailableBotsForFollowing }  = require("../helpers/getFollowBots.js");
 const { syncLoop, timeToString }        = require("../../controller/helpers/misc.js");
-const { handleFollowIterationSkip, logFollowError } = require("../helpers/handleFollowErrors.js");
+const { logFollowError }      = require("../helpers/handleFollowErrors.js");
+const { handleIterationSkip } = require("../helpers/handleRequestSkips.js");
 
 
 module.exports.follow = {
@@ -151,7 +152,7 @@ module.exports.follow = {
                 const bot = commandHandler.controller.bots[availableAccounts[i]];
                 activeReqEntry.thisIteration++;
 
-                if (!handleFollowIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
+                if (!handleIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
                 /* --------- Try to follow --------- */
                 let followFunc = activeReqEntry.type == "curatorFollow" ? bot.community.followCurator : bot.community.followUser; // Get the correct function, depending on if the user provided a curator id or a user id
@@ -347,7 +348,7 @@ module.exports.unfollow = {
                 const bot = commandHandler.controller.bots[availableAccounts[i]];
                 activeReqEntry.thisIteration++;
 
-                if (!handleFollowIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
+                if (!handleIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
                 /* --------- Try to unfollow --------- */
                 let followFunc = activeReqEntry.type == "curatorUnfollow" ? bot.community.unfollowCurator : bot.community.unfollowUser; // Get the correct function, depending on if the user provided a curator id or a user id

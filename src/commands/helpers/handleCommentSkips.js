@@ -4,7 +4,7 @@
  * Created Date: 2022-02-28 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 2024-08-11 19:27:03
+ * Last Modified: 2024-10-07 22:03:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -15,7 +15,6 @@
  */
 
 
-const Bot            = require("../../bot/bot.js");
 const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 
@@ -33,86 +32,6 @@ function sortFailedCommentsObject(failedObj) {
 
     return failedObj;
 }
-
-
-/**
- * Checks if the following comment process iteration should be skipped
- * Aborts comment process on critical error.
- * @param {CommandHandler} commandHandler The commandHandler object
- * @param {{ next: function(): void, break: function(): void, index: function(): number }} loop Object returned by misc.js syncLoop() helper
- * @param {Bot} bot Bot object of the account posting this comment
- * @param {string} receiverSteamID64 steamID64 of the receiving user/group
- * @returns {boolean} true if iteration should continue, false if iteration should be skipped using return
- */
-module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID64) => {
-    const activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
-
-    // Check if no bot account was found
-    if (!bot) {
-        activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b? p?`] = "Skipped because bot account does not exist";
-
-        logger("error", `[Bot ?] Error posting comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} to ${receiverSteamID64}: Bot account '${activeReqEntry.accounts[loop.index() % activeReqEntry.accounts.length]}' does not exist?! Skipping...`);
-        loop.next();
-        return false;
-    }
-
-    // Check if bot account is offline
-    if (bot.status != Bot.EStatus.ONLINE) {
-        activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = "Skipped because bot account is offline";
-
-        logger("error", `[${bot.logPrefix}] Error posting comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} to ${receiverSteamID64}: Skipped because bot account is offline`);
-        loop.next();
-        return false;
-    }
-
-    // Check if comment process was aborted or activeReqEntry was deleted and stop loop
-    if (!activeReqEntry || !activeReqEntry.failed || activeReqEntry.status == "aborted") {
-        logger("debug", "CommandHandler handleIterationSkip(): Request was aborted or deleted, breaking comment loop...");
-
-        // Add failed entry for all skipped iterations only if request was aborted
-        if (activeReqEntry.status == "aborted") {
-            for (let i = activeReqEntry.thisIteration; i < activeReqEntry.amount; i++) { // Iterate over all remaining comments by starting with thisIteration till numberOfComments
-                const thisbot = commandHandler.controller.getBots("*", true)[activeReqEntry.accounts[i % activeReqEntry.accounts.length]];
-
-                activeReqEntry.failed[`i${i + 1} b${thisbot.index} p${thisbot.loginData.proxyIndex}`] = "Skipped because comment process was aborted";
-            }
-        }
-
-        // Sort failed object to make it easier to read
-        activeReqEntry.failed = sortFailedCommentsObject(activeReqEntry.failed);
-
-        // Break the loop and return false. No need to update status as it was already set to aborted
-        loop.break();
-        return false;
-    }
-
-    // Check if all proxies have failed (logCommentError() has pre-filled the failed array on IP cooldown) and break loop unless this is the last iteration
-    const ipCooldownsAmount = Object.values(activeReqEntry.failed).filter((e) => e.toLowerCase().includes("http error 429")).length;
-
-    if (ipCooldownsAmount >= activeReqEntry.amount && activeReqEntry.thisIteration + 1 != activeReqEntry.amount) {
-        logger("warn", "Detected error for all remaining comments, aborting request!");
-
-        // Sort failed object to make it easier to read
-        activeReqEntry.failed = sortFailedCommentsObject(activeReqEntry.failed);
-
-        // Update status to error
-        activeReqEntry.status = "error";
-
-        // Break the loop and return false
-        loop.break();
-        return false;
-    }
-
-    // Check if this iteration would use a blocked proxy by checking for existing failed obj entry for this iteration
-    if (activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`]) {
-        logger("debug", "CommandHandler handleIterationSkip(): Iteration would use a failed proxy, skipping...");
-        loop.next();
-        return false;
-    }
-
-    // If nothing above terminated the function then return true to let the comment loop continue
-    return true;
-};
 
 
 /**

@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-08-10 22:44:28
+ * Last Modified: 2024-10-07 22:06:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -16,10 +16,11 @@
 
 
 const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
-const { getCommentArgs }                       = require("../helpers/getCommentArgs.js");
-const { getAvailableBotsForCommenting }        = require("../helpers/getCommentBots.js");
-const { syncLoop, timeToString }               = require("../../controller/helpers/misc.js");
-const { logCommentError, handleIterationSkip } = require("../helpers/handleCommentSkips.js");
+const { getCommentArgs }                = require("../helpers/getCommentArgs.js");
+const { getAvailableBotsForCommenting } = require("../helpers/getCommentBots.js");
+const { syncLoop, timeToString }        = require("../../controller/helpers/misc.js");
+const { logCommentError }     = require("../helpers/handleCommentSkips.js");
+const { handleIterationSkip } = require("../helpers/handleRequestSkips.js");
 
 
 module.exports.comment = {
