@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-09 22:19:25
+ * Last Modified: 2024-10-09 22:25:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -182,16 +182,20 @@ module.exports.failed = {
                 userID = res; // If user provided an id as argument then use that instead of their id
             }
 
-            if (!commandHandler.controller.activeRequests[userID] || Object.keys(commandHandler.controller.activeRequests[userID].failed).length < 1) return respond(await commandHandler.data.getLang("failedcmdnothingfound", null, resInfo.userID));
+
+            let thisRequest = commandHandler.controller.activeRequests[userID];
+
+            if (!thisRequest || thisRequest.length < 1) return respond(await commandHandler.data.getLang("failedcmdnothingfound", null, resInfo.userID));
+
 
             // Get timestamp of request
-            const requestTime = new Date(commandHandler.controller.activeRequests[userID].until).toISOString().replace(/T/, " ").replace(/\..+/, "");
+            const requestTime = new Date(thisRequest.until).toISOString().replace(/T/, " ").replace(/\..+/, "");
 
             // Group errors and convert them to string using helper function
-            const failedcommentsstr = failedCommentsObjToString(commandHandler.controller.activeRequests[userID].failed);
+            const failedcommentsstr = failedCommentsObjToString(thisRequest.failed);
 
             // Get start of message from lang file and add data
-            const messagestart = await commandHandler.data.getLang("failedcmdmsg", { "steamID64": userID, "requesttime": requestTime }, resInfo.userID);
+            const messagestart = await commandHandler.data.getLang("failedcmdmsg", { "steamID64": `${thisRequest.type} ${userID}`, "requesttime": requestTime }, resInfo.userID);
 
             // Send message and limit to 500 chars as this call can cause many messages to be sent
             respondModule(context, { prefix: "/pre", charLimit: 500, ...resInfo }, messagestart + "\ni = Index, b = Bot, p = Proxy\n\n" + failedcommentsstr); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
