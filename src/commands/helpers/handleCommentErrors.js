@@ -1,10 +1,10 @@
 /*
- * File: handleCommentSkips.js
+ * File: handleCommentErrors.js
  * Project: steam-comment-service-bot
  * Created Date: 2022-02-28 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-07 22:03:16
+ * Last Modified: 2024-10-09 22:04:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
