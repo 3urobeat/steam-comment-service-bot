@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-09 22:15:17
+ * Last Modified: 2024-10-10 18:24:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -19,7 +19,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 const { getCommentArgs }                = require("../helpers/getCommentArgs.js");
 const { getAvailableBotsForCommenting } = require("../helpers/getCommentBots.js");
 const { syncLoop, timeToString }        = require("../../controller/helpers/misc.js");
-const { logCommentError }     = require("../helpers/handleCommentErrors.js");
+const { logRequestError }     = require("../helpers/handleRequestErrors.js");
 const { handleIterationSkip } = require("../helpers/handleRequestSkips.js");
 
 
@@ -302,7 +302,7 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
 
                 /* --------- Handle errors thrown by this comment attempt or log success message --------- */
                 if (error) {
-                    logCommentError(error, commandHandler, bot, receiverSteamID64);
+                    logRequestError(error, commandHandler, bot, receiverSteamID64);
                 } else {
                     if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${whereStr} with proxy ${bot.loginData.proxyIndex}: ${String(quote).split("\n")[0]}`);
                         else logger("info", `[${bot.logPrefix}] Comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${whereStr}: ${String(quote).split("\n")[0]}`); // Splitting \n to only get first line of multi line comments

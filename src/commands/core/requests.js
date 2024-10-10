@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-09 22:31:31
+ * Last Modified: 2024-10-10 18:26:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -15,8 +15,8 @@
  */
 
 
-const CommandHandler                = require("../commandHandler.js"); // eslint-disable-line
-const { failedCommentsObjToString } = require("../helpers/handleCommentErrors.js");
+const CommandHandler        = require("../commandHandler.js"); // eslint-disable-line
+const { failedObjToString } = require("../helpers/handleRequestErrors.js");
 
 
 module.exports.abort = {

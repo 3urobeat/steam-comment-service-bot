@@ -4,7 +4,7 @@
  * Created Date: 2023-06-02 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-07 22:07:24
+ * Last Modified: 2024-10-10 18:19:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -19,7 +19,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 const { getMiscArgs }             = require("../helpers/getMiscArgs.js");
 const { getAvailableBotsForFavorizing } = require("../helpers/getFavoriteBots.js");
 const { syncLoop, timeToString }        = require("../../controller/helpers/misc.js");
-const { logFavoriteError }    = require("../helpers/handleMiscErrors.js");
+const { logRequestError }     = require("../helpers/handleRequestErrors.js");
 const { handleIterationSkip } = require("../helpers/handleRequestSkips.js");
 
 
@@ -170,7 +170,7 @@ module.exports.favorite = {
 
                         /* --------- Handle errors thrown by this favorite attempt or update ratingHistory db and log success message --------- */
                         if (error) {
-                            logFavoriteError(error, commandHandler, bot, id);
+                            logRequestError(error, commandHandler, bot, id);
 
                         } else {
 
@@ -368,7 +368,7 @@ module.exports.unfavorite = {
 
                         /* --------- Handle errors thrown by this unfavorite attempt or update ratingHistory db and log success message --------- */
                         if (error) {
-                            logFavoriteError(error, commandHandler, bot, id);
+                            logRequestError(error, commandHandler, bot, id);
 
                         } else {
 

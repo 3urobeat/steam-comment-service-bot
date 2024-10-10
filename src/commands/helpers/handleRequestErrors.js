@@ -1,10 +1,10 @@
 /*
- * File: handleCommentErrors.js
+ * File: handleRequestErrors.js
  * Project: steam-comment-service-bot
  * Created Date: 2022-02-28 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-09 22:04:01
+ * Last Modified: 2024-10-10 18:25:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -15,14 +15,14 @@
  */
 
 
-const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
+const CommandHandler = require("../commandHandler"); // eslint-disable-line
 
 
 /**
- * Helper function to sort failed object by comment number so that it is easier to read
+ * Helper function to sort failed object by number so that it is easier to read
  * @param {object} failedObj Current state of failed object
  */
-function sortFailedCommentsObject(failedObj) {
+function sortFailedObject(failedObj) {
     const sortedvals = Object.keys(failedObj).sort((a, b) => {
         return Number(a.split(" ")[0].replace("i", "")) - Number(b.split(" ")[0].replace("i", ""));
     });
@@ -35,21 +35,21 @@ function sortFailedCommentsObject(failedObj) {
 
 
 /**
- * Adds a description to comment errors and applies additional cooldowns for certain errors
+ * Logs request errors
  * @param {string} error The error string returned by steamcommunity
  * @param {CommandHandler} commandHandler The commandHandler object
- * @param {Bot} bot Bot object of the account posting this comment
- * @param {string} receiverSteamID64 steamID64 of the receiving user/group
+ * @param {Bot} bot Bot object of the account making this request
+ * @param {string} id steamID64 of the receiving entity
  */
-module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64) => {
-    const activeReqEntry = commandHandler.controller.activeRequests[receiverSteamID64]; // Make using the obj shorter
+module.exports.logRequestError = (error, commandHandler, bot, id) => {
+    const activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
     let   description    = "";
 
 
     // Add description to errors to make it easier to understand for users. Add extra cooldown for certain errors
     switch (String(error).toLowerCase()) {
         case "error: http error 429":
-            description = "This IP has commented too often recently. Please wait a few minutes and try again";
+            description = "This IP has interacted too often recently. Please wait a few minutes and try again";
 
             // Add 5 minutes of extra cooldown to all bot accounts that are also using this proxy by adding them to the accounts list of this request
             activeReqEntry.accounts = activeReqEntry.accounts.concat(Object.keys(commandHandler.controller.getBots(null, true)).filter(e => commandHandler.controller.getBots(null, true)[e].loginData.proxyIndex == bot.loginData.proxyIndex && !activeReqEntry.accounts.includes(e))); // Append all accounts with the same proxy which aren't included yet
@@ -61,9 +61,9 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
             }
 
             // Add failed obj entry for all iterations that would use this proxy
-            logger("warn", "Skipping all other comments on this proxy as well because they will fail too!");
+            logger("warn", "Skipping all other interactions on this proxy as well because they will fail too!");
 
-            for (let i = activeReqEntry.thisIteration + 1; i < activeReqEntry.amount; i++) { // Iterate over all remaining comments by starting with next iteration till numberOfComments
+            for (let i = activeReqEntry.thisIteration + 1; i < activeReqEntry.amount; i++) { // Iterate over all remaining interactions by starting with next iteration
                 const thisbot = commandHandler.controller.getBots(null, true)[activeReqEntry.accounts[i % activeReqEntry.accounts.length]];
 
                 // Add to failed obj if proxies match
@@ -79,7 +79,7 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
             description = "The Steam servers seem to have a problem. Check the status here: https://steamstat.us";
             break;
         case "error: you've been posting too frequently, and can't make another post right now":
-            description = "This account has commented too often recently. Please wait a few minutes and try again";
+            description = "This account has interacted too often recently. Please wait a few minutes and try again";
 
             if (activeReqEntry.ipCooldownPenaltyAdded === false) {                          // Explicitly check for false to avoid triggering on undefined
                 activeReqEntry.until += bot.data.advancedconfig.commentsIpCooldownPenalty;  // Add to cooldown
@@ -110,13 +110,13 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
 
 
     // Log error, add it to failed obj and continue with next iteration
-    logger("error", `[${bot.logPrefix}] Error posting comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} to ${receiverSteamID64}${proxiesDescription}: ${error}`);
+    logger("error", `[${bot.logPrefix}] Error posting ${activeReqEntry.type} ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} to ${id}${proxiesDescription}: ${error}`);
 
     activeReqEntry.failed[`i${activeReqEntry.thisIteration + 1} b${bot.index} p${bot.loginData.proxyIndex}`] = `${error} [${description}]`;
 
 
     // Sort failed object to make it easier to read
-    activeReqEntry.failed = sortFailedCommentsObject(activeReqEntry.failed);
+    activeReqEntry.failed = sortFailedObject(activeReqEntry.failed);
 };
 
 
@@ -125,7 +125,7 @@ module.exports.logCommentError = (error, commandHandler, bot, receiverSteamID64)
  * @param {object} obj failedcomments object that should be converted
  * @returns {string} String that looks like this: `amount`x - `indices`\n`error message`
  */
-module.exports.failedCommentsObjToString = (obj) => {
+module.exports.failedObjToString = (obj) => {
     // Count amount of each string
     const grouped = {};
 

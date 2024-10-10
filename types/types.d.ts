@@ -410,65 +410,26 @@ declare function getMiscArgs(commandHandler: CommandHandler, args: any[], cmd: s
 declare function getAvailableBotsForVoting(commandHandler: CommandHandler, amount: number | "all", id: string, voteType: "upvote" | "downvote" | "funnyvote", resInfo: CommandHandler.resInfo): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
 
 /**
- * Helper function to sort failed object by comment number so that it is easier to read
+ * Helper function to sort failed object by number so that it is easier to read
  * @param failedObj - Current state of failed object
  */
-declare function sortFailedCommentsObject(failedObj: any): void;
+declare function sortFailedObject(failedObj: any): void;
 
 /**
- * Adds a description to comment errors and applies additional cooldowns for certain errors
+ * Logs request errors
  * @param error - The error string returned by steamcommunity
  * @param commandHandler - The commandHandler object
- * @param bot - Bot object of the account posting this comment
- * @param receiverSteamID64 - steamID64 of the receiving user/group
+ * @param bot - Bot object of the account making this request
+ * @param id - steamID64 of the receiving entity
  */
-declare function logCommentError(error: string, commandHandler: CommandHandler, bot: Bot, receiverSteamID64: string): void;
+declare function logRequestError(error: string, commandHandler: CommandHandler, bot: Bot, id: string): void;
 
 /**
  * Groups same error messages together, counts amount, lists affected bots and converts it to a String.
  * @param obj - failedcomments object that should be converted
  * @returns String that looks like this: `amount`x - `indices`\n`error message`
  */
-declare function failedCommentsObjToString(obj: any): string;
-
-/**
- * Helper function to sort failed object by comment number so that it is easier to read
- * @param failedObj - Current state of failed object
- */
-declare function sortFailedCommentsObject(failedObj: any): void;
-
-/**
- * Logs follow errors
- * @param error - The error string returned by steam-community
- * @param commandHandler - The commandHandler object
- * @param bot - Bot object of the account making this request
- * @param id - ID of the profile that receives the follow
- */
-declare function logFollowError(error: string, commandHandler: CommandHandler, bot: Bot, id: string): void;
-
-/**
- * Helper function to sort failed object by comment number so that it is easier to read
- * @param failedObj - Current state of failed object
- */
-declare function sortFailedCommentsObject(failedObj: any): void;
-
-/**
- * Logs vote errors
- * @param error - The error string returned by steam-community
- * @param commandHandler - The commandHandler object
- * @param bot - Bot object of the account making this request
- * @param id - ID that receives the votes
- */
-declare function logVoteError(error: string, commandHandler: CommandHandler, bot: Bot, id: string): void;
-
-/**
- * Logs favorite errors
- * @param error - The error string returned by steam-community
- * @param commandHandler - The commandHandler object
- * @param bot - Bot object of the account making this request
- * @param id - ID of the sharedfile that receives the favorites
- */
-declare function logFavoriteError(error: string, commandHandler: CommandHandler, bot: Bot, id: string): void;
+declare function failedObjToString(obj: any): string;
 
 /**
  * Helper function to sort failed object by number so that it is easier to read

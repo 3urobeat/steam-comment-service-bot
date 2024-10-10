@@ -4,7 +4,7 @@
  * Created Date: 2023-09-24 15:04:33
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-07 22:07:54
+ * Last Modified: 2024-10-10 18:24:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -19,7 +19,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 const { getFollowArgs }                 = require("../helpers/getFollowArgs.js");
 const { getAvailableBotsForFollowing }  = require("../helpers/getFollowBots.js");
 const { syncLoop, timeToString }        = require("../../controller/helpers/misc.js");
-const { logFollowError }      = require("../helpers/handleFollowErrors.js");
+const { logRequestError }      = require("../helpers/handleRequestErrors.js");
 const { handleIterationSkip } = require("../helpers/handleRequestSkips.js");
 
 
@@ -167,7 +167,7 @@ module.exports.follow = {
 
                     /* --------- Handle errors thrown by this follow attempt or update ratingHistory db and log success message --------- */
                     if (error) {
-                        logFollowError(error, commandHandler, bot, id);
+                        logRequestError(error, commandHandler, bot, id);
                     }
 
                     if (!error || error.eresult == 2) { // Steam returns Enum 2 ("Fail") for duplicate requests
@@ -363,7 +363,7 @@ module.exports.unfollow = {
 
                     /* --------- Handle errors thrown by this unfollow attempt or update ratingHistory db and log success message --------- */
                     if (error) {
-                        logFollowError(error, commandHandler, bot, id);
+                        logRequestError(error, commandHandler, bot, id);
                     }
 
                     if (!error || error.eresult == 2) { // Steam returns Enum 2 ("Fail") for duplicate requests
