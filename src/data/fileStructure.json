@@ -561,6 +561,11 @@
             "checksum": "cb31edb8d74306c46391bbebfc24a52e"
         },
         {
+            "path": "src/updater/compatibility/21504.js",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/compatibility/21504.js",
+            "checksum": "8ad54c7a8f16cecd3b4559ebe9ed96c9"
+        },
+        {
             "path": "src/updater/compatibility.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/compatibility.js",
             "checksum": "cc47bba386329fbd26a678d2ae911b71"
