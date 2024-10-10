@@ -43,7 +43,7 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
         // Loop over all docs and attempt to renew their token. Notify the bot owners if Steam did not issue a new one
         _this.controller.misc.syncLoop(docs.length, async (loop, i) => {
             const e        = docs[i];
-            let tokenObj = _this.decodeJWT(e.token);
+            let   tokenObj = _this.decodeJWT(e.token);
             const thisbot  = bots[e.accountName];
 
             // Check if decoding failed

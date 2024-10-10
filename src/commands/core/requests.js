@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-10 18:26:04
+ * Last Modified: 2024-10-10 18:27:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -192,13 +192,13 @@ module.exports.failed = {
             const requestTime = new Date(thisRequest.until).toISOString().replace(/T/, " ").replace(/\..+/, "");
 
             // Group errors and convert them to string using helper function
-            const failedcommentsstr = failedCommentsObjToString(thisRequest.failed);
+            const failedStr = failedObjToString(thisRequest.failed);
 
             // Get start of message from lang file and add data
             const messagestart = await commandHandler.data.getLang("failedcmdmsg", { "steamID64": `${thisRequest.type} ${userID}`, "requesttime": requestTime }, resInfo.userID);
 
             // Send message and limit to 500 chars as this call can cause many messages to be sent
-            respondModule(context, { prefix: "/pre", charLimit: 500, ...resInfo }, messagestart + "\ni = Index, b = Bot, p = Proxy\n\n" + failedcommentsstr); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+            respondModule(context, { prefix: "/pre", charLimit: 500, ...resInfo }, messagestart + "\ni = Interaction, b = Bot, p = Proxy\n\n" + failedStr); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         });
     }
 };
