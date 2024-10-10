@@ -4,7 +4,7 @@
  * Created Date: 2022-02-28 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-10 18:25:03
+ * Last Modified: 2024-10-10 18:33:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -55,9 +55,9 @@ module.exports.logRequestError = (error, commandHandler, bot, id) => {
             activeReqEntry.accounts = activeReqEntry.accounts.concat(Object.keys(commandHandler.controller.getBots(null, true)).filter(e => commandHandler.controller.getBots(null, true)[e].loginData.proxyIndex == bot.loginData.proxyIndex && !activeReqEntry.accounts.includes(e))); // Append all accounts with the same proxy which aren't included yet
 
             if (activeReqEntry.ipCooldownPenaltyAdded === false) {                          // Explicitly check for false to avoid triggering on undefined
-                activeReqEntry.until += bot.data.advancedconfig.commentsIpCooldownPenalty;  // Add to cooldown
+                activeReqEntry.until += bot.data.advancedconfig.requestsIpCooldownPenalty;  // Add to cooldown
                 activeReqEntry.ipCooldownPenaltyAdded = true;
-                logger("debug", `${logger.colors.fgred}IP cooldown error detected${logger.colors.reset} - Increased until value of this request by ${bot.data.advancedconfig.commentsIpCooldownPenalty / 60000} minutes`);
+                logger("debug", `${logger.colors.fgred}IP cooldown error detected${logger.colors.reset} - Increased until value of this request by ${bot.data.advancedconfig.requestsIpCooldownPenalty / 60000} minutes`);
             }
 
             // Add failed obj entry for all iterations that would use this proxy
@@ -82,9 +82,9 @@ module.exports.logRequestError = (error, commandHandler, bot, id) => {
             description = "This account has interacted too often recently. Please wait a few minutes and try again";
 
             if (activeReqEntry.ipCooldownPenaltyAdded === false) {                          // Explicitly check for false to avoid triggering on undefined
-                activeReqEntry.until += bot.data.advancedconfig.commentsIpCooldownPenalty;  // Add to cooldown
+                activeReqEntry.until += bot.data.advancedconfig.requestsIpCooldownPenalty;  // Add to cooldown
                 activeReqEntry.ipCooldownPenaltyAdded = true;
-                logger("debug", `${logger.colors.fgred}IP cooldown error detected${logger.colors.reset} - Increased until value of this request by ${bot.data.advancedconfig.commentsIpCooldownPenalty / 60000} minutes`);
+                logger("debug", `${logger.colors.fgred}IP cooldown error detected${logger.colors.reset} - Increased until value of this request by ${bot.data.advancedconfig.requestsIpCooldownPenalty / 60000} minutes`);
             }
             break;
         case "error: there was a problem posting your comment. please try again":

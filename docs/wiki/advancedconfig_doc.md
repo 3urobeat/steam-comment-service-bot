@@ -36,7 +36,7 @@ This is the full documentation to customize your `advancedconfig.json`.
 | retryFailedComments | true or false | If the bot should retry comments that failed in a comment request. Default: false |
 | retryFailedCommentsDelay | Number in ms | Time the bot will wait before retrying the failed comments. Default: 300000 (5 minutes) |
 | retryFailedCommentsAttempts | Number | How often the bot should retry a failed comment. Default: 1 |
-| commentsIpCooldownPenalty | Number | Time in ms to add to cooldown of bot accounts participating in a comment request which experienced an IP Cooldown error (e.g. HTTP 429). **Disabling is not recommended as it might prolong the cooldown.** Default: 300000 (5 minutes) |
+| requestsIpCooldownPenalty | Number | Time in ms to add to cooldown of bot accounts participating in a comment request which experienced an IP Cooldown error (e.g. HTTP 429). **Disabling is not recommended as it might prolong the cooldown.** Default: 300000 (5 minutes) |
 | lastQuotesSize | Number | Amount (minus 1) of different quotes that need to be selected in between before a quote can be used again. Default: 5 |
 | &nbsp; | | |
 | enableevalcmd | true or false | The eval command allows the botowner to run javascript code from the steam chat. **Warning: This can harm your machine! Leave it to false if you don't know what you are doing!** Default: false |
