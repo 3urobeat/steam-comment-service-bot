@@ -4,7 +4,7 @@
  * Created Date: 2023-03-29 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-28 22:40:46
+ * Last Modified: 2024-10-12 11:56:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -78,11 +78,14 @@ Controller.prototype._readyEvent = function() {
     if (Object.keys(this.pluginSystem.pluginList).length > 0) logger("", `${logger.colors.fgblack}>${logger.colors.reset} Successfully loaded ${Object.keys(this.pluginSystem.pluginList).length} plugins!`, true, false, null, false, true);
 
 
-    // Log which games the main bot is playing
-    let playinggames = "";
-    if (this.data.config.playinggames[1]) playinggames = `(${this.data.config.playinggames.slice(1, this.data.config.playinggames.length)})`;
+    // Log which games the bots are playing, separated by main and child bots
+    let playingGames = "";
 
-    logger("", `${logger.colors.brfgyellow}>${logger.colors.reset} Playing status: ${logger.colors.fggreen}${this.data.config.playinggames[0] || "/"}${logger.colors.reset} ${playinggames}`, true, false, null, false, true);
+    if (this.data.config.playinggames && this.data.config.playinggames[1]) {
+        playingGames = `(${logger.colors.fggreen}${this.data.config.playinggames[0] || "/"}${logger.colors.reset} ${this.data.config.playinggames.slice(1, this.data.config.playinggames.length)})`;
+    }
+
+    logger("", `${logger.colors.brfgyellow}>${logger.colors.reset} Playing status: ${playingGames || "/"}`, true, false, null, false, true);
 
 
     // Calculate time the bot took to start

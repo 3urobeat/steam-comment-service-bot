@@ -4,10 +4,10 @@
  * Created Date: 2023-03-27 21:34:45
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:12:22
+ * Last Modified: 2024-10-12 09:55:14
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -31,7 +31,7 @@ DataManager.prototype.processData = async function() {
     function yourgroup() {
         return new Promise((resolve) => {
 
-            if (_this.config.yourgroup.length == 0) { // Check if yourgroup is empty
+            if (!_this.config.yourgroup) { // Check if yourgroup is empty/missing
                 logger("debug", "DataManager processData(): yourgroup is not set, clearing cachefile entry"); // Log to output for debugging
 
                 // Reset cachefile values
@@ -73,7 +73,7 @@ DataManager.prototype.processData = async function() {
     function botsgroup() {
         return new Promise((resolve) => {
 
-            if (_this.config.botsgroup.length == 0) { // Check if botsgroup is empty
+            if (!_this.config.botsgroup) { // Check if botsgroup is empty/missing
                 logger("debug", "DataManager processData(): botsgroup is not set, clearing cachefile entry"); // Log to output for debugging
 
                 // Reset cachefile values
@@ -130,7 +130,7 @@ DataManager.prototype.processData = async function() {
             }
 
             // Instantly bail out if the array is empty. DataCheck will abort the bot later on
-            if (_this.config.ownerid.length == 0) finishedResponse(-1);
+            if (!_this.config.ownerid || _this.config.ownerid.length == 0) finishedResponse(-1);
 
             // Either convert to steamID64 or directly push e
             _this.config.ownerid.forEach((e, i) => {
