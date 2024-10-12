@@ -4,7 +4,7 @@
  * Created Date: 2023-03-27 21:34:45
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-12 09:55:14
+ * Last Modified: 2024-10-12 16:48:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -156,6 +156,7 @@ DataManager.prototype.processData = async function() {
     }
     /* eslint-enable jsdoc/require-jsdoc */
 
+    logger("info", "Processing data: Converting owners and groups to IDs...", false, true, logger.animation("loading"));
 
     // Process all three, then update cache.json
     await Promise.all([yourgroup(), botsgroup(), owners()]);

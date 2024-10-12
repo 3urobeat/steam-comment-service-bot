@@ -373,7 +373,7 @@
         {
             "path": "src/dataManager/dataProcessing.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataProcessing.js",
-            "checksum": "24492588e69e5df65d1f78598a84fa69"
+            "checksum": "8de1c0db0fb5a29d103b0c22c9d961e7"
         },
         {
             "path": "src/dataManager/helpers/checkProxies.js",
