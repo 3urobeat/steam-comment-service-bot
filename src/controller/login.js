@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-06 13:59:34
+ * Last Modified: 2024-10-12 16:00:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -190,7 +190,7 @@ Controller.prototype.login = async function(firstLogin) {
                 // Check if main account is involved and this is the initial login and terminate the bot
                 if (allAccountsWaitingFor.find((e) => e.index == 0) && this.info.readyAfter == 0) {
                     logger("", "", true);
-                    logger("error", "Aborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true);
+                    logger("error", "Aborting because the first bot account always needs to be logged in!\n        Please correct what caused the error and try again.", true);
                     return this.stop();
                 }
 

@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-08-10 19:13:29
+ * Last Modified: 2024-10-12 16:00:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -73,7 +73,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
                 // Abort if bot0 failed on initial login or skip account for now
                 if (this.index == 0 && this.controller.info.readyAfter == 0) {
                     logger("", "", true);
-                    logger("error", "Aborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true);
+                    logger("error", "Aborting because the first bot account always needs to be logged in!\n        Please correct what caused the error and try again.", true);
                     return this.controller.stop();
 
                 } else {
