@@ -503,7 +503,7 @@
         {
             "path": "src/sessions/sessionHandler.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/sessions/sessionHandler.js",
-            "checksum": "9dd712e850ef1a0f4373a6a347409ac9"
+            "checksum": "12372810497696ff0df4da04db6884ef"
         },
         {
             "path": "src/starter.js",

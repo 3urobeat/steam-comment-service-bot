@@ -126,7 +126,13 @@ SessionHandler.prototype._attemptCredentialsLogin = function() {
     // Bail if username or password is null
     if (!this.logOnOptions.accountName || !this.logOnOptions.password) {
         logger("", "", true);
-        logger("error", `[${this.bot.logPrefix}] This account is missing a username or password, which are required to login using credentials! Please re-check your 'accounts.txt' entries.`, true);
+
+        if (this.logOnOptions.accountName) {
+            logger("error", `[${this.bot.logPrefix}] The account '${this.logOnOptions.accountName}' is missing a password, which is required to login using credentials! Please re-check this 'accounts.txt' entry.`, true);
+        } else {
+            logger("error", `[${this.bot.logPrefix}] This account is missing a username or password, which are required to login using credentials! Please re-check your 'accounts.txt' entries.`, true);
+        }
+
         this._resolvePromise(null);
         return;
     }
