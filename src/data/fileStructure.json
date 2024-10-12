@@ -118,7 +118,7 @@
         {
             "path": "src/bot/events/webSession.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/webSession.js",
-            "checksum": "37a078ce9bc892c1506c0653b145663f"
+            "checksum": "a6b4280a040451fc8620d6834bd01dfc"
         },
         {
             "path": "src/bot/helpers/checkMsgBlock.js",
@@ -133,7 +133,7 @@
         {
             "path": "src/bot/helpers/handleMissingGameLicenses.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/helpers/handleMissingGameLicenses.js",
-            "checksum": "709539fcde6c70a46f6fe895d8b30a95"
+            "checksum": "4af73cb5e4c80bcf0e1372beabb8bc39"
         },
         {
             "path": "src/bot/helpers/handleRelog.js",

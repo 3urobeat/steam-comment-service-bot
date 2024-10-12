@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-08 16:21:53
+ * Last Modified: 2024-10-12 12:15:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -76,7 +76,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
 
                     // Add user to lastcomment database
-                    const time = Date.now() - (this.controller.data.config.requestCooldown * 60000); // Subtract requestCooldown so that the user is able to use the command instantly;
+                    const time = Date.now() - ((this.controller.data.config.requestCooldown || 0) * 60000); // Subtract requestCooldown (if !undefined) so that the user is able to use the command instantly;
 
                     this.controller.data.lastCommentDB.update({ id: thisfriend }, { $set: { time: time } }, { upsert: true }, (err) => {
                         if (err) logger("error", "Error inserting new user into lastcomment.db database! Error: " + err);
@@ -109,7 +109,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
                 // Check if acceptgroupinvites is set to false and only allow botsgroup invite to be accepted
                 if (!this.controller.data.config.acceptgroupinvites) {
-                    if (this.controller.data.config.yourgroup.length < 1 && this.controller.data.config.botsgroup.length < 1) return;
+                    if (!this.controller.data.config.yourgroup && !this.controller.data.config.botsgroup) return;
                     if (thisgroup != this.controller.data.cachefile.configgroup64id && thisgroup != this.controller.data.cachefile.botsgroupid) return;
                     logger("info", "acceptgroupinvites is turned off but this is an invite to the group set as yourgroup or botsgroup. Accepting invite anyway...");
                 }
