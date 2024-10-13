@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-13 11:54:59
+ * Last Modified: 2024-10-13 11:57:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -269,20 +269,20 @@ Controller.prototype._start = async function() {
     /* ------------ Run compatibility feature and updater or start logging in: ------------ */
     const compatibility = await checkAndGetFile("./src/updater/compatibility.js", logger, false, false);
     if (compatibility) forceUpdate = await compatibility.runCompatibility(this); // Don't bother running it if it couldn't be found and just hope the next update will fix it
+        else logger("warn", "Failed to load compatibility feature handler! If the bot was just updated some settings might not have been transferred.", false, false, null, true);
 
-    // Attempt to load updater to activate the auto update checker. If this fails we are properly "fucked" as we can't repair ourselves
+    // Attempt to load updater. If this fails we are properly "fucked" as we can't repair ourselves
     const Updater = await checkAndGetFile("./src/updater/updater.js", logger, false, false);
     if (!Updater) {
         logger("error", "Fatal Error: Failed to load updater! Please reinstall the bot manually. Aborting...");
         return this.stop();
     }
 
-    // Init a new updater object. This will start our auto update checker
     this.updater = new Updater(this);
 
     // Check if the last update failed and skip the updater for now
     if (updateFailed) {
-        logger("info", `It looks like the last update failed! Skipping the updater for now and hoping ${this.data.datafile.mestr} fixes the issue soon.\n       Another attempt will be made in 6 hours or on the next restart.\n\n       If you haven't reported the error yet please do so as only then he will be able to fix it!`, true);
+        logger("info", `It looks like the last update failed! Skipping the updater for now and hoping ${this.data.datafile.mestr} fixes the issue soon.\n       Another attempt will be made in 6 hours or on the next restart.\n\n       If you haven't reported the error yet please do so it can get fixed!`, true);
 
         this._preLogin(); // Run one-time pre-login tasks, it will call login() when it's done
 

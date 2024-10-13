@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-12 12:15:24
+ * Last Modified: 2024-10-13 11:57:34
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -71,7 +71,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
                     setTimeout(async () => {
                         if (this.index == 0) this.sendChatMessage(this, { userID: String(thisfriend) }, await this.controller.data.getLang("useradded", { "cmdprefix": "!", "langcount": Object.keys(this.data.lang).length }, String(thisfriend)));
-                            else logger("debug", "Not sending useradded message because this isn't the main user...");
+                            else logger("debug", `[${this.logPrefix}] Not sending useradded message because this isn't the main bot...`);
                     }, 1000 * processedFriendRequests);
 
 
