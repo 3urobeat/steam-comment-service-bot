@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-10 18:27:41
+ * Last Modified: 2024-10-13 13:50:23
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -231,7 +231,7 @@ module.exports.sessions = {
             const thisRequest = commandHandler.controller.activeRequests[e];
 
             if (Date.now() < thisRequest.until + (commandHandler.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
-                str += `- Status: ${thisRequest.status} | ${thisRequest.amount} iterations with ${thisRequest.accounts.length} accounts by ${thisRequest.requestedby} for ${thisRequest.type} ${Object.keys(commandHandler.controller.activeRequests)[i]}\n`;
+                str += `- Status: ${thisRequest.status} | ${thisRequest.amount} interactions with ${thisRequest.accounts.length} accounts by ${thisRequest.requestedby} for ${thisRequest.type} ${Object.keys(commandHandler.controller.activeRequests)[i]}\n`;
             } else {
                 delete commandHandler.controller.activeRequests[e]; // Remove entry from object if it is finished to keep the object clean
             }
@@ -275,7 +275,7 @@ module.exports.mySessions = {
             const thisRequest = commandHandler.controller.activeRequests[e];
 
             if (Date.now() < thisRequest.until + (commandHandler.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
-                if (thisRequest.requestedby == resInfo.userID) str += `- Status: ${thisRequest.status} | ${thisRequest.amount} iterations with ${thisRequest.accounts.length} accounts by ${thisRequest.requestedby} for ${thisRequest.type} ${Object.keys(commandHandler.controller.activeRequests)[i]}`;
+                if (thisRequest.requestedby == resInfo.userID) str += `- Status: ${thisRequest.status} | ${thisRequest.amount} interactions with ${thisRequest.accounts.length} accounts by ${thisRequest.requestedby} for ${thisRequest.type} ${Object.keys(commandHandler.controller.activeRequests)[i]}`;
             } else {
                 delete commandHandler.controller.activeRequests[e]; // Remove entry from object if it is finished to keep the object clean
             }
