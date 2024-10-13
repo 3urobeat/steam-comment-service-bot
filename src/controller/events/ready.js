@@ -4,7 +4,7 @@
  * Created Date: 2023-03-29 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-12 11:56:06
+ * Last Modified: 2024-10-13 12:34:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -172,6 +172,10 @@ Controller.prototype._readyEvent = function() {
         });
 
     }
+
+
+    // Register job to check tokens.db every 24 hours for expired tokens to allow users to refresh them beforehand. Runs already once upon registering it.
+    this.data._startExpiringTokensCheckInterval();
 
 
     // Write logintime stuff to data.json

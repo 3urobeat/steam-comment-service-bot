@@ -4,7 +4,7 @@
  * Created Date: 2022-10-14 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 16:53:46
+ * Last Modified: 2024-02-1 12:34:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -116,7 +116,8 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
         name: "expiringTokensScan",
         description: "Scans the tokens database for expiring tokens every 24 hours",
         func: () => { scanDatabase(); },
-        interval: 86400000 // 24h in ms
+        interval: 86400000,     // 24h in ms
+        runOnRegistration: true // Run now to let user refresh any expiring tokens directly after ready
     });
 
 };

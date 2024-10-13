@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-13 11:57:34
+ * Last Modified: 2024-10-13 12:34:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -319,9 +319,6 @@ Controller.prototype._preLogin = async function() {
      * @type {DataManager}
      */
     this.data;
-
-    // Register job to check tokens.db every 24 hours for expired tokens to allow users to refresh them beforehand
-    this.data._startExpiringTokensCheckInterval();
 
 
     // Update Updater IntelliSense without modifying what _start() has already set. Integrity has already been checked
