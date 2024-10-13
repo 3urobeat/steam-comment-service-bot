@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-09 13:22:40
+ * Last Modified: 2024-10-10 18:27:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -15,8 +15,8 @@
  */
 
 
-const CommandHandler                = require("../commandHandler.js"); // eslint-disable-line
-const { failedCommentsObjToString } = require("../helpers/handleCommentSkips.js");
+const CommandHandler        = require("../commandHandler.js"); // eslint-disable-line
+const { failedObjToString } = require("../helpers/handleRequestErrors.js");
 
 
 module.exports.abort = {
@@ -182,19 +182,23 @@ module.exports.failed = {
                 userID = res; // If user provided an id as argument then use that instead of their id
             }
 
-            if (!commandHandler.controller.activeRequests[userID] || Object.keys(commandHandler.controller.activeRequests[userID].failed).length < 1) return respond(await commandHandler.data.getLang("failedcmdnothingfound", null, resInfo.userID));
+
+            const thisRequest = commandHandler.controller.activeRequests[userID];
+
+            if (!thisRequest || thisRequest.length < 1) return respond(await commandHandler.data.getLang("failedcmdnothingfound", null, resInfo.userID));
+
 
             // Get timestamp of request
-            const requestTime = new Date(commandHandler.controller.activeRequests[userID].until).toISOString().replace(/T/, " ").replace(/\..+/, "");
+            const requestTime = new Date(thisRequest.until).toISOString().replace(/T/, " ").replace(/\..+/, "");
 
             // Group errors and convert them to string using helper function
-            const failedcommentsstr = failedCommentsObjToString(commandHandler.controller.activeRequests[userID].failed);
+            const failedStr = failedObjToString(thisRequest.failed);
 
             // Get start of message from lang file and add data
-            const messagestart = await commandHandler.data.getLang("failedcmdmsg", { "steamID64": userID, "requesttime": requestTime }, resInfo.userID);
+            const messagestart = await commandHandler.data.getLang("failedcmdmsg", { "steamID64": `${thisRequest.type} ${userID}`, "requesttime": requestTime }, resInfo.userID);
 
             // Send message and limit to 500 chars as this call can cause many messages to be sent
-            respondModule(context, { prefix: "/pre", charLimit: 500, ...resInfo }, messagestart + "\ni = Index, b = Bot, p = Proxy\n\n" + failedcommentsstr); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+            respondModule(context, { prefix: "/pre", charLimit: 500, ...resInfo }, messagestart + "\ni = Interaction, b = Bot, p = Proxy\n\n" + failedStr); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained
         });
     }
 };
@@ -224,8 +228,10 @@ module.exports.sessions = {
         let str = "";
 
         Object.keys(commandHandler.controller.activeRequests).forEach((e, i) => {
-            if (Date.now() < commandHandler.controller.activeRequests[e].until + (commandHandler.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
-                str += `- Status: ${commandHandler.controller.activeRequests[e].status} | ${commandHandler.controller.activeRequests[e].amount} iterations with ${commandHandler.controller.activeRequests[e].accounts.length} accounts by ${commandHandler.controller.activeRequests[e].requestedby} for ${commandHandler.controller.activeRequests[e].type} ${Object.keys(commandHandler.controller.activeRequests)[i]}\n`;
+            const thisRequest = commandHandler.controller.activeRequests[e];
+
+            if (Date.now() < thisRequest.until + (commandHandler.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
+                str += `- Status: ${thisRequest.status} | ${thisRequest.amount} iterations with ${thisRequest.accounts.length} accounts by ${thisRequest.requestedby} for ${thisRequest.type} ${Object.keys(commandHandler.controller.activeRequests)[i]}\n`;
             } else {
                 delete commandHandler.controller.activeRequests[e]; // Remove entry from object if it is finished to keep the object clean
             }
@@ -266,8 +272,10 @@ module.exports.mySessions = {
         let str = "";
 
         Object.keys(commandHandler.controller.activeRequests).forEach(async (e, i) => {
-            if (Date.now() < commandHandler.controller.activeRequests[e].until + (commandHandler.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
-                if (commandHandler.controller.activeRequests[e].requestedby == resInfo.userID) str += `- Status: ${commandHandler.controller.activeRequests[e].status} | ${commandHandler.controller.activeRequests[e].amount} iterations with ${commandHandler.controller.activeRequests[e].accounts.length} accounts by ${commandHandler.controller.activeRequests[e].requestedby} for ${commandHandler.controller.activeRequests[e].type} ${Object.keys(commandHandler.controller.activeRequests)[i]}`;
+            const thisRequest = commandHandler.controller.activeRequests[e];
+
+            if (Date.now() < thisRequest.until + (commandHandler.data.config.botaccountcooldown * 60000)) { // Check if entry is not finished yet
+                if (thisRequest.requestedby == resInfo.userID) str += `- Status: ${thisRequest.status} | ${thisRequest.amount} iterations with ${thisRequest.accounts.length} accounts by ${thisRequest.requestedby} for ${thisRequest.type} ${Object.keys(commandHandler.controller.activeRequests)[i]}`;
             } else {
                 delete commandHandler.controller.activeRequests[e]; // Remove entry from object if it is finished to keep the object clean
             }

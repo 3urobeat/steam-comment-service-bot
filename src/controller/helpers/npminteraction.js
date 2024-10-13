@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-29 15:16:31
+ * Last Modified: 2024-10-13 11:18:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -45,12 +45,12 @@ module.exports.reinstallAll = async (logger, callback) => {
     fs.rm(srcdir + "/../node_modules", { recursive: true }, (err) => {
         if (err) return callback(err, null);
 
-        logger("info", "Running 'npm install --production'. This can take a moment, please wait...");
+        logger("info", "Running 'npm install --omit=dev'. This can take a moment, please wait...");
 
-        exec("npm install --production", { cwd: srcdir + "/.." }, (err, stdout) => {
+        exec("npm install --omit=dev", { cwd: srcdir + "/.." }, (err, stdout) => {
             if (err) return callback(err, null);
 
-            logger("info", "Successfully ran 'npm install --production'");
+            logger("info", "Successfully ran 'npm install --omit=dev'");
 
             callback(null, stdout);
         });
@@ -73,9 +73,9 @@ module.exports.update = (callback) => {
  * @param {function(string|null, string|null): void} callback Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
 module.exports.updateFromPath = (path, callback) => {
-    logger("debug", `npminteraction update(): Running 'npm install --production' in '${path}'. This can take a moment, please wait...`);
+    logger("debug", `npminteraction update(): Running 'npm install --omit=dev' in '${path}'. This can take a moment, please wait...`);
 
-    exec("npm install --production", { cwd: path }, (err, stdout) => {
+    exec("npm install --omit=dev", { cwd: path }, (err, stdout) => {
         if (err) return callback(err, null);
 
         // Logger("info", `NPM Log:\n${stdout}`, false, false, null, true) // Entire log, disabled to reduce log spam

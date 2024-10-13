@@ -4,7 +4,7 @@
  * Created Date: 2023-06-29 21:31:53
  * Author: 3urobeat
  *
- * Last Modified: 2024-08-10 19:13:29
+ * Last Modified: 2024-10-12 12:36:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -24,23 +24,24 @@ const Bot = require("../bot.js");
 Bot.prototype.handleMissingGameLicenses = function() {
     const data = this.controller.data;
 
-    // Check if user provided games specifically for this account. We only need to check this for child accounts
-    let configChildGames = data.config.childaccplayinggames;
+    const configMainGames  = data.config.playinggames || [];
+    let   configChildGames = data.config.childaccplayinggames || [];
 
-    if (typeof configChildGames[0] == "object" && configChildGames[0] != null) { // - typeof null == "object"
+    // Check if user provided games specifically for this account. We only need to check this for child accounts
+    if (configChildGames && typeof configChildGames[0] == "object" && configChildGames[0] != null) { // - typeof null == "object"
         if (Object.keys(configChildGames[0]).includes(this.accountName)) configChildGames = configChildGames[0][this.accountName]; // Get the specific settings for this account if included
-            else configChildGames = configChildGames.slice(1);                                                                                                                   // ...otherwise remove object containing acc specific settings to use the generic ones
+            else configChildGames = configChildGames.slice(1);                                                                     // ...otherwise remove object containing acc specific settings to use the generic ones
 
         logger("debug", `[${this.logPrefix}] Bot handleMissingGameLicenses(): Setting includes specific games, filtered for this account: ${configChildGames.join(", ")}`);
     }
 
+
     // Shorthander for starting to play
     const startPlaying = () => { if (this.index == 0) this.user.gamesPlayed(this.controller.data.config.playinggames); else this.user.gamesPlayed(configChildGames); };
 
-
     const options = {
         includePlayedFreeGames: true,
-        filterAppids: this.index == 0 ? data.config.playinggames.filter(e => !isNaN(e)) : configChildGames.filter(e => !isNaN(e) && e != null), // We only need to check for these appIDs. Filter custom game string and null values
+        filterAppids: this.index == 0 ? configMainGames.filter(e => !isNaN(e)) : configChildGames.filter(e => !isNaN(e) && e != null), // We only need to check for these appIDs. Filter custom game string and null values
         includeFreeSub: false
     };
 

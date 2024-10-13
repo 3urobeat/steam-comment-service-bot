@@ -4,10 +4,10 @@
  * Created Date: 2023-03-21 22:53:37
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:09:15
+ * Last Modified: 2024-10-13 11:18:09
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -42,7 +42,7 @@ Controller.prototype._handleErrors = function() {
 
             npminteraction.reinstallAll(logger, (err, stdout) => { //eslint-disable-line
                 if (err) {
-                    logger("error", "I was unable to reinstall all modules. Please try running 'npm install --production' manually. Error: " + err);
+                    logger("error", "I was unable to reinstall all modules. Please try running 'npm install --omit=dev' manually. Error: " + err);
                     return this.stop();
                 } else {
                     // Logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)

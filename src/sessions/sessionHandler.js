@@ -4,7 +4,7 @@
  * Created Date: 2022-10-09 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 2024-08-10 19:13:29
+ * Last Modified: 2024-10-12 16:00:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -89,7 +89,7 @@ SessionHandler.prototype._resolvePromise = function(token) {
     if (!token) {
         if (this.bot.index == 0) {
             logger("", "", true);
-            logger("error", "Aborting because the first bot account always needs to be logged in!\nPlease correct what caused the error and try again.", true);
+            logger("error", "Aborting because the first bot account always needs to be logged in!\n        Please correct what caused the error and try again.", true);
             this.controller.stop();
             return;
         } else {
@@ -122,6 +122,20 @@ SessionHandler.prototype._attemptCredentialsLogin = function() {
 
     // Attach event listeners
     this._attachEvents();
+
+    // Bail if username or password is null
+    if (!this.logOnOptions.accountName || !this.logOnOptions.password) {
+        logger("", "", true);
+
+        if (this.logOnOptions.accountName) {
+            logger("error", `[${this.bot.logPrefix}] The account '${this.logOnOptions.accountName}' is missing a password, which is required to login using credentials! Please re-check this 'accounts.txt' entry.`, true);
+        } else {
+            logger("error", `[${this.bot.logPrefix}] This account is missing a username or password, which are required to login using credentials! Please re-check your 'accounts.txt' entries.`, true);
+        }
+
+        this._resolvePromise(null);
+        return;
+    }
 
     // Login with QR Code if password is "qrcode", otherwise with normal credentials
     if (this.logOnOptions.password == "qrcode") {

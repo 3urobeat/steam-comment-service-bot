@@ -4,7 +4,7 @@
  * Created Date: 2023-05-28 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-08 18:36:55
+ * Last Modified: 2024-10-10 18:20:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -19,7 +19,8 @@ const CommandHandler  = require("../commandHandler.js"); // eslint-disable-line
 const { getMiscArgs } = require("../helpers/getMiscArgs.js");
 const { getAvailableBotsForVoting } = require("../helpers/getVoteBots.js");
 const { syncLoop, timeToString }    = require("../../controller/helpers/misc.js");
-const { handleVoteIterationSkip, logVoteError } = require("../helpers/handleMiscErrors.js");
+const { logRequestError }        = require("../helpers/handleRequestErrors.js");
+const { handleIterationSkip } = require("../helpers/handleRequestSkips.js");
 
 
 /**
@@ -210,7 +211,7 @@ async function processVoteRequest(origin, commandHandler, args, respondModule, c
             const bot = commandHandler.controller.bots[availableAccounts[i]];
             activeReqEntry.thisIteration++;
 
-            if (!handleVoteIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
+            if (!handleIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
 
             /* --------- Try to vote --------- */
@@ -218,7 +219,7 @@ async function processVoteRequest(origin, commandHandler, args, respondModule, c
 
                 /* --------- Handle errors thrown by this vote attempt or update ratingHistory db and log success message --------- */
                 if (error) {
-                    logVoteError(error, commandHandler, bot, id);
+                    logRequestError(error, commandHandler, bot, id);
 
                 } else {
 

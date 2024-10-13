@@ -4,10 +4,10 @@
  * Created Date: 2022-10-09 12:52:30
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:16:21
+ * Last Modified: 2024-10-03 22:44:42
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -51,7 +51,7 @@ SessionHandler.prototype._attachEvents = function() {
 
 
     this.session.on("error", (err) => { // Failure
-        logger("error", `[${this.bot.logPrefix}] Failed to get a session for account '${this.logOnOptions.accountName}'! Error: ${err}`); // Session.accountName is only defined on success
+        logger("error", `[${this.bot.logPrefix}] Failed to get a session for account '${this.logOnOptions.accountName}'! Error: ${err.stack ? err.stack : err}`); // Session.accountName is only defined on success
 
         // TODO: When does this event fire? Do I need to do something else?
         // TODO: Retry until advancedconfig.maxLogOnRetries?

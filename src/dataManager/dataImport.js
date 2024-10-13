@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-08-12 22:04:45
+ * Last Modified: 2024-10-12 18:59:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -304,7 +304,7 @@ DataManager.prototype._importFromDisk = async function () {
                             // Add language to obj
                             obj[e.replace(".json", "")] = thisFile;
                         } catch (err) {
-                            logger("error", `Error loading language '${e}'! ${err.stack}`, true);
+                            logger("error", `Failed to load language '${e}': ${err}! Ignoring it...`);
                         }
                     });
 
