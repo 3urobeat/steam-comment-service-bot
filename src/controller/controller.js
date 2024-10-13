@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-08-10 22:36:46
+ * Last Modified: 2024-10-13 11:54:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -289,7 +289,7 @@ Controller.prototype._start = async function() {
     } else {
 
         // Let the updater run and check for any available updates
-        const { updateFound } = await this.updater.run(forceUpdate);
+        const updateFound = await this.updater.run(forceUpdate);
 
         // Continue if no update was found. If an update was found and installed the updater will restart the bot itself.
         if (!updateFound) {
