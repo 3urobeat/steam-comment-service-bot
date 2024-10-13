@@ -8,6 +8,7 @@
 - [2.15.1](#2.15.1)
 - [2.15.2](#2.15.2)
 - [2.15.3](#2.15.3)
+- [2.15.4](#2.15.4)
   
 &nbsp;
 
@@ -235,3 +236,43 @@ Commit: [df92d84](https://github.com/3urobeat/steam-comment-service-bot/commit/d
 - Minor other changes
 
 Commit: [199aa8a](https://github.com/3urobeat/steam-comment-service-bot/commit/199aa8a)
+
+&nbsp;
+
+<a id="2.15.4"></a>
+
+## **2024-10-13, Version 2.15.4**
+**Additions:**
+- Log error stack (if available) when creating session fails
+- Unified all request (comment, vote, ...) iteration skip handlers into one
+- Unified all request (comment, vote, ...) error handlers into one
+  - This also brings features like aborting request on IP cooldown on all proxies to non comment request types
+- The `!failed` command now mentions the type of request in its response
+- Added progress log message in `dataProcessing` to accurately reflect if bot is hanging on converting owner and group vanities to IDs
+
+**Fixes:**
+- Fixed continuously running "Finished logging in..." animation
+- Fixed "Detected inactivity [...]" message not displaying non-populated accounts
+- Fixed "Detected inactivity [...]" message printing multiple times per minute
+- Fixed login softlock checker not handling inactivity when account is online but not populated
+- Fixed "[...] waiting for user object [...] to populate" message spamming output file
+- Fixed group issues in dataProcessing & log issues in ready when config prop is missing
+- Fixed handleMissingGameLicenses causing webSession to loop when config prop is missing
+- Fixed supplying steam-session login data without username/password, leading to cryptic error for users
+  - The session handler now clarifies which account is missing a password
+- Fixed controller interpreting Promise from Updater wrong, leading to a short lived double startup behavior after an update
+
+**Changes:**
+- Renamed `commentsIpCooldownPenalty` advancedconfig setting to `requestsIpCooldownPenalty`
+  - This cooldown now applies to all request types, this rename reflects that change
+  - Added compatibility feature to transfer customized setting
+- The `!failed` command now refers to index as interaction to use more intuitive terms
+- Revised a bunch of log messages to improve user experience
+  - Failing to load a language file does not log a confusing error stack anymore before it gets replaced by `dataIntegrity`
+- Softlock Handler log messages now include a timestamp
+- Refactored a few parts of the codebase
+- Moved expiring tokens job register call to ready event and run it instantly
+- Replaced deprecated `--production` flag in npm commands with `--omit=dev`
+- Updated dependencies
+- Minor other changes
+
