@@ -4,7 +4,7 @@
  * Created Date: 2021-07-10 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-04 22:04:33
+ * Last Modified: 2024-10-13 11:18:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -97,7 +97,7 @@ function attachParentListeners(callback) {
 
             npminteraction.reinstallAll(logger, (err, stdout) => { // eslint-disable-line
                 if (err) {
-                    logger("error", "I was unable to reinstall all modules. Please try running 'npm install --production' manually. Error: " + err);
+                    logger("error", "I was unable to reinstall all modules. Please try running 'npm install --omit=dev' manually. Error: " + err);
                     process.exit(1);
 
                 } else {

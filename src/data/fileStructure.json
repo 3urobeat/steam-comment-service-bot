@@ -288,7 +288,7 @@
         {
             "path": "src/controller/helpers/handleErrors.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/handleErrors.js",
-            "checksum": "5254f26c41c0824f399ab596cc691bc0"
+            "checksum": "eb85852ce2e4cf8630798592d6331efe"
         },
         {
             "path": "src/controller/helpers/handleSteamIdResolving.js",
@@ -308,7 +308,7 @@
         {
             "path": "src/controller/helpers/npminteraction.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/npminteraction.js",
-            "checksum": "b04f44e9074ee597e00c481f0eec75fb"
+            "checksum": "068d0415fbe337791d338c883b6fea7d"
         },
         {
             "path": "src/controller/login.js",
@@ -508,7 +508,7 @@
         {
             "path": "src/starter.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/starter.js",
-            "checksum": "54256633c339c5ba046c73f592fb582f"
+            "checksum": "eb0b3f53b24410f139aba36a61ba5b17"
         },
         {
             "path": "src/updater/compatibility/2060.js",
