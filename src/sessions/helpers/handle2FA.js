@@ -28,7 +28,7 @@ const SessionHandler = require("../sessionHandler.js");
  */
 SessionHandler.prototype._handle2FA = function(res) {
 
-    logger("debug", `[${this.bot.logPrefix}] getRefreshToken(): Received startWithCredentials() actionRequired response. Type: ${res.validActions[0].type} | Detail: ${res.validActions[0].detail}`);
+    logger("debug", `[${this.bot.logPrefix}] _handle2FA(): Received startWithCredentials() actionRequired response. Type: ${res.validActions[0].type} | Detail: ${res.validActions[0].detail}`);
 
     this.bot.loginData.waitingFor2FA = true; // Prevent handleLoginTimeout from triggring while waiting
 
