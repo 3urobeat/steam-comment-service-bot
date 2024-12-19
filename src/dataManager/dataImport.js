@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-19 13:07:50
+ * Last Modified: 2024-12-19 14:28:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -222,13 +222,41 @@ DataManager.prototype._importFromDisk = async function () {
 
                 if (proxies.length > 0 && proxies[0].startsWith("//Comment")) proxies = proxies.slice(1); // Remove comment from array
 
-                if (_this.advancedconfig.useLocalIP) proxies.unshift(null); // Add no proxy (local ip) if useLocalIP is true
+                // Split proxy format set in advancedconfig by supported delimiters to prepare for conversion below
+                const formatSplit = _this.advancedconfig.proxyFormat.replace("http://", "").split(/[:@]/);
+
+                // Add no proxy (local ip) if useLocalIP is true
+                if (_this.advancedconfig.useLocalIP) {
+                    proxies.unshift({ proxyIndex: 0, proxy: null, isOnline: true, lastOnlineCheck: 0 });
+                }
 
                 // Restructure array into array of objects
                 proxies.forEach((e, i) => {
-                    if (typeof e == "string" && !e.includes("://")) e = "http://" + e; // Precede proxy with http if user did not to prevent SteamCommunity requests from failing
+                    if (typeof e !== "string") return; // Ignore elements which are not a string anymore
 
-                    proxies[i] = { proxyIndex: i, proxy: e, isOnline: true, lastOnlineCheck: 0 };
+                    // Apply formatting from advancedconfig
+                    const proxySplit = e.replace("http://", "").split(/[:@]/); // Split the proxy string into its components
+
+                    /* if (formatSplit.length != proxySplit.length) {
+                        logger("error", `The proxy '${e}' at index ${i} does not seem to match the proxyFormat set in advancedconfig.json!`, true);
+                        proxies[i] = { proxyIndex: i, proxy: null, isOnline: false, lastOnlineCheck: Date.now() }; // TODO: I hope this does not cause issues later?
+                        return;
+                    } */
+
+                    const proxyUsername = proxySplit[formatSplit.indexOf("username")];
+                    const proxyPassword = proxySplit[formatSplit.indexOf("password")];
+                    const proxyIp       = proxySplit[formatSplit.indexOf("ip")];
+                    const proxyPort     = proxySplit[formatSplit.indexOf("port")];
+
+                    // Overwrite unformatted proxy string with expected object
+                    proxies[i] = {
+                        proxyIndex: i,
+                        proxy: `http://${proxyUsername}:${proxyPassword}@${proxyIp}:${proxyPort}`, // Reconstruct proxy string in the expected format
+                        isOnline: true,
+                        lastOnlineCheck: 0
+                    };
+
+                    logger("debug", `DataManager _importFromDisk(): Converted proxy '${e}' using format '${_this.advancedconfig.proxyFormat}' to '${proxies[i].proxy}'`);
                 });
 
                 // Check if no proxies were found (can only be the case when useLocalIP is false)

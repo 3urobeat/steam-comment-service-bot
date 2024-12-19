@@ -10,6 +10,7 @@
     "relogTimeout": 900000,
     "maxLogOnRetries": 1,
     "useLocalIP": true,
+    "proxyFormat": "http://username:password@ip:port",
     "enableRelogOnLogOnSessionReplaced": true,
     "dummy1": "------------------- General Settings: -------------------",
     "acceptFriendRequests": true,
