@@ -19,13 +19,12 @@ Adding proxies is quite simple:
 - Add as many HTTP proxies as you wish line per line  
 - Save the file and start the bot  
   
-Your proxies must be provided in this format: `http://user:pass@1.2.3.4:8081`  
-
-If you are using webshare.io then check out my quick and dirty [conversion script](https://github.com/3urobeat/webshare-proxies-file-converter).  
-It reformats the export to the format which this bot uses.
+By default the proxies must be provided in this format: `http://user:pass@1.2.3.4:8081`  
+If the proxies of your provider differ from the default structure, you can change the `proxyFormat` setting in `advancedconfig.json`.  
+For example, webshare.io provides proxies in the download using the format `http://ip:port:username:password`.
 
 The bot will automatically spread all your bot accounts over all available proxies.  
 By default the bot will also use your own IP. If you'd like to disable this and only use proxies, set `useLocalIP` in the `advancedconfig.json` to `false`.
 
 Please note that Steam might block some proxy providers.  
-I'm paying just $1/month for 33 proxies. I'd be comfortable using these up to 100 accounts.
+I'm paying just $1/month for 33 proxies. I'd be comfortable using these with up to 100 accounts.
