@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-12 18:59:48
+ * Last Modified: 2024-12-19 13:07:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -391,6 +391,9 @@ DataManager.prototype._importFromDisk = async function () {
     this.datafile        = await loadData();
     this.config          = await loadConfig();
     this.advancedconfig  = await loadAdvancedConfig();
+
+    this.controller._loggerOptionsUpdateAfterConfigLoad(this.advancedconfig); // Call optionsUpdateAfterConfigLoad() to set previously inaccessible options
+
     this.logininfo       = await loadLoginInfo();
     this.proxies         = await loadProxies();
     this.quotes          = await loadQuotes();
