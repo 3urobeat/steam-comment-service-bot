@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-21 12:07:57
+ * Last Modified: 2024-12-21 18:01:15
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -222,19 +222,29 @@ DataManager.prototype._importFromDisk = async function () {
 
                 if (proxies.length > 0 && proxies[0].startsWith("//Comment")) proxies = proxies.slice(1); // Remove comment from array
 
-                // Split proxy format set in advancedconfig by supported delimiters to prepare for conversion below. This will result in an array with an empty String if no custom setting was specified
-                let formatSplit = null;
+
+                // Split proxy format set in advancedconfig to prepare for conversion below
+                const formatSplitRegex = /(\$\{[^}]+\})|([^$\s]+)/g; // Splits String at in-string-variables "${var}" with arbitrary delimiter
+                let   formatSplit      = null;
 
                 if (_this.advancedconfig.proxyFormat != "") {
-                    formatSplit = _this.advancedconfig.proxyFormat.replace("http://", "").split(/[:@]/);
+                    formatSplit = _this.advancedconfig.proxyFormat.replace("http://", "").split(formatSplitRegex).filter((e) => e); // Split into components and filter empty/undefined elements
                 } else {
                     logger("debug", "DataManager _importFromDisk(): No proxyFormat provided in advancedconfig, skipping proxy format conversion...");
                 }
+
+                // Collect all delimiters found in the user provided proxyFormat
+                const proxySplitDelimiters = formatSplit.filter((e) => !e.startsWith("${"));
+
+                // Escape each delimiter if necessary and construct regex to split proxy below once with 1. delimiter, then once with 2. delimiter on the remaining string, and so on...
+                const proxySplitRegex      = new RegExp(proxySplitDelimiters.map((e) => `(${e.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&")})(.*)`).join(""), "g");
+
 
                 // Add no proxy (local ip) if useLocalIP is true
                 if (_this.advancedconfig.useLocalIP) {
                     proxies.unshift({ proxyIndex: 0, proxy: null, isOnline: true, lastOnlineCheck: 0 });
                 }
+
 
                 // Restructure array into array of objects
                 proxies.forEach((e, i) => {
@@ -243,7 +253,7 @@ DataManager.prototype._importFromDisk = async function () {
                     // Apply formatting from advancedconfig if a custom format was specified
                     if (formatSplit) { // Needs conversion
 
-                        const proxySplit = e.replace("http://", "").split(/[:@]/); // Split the proxy string into its components
+                        const proxySplit = e.replace("http://", "").split(proxySplitRegex).filter((e) => e); // Split into components and filter empty/undefined elements
 
                         /* if (formatSplit.length != proxySplit.length) {
                             logger("error", `The proxy '${e}' at index ${i} does not seem to match the proxyFormat set in advancedconfig.json!`, true);
