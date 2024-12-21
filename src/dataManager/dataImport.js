@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-21 18:01:15
+ * Last Modified: 2024-12-21 18:12:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -226,18 +226,19 @@ DataManager.prototype._importFromDisk = async function () {
                 // Split proxy format set in advancedconfig to prepare for conversion below
                 const formatSplitRegex = /(\$\{[^}]+\})|([^$\s]+)/g; // Splits String at in-string-variables "${var}" with arbitrary delimiter
                 let   formatSplit      = null;
+                let   proxySplitRegex;
 
                 if (_this.advancedconfig.proxyFormat != "") {
                     formatSplit = _this.advancedconfig.proxyFormat.replace("http://", "").split(formatSplitRegex).filter((e) => e); // Split into components and filter empty/undefined elements
+
+                    // Collect all delimiters found in the user provided proxyFormat
+                    const proxySplitDelimiters = formatSplit.filter((e) => !e.startsWith("${"));
+
+                    // Escape each delimiter if necessary and construct regex to split proxy below once with 1. delimiter, then once with 2. delimiter on the remaining string, and so on...
+                    proxySplitRegex = new RegExp(proxySplitDelimiters.map((e) => `(${e.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&")})(.*)`).join(""), "g");
                 } else {
                     logger("debug", "DataManager _importFromDisk(): No proxyFormat provided in advancedconfig, skipping proxy format conversion...");
                 }
-
-                // Collect all delimiters found in the user provided proxyFormat
-                const proxySplitDelimiters = formatSplit.filter((e) => !e.startsWith("${"));
-
-                // Escape each delimiter if necessary and construct regex to split proxy below once with 1. delimiter, then once with 2. delimiter on the remaining string, and so on...
-                const proxySplitRegex      = new RegExp(proxySplitDelimiters.map((e) => `(${e.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&")})(.*)`).join(""), "g");
 
 
                 // Add no proxy (local ip) if useLocalIP is true
