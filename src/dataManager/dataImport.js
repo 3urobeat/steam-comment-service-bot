@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-19 14:28:30
+ * Last Modified: 2024-12-21 11:18:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -243,10 +243,10 @@ DataManager.prototype._importFromDisk = async function () {
                         return;
                     } */
 
-                    const proxyUsername = proxySplit[formatSplit.indexOf("username")];
-                    const proxyPassword = proxySplit[formatSplit.indexOf("password")];
-                    const proxyIp       = proxySplit[formatSplit.indexOf("ip")];
-                    const proxyPort     = proxySplit[formatSplit.indexOf("port")];
+                    const proxyUsername = proxySplit[formatSplit.indexOf("${username}")];
+                    const proxyPassword = proxySplit[formatSplit.indexOf("${password}")];
+                    const proxyIp       = proxySplit[formatSplit.indexOf("${ip}")];
+                    const proxyPort     = proxySplit[formatSplit.indexOf("${port}")];
 
                     // Overwrite unformatted proxy string with expected object
                     proxies[i] = {
