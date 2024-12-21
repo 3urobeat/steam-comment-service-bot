@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-21 11:53:38
+ * Last Modified: 2024-12-21 12:07:57
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -259,7 +259,7 @@ DataManager.prototype._importFromDisk = async function () {
                         // Overwrite unformatted proxy string with expected object
                         proxies[i] = {
                             proxyIndex: i,
-                            proxy: `http://${proxyUsername}:${proxyPassword}@${proxyIp}:${proxyPort}`, // Reconstruct proxy string in the expected format
+                            proxy: (proxyUsername && proxyPassword) ? `http://${proxyUsername}:${proxyPassword}@${proxyIp}:${proxyPort}` : `http://${proxyIp}:${proxyPort}`, // Reconstruct proxy string in the expected format
                             isOnline: true,
                             lastOnlineCheck: 0
                         };
