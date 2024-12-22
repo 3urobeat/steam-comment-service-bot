@@ -219,6 +219,13 @@ declare namespace Bot {
 declare function checkForFamilyView(community: SteamCommunity): Promise<boolean>;
 
 /**
+ * Requests family view unlock key from user and attempts to unlock it
+ * @param community - The SteamCommunity instance of this bot account
+ * @returns Returns a Promise which resolves when done
+ */
+declare function unlockFamilyView(community: SteamCommunity): Promise<void>;
+
+/**
  * @property description - Description of what this command does
  * @property args - Array of objects containing information about each parameter supported by this command
  * @property ownersOnly - Set to true to only allow owners to use this command.

@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-22 16:16:40
+ * Last Modified: 2024-12-22 16:22:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -37,8 +37,13 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
 
         // Check if account has family view enabled
+        logger("info", `[${this.logPrefix}] Checking if this account has family view enabled...`, false, true, logger.animation("loading"));
+
         if (await handleFamilyView.checkForFamilyView(this.community)) {
-            logger("warn", "Family View is enabled! Please provide your unlock code to allow commenting!");
+            logger("warn", `[${this.logPrefix}] It appears that this account has family view enabled! Please provide your unlock code to allow commenting!\n`, true, false, null, true);
+            await handleFamilyView.unlockFamilyView(this.community);
+        } else {
+            logger("info", `[${this.logPrefix}] Account does not seem to have family view enabled. Proceeding...`, false, true);
         }
 
 
