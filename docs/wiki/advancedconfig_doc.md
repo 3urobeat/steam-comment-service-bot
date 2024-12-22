@@ -24,6 +24,7 @@ This is the full documentation to customize your `advancedconfig.json`.
 | useLocalIP | true or false | If the bot should use your real IP as well when using proxies. Default: true |
 | proxyFormat | String | Used to specify the format of proxies provided in proxies.txt should they differ from the default "http://${username}:${password}@${ip}:${port}" (username & password are optional). If an empty String is provided, the provided proxies are assumed to be in the default format and will be used as is. Default: "" |
 | enableRelogOnLogOnSessionReplaced | true or false | If the bot should relog accounts when they loose connection with the error message 'LogOnSessionReplaced'. This error is usually caused when someone logs into an account from somewhere else. Default: true |
+| skipFamilyViewUnlock | true or false | If the bot should skip checking every account for enabled family view and asking for an unlock code. **Setting to true may make accounts with enabled family view unusable!** Default: false |
 | &nbsp; | | |
 | acceptFriendRequests | true or false | If the bot should accept friend requests. Default: true |
 | forceFriendlistSpaceTime | Number in days | Amount of days a user hasn't requested something to get unfriended if only one friend slot is left. Set to 0 to disable. Default: 4 |
