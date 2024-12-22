@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-13 11:57:34
+ * Last Modified: 2024-12-22 16:16:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -18,6 +18,7 @@
 const SteamID = require("steamid");
 
 const Bot = require("../bot.js");
+const handleFamilyView = require("../helpers/handleFamilyView.js");
 
 
 /**
@@ -25,16 +26,24 @@ const Bot = require("../bot.js");
  */
 Bot.prototype._attachSteamWebSessionEvent = function() {
 
-    this.user.on("webSession", (sessionID, cookies) => { // Get websession (log in to chat)
+    this.user.on("webSession", async (sessionID, cookies) => { // Get websession (log in to chat)
 
         // Increase progress bar if one is active
         if (logger.getProgressBar()) logger.increaseProgressBar((100 / this.data.logininfo.length) / 3);
 
 
-        // Set cookies (otherwise the bot is unable to comment)
+        // Set cookies to allow sending authenticated requests (e.g. for commenting)
         this.community.setCookies(cookies);
 
-        this.controller._statusUpdateEvent(this, Bot.EStatus.ONLINE); // Set status of this account to online
+
+        // Check if account has family view enabled
+        if (await handleFamilyView.checkForFamilyView(this.community)) {
+            logger("warn", "Family View is enabled! Please provide your unlock code to allow commenting!");
+        }
+
+
+        // Update bot's status to progress login queue
+        this.controller._statusUpdateEvent(this, Bot.EStatus.ONLINE);
 
         this.loginData.relogTries = 0;       // Reset relogTries to indicate that this proxy is working should one of the next logOn retries fail
         this.loginData.pendingLogin = false; // Unlock login again

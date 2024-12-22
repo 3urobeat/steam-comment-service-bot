@@ -212,6 +212,13 @@ declare namespace Bot {
 }
 
 /**
+ * Attempts to check if this account has family view (feature to restrict features for child accounts) enabled
+ * @param community - The SteamCommunity instance of this bot account
+ * @returns Returns a Promise which resolves with a boolean, indicating whether family view is enabled or not. If request failed, `false` is returned.
+ */
+declare function checkForFamilyView(community: SteamCommunity): Promise<boolean>;
+
+/**
  * @property description - Description of what this command does
  * @property args - Array of objects containing information about each parameter supported by this command
  * @property ownersOnly - Set to true to only allow owners to use this command.
