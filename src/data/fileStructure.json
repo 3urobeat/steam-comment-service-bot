@@ -211,6 +211,11 @@
             "checksum": "34892d7e75ee3bc9964f746c03fa3ddb"
         },
         {
+            "path": "src/commands/helpers/calculateSuggestion.js",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/calculateSuggestion.js",
+            "checksum": "a0bec355ce4fe618f9d4893593f1364e"
+        },
+        {
             "path": "src/commands/helpers/getCommentArgs.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getCommentArgs.js",
             "checksum": "8a42a107359cdef43f7b4706509e4097"
@@ -618,7 +623,7 @@
         {
             "path": "types/types.d.ts",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/types/types.d.ts",
-            "checksum": "03b1dde56f0c46229f22a5ce4c6bc1ab"
+            "checksum": "b4041114f672066a614eb8544883a47b"
         }
     ]
 }

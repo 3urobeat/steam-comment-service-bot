@@ -338,6 +338,13 @@ declare function comment(commandHandler: CommandHandler, resInfo: CommandHandler
 declare function processVoteRequest(origin: "upvote" | "downvote" | "funnyvote", commandHandler: CommandHandler, args: any[], respondModule: (...params: any[]) => any, context: any, resInfo: CommandHandler.resInfo): void;
 
 /**
+ * Calculates command suggestions using the Jaro Winkler distance of `input` to all registered commands
+ * @param commandHandler - The commandHandler object
+ * @param input - String to get the nearest registered commands of
+ */
+declare function calculateCommandSuggestions(commandHandler: CommandHandler, input: string): any;
+
+/**
  * Helper function: Gets the visibility status of a profile and appends it to idType
  * @param commandHandler - The commandHandler object
  * @param steamID64 - The steamID64 of the profile to check
