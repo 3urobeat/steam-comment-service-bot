@@ -1451,6 +1451,10 @@ declare class PluginSystem {
      */
     jobManager: JobManager;
     /**
+     * Internal: Unloads on all plugins
+     */
+    _unloadAllPlugins(): void;
+    /**
      * Reloads all plugins and calls ready event after ~2.5 seconds.
      */
     reloadPlugins(): void;

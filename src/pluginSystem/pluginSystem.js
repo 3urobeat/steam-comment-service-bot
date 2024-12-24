@@ -4,7 +4,7 @@
  * Created Date: 2023-03-19 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-01 15:19:03
+ * Last Modified: 2024-12-24 16:18:42
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -73,15 +73,17 @@ module.exports = PluginSystem;
 
 
 /**
- * Reloads all plugins and calls ready event after ~2.5 seconds.
+ * Internal: Unloads on all plugins
  */
-PluginSystem.prototype.reloadPlugins = function () {
+PluginSystem.prototype._unloadAllPlugins = function() {
+    logger("info", "Unloading all plugins...", false, true);
+
     // Delete all plugin objects and their subfiles
     Object.keys(this.pluginList).forEach((e) => {
         if (this.pluginList[e].unload) {
             this.pluginList[e].unload();
         } else {
-            logger("warn", `PluginSystem reloadPlugins: Plugin ${e} does not have an unload function, reloading might not work properly!`);
+            logger("warn", `PluginSystem unloadAllPlugins: Plugin ${e} does not have an unload function, un-/reloading might not work properly!`);
         }
 
         // Delete the original path of the plugin, otherwise plugins linked via 'npm link' won't be reloaded correctly
@@ -97,6 +99,15 @@ PluginSystem.prototype.reloadPlugins = function () {
         // Delete entry from pluginList object
         delete this.pluginList[e];
     });
+};
+
+
+/**
+ * Reloads all plugins and calls ready event after ~2.5 seconds.
+ */
+PluginSystem.prototype.reloadPlugins = function () {
+    // Delete all plugin objects and their subfiles
+    this._unloadAllPlugins();
 
     this.pluginList = {};
     setTimeout(() => this._loadPlugins(), 500);
