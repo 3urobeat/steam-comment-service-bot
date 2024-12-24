@@ -4,7 +4,7 @@
  * Created Date: 2023-04-01 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-08 18:18:46
+ * Last Modified: 2024-12-24 13:19:47
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -18,6 +18,7 @@
 const fs = require("fs");
 
 const Controller = require("../controller/controller.js"); // eslint-disable-line
+const { calculateCommandSuggestions } = require("./helpers/calculateSuggestion.js");
 
 
 /**
@@ -190,16 +191,23 @@ CommandHandler.prototype.unregisterCommand = function(commandName) {
  * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
  * @param {object} context The context (`this.`) of the object calling this command. Will be passed to respondModule() as first parameter to make working in this function easier.
  * @param {resInfo} resInfo Object containing additional information
- * @returns {boolean} `true` if command was found, `false` if not
+ * @returns {{ success: boolean, reason: string, message: string }} Returns an object indicating whether the command was found and executed or not. If success is `false`, a reason and corresponding message will be provided which can be sent to the user.
  */
 CommandHandler.prototype.runCommand = async function(name, args, respondModule, context, resInfo) {
+    const result = { success: false, reason: null, message: null };
 
     // Iterate through all command objects in commands array and check if name is included in names array of each command.
     const thisCmd = this.commands.find(e => e.names.includes(name));
 
     if (!thisCmd) {
+        // Calculate a command suggestion from user input
         logger("warn", `CommandHandler runCommand(): Command '${name}' was not found!`);
-        return false;
+
+        result.success = false;
+        result.reason  = "notfound";
+        result.message = await this.data.getLang("commandnotfound", { "cmdprefix": resInfo.cmdprefix }, resInfo.userID);
+
+        return result;
     }
 
     if (!resInfo) {
@@ -222,10 +230,13 @@ CommandHandler.prototype.runCommand = async function(name, args, respondModule, 
     let owners = this.data.cachefile.ownerid;
     if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-    // If command is ownersOnly, check if user is included in owners array. If not, send error msg and return true to avoid caller sending a not found msg
+    // If command is ownersOnly, check if user is included in owners array
     if (thisCmd.ownersOnly && !owners.includes(resInfo.userID)) { // If no userID was provided this check will also trigger
-        respondModule(context, resInfo, await this.data.getLang("commandowneronly", null, resInfo.userID));
-        return true;
+        result.success = false;
+        result.reason  = "owneronly";
+        result.message = await this.data.getLang("commandowneronly", null, resInfo.userID);
+
+        return result;
     }
 
     // Add default prefix to resInfo object if none was provided
@@ -235,8 +246,9 @@ CommandHandler.prototype.runCommand = async function(name, args, respondModule, 
     thisCmd.run(this, args, respondModule, context, resInfo);
 
     // Return true if command was found
-    return true;
+    result.success = true;
 
+    return result;
 };
 
 

@@ -287,9 +287,9 @@ declare class CommandHandler {
      * @param respondModule - Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
      * @param context - The context (`this.`) of the object calling this command. Will be passed to respondModule() as first parameter to make working in this function easier.
      * @param resInfo - Object containing additional information
-     * @returns `true` if command was found, `false` if not
+     * @returns Returns an object indicating whether the command was found and executed or not. If success is `false`, a reason and corresponding message will be provided which can be sent to the user.
      */
-    runCommand(name: string, args: any[], respondModule: (...params: any[]) => any, context: any, resInfo: resInfo): boolean;
+    runCommand(name: string, args: any[], respondModule: (...params: any[]) => any, context: any, resInfo: resInfo): any;
     /**
      * Reloads all core commands. Does NOT reload commands registered at runtime. Please consider reloading the pluginSystem as well.
      */

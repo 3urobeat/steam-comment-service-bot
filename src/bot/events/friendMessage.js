@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 16:21:12
+ * Last Modified: 2024-12-24 13:20:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -59,8 +59,11 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
                     this.sendChatMessage(this, resInfo, this.controller.data.datafile.aboutstr);
                     break;
                 default:
-                    if (message.startsWith(resInfo.cmdprefix)) this.sendChatMessage(this, resInfo, `${await this.controller.data.getLang("childbotmessage", { "cmdprefix": resInfo.cmdprefix }, steamID64)}\nhttps://steamcommunity.com/profiles/${new SteamID(String(this.controller.main.user.steamID)).getSteamID64()}`);
-                        else logger("debug", `[${this.logPrefix}] Chat message is not a command, ignoring message.`);
+                    if (message.startsWith(resInfo.cmdprefix)) {
+                        this.sendChatMessage(this, resInfo, `${await this.controller.data.getLang("childbotmessage", { "cmdprefix": resInfo.cmdprefix }, steamID64)}\nhttps://steamcommunity.com/profiles/${new SteamID(String(this.controller.main.user.steamID)).getSteamID64()}`);
+                    } else {
+                        logger("debug", `[${this.logPrefix}] Chat message is not a command, ignoring message.`);
+                    }
             }
 
             return;
@@ -93,13 +96,15 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         }
 
 
-        // Ask command handler to figure out things for us when a message with prefix was sent
+        // Ask command handler to figure things out for us when a message with prefix was sent
         const cont = message.slice(1).split(" "); // Remove prefix and split
         const args = cont.slice(1);               // Remove cmd name to only get arguments
 
-        const success = await this.controller.commandHandler.runCommand(cont[0].toLowerCase(), args, this.sendChatMessage, this, resInfo); // Don't listen to your IDE, this *await is necessary*
+        const runCommandResult = await this.controller.commandHandler.runCommand(cont[0].toLowerCase(), args, this.sendChatMessage, this, resInfo); // Don't listen to your linter, this *await is necessary*
 
-        if (!success) this.sendChatMessage(this, resInfo, await this.controller.data.getLang("commandnotfound", { "cmdprefix": resInfo.cmdprefix }, steamID64)); // Send cmd not found msg if runCommand() returned false
+        if (!runCommandResult.success) {
+            this.sendChatMessage(this, resInfo, runCommandResult.message); // Send cmd not found msg if runCommand() returned false
+        }
     });
 
 };
