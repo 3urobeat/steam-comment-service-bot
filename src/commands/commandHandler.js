@@ -4,7 +4,7 @@
  * Created Date: 2023-04-01 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-24 13:19:47
+ * Last Modified: 2024-12-24 13:26:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -201,11 +201,13 @@ CommandHandler.prototype.runCommand = async function(name, args, respondModule, 
 
     if (!thisCmd) {
         // Calculate a command suggestion from user input
-        logger("warn", `CommandHandler runCommand(): Command '${name}' was not found!`);
+        const suggestions = calculateCommandSuggestions(this, name);
+
+        logger("warn", `CommandHandler runCommand(): Command '${name}' was not found! Suggesting user command '${suggestions[0].name}' with a similarity of ${suggestions[0].closeness}%`);
 
         result.success = false;
         result.reason  = "notfound";
-        result.message = await this.data.getLang("commandnotfound", { "cmdprefix": resInfo.cmdprefix }, resInfo.userID);
+        result.message = await this.data.getLang("commandnotfound", { "cmdprefix": resInfo.cmdprefix, "cmdsuggestion": suggestions[0].name }, resInfo.userID);
 
         return result;
     }

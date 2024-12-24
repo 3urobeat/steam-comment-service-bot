@@ -48,7 +48,7 @@
     "userspamblock": "由于垃圾信息，您已被封锁 90 秒。",
     "usernotfriend": "请在使用命令之前先添加我为好友！",
     "botnotready": "机器人尚未完全启动。在使用命令之前，请稍等片刻。",
-    "commandnotfound": "我不知道那个命令。输入 ${cmdprefix}help 以获取更多信息。",
+    "commandnotfound": "我不知道那个命令。 Did you mean ${cmdprefix}${cmdsuggestion}? 输入 ${cmdprefix}help 以获取更多信息。",
     "commandowneronly": "此命令仅供所有者使用。\n如果您是机器人所有者，请确保已将您的ownerid添加到config.json中。\n如果此请求来自插件，请确保传递userID和ownerIDs参数。",
     "nouserid": "调用命令时未提供userID！由于无法应用冷却或此命令的默认行为无法在没有userID的情况下使用，因此正在阻止该命令。这是开发人员必须解决的编码问题。",
     "noidparam": "请提供一个ID！此上下文中可能无法使用此命令的默认行为，例如当从Steam Chat外部或开发人员忘记传递userID以启用它时。",

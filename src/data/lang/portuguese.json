@@ -48,7 +48,7 @@
     "userspamblock": "Você foi bloqueado por 90 segundos por fazer spam.",
     "usernotfriend": "Por favor, me adicione antes de usar um comando!",
     "botnotready": "O bot ainda não está completamente iniciado. Por favor, aguarde um momento antes de usar um comando.",
-    "commandnotfound": "Eu não conheço esse comando. Digite ${cmdprefix}help para mais informações.",
+    "commandnotfound": "Eu não conheço esse comando. Did you mean ${cmdprefix}${cmdsuggestion}? Digite ${cmdprefix}help para mais informações.",
     "commandowneronly": "Este comando está disponível apenas para os proprietários.\nSe você é o proprietário do bot, certifique-se de adicionar seu ownerid ao config.json.\nSe esta solicitação vem de um plug-in, certifique-se de passar os parâmetros userID e ownerIDs.",
     "nouserid": "O comando foi chamado sem um userID! Bloqueando o comando, pois não consigo aplicar cooldowns ou o comportamento padrão deste comando não pode ser usado sem um. Isso é um problema de codificação que deve ser corrigido por um desenvolvedor.",
     "noidparam": "Por favor, forneça um ID!\nO comportamento padrão deste comando pode estar indisponível neste contexto, por exemplo, quando o comando foi usado fora do Steam Chat ou o desenvolvedor esqueceu de passar um userID para ativá-lo.",

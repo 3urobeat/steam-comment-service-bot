@@ -44,10 +44,10 @@
     "userforceunfriend": "由於使用者太多，你${forceFriendlistSpaceTime}天沒使用我\n如果還有需要繼續使用請添加。",
     "userunfriend": "你${unfriendtime}天沒使用我\n如果還有需要繼續使用請添加。",
 
-    "userspamblock": "已封鎖90秒\n原因 : 刷屏",
+    "userspamblock": "已封鎖90秒\n原因: 刷屏",
     "usernotfriend": "請在使用我之前添加好友。",
     "botnotready": "尚未完全啟動\n請等待。",
-    "commandnotfound": "資料庫尚未沒有這個功能\n請查看 ${cmdprefix}help",
+    "commandnotfound": "資料庫尚未沒有這個功能。Did you mean ${cmdprefix}${cmdsuggestion}? 請查看: ${cmdprefix}help",
     "commandowneronly": "指令只提供開發者使用\n如果你是開發者請添加你的Steam ID到config.json。",
     "nouserid": "在沒有用戶ID的情況下被調用\n阻止該指令\n這是一個編碼問題\n請聯繫開發者 : ${cmdprefix}owner",
     "noidparam": "請提供ID",
