@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-24 13:20:01
+ * Last Modified: 2024-12-24 13:26:17
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -76,7 +76,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         this.controller.data.lastCommentDB.findOne({ id: steamID64 }, (err, doc) => {
             if (err) logger("error", "Database error on friendMessage. This is weird. Error: " + err);
 
-            if (!doc) { // Add user to database if he/she is missing for some reason
+            if (!doc) { // Add user to database if they are missing for some reason
                 const lastcommentobj = {
                     id: new SteamID(String(steamID)).getSteamID64(),
                     time: Date.now() - (this.data.config.requestCooldown * 60000) // Subtract requestCooldown so that the user is able to use the command instantly

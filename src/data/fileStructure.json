@@ -103,7 +103,7 @@
         {
             "path": "src/bot/events/friendMessage.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/friendMessage.js",
-            "checksum": "ec9ab5fb871be7643448d81d7410a579"
+            "checksum": "e46e57c670c1896cd9758d597aca18fb"
         },
         {
             "path": "src/bot/events/loggedOn.js",
@@ -223,7 +223,7 @@
         {
             "path": "src/commands/helpers/getCommentBots.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getCommentBots.js",
-            "checksum": "64b43f3d326c560cf79764e96e69d043"
+            "checksum": "dc39b333df36b14653e2291cd282aca0"
         },
         {
             "path": "src/commands/helpers/getFavoriteBots.js",
@@ -408,7 +408,7 @@
         {
             "path": "src/dataManager/helpers/handleExpiringTokens.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/helpers/handleExpiringTokens.js",
-            "checksum": "3d5099c51271dc034fb833a42e83deb8"
+            "checksum": "a5a0baa7683f20b57bb1e0a982f26c69"
         },
         {
             "path": "src/dataManager/helpers/misc.js",
@@ -548,7 +548,7 @@
         {
             "path": "src/updater/compatibility/2104.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/compatibility/2104.js",
-            "checksum": "3957635683fa37196684da72881445fc"
+            "checksum": "5abea4eb224b0d7daeb87fe71128e53c"
         },
         {
             "path": "src/updater/compatibility/21100.js",

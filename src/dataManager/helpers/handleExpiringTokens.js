@@ -4,7 +4,7 @@
  * Created Date: 2022-10-14 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-1 12:34:46
+ * Last Modified: 2024-12-24 13:26:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -192,7 +192,7 @@ DataManager.prototype._askForGetNewToken = function(expiring) {
 
             } else { // If the obj is now empty then lets continue
 
-                // Ask user if he/she wants to refresh the tokens now
+                // Ask user if they want to refresh the tokens now
                 askForRelog();
             }
         }

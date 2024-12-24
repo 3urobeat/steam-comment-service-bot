@@ -4,7 +4,7 @@
  * Created Date: 2023-04-09 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-02 14:35:28
+ * Last Modified: 2024-12-24 13:26:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -43,7 +43,7 @@ module.exports.getAvailableBotsForCommenting = async function(commandHandler, nu
     // TODO
 
 
-    // Sort activeRequests by highest until value, decreasing, so that we can tell the user how long he/she has to wait if not enough accounts were found
+    // Sort activeRequests by highest until value, decreasing, so that we can tell the user how long they have to wait if not enough accounts were found
     const sortedvals = Object.keys(commandHandler.controller.activeRequests).sort((a, b) => {
         return commandHandler.controller.activeRequests[b].until - commandHandler.controller.activeRequests[a].until;
     });
