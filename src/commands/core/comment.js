@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-25 14:30:20
+ * Last Modified: 2024-12-26 17:54:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -140,7 +140,21 @@ module.exports.comment = {
                 respondModule(context, { charLimit: 500, cutChars: ["\n"], ...resInfo }, addStr); // Manually limit part length to 500 chars as addStr can cause many messages and only allow cuts at newlines to prevent links from getting embedded
                 return;
             } else {
-                logger("warn", "Found enough available accounts which the user would need to add first but 'acceptFriendRequests' is disabled in 'advancedconfig.json'! Sending 'not enough' message instead...");
+                // TODO: This could become obsolete (or need rethinking) when comment mode 2 is implemented
+                let commentcmdUsage;
+
+                if (owners.includes(requesterID)) {
+                    if (availableAccounts.length - accsToAdd.length > 1) commentcmdUsage = await commandHandler.data.getLang("commentcmdusageowner", { "cmdprefix": resInfo.cmdprefix }, requesterID);
+                        else commentcmdUsage = await commandHandler.data.getLang("commentcmdusageowner2", { "cmdprefix": resInfo.cmdprefix }, requesterID);
+                } else {
+                    if (availableAccounts.length - accsToAdd.length > 1) commentcmdUsage = await commandHandler.data.getLang("commentcmdusage", { "cmdprefix": resInfo.cmdprefix }, requesterID);
+                        else commentcmdUsage = await commandHandler.data.getLang("commentcmdusage2", { "cmdprefix": resInfo.cmdprefix }, requesterID);
+                }
+
+                logger("warn", "Found enough available accounts which the user would need to add first but 'acceptFriendRequests' is disabled in 'advancedconfig.json'! Sending 'request less' message instead...");
+
+                respond(await commandHandler.data.getLang("requesttoohigh", { "maxRequestAmount": availableAccounts.length - accsToAdd.length, "cmdusage": commentcmdUsage }, requesterID));
+                return;
             }
         }
 
