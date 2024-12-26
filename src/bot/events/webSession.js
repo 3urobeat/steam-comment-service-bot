@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-22 16:45:15
+ * Last Modified: 2024-12-26 19:07:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -18,7 +18,6 @@
 const SteamID = require("steamid");
 
 const Bot = require("../bot.js");
-const handleFamilyView = require("../helpers/handleFamilyView.js");
 
 
 /**
@@ -40,9 +39,9 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
         if (!this.data.advancedconfig.skipFamilyViewUnlock) {
             logger("info", `[${this.logPrefix}] Checking if this account has family view enabled...`, false, true, logger.animation("loading"));
 
-            if (await handleFamilyView.checkForFamilyView(this.community)) {
+            if (await this.checkForFamilyView(this.community)) {
                 logger("warn", `[${this.logPrefix}] It appears that this account has family view enabled! Please provide your unlock code to allow commenting!\n`, true, false, null, true);
-                await handleFamilyView.unlockFamilyView(this.community);
+                await this.unlockFamilyView(this.community);
             } else {
                 logger("info", `[${this.logPrefix}] Account does not seem to have family view enabled. Proceeding...`, false, true);
             }

@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-12 16:00:32
+ * Last Modified: 2024-12-26 19:06:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -77,7 +77,7 @@ const Bot = function(controller, index) {
         logOnTries:    0,
         relogTries:    0, // Amount of times logOns have been retried after relogTimeout. handleRelog() attempts to cycle proxies after enough failures
         pendingLogin:  false,
-        waitingFor2FA: false, // Set by sessionHandler's handle2FA helper to prevent handleLoginTimeout from triggering
+        waitingFor2FA: false, // Set by sessionHandler's handle2FA & bot's handleFamilyView helpers to prevent handleLoginTimeout from triggering
         proxyIndex:    proxyIndex,
         proxy:         controller.data.proxies[proxyIndex].proxy
     };
@@ -110,6 +110,7 @@ const Bot = function(controller, index) {
     require("./events/relationship.js");
     require("./events/webSession.js");
     require("./helpers/checkMsgBlock.js");
+    require("./helpers/handleFamilyView.js");
     require("./helpers/handleLoginTimeout.js");
     require("./helpers/handleMissingGameLicenses.js");
     require("./helpers/handleRelog.js");
@@ -313,6 +314,18 @@ Bot.prototype._attachSteamWebSessionEvent = function() {};
  * @returns {boolean} `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
  */
 Bot.prototype.checkMsgBlock = async function(steamID64, message) {}; // eslint-disable-line
+
+/**
+ * Attempts to check if this account has family view (feature to restrict features for child accounts) enabled
+ * @returns {Promise.<boolean>} Returns a Promise which resolves with a boolean, indicating whether family view is enabled or not. If request failed, `false` is returned.
+ */
+Bot.prototype.checkForFamilyView = function() {};
+
+/**
+ * Requests family view unlock key from user and attempts to unlock it
+ * @returns {Promise.<void>} Returns a Promise which resolves when done
+ */
+Bot.prototype.unlockFamilyView = function() {};
 
 /**
  * Handles aborting a login attempt should an account get stuck to prevent the bot from softlocking (see issue #139)

@@ -4,7 +4,7 @@
  * Created Date: 2024-12-20 23:51:51
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-22 16:38:10
+ * Last Modified: 2024-12-26 19:07:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
@@ -15,18 +15,17 @@
  */
 
 
-const { default: SteamCommunity } = require("steamcommunity"); // eslint-disable-line
+const Bot = require("../bot");
 
 
 /**
  * Attempts to check if this account has family view (feature to restrict features for child accounts) enabled
- * @param {SteamCommunity} community The SteamCommunity instance of this bot account
  * @returns {Promise.<boolean>} Returns a Promise which resolves with a boolean, indicating whether family view is enabled or not. If request failed, `false` is returned.
  */
-module.exports.checkForFamilyView = async function(community) {
+Bot.prototype.checkForFamilyView = function() {
     return new Promise((resolve) => {
 
-        community.httpRequestGet("https://steamcommunity.com/my?l=en", (err, res, body) => {
+        this.community.httpRequestGet("https://steamcommunity.com/my?l=en", (err, res, body) => {
             // Disabled checking for err because Steam returns 403 when the request was successful but family view is enabled...
             /* if (err) {
                 logger("warn", "Failed to check if this account has family view enabled! Proceeding and hoping family view is disabled. " + err);
@@ -46,10 +45,9 @@ module.exports.checkForFamilyView = async function(community) {
 
 /**
  * Requests family view unlock key from user and attempts to unlock it
- * @param {SteamCommunity} community The SteamCommunity instance of this bot account
  * @returns {Promise.<void>} Returns a Promise which resolves when done
  */
-module.exports.unlockFamilyView = async function(community) {
+Bot.prototype.unlockFamilyView = function() {
     return new Promise((resolve) => {
 
         // Read unlock code from user
@@ -63,13 +61,13 @@ module.exports.unlockFamilyView = async function(community) {
             // Post request to Steam using the provied code
             logger("info", "Sending family view unlock request to Steam...", false, true, logger.animation("loading"));
 
-            community.httpRequestPost({
+            this.community.httpRequestPost({
                 "uri": "https://store.steampowered.com/parental/ajaxunlock/",
                 "form": {
                     "pin": input,
-                    "sessionid": community.getSessionID()
+                    "sessionid": this.community.getSessionID()
                 }
-            }, function(err, response, body) {
+            }, (err, response, body) => {
                 if (err) {
                     logger("error", `Failed to unlock family view! ${err} - Attempting to use account anyway...`);
                 }
@@ -92,7 +90,7 @@ module.exports.unlockFamilyView = async function(community) {
 
                         if (steamparentalCookie) {
                             // logger("debug", "unlockFamilyView() cookie header: " + steamparentalCookie);
-                            community.setCookies([ steamparentalCookie.split(";")[0] ]);
+                            this.community.setCookies([ steamparentalCookie.split(";")[0] ]);
 
                             logger("info", `${logger.colors.fggreen}Successfully unlocked family view and set cookie!`, false, false, null, true);
                         } else {

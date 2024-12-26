@@ -89,6 +89,16 @@ declare class Bot {
      */
     checkMsgBlock(steamID64: any, message: string): boolean;
     /**
+     * Attempts to check if this account has family view (feature to restrict features for child accounts) enabled
+     * @returns Returns a Promise which resolves with a boolean, indicating whether family view is enabled or not. If request failed, `false` is returned.
+     */
+    checkForFamilyView(): Promise<boolean>;
+    /**
+     * Requests family view unlock key from user and attempts to unlock it
+     * @returns Returns a Promise which resolves when done
+     */
+    unlockFamilyView(): Promise<void>;
+    /**
      * Handles aborting a login attempt should an account get stuck to prevent the bot from softlocking (see issue #139)
      */
     handleLoginTimeout(): void;
@@ -165,6 +175,16 @@ declare class Bot {
      */
     checkMsgBlock(steamID64: any, message: string): boolean;
     /**
+     * Attempts to check if this account has family view (feature to restrict features for child accounts) enabled
+     * @returns Returns a Promise which resolves with a boolean, indicating whether family view is enabled or not. If request failed, `false` is returned.
+     */
+    checkForFamilyView(): Promise<boolean>;
+    /**
+     * Requests family view unlock key from user and attempts to unlock it
+     * @returns Returns a Promise which resolves when done
+     */
+    unlockFamilyView(): Promise<void>;
+    /**
      * Handles aborting a login attempt should an account get stuck to prevent the bot from softlocking (see issue #139)
      */
     handleLoginTimeout(): void;
@@ -210,20 +230,6 @@ declare namespace Bot {
     enum EStatus {
     }
 }
-
-/**
- * Attempts to check if this account has family view (feature to restrict features for child accounts) enabled
- * @param community - The SteamCommunity instance of this bot account
- * @returns Returns a Promise which resolves with a boolean, indicating whether family view is enabled or not. If request failed, `false` is returned.
- */
-declare function checkForFamilyView(community: SteamCommunity): Promise<boolean>;
-
-/**
- * Requests family view unlock key from user and attempts to unlock it
- * @param community - The SteamCommunity instance of this bot account
- * @returns Returns a Promise which resolves when done
- */
-declare function unlockFamilyView(community: SteamCommunity): Promise<void>;
 
 /**
  * @property description - Description of what this command does
