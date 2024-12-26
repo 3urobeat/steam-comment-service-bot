@@ -128,7 +128,7 @@
         {
             "path": "src/bot/helpers/handleFamilyView.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/helpers/handleFamilyView.js",
-            "checksum": "7f6a1605bb320a136e7fb6260461348e"
+            "checksum": "d1b0130c9df45bd34b4f6df207945489"
         },
         {
             "path": "src/bot/helpers/handleLoginTimeout.js",

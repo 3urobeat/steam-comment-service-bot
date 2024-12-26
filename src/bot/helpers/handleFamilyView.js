@@ -4,7 +4,7 @@
  * Created Date: 2024-12-20 23:51:51
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-26 19:07:50
+ * Last Modified: 2024-12-26 19:15:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
@@ -50,8 +50,14 @@ Bot.prototype.checkForFamilyView = function() {
 Bot.prototype.unlockFamilyView = function() {
     return new Promise((resolve) => {
 
+        // Block handleLoginTimeout check from triggering while waiting for user input
+        this.loginData.waitingFor2FA = true;
+
         // Read unlock code from user
         logger.readInput("Please submit your family view unlock code: ", 90000, (input) => {
+            // Re-enable login timeout check as the very first action to prevent any possible softlock
+            this.loginData.waitingFor2FA = false;
+
             if (!input) {
                 logger("warn", "Input is empty, skipping trying to unlock family view and attempting to use account anyway...", true);
                 resolve();
