@@ -4,7 +4,7 @@
  * Created Date: 2023-04-09 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-24 13:26:06
+ * Last Modified: 2024-12-27 19:16:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
@@ -36,8 +36,11 @@ module.exports.getAvailableBotsForCommenting = async function(commandHandler, nu
     let accountsNeeded;
 
     // Method 1: Use as many accounts as possible to maximize the spread (Default)
-    if (numberOfComments <= commandHandler.controller.getBots().length) accountsNeeded = numberOfComments;
-        else accountsNeeded = commandHandler.controller.getBots().length; // Cap accountsNeeded at amount of accounts because if numberOfComments is greater we will start at account 1 again
+    if (numberOfComments <= commandHandler.controller.getBots().length) {
+        accountsNeeded = numberOfComments;
+    } else {
+        accountsNeeded = commandHandler.controller.getBots().length; // Cap accountsNeeded at amount of accounts because if numberOfComments is greater we will start at account 1 again
+    }
 
     // Method 2: Use as few accounts as possible to maximize the amount of parallel requests (Not implemented yet)
     // TODO
@@ -48,13 +51,15 @@ module.exports.getAvailableBotsForCommenting = async function(commandHandler, nu
         return commandHandler.controller.activeRequests[b].until - commandHandler.controller.activeRequests[a].until;
     });
 
-    if (sortedvals.length > 0) commandHandler.controller.activeRequests = Object.assign(...sortedvals.map(k => ( { [k]: commandHandler.controller.activeRequests[k] } ) )); // Map sortedvals back to object if array is not empty - credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
+    if (sortedvals.length > 0) {
+        commandHandler.controller.activeRequests = Object.assign(...sortedvals.map(k => ( { [k]: commandHandler.controller.activeRequests[k] } ) )); // Map sortedvals back to object if array is not empty - credit: https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
+    }
 
 
-    let whenAvailable; // We will save the until value of the account that the user has to wait for here
-    let whenAvailableStr;
+    let   whenAvailable; // We will save the until value of the account that the user has to wait for here
+    let   whenAvailableStr;
     const allAccsOnline = commandHandler.controller.getBots(null, true);
-    let allAccounts = [ ... Object.keys(allAccsOnline) ]; // Clone keys array (bot usernames) of bots object
+    let   allAccounts   = [ ... Object.keys(allAccsOnline) ]; // Clone keys array (bot usernames) of bots object
 
 
     // Remove limited accounts from allAccounts array if desired
@@ -62,7 +67,9 @@ module.exports.getAvailableBotsForCommenting = async function(commandHandler, nu
         const previousLength = allAccounts.length;
         allAccounts = allAccounts.filter(e => allAccsOnline[e].user.limitations && !allAccsOnline[e].user.limitations.limited);
 
-        if (previousLength - allAccounts.length > 0) logger("info", `${previousLength - allAccounts.length} of ${previousLength} bot accounts were removed from available accounts as they are limited and can't be used for this request!`);
+        if (previousLength - allAccounts.length > 0) {
+            logger("info", `${previousLength - allAccounts.length} of ${previousLength} bot accounts were removed from available accounts as they are limited and can't be used for this request!`);
+        }
     }
 
 
@@ -89,7 +96,9 @@ module.exports.getAvailableBotsForCommenting = async function(commandHandler, nu
 
 
     // Randomize order if enabled in config
-    if (commandHandler.data.config.randomizeAccounts) allAccounts.sort(() => Math.random() - 0.5);
+    if (commandHandler.data.config.randomizeAccounts) {
+        allAccounts.sort(() => Math.random() - 0.5);
+    }
 
 
     // Prioritize accounts the user is friend with if type is profile
@@ -124,7 +133,9 @@ module.exports.getAvailableBotsForCommenting = async function(commandHandler, nu
             const previousLength = allAccounts.length;
 
             res.forEach((e) => {
-                if (!e.accountCanComment) allAccounts.splice(allAccounts.indexOf(e.accountName), 1); // Remove that accountindex from the allAccounts array
+                if (!e.accountCanComment) {
+                    allAccounts.splice(allAccounts.indexOf(e.accountName), 1); // Remove that accountindex from the allAccounts array
+                }
             });
 
             logger("info", `${previousLength - allAccounts.length} of ${previousLength} bot accounts were removed from available accounts as they are not allowed to comment on this discussion!`);
@@ -133,7 +144,9 @@ module.exports.getAvailableBotsForCommenting = async function(commandHandler, nu
 
 
     // Cut result to only include needed accounts
-    if (allAccounts.length > accountsNeeded) allAccounts = allAccounts.slice(0, accountsNeeded);
+    if (allAccounts.length > accountsNeeded) {
+        allAccounts = allAccounts.slice(0, accountsNeeded);
+    }
 
 
     // Filter all accounts needed for this request which must be added first
@@ -147,8 +160,11 @@ module.exports.getAvailableBotsForCommenting = async function(commandHandler, nu
 
 
     // Log debug values
-    if (allAccounts.length < accountsNeeded) logger("debug", `CommandHandler getAvailableBotsForCommenting(): Calculated ${accountsNeeded} accs needed for ${numberOfComments} comments but only ${allAccounts.length} are available. If accs will become available, the user needs to wait: ${whenAvailableStr || "/"}`);
-        else logger("debug", `CommandHandler getAvailableBotsForCommenting(): Calculated ${accountsNeeded} accs needed for ${numberOfComments} comments and ${allAccounts.length} are available: ${allAccounts}`);
+    if (allAccounts.length < accountsNeeded) {
+        logger("debug", `CommandHandler getAvailableBotsForCommenting(): Calculated ${accountsNeeded} accs needed for ${numberOfComments} comments but only ${allAccounts.length} are available. If accs will become available, the user needs to wait: ${whenAvailableStr || "/"}`);
+    } else {
+        logger("debug", `CommandHandler getAvailableBotsForCommenting(): Calculated ${accountsNeeded} accs needed for ${numberOfComments} comments and ${allAccounts.length} are available: ${allAccounts}`);
+    }
 
     // Return values
     return {

@@ -223,7 +223,7 @@
         {
             "path": "src/commands/helpers/getCommentBots.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getCommentBots.js",
-            "checksum": "dc39b333df36b14653e2291cd282aca0"
+            "checksum": "2dcfb4af62e8c2281b350f0819ed6501"
         },
         {
             "path": "src/commands/helpers/getFavoriteBots.js",
