@@ -4,7 +4,7 @@
  * Created Date: 2024-12-20 23:51:51
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-27 12:46:29
+ * Last Modified: 2024-12-27 14:06:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
@@ -149,8 +149,8 @@ Bot.prototype._getFamilyViewCodeFromStorage = function(callback) {
  * @param {string} familyViewCode The family view code to store
  */
 Bot.prototype._saveFamilyViewCodeToStorage = function(familyViewCode) {
-    logger("debug", `[${this.bot.logPrefix}] _saveFamilyViewCodeToStorage(): Updating tokens.db entry for accountName '${this.logOnOptions.accountName}'...`);
+    logger("debug", `[${this.logPrefix}] _saveFamilyViewCodeToStorage(): Updating tokens.db entry for accountName '${this.accountName}'...`);
 
     // Update db entry for this account. Upsert is enabled so a new doc will be inserted if none exists yet
-    this.data.tokensdb.updateAsync({ accountName: this.accountName }, { $set: { familyViewCode: familyViewCode } }, { upsert: true });
+    this.data.tokensDB.updateAsync({ accountName: this.accountName }, { $set: { familyViewCode: familyViewCode } }, { upsert: true });
 };
