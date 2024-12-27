@@ -4,7 +4,7 @@
  * Created Date: 2024-12-20 23:51:51
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-26 19:15:04
+ * Last Modified: 2024-12-27 12:46:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
@@ -115,4 +115,42 @@ Bot.prototype.unlockFamilyView = function() {
         });
 
     });
+};
+
+
+/**
+ * Internal - Attempts to get a cached family view code for this account from tokens.db
+ * @param {function(string|null): void} callback Called with `familyViewCode` (String) on success or `null` on failure
+ */
+Bot.prototype._getFamilyViewCodeFromStorage = function(callback) {
+
+    this.data.tokensDB.findOne({ accountName: this.accountName }, (err, doc) => {
+        if (err) {
+            logger("warn", `Database error! Failed to check for cached family view code for accountName '${this.accountName}'!\nError: ${err}`, true);
+            return callback(null);
+        }
+
+        if (doc && doc.familyViewCode) {
+            logger("info", `[${this.logPrefix}] Found cached family view code in tokens.db. Attempting to auto-unlock family view by using it...`, false, true, logger.animation("loading"));
+
+            callback(doc.familyViewCode);
+        } else {
+            logger("info", `[${this.logPrefix}] No cached family view code found in tokens.db. Cannot attempt to auto-unlock family view...`, false, true, logger.animation("loading"));
+
+            callback(null);
+        }
+    });
+
+};
+
+
+/**
+ * Internal - Saves a new family view code for this account to tokens.db
+ * @param {string} familyViewCode The family view code to store
+ */
+Bot.prototype._saveFamilyViewCodeToStorage = function(familyViewCode) {
+    logger("debug", `[${this.bot.logPrefix}] _saveFamilyViewCodeToStorage(): Updating tokens.db entry for accountName '${this.logOnOptions.accountName}'...`);
+
+    // Update db entry for this account. Upsert is enabled so a new doc will be inserted if none exists yet
+    this.data.tokensdb.updateAsync({ accountName: this.accountName }, { $set: { familyViewCode: familyViewCode } }, { upsert: true });
 };

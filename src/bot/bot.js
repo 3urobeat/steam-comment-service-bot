@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-26 19:06:56
+ * Last Modified: 2024-12-27 11:21:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -326,6 +326,18 @@ Bot.prototype.checkForFamilyView = function() {};
  * @returns {Promise.<void>} Returns a Promise which resolves when done
  */
 Bot.prototype.unlockFamilyView = function() {};
+
+/**
+ * Internal - Attempts to get a cached family view code for this account from tokens.db
+ * @param {function(string|null): void} callback Called with `familyViewCode` (String) on success or `null` on failure
+ */
+Bot.prototype._getFamilyViewCodeFromStorage = function(callback) {}; // eslint-disable-line
+
+/**
+ * Internal - Saves a new family view code for this account to tokens.db
+ * @param {string} familyViewCode The family view code to store
+ */
+Bot.prototype._saveFamilyViewCodeToStorage = function(familyViewCode) {}; // eslint-disable-line
 
 /**
  * Handles aborting a login attempt should an account get stuck to prevent the bot from softlocking (see issue #139)

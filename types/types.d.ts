@@ -99,6 +99,15 @@ declare class Bot {
      */
     unlockFamilyView(): Promise<void>;
     /**
+     * Internal - Attempts to get a cached family view code for this account from tokens.db
+     */
+    _getFamilyViewCodeFromStorage(callback: any): void;
+    /**
+     * Internal - Saves a new family view code for this account to tokens.db
+     * @param familyViewCode - The family view code to store
+     */
+    _saveFamilyViewCodeToStorage(familyViewCode: string): void;
+    /**
      * Handles aborting a login attempt should an account get stuck to prevent the bot from softlocking (see issue #139)
      */
     handleLoginTimeout(): void;
@@ -184,6 +193,15 @@ declare class Bot {
      * @returns Returns a Promise which resolves when done
      */
     unlockFamilyView(): Promise<void>;
+    /**
+     * Internal - Attempts to get a cached family view code for this account from tokens.db
+     */
+    _getFamilyViewCodeFromStorage(callback: any): void;
+    /**
+     * Internal - Saves a new family view code for this account to tokens.db
+     * @param familyViewCode - The family view code to store
+     */
+    _saveFamilyViewCodeToStorage(familyViewCode: string): void;
     /**
      * Handles aborting a login attempt should an account get stuck to prevent the bot from softlocking (see issue #139)
      */
