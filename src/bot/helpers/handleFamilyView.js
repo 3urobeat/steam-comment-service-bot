@@ -4,7 +4,7 @@
  * Created Date: 2024-12-20 23:51:51
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-27 14:06:02
+ * Last Modified: 2024-12-27 14:07:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
@@ -50,70 +50,107 @@ Bot.prototype.checkForFamilyView = function() {
 Bot.prototype.unlockFamilyView = function() {
     return new Promise((resolve) => {
 
-        // Block handleLoginTimeout check from triggering while waiting for user input
-        this.loginData.waitingFor2FA = true;
+        // Helper function - Reads user input for family view code
+        const readUserInput = (callback) => { // ES6 function to not create a new context
+            // Block handleLoginTimeout check from triggering while waiting for user input
+            this.loginData.waitingFor2FA = true;
 
-        // Read unlock code from user
-        logger.readInput("Please submit your family view unlock code: ", 90000, (input) => {
-            // Re-enable login timeout check as the very first action to prevent any possible softlock
-            this.loginData.waitingFor2FA = false;
+            // Read unlock code from user
+            logger("", "", true);
+            logger.readInput(`[${this.accountName}] Please submit your family view unlock code to use this account for requests: `, 90000, (input) => {
+                // Re-enable login timeout check as the very first action to prevent any possible softlock
+                this.loginData.waitingFor2FA = false;
 
-            if (!input) {
-                logger("warn", "Input is empty, skipping trying to unlock family view and attempting to use account anyway...", true);
-                resolve();
-                return;
-            }
-
-            // Post request to Steam using the provied code
-            logger("info", "Sending family view unlock request to Steam...", false, true, logger.animation("loading"));
-
-            this.community.httpRequestPost({
-                "uri": "https://store.steampowered.com/parental/ajaxunlock/",
-                "form": {
-                    "pin": input,
-                    "sessionid": this.community.getSessionID()
-                }
-            }, (err, response, body) => {
-                if (err) {
-                    logger("error", `Failed to unlock family view! ${err} - Attempting to use account anyway...`);
+                if (!input) {
+                    logger("warn", `[${this.logPrefix}] Input is empty, skipping trying to unlock family view and attempting to use account anyway...`, true);
                 }
 
-                if (body) {
-                    let parsed;
-                    // logger("debug", "unlockFamilyView() body: " + body);
+                callback(input);
+            });
+        };
 
-                    try {
-                        parsed = JSON.parse(body);
-                    } catch (err) {
-                        logger("error", `Failed to parse family view response body! ${err} - Can't determine if unlock was successful, attempting to use account anyway...`);
-                        resolve();
-                        return;
+        // Helper function - Posts request to Steam using the provied code. Returns promise which resolves with boolean indicating whether request was known successful or not
+        const submitToSteam = (input, callback) => {    // ES6 function to not create a new context
+            return new Promise((resolveSubmit) => {     // Sorry for the nested Promise but I promise (heh) this is a sensible solution
+                logger("info", `[${this.logPrefix}] Sending family view unlock request to Steam...`, false, true, logger.animation("loading"));
+
+                this.community.httpRequestPost({
+                    "uri": "https://store.steampowered.com/parental/ajaxunlock/",
+                    "form": {
+                        "pin": input,
+                        "sessionid": this.community.getSessionID()
+                    }
+                }, (err, response, body) => {
+                    if (err) {
+                        logger("error", `[${this.logPrefix}] Failed to unlock family view! ${err}`);
+                        return resolveSubmit(false);
                     }
 
-                    // Get steamparental cookie and set it when request was successful
-                    if (parsed.success) {
-                        const steamparentalCookie = response.rawHeaders.find((e) => e.startsWith("steamparental="));
+                    if (body) {
+                        let parsed;
+                        // logger("debug", "unlockFamilyView() body: " + body);
 
-                        if (steamparentalCookie) {
-                            // logger("debug", "unlockFamilyView() cookie header: " + steamparentalCookie);
-                            this.community.setCookies([ steamparentalCookie.split(";")[0] ]);
+                        try {
+                            parsed = JSON.parse(body);
+                        } catch (err) {
+                            logger("error", `[${this.logPrefix}] Failed to parse family view response body! ${err} - Can't determine if unlock was successful.`);
+                            return resolveSubmit(false);
+                        }
 
-                            logger("info", `${logger.colors.fggreen}Successfully unlocked family view and set cookie!`, false, false, null, true);
+                        // Get steamparental cookie and set it when request was successful
+                        if (parsed.success) {
+                            const steamparentalCookie = response.rawHeaders.find((e) => e.startsWith("steamparental="));
+
+                            if (steamparentalCookie) {
+                                // logger("debug", "unlockFamilyView() cookie header: " + steamparentalCookie);
+                                this.community.setCookies([ steamparentalCookie.split(";")[0] ]);
+
+                                logger("info", `[${this.logPrefix}] ${logger.colors.fggreen}Successfully unlocked family view and set cookie!`, false, false, null, true);
+                                return resolveSubmit(true);
+                            } else {
+                                logger("error", `[${this.logPrefix}] Family view unlock request was declared as successful but Steam provided no steamparental cookie!`);
+                            }
                         } else {
-                            logger("error", "Family view unlock request was declared as successful but Steam provided no steamparental cookie! Attempting to use account anyway...");
+                            logger("error", `[${this.logPrefix}] Failed to unlock family view! Error: "${parsed.error_message}" (EResult ${parsed.eresult})`);
                         }
                     } else {
-                        logger("error", `Failed to unlock family view! Error: "${parsed.error_message}" (EResult ${parsed.eresult}) - Attempting to use account anyway...`);
+                        logger("warn", `[${this.logPrefix}] Failed to determine if family view unlock was successful because Steam returned an empty body.`, false, false, null, true);
                     }
-                } else {
-                    logger("warn", "Failed to determine if family view unlock was successful because Steam returned an empty body. Attempting to use account anyway...", false, false, null, true);
-                }
 
+                    resolveSubmit(false);
+                }, "steamcommunity");
+            });
+        };
+
+
+        // Check if we have a family view code cached and attempt to auto-unlock
+        this._getFamilyViewCodeFromStorage(async (familyViewCode) => {
+            let autoUnlockSuccessful = false;
+
+            // Attempt to auto unlock if a cached code was found
+            if (familyViewCode) {
+                autoUnlockSuccessful = await submitToSteam(familyViewCode);
+            }
+
+            // If no code was found or the cached code didn't successfully unlock family view, read user input and attempt to unlock again
+            if (!autoUnlockSuccessful) {
+                readUserInput(async (input) => {
+                    if (!input) {
+                        return resolve(); // Abort
+                    }
+
+                    if (await submitToSteam(input)) {
+                        this._saveFamilyViewCodeToStorage(input);
+                    } else {
+                        logger("info", `[${this.logPrefix}] Attempting to use account with locked family view anyway...`, false, false, null, true);
+                    }
+
+                    resolve();
+                });
+            } else {
                 resolve();
-            }, "steamcommunity");
-
+            }
         });
-
     });
 };
 
