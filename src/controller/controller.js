@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-19 13:07:50
+ * Last Modified: 2024-12-28 14:00:17
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -217,6 +217,10 @@ Controller.prototype._start = async function() {
     if (!await checkAndGetFile("./src/dataManager/dataManager.js", logger, false, false)) return;
     const DataManager = require("../dataManager/dataManager.js");
 
+    /**
+     * The dataManager object
+     * @type {DataManager}
+     */
     this.data = new DataManager(this); // All functions provided by the DataManager, as well as all imported file data will be accessible here
 
     await this.data._loadDataManagerFiles();
@@ -309,13 +313,6 @@ Controller.prototype._preLogin = async function() {
      * @type {JobManager}
      */
     this.jobManager = new JobManager(this);
-
-
-    /**
-     * The dataManager object
-     * @type {DataManager}
-     */
-    this.data;
 
 
     // Update Updater IntelliSense without modifying what _start() has already set. Integrity has already been checked

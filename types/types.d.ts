@@ -514,6 +514,10 @@ declare class Controller {
      */
     _start(): void;
     /**
+     * The dataManager object
+     */
+    data: DataManager;
+    /**
      * Internal: Loads all parts of the application to get IntelliSense support after the updater ran and calls login() when done.
      */
     _preLogin(): void;
@@ -521,10 +525,6 @@ declare class Controller {
      * The JobManager handles the periodic execution of functions which you can register at runtime
      */
     jobManager: JobManager;
-    /**
-     * The dataManager object
-     */
-    data: DataManager;
     /**
      * The updater object
      */
