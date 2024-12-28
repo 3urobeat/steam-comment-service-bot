@@ -4,7 +4,7 @@
  * Created Date: 2024-12-28 12:56:44
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-28 15:09:28
+ * Last Modified: 2024-12-28 15:26:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
@@ -57,6 +57,15 @@ Controller.prototype.removeAccount = function(accountName) {
     // Remove affected entry from logininfo
     this.data.logininfo = this.data.logininfo.filter((e) => e.accountName != accountName); // TODO: Is a gap in the array (= missing index) a problem?
 
+    // Write changes to accounts.txt
+    this.data.writeLogininfoToDisk();
+
+    // Abort if this account does not exist
+    if (!this.bots[accountName]) {
+        logger("warn", `No bot instance exists for account '${accountName}'. The accountName has been removed from accounts.txt if an entry existed for it.`);
+        return;
+    }
+
     // Log out this account if online and push to skippedaccounts to avoid bot attempting relog
     this.info.skippedaccounts.push(accountName);
 
@@ -66,8 +75,5 @@ Controller.prototype.removeAccount = function(accountName) {
 
     // Delete bot instance
     delete this.bots[accountName];
-
-    // Write changes to accounts.txt
-    this.data.writeLogininfoToDisk();
 
 };
