@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-28 14:27:00
+ * Last Modified: 2024-12-28 17:25:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -443,6 +443,18 @@ Controller.prototype.addAccount = function(accountName, password, sharedSecret =
  * @param {string} accountName Username of the account to remove
  */
 Controller.prototype.removeAccount = function(accountName) {}; // eslint-disable-line
+
+/**
+ * Filters the active set of bot accounts by a given criteria
+ * @param {function(Bot): boolean} predicate Function that returns true if the account should be included in the result
+ */
+Controller.prototype.filterAccounts = function(predicate) {}; // eslint-disable-line
+
+/**
+ * Set of premade functions for filterAccounts()
+ * @type {{ statusOffline: Function, statusOnline: Function, statusError: Function, statusSkipped: Function, limited: Function, unlimited: Function }}
+ */
+Controller.prototype.filters = {};
 
 /**
  * Runs internal ready event code and emits ready event for plugins

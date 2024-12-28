@@ -4,7 +4,7 @@
  * Created Date: 2024-12-28 12:56:44
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-28 15:26:28
+ * Last Modified: 2024-12-28 17:25:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
@@ -16,6 +16,7 @@
 
 
 const Controller  = require("./controller.js");
+const Bot         = require("../bot/bot.js");     // eslint-disable-line
 const EStatus     = require("../bot/EStatus.js");
 
 
@@ -76,4 +77,26 @@ Controller.prototype.removeAccount = function(accountName) {
     // Delete bot instance
     delete this.bots[accountName];
 
+};
+
+
+/**
+ * Filters the active set of bot accounts by a given criteria
+ * @param {function(Bot): boolean} predicate Function that returns true if the account should be included in the result
+ */
+Controller.prototype.filterAccounts = function(predicate) { // TODO: Adapt getBots() function to use this function
+    return this.getBots("*").filter(predicate);
+};
+
+/**
+ * Set of premade functions for filterAccounts()
+ * @type {{ statusOnline: Function, limited: Function }}
+ */
+Controller.prototype.filters = {
+    statusOffline:  (bot) => bot.status == EStatus.OFFLINE,
+    statusOnline:   (bot) => bot.status == EStatus.ONLINE,
+    statusError:    (bot) => bot.status == EStatus.ERROR,
+    statusSkipped:  (bot) => bot.status == EStatus.SKIPPED,
+    limited:        (bot) => !bot.user.limitations || bot.user.limitations.limited == true,
+    unlimited:      (bot) => bot.user.limitations  && bot.user.limitations.limited == false
 };

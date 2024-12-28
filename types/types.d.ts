@@ -583,6 +583,15 @@ declare class Controller {
      */
     removeAccount(accountName: string): void;
     /**
+     * Filters the active set of bot accounts by a given criteria
+     * @param predicate - Function that returns true if the account should be included in the result
+     */
+    filterAccounts(predicate: (...params: any[]) => any): void;
+    /**
+     * Set of premade functions for filterAccounts()
+     */
+    filters: any;
+    /**
      * Runs internal ready event code and emits ready event for plugins
      */
     _readyEvent(): void;
@@ -772,6 +781,15 @@ declare class Controller {
      * @param accountName - Username of the account to remove
      */
     removeAccount(accountName: string): void;
+    /**
+     * Filters the active set of bot accounts by a given criteria
+     * @param predicate - Function that returns true if the account should be included in the result
+     */
+    filterAccounts(predicate: (...params: any[]) => any): void;
+    /**
+     * Set of premade functions for filterAccounts()
+     */
+    filters: any;
 }
 
 /**
