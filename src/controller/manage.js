@@ -4,7 +4,7 @@
  * Created Date: 2024-12-28 12:56:44
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-28 14:24:53
+ * Last Modified: 2024-12-28 15:03:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
@@ -34,6 +34,9 @@ Controller.prototype.addAccount = function(accountName, password, sharedSecret =
         sharedSecret: sharedSecret,
         steamGuardCode: null
     });
+
+    // Make sure this account is not included in skippedaccounts
+    this.info.skippedaccounts = this.info.skippedaccounts.filter((e) => e != accountName);
 
     // Call login handler to let it create a new Bot instance, register it and log the account in
     this.login();   // TODO: It sucks that we don't get a response here whether the account credentials are correct or not
