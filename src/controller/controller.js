@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-28 14:00:17
+ * Last Modified: 2024-12-28 14:25:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -354,6 +354,7 @@ Controller.prototype._preLogin = async function() {
     require("./helpers/getBots.js");
     require("./helpers/handleSteamIdResolving.js");
     require("./login.js");
+    require("./manage.js");
 
 
     // Load commandHandler
@@ -428,6 +429,14 @@ Controller.prototype._processFastLoginQueue = function(allAccounts) {}; // eslin
  * @param {Array} allAccounts Array of logininfo entries of accounts to log in
  */
 Controller.prototype._processSlowLoginQueue = function(allAccounts) {}; // eslint-disable-line
+
+/**
+ * Adds a new account to the set of bot accounts in use and writes changes to accounts.txt
+ * @param {string} accountName Username of the account
+ * @param {string} password Password of the account
+ * @param {string} [sharedSecret] Optional: Shared secret of the account
+ */
+Controller.prototype.addAccount = function(accountName, password, sharedSecret = "") {}; // eslint-disable-line
 
 /**
  * Runs internal ready event code and emits ready event for plugins

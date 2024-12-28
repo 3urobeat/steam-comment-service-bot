@@ -571,6 +571,13 @@ declare class Controller {
      */
     _processSlowLoginQueue(allAccounts: any[]): void;
     /**
+     * Adds a new account to the set of bot accounts in use and writes changes to accounts.txt
+     * @param accountName - Username of the account
+     * @param password - Password of the account
+     * @param [sharedSecret] - Optional: Shared secret of the account
+     */
+    addAccount(accountName: string, password: string, sharedSecret?: string): void;
+    /**
      * Runs internal ready event code and emits ready event for plugins
      */
     _readyEvent(): void;
@@ -748,6 +755,13 @@ declare class Controller {
      * @param allAccounts - Array of logininfo entries of accounts to log in
      */
     _processSlowLoginQueue(allAccounts: any[]): void;
+    /**
+     * Adds a new account to the set of bot accounts in use and writes changes to accounts.txt
+     * @param accountName - Username of the account
+     * @param password - Password of the account
+     * @param [sharedSecret] - Optional: Shared secret of the account
+     */
+    addAccount(accountName: string, password: string, sharedSecret?: string): void;
 }
 
 /**
