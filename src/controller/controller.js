@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-28 14:25:08
+ * Last Modified: 2024-12-28 14:27:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -437,6 +437,12 @@ Controller.prototype._processSlowLoginQueue = function(allAccounts) {}; // eslin
  * @param {string} [sharedSecret] Optional: Shared secret of the account
  */
 Controller.prototype.addAccount = function(accountName, password, sharedSecret = "") {}; // eslint-disable-line
+
+/**
+ * Removes an account from the active set of bot accounts and writes changes to accounts.txt
+ * @param {string} accountName Username of the account to remove
+ */
+Controller.prototype.removeAccount = function(accountName) {}; // eslint-disable-line
 
 /**
  * Runs internal ready event code and emits ready event for plugins

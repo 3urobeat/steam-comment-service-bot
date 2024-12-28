@@ -4,7 +4,7 @@
  * Created Date: 2024-12-28 12:56:44
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-28 15:03:29
+ * Last Modified: 2024-12-28 15:09:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
@@ -16,6 +16,7 @@
 
 
 const Controller  = require("./controller.js");
+const EStatus     = require("../bot/EStatus.js");
 
 
 /**
@@ -40,6 +41,31 @@ Controller.prototype.addAccount = function(accountName, password, sharedSecret =
 
     // Call login handler to let it create a new Bot instance, register it and log the account in
     this.login();   // TODO: It sucks that we don't get a response here whether the account credentials are correct or not
+
+    // Write changes to accounts.txt
+    this.data.writeLogininfoToDisk();
+
+};
+
+
+/**
+ * Removes an account from the active set of bot accounts and writes changes to accounts.txt
+ * @param {string} accountName Username of the account to remove
+ */
+Controller.prototype.removeAccount = function(accountName) {
+
+    // Remove affected entry from logininfo
+    this.data.logininfo = this.data.logininfo.filter((e) => e.accountName != accountName); // TODO: Is a gap in the array (= missing index) a problem?
+
+    // Log out this account if online and push to skippedaccounts to avoid bot attempting relog
+    this.info.skippedaccounts.push(accountName);
+
+    if (this.bots[accountName].status == EStatus.ONLINE) {
+        this.bots[accountName].user.logOff();
+    }
+
+    // Delete bot instance
+    delete this.bots[accountName];
 
     // Write changes to accounts.txt
     this.data.writeLogininfoToDisk();

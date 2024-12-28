@@ -578,6 +578,11 @@ declare class Controller {
      */
     addAccount(accountName: string, password: string, sharedSecret?: string): void;
     /**
+     * Removes an account from the active set of bot accounts and writes changes to accounts.txt
+     * @param accountName - Username of the account to remove
+     */
+    removeAccount(accountName: string): void;
+    /**
      * Runs internal ready event code and emits ready event for plugins
      */
     _readyEvent(): void;
@@ -762,6 +767,11 @@ declare class Controller {
      * @param [sharedSecret] - Optional: Shared secret of the account
      */
     addAccount(accountName: string, password: string, sharedSecret?: string): void;
+    /**
+     * Removes an account from the active set of bot accounts and writes changes to accounts.txt
+     * @param accountName - Username of the account to remove
+     */
+    removeAccount(accountName: string): void;
 }
 
 /**
