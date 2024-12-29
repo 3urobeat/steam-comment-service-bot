@@ -4,7 +4,7 @@
  * Created Date: 2024-12-28 12:56:44
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-28 17:25:01
+ * Last Modified: 2024-12-29 13:59:15
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
@@ -76,6 +76,32 @@ Controller.prototype.removeAccount = function(accountName) {
 
     // Delete bot instance
     delete this.bots[accountName];
+
+};
+
+
+/**
+ * Relogs an account
+ * @param {string} accountName Username of the account to relog
+ */
+Controller.prototype.relogAccount = function(accountName) {
+
+    // Abort if this account does not exist
+    if (!this.bots[accountName]) {
+        logger("error", `Cannot relog account '${accountName}' because no bot instance exists for it!`);
+        return;
+    }
+
+    // Make sure this account is not included in skippedaccounts
+    this.info.skippedaccounts = this.info.skippedaccounts.filter((e) => e != accountName);
+
+    // If ONLINE, log off account and disconnect event will trigger relog. If not, set status to OFFLINE and let login handler figure out what to do
+    if (this.bots[accountName].status == EStatus.ONLINE) {
+        this.bots[accountName].user.logOff();
+    } else {
+        this._statusUpdateEvent(this.bots[accountName], EStatus.OFFLINE);
+        this.login();
+    }
 
 };
 
