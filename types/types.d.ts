@@ -588,6 +588,10 @@ declare class Controller {
      */
     relogAccount(accountName: string): void;
     /**
+     * Respreads all proxies and relogs affected accounts
+     */
+    respreadProxies(): void;
+    /**
      * Filters the active set of bot accounts by a given criteria
      * @param predicate - Function that returns true if the account should be included in the result
      */
@@ -791,6 +795,10 @@ declare class Controller {
      * @param accountName - Username of the account to relog
      */
     relogAccount(accountName: string): void;
+    /**
+     * Respreads all proxies and relogs affected accounts
+     */
+    respreadProxies(): void;
     /**
      * Filters the active set of bot accounts by a given criteria
      * @param predicate - Function that returns true if the account should be included in the result

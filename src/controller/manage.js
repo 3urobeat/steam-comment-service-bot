@@ -4,7 +4,7 @@
  * Created Date: 2024-12-28 12:56:44
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-29 13:59:15
+ * Last Modified: 2024-12-31 14:19:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
@@ -102,6 +102,50 @@ Controller.prototype.relogAccount = function(accountName) {
         this._statusUpdateEvent(this.bots[accountName], EStatus.OFFLINE);
         this.login();
     }
+
+};
+
+
+/**
+ * Respreads all proxies and relogs affected accounts
+ */
+Controller.prototype.respreadProxies = async function() {
+
+    logger("debug", "Respreading proxies and relogging affected accounts...");
+
+    // Update status of all proxies once
+    await this.data.checkAllProxies(15000);
+
+    // Option 1 (untested): Call checkAndSwitchMyProxy for all bot accounts to let them rebalance to the least used proxy. Might cause unnecessary requests but reuses existing code
+    /* this.getBots("*").forEach((e) => e.checkAndSwitchMyProxy(true)); */
+
+    // Option 2: Get all proxies which are online. More straight forward but introduces potentially duplicate code
+    const onlineProxies = this.data.proxies.filter((e) => e.isOnline);
+
+    this.getBots("*").forEach((e) => {
+        const currentProxy = e.loginData.proxy;
+        const newProxy     = onlineProxies[e.index % onlineProxies.length]; // Spread all accounts over all online proxies
+
+        // Assign new proxy info
+        this.bots[e.accountName].loginData.proxyIndex = newProxy.proxyIndex;
+        this.bots[e.accountName].loginData.proxy      = newProxy.proxy;
+
+        // Relog account if proxy has changed and account is online
+        if (currentProxy != newProxy.proxy) {
+            logger("info", `Account '${e.accountName}' switched from proxy '${currentProxy}' to proxy '${newProxy.proxy}'. Relogging account...`);
+
+            if (e.status == EStatus.ONLINE) {
+                this.bots[e.accountName].user.logOff();
+            } else {
+                this._statusUpdateEvent(this.bots[e.accountName], EStatus.OFFLINE);
+            }
+        } else {
+            logger("debug", `Account '${e.accountName}' has not switched from proxy '${newProxy.proxy}'. No relog required.`);
+        }
+    });
+
+    // Request a login to get all OFFLINE bots back online
+    this.login();
 
 };
 

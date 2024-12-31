@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-29 13:59:42
+ * Last Modified: 2024-12-29 14:00:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
@@ -449,6 +449,11 @@ Controller.prototype.removeAccount = function(accountName) {}; // eslint-disable
  * @param {string} accountName Username of the account to relog
  */
 Controller.prototype.relogAccount = function(accountName) {}; // eslint-disable-line
+
+/**
+ * Respreads all proxies and relogs affected accounts
+ */
+Controller.prototype.respreadProxies = async function() {};
 
 /**
  * Filters the active set of bot accounts by a given criteria
