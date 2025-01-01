@@ -4,10 +4,10 @@
  * Created Date: 2024-12-28 12:56:44
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-31 14:19:40
+ * Last Modified: 2025-01-01 23:06:52
  * Modified By: 3urobeat
  *
- * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2024 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -110,17 +110,14 @@ Controller.prototype.relogAccount = function(accountName) {
  * Respreads all proxies and relogs affected accounts
  */
 Controller.prototype.respreadProxies = async function() {
-
     logger("debug", "Respreading proxies and relogging affected accounts...");
 
     // Update status of all proxies once
     await this.data.checkAllProxies(15000);
 
-    // Option 1 (untested): Call checkAndSwitchMyProxy for all bot accounts to let them rebalance to the least used proxy. Might cause unnecessary requests but reuses existing code
-    /* this.getBots("*").forEach((e) => e.checkAndSwitchMyProxy(true)); */
-
-    // Option 2: Get all proxies which are online. More straight forward but introduces potentially duplicate code
+    // Get all proxies which are online
     const onlineProxies = this.data.proxies.filter((e) => e.isOnline);
+    let   pendingRelogs = [];                                           // Stores bot accountNames which are waiting for an active request to finish before relogging
 
     this.getBots("*").forEach((e) => {
         const currentProxy = e.loginData.proxy;
@@ -130,23 +127,59 @@ Controller.prototype.respreadProxies = async function() {
         this.bots[e.accountName].loginData.proxyIndex = newProxy.proxyIndex;
         this.bots[e.accountName].loginData.proxy      = newProxy.proxy;
 
-        // Relog account if proxy has changed and account is online
+        // Deny further requests and queue account for relog if proxy has changed
         if (currentProxy != newProxy.proxy) {
-            logger("info", `Account '${e.accountName}' switched from proxy '${currentProxy}' to proxy '${newProxy.proxy}'. Relogging account...`);
+            this.info.activeLogin = true;
 
-            if (e.status == EStatus.ONLINE) {
-                this.bots[e.accountName].user.logOff();
-            } else {
-                this._statusUpdateEvent(this.bots[e.accountName], EStatus.OFFLINE);
-            }
+            pendingRelogs.push(e.accountName);
+
+            logger("info", `Account '${e.accountName}' switched from proxy '${currentProxy}' to proxy '${newProxy.proxy}'. Queueing relog for account...`);
         } else {
             logger("debug", `Account '${e.accountName}' has not switched from proxy '${newProxy.proxy}'. No relog required.`);
         }
     });
 
-    // Request a login to get all OFFLINE bots back online
-    this.login();
+    // Check every queued account once a second if they are free to relog and resolve
+    await new Promise((resolve) => {
+        let lastPendingRelogsMsgAmount = 0;
 
+        const pendingCheckInterval = setInterval(() => {
+            // Create a collection of all accountNames currently in active requests
+            const accountsActive = Object.values(this.activeRequests).flatMap((e) => e.status == "active" ? e.accounts : []);
+
+            // Check every account if they are not included in accountsActive, then relog and remove them from pendingRelogs
+            pendingRelogs = pendingRelogs.filter((accountName) => {
+                if (!accountsActive.includes(accountName)) {
+                    logger("info", `Relogging account '${accountName}' to apply proxy switch...`);
+
+                    if (this.bots[accountName].status == EStatus.ONLINE) {
+                        this.bots[accountName].user.logOff();
+                    } else {
+                        this._statusUpdateEvent(this.bots[accountName], EStatus.OFFLINE);
+                    }
+
+                    return false; // Tell filter() to remove this item from the pendingRelogs
+                }
+
+                return true; // Keep this item in pendingRelogs
+            });
+
+            // Break interval & resolve if no account is pending anymore, otherwise display waiting message
+            if (pendingRelogs.length == 0) {
+                clearInterval(pendingCheckInterval);
+                resolve();
+            } else {
+                if (lastPendingRelogsMsgAmount != pendingRelogs.length) {
+                    logger("info", `Waiting for bot(s) '${pendingRelogs.map((e) => this.bots[e].index).join(", ")}' to finish their active request to relog to apply proxy switch...`, false, false, logger.animation("waiting")); // Using !remove because a blocking request would bury this message instantly
+                    lastPendingRelogsMsgAmount = pendingRelogs.length;
+                }
+            }
+        }, 1000);
+    });
+
+    // Request a login to get all OFFLINE bots back online
+    this.info.activeLogin = false;  // Must be false as login() will otherwise refuse to proceed
+    this.login();
 };
 
 
