@@ -4,7 +4,7 @@
  * Created Date: 2023-03-19 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-02 18:05:49
+ * Last Modified: 2025-01-02 18:46:26
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -63,6 +63,20 @@ const PluginSystem = function (controller) {
      */
     this.jobManager = controller.jobManager;
 
+    // Project's package.json
+    this.packageJson = require("../../package.json");
+
+    // Name regex for matching plugins
+    this.PLUGIN_REGEX = /^steam-comment-bot-/;
+
+    // Events supported by the PluginSystem
+    this.PLUGIN_EVENTS = {
+        READY: "ready",
+        STATUS_UPDATE: "statusUpdate",
+        steamGuardInput: "steamGuardInput",
+        steamGuardQrCode: "steamGuardQrCode"
+    };
+
     // Load helper files
     require("./loadPlugins.js");
     require("./handlePluginData.js");
@@ -70,6 +84,30 @@ const PluginSystem = function (controller) {
 
 // The plugin system loads all plugins and provides functions for plugins to hook into
 module.exports = PluginSystem;
+
+
+/**
+ * Internal: Checks for available updates of all enabled plugins on NPM
+ * @param {[string, string][]} [packageNames] List of arrays containing plugin name and installed version to check for updates. If not provided, all enabled plugins will be checked
+ */
+PluginSystem.prototype._checkPluginUpdates = async function(packageNames = null) {
+
+    const npminteraction = require("../controller/helpers/npminteraction.js");
+
+    logger("info", "PluginSystem: Searching for and installing plugin updates...", false, true, logger.animation("loading"));
+
+    // Get all plugin names. Ignore locally installed ones by checking for "file:"
+    const pluginNamesArr = packageNames.flatMap((e) => { // Use flatMap instead of map to omit empty results instead of including undefined
+        if (!e[1].startsWith("file:")) return e[0];
+            else return [];
+    });
+
+    await npminteraction.installLatest(pluginNamesArr)
+        .catch((err) => {
+            logger("error", "PluginSystem: Failed to update plugins. Resuming with currently installed versions. " + err);
+        });
+
+};
 
 
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */

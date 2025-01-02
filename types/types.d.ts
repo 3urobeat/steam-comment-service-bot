@@ -1545,6 +1545,10 @@ declare class PluginSystem {
      */
     jobManager: JobManager;
     /**
+     * Internal: Checks for available updates of all enabled plugins on NPM
+     */
+    _checkPluginUpdates(packageNames: any): void;
+    /**
      * Internal: Loads all plugin npm packages and populates pluginList
      */
     _loadPlugins(): void;

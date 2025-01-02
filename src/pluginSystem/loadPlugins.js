@@ -4,7 +4,7 @@
  * Created Date: 2023-06-04 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 2025-01-02 18:04:56
+ * Last Modified: 2025-01-02 18:46:49
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -16,16 +16,6 @@
 
 
 const PluginSystem = require("./pluginSystem.js");
-
-const PLUGIN_REGEX = /^steam-comment-bot-/;
-const packageJson = require("../../package.json");
-
-const PLUGIN_EVENTS = {
-    READY: "ready",
-    STATUS_UPDATE: "statusUpdate",
-    steamGuardInput: "steamGuardInput",
-    steamGuardQrCode: "steamGuardQrCode"
-};
 
 
 /**
@@ -63,25 +53,11 @@ function loadPlugin(pluginName) {
 PluginSystem.prototype._loadPlugins = async function () {
 
     // Get all plugins with the matching regex
-    const plugins = Object.entries(packageJson.dependencies).filter(([key, value]) => PLUGIN_REGEX.test(key)); // eslint-disable-line
-
+    const plugins = Object.entries(this.packageJson.dependencies).filter(([key, value]) => this.PLUGIN_REGEX.test(key)); // eslint-disable-line
 
     // Check for the latest version of all plugins
     if (!this.controller.data.advancedconfig.disablePluginsAutoUpdate) {
-        const npminteraction = require("../controller/helpers/npminteraction.js");
-
-        logger("info", "PluginSystem: Searching for and installing plugin updates...", false, true, logger.animation("loading"));
-
-        // Get all plugin names. Ignore locally installed ones by checking for "file:"
-        const pluginNamesArr = plugins.flatMap((e) => { // Use flatMap instead of map to omit empty results instead of including undefined
-            if (!e[1].startsWith("file:")) return e[0];
-                else return [];
-        });
-
-        await npminteraction.installLatest(pluginNamesArr)
-            .catch((err) => {
-                logger("error", "PluginSystem: Failed to update plugins. Resuming with currently installed versions. " + err);
-            });
+        await this._checkPluginUpdates(plugins);
     } else {
         logger("info", "PluginSystem: Skipping plugins auto update because 'disablePluginsAutoUpdate' in 'advancedconfig.json' is enabled.", false, true);
     }
@@ -152,7 +128,7 @@ PluginSystem.prototype._loadPlugins = async function () {
         pluginInstance.load();
 
         // Call the exposed event functions if they exist
-        Object.entries(PLUGIN_EVENTS).forEach(([eventName, event]) => { // eslint-disable-line no-unused-vars
+        Object.entries(this.PLUGIN_EVENTS).forEach(([eventName, event]) => { // eslint-disable-line no-unused-vars
             this.controller.events.on(event, (...args) => pluginInstance[event]?.call(pluginInstance, ...args));
         });
     }
