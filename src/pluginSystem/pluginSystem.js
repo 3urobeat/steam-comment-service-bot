@@ -4,7 +4,7 @@
  * Created Date: 2023-03-19 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-02 21:50:35
+ * Last Modified: 2025-01-02 22:16:53
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -88,16 +88,26 @@ module.exports = PluginSystem;
 
 /**
  * Internal: Checks for available updates of all enabled plugins on NPM
- * @param {[string, string][]} [packageNames] List of arrays containing plugin name and installed version to check for updates. If not provided, all enabled plugins will be checked
+ * @param {[string, string][]} [pluginPackages] List of arrays containing plugin name and installed version to check for updates. If not provided, all enabled plugins will be checked
  */
-PluginSystem.prototype._checkPluginUpdates = async function(packageNames = null) {
-
+PluginSystem.prototype._checkPluginUpdates = async function(pluginPackages = null) {
     const npminteraction = require("../controller/helpers/npminteraction.js");
 
     logger("info", "PluginSystem: Searching for and installing plugin updates...", false, true, logger.animation("loading"));
 
+    // Set packageNames to all enabled plugins if null
+    if (!pluginPackages) {
+        pluginPackages = [];
+
+        Object.keys(this.pluginList).forEach((pluginName) => {
+            const pluginVersion = this.packageJson.dependencies[pluginName];    // Get installed version from package.json
+
+            if (pluginVersion) pluginPackages.push([pluginName, pluginVersion]);  // Push if corresponding plugin version was found
+        });
+    }
+
     // Get all plugin names. Ignore locally installed ones by checking for "file:"
-    const pluginNamesArr = packageNames.flatMap((e) => { // Use flatMap instead of map to omit empty results instead of including undefined
+    const pluginNamesArr = pluginPackages.flatMap((e) => { // Use flatMap instead of map to omit empty results instead of including undefined
         if (!e[1].startsWith("file:")) return e[0];
             else return [];
     });
@@ -106,6 +116,46 @@ PluginSystem.prototype._checkPluginUpdates = async function(packageNames = null)
         .catch((err) => {
             logger("error", "PluginSystem: Failed to update plugins. Resuming with currently installed versions. " + err);
         });
+
+    // Reload package.json to get updated version numbers
+    delete require.cache[require.resolve("../../package.json")];
+    this.packageJson = require("../../package.json");
+
+    // Check if a plugin needs to be reloaded (different version and plugin instance is registered in pluginList)
+    pluginPackages.forEach(([ pluginName, oldVersion ]) => {
+        const newVersion = this.packageJson.dependencies[pluginName];    // Get installed version from package.json
+
+        if (oldVersion != newVersion) {
+            if (this.pluginList[pluginName]) {
+                logger("info", `PluginSystem: Plugin '${pluginName}' has been updated from version '${oldVersion}' to '${newVersion}'. Reloading plugin...`);
+                this.reloadPlugin(pluginName);
+            } else {
+                logger("info", `PluginSystem: Plugin '${pluginName}' has been updated from version '${oldVersion}' to '${newVersion}' but it was not instantiated and therefore must not be reloaded.`, false, false, null, true);
+            }
+        }
+    });
+};
+
+
+/**
+ * Registers an plugin update check job. This is called by Controller after the initial _loadPlugins() call
+ */
+PluginSystem.prototype._registerUpdateChecker = function() {
+
+    // Only register when disablePluginsAutoUpdate is not enabled
+    if (!this.controller.data.advancedconfig.disablePluginsAutoUpdate) {
+
+        this.controller.jobManager.registerJob({
+            name: "pluginsUpdateCheck",
+            description: "Checks for new updates of enabled plugins from npm every 24 hours",
+            func: () => { this._checkPluginUpdates(); },
+            interval: 8.64e+7, // 24 hours in ms
+            runOnRegistration: false
+        });
+
+    } else {
+        logger("info", "PluginSystem: Skip registering pluginsUpdateCheck job because 'disablePluginsAutoUpdate' in 'advancedconfig.json' is enabled.", false, true);
+    }
 
 };
 

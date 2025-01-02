@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-02 13:36:17
+ * Last Modified: 2025-01-02 18:40:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -376,7 +376,9 @@ Controller.prototype._preLogin = async function() {
      * @type {PluginSystem}
      */
     this.pluginSystem = new PluginSystem(this);
-    await this.pluginSystem._loadPlugins(); // Load all plugins now. Await to hopefully give plugins enough time to catch Steam Guard events
+
+    await this.pluginSystem._loadPlugins();     // Load all plugins now. Await to hopefully give plugins enough time to catch Steam Guard events
+    this.pluginSystem._registerUpdateChecker(); // Register update check job for all plugins
 
 
     // Start logging in
