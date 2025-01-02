@@ -4,10 +4,10 @@
  * Created Date: 2023-06-04 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 2024-05-03 12:52:12
+ * Last Modified: 2025-01-02 18:04:56
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -157,4 +157,53 @@ PluginSystem.prototype._loadPlugins = async function () {
         });
     }
 
+};
+
+
+/**
+ * Internal: Unloads all plugins
+ */
+PluginSystem.prototype._unloadAllPlugins = function() {
+    logger("info", "Unloading all plugins...", false, true);
+
+    // Delete all plugin objects and their subfiles
+    Object.keys(this.pluginList).forEach((e) => {
+        if (this.pluginList[e].unload) {
+            this.pluginList[e].unload();
+        } else {
+            logger("warn", `PluginSystem unloadAllPlugins: Plugin ${e} does not have an unload function, un-/reloading might not work properly!`);
+        }
+
+        // Delete the original path of the plugin, otherwise plugins linked via 'npm link' won't be reloaded correctly
+        delete require.cache[require.resolve(e)];
+
+        // Make sure to delete subfiles of this plugin
+        Object.keys(require.cache).forEach((key) => {
+            if (key.includes(e) || key.includes("/plugins/")) {
+                delete require.cache[require.resolve(key)];
+            }
+        });
+
+        // Delete entry from pluginList object
+        delete this.pluginList[e];
+    });
+};
+
+
+/**
+ * Reloads all plugins and calls ready event after ~2.5 seconds.
+ */
+PluginSystem.prototype.reloadPlugins = function () {
+    // Delete all plugin objects and their subfiles
+    this._unloadAllPlugins();
+
+    this.pluginList = {};
+    setTimeout(() => this._loadPlugins(), 500);
+
+    // Call ready event for every plugin which has one, 2.5 seconds after loading
+    setTimeout(() => {
+        Object.values(this.pluginList).forEach((e) => {
+            if (e.ready) e.ready();
+        });
+    }, 3000);
 };

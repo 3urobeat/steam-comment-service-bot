@@ -1521,6 +1521,14 @@ declare class PluginSystem {
      */
     _loadPlugins(): void;
     /**
+     * Internal: Unloads all plugins
+     */
+    _unloadAllPlugins(): void;
+    /**
+     * Reloads all plugins and calls ready event after ~2.5 seconds.
+     */
+    reloadPlugins(): void;
+    /**
      * Central part of the application and your interface to everything
      */
     controller: Controller;
@@ -1537,17 +1545,17 @@ declare class PluginSystem {
      */
     jobManager: JobManager;
     /**
-     * Internal: Unloads on all plugins
+     * Internal: Loads all plugin npm packages and populates pluginList
+     */
+    _loadPlugins(): void;
+    /**
+     * Internal: Unloads all plugins
      */
     _unloadAllPlugins(): void;
     /**
      * Reloads all plugins and calls ready event after ~2.5 seconds.
      */
     reloadPlugins(): void;
-    /**
-     * Internal: Loads all plugin npm packages and populates pluginList
-     */
-    _loadPlugins(): void;
     /**
      * Internal: Checks a plugin, displays relevant warnings and decides whether the plugin is allowed to be loaded
      * @param folderName - Name of the plugin folder. This is used to reference the plugin when thisPluginConf is undefined
