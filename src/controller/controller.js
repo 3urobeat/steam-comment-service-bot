@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-02 12:35:45
+ * Last Modified: 2025-01-02 13:36:17
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -464,7 +464,7 @@ Controller.prototype.filterAccounts = function(predicate) {}; // eslint-disable-
 
 /**
  * Set of premade functions for filterAccounts()
- * @type {{ statusOffline: Function, statusOnline: Function, statusError: Function, statusSkipped: Function, limited: Function, unlimited: Function }}
+ * @type {{ all: Function, statusOffline: Function, statusOnline: Function, statusError: Function, statusSkipped: Function, limited: Function, unlimited: Function }}
  */
 Controller.prototype.filters = {};
 

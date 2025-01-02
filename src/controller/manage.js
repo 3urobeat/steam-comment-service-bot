@@ -4,7 +4,7 @@
  * Created Date: 2024-12-28 12:56:44
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-02 12:35:51
+ * Last Modified: 2025-01-02 14:22:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 - 2025 3urobeat <https://github.com/3urobeat>
@@ -58,12 +58,9 @@ Controller.prototype.removeAccount = function(accountName) {
     // Remove affected entry from logininfo
     this.data.logininfo = this.data.logininfo.filter((e) => e.accountName != accountName); // TODO: Is a gap in the array (= missing index) a problem?
 
-    // Write changes to accounts.txt
-    this.data.writeLogininfoToDisk();
-
     // Abort if this account does not exist
     if (!this.bots[accountName]) {
-        logger("warn", `No bot instance exists for account '${accountName}'. The accountName has been removed from accounts.txt if an entry existed for it.`);
+        logger("warn", `Cannot remove account '${accountName}' because no bot instance exists for it!`);
         return;
     }
 
@@ -76,6 +73,9 @@ Controller.prototype.removeAccount = function(accountName) {
 
     // Delete bot instance
     delete this.bots[accountName];
+
+    // Write changes (generated from this.bots) to accounts.txt
+    this.data.writeLogininfoToDisk();
 
 };
 
@@ -194,7 +194,7 @@ Controller.prototype.filterAccounts = function(predicate) { // TODO: Adapt getBo
 
 /**
  * Set of premade functions for filterAccounts()
- * @type {{ statusOnline: Function, limited: Function }}
+ * @type {{ all: Function, statusOffline: Function, statusOnline: Function, statusError: Function, statusSkipped: Function, limited: Function, unlimited: Function }}
  */
 Controller.prototype.filters = {
     all:            (bot) => bot != null,
