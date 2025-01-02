@@ -1439,11 +1439,11 @@ declare class CSteamSharedFile {
 }
 
 /**
- * Attempt to load all plugins. If a critical check fails loading will be denied
+ * Attempts to instantiate a plugin
  * @param pluginName - Name of the plugin package
  * @returns Creates a plugin instance and returns it along with more information
  */
-declare function loadPlugin(pluginName: string): any;
+declare function instantiatePlugin(pluginName: string): any;
 
 /**
  * @property load - Called on Plugin load
@@ -1517,13 +1517,28 @@ declare class PluginSystem {
      */
     writePluginConfig(pluginName: string, pluginConfig: any): Promise<void>;
     /**
-     * Internal: Loads all plugin npm packages and populates pluginList
+     * Internal: Loads a plugin npm package and populates pluginList
+     * @param pluginPackageName - Name of the plugin npm package to load
+     */
+    _loadPlugin(pluginPackageName: string): void;
+    /**
+     * Internal: Checks for updates (if !disablePluginsAutoUpdate), loads all plugin npm packages and populates pluginList
      */
     _loadPlugins(): void;
+    /**
+     * Internal: Unloads a plugin
+     * @param pluginName - Name of the plugin package to unload
+     */
+    _unloadPlugin(pluginName: string): void;
     /**
      * Internal: Unloads all plugins
      */
     _unloadAllPlugins(): void;
+    /**
+     * Reloads a plugin and calls ready event after ~2.5 seconds.
+     * @param pluginName - Name of the plugin package to reload
+     */
+    reloadPlugin(pluginName: string): void;
     /**
      * Reloads all plugins and calls ready event after ~2.5 seconds.
      */
@@ -1547,15 +1562,34 @@ declare class PluginSystem {
     /**
      * Internal: Checks for available updates of all enabled plugins on NPM
      */
-    _checkPluginUpdates(packageNames: any): void;
+    _checkPluginUpdates(pluginPackages: any): void;
     /**
-     * Internal: Loads all plugin npm packages and populates pluginList
+     * Registers an plugin update check job. This is called by Controller after the initial _loadPlugins() call
+     */
+    _registerUpdateChecker(): void;
+    /**
+     * Internal: Loads a plugin npm package and populates pluginList
+     * @param pluginPackageName - Name of the plugin npm package to load
+     */
+    _loadPlugin(pluginPackageName: string): void;
+    /**
+     * Internal: Checks for updates (if !disablePluginsAutoUpdate), loads all plugin npm packages and populates pluginList
      */
     _loadPlugins(): void;
+    /**
+     * Internal: Unloads a plugin
+     * @param pluginName - Name of the plugin package to unload
+     */
+    _unloadPlugin(pluginName: string): void;
     /**
      * Internal: Unloads all plugins
      */
     _unloadAllPlugins(): void;
+    /**
+     * Reloads a plugin and calls ready event after ~2.5 seconds.
+     * @param pluginName - Name of the plugin package to reload
+     */
+    reloadPlugin(pluginName: string): void;
     /**
      * Reloads all plugins and calls ready event after ~2.5 seconds.
      */

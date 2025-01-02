@@ -4,7 +4,7 @@
  * Created Date: 2023-06-04 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 2025-01-02 21:50:21
+ * Last Modified: 2025-01-02 22:16:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -90,7 +90,7 @@ PluginSystem.prototype._loadPlugin = async function(pluginPackageName) {
         return;
     }
 
-    logger("info", `PluginSystem: Loading plugin '${pluginName}' v${pluginJson.version} by '${pluginJson.author}' made for v${pluginJson.botVersion}...`, false, true, logger.animation("loading"));
+    logger("info", `PluginSystem: Loading plugin '${pluginName}' v${pluginJson.version} by '${pluginJson.author}' made for v${pluginJson.botVersion}...`, false, false, logger.animation("loading"), true);
 
     // Display warning if bot version mismatches plugin's botVersion
     try {
@@ -158,12 +158,12 @@ PluginSystem.prototype._loadPlugins = async function () {
 PluginSystem.prototype._unloadPlugin = function(pluginName) {
     if (!pluginName) throw new Error("pluginName parameter is undefined");
 
-    logger("info", `PluginSystem: Unloading plugin '${pluginName}'...`, false, true);
+    logger("info", `PluginSystem: Unloading plugin '${pluginName}'...`, false, false, null, true);
 
     if (this.pluginList[pluginName].unload) {
         this.pluginList[pluginName].unload();
     } else {
-        logger("warn", `PluginSystem _unloadPlugin: Plugin '${pluginName}' does not have an unload function, un-/reloading might not work properly!`);
+        logger("warn", `PluginSystem _unloadPlugin: Plugin '${pluginName}' does not have an unload function, un-/reloading might not work properly!`, false, false, null, true);
     }
 
     // Delete the original path of the plugin, otherwise plugins linked via 'npm link' won't be reloaded correctly
@@ -185,7 +185,7 @@ PluginSystem.prototype._unloadPlugin = function(pluginName) {
  * Internal: Unloads all plugins
  */
 PluginSystem.prototype._unloadAllPlugins = function() {
-    logger("info", "PluginSystem: Unloading all plugins...", false, true);
+    logger("info", "PluginSystem: Unloading all plugins...", false, false, null, true);
 
     // Delete all plugin objects and their subfiles
     Object.keys(this.pluginList).forEach((e) => {
