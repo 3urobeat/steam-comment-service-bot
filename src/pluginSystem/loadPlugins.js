@@ -4,7 +4,7 @@
  * Created Date: 2023-06-04 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 2025-01-02 18:46:49
+ * Last Modified: 2025-01-02 21:50:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -19,11 +19,11 @@ const PluginSystem = require("./pluginSystem.js");
 
 
 /**
- * Attempt to load all plugins. If a critical check fails loading will be denied
+ * Attempts to instantiate a plugin
  * @param {string} pluginName Name of the plugin package
  * @returns {{ pluginName: string, pluginInstance: object, pluginJson: object }} Creates a plugin instance and returns it along with more information
  */
-function loadPlugin(pluginName) {
+function instantiatePlugin(pluginName) {
     try {
         // Load plugin and pluginJson
         const importedPlugin = require(pluginName);
@@ -47,8 +47,89 @@ function loadPlugin(pluginName) {
     }
 }
 
+
 /**
- * Internal: Loads all plugin npm packages and populates pluginList
+ * Internal: Loads a plugin npm package and populates pluginList
+ * @param {string} pluginPackageName Name of the plugin npm package to load
+ */
+PluginSystem.prototype._loadPlugin = async function(pluginPackageName) {
+
+    // Attempt to instantiate the plugin
+    const instantiatedPlugin = instantiatePlugin.bind(this)(pluginPackageName);
+
+    const { pluginName, pluginInstance, pluginJson } = instantiatedPlugin;
+
+    // Abort if plugin couldn't be instantiated
+    if (!pluginInstance) {
+        logger("warn", `Skipping plugin '${pluginName}'...`, false, false, null, true); // Force print now
+        return;
+    }
+
+    // Attempt to load plugin config, skip in error
+    let pluginConfig = await this.loadPluginConfig(pluginName).catch((err) => logger("error", `The config of plugin '${pluginName}' is fucked, skipping plugin. ${err}`));
+
+    if (!pluginConfig) return;
+
+
+    // Handle plugin update by updating config file
+    const lastSeenVersion = this.controller.data.cachefile.pluginVersions;
+
+    if (lastSeenVersion && lastSeenVersion[pluginName] && lastSeenVersion[pluginName] !== pluginJson.version) {
+        logger("warn", `Detected version change for plugin '${pluginName}'! Updating config...\n                             You might need to make changes and reload/restart the bot. Please check the plugin's release notes.`, false, false, null, true); // Force print now
+        pluginConfig = this._aggregatePluginConfig(pluginName, pluginConfig);
+    }
+
+    // Update last seen version of this plugin
+    if (!lastSeenVersion) this.controller.data.cachefile.pluginVersions = {};
+    this.controller.data.cachefile.pluginVersions[pluginName] = pluginJson.version;
+
+
+    // Skip plugin if it is disabled
+    if (!pluginConfig || !pluginConfig.enabled) {
+        logger("debug", `Plugin '${pluginName}' is disabled. Skipping plugin...`);
+        return;
+    }
+
+    logger("info", `PluginSystem: Loading plugin '${pluginName}' v${pluginJson.version} by '${pluginJson.author}' made for v${pluginJson.botVersion}...`, false, true, logger.animation("loading"));
+
+    // Display warning if bot version mismatches plugin's botVersion
+    try {
+        if (pluginJson.botVersion) {
+            if (pluginJson.botVersion != this.controller.data.datafile.versionstr) {
+                if (this.controller.data.advancedconfig.blockPluginLoadOnMismatchedBotVersion) {
+                    logger("warn", `Plugin '${pluginName}' wasn't made for this version! Blocking load because 'blockPluginLoadOnMismatchedBotVersion' is enabled.`, true);
+                    return;
+                }
+
+                logger("warn", `Plugin '${pluginName}' was made for v${pluginJson.botVersion} but the bot runs on v${this.controller.data.datafile.versionstr}. This plugin might not function correctly but I'm loading it anyway.`, true); // Log now
+            }
+        } else {
+            if (this.controller.data.advancedconfig.blockPluginLoadOnMismatchedBotVersion) {
+                logger("warn", `Plugin '${pluginName}' does not specify a botVersion! Blocking load because 'blockPluginLoadOnMismatchedBotVersion' is enabled.`, true);
+                return;
+            }
+
+            logger("warn", `Plugin '${pluginName}' does not specify a botVersion in their package.json! This plugin might not function correctly as it could have been made for an outdated version.`, true); // Log now
+        }
+    } catch (err) {
+        logger("err", `PluginSystem: Failed to check compatibility of plugin '${pluginName}' by comparing botVersion value. Attempting to load anyway. ${err}`);
+    }
+
+
+    // Add plugin reference to pluginList and call load function
+    this.pluginList[pluginName] = pluginInstance;
+    pluginInstance.load();
+
+    // Call the exposed event functions if they exist
+    Object.entries(this.PLUGIN_EVENTS).forEach(([eventName, event]) => { // eslint-disable-line no-unused-vars
+        this.controller.events.on(event, (...args) => pluginInstance[event]?.call(pluginInstance, ...args));
+    });
+
+};
+
+
+/**
+ * Internal: Checks for updates (if !disablePluginsAutoUpdate), loads all plugin npm packages and populates pluginList
  */
 PluginSystem.prototype._loadPlugins = async function () {
 
@@ -62,77 +143,41 @@ PluginSystem.prototype._loadPlugins = async function () {
         logger("info", "PluginSystem: Skipping plugins auto update because 'disablePluginsAutoUpdate' in 'advancedconfig.json' is enabled.", false, true);
     }
 
-
     // Initalize and load each plugin
-    const initiatedPlugins = plugins.map(([plugin]) => loadPlugin.bind(this)(plugin));
-
-    for (const plugin of initiatedPlugins) {
-        const { pluginName, pluginInstance, pluginJson } = plugin;
-
-        // Skip iteration if plugin couldn't be instantiated
-        if (!pluginInstance) {
-            logger("warn", `Skipping plugin '${pluginName}'...`, false, false, null, true); // Force print now
-            continue;
-        }
-
-        // Attempt to load plugin config, skip in error
-        let pluginConfig = await this.loadPluginConfig(pluginName).catch((err) => logger("error", `The config of plugin '${pluginName}' is fucked, skipping plugin. ${err}`));
-
-        if (!pluginConfig) continue;
-
-        // Handle plugin update by updating config file
-        const lastSeenVersion = this.controller.data.cachefile.pluginVersions;
-
-        if (lastSeenVersion && lastSeenVersion[pluginName] && lastSeenVersion[pluginName] !== pluginJson.version) {
-            logger("warn", `Detected version change for plugin '${pluginName}'! Updating config...\n                             You might need to make changes and reload/restart the bot. Please check the plugin's release notes.`, false, false, null, true); // Force print now
-            pluginConfig = this._aggregatePluginConfig(pluginName, pluginConfig);
-        }
-
-        // Update last seen version of this plugin
-        if (!lastSeenVersion) this.controller.data.cachefile.pluginVersions = {};
-        this.controller.data.cachefile.pluginVersions[pluginName] = pluginJson.version;
-
-        // Skip plugin if it is disabled
-        if (!pluginConfig || !pluginConfig.enabled) {
-            logger("debug", `Plugin '${pluginName}' is disabled. Skipping plugin...`);
-            continue;
-        }
-
-        logger("info", `PluginSystem: Loading plugin '${pluginName}' v${pluginJson.version} by '${pluginJson.author}' made for v${pluginJson.botVersion}...`, false, true, logger.animation("loading"));
-
-        // Display warning if bot version mismatches plugin's botVersion
-        try {
-            if (pluginJson.botVersion) {
-                if (pluginJson.botVersion != this.controller.data.datafile.versionstr) {
-                    if (this.controller.data.advancedconfig.blockPluginLoadOnMismatchedBotVersion) {
-                        logger("warn", `Plugin '${pluginName}' wasn't made for this version! Blocking load because 'blockPluginLoadOnMismatchedBotVersion' is enabled.`, true);
-                        continue; // Important: Cannot use return instead as it would break the loop
-                    }
-
-                    logger("warn", `Plugin '${pluginName}' was made for v${pluginJson.botVersion} but the bot runs on v${this.controller.data.datafile.versionstr}. This plugin might not function correctly but I'm loading it anyway.`, true); // Log now
-                }
-            } else {
-                if (this.controller.data.advancedconfig.blockPluginLoadOnMismatchedBotVersion) {
-                    logger("warn", `Plugin '${pluginName}' does not specify a botVersion! Blocking load because 'blockPluginLoadOnMismatchedBotVersion' is enabled.`, true);
-                    continue; // Important: Cannot use return instead as it would break the loop
-                }
-
-                logger("warn", `Plugin '${pluginName}' does not specify a botVersion in their package.json! This plugin might not function correctly as it could have been made for an outdated version.`, true); // Log now
-            }
-        } catch (err) {
-            logger("err", `PluginSystem: Failed to check compatibility of plugin '${pluginName}' by comparing botVersion value. Attempting to load anyway. ${err}`);
-        }
-
-        // Add plugin reference to pluginList and call load function
-        this.pluginList[pluginName] = pluginInstance;
-        pluginInstance.load();
-
-        // Call the exposed event functions if they exist
-        Object.entries(this.PLUGIN_EVENTS).forEach(([eventName, event]) => { // eslint-disable-line no-unused-vars
-            this.controller.events.on(event, (...args) => pluginInstance[event]?.call(pluginInstance, ...args));
-        });
+    for (const plugin of plugins) {
+        this._loadPlugin(plugin[0]);
     }
 
+};
+
+
+/**
+ * Internal: Unloads a plugin
+ * @param {string} pluginName Name of the plugin package to unload
+ */
+PluginSystem.prototype._unloadPlugin = function(pluginName) {
+    if (!pluginName) throw new Error("pluginName parameter is undefined");
+
+    logger("info", `PluginSystem: Unloading plugin '${pluginName}'...`, false, true);
+
+    if (this.pluginList[pluginName].unload) {
+        this.pluginList[pluginName].unload();
+    } else {
+        logger("warn", `PluginSystem _unloadPlugin: Plugin '${pluginName}' does not have an unload function, un-/reloading might not work properly!`);
+    }
+
+    // Delete the original path of the plugin, otherwise plugins linked via 'npm link' won't be reloaded correctly
+    delete require.cache[require.resolve(pluginName)];
+
+    // Make sure to delete subfiles of this plugin
+    Object.keys(require.cache).forEach((key) => {
+        if (key.includes(pluginName) || key.includes("/plugins/")) {
+            delete require.cache[require.resolve(key)];
+        }
+    });
+
+    // Delete entry from pluginList object
+    delete this.pluginList[pluginName];
 };
 
 
@@ -140,36 +185,37 @@ PluginSystem.prototype._loadPlugins = async function () {
  * Internal: Unloads all plugins
  */
 PluginSystem.prototype._unloadAllPlugins = function() {
-    logger("info", "Unloading all plugins...", false, true);
+    logger("info", "PluginSystem: Unloading all plugins...", false, true);
 
     // Delete all plugin objects and their subfiles
     Object.keys(this.pluginList).forEach((e) => {
-        if (this.pluginList[e].unload) {
-            this.pluginList[e].unload();
-        } else {
-            logger("warn", `PluginSystem unloadAllPlugins: Plugin ${e} does not have an unload function, un-/reloading might not work properly!`);
-        }
-
-        // Delete the original path of the plugin, otherwise plugins linked via 'npm link' won't be reloaded correctly
-        delete require.cache[require.resolve(e)];
-
-        // Make sure to delete subfiles of this plugin
-        Object.keys(require.cache).forEach((key) => {
-            if (key.includes(e) || key.includes("/plugins/")) {
-                delete require.cache[require.resolve(key)];
-            }
-        });
-
-        // Delete entry from pluginList object
-        delete this.pluginList[e];
+        this._unloadPlugin(e);
     });
+};
+
+
+/**
+ * Reloads a plugin and calls ready event after ~2.5 seconds.
+ * @param {string} pluginName Name of the plugin package to reload
+ */
+PluginSystem.prototype.reloadPlugin = function(pluginName) {
+    this._unloadPlugin(pluginName);
+
+    setTimeout(() => this._loadPlugin(pluginName), 500);
+
+    // Call ready event if plugin has one, 2.5 seconds after loading
+    setTimeout(() => {
+        const plugin = this.pluginList[pluginName];
+
+        if (plugin.ready) plugin.ready();
+    }, 3000);
 };
 
 
 /**
  * Reloads all plugins and calls ready event after ~2.5 seconds.
  */
-PluginSystem.prototype.reloadPlugins = function () {
+PluginSystem.prototype.reloadPlugins = function() {
     // Delete all plugin objects and their subfiles
     this._unloadAllPlugins();
 

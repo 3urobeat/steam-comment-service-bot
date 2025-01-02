@@ -4,7 +4,7 @@
  * Created Date: 2023-03-19 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-02 18:46:26
+ * Last Modified: 2025-01-02 21:50:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -113,14 +113,32 @@ PluginSystem.prototype._checkPluginUpdates = async function(packageNames = null)
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
 
 /**
- * Internal: Loads all plugin npm packages and populates pluginList
+ * Internal: Loads a plugin npm package and populates pluginList
+ * @param {string} pluginPackageName Name of the plugin npm package to load
+ */
+PluginSystem.prototype._loadPlugin = async function(pluginPackageName) {}; // eslint-disable-line
+
+/**
+ * Internal: Checks for updates (if !disablePluginsAutoUpdate), loads all plugin npm packages and populates pluginList
  */
 PluginSystem.prototype._loadPlugins = async function () {};
+
+/**
+ * Internal: Unloads a plugin
+ * @param {string} pluginName Name of the plugin package to unload
+ */
+PluginSystem.prototype._unloadPlugin = function(pluginName) {}; // eslint-disable-line
 
 /**
  * Internal: Unloads all plugins
  */
 PluginSystem.prototype._unloadAllPlugins = function() {};
+
+/**
+ * Reloads a plugin and calls ready event after ~2.5 seconds.
+ * @param {string} pluginName Name of the plugin package to reload
+ */
+PluginSystem.prototype.reloadPlugin = function(pluginName) {}; // eslint-disable-line
 
 /**
  * Reloads all plugins and calls ready event after ~2.5 seconds.
