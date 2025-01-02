@@ -144,5 +144,13 @@
     "evalcmdturnedoff": "The eval command has been turned off!",
     "evalcmdlogininfoblock": "Your code includes 'logininfo'. In order to protect passwords this is not allowed.",
 
+    "managecmdaddusage": "Provide the credentials of the account to add to the current set of bot accounts as argument in this format:\n'${credentialsformat}' (${optionalparameter} is optional)\n\nCommand usage: ${cmdusage}",
+    "managecmdaddsuccess": "The bot will attempt to add & login '${username}'. Please check the log for potential errors.",
+    "managecmdremoveusage": "Provide the username (accountName) of the bot account to remove from the current set of bot accounts as argument.\n\nCommand usage: ${cmdusage}",
+    "managecmdremovesuccess": "The bot will log off & remove account '${username}' if it exists. Please check the log for potential errors.",
+    "managecmdfilterusage": "Provide one of these arguments to filter the current list of bot accounts and display their names:\n'${availablefilters}'\n\nCommand usage: ${cmdusage}",
+    "managecmdfiltersuccess": "These ${matchamount} bot accounts match the selected filter '${selectedfilter}':\n'${usernames}'",
+    "managecmdusage": "Provide one of these modes: '${availablemodes}'.\nRun command with mode but without argument parameter to display help for that selected mode.\n\nCommand usage: ${cmdusage}",
+
     "childbotmessage": "This is one account running in a bot cluster.\nPlease add the main bot and send him a ${cmdprefix}help message.\nIf you want to check out what this is about, type: ${cmdprefix}about\nThis is the main bot account:"
 }
