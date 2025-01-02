@@ -4,7 +4,7 @@
  * Created Date: 2024-12-28 12:56:44
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-01 23:06:52
+ * Last Modified: 2025-01-02 12:35:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 - 2025 3urobeat <https://github.com/3urobeat>
@@ -186,6 +186,7 @@ Controller.prototype.respreadProxies = async function() {
 /**
  * Filters the active set of bot accounts by a given criteria
  * @param {function(Bot): boolean} predicate Function that returns true if the account should be included in the result
+ * @returns {Array.<Bot>} Array of bot instances that match the criteria
  */
 Controller.prototype.filterAccounts = function(predicate) { // TODO: Adapt getBots() function to use this function
     return this.getBots("*").filter(predicate);
@@ -196,6 +197,7 @@ Controller.prototype.filterAccounts = function(predicate) { // TODO: Adapt getBo
  * @type {{ statusOnline: Function, limited: Function }}
  */
 Controller.prototype.filters = {
+    all:            (bot) => bot != null,
     statusOffline:  (bot) => bot.status == EStatus.OFFLINE,
     statusOnline:   (bot) => bot.status == EStatus.ONLINE,
     statusError:    (bot) => bot.status == EStatus.ERROR,

@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-02 10:38:34
+ * Last Modified: 2025-01-02 12:35:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -458,6 +458,7 @@ Controller.prototype.respreadProxies = async function() {};
 /**
  * Filters the active set of bot accounts by a given criteria
  * @param {function(Bot): boolean} predicate Function that returns true if the account should be included in the result
+ * @returns {Array.<Bot>} Array of bot instances that match the criteria
  */
 Controller.prototype.filterAccounts = function(predicate) {}; // eslint-disable-line
 

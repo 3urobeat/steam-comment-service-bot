@@ -594,8 +594,9 @@ declare class Controller {
     /**
      * Filters the active set of bot accounts by a given criteria
      * @param predicate - Function that returns true if the account should be included in the result
+     * @returns Array of bot instances that match the criteria
      */
-    filterAccounts(predicate: (...params: any[]) => any): void;
+    filterAccounts(predicate: (...params: any[]) => any): Bot[];
     /**
      * Set of premade functions for filterAccounts()
      */
@@ -802,8 +803,9 @@ declare class Controller {
     /**
      * Filters the active set of bot accounts by a given criteria
      * @param predicate - Function that returns true if the account should be included in the result
+     * @returns Array of bot instances that match the criteria
      */
-    filterAccounts(predicate: (...params: any[]) => any): void;
+    filterAccounts(predicate: (...params: any[]) => any): Bot[];
     /**
      * Set of premade functions for filterAccounts()
      */
