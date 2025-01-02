@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-29 14:00:52
+ * Last Modified: 2025-01-02 10:38:34
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -197,6 +197,19 @@ Controller.prototype._start = async function() {
     logger("", "---------------------------------------------------------", true, true);
 
 
+    // Check for unsupported node.js version (<16.0.0)
+    const versionarr = process.version.replace("v", "").split(".");
+
+    versionarr.forEach((e, i) => { if (e.length == 1 && parseInt(e) < 10) versionarr[i] = `0${e}`; }); // Put 0 in front of single digits
+
+    if (parseInt(versionarr.join("")) < 160000) {
+        logger("", "\n************************************************************************************\n", true);
+        logger("error", `This application requires at least node.js ${logger.colors.reset}v16.0.0${logger.colors.fgred} but you have ${logger.colors.reset}${process.version}${logger.colors.fgred} installed!\n        Please update your node.js installation: ${logger.colors.reset} https://nodejs.org/`, true);
+        logger("", "\n************************************************************************************\n", true);
+        return this.stop();
+    }
+
+
     /* ------------ Check internet connection: ------------ */
     logger("info", "Checking if Steam is reachable...", false, true, logger.animation("loading"));
 
@@ -236,19 +249,6 @@ Controller.prototype._start = async function() {
     } else {
         process.stdout.write(`${String.fromCharCode(27)}]0;${this.data.datafile.mestr}'s Steam Comment Service Bot v${this.data.datafile.versionstr} | ${process.platform}${String.fromCharCode(7)}`); // Sets terminal title (thanks: https://stackoverflow.com/a/30360821/12934162)
         process.title = "CommentBot"; // Sets process title in task manager etc.
-    }
-
-
-    // Check for unsupported node.js version (<16.0.0)
-    const versionarr = process.version.replace("v", "").split(".");
-
-    versionarr.forEach((e, i) => { if (e.length == 1 && parseInt(e) < 10) versionarr[i] = `0${e}`; }); // Put 0 in front of single digits
-
-    if (parseInt(versionarr.join("")) < 160000) {
-        logger("", "\n************************************************************************************\n", true);
-        logger("error", `This application requires at least node.js ${logger.colors.reset}v16.0.0${logger.colors.fgred} but you have ${logger.colors.reset}${process.version}${logger.colors.fgred} installed!\n        Please update your node.js installation: ${logger.colors.reset} https://nodejs.org/`, true);
-        logger("", "\n************************************************************************************\n", true);
-        return this.stop();
     }
 
 

@@ -263,7 +263,7 @@
         {
             "path": "src/controller/controller.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/controller.js",
-            "checksum": "f9ebc14132ef60a47913dd0431c83282"
+            "checksum": "45b943499daa41b8e24e2c22b900a0ae"
         },
         {
             "path": "src/controller/events/ready.js",
