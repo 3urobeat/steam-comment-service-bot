@@ -16,7 +16,7 @@ This is the full documentation of all commands. Most commands have aliases but s
 | !downvote     | `amount ID`      | Downvotes a sharedfile or review with all bot accounts that haven't yet voted on that item. Requires unlimited accounts! (Owner only.) |
 | !funnyvote    | `amount link`    | Votes with funny on a review using all bot accounts that haven't yet voted on that item. Requires unlimited accounts! |
 | !favorite     | `amount ID`      | Favorizes a sharedfile with all bot accounts that haven't yet favorized that item. Alias: !fav |
-| !unfavorite   | `amount ID`      | Unfavorizes a sharedfile with all bot accounts that have favorized that item. Alias: !unfav (Owners only.) |
+| !unfavorite   | `amount ID`      | Unfavorizes a sharedfile with all bot accounts that have favorized that item. Alias: !unfav (Owner only.) |
 | !follow       | `amount ID`      | Follows a user's workshop or a curator (you must provide a full url for curators) with all bot accounts that haven't yet done so.<br>Providing an ID/url is owner only, normal users can only request follows for themselves.<br>When no `ID` has been provided the bot will always use the profile of the requesting user. (You) |
 | !unfollow     | `amount ID`      | Unfollows a user's workshop or a curator (you must provide a full url for curators) with all bot accounts that have done so.<br>Providing an ID/url is owner only, normal users can only request unfollows for themselves.<br>When no `ID` has been provided the bot will always use the profile of the requesting user. (You) |
 | !ping         | No arguments     | Returns ping in ms to Steam's servers. Can be used to check if the bot is responsive | 
@@ -46,6 +46,7 @@ This is the full documentation of all commands. Most commands have aliases but s
 | !update       | `true` | Checks for an available update and installs it if automatic updates are enabled and no requests are active. 'true' forces an update. Blocks new requests if it currently waits for one to be completed. (Owner only.) |
 | !log          | No arguments     | Shows the last 15 lines of the log. (Owner only.) |
 | !eval         | `javascript code` | Disabled by default, needs to be toggled on with `enableevalcmd` in config.json.<h4>**Warning!** This will run any javascript code that was provided. It is strongly advised to leave this feature off unless you know exactly what this means! If you have multiple owners configured they can also run code on **your** machine!</h4> (Owner only.) |
+| !manage       | `mode argument`  | Interact with the manage module to administrate the active set of bot accounts (add, remove, filter). Run the command without `mode` or `argument` to display help. (Owner only.) |
   
 &nbsp;
 
