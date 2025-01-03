@@ -488,7 +488,7 @@
         {
             "path": "src/pluginSystem/loadPlugins.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/pluginSystem/loadPlugins.js",
-            "checksum": "d4be136478505123b8e25a28850ebfd6"
+            "checksum": "0046cfbd503dd367f234cebc084c94bc"
         },
         {
             "path": "src/pluginSystem/pluginSystem.js",

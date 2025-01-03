@@ -4,7 +4,7 @@
  * Created Date: 2023-06-04 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 2025-01-02 22:16:46
+ * Last Modified: 2025-01-03 14:14:56
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -53,6 +53,12 @@ function instantiatePlugin(pluginName) {
  * @param {string} pluginPackageName Name of the plugin npm package to load
  */
 PluginSystem.prototype._loadPlugin = async function(pluginPackageName) {
+
+    // Check if a plugin with this name is already loaded
+    if (this.pluginList[pluginPackageName]) {
+        logger("warn", `PluginSystem: Plugin '${pluginPackageName}' is already loaded! Skipping...`, false, false, null, true); // Force print now
+        return;
+    }
 
     // Attempt to instantiate the plugin
     const instantiatedPlugin = instantiatePlugin.bind(this)(pluginPackageName);
