@@ -4,7 +4,7 @@
  * Created Date: 2024-12-28 12:56:44
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-02 14:22:52
+ * Last Modified: 2025-01-03 16:31:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 - 2025 3urobeat <https://github.com/3urobeat>
@@ -107,10 +107,13 @@ Controller.prototype.relogAccount = function(accountName) {
 
 
 /**
- * Respreads all proxies and relogs affected accounts
+ * Reloads and respreads all proxies and relogs affected accounts
  */
 Controller.prototype.respreadProxies = async function() {
-    logger("debug", "Respreading proxies and relogging affected accounts...");
+    logger("info", "Reloading proxies from disk, respreading them and relogging affected accounts...", false, false, logger.animation("loading"));
+
+    // Reload proxies from disk real quick
+    this.data.proxies = await this.data._importProxiesFromDisk();
 
     // Update status of all proxies once
     await this.data.checkAllProxies(15000);

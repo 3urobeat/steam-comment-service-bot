@@ -588,7 +588,7 @@ declare class Controller {
      */
     relogAccount(accountName: string): void;
     /**
-     * Respreads all proxies and relogs affected accounts
+     * Reloads and respreads all proxies and relogs affected accounts
      */
     respreadProxies(): void;
     /**
@@ -797,7 +797,7 @@ declare class Controller {
      */
     relogAccount(accountName: string): void;
     /**
-     * Respreads all proxies and relogs affected accounts
+     * Reloads and respreads all proxies and relogs affected accounts
      */
     respreadProxies(): void;
     /**

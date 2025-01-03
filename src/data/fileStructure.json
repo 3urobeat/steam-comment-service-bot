@@ -263,7 +263,7 @@
         {
             "path": "src/controller/controller.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/controller.js",
-            "checksum": "ccea008e2379063084cffe72486a0d7e"
+            "checksum": "01d8ded768bb4bc4a1000e4cd57ca2c3"
         },
         {
             "path": "src/controller/events/ready.js",
@@ -328,7 +328,7 @@
         {
             "path": "src/controller/manage.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/manage.js",
-            "checksum": "1a14c09d6ceb87c97af2826baa8dd79f"
+            "checksum": "e2f487866a3e2b49ee16105674091e32"
         },
         {
             "path": "src/data/ascii.js",
@@ -393,7 +393,7 @@
         {
             "path": "src/dataManager/helpers/checkProxies.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/helpers/checkProxies.js",
-            "checksum": "cd61d354f2726df6edc0ea37cd560ba1"
+            "checksum": "17e7e827ff8b889faf61531710259f59"
         },
         {
             "path": "src/dataManager/helpers/getLang.js",
@@ -628,7 +628,7 @@
         {
             "path": "types/types.d.ts",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/types/types.d.ts",
-            "checksum": "b55072358ec0c9ddaee235fb04b2fa02"
+            "checksum": "d396c5636cb3e0abb7c390cd0aad4f4b"
         }
     ]
 }

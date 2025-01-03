@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-02 18:40:28
+ * Last Modified: 2025-01-03 16:33:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -453,7 +453,7 @@ Controller.prototype.removeAccount = function(accountName) {}; // eslint-disable
 Controller.prototype.relogAccount = function(accountName) {}; // eslint-disable-line
 
 /**
- * Respreads all proxies and relogs affected accounts
+ * Reloads and respreads all proxies and relogs affected accounts
  */
 Controller.prototype.respreadProxies = async function() {};
 

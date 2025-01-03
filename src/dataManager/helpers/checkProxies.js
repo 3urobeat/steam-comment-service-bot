@@ -4,10 +4,10 @@
  * Created Date: 2023-10-09 21:08:13
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:14:31
+ * Last Modified: 2025-01-03 16:21:02
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -27,6 +27,8 @@ DataManager.prototype.checkProxy = async function(proxyIndex) {
     const { checkConnection, splitProxyString } = this.controller.misc;
 
     const thisProxy = this.proxies[proxyIndex];
+
+    logger("debug", `DataManager checkProxy(): Pinging Steam with proxy '${thisProxy.proxy}' and updating its status...`);
 
     // Check connection using checkConnection helper
     await checkConnection("https://steamcommunity.com", true, thisProxy.proxy != null ? splitProxyString(thisProxy.proxy) : null) // Quick ternary to only split non-hosts
@@ -51,6 +53,8 @@ DataManager.prototype.checkProxy = async function(proxyIndex) {
  */
 DataManager.prototype.checkAllProxies = async function(ignoreLastCheckedWithin = 0) {
     const promiseArr = [];
+
+    logger("info", "Checking all proxies for connectivity and updating their status...", false, true, logger.animation("loading"));
 
     // Iterate over all proxies and call this.checkProxies(). We don't need any delay here as all requests go over different IPs
     this.proxies.forEach((e) => {
