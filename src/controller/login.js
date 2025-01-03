@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-20 16:59:35
+ * Last Modified: 2025-01-03 21:00:10
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -84,14 +84,17 @@ Controller.prototype.login = async function(firstLogin) {
     this.info.activeLogin = true;
 
 
-    // Create new bot objects and register them bot accounts which are "new"
+    // Create new bot objects and register them bot accounts which are "new". We need to recreate bot objects of bots who have changed their proxy in order for it to actually get used
     allAccounts.forEach(async (e, i) => {
-        if (!this.bots[e.accountName]) {
-            logger("debug", `Creating new bot object for ${e.accountName}...`);
+        // Check if either no bot object exists yet or if bot has changed proxy and re-create
+        if (!this.bots[e.accountName]
+            || (this.bots[e.accountName].user && this.bots[e.accountName].user.options.httpProxy != this.bots[e.accountName].loginData.proxy)) {
+            logger("debug", `Creating new bot object for account '${e.accountName}'${this.bots[e.accountName] ? " due to proxy change" : ""}...`);
 
+            // TODO: Does this properly clean up memory when re-creating?
             this.bots[e.accountName] = new Bot(this, e.index); // Create a new bot object for this account and store a reference to it
         } else {
-            logger("debug", `Found existing bot object for ${e.accountName}! Reusing it...`);
+            logger("debug", `Found existing bot object for '${e.accountName}' with unchanged proxy! Reusing it...`);
         }
 
         // Check if this acc has a valid token stored to qualify for fastQueue. This async function is awaited below for all accounts at once using Promise.all(). Self-assign result in then() so that the value is accessible, instead of nested inside a fulfilled Promise object.

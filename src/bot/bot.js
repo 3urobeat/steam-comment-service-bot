@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-27 11:21:43
+ * Last Modified: 2025-01-03 21:05:37
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -235,6 +235,12 @@ Bot.prototype._loginToSteam = async function() {
     // Cancel if not on the same logOnTries value anymore (handleLoginTimeout has probably taken action)
     if (currentLogOnTry != this.loginData.logOnTries) return logger("debug", `[${this.logPrefix}] Aborting login because _loginToSteam() was called again from somewhere else. Potentially logging off took too long and handleLoginTimeout took action.`);
 
+    // Check if SteamUser & SteamCommunity instances must be re-created due to a proxy change
+    if (this.user.options.httpProxy != this.loginData.proxy) {
+        logger("error", `[${this.logPrefix}] Proxy has changed from '${this.user.options.httpProxy}' to '${this.loginData.proxy}'! This bot object needs to be re-created!`, false, false, null, true);
+        this.controller._statusUpdateEvent(this, Bot.EStatus.ERROR);
+        return; // TODO: What now??
+    }
 
     // Find proxyIndex from steam-user object options instead of loginData to get reliable log data
     const thisProxy = this.data.proxies.find((e) =>
