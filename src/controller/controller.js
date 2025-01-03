@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-03 16:33:01
+ * Last Modified: 2025-01-03 21:48:48
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -383,6 +383,16 @@ Controller.prototype._preLogin = async function() {
 
     // Start logging in
     this.login(true);
+
+
+    // Register job to reload & respread proxies every 96 hours (I didn't know where to put this)
+    this.jobManager.registerJob({
+        name: "respreadProxies",
+        description: "Reloads, checks and if possible respreads all proxies every 96 hours",
+        func: () => { this.respreadProxies(); },
+        interval: 3.456e+8,     // 96h in ms
+        runOnRegistration: false
+    });
 
 };
 
