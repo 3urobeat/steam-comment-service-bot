@@ -4,7 +4,7 @@
  * Created Date: 2023-03-21 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-03 15:51:18
+ * Last Modified: 2025-01-03 16:08:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -189,56 +189,56 @@ DataManager.prototype.writeProxiesToDisk = function() {};
 DataManager.prototype.writeQuotesToDisk = function() {};
 
 /**
- * Internal: Loads cache.json from disk, overwrites reference in DataManager and handles potential errors
- * @returns {Promise.<void>} Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ * Internal: Loads cache.json from disk in DataManager and handles potential errors
+ * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importCacheFromDisk = function() {};
 
 /**
- * Internal: Loads data.json from disk, overwrites reference in DataManager and handles potential errors
- * @returns {Promise.<void>} Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ * Internal: Loads data.json from disk in DataManager and handles potential errors
+ * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importDataFromDisk = function() {};
 
 /**
- * Internal: Loads config.json from disk, overwrites reference in DataManager and handles potential errors
- * @returns {Promise.<void>} Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ * Internal: Loads config.json from disk in DataManager and handles potential errors
+ * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importConfigFromDisk = function() {};
 
 /**
- * Internal: Loads advancedconfig.json from disk, overwrites reference in DataManager and handles potential errors
- * @returns {Promise.<void>} Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ * Internal: Loads advancedconfig.json from disk in DataManager and handles potential errors
+ * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importAdvancedConfigFromDisk = function() {};
 
 /**
- * Internal: Loads accounts.txt/logininfo.json from disk, overwrites reference in DataManager and handles potential errors
- * @returns {Promise.<void>} Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ * Internal: Loads accounts.txt/logininfo.json from disk in DataManager and handles potential errors
+ * @returns {Promise.<object[]>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importLogininfoFromDisk = function() {};
 
 /**
- * Internal: Loads proxies.txt from disk, overwrites reference in DataManager and handles potential errors
- * @returns {Promise.<void>} Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ * Internal: Loads proxies.txt from disk in DataManager and handles potential errors
+ * @returns {Promise.<object[]>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importProxiesFromDisk = function() {};
 
 /**
- * Internal: Loads quotes.txt from disk, overwrites reference in DataManager and handles potential errors
- * @returns {Promise.<void>} Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ * Internal: Loads quotes.txt from disk in DataManager and handles potential errors
+ * @returns {Promise.<string[]>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importQuotesFromDisk = function() {};
 
 /**
- * Internal: Loads languages from disk, overwrites reference in DataManager and handles potential errors
- * @returns {Promise.<void>} Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ * Internal: Loads languages from disk in DataManager and handles potential errors
+ * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importLanguagesFromDisk = function() {};
 
 /**
- * Internal: Loads customlang.json from disk, overwrites reference in DataManager and handles potential errors
- * @returns {Promise.<void>} Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ * Internal: Loads customlang.json from disk in DataManager and handles potential errors
+ * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importCustomLangFromDisk = function() {};
 
