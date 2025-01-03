@@ -946,6 +946,51 @@ declare class DataManager {
      */
     writeQuotesToDisk(): void;
     /**
+     * Internal: Loads cache.json from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importCacheFromDisk(): Promise<void>;
+    /**
+     * Internal: Loads data.json from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importDataFromDisk(): Promise<void>;
+    /**
+     * Internal: Loads config.json from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importConfigFromDisk(): Promise<void>;
+    /**
+     * Internal: Loads advancedconfig.json from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importAdvancedConfigFromDisk(): Promise<void>;
+    /**
+     * Internal: Loads accounts.txt/logininfo.json from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importLogininfoFromDisk(): Promise<void>;
+    /**
+     * Internal: Loads proxies.txt from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importProxiesFromDisk(): Promise<void>;
+    /**
+     * Internal: Loads quotes.txt from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importQuotesFromDisk(): Promise<void>;
+    /**
+     * Internal: Loads languages from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importLanguagesFromDisk(): Promise<void>;
+    /**
+     * Internal: Loads customlang.json from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importCustomLangFromDisk(): Promise<void>;
+    /**
      * Internal: Loads all config & data files from disk and handles potential errors
      * @returns Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
@@ -1057,6 +1102,51 @@ declare class DataManager {
      * Writes quotes to quotes.txt on disk
      */
     writeQuotesToDisk(): void;
+    /**
+     * Internal: Loads cache.json from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importCacheFromDisk(): Promise<void>;
+    /**
+     * Internal: Loads data.json from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importDataFromDisk(): Promise<void>;
+    /**
+     * Internal: Loads config.json from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importConfigFromDisk(): Promise<void>;
+    /**
+     * Internal: Loads advancedconfig.json from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importAdvancedConfigFromDisk(): Promise<void>;
+    /**
+     * Internal: Loads accounts.txt/logininfo.json from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importLogininfoFromDisk(): Promise<void>;
+    /**
+     * Internal: Loads proxies.txt from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importProxiesFromDisk(): Promise<void>;
+    /**
+     * Internal: Loads quotes.txt from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importQuotesFromDisk(): Promise<void>;
+    /**
+     * Internal: Loads languages from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importLanguagesFromDisk(): Promise<void>;
+    /**
+     * Internal: Loads customlang.json from disk, overwrites reference in DataManager and handles potential errors
+     * @returns Resolves promise when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+     */
+    _importCustomLangFromDisk(): Promise<void>;
     /**
      * Internal: Loads all config & data files from disk and handles potential errors
      * @returns Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
