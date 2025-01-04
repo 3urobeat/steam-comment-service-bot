@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-03 21:00:10
+ * Last Modified: 2025-01-04 12:32:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -91,7 +91,6 @@ Controller.prototype.login = async function(firstLogin) {
             || (this.bots[e.accountName].user && this.bots[e.accountName].user.options.httpProxy != this.bots[e.accountName].loginData.proxy)) {
             logger("debug", `Creating new bot object for account '${e.accountName}'${this.bots[e.accountName] ? " due to proxy change" : ""}...`);
 
-            // TODO: Does this properly clean up memory when re-creating?
             this.bots[e.accountName] = new Bot(this, e.index); // Create a new bot object for this account and store a reference to it
         } else {
             logger("debug", `Found existing bot object for '${e.accountName}' with unchanged proxy! Reusing it...`);
