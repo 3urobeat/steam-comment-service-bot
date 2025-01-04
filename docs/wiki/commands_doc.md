@@ -40,6 +40,7 @@ This is the full documentation of all commands. Most commands have aliases but s
 | !block        | `profileid`      | Blocks a user with all bot accounts on Steam. (Owner only.) |
 | !unblock      | `profileid`      | Unblocks a user with all bot accounts on Steam. Note: The user can still get ignored by Steam for a while. (Owner only.) |
 | !jobs         | No arguments     | Lists all currently registered jobs. (Owner only.) |
+| !plugins      | No arguments     | Lists all currently active and installed but inactive plugins, including their version, botVersion and description. (Owner only.) |
 | !reload       | No arguments     | Reloads all commands and plugins without needing to restart. Please only use it for testing/development. Alias: !rl (Owner only.) |
 | !restart      | No arguments     | Restarts the bot and checks for available updates. Alias: !rs (Owner only.) |
 | !stop         | No arguments     | Stops the bot. (Owner only.) |

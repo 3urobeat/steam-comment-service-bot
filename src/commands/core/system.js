@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-02 13:23:12
+ * Last Modified: 2025-01-04 17:31:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -61,6 +61,64 @@ module.exports.jobs = {
 
         // Send message
         respond(str);
+    }
+};
+
+
+module.exports.plugins = {
+    names: ["plugins"],
+    description: "Lists all installed plugins",
+    args: [],
+    ownersOnly: true,
+
+    /**
+     * The jobs command
+     * @param {CommandHandler} commandHandler The commandHandler object
+     * @param {Array} args Array of arguments that will be passed to the command
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     */
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+
+        // Compile list of all enabled plugins
+        const activePlugins    = commandHandler.controller.pluginSystem.getActivePlugins();
+        let   activePluginsStr = "";
+
+        activePlugins.forEach(([pluginName, pluginVersion]) => {
+            pluginVersion = pluginVersion.replace("^", ""); // Remove ^ from version string, it looks weird in the message
+
+            try {
+                const pluginPackageJson = require(srcdir + "/../node_modules/" + pluginName + "/package.json");
+
+                activePluginsStr += `- ${pluginName} v${pluginVersion} for v${pluginPackageJson.botVersion} by ${pluginPackageJson.author} - '${pluginPackageJson.description}'\n`;
+            } catch (err) {
+                logger("warn", `Couldn't load package.json of plugin '${pluginName}', displaying shallow information. ${err}`);
+                activePluginsStr += `- ${pluginName} v${pluginVersion}`;
+            }
+        });
+
+        // Compile list of all installed plugins but exclude the active ones
+        const installedPlugins   = commandHandler.controller.pluginSystem.getInstalledPlugins();
+        const inactivePlugins    = installedPlugins.filter(([pluginName]) => !activePlugins.map(([name]) => name).includes(pluginName)); // Reduce activePlugins [[name, version], ...] to [name, ...] and filter plugins included in it
+        let   inactivePluginsStr = "";
+
+        inactivePlugins.forEach(([pluginName, pluginVersion]) => {
+            pluginVersion = pluginVersion.replace("^", ""); // Remove ^ from version string, it looks weird in the message
+
+            try {
+                const pluginPackageJson = require(srcdir + "/../node_modules/" + pluginName + "/package.json");
+
+                inactivePluginsStr += `- ${pluginName} v${pluginVersion} for v${pluginPackageJson.botVersion} by ${pluginPackageJson.author} - '${pluginPackageJson.description}'\n`;
+            } catch (err) {
+                logger("warn", `Couldn't load package.json of plugin '${pluginName}', displaying shallow information. ${err}`);
+                inactivePluginsStr += `- ${pluginName} v${pluginVersion}`;
+            }
+        });
+
+        // Send message
+        respond(await commandHandler.data.getLang("pluginscmdresponse", { "activeplugins": activePluginsStr.trim(), "inactiveplugins": inactivePluginsStr.trim() }, resInfo.userID));
     }
 };
 

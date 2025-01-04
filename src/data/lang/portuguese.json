@@ -68,6 +68,7 @@
 
     "jobscmdregistered": "These jobs are currently registered:",
     "jobscmdnoneregistered": "There are currently no jobs registered.",
+    "pluginscmdresponse": "These plugins are currently active:\n${activeplugins}\n\nThese plugins are installed but currently inactive:\n${inactiveplugins}",
     "reloadcmdreloaded": "Recarregou todos os comandos e plugins.",
     "activerelog": "O bot está aguardando as últimas solicitações ativas serem concluídas para reiniciar as contas.\nAguarde alguns minutos e tente novamente.",
     "updatecmdforce": "Forçando uma atualização do ${branchname}...",

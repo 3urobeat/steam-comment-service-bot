@@ -68,6 +68,7 @@
 
     "jobscmdregistered": "Эти работы сейчас зарегистрированны:",
     "jobscmdnoneregistered": "Сейчас нет зарегистрированных работ.",
+    "pluginscmdresponse": "These plugins are currently active:\n${activeplugins}\n\nThese plugins are installed but currently inactive:\n${inactiveplugins}",
     "reloadcmdreloaded": "Перезагружены все команды и плагины.",
     "activerelog": "В настоящее время бот ожидает завершения последних активных запросов, чтобы заново войти.\nПожалуйста, подождите несколько минут и повторите попытку.",
     "updatecmdforce": "Принудительное обновление из ветки ${branchname}...",

@@ -67,6 +67,7 @@
 
     "jobscmdregistered": "已註冊:",
     "jobscmdnoneregistered": "未註冊",
+    "pluginscmdresponse": "These plugins are currently active:\n${activeplugins}\n\nThese plugins are installed but currently inactive:\n${inactiveplugins}",
     "reloadcmdreloaded": "已重新讀取所有功能 / 插件",
     "activerelog": "目前正等待最後一個活動完成，以便重新登入帳戶。",
     "updatecmdforce": "強制更新 ${branchname}",

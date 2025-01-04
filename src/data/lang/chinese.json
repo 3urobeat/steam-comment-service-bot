@@ -68,6 +68,7 @@
 
     "jobscmdregistered": "这些作业目前已注册: ",
     "jobscmdnoneregistered": "目前没有作业注册。",
+    "pluginscmdresponse": "These plugins are currently active:\n${activeplugins}\n\nThese plugins are installed but currently inactive:\n${inactiveplugins}",
     "reloadcmdreloaded": "重新加载所有命令和插件。",
     "activerelog": "机器人目前正在等待最后一个活动请求完成，以便重新登录帐户。\n请稍等片刻，然后重试。",
     "updatecmdforce": "Forcing an update from the ${branchname} branch...",
