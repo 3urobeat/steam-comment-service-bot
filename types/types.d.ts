@@ -1650,6 +1650,14 @@ declare class PluginSystem {
      */
     jobManager: JobManager;
     /**
+     * Helper function - Get a list of all installed plugins
+     */
+    getInstalledPlugins(): any;
+    /**
+     * Helper function - Get a list of all active (loaded) plugins
+     */
+    getActivePlugins(): any;
+    /**
      * Internal: Checks for available updates of all enabled plugins on NPM
      */
     _checkPluginUpdates(pluginPackages: any): void;

@@ -4,7 +4,7 @@
  * Created Date: 2023-03-19 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-02 22:16:53
+ * Last Modified: 2025-01-04 13:30:44
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -77,6 +77,18 @@ const PluginSystem = function (controller) {
         steamGuardQrCode: "steamGuardQrCode"
     };
 
+    /**
+     * Helper function - Get a list of all installed plugins
+     * @returns {[string, string][]} Array of arrays containing package name & version of all installed plugins
+     */
+    this.getInstalledPlugins = (() => Object.entries(this.packageJson.dependencies).filter(([key, value]) => this.PLUGIN_REGEX.test(key))); // eslint-disable-line
+
+    /**
+     * Helper function - Get a list of all active (loaded) plugins
+     * @returns {[string, string][]} Array of arrays containing package name & version of all active (loaded) plugins
+     */
+    this.getActivePlugins = (() => Object.keys(this.pluginList).map((key) => [key, this.packageJson.dependencies[key]]));
+
     // Load helper files
     require("./loadPlugins.js");
     require("./handlePluginData.js");
@@ -97,13 +109,7 @@ PluginSystem.prototype._checkPluginUpdates = async function(pluginPackages = nul
 
     // Set packageNames to all enabled plugins if null
     if (!pluginPackages) {
-        pluginPackages = [];
-
-        Object.keys(this.pluginList).forEach((pluginName) => {
-            const pluginVersion = this.packageJson.dependencies[pluginName];    // Get installed version from package.json
-
-            if (pluginVersion) pluginPackages.push([pluginName, pluginVersion]);  // Push if corresponding plugin version was found
-        });
+        pluginPackages = this.getActivePlugins();
     }
 
     // Get all plugin names. Ignore locally installed ones by checking for "file:"

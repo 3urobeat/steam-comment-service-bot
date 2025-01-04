@@ -4,7 +4,7 @@
  * Created Date: 2023-06-04 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 2025-01-03 14:14:56
+ * Last Modified: 2025-01-04 13:27:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -140,7 +140,7 @@ PluginSystem.prototype._loadPlugin = async function(pluginPackageName) {
 PluginSystem.prototype._loadPlugins = async function () {
 
     // Get all plugins with the matching regex
-    const plugins = Object.entries(this.packageJson.dependencies).filter(([key, value]) => this.PLUGIN_REGEX.test(key)); // eslint-disable-line
+    const plugins = this.getInstalledPlugins();
 
     // Check for the latest version of all plugins
     if (!this.controller.data.advancedconfig.disablePluginsAutoUpdate) {
