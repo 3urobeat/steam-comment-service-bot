@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-05 13:08:02
+ * Last Modified: 2025-01-05 14:06:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -18,12 +18,31 @@
 const { EventEmitter } = require("events");
 
 
+// "Hack" to get type information in code completion without requiring file during runtime
+/**
+ * @typedef Bot
+ * @type {import("../bot/bot.js")}
+ */
+
+
 /**
  * Constructor - Initializes the controller and starts all bot accounts
  * @class
  */
 const Controller = function() {
     this.srcdir = srcdir; // Let users see the global var srcdir more easily
+
+    /**
+     * Stores references to all bot account objects mapped to their accountName
+     * @type {{[key: string]: Bot}}
+     */
+    this.bots = {};
+
+    /**
+     * The main bot account
+     * @type {Bot}
+     */
+    this.main = {}; // Store short-hand reference to the main acc (populated later)
 
     // Create eventEmitter
     this.events = new EventEmitter();
@@ -279,6 +298,10 @@ Controller.prototype._start = async function() {
         return this.stop();
     }
 
+    /**
+     * The updater object
+     * @type {import("../updater/updater.js")}
+     */
     this.updater = new Updater(this);
 
     // Check if the last update failed and skip the updater for now
@@ -315,34 +338,8 @@ Controller.prototype._preLogin = async function() {
     this.jobManager = new JobManager(this);
 
 
-    // Update Updater IntelliSense without modifying what _start() has already set. Integrity has already been checked
-    let Updater = require("../updater/updater.js"); // eslint-disable-line
-
-    /**
-     * The updater object
-     * @type {Updater}
-     */
-    this.updater;
-
     // Register update check job
     this.updater._registerUpdateChecker();
-
-
-    // Check bot.js for errors and load it explicitly again to get IntelliSense support
-    if (!await this.checkAndGetFile("./src/bot/bot.js", logger, false, false)) return this.stop(); // TODO: Is this still necessary when the dataIntegrity check and updater already ran??
-    let Bot = require("../bot/bot.js"); // eslint-disable-line
-
-    /**
-     * Stores references to all bot account objects mapped to their accountName
-     * @type {{[key: string]: Bot}}
-     */
-    this.bots = {};
-
-    /**
-     * The main bot account
-     * @type {Bot}
-     */
-    this.main = {}; // Store short-hand reference to the main acc (populated later)
 
 
     // Load Controller event handlers & helpers. This must happen after bot.js has been verified
@@ -394,64 +391,6 @@ Controller.prototype._preLogin = async function() {
         runOnRegistration: false
     });
 
-
-    // Functions implemented by Controller which require the previously unresolved Bot class import
-    /**
-     * Filters the active set of bot accounts by a given criteria
-     * @param {function(Bot): boolean} predicate Function that returns true if the account should be included in the result
-     * @returns {Array.<Bot>} Array of bot instances that match the criteria
-     */
-    this.filterAccounts = function(predicate) {}; // eslint-disable-line
-
-    /**
-     * Runs internal statusUpdate event code and emits statusUpdate event for plugins
-     * @param {Bot} bot Bot instance
-     * @param {Bot.EStatus} newStatus The new status of this bot
-     */
-    this._statusUpdateEvent = function(bot, newStatus) {}; // eslint-disable-line
-
-    /**
-     * Emits steamGuardInput event for bot & plugins
-     * @param {Bot} bot Bot instance of the affected account
-     * @param {function(string): void} submitCode Function to submit a code. Pass an empty string to skip the account.
-     */
-    this._steamGuardInputEvent = function(bot, submitCode) {}; // eslint-disable-line
-
-    /**
-     * Emits steamGuardQrCode event for bot & plugins
-     * @param {Bot} bot Bot instance of the affected account
-     * @param {string} challengeUrl The QrCode Challenge URL supplied by Steam. Display this value using a QR-Code parser and let a user scan it using their Steam Mobile App.
-     */
-    this._steamGuardQrCodeEvent = function(bot, challengeUrl) {}; // eslint-disable-line
-
-    /**
-     * Check if all friends are in lastcomment database
-     * @param {Bot} bot Bot object of the account to check
-     */
-    this.checkLastcommentDB = function(bot) {}; // eslint-disable-line
-
-    /**
-     * Checks the remaining space on the friendlist of a bot account, sends a warning message if it is less than 10 and force unfriends oldest lastcomment db user to always keep room for 1 friend.
-     * @param {Bot} bot Bot object of the account to check
-     * @param {function(number|null): void} callback Called with `remaining` (Number) on success or `null` on failure
-     */
-    this.friendListCapacityCheck = function(bot, callback) {}; // eslint-disable-line
-
-    /**
-     * Retrieves all matching bot accounts and returns them.
-     * @param {(EStatus|EStatus[]|string)} [statusFilter=EStatus.ONLINE] Optional: EStatus or Array of EStatus's including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'EStatus.ONLINE' will be returned.
-     * @param {boolean} [mapToObject=false] Optional: If true, an object will be returned where every bot object is mapped to their accountName.
-     * @returns {Array.<Bot>} An array or object if `mapToObject == true` containing all matching bot accounts. Note: This JsDoc type param only specifies the default array version to get IntelliSense support.
-     */
-    this.getBots = function(statusFilter = EStatus.ONLINE, mapToObject = false) {}; // eslint-disable-line
-
-    /**
-     * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
-     * @param {boolean} [filterOffline=false] Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
-     * @returns {Array.<{ bots: Array.<Bot>, proxy: string, proxyIndex: number, isOnline: boolean, lastOnlineCheck: number }>} Bot accounts mapped to their associated proxy
-     */
-    this.getBotsPerProxy = function(filterOffline = false) {}; // eslint-disable-line
-
 };
 
 
@@ -480,7 +419,6 @@ Controller.prototype.stop = function() {
 
 
 /* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
-// NOTE: Functions containing 'Bot' class in JsDoc MUST be referenced in _preLogin() instead, as the the Bot import is not resolved here yet
 
 /**
  * Attempts to log in all bot accounts which are currently offline one after another.
@@ -527,6 +465,13 @@ Controller.prototype.relogAccount = function(accountName) {}; // eslint-disable-
 Controller.prototype.respreadProxies = async function() {};
 
 /**
+ * Filters the active set of bot accounts by a given criteria
+ * @param {function(Bot): boolean} predicate Function that returns true if the account should be included in the result
+ * @returns {Array.<Bot>} Array of bot instances that match the criteria
+ */
+Controller.prototype.filterAccounts = function(predicate) {}; // eslint-disable-line
+
+/**
  * Set of premade functions for filterAccounts()
  * @type {{ all: Function, statusOffline: Function, statusOnline: Function, statusError: Function, statusSkipped: Function, limited: Function, unlimited: Function }}
  */
@@ -538,9 +483,58 @@ Controller.prototype.filters = {};
 Controller.prototype._readyEvent = function() {};
 
 /**
+ * Runs internal statusUpdate event code and emits statusUpdate event for plugins
+ * @param {Bot} bot Bot instance
+ * @param {Bot.EStatus} newStatus The new status of this bot
+ */
+Controller.prototype._statusUpdateEvent = function(bot, newStatus) {}; // eslint-disable-line
+
+/**
+ * Emits steamGuardInput event for bot & plugins
+ * @param {Bot} bot Bot instance of the affected account
+ * @param {function(string): void} submitCode Function to submit a code. Pass an empty string to skip the account.
+ */
+Controller.prototype._steamGuardInputEvent = function(bot, submitCode) {}; // eslint-disable-line
+
+/**
+ * Emits steamGuardQrCode event for bot & plugins
+ * @param {Bot} bot Bot instance of the affected account
+ * @param {string} challengeUrl The QrCode Challenge URL supplied by Steam. Display this value using a QR-Code parser and let a user scan it using their Steam Mobile App.
+ */
+Controller.prototype._steamGuardQrCodeEvent = function(bot, challengeUrl) {}; // eslint-disable-line
+
+/**
+ * Check if all friends are in lastcomment database
+ * @param {Bot} bot Bot object of the account to check
+ */
+Controller.prototype.checkLastcommentDB = function(bot) {}; // eslint-disable-line
+
+/**
+ * Checks the remaining space on the friendlist of a bot account, sends a warning message if it is less than 10 and force unfriends oldest lastcomment db user to always keep room for 1 friend.
+ * @param {Bot} bot Bot object of the account to check
+ * @param {function(number|null): void} callback Called with `remaining` (Number) on success or `null` on failure
+ */
+Controller.prototype.friendListCapacityCheck = function(bot, callback) {}; // eslint-disable-line
+
+/**
  * Check for friends who haven't requested comments in config.unfriendtime days and unfriend them
  */
 Controller.prototype._lastcommentUnfriendCheck = function() {} // eslint-disable-line
+
+/**
+ * Retrieves all matching bot accounts and returns them.
+ * @param {(EStatus|EStatus[]|string)} [statusFilter=EStatus.ONLINE] Optional: EStatus or Array of EStatus's including account statuses to filter. Pass '*' to get all accounts. If omitted, only accs with status 'EStatus.ONLINE' will be returned.
+ * @param {boolean} [mapToObject=false] Optional: If true, an object will be returned where every bot object is mapped to their accountName.
+ * @returns {Array.<Bot>} An array or object if `mapToObject == true` containing all matching bot accounts. Note: This JsDoc type param only specifies the default array version to get IntelliSense support.
+ */
+Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObject = false) {}; // eslint-disable-line
+
+/**
+ * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
+ * @param {boolean} [filterOffline=false] Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
+ * @returns {Array.<{ bots: Array.<Bot>, proxy: string, proxyIndex: number, isOnline: boolean, lastOnlineCheck: number }>} Bot accounts mapped to their associated proxy
+ */
+Controller.prototype.getBotsPerProxy = function(filterOffline = false) {}; // eslint-disable-line
 
 /**
  * Internal: Handles process's unhandledRejection & uncaughtException error events.

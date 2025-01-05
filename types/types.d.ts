@@ -493,10 +493,261 @@ declare function sortFailedObject(failedObj: any): void;
 declare function handleIterationSkip(commandHandler: CommandHandler, loop: any, bot: Bot, receiverSteamID64: string): boolean;
 
 /**
+ * Constructor - Initializes an object which represents a user steam account
+ * @param controller - Reference to the controller object
+ * @param index - The index of this account in the logininfo object
+ */
+declare class Bot {
+    constructor(controller: Controller, index: number);
+    /**
+     * Reference to the controller object
+     */
+    controller: Controller;
+    /**
+     * Reference to the DataManager object
+     */
+    data: DataManager;
+    /**
+     * Login index of this bot account
+     */
+    index: number;
+    /**
+     * Status of this bot account
+     */
+    status: EStatus;
+    /**
+     * SteamID64's to ignore in the friendMessage event handler. This is used by readChatMessage() to prevent duplicate responses.
+     */
+    friendMessageBlock: string[];
+    /**
+     * Additional login related information for this bot account
+     */
+    loginData: any;
+    /**
+     * Username of this bot account
+     */
+    accountName: string;
+    /**
+     * Stores the timestamp and reason of the last disconnect. This is used by handleRelog() to take proper action
+     */
+    lastDisconnect: any;
+    /**
+     * This SteamUser instance
+     */
+    user: SteamUser;
+    /**
+     * This SteamCommunity instance
+     */
+    community: SteamCommunity;
+    /**
+     * Calls SteamUser logOn() for this account. This will either trigger the SteamUser loggedOn or error event.
+     */
+    _loginToSteam(): void;
+    /**
+     * Handles the SteamUser debug events if enabled in advancedconfig
+     */
+    _attachSteamDebugEvent(): void;
+    /**
+     * Handles the SteamUser disconnect event and tries to relog the account
+     */
+    _attachSteamDisconnectedEvent(): void;
+    /**
+     * Handles the SteamUser error event
+     */
+    _attachSteamErrorEvent(): void;
+    /**
+     * Handles messages, cooldowns and executes commands.
+     */
+    _attachSteamFriendMessageEvent(): void;
+    /**
+     * Do some stuff when account is logged in
+     */
+    _attachSteamLoggedOnEvent(): void;
+    /**
+     * Accepts a friend request, adds the user to the lastcomment.db database and invites him to your group
+     */
+    _attachSteamFriendRelationshipEvent(): void;
+    /**
+     * Accepts a group invite if acceptgroupinvites in the config is true
+     */
+    _attachSteamGroupRelationshipEvent(): void;
+    /**
+     * Handles setting cookies and accepting offline friend & group invites
+     */
+    _attachSteamWebSessionEvent(): void;
+    /**
+     * Checks if user is blocked, has an active cooldown for spamming or isn't a friend
+     * @param steamID64 - The steamID64 of the message sender
+     * @param message - The message string provided by steam-user friendMessage event
+     * @returns `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
+     */
+    checkMsgBlock(steamID64: any, message: string): boolean;
+    /**
+     * Attempts to check if this account has family view (feature to restrict features for child accounts) enabled
+     * @returns Returns a Promise which resolves with a boolean, indicating whether family view is enabled or not. If request failed, `false` is returned.
+     */
+    checkForFamilyView(): Promise<boolean>;
+    /**
+     * Requests family view unlock key from user and attempts to unlock it
+     * @returns Returns a Promise which resolves when done
+     */
+    unlockFamilyView(): Promise<void>;
+    /**
+     * Internal - Attempts to get a cached family view code for this account from tokens.db
+     */
+    _getFamilyViewCodeFromStorage(callback: any): void;
+    /**
+     * Internal - Saves a new family view code for this account to tokens.db
+     * @param familyViewCode - The family view code to store
+     */
+    _saveFamilyViewCodeToStorage(familyViewCode: string): void;
+    /**
+     * Handles aborting a login attempt should an account get stuck to prevent the bot from softlocking (see issue #139)
+     */
+    handleLoginTimeout(): void;
+    /**
+     * Handles checking for missing game licenses, requests them and then starts playing
+     */
+    handleMissingGameLicenses(): void;
+    /**
+     * Changes the proxy of this bot account.
+     * @param newProxyIndex - Index of the new proxy inside the DataManager.proxies array.
+     */
+    switchProxy(newProxyIndex: number): void;
+    /**
+     * Checks host internet connection, updates the status of all proxies checked >2.5 min ago and switches the proxy of this bot account if necessary.
+     * @returns Resolves with a boolean indicating whether the proxy was switched when done. A relog is triggered when the proxy was switched.
+     */
+    checkAndSwitchMyProxy(): Promise<boolean>;
+    /**
+     * Attempts to get this account, after failing all logOnRetries, back online after some time. Does not apply to initial logins.
+     */
+    handleRelog(): void;
+    /**
+     * Our commandHandler respondModule implementation - Sends a message to a Steam user
+     * @param _this - The Bot object context
+     * @param txt - The text to send
+     * @param retry - Internal: true if this message called itself again to send failure message
+     * @param part - Internal: Index of which part to send for messages larger than 750 chars
+     */
+    sendChatMessage(_this: any, resInfo: any, txt: string, retry: boolean, part: number): void;
+    /**
+     * Waits for a Steam Chat message from this user to this account and resolves their message content. The "normal" friendMessage event handler will be blocked for this user.
+     * @param steamID64 - The steamID64 of the user to read a message from
+     * @param timeout - Time in ms after which the Promise will be resolved if user does not respond. Pass 0 to disable (not recommended)
+     * @returns Resolved with `String` on response or `null` on timeout.
+     */
+    readChatMessage(steamID64: string, timeout: number): Promise<string | null>;
+    /**
+     * Handles the SteamUser debug events if enabled in advancedconfig
+     */
+    _attachSteamDebugEvent(): void;
+    /**
+     * Handles the SteamUser disconnect event and tries to relog the account
+     */
+    _attachSteamDisconnectedEvent(): void;
+    /**
+     * Handles the SteamUser error event
+     */
+    _attachSteamErrorEvent(): void;
+    /**
+     * Handles messages, cooldowns and executes commands.
+     */
+    _attachSteamFriendMessageEvent(): void;
+    /**
+     * Do some stuff when account is logged in
+     */
+    _attachSteamLoggedOnEvent(): void;
+    /**
+     * Accepts a friend request, adds the user to the lastcomment.db database and invites him to your group
+     */
+    _attachSteamFriendRelationshipEvent(): void;
+    /**
+     * Accepts a group invite if acceptgroupinvites in the config is true
+     */
+    _attachSteamGroupRelationshipEvent(): void;
+    /**
+     * Handles setting cookies and accepting offline friend & group invites
+     */
+    _attachSteamWebSessionEvent(): void;
+    /**
+     * Checks if user is blocked, has an active cooldown for spamming or isn't a friend
+     * @param steamID64 - The steamID64 of the message sender
+     * @param message - The message string provided by steam-user friendMessage event
+     * @returns `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
+     */
+    checkMsgBlock(steamID64: any, message: string): boolean;
+    /**
+     * Attempts to check if this account has family view (feature to restrict features for child accounts) enabled
+     * @returns Returns a Promise which resolves with a boolean, indicating whether family view is enabled or not. If request failed, `false` is returned.
+     */
+    checkForFamilyView(): Promise<boolean>;
+    /**
+     * Requests family view unlock key from user and attempts to unlock it
+     * @returns Returns a Promise which resolves when done
+     */
+    unlockFamilyView(): Promise<void>;
+    /**
+     * Internal - Attempts to get a cached family view code for this account from tokens.db
+     */
+    _getFamilyViewCodeFromStorage(callback: any): void;
+    /**
+     * Internal - Saves a new family view code for this account to tokens.db
+     * @param familyViewCode - The family view code to store
+     */
+    _saveFamilyViewCodeToStorage(familyViewCode: string): void;
+    /**
+     * Handles aborting a login attempt should an account get stuck to prevent the bot from softlocking (see issue #139)
+     */
+    handleLoginTimeout(): void;
+    /**
+     * Handles checking for missing game licenses, requests them and then starts playing
+     */
+    handleMissingGameLicenses(): void;
+    /**
+     * Changes the proxy of this bot account.
+     * @param newProxyIndex - Index of the new proxy inside the DataManager.proxies array.
+     */
+    switchProxy(newProxyIndex: number): void;
+    /**
+     * Checks host internet connection, updates the status of all proxies checked >2.5 min ago and switches the proxy of this bot account if necessary.
+     * @returns Resolves with a boolean indicating whether the proxy was switched when done. A relog is triggered when the proxy was switched.
+     */
+    checkAndSwitchMyProxy(): Promise<boolean>;
+    /**
+     * Attempts to get this account, after failing all logOnRetries, back online after some time. Does not apply to initial logins.
+     */
+    handleRelog(): void;
+    /**
+     * Our commandHandler respondModule implementation - Sends a message to a Steam user
+     * @param _this - The Bot object context
+     * @param txt - The text to send
+     * @param retry - Internal: true if this message called itself again to send failure message
+     * @param part - Internal: Index of which part to send for messages larger than 750 chars
+     */
+    sendChatMessage(_this: any, resInfo: any, txt: string, retry: boolean, part: number): void;
+    /**
+     * Waits for a Steam Chat message from this user to this account and resolves their message content. The "normal" friendMessage event handler will be blocked for this user.
+     * @param steamID64 - The steamID64 of the user to read a message from
+     * @param timeout - Time in ms after which the Promise will be resolved if user does not respond. Pass 0 to disable (not recommended)
+     * @returns Resolved with `String` on response or `null` on timeout.
+     */
+    readChatMessage(steamID64: string, timeout: number): Promise<string | null>;
+}
+
+/**
  * Constructor - Initializes the controller and starts all bot accounts
  */
 declare class Controller {
     constructor();
+    /**
+     * Stores references to all bot account objects mapped to their accountName
+     */
+    bots: any;
+    /**
+     * The main bot account
+     */
+    main: Bot;
     /**
      * Collection of miscellaneous functions for easier access
      */
@@ -518,6 +769,10 @@ declare class Controller {
      */
     data: DataManager;
     /**
+     * The updater object
+     */
+    updater: any;
+    /**
      * Internal: Loads all parts of the application to get IntelliSense support after the updater ran and calls login() when done.
      */
     _preLogin(): void;
@@ -525,18 +780,6 @@ declare class Controller {
      * The JobManager handles the periodic execution of functions which you can register at runtime
      */
     jobManager: JobManager;
-    /**
-     * The updater object
-     */
-    updater: Updater;
-    /**
-     * Stores references to all bot account objects mapped to their accountName
-     */
-    bots: any;
-    /**
-     * The main bot account
-     */
-    main: Bot;
     /**
      * The commandHandler object
      */
