@@ -130,7 +130,7 @@
     "unfriendallcmdpending": "除了開發者，我需要30秒時間解除所有好友\n填寫 '${cmdprefix}unfriendall abort' abort/stop 可停止",
     "unfriendallcmdstart": "開始解除所有好友",
 
-    "joingroupcmdsuccess": "所有的機器人正在加入'${groupid}'",
+    "joingroupcmdsuccess": "Joining group '${groupid}' with ${numberOfJoins} bot accounts",
 
     "leavegroupcmdsuccess": "所有的機器人正在退出'${groupid}'",
 

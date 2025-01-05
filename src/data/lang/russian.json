@@ -131,7 +131,7 @@
     "unfriendallcmdpending": "Удаление всех людей (кроме владельцев) со всех аккаунтов бота за 30 секунд...\nВведите «${cmdprefix}unfriendall abort» для прерывания/остановки процесса.",
     "unfriendallcmdstart": "Начинаю всех удалять из друзей...",
 
-    "joingroupcmdsuccess": "Вступление в группу «${groupid}» со всеми аккаунтами ботов...",
+    "joingroupcmdsuccess": "Вступление в группу «${groupid}» со ${numberOfJoins} аккаунтами ботов...",
 
     "leavegroupcmdsuccess": "Покидаю группу «${groupid}» со всеми аккаунтами ботов...",
 

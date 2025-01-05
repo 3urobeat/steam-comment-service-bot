@@ -131,7 +131,7 @@
     "unfriendallcmdpending": "Cancelando a amizade de todas as pessoas (exceto proprietários) com todas as contas de bot em 30 segundos...\nDigite '${cmdprefix}unfriendall abort' para abortar/parar o processo.",
     "unfriendallcmdstart": "Iniciando o cancelamento de amizade com todos...",
 
-    "joingroupcmdsuccess": "Entrando no grupo '${groupid}' com todas as contas de bot...",
+    "joingroupcmdsuccess": "Entrando no grupo '${groupid}' com ${numberOfJoins} as contas de bot...",
 
     "leavegroupcmdsuccess": "Saindo do grupo '${groupid}' com todas as contas de bot...",
 

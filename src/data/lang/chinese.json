@@ -131,7 +131,7 @@
     "unfriendallcmdpending": "在30秒内使用所有机器人帐户取消所有人（除所有者之外）的好友关系...\n键入'${cmdprefix}unfriendall abort'以中止/停止过程。",
     "unfriendallcmdstart": "开始取消所有人的好友关系...",
 
-    "joingroupcmdsuccess": "使用所有机器人帐户加入组'${groupid}'...",
+    "joingroupcmdsuccess": "Joining group '${groupid}' with ${numberOfJoins} bot accounts...",
 
     "leavegroupcmdsuccess": "使用所有机器人帐户退出组'${groupid}'...",
 

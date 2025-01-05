@@ -131,7 +131,7 @@
     "unfriendallcmdpending": "Unfriending all people (except owners) with all bot accounts in 30 seconds...\nType '${cmdprefix}unfriendall abort' to abort/stop the process.",
     "unfriendallcmdstart": "Starting to unfriend everyone...",
 
-    "joingroupcmdsuccess": "Joining group '${groupid}' with all bot accounts...",
+    "joingroupcmdsuccess": "Joining group '${groupid}' with ${numberOfJoins} bot accounts...",
 
     "leavegroupcmdsuccess": "Leaving group '${groupid}' with all bot accounts...",
 
