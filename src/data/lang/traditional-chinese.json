@@ -121,8 +121,7 @@
     "sessionscmdmsg": "目前有 ${amount}個活耀秒(s):",
     "mysessionscmdnosessions": "目前沒有",
 
-    "addfriendcmdacclimited": "無法添加 ${profileid} bot0可能不是課金帳號",
-    "addfriendcmdsuccess": "正在添加 ${profileid} 所有機器人同時添加，這可能需要一點時間",
+    "addfriendcmdsuccess": "Adding friend ${profileid} with ${numberOfAdds} bot accounts... This will take ~${estimatedtime} seconds. Please check the log for potential errors.",
     "unfriendcmdsuccess": "所有機器人同時解除好友，這可能需要一點時間。",
     "unfriendidcmdsuccess": "所有機器人已解除${profileid}好友",
 

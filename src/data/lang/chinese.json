@@ -122,8 +122,7 @@
     "sessionscmdmsg": "目前有${amount}个活动会话：",
     "mysessionscmdnosessions": "目前没有您启动的活动会话。",
 
-    "addfriendcmdacclimited": "无法使用bot0添加${profileid}为好友，因为机器人账户受限。",
-    "addfriendcmdsuccess": "正在使用所有机器人帐户添加好友${profileid}...这将花费约${estimatedtime}秒。请检查日志以查看潜在错误。",
+    "addfriendcmdsuccess": "Adding friend ${profileid} with ${numberOfAdds} bot accounts... This will take ~${estimatedtime} seconds. Please check the log for potential errors.",
     "unfriendcmdsuccess": "我正在使用所有机器人帐户取消与您的好友关系。这将需要一些时间...\n您随时可以再次向我发送好友请求。",
     "unfriendidcmdsuccess": "已从所有机器人帐户中移除好友${profileid}。",
 

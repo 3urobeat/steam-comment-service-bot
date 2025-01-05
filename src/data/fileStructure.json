@@ -178,7 +178,7 @@
         {
             "path": "src/commands/core/friend.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/friend.js",
-            "checksum": "951e82328f07638dcf1f1fb1092f93fa"
+            "checksum": "b87cba1970db0f5f1ea5a10aabe6614a"
         },
         {
             "path": "src/commands/core/general.js",
@@ -338,27 +338,27 @@
         {
             "path": "src/data/lang/chinese.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/chinese.json",
-            "checksum": "71260995bfadb41f7437b82ad9fb6183"
+            "checksum": "711fe9acf0cbddf7c7bae534ca4c8c1f"
         },
         {
             "path": "src/data/lang/english.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/english.json",
-            "checksum": "aaf607fb01e691c4bec270fbfd7450b4"
+            "checksum": "0563cc31ab26ffb57ba3fa12f8873abb"
         },
         {
             "path": "src/data/lang/portuguese.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/portuguese.json",
-            "checksum": "363c2d42ab4399cfb47ea05ae4910885"
+            "checksum": "efad56152be204baf93c6afb8ec9005b"
         },
         {
             "path": "src/data/lang/russian.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/russian.json",
-            "checksum": "914390b3392e884e9971d400d51a011c"
+            "checksum": "970602bc3817c68ca98c69a7fe4452fb"
         },
         {
             "path": "src/data/lang/traditional-chinese.json",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/data/lang/traditional-chinese.json",
-            "checksum": "a26117c7647c570ca2e122ff2acf0be7"
+            "checksum": "613f00285459ec035d5548ae14ff142c"
         },
         {
             "path": "src/dataManager/dataCheck.js",
