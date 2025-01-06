@@ -173,7 +173,7 @@
         {
             "path": "src/commands/core/follow.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/core/follow.js",
-            "checksum": "a9e974895dd7c9e2a67e1914cccce158"
+            "checksum": "5f1f07fd3ff58d90f6801c76b0c7d3e2"
         },
         {
             "path": "src/commands/core/friend.js",
@@ -233,7 +233,7 @@
         {
             "path": "src/commands/helpers/getFollowArgs.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/commands/helpers/getFollowArgs.js",
-            "checksum": "0dbb185c9a4b22691e60dffdf5d1160c"
+            "checksum": "5d4a9849c373602c0bf2b30f82bf0fea"
         },
         {
             "path": "src/commands/helpers/getFollowBots.js",

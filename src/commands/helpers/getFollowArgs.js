@@ -4,10 +4,10 @@
  * Created Date: 2023-09-24 16:10:36
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-23 16:22:52
+ * Last Modified: 2025-01-06 19:27:25
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -71,7 +71,7 @@ module.exports.getFollowArgs = (commandHandler, args, cmd, resInfo, respond) => 
                     const arg = args[1];
 
                     commandHandler.controller.handleSteamIdResolving(arg, null, async (err, res, idType) => {
-                        if (err || (idType != "profile" && idType != "curator")) {
+                        if (err || (!["profile", "curator", "sharedfile"].includes(idType))) {
                             respond((await commandHandler.data.getLang("invalidprofileid", null, requesterID)) + "\n\nError: " + err);
                             return resolve({});
                         }

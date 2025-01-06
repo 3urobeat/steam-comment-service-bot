@@ -4,10 +4,10 @@
  * Created Date: 2023-09-24 15:04:33
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-10 18:24:12
+ * Last Modified: 2025-01-06 19:48:16
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -25,7 +25,7 @@ const { handleIterationSkip } = require("../helpers/handleRequestSkips.js");
 
 module.exports.follow = {
     names: ["follow"],
-    description: "Follows a user with all bot accounts that haven't yet done so",
+    description: "Follows a user/curator/workshop item with all bot accounts that haven't yet done so",
     args: [
         {
             name: "amount",
@@ -36,7 +36,7 @@ module.exports.follow = {
         },
         {
             name: "ID",
-            description: "The link, steamID64 or vanity of the profile to follow",
+            description: "The link, steamID64 or vanity of the profile/curator/workshop item to follow",
             type: "string",
             isOptional: true,
             ownersOnly: true
@@ -128,6 +128,48 @@ module.exports.follow = {
         const activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
 
 
+        // Get the correct followFunc function based on type
+        let followFunc;
+        let followArgs = {};
+
+        switch (activeReqEntry.type) {
+            case "sharedfileFollow": // We assume the user provided a follow-able game workshop item like https://steamcommunity.com/sharedfiles/filedetails/?id=3236615060
+                followFunc = commandHandler.controller.main.community.subscribeWorkshopSharedFile; // Context of the correct bot account is applied later
+                followArgs = { sharedFileId: null, appid: null };
+
+                // Get sharedFileId & appid by scraping sharedfile DOM - Quick hack to await function that only supports callbacks
+                await (() => {
+                    return new Promise((resolve) => {
+                        commandHandler.controller.main.community.getSteamSharedFile(id, (err, obj) => { // ReceiverSteamID64 is a URL in this case
+                            if (err) {
+                                logger("error", "Couldn't get workshop sharedfile even though it exists?! Aborting!\n" + err.stack);
+                                respond("Error: Couldn't get workshop sharedfile even though it exists?! Aborting!\n" + err);
+                                return;
+                            }
+
+                            followArgs.sharedFileId = obj.id;
+                            followArgs.appid        = obj.appID;
+                            resolve();
+                        });
+                    });
+                })();
+                break;
+            case "curatorFollow":
+                followFunc = commandHandler.controller.main.community.followCurator; // Context of the correct bot account is applied later
+                followArgs = { id: id };
+                break;
+            default:
+                followFunc = commandHandler.controller.main.community.followUser; // Context of the correct bot account is applied later
+                followArgs = { id: id };
+        }
+
+        // Overwrite followFunc with pure *nothingness* if debug mode is enabled
+        if (commandHandler.data.advancedconfig.disableSendingRequests) {
+            logger("warn", "Replacing followFunc with nothingness because 'disableSendingRequests' is enabled in 'advancedconfig.json'!");
+            followFunc = (a, callback) => callback(null);
+        }
+
+
         // Log request start and give user cooldown on the first iteration
         if (activeReqEntry.thisIteration == -1) {
             logger("info", `${logger.colors.fggreen}[${commandHandler.controller.main.logPrefix}] ${activeReqEntry.amount} Follow(s) requested. Starting to follow ${idType} ${id}...`);
@@ -155,15 +197,7 @@ module.exports.follow = {
                 if (!handleIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
                 /* --------- Try to follow --------- */
-                let followFunc = activeReqEntry.type == "curatorFollow" ? bot.community.followCurator : bot.community.followUser; // Get the correct function, depending on if the user provided a curator id or a user id
-
-                // Overwrite followFunc with pure *nothingness* if debug mode is enabled
-                if (commandHandler.data.advancedconfig.disableSendingRequests) {
-                    logger("warn", "Replacing followFunc with nothingness because 'disableSendingRequests' is enabled in 'advancedconfig.json'!");
-                    followFunc = (a, callback) => callback(null);
-                }
-
-                followFunc.call(bot.community, id, (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
+                followFunc.call(bot.community, ...Object.values(followArgs), (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
 
                     /* --------- Handle errors thrown by this follow attempt or update ratingHistory db and log success message --------- */
                     if (error) {
@@ -221,7 +255,7 @@ module.exports.follow = {
 
 module.exports.unfollow = {
     names: ["unfollow"],
-    description: "Unfollows a user with all bot accounts that have followed them",
+    description: "Unfollows a user/curator/workshop item with all bot accounts that have followed them",
     args: [
         {
             name: "amount",
@@ -232,7 +266,7 @@ module.exports.unfollow = {
         },
         {
             name: "ID",
-            description: "The link, steamID64 or vanity of the profile to unfollow",
+            description: "The link, steamID64 or vanity of the profile/curator/workshop item to unfollow",
             type: "string",
             isOptional: true,
             ownersOnly: true
@@ -324,6 +358,48 @@ module.exports.unfollow = {
         const activeReqEntry = commandHandler.controller.activeRequests[id]; // Make using the obj shorter
 
 
+        // Get the correct followFunc function based on type
+        let followFunc;
+        let followArgs = {};
+
+        switch (activeReqEntry.type) {
+            case "sharedfileUnfollow": // We assume the user provided a follow-able game workshop item like https://steamcommunity.com/sharedfiles/filedetails/?id=3236615060
+                followFunc = commandHandler.controller.main.community.unsubscribeWorkshopSharedFile; // Context of the correct bot account is applied later
+                followArgs = { sharedFileId: null, appid: null };
+
+                // Get sharedFileId & appid by scraping sharedfile DOM - Quick hack to await function that only supports callbacks
+                await (() => {
+                    return new Promise((resolve) => {
+                        commandHandler.controller.main.community.getSteamSharedFile(id, (err, obj) => { // ReceiverSteamID64 is a URL in this case
+                            if (err) {
+                                logger("error", "Couldn't get workshop sharedfile even though it exists?! Aborting!\n" + err.stack);
+                                respond("Error: Couldn't get workshop sharedfile even though it exists?! Aborting!\n" + err);
+                                return;
+                            }
+
+                            followArgs.sharedFileId = obj.id;
+                            followArgs.appid        = obj.appID;
+                            resolve();
+                        });
+                    });
+                })();
+                break;
+            case "curatorUnfollow":
+                followFunc = commandHandler.controller.main.community.unfollowCurator; // Context of the correct bot account is applied later
+                followArgs = { id: id };
+                break;
+            default:
+                followFunc = commandHandler.controller.main.community.unfollowUser; // Context of the correct bot account is applied later
+                followArgs = { id: id };
+        }
+
+        // Overwrite followFunc with pure *nothingness* if debug mode is enabled
+        if (commandHandler.data.advancedconfig.disableSendingRequests) {
+            logger("warn", "Replacing followFunc with nothingness because 'disableSendingRequests' is enabled in 'advancedconfig.json'!");
+            followFunc = (a, callback) => callback(null);
+        }
+
+
         // Log request start and give user cooldown on the first iteration
         if (activeReqEntry.thisIteration == -1) {
             logger("info", `${logger.colors.fggreen}[${commandHandler.controller.main.logPrefix}] ${activeReqEntry.amount} Unfollow(s) requested. Starting to unfollow ${idType} ${id}...`);
@@ -351,15 +427,7 @@ module.exports.unfollow = {
                 if (!handleIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
                 /* --------- Try to unfollow --------- */
-                let followFunc = activeReqEntry.type == "curatorUnfollow" ? bot.community.unfollowCurator : bot.community.unfollowUser; // Get the correct function, depending on if the user provided a curator id or a user id
-
-                // Overwrite followFunc with pure *nothingness* if debug mode is enabled
-                if (commandHandler.data.advancedconfig.disableSendingRequests) {
-                    logger("warn", "Replacing followFunc with nothingness because 'disableSendingRequests' is enabled in 'advancedconfig.json'!");
-                    followFunc = (a, callback) => callback(null);
-                }
-
-                followFunc.call(bot.community, id, (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
+                followFunc.call(bot.community, ...Object.values(followArgs), (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
 
                     /* --------- Handle errors thrown by this unfollow attempt or update ratingHistory db and log success message --------- */
                     if (error) {
