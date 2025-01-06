@@ -448,12 +448,17 @@
         {
             "path": "src/libraryPatches/CSteamSharedFile.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/libraryPatches/CSteamSharedFile.js",
-            "checksum": "9f155bb4bded0f93b388399f17e859a8"
+            "checksum": "445874b13cdd04a885790508055202be"
         },
         {
             "path": "src/libraryPatches/EDiscussionType.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/libraryPatches/EDiscussionType.js",
             "checksum": "4a801c29078172b6b35e86843670ae6e"
+        },
+        {
+            "path": "src/libraryPatches/ESharedFileType.js",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/libraryPatches/ESharedFileType.js",
+            "checksum": "86de7b8864dd78fcfc542e88bc4c5a68"
         },
         {
             "path": "src/libraryPatches/README.md",
@@ -478,7 +483,7 @@
         {
             "path": "src/libraryPatches/sharedfiles.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/libraryPatches/sharedfiles.js",
-            "checksum": "a33395c4ab436fa534e404487d8e7925"
+            "checksum": "778ee43931a32422004d50168679127b"
         },
         {
             "path": "src/pluginSystem/handlePluginData.js",
@@ -628,7 +633,7 @@
         {
             "path": "types/types.d.ts",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/types/types.d.ts",
-            "checksum": "c42ffd93755b217a59a82852946a87e5"
+            "checksum": "1570c999b124f71794ed294650f133d1"
         }
     ]
 }

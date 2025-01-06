@@ -1758,7 +1758,7 @@ declare class CSteamSharedFile {
      * Subscribes to this sharedfile's comment section. Note: Checkbox on webpage does not update
      * @param callback - Takes only an Error object/null as the first argument
      */
-    subscribe(callback: (...params: any[]) => any): void;
+    subscribeComments(callback: (...params: any[]) => any): void;
     /**
      * Unfavorites this sharedfile
      * @param callback - Takes only an Error object/null as the first argument
@@ -1768,7 +1768,17 @@ declare class CSteamSharedFile {
      * Unsubscribes from this sharedfile's comment section. Note: Checkbox on webpage does not update
      * @param callback - Takes only an Error object/null as the first argument
      */
-    unsubscribe(callback: (...params: any[]) => any): void;
+    unsubscribeComments(callback: (...params: any[]) => any): void;
+    /**
+     * Subscribes to this workshop item
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    subscribeWorkshop(callback: (...params: any[]) => any): void;
+    /**
+     * Unsubscribes from this workshop item
+     * @param callback - Takes only an Error object/null as the first argument
+     */
+    unsubscribeWorkshop(callback: (...params: any[]) => any): void;
 }
 
 /**

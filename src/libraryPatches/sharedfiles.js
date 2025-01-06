@@ -107,3 +107,49 @@ SteamCommunity.prototype.postSharedFileComment = function(userID, sharedFileId, 
 		}
 	}, "steamcommunity");
 };
+
+/**
+ * Subscribes to a workshop item sharedfile.
+ * @param {String} sharedFileId - ID of the sharedfile
+ * @param {String} appid - ID of the app associated to this sharedfile
+ * @param {function} callback - Takes only an Error object/null as the first argument
+ */
+SteamCommunity.prototype.subscribeWorkshopSharedFile = function(sharedFileId, appid, callback) {
+	this.httpRequestPost({
+		"uri": "https://steamcommunity.com/sharedfiles/subscribe",
+		"form": {
+			"id": sharedFileId,
+			"appid": appid,
+			"sessionid": this.getSessionID()
+		}
+	}, function(err, response, body) {
+		if (!callback) {
+			return;
+		}
+
+		callback(err);
+	}, "steamcommunity");
+};
+
+/**
+ * Unsubscribes from a workshop item sharedfile.
+ * @param {String} sharedFileId - ID of the sharedfile
+ * @param {String} appid - ID of the app associated to this sharedfile
+ * @param {function} callback - Takes only an Error object/null as the first argument
+ */
+SteamCommunity.prototype.unsubscribeWorkshopSharedFile = function(sharedFileId, appid, callback) {
+	this.httpRequestPost({
+		"uri": "https://steamcommunity.com/sharedfiles/unsubscribe",
+		"form": {
+			"id": sharedFileId,
+			"appid": appid,
+			"sessionid": this.getSessionID()
+		}
+	}, function(err, response, body) {
+		if (!callback) {
+			return;
+		}
+
+		callback(err);
+	}, "steamcommunity");
+};
