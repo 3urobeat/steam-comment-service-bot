@@ -4,10 +4,10 @@
  * Created Date: 2023-07-04 21:29:42
  * Author: 3urobeat
  *
- * Last Modified: 2024-08-12 17:48:22
+ * Last Modified: 2025-01-07 22:34:18
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -40,6 +40,8 @@ DataManager.prototype.writeAllFilesToDisk = function() {
 DataManager.prototype.writeCachefileToDisk = function() {
     logger("debug", "DataManager dataExport: Writing to cache.json...");
 
+    this.controller._dataUpdateEvent("cachefile", null, this.cachefile);
+
     fs.writeFile("./src/data/cache.json", JSON.stringify(this.cachefile, null, 4), (err) => {
         if (err) logger("error", "DataManager: Error writing cachefile to cache.json: " + err);
     });
@@ -52,6 +54,8 @@ DataManager.prototype.writeCachefileToDisk = function() {
 DataManager.prototype.writeDatafileToDisk = function() {
     logger("debug", "DataManager dataExport: Writing to data.json...");
 
+    this.controller._dataUpdateEvent("datafile", null, this.datafile);
+
     fs.writeFile("./src/data/data.json", JSON.stringify(this.datafile, null, 4), (err) => {
         if (err) logger("error", "DataManager: Error writing datafile to data.json: " + err);
     });
@@ -63,6 +67,8 @@ DataManager.prototype.writeDatafileToDisk = function() {
  */
 DataManager.prototype.writeConfigToDisk = function() {
     logger("debug", "DataManager dataExport: Writing to config.json...");
+
+    this.controller._dataUpdateEvent("config", null, this.config);
 
     // Get arrays on one line
     const stringifiedconfig = JSON.stringify(this.config, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
@@ -85,6 +91,8 @@ DataManager.prototype.writeConfigToDisk = function() {
  */
 DataManager.prototype.writeAdvancedconfigToDisk = function() {
     logger("debug", "DataManager dataExport: Writing to advancedconfig.json...");
+
+    this.controller._dataUpdateEvent("advancedconfig", null, this.advancedconfig);
 
     // Get arrays on one line
     const stringifiedadvancedconfig = JSON.stringify(this.advancedconfig, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
@@ -117,6 +125,8 @@ DataManager.prototype.writeLogininfoToDisk = function() {
             logininfojson[`bot${e.index}`] = [ e.accountName, e.loginData.logOnOptions.password, e.loginData.logOnOptions.sharedSecret ];
         }
 
+        //this.controller._dataUpdateEvent("logininfo", null, logininfojson); // TODO
+
         // Get arrays on one line
         const stringifiedlogininfo = JSON.stringify(logininfojson, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
             if (v instanceof Array) return JSON.stringify(v);
@@ -143,6 +153,8 @@ DataManager.prototype.writeLogininfoToDisk = function() {
                 else accountstxt.push(`${e.accountName}:${e.loginData.logOnOptions.password}`);
         }
 
+        //this.controller._dataUpdateEvent("logininfo", null, accountstxt); // TODO
+
         fs.writeFile(srcdir + "/../accounts.txt", accountstxt.join("\n"), (err) => {
             if (err) logger("error", "DataManager: Error writing accounts to accounts.txt: " + err);
         });
@@ -157,6 +169,8 @@ DataManager.prototype.writeLogininfoToDisk = function() {
 DataManager.prototype.writeProxiesToDisk = function() {
     logger("debug", "DataManager dataExport: Writing to proxies.txt...");
 
+    this.controller._dataUpdateEvent("proxies", null, this.proxies);
+
     const comment = "//Comment: This file is used to provide proxies to spread your accounts over multiple IPs. Read the instructions here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/adding_proxies.md";
 
     fs.writeFile(srcdir + "/../proxies.txt", comment + this.proxies.join("\n"), (err) => {
@@ -170,9 +184,12 @@ DataManager.prototype.writeProxiesToDisk = function() {
  */
 DataManager.prototype.writeQuotesToDisk = function() {
     logger("debug", "DataManager dataExport: Writing to quotes.txt...");
-    const quotesArr = [];
+
+    this.controller._dataUpdateEvent("quotes", null, this.quotes);
 
     // Replace every \n with \\n so that writeFile won't parse them to actual newlines
+    const quotesArr = [];
+
     this.quotes.forEach(e => quotesArr.push(e.replace(/\n/g, "\\n")));
 
     fs.writeFile(srcdir + "/../quotes.txt", quotesArr.join("\n"), (err) => {

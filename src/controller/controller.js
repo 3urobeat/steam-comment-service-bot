@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-05 14:06:02
+ * Last Modified: 2025-01-07 18:28:23
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -343,6 +343,7 @@ Controller.prototype._preLogin = async function() {
 
 
     // Load Controller event handlers & helpers. This must happen after bot.js has been verified
+    require("./events/dataUpdate.js");
     require("./events/ready.js");
     require("./events/statusUpdate.js");
     require("./events/steamGuardInput.js");
@@ -476,6 +477,14 @@ Controller.prototype.filterAccounts = function(predicate) {}; // eslint-disable-
  * @type {{ all: Function, statusOffline: Function, statusOnline: Function, statusError: Function, statusSkipped: Function, limited: Function, unlimited: Function }}
  */
 Controller.prototype.filters = {};
+
+/**
+ * Runs internal dataUpdate event code and emits dataUpdate event for plugins. The event is emitted whenever DataManager is instructed to import or export a key.
+ * @param {string} key Which DataManager key got updated
+ * @param {any} oldData Old content of the updated key
+ * @param {any} newData New content of the updated key
+ */
+Controller.prototype._dataUpdateEvent = function(key, oldData, newData) {}; // eslint-disable-line
 
 /**
  * Runs internal ready event code and emits ready event for plugins

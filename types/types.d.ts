@@ -845,6 +845,13 @@ declare class Controller {
      */
     filters: any;
     /**
+     * Runs internal dataUpdate event code and emits dataUpdate event for plugins. The event is emitted whenever DataManager is instructed to import or export a key.
+     * @param key - Which DataManager key got updated
+     * @param oldData - Old content of the updated key
+     * @param newData - New content of the updated key
+     */
+    _dataUpdateEvent(key: string, oldData: any, newData: any): void;
+    /**
      * Runs internal ready event code and emits ready event for plugins
      */
     _readyEvent(): void;
@@ -925,6 +932,13 @@ declare class Controller {
      * Internal: Logs all held back messages from logAfterReady array
      */
     _loggerLogAfterReady(): void;
+    /**
+     * Runs internal dataUpdate event code and emits dataUpdate event for plugins. The event is emitted whenever DataManager is instructed to import or export a key.
+     * @param key - Which DataManager key got updated
+     * @param oldData - Old content of the updated key
+     * @param newData - New content of the updated key
+     */
+    _dataUpdateEvent(key: string, oldData: any, newData: any): void;
     /**
      * Runs internal ready event code and emits ready event for plugins
      */

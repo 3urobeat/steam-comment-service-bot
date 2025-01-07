@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-03 16:07:54
+ * Last Modified: 2025-01-07 22:21:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -30,7 +30,10 @@ DataManager.prototype._importCacheFromDisk = function() {
         try {
             delete require.cache[require.resolve(srcdir + "/data/cache.json")]; // Delete cache to enable reloading data
 
-            resolve(require(srcdir + "/data/cache.json"));
+            const cacheJson = require(srcdir + "/data/cache.json");
+
+            this.controller._dataUpdateEvent("cachefile", this.cachefile, cacheJson);
+            resolve(cacheJson);
         } catch (err) {
             if (err) {
                 logger("", "", true, true);
@@ -46,7 +49,11 @@ DataManager.prototype._importCacheFromDisk = function() {
                         return this.controller.stop(); // Abort since writeFile was unable to write and any further execution would crash
                     } else {
                         logger("info", "Successfully cleared/created cache.json.\n", true, true);
-                        resolve(require(srcdir + "/data/cache.json"));
+
+                        const cacheJson = require(srcdir + "/data/cache.json");
+
+                        this.controller._dataUpdateEvent("cachefile", this.cachefile, cacheJson);
+                        resolve(cacheJson);
                     }
                 });
             }
@@ -64,7 +71,10 @@ DataManager.prototype._importDataFromDisk = function() {
         try {
             delete require.cache[require.resolve(srcdir + "/data/data.json")]; // Delete cache to enable reloading data
 
-            resolve(require(srcdir + "/data/data.json"));
+            const dataJson = require(srcdir + "/data/data.json");
+
+            this.controller._dataUpdateEvent("datafile", this.datafile, dataJson);
+            resolve(dataJson);
         } catch (err) {
             if (err) {
                 // Corrupted!
@@ -73,9 +83,15 @@ DataManager.prototype._importDataFromDisk = function() {
 
                 // Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
                 if (this.cachefile.datajson) {
-                    this._restoreBackup("data.json", srcdir + "/data/data.json", this.cachefile.datajson, "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/src/data/data.json", resolve);
+                    this._restoreBackup("data.json", srcdir + "/data/data.json", this.cachefile.datajson, "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/src/data/data.json", (data) => {
+                        this.controller._dataUpdateEvent("datafile", this.datafile, data);
+                        resolve(data);
+                    });
                 } else {
-                    this._pullNewFile("data.json", "./src/data/data.json", resolve);
+                    this._pullNewFile("data.json", "./src/data/data.json", (data) => {
+                        this.controller._dataUpdateEvent("datafile", this.datafile, data);
+                        resolve(data);
+                    });
                 }
             }
         }
@@ -92,7 +108,10 @@ DataManager.prototype._importConfigFromDisk = function() {
         try {
             delete require.cache[require.resolve(srcdir + "/../config.json")]; // Delete cache to enable reloading data
 
-            resolve(require(srcdir + "/../config.json"));
+            const configJson = require(srcdir + "/../config.json");
+
+            this.controller._dataUpdateEvent("config", this.config, configJson);
+            resolve(configJson);
         } catch (err) {
             if (err) {
                 // Corrupted!
@@ -118,9 +137,15 @@ DataManager.prototype._importConfigFromDisk = function() {
                 setTimeout(() => {
                     // Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
                     if (this.cachefile.configjson) {
-                        this._restoreBackup("config.json", srcdir + "/../config.json", this.cachefile.configjson, "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/config.json", resolve);
+                        this._restoreBackup("config.json", srcdir + "/../config.json", this.cachefile.configjson, "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/config.json", (data) => {
+                            this.controller._dataUpdateEvent("config", this.config, data);
+                            resolve(data);
+                        });
                     } else {
-                        this._pullNewFile("config.json", "./config.json", resolve);
+                        this._pullNewFile("config.json", "./config.json", (data) => {
+                            this.controller._dataUpdateEvent("config", this.config, data);
+                            resolve(data);
+                        });
                     }
                 }, restoreTimeout);
             }
@@ -138,7 +163,10 @@ DataManager.prototype._importAdvancedConfigFromDisk = function() {
         try {
             delete require.cache[require.resolve(srcdir + "/../advancedconfig.json")]; // Delete cache to enable reloading data
 
-            resolve(require(srcdir + "/../advancedconfig.json"));
+            const advancedconfigJson = require(srcdir + "/../advancedconfig.json");
+
+            this.controller._dataUpdateEvent("advancedconfig", this.advancedconfig, advancedconfigJson);
+            resolve(advancedconfigJson);
         } catch (err) {
             if (err) {
                 // Corrupted!
@@ -147,9 +175,15 @@ DataManager.prototype._importAdvancedConfigFromDisk = function() {
 
                 // Check if cache.json has a backup of config.json and try to restore it. If not then pull the file directly from GitHub.
                 if (this.cachefile.advancedconfigjson) {
-                    this._restoreBackup("advancedconfig.json", srcdir + "/../advancedconfig.json", this.cachefile.advancedconfigjson, "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/advancedconfig.json", resolve);
+                    this._restoreBackup("advancedconfig.json", srcdir + "/../advancedconfig.json", this.cachefile.advancedconfigjson, "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/advancedconfig.json", (data) => {
+                        this.controller._dataUpdateEvent("advancedconfig", this.advancedconfig, data);
+                        resolve(data);
+                    });
                 } else {
-                    this._pullNewFile("advancedconfig.json", "./advancedconfig.json", resolve);
+                    this._pullNewFile("advancedconfig.json", "./advancedconfig.json", (data) => {
+                        this.controller._dataUpdateEvent("advancedconfig", this.advancedconfig, data);
+                        resolve(data);
+                    });
                 }
             }
         }
@@ -188,6 +222,7 @@ DataManager.prototype._importLogininfoFromDisk = function() {
 
                 logger("debug", `DataManager _importLogininfoFromDisk(): Found ${logininfo.length} accounts in accounts.txt, not checking for logininfo.json...`);
 
+                this.controller._dataUpdateEvent("logininfo", this.logininfo, logininfo);
                 return resolve(logininfo);
             }
         }
@@ -218,6 +253,7 @@ DataManager.prototype._importLogininfoFromDisk = function() {
 
             logger("debug", `Found ${logininfo.length} accounts in logininfo.json...`);
 
+            this.controller._dataUpdateEvent("logininfo", this.logininfo, logininfo);
             resolve(logininfo);
         } catch (err) {
             logger("error", "It seems like you made a mistake in your logininfo.json. Please check if your Syntax looks exactly like in the example/template and try again.\n        " + err, true);
@@ -323,6 +359,7 @@ DataManager.prototype._importProxiesFromDisk = function() {
             }
         }
 
+        this.controller._dataUpdateEvent("proxies", this.proxies, proxies);
         resolve(proxies);
     });
 };
@@ -362,6 +399,7 @@ DataManager.prototype._importQuotesFromDisk = function() {
             return this.controller.stop();
         }
 
+        this.controller._dataUpdateEvent("quotes", this.quotes, quotes);
         resolve(quotes);
     });
 };
@@ -404,9 +442,13 @@ DataManager.prototype._importLanguagesFromDisk = function() {
 
                 // Resolve with success message or force restore default language
                 if (Object.keys(obj).length > 0 && obj["english"]) {
+                    this.controller._dataUpdateEvent("lang", this.lang, obj);
                     resolve(obj);
                 } else {
-                    this._pullNewFile("english.json", "./src/data/lang/english.json", (e) => resolve({ "english": e })); // Only resolve for the default language
+                    this._pullNewFile("english.json", "./src/data/lang/english.json", (e) => {
+                        this.controller._dataUpdateEvent("lang", this.lang, { "english": e });
+                        resolve({ "english": e });  // Only resolve for the default language
+                    });
                 }
             });
         } catch (err) {
@@ -415,7 +457,10 @@ DataManager.prototype._importLanguagesFromDisk = function() {
                 logger("", "", true, true);
 
                 // Pull the default lang file directly from GitHub, the other ones should be handled by the dataIntegrity check
-                this._pullNewFile("english.json", "./src/data/lang/english.json", (e) => resolve({ "english": e })); // Only resolve for the default language
+                this._pullNewFile("english.json", "./src/data/lang/english.json", (e) => {
+                    this.controller._dataUpdateEvent("lang", this.lang, { "english": e });
+                    resolve({ "english": e });
+                }); // Only resolve for the default language
             }
         }
     });
@@ -447,6 +492,9 @@ DataManager.prototype._importCustomLangFromDisk = function() {
             // Instantly resolve if nothing was found
             if (Object.keys(customlang).length == 0) resolve(this.lang);
 
+            // Create deep copy to be able to call _dataUpdateEvent in a sec
+            const originalLang = JSON.parse(JSON.stringify(this.lang));
+
             // Overwrite values in each lang object with values from customlang
             Object.keys(customlang).forEach((lang, langIteration) => {
                 customlangkeys = 0; // Reset for this language
@@ -473,7 +521,10 @@ DataManager.prototype._importCustomLangFromDisk = function() {
                 }
 
                 // Resolve lang object with our new keys on the very last iteration
-                if (langIteration == Object.keys(customlang).length - 1) resolve(this.lang);
+                if (langIteration == Object.keys(customlang).length - 1) {
+                    this.controller._dataUpdateEvent("lang", originalLang, this.lang);
+                    resolve(this.lang);
+                }
             });
         } else {
             logger("debug", "DataManager _importCustomLangFromDisk(): No customlang.json file found");
