@@ -4,7 +4,7 @@
  * Created Date: 2023-07-04 21:29:42
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-08 19:30:41
+ * Last Modified: 2025-01-08 19:43:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -189,7 +189,7 @@ DataManager.prototype.writeProxiesToDisk = function() {
 
     this.controller._dataUpdateEvent("proxies", null, this.proxies);
 
-    fs.writeFile(srcdir + "/../proxies.txt", comment + formattedProxies.join("\n"), (err) => {
+    fs.writeFile(srcdir + "/../proxies.txt", comment + "\n" + formattedProxies.join("\n"), (err) => {
         if (err) logger("error", "DataManager: Error writing proxies to proxies.txt: " + err);
     });
 };
