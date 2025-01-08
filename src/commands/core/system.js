@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-04 17:31:00
+ * Last Modified: 2025-01-08 19:27:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -325,7 +325,7 @@ module.exports.eval = {
         } catch (err) {
 
             respond(`Error:\n${clean(err)}`);
-            logger("error", `${logger.colors.fgyellow}Eval error:${logger.colors.reset} \n${clean(err)}`, true);                                                                                                                                                                                                                                                                                                                // Hi I'm a comment that serves no purpose
+            logger("error", `${logger.colors.fgyellow}Eval error:${logger.colors.reset} \n${err.stack}`, true);                                                                                                                                                                                                                                                                                                                // Hi I'm a comment that serves no purpose
             return;
         }
     }
