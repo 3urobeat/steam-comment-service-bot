@@ -4,7 +4,7 @@
  * Created Date: 2023-07-04 21:29:42
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-08 17:36:08
+ * Last Modified: 2025-01-08 19:30:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -169,11 +169,27 @@ DataManager.prototype.writeLogininfoToDisk = function() {
 DataManager.prototype.writeProxiesToDisk = function() {
     logger("debug", "DataManager dataExport: Writing to proxies.txt...");
 
-    this.controller._dataUpdateEvent("proxies", null, this.proxies);
-
     const comment = "//Comment: This file is used to provide proxies to spread your accounts over multiple IPs. Read the instructions here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/adding_proxies.md";
 
-    fs.writeFile(srcdir + "/../proxies.txt", comment + this.proxies.map((e) => e.proxy).join("\n"), (err) => {
+    // Re-convert proxies to a format specified in advancedconfig.json before writing if necessary
+    let formattedProxies = this.proxies.flatMap((e) => e.proxy ? e.proxy : []); // That flatMap with `return []` removes `null` without extra hassle
+
+    if (this.advancedconfig.proxyFormat != "") {
+        formattedProxies = formattedProxies.map((e) => {
+            const proxySplit = e.replace("http://", "").split(/:|@/g);
+
+            // Check whether proxy contains credentials
+            if (proxySplit.length > 2) {
+                return this.advancedconfig.proxyFormat.replace("${username}", proxySplit[0]).replace("${password}", proxySplit[1]).replace("${ip}", proxySplit[2]).replace("${port}", proxySplit[3]); // Chained replace my beloved
+            } else {
+                return this.advancedconfig.proxyFormat.replace("${ip}", proxySplit[0]).replace("${port}", proxySplit[1]); // Chained replace my beloved
+            }
+        });
+    }
+
+    this.controller._dataUpdateEvent("proxies", null, this.proxies);
+
+    fs.writeFile(srcdir + "/../proxies.txt", comment + formattedProxies.join("\n"), (err) => {
         if (err) logger("error", "DataManager: Error writing proxies to proxies.txt: " + err);
     });
 };
