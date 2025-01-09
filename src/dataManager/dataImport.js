@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-07 22:21:06
+ * Last Modified: 2025-01-09 21:41:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -22,7 +22,7 @@ const DataManager = require("./dataManager.js");
 
 
 /**
- * Internal: Loads cache.json from disk in DataManager and handles potential errors
+ * Internal: Loads cache.json from disk, updates cachefile property in DataManager and handles potential errors
  * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importCacheFromDisk = function() {
@@ -33,6 +33,7 @@ DataManager.prototype._importCacheFromDisk = function() {
             const cacheJson = require(srcdir + "/data/cache.json");
 
             this.controller._dataUpdateEvent("cachefile", this.cachefile, cacheJson);
+            this.cachefile = cacheJson;
             resolve(cacheJson);
         } catch (err) {
             if (err) {
@@ -53,6 +54,7 @@ DataManager.prototype._importCacheFromDisk = function() {
                         const cacheJson = require(srcdir + "/data/cache.json");
 
                         this.controller._dataUpdateEvent("cachefile", this.cachefile, cacheJson);
+                        this.cachefile = cacheJson;
                         resolve(cacheJson);
                     }
                 });
@@ -63,7 +65,7 @@ DataManager.prototype._importCacheFromDisk = function() {
 
 
 /**
- * Internal: Loads data.json from disk in DataManager and handles potential errors
+ * Internal: Loads data.json from disk, updates datafile property in DataManager and handles potential errors
  * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importDataFromDisk = function() {
@@ -74,6 +76,7 @@ DataManager.prototype._importDataFromDisk = function() {
             const dataJson = require(srcdir + "/data/data.json");
 
             this.controller._dataUpdateEvent("datafile", this.datafile, dataJson);
+            this.datafile = dataJson;
             resolve(dataJson);
         } catch (err) {
             if (err) {
@@ -85,11 +88,13 @@ DataManager.prototype._importDataFromDisk = function() {
                 if (this.cachefile.datajson) {
                     this._restoreBackup("data.json", srcdir + "/data/data.json", this.cachefile.datajson, "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/src/data/data.json", (data) => {
                         this.controller._dataUpdateEvent("datafile", this.datafile, data);
+                        this.datafile = data;
                         resolve(data);
                     });
                 } else {
                     this._pullNewFile("data.json", "./src/data/data.json", (data) => {
                         this.controller._dataUpdateEvent("datafile", this.datafile, data);
+                        this.datafile = data;
                         resolve(data);
                     });
                 }
@@ -100,7 +105,7 @@ DataManager.prototype._importDataFromDisk = function() {
 
 
 /**
- * Internal: Loads config.json from disk in DataManager and handles potential errors
+ * Internal: Loads config.json from disk, updates config property in DataManager and handles potential errors
  * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importConfigFromDisk = function() {
@@ -111,6 +116,7 @@ DataManager.prototype._importConfigFromDisk = function() {
             const configJson = require(srcdir + "/../config.json");
 
             this.controller._dataUpdateEvent("config", this.config, configJson);
+            this.config = configJson;
             resolve(configJson);
         } catch (err) {
             if (err) {
@@ -139,11 +145,13 @@ DataManager.prototype._importConfigFromDisk = function() {
                     if (this.cachefile.configjson) {
                         this._restoreBackup("config.json", srcdir + "/../config.json", this.cachefile.configjson, "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/config.json", (data) => {
                             this.controller._dataUpdateEvent("config", this.config, data);
+                            this.config = data;
                             resolve(data);
                         });
                     } else {
                         this._pullNewFile("config.json", "./config.json", (data) => {
                             this.controller._dataUpdateEvent("config", this.config, data);
+                            this.config = data;
                             resolve(data);
                         });
                     }
@@ -155,7 +163,7 @@ DataManager.prototype._importConfigFromDisk = function() {
 
 
 /**
- * Internal: Loads advancedconfig.json from disk in DataManager and handles potential errors
+ * Internal: Loads advancedconfig.json from disk, updates advancedconfig property in DataManager and handles potential errors
  * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importAdvancedConfigFromDisk = function() {
@@ -166,6 +174,7 @@ DataManager.prototype._importAdvancedConfigFromDisk = function() {
             const advancedconfigJson = require(srcdir + "/../advancedconfig.json");
 
             this.controller._dataUpdateEvent("advancedconfig", this.advancedconfig, advancedconfigJson);
+            this.advancedconfig = advancedconfigJson;
             resolve(advancedconfigJson);
         } catch (err) {
             if (err) {
@@ -177,11 +186,13 @@ DataManager.prototype._importAdvancedConfigFromDisk = function() {
                 if (this.cachefile.advancedconfigjson) {
                     this._restoreBackup("advancedconfig.json", srcdir + "/../advancedconfig.json", this.cachefile.advancedconfigjson, "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/advancedconfig.json", (data) => {
                         this.controller._dataUpdateEvent("advancedconfig", this.advancedconfig, data);
+                        this.advancedconfig = data;
                         resolve(data);
                     });
                 } else {
                     this._pullNewFile("advancedconfig.json", "./advancedconfig.json", (data) => {
                         this.controller._dataUpdateEvent("advancedconfig", this.advancedconfig, data);
+                        this.advancedconfig = data;
                         resolve(data);
                     });
                 }
@@ -192,7 +203,7 @@ DataManager.prototype._importAdvancedConfigFromDisk = function() {
 
 
 /**
- * Internal: Loads accounts.txt/logininfo.json from disk in DataManager and handles potential errors
+ * Internal: Loads accounts.txt/logininfo.json from disk, updates logininfo property in DataManager and handles potential errors
  * @returns {Promise.<object[]>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importLogininfoFromDisk = function() {
@@ -223,6 +234,7 @@ DataManager.prototype._importLogininfoFromDisk = function() {
                 logger("debug", `DataManager _importLogininfoFromDisk(): Found ${logininfo.length} accounts in accounts.txt, not checking for logininfo.json...`);
 
                 this.controller._dataUpdateEvent("logininfo", this.logininfo, logininfo);
+                this.logininfo = logininfo;
                 return resolve(logininfo);
             }
         }
@@ -254,6 +266,7 @@ DataManager.prototype._importLogininfoFromDisk = function() {
             logger("debug", `Found ${logininfo.length} accounts in logininfo.json...`);
 
             this.controller._dataUpdateEvent("logininfo", this.logininfo, logininfo);
+            this.logininfo = logininfo;
             resolve(logininfo);
         } catch (err) {
             logger("error", "It seems like you made a mistake in your logininfo.json. Please check if your Syntax looks exactly like in the example/template and try again.\n        " + err, true);
@@ -267,7 +280,7 @@ DataManager.prototype._importLogininfoFromDisk = function() {
 
 
 /**
- * Internal: Loads proxies.txt from disk in DataManager and handles potential errors
+ * Internal: Loads proxies.txt from disk, updates proxies property in DataManager and handles potential errors
  * @returns {Promise.<object[]>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importProxiesFromDisk = function() {
@@ -360,13 +373,14 @@ DataManager.prototype._importProxiesFromDisk = function() {
         }
 
         this.controller._dataUpdateEvent("proxies", this.proxies, proxies);
+        this.proxies = proxies;
         resolve(proxies);
     });
 };
 
 
 /**
- * Internal: Loads quotes.txt from disk in DataManager and handles potential errors
+ * Internal: Loads quotes.txt from disk, updates quotes property in DataManager and handles potential errors
  * @returns {Promise.<string[]>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importQuotesFromDisk = function() {
@@ -400,13 +414,14 @@ DataManager.prototype._importQuotesFromDisk = function() {
         }
 
         this.controller._dataUpdateEvent("quotes", this.quotes, quotes);
+        this.quotes = quotes;
         resolve(quotes);
     });
 };
 
 
 /**
- * Internal: Loads languages from disk in DataManager and handles potential errors
+ * Internal: Loads languages from disk, updates languages property in DataManager and handles potential errors
  * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importLanguagesFromDisk = function() {
@@ -443,10 +458,12 @@ DataManager.prototype._importLanguagesFromDisk = function() {
                 // Resolve with success message or force restore default language
                 if (Object.keys(obj).length > 0 && obj["english"]) {
                     this.controller._dataUpdateEvent("lang", this.lang, obj);
+                    this.lang = obj;
                     resolve(obj);
                 } else {
                     this._pullNewFile("english.json", "./src/data/lang/english.json", (e) => {
                         this.controller._dataUpdateEvent("lang", this.lang, { "english": e });
+                        this.lang = { "english": e };
                         resolve({ "english": e });  // Only resolve for the default language
                     });
                 }
@@ -459,6 +476,7 @@ DataManager.prototype._importLanguagesFromDisk = function() {
                 // Pull the default lang file directly from GitHub, the other ones should be handled by the dataIntegrity check
                 this._pullNewFile("english.json", "./src/data/lang/english.json", (e) => {
                     this.controller._dataUpdateEvent("lang", this.lang, { "english": e });
+                    this.lang = { "english": e };
                     resolve({ "english": e });
                 }); // Only resolve for the default language
             }
@@ -468,7 +486,7 @@ DataManager.prototype._importLanguagesFromDisk = function() {
 
 
 /**
- * Internal: Loads customlang.json from disk in DataManager and handles potential errors
+ * Internal: Loads customlang.json from disk, updates languages property in DataManager and handles potential errors
  * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
 DataManager.prototype._importCustomLangFromDisk = function() {
@@ -543,18 +561,18 @@ DataManager.prototype._importFromDisk = async function () {
     // Call all functions from above after another. This must be done async to avoid a check failing that depends on something from a previous function. We sadly cannot use Promise.all() because of this.
     logger("info", "Importing data files and settings...", false, true, logger.animation("loading"));
 
-    this.cachefile       = await this._importCacheFromDisk();
-    this.datafile        = await this._importDataFromDisk();
-    this.config          = await this._importConfigFromDisk();
-    this.advancedconfig  = await this._importAdvancedConfigFromDisk();
+    await this._importCacheFromDisk();
+    await this._importDataFromDisk();
+    await this._importConfigFromDisk();
+    await this._importAdvancedConfigFromDisk();
 
     this.controller._loggerOptionsUpdateAfterConfigLoad(this.advancedconfig); // Call optionsUpdateAfterConfigLoad() to set previously inaccessible options
 
-    this.logininfo       = await this._importLogininfoFromDisk();
-    this.proxies         = await this._importProxiesFromDisk();
-    this.quotes          = await this._importQuotesFromDisk();
-    this.lang            = await this._importLanguagesFromDisk();
-    this.lang            = await this._importCustomLangFromDisk();
+    await this._importLogininfoFromDisk();
+    await this._importProxiesFromDisk();
+    await this._importQuotesFromDisk();
+    await this._importLanguagesFromDisk();
+    await this._importCustomLangFromDisk();
 
     this.lastCommentDB   = new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); // Autoload
     this.ratingHistoryDB = new nedb({ filename: srcdir + "/data/ratingHistory.db", autoload: true });
