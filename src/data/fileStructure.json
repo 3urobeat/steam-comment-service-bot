@@ -373,7 +373,7 @@
         {
             "path": "src/dataManager/dataExport.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataExport.js",
-            "checksum": "e65e3832a53946a1604a1b47d0c99442"
+            "checksum": "215ee2110d08ee1b95c8e720170fc8f8"
         },
         {
             "path": "src/dataManager/dataImport.js",

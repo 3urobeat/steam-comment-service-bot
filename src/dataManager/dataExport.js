@@ -4,7 +4,7 @@
  * Created Date: 2023-07-04 21:29:42
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-08 19:43:03
+ * Last Modified: 2025-01-10 16:49:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -118,14 +118,14 @@ DataManager.prototype.writeLogininfoToDisk = function() {
     if (fs.existsSync(srcdir + "/../logininfo.json")) {
         logger("debug", "DataManager dataExport: Writing to logininfo.json...");
 
+        // Construct logininfo object
         const logininfojson = {};
 
-        // Re-Construct logininfo object. Iterate over bots instead of logininfo to retain a changed bots hierarchy
-        for (const e of this.controller.getBots("*")) {
-            logininfojson[`bot${e.index}`] = [ e.accountName, e.loginData.logOnOptions.password, e.loginData.logOnOptions.sharedSecret ];
+        for (const e of this.logininfo) {
+            logininfojson[`bot${e.index}`] = [ e.accountName, e.password, e.sharedSecret ];
         }
 
-        //this.controller._dataUpdateEvent("logininfo", null, logininfojson); // TODO
+        this.controller._dataUpdateEvent("logininfo", null, this.logininfo);
 
         // Get arrays on one line
         const stringifiedlogininfo = JSON.stringify(logininfojson, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162
@@ -148,12 +148,15 @@ DataManager.prototype.writeLogininfoToDisk = function() {
         const accountstxt = [ "//Comment: Provide login information in the form of username:password. Read instructions here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/setup_guide.md#accounts" ]; // Re-add comment
 
         // Re-construct accounts.txt string. Iterate over bots instead of logininfo to retain a changed bots hierarchy
-        for (const e of this.controller.getBots("*")) {
-            if (e.loginData.logOnOptions.sharedSecret) accountstxt.push(`${e.accountName}:${e.loginData.logOnOptions.password}:${e.loginData.logOnOptions.sharedSecret}`);
-                else accountstxt.push(`${e.accountName}:${e.loginData.logOnOptions.password}`);
+        for (const e of this.logininfo) {
+            if (e.sharedSecret) {
+                accountstxt.push(`${e.accountName}:${e.password}:${e.sharedSecret}`);
+            } else {
+                accountstxt.push(`${e.accountName}:${e.password}`);
+            }
         }
 
-        //this.controller._dataUpdateEvent("logininfo", null, accountstxt); // TODO
+        this.controller._dataUpdateEvent("logininfo", null, this.logininfo);
 
         fs.writeFile(srcdir + "/../accounts.txt", accountstxt.join("\n"), (err) => {
             if (err) logger("error", "DataManager: Error writing accounts to accounts.txt: " + err);
