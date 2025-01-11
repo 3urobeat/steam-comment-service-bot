@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-07 18:28:23
+ * Last Modified: 2025-01-11 16:48:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -479,7 +479,7 @@ Controller.prototype.filterAccounts = function(predicate) {}; // eslint-disable-
 Controller.prototype.filters = {};
 
 /**
- * Runs internal dataUpdate event code and emits dataUpdate event for plugins. The event is emitted whenever DataManager is instructed to import or export a key.
+ * Runs internal dataUpdate event code and emits dataUpdate event for plugins. The event is emitted whenever DataManager is instructed to import a file from the disk or export a DataManager property to it. On data export `oldData` will always be `null`.
  * @param {string} key Which DataManager key got updated
  * @param {any} oldData Old content of the updated key
  * @param {any} newData New content of the updated key
