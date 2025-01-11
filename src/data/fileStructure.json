@@ -503,7 +503,7 @@
         {
             "path": "src/pluginSystem/pluginSystem.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/pluginSystem/pluginSystem.js",
-            "checksum": "4df1929858029f4ade2e560512e0bea6"
+            "checksum": "7114e3cca7e10643136d6190b422c5a7"
         },
         {
             "path": "src/sessions/events/sessionEvents.js",

@@ -4,7 +4,7 @@
  * Created Date: 2023-03-19 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-04 13:30:44
+ * Last Modified: 2025-01-11 16:49:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -30,6 +30,7 @@ const Bot            = require("../bot/bot.js");                 // eslint-disab
  * @property {function(Bot, Bot.EStatus, Bot.EStatus): void} statusUpdate Controller statusUpdate event
  * @property {function(Bot, function(string): void): void} steamGuardInput Controller steamGuardInput event
  * @property {function(Bot, string): void} steamGuardQrCode Controller steamGuardQrCode event
+ * @property {function(string, any, any): void} dataUpdate Controller dataUpdate event
  */
 
 
@@ -74,7 +75,8 @@ const PluginSystem = function (controller) {
         READY: "ready",
         STATUS_UPDATE: "statusUpdate",
         steamGuardInput: "steamGuardInput",
-        steamGuardQrCode: "steamGuardQrCode"
+        steamGuardQrCode: "steamGuardQrCode",
+        dataUpdate: "dataUpdate"
     };
 
     /**

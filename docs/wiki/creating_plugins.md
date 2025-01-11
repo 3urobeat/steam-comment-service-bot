@@ -87,7 +87,7 @@ It makes sense to load your plugin config file from your plugin config folder, j
 We are also registering a super cool command here with the names '!hello' and '!cool-alias'. If someone executes it, it will respond with 'Hello World!'. Registering commands and responding to the user is further explained below.
 
 **Event functions:**  
-The template plugin also exposes a 'ready', 'statusUpdate', 'steamGuardInput', 'steamGuardQrCode' function.  
+The template plugin also exposes a 'ready', 'statusUpdate', 'steamGuardInput', 'steamGuardQrCode', 'dataUpdate' function.  
 These are functions that will be called by the plugin system when the bot emits those events.
 
 The 'ready' event function is called when the bot has finished logging in all accounts. Should the plugin load be caused by '!reload', this function is executed milliseconds after `load()` has been called.  
@@ -97,6 +97,8 @@ The 'statusUpdate' event function is called when any bot account changes their s
 The 'steamGuardInput' event function is called when any bot account is currently being logged in and a Steam Guard Code was requested by Steam.  
 The bot has a built in handler that will request code input from the terminal on this event. Plugins can use the `code()` callback function in `steamGuardInput(bot, code)` to supply a code themselves, resolving the request as well.  
 If a session was started by logging in using a QrCode instead of a password, the event 'steamGuardQrCode' will be fired instead. Plugins can display the QrCode supplied in this event, for example using the [qrcode library](https://www.npmjs.com/package/qrcode), which will resolve the request once it has been scanned using a Steam Mobile App.
+
+The 'dataUpdate' event is emitted whenever DataManager is instructed to import a file from the disk or export a DataManager property to it. On data export `oldData` will always be `null`.
 
 To check from your plugin if the Steam Guard Code/QrCode request has been resolved, wait for the statusUpdate event to announce a change.
 

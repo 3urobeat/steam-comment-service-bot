@@ -13,6 +13,8 @@ This allows for running internal code (e.g. ready event) before an external modu
 - [ready](#ready-)
 - [statusUpdate](#statusUpdate-)
 - [steamGuardInput](#steamGuardInput-)
+- [steamGuardQrCode](#steamGuardQrCode-)
+- [dataUpdate](#dataUpdate-)
 
 Please use your browser's search function <kbd>Ctrl</kbd>+<kbd>F</kbd> to find a specific event using its name on this page.
 
@@ -56,3 +58,11 @@ This event is emitted when any bot account is trying to log in using a QR-Code. 
 The event is emitted with the parameters
 - `bot` ([Bot](../bot/bot.md)) - Bot instance of the affected account
 - `challengeUrl` (string) - The QrCode Challenge URL supplied by Steam. Display this value using a QR-Code parser and let a user scan it using their Steam Mobile App.
+
+## dataUpdate <a href="/src/controller/events/dataUpdate.js" target="_blank"><img align="right" src="https://img.shields.io/badge/<%2F>%20Source-darkcyan"></a>
+The event is emitted whenever DataManager is instructed to import a file from the disk or export a DataManager property to it. On data export `oldData` will always be `null`.
+
+The event is emitted with the parameters
+- `key` (string) - Which DataManager key got updated
+- `oldData` (any) - Old content of the updated key
+- `newData` (any) - New content of the updated key
