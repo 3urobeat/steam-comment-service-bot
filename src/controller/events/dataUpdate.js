@@ -4,7 +4,7 @@
  * Created Date: 2025-01-07 17:18:36
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-11 16:48:01
+ * Last Modified: 2025-01-11 18:27:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2025 3urobeat <https://github.com/3urobeat>
@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+
+const util = require("util");
 
 const Controller = require("../controller");
 
@@ -27,12 +29,24 @@ const Controller = require("../controller");
 Controller.prototype._dataUpdateEvent = function(key, oldData, newData) {
 
     // Calculate changes. If !oldData (e.g. on dataExport) count it as a change
-    const changes = Object.keys(newData).filter((e) => !oldData || oldData[e] != newData[e]); // TODO: Could provide more info tbh
+    const changes = Object.keys(newData).filter((e) => {
+        // Use JSON.stringify to deep compare objects, as obj == obj will nearly always be false because thats how programming languages work
+        const isDifferent = !oldData || JSON.stringify(oldData[e]) != JSON.stringify(newData[e]);
+
+        // Log debug message
+        if (isDifferent && oldData) {
+            logger("debug", `Event dataUpdate: DataManager key '${key}' got updated. Difference - old '${util.inspect(oldData[e], false, 2, true)}' | new '${util.inspect(newData[e], false, 2, true)}'`);
+        }
+
+        return isDifferent;
+    });
 
     if (changes.length == 0) return logger("debug", `Event dataUpdate: DataManager key '${key}' did not change`);
 
     // Log debug message
-    logger("debug", `Event dataUpdate: DataManager key '${key}' got updated. Changes: '${changes.join(", ")}'`);
+    if (!oldData) {
+        logger("debug", `Event dataUpdate: DataManager key '${key}' got exported. All values are included in newData.`);
+    }
 
     // Emit event
     this.events.emit("dataUpdate", key, oldData, newData);
