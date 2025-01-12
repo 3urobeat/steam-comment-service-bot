@@ -24,7 +24,7 @@
     "scripts": {
         "start": "node start.js",
         "dev": "node scripts/generateFileStructure.js && node start",
-        "types": "jsdoc -t node_modules/tsd-jsdoc/dist -r src/. -d types ; node scripts/generateFileStructure.js",
+        "types": "jsdoc -t node_modules/tsd-jsdoc/dist -c jsdoc.config.json -d types ; node scripts/generateFileStructure.js",
         "deps": "ncu -u && npm update"
     },
     "author": "3urobeat",
@@ -38,7 +38,11 @@
         "@eslint/js": "^9.15.0",
         "eslint": "^9.15.0",
         "eslint-plugin-jsdoc": "^50.5.0",
+        "jsdoc": "^4.0.4",
         "tsd-jsdoc": "^2.5.0"
+    },
+    "overrides": {
+        "jsdoc": "^4.0.4"
     },
     "types": "./types/types.d.ts"
 }

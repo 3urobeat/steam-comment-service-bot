@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-13 11:18:09
+ * Last Modified: 2025-01-12 12:24:26
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -25,7 +25,7 @@ const { exec } = require("child_process"); // Wanted to do it with the npm packa
 /**
  * Attempts to reinstall all modules
  * @param {function(string, string): void} logger The currently used logger function (real or fake, the caller decides)
- * @param {function(string|null, string|null): void} callback Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
+ * @param {function((string|null), (string|null)): void} callback Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
 module.exports.reinstallAll = async (logger, callback) => {
     logger("info", "I'm installing packages, which the bot depends on to function, inside this folder. Please wait a moment, this can take up to a minute.");
@@ -60,7 +60,7 @@ module.exports.reinstallAll = async (logger, callback) => {
 
 /**
  * Updates all installed packages to versions listed in package.json from the project root directory.
- * @param {function(string|null, string|null): void} callback Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
+ * @param {function((string|null), (string|null)): void} callback Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
 module.exports.update = (callback) => {
     module.exports.updateFromPath(srcdir + "/..", callback);
@@ -70,7 +70,7 @@ module.exports.update = (callback) => {
 /**
  * Updates all installed packages to versions listed in package.json
  * @param {string} path Custom path to read package.json from and install packages to
- * @param {function(string|null, string|null): void} callback Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
+ * @param {function((string|null), (string|null)): void} callback Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
 module.exports.updateFromPath = (path, callback) => {
     logger("debug", `npminteraction update(): Running 'npm install --omit=dev' in '${path}'. This can take a moment, please wait...`);

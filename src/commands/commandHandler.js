@@ -4,7 +4,7 @@
  * Created Date: 2023-04-01 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 11:41:44
+ * Last Modified: 2025-01-12 15:48:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -23,7 +23,7 @@ const Controller = require("../controller/controller.js"); // eslint-disable-lin
 /**
  * @typedef Command Documentation of the Command structure
  * @type {object}
- * @property {[string]} names All names that should trigger this command
+ * @property {Array.<string>} names All names that should trigger this command
  * @property {string} description Description of what this command does
  * @property {Array.<CommandArg>} args Array of objects containing information about each parameter supported by this command
  * @property {boolean} ownersOnly Set to true to only allow owners to use this command.
@@ -282,6 +282,6 @@ module.exports = CommandHandler;
 /**
  * Calculates command suggestions using the Jaro Winkler distance of `input` to all registered commands
  * @param {string} input String to get the nearest registered commands of
- * @returns {{ name: string, closeness: number }[]} Returns a sorted Array of Objects, containing the command name and closeness in percent of name to `input` of every registered command
+ * @returns {Array.<{ name: string, closeness: number }>} Returns a sorted Array of Objects, containing the command name and closeness in percent of name to `input` of every registered command
  */
 CommandHandler.prototype.calculateCommandSuggestions = function(input) {}; // eslint-disable-line

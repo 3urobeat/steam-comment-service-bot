@@ -27,9 +27,9 @@ SteamCommunity.prototype.getDiscussionComments = function(url, startIndex, endIn
 
 		/**
 		 * Stores every loaded page inside a Cheerio instance
-		 * @type {{[key: number]: cheerio.Root}}
+		 * @type {Object.<string, cheerio.Root>}
 		 */
-		let pages = { 
+		let pages = {
 			0: $
 		};
 
@@ -128,7 +128,7 @@ SteamCommunity.prototype.getDiscussionComments = function(url, startIndex, endIn
 			});
 		}
 
-		
+
 		// Callback our result
 		callback(null, comments);
 

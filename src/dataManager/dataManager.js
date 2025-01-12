@@ -4,7 +4,7 @@
  * Created Date: 2023-03-21 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-09 21:27:08
+ * Last Modified: 2025-01-12 15:45:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -18,6 +18,12 @@
 const { default: Nedb } = require("@seald-io/nedb"); // eslint-disable-line
 
 const Controller = require("../controller/controller.js"); // eslint-disable-line
+
+
+/**
+ * @typedef logOnOptions Login information stored for one account
+ * @type {{ index: number, accountName: string, password: string, sharedSecret: (string|undefined), steamGuardCode: (null|undefined), machineName: (string|undefined), deviceFriendlyName: (string|undefined) }}
+ */
 
 
 /**
@@ -44,20 +50,20 @@ const DataManager = function (controller) {
 
     /**
      * Stores all `config.json` settings.
-     * @type {{[key: string]: any}}
+     * @type {Object.<string, any>}
      */
     this.config = {};
 
     /**
      * Stores all `advancedconfig.json` settings.
-     * @type {{[key: string]: any}}
+     * @type {Object.<string, any>}
      */
     this.advancedconfig = {};
 
     /**
      * Stores all supported languages and their strings used for responding to a user.
      * All default strings have already been replaced with corresponding matches from `customlang.json`.
-     * @type {{[key: string]: {[key: string]: string}}}
+     * @type {Object.<string, Object.<string, string>>}
      */
     this.lang = {};
 
@@ -75,13 +81,13 @@ const DataManager = function (controller) {
 
     /**
      * Stores IDs from config files converted at runtime and backups for all config & data files.
-     * @type {{ ownerid: Array.<string>, botsgroup: string, botsgroupid: string, configgroup: string, configgroup64id: string, ownerlinkid: string, botaccid: Array.<string>, pluginVersions: {[key: string]: string}, configjson: {}, advancedconfigjson: {}, datajson: {} }}
+     * @type {{ ownerid: Array.<string>, botsgroup: string, botsgroupid: string, configgroup: string, configgroup64id: string, ownerlinkid: string, botaccid: Array.<string>, pluginVersions: Object.<string, string>, configjson: {}, advancedconfigjson: {}, datajson: {} }}
      */
     this.cachefile = {};
 
     /**
      * Stores the login information for every bot account provided via the `logininfo.json` or `accounts.txt` files.
-     * @type {Array.<{ index: number, accountName: string, password: string, sharedSecret?: string, steamGuardCode?: null, machineName?: string, deviceFriendlyName?: string }>}
+     * @type {logOnOptions[]}
      */
     this.logininfo = [];
 
@@ -279,9 +285,9 @@ DataManager.prototype.checkAllProxies = async function(ignoreLastCheckedWithin =
  * Retrieves a language string from one of the available language files and replaces keywords if desired.
  * If a userID is provided it will lookup which language the user has set. If nothing is set, the default language set in the config will be returned.
  * @param {string} str Name of the language string to be retrieved
- * @param {{[key: string]: string}} [replace] Optional: Object containing keywords in the string to replace. Pass the keyword as key and the corresponding value to replace as value.
+ * @param {Object.<string, string>} [replace] Optional: Object containing keywords in the string to replace. Pass the keyword as key and the corresponding value to replace as value.
  * @param {string} [userIDOrLanguage] Optional: ID of the user to lookup in the userSettings database. You can also pass the name of a supported language like "english" to get a specific language.
- * @returns {Promise.<string|null>} Returns a promise that resolves with the language string or `null` if it could not be found.
+ * @returns {Promise.<(string|null)>} Returns a promise that resolves with the language string or `null` if it could not be found.
  */
 DataManager.prototype.getLang = async function(str, replace = null, userIDOrLanguage = "") {}; // eslint-disable-line
 

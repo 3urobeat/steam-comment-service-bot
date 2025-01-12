@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-11 16:48:21
+ * Last Modified: 2025-01-12 15:32:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -24,6 +24,11 @@ const { EventEmitter } = require("events");
  * @type {import("../bot/bot.js")}
  */
 
+/**
+ * @typedef EIdTypes
+ * @type {import("./helpers/handleSteamIdResolving.js")}
+ */
+
 
 /**
  * Constructor - Initializes the controller and starts all bot accounts
@@ -34,7 +39,7 @@ const Controller = function() {
 
     /**
      * Stores references to all bot account objects mapped to their accountName
-     * @type {{[key: string]: Bot}}
+     * @type {Object.<string, Bot>}
      */
     this.bots = {};
 
@@ -49,62 +54,14 @@ const Controller = function() {
 
     /**
      * Collection of miscellaneous functions for easier access
+     * @type {import("./helpers/misc.js")}
      */
-    this.misc = {
-        /**
-         * Implementation of a synchronous for loop in JS (Used as reference: https://whitfin.io/handling-synchronous-asynchronous-loops-javascriptnode-js/)
-         * @param {number} iterations The amount of iterations
-         * @param {function(object, number): void} func The function to run each iteration (Params: loop, index)
-         * @param {function(): void} exit This function will be called when the loop is finished
-         */
-        syncLoop: (iterations, func, exit) => {}, // eslint-disable-line
-
-        /**
-         * Rounds a number with x decimals
-         * @param {number} value Number to round
-         * @param {number} decimals Amount of decimals
-         * @returns {number} Rounded number
-         */
-        round: (value, decimals) => {}, // eslint-disable-line
-
-        /**
-         * Converts a timestamp to a human-readable "until from now" format. Does not care about past/future.
-         * @param {number} timestamp UNIX timestamp to convert
-         * @returns {string} "x seconds/minutes/hours/days"
-         */
-        timeToString: () => {},
-
-        /**
-         * Pings a *https* URL to check if the service and this internet connection is working
-         * @param {string} url The URL of the service to check
-         * @param {boolean} [throwTimeout=false] If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
-         * @param {{ ip: string, port: number, username: string, password: string }} [proxy] Provide a proxy if the connection check should be made through a proxy instead of the local connection
-         * @returns {Promise.<{ statusMessage: string, statusCode: number|null }>} Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
-         */
-        checkConnection: (url, throwTimeout = false, proxy) => {}, // eslint-disable-line
-
-        /**
-         * Splits a HTTP proxy URL into its parts
-         * @param {string} url The HTTP proxy URL
-         * @returns {{ ip: string, port: number, username: string, password: string }} Object containing the proxy parts
-         */
-        splitProxyString: (url) => {}, // eslint-disable-line
-
-        /**
-         * Helper function which attempts to cut Strings intelligently and returns all parts. It will attempt to not cut words & links in half.
-         * It is used by the steamChatInteraction helper but can be used in plugins as well.
-         * @param {string} txt The string to cut
-         * @param {number} limit Maximum length for each part. The function will attempt to cut txt into parts that don't exceed this amount.
-         * @param {Array.<string>} cutChars Optional: Custom chars to search after for cutting string in parts. Default: [" ", "\n", "\r"]
-         * @param {number} threshold Optional: Maximum amount that limit can be reduced to find the last space or line break. If no match is found within this limit a word will be cut. Default: 15% of total length
-         * @returns {Array} Returns all parts of the string in an array
-         */
-        cutStringsIntelligently: (txt, limit, cutChars, threshold) => {} // eslint-disable-line
-    };
+    this.misc = {};
 
 
     /**
      * Collection of various misc parameters
+     * @type {{ bootStartTimestamp: number, lastLoginTimestamp: object, steamGuardInputTime: number, startupWarnings: number, activeLogin: boolean, relogAfterDisconnect: boolean, readyAfter: number, skippedaccounts: string[], commentCounter: number }}
      */
     this.info = {
         bootStartTimestamp: Date.now(), // Save timestamp to be able to calculate startup time in ready event
@@ -120,7 +77,7 @@ const Controller = function() {
 
     /**
      * Stores all recent comment, vote etc. requests
-     * @type {{[key: string]: { status: string, type: string, amount: number, quotesArr?: Array.<string>, requestedby: string, accounts: Array.<Bot>, thisIteration: number, retryAttempt: number, amountBeforeRetry?: number, until: number, ipCooldownPenaltyAdded?: boolean, failed: object }}}
+     * @type {Object.<string, { status: string, type: string, amount: number, quotesArr: (Array.<string>|undefined), requestedby: string, accounts: Array.<Bot>, thisIteration: number, retryAttempt: number, amountBeforeRetry: (number|undefined), until: number, ipCooldownPenaltyAdded: (boolean|undefined), failed: object }>}
      */
     this.activeRequests = {};
 };
@@ -521,7 +478,7 @@ Controller.prototype.checkLastcommentDB = function(bot) {}; // eslint-disable-li
 /**
  * Checks the remaining space on the friendlist of a bot account, sends a warning message if it is less than 10 and force unfriends oldest lastcomment db user to always keep room for 1 friend.
  * @param {Bot} bot Bot object of the account to check
- * @param {function(number|null): void} callback Called with `remaining` (Number) on success or `null` on failure
+ * @param {function(((number|null))): void} callback Called with `remaining` (Number) on success or `null` on failure
  */
 Controller.prototype.friendListCapacityCheck = function(bot, callback) {}; // eslint-disable-line
 
@@ -552,23 +509,11 @@ Controller.prototype.getBotsPerProxy = function(filterOffline = false) {}; // es
 Controller.prototype._handleErrors = function() {} // eslint-disable-line
 
 /**
- * ID types supported by this resolver
- */
-const EIdTypes = { // eslint-disable-line
-    "profile": "profile",
-    "group": "group",
-    "sharedfile": "sharedfile",
-    "discussion": "discussion",
-    "curator": "curator",
-    "review": "review"
-};
-
-/**
  * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
  * Note: You need to provide a full URL for discussions, curators & reviews. For discussions only type checking/determination is supported.
  * @param {string} str The profileID argument provided by the user
  * @param {EIdTypes} expectedIdType The type of SteamID expected or `null` if type should be assumed.
- * @param {function(string|null, string|null, EIdTypes|null): void} callback
+ * @param {function((string|null), (string|null), (EIdTypes|null)): void} callback
  * Called with `err` (String or null), `id` (String or null), `idType` (String or null) parameters on completion. The `id` param has the format `userID/appID` for type review and full input url for type discussion.
  */
 Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) => {} // eslint-disable-line

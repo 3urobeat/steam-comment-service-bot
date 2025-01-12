@@ -4,10 +4,10 @@
  * Created Date: 2023-09-09 12:35:10
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:14:21
+ * Last Modified: 2025-01-12 12:43:38
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -22,9 +22,9 @@ const DataManager = require("../dataManager");
  * Retrieves a language string from one of the available language files and replaces keywords if desired.
  * If a userID is provided it will lookup which language the user has set. If nothing is set, the default language set in the config will be returned.
  * @param {string} str Name of the language string to be retrieved
- * @param {{[key: string]: string}} [replace] Optional: Object containing keywords in the string to replace. Pass the keyword as key and the corresponding value to replace as value.
+ * @param {Object.<string, string>} [replace] Optional: Object containing keywords in the string to replace. Pass the keyword as key and the corresponding value to replace as value.
  * @param {string} [userIDOrLanguage] Optional: ID of the user to lookup in the userSettings database. You can also pass the name of a supported language like "english" to get a specific language.
- * @returns {Promise.<string|null>} Returns a promise that resolves with the language string or `null` if it could not be found.
+ * @returns {Promise.<(string|null)>} Returns a promise that resolves with the language string or `null` if it could not be found.
  */
 DataManager.prototype.getLang = async function(str, replace = null, userIDOrLanguage = "") {
 

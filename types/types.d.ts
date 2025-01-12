@@ -1,4 +1,20 @@
 /**
+ * Status which a bot object can have
+ */
+declare const enum EStatus {
+    OFFLINE = 0,
+    ONLINE = 1,
+    ERROR = 2,
+    SKIPPED = 3,
+    POSTPONED = 4,
+    0 = "OFFLINE",
+    1 = "ONLINE",
+    2 = "ERROR",
+    3 = "SKIPPED",
+    4 = "POSTPONED"
+}
+
+/**
  * Constructor - Initializes an object which represents a user steam account
  * @param controller - Reference to the controller object
  * @param index - The index of this account in the logininfo object
@@ -100,8 +116,9 @@ declare class Bot {
     unlockFamilyView(): Promise<void>;
     /**
      * Internal - Attempts to get a cached family view code for this account from tokens.db
+     * @param callback - Called with `familyViewCode` (String) on success or `null` on failure
      */
-    _getFamilyViewCodeFromStorage(callback: any): void;
+    _getFamilyViewCodeFromStorage(callback: (...params: any[]) => any): void;
     /**
      * Internal - Saves a new family view code for this account to tokens.db
      * @param familyViewCode - The family view code to store
@@ -132,11 +149,12 @@ declare class Bot {
     /**
      * Our commandHandler respondModule implementation - Sends a message to a Steam user
      * @param _this - The Bot object context
+     * @param resInfo - Object containing information passed to command by friendMessage event
      * @param txt - The text to send
      * @param retry - Internal: true if this message called itself again to send failure message
      * @param part - Internal: Index of which part to send for messages larger than 750 chars
      */
-    sendChatMessage(_this: any, resInfo: any, txt: string, retry: boolean, part: number): void;
+    sendChatMessage(_this: any, resInfo: resInfo, txt: string, retry: boolean, part: number): void;
     /**
      * Waits for a Steam Chat message from this user to this account and resolves their message content. The "normal" friendMessage event handler will be blocked for this user.
      * @param steamID64 - The steamID64 of the user to read a message from
@@ -195,8 +213,9 @@ declare class Bot {
     unlockFamilyView(): Promise<void>;
     /**
      * Internal - Attempts to get a cached family view code for this account from tokens.db
+     * @param callback - Called with `familyViewCode` (String) on success or `null` on failure
      */
-    _getFamilyViewCodeFromStorage(callback: any): void;
+    _getFamilyViewCodeFromStorage(callback: (...params: any[]) => any): void;
     /**
      * Internal - Saves a new family view code for this account to tokens.db
      * @param familyViewCode - The family view code to store
@@ -227,11 +246,12 @@ declare class Bot {
     /**
      * Our commandHandler respondModule implementation - Sends a message to a Steam user
      * @param _this - The Bot object context
+     * @param resInfo - Object containing information passed to command by friendMessage event
      * @param txt - The text to send
      * @param retry - Internal: true if this message called itself again to send failure message
      * @param part - Internal: Index of which part to send for messages larger than 750 chars
      */
-    sendChatMessage(_this: any, resInfo: any, txt: string, retry: boolean, part: number): void;
+    sendChatMessage(_this: any, resInfo: resInfo, txt: string, retry: boolean, part: number): void;
     /**
      * Waits for a Steam Chat message from this user to this account and resolves their message content. The "normal" friendMessage event handler will be blocked for this user.
      * @param steamID64 - The steamID64 of the user to read a message from
@@ -250,12 +270,14 @@ declare namespace Bot {
 }
 
 /**
+ * @property names - All names that should trigger this command
  * @property description - Description of what this command does
  * @property args - Array of objects containing information about each parameter supported by this command
  * @property ownersOnly - Set to true to only allow owners to use this command.
  * @property run - Function that will be executed when the command runs. Arguments: commandHandler, args, steamID64, respondModule, context, resInfo
  */
 declare type Command = {
+    names: string[];
     description: string;
     args: CommandArg[];
     ownersOnly: boolean;
@@ -318,6 +340,18 @@ declare class CommandHandler {
      * Reloads all core commands. Does NOT reload commands registered at runtime. Please consider reloading the pluginSystem as well.
      */
     reloadCommands(): void;
+    /**
+     * Calculates command suggestions using the Jaro Winkler distance of `input` to all registered commands
+     * @param input - String to get the nearest registered commands of
+     * @returns Returns a sorted Array of Objects, containing the command name and closeness in percent of name to `input` of every registered command
+     */
+    calculateCommandSuggestions(input: string): { name: string; closeness: number; }[];
+    /**
+     * Calculates command suggestions using the Jaro Winkler distance of `input` to all registered commands
+     * @param input - String to get the nearest registered commands of
+     * @returns Returns a sorted Array of Objects, containing the command name and closeness in percent of name to `input` of every registered command
+     */
+    calculateCommandSuggestions(input: string): { name: string; closeness: number; }[];
 }
 
 /**
@@ -340,33 +374,12 @@ declare type resInfo = {
 };
 
 /**
- * Internal: Do the actual commenting, activeRequests entry with all relevant information was processed by the comment command function above.
- * @param commandHandler - The commandHandler object
- * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
- * @param respond - The shortened respondModule call
- * @param postComment - The correct postComment function for this idType. Context from the correct bot account is being applied later.
- * @param commentArgs - All arguments this postComment function needs, without callback. It will be applied and a callback added as last param. Include a key called "quote" to dynamically replace it with a random quote.
- * @param receiverSteamID64 - steamID64 of the profile to receive the comments
+ * Calculate JaroWinkler distance between two inputs. Credit: https://sumn2u.medium.com/string-similarity-comparision-in-js-with-examples-4bae35f13968 & https://gist.github.com/sumn2u/0e0b5d9505ad096284928a987ace13fb#file-jaro-wrinker-js
+ * @param s1 - First input
+ * @param s2 - Second input
+ * @returns Returns closeness
  */
-declare function comment(commandHandler: CommandHandler, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any, postComment: (...params: any[]) => any, commentArgs: any, receiverSteamID64: string): void;
-
-/**
- * Processes a up-/down-/funnyvote request
- * @param origin - Type of vote requested
- * @param commandHandler - The commandHandler object
- * @param args - Array of arguments that will be passed to the command
- * @param respondModule - Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
- * @param context - The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
- * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
- */
-declare function processVoteRequest(origin: "upvote" | "downvote" | "funnyvote", commandHandler: CommandHandler, args: any[], respondModule: (...params: any[]) => any, context: any, resInfo: CommandHandler.resInfo): void;
-
-/**
- * Calculates command suggestions using the Jaro Winkler distance of `input` to all registered commands
- * @param commandHandler - The commandHandler object
- * @param input - String to get the nearest registered commands of
- */
-declare function calculateCommandSuggestions(commandHandler: CommandHandler, input: string): any;
+declare function jaroWinkler(s1: string, s2: string): number;
 
 /**
  * Helper function: Gets the visibility status of a profile and appends it to idType
@@ -594,8 +607,9 @@ declare class Bot {
     unlockFamilyView(): Promise<void>;
     /**
      * Internal - Attempts to get a cached family view code for this account from tokens.db
+     * @param callback - Called with `familyViewCode` (String) on success or `null` on failure
      */
-    _getFamilyViewCodeFromStorage(callback: any): void;
+    _getFamilyViewCodeFromStorage(callback: (...params: any[]) => any): void;
     /**
      * Internal - Saves a new family view code for this account to tokens.db
      * @param familyViewCode - The family view code to store
@@ -626,11 +640,12 @@ declare class Bot {
     /**
      * Our commandHandler respondModule implementation - Sends a message to a Steam user
      * @param _this - The Bot object context
+     * @param resInfo - Object containing information passed to command by friendMessage event
      * @param txt - The text to send
      * @param retry - Internal: true if this message called itself again to send failure message
      * @param part - Internal: Index of which part to send for messages larger than 750 chars
      */
-    sendChatMessage(_this: any, resInfo: any, txt: string, retry: boolean, part: number): void;
+    sendChatMessage(_this: any, resInfo: resInfo, txt: string, retry: boolean, part: number): void;
     /**
      * Waits for a Steam Chat message from this user to this account and resolves their message content. The "normal" friendMessage event handler will be blocked for this user.
      * @param steamID64 - The steamID64 of the user to read a message from
@@ -689,8 +704,9 @@ declare class Bot {
     unlockFamilyView(): Promise<void>;
     /**
      * Internal - Attempts to get a cached family view code for this account from tokens.db
+     * @param callback - Called with `familyViewCode` (String) on success or `null` on failure
      */
-    _getFamilyViewCodeFromStorage(callback: any): void;
+    _getFamilyViewCodeFromStorage(callback: (...params: any[]) => any): void;
     /**
      * Internal - Saves a new family view code for this account to tokens.db
      * @param familyViewCode - The family view code to store
@@ -721,11 +737,12 @@ declare class Bot {
     /**
      * Our commandHandler respondModule implementation - Sends a message to a Steam user
      * @param _this - The Bot object context
+     * @param resInfo - Object containing information passed to command by friendMessage event
      * @param txt - The text to send
      * @param retry - Internal: true if this message called itself again to send failure message
      * @param part - Internal: Index of which part to send for messages larger than 750 chars
      */
-    sendChatMessage(_this: any, resInfo: any, txt: string, retry: boolean, part: number): void;
+    sendChatMessage(_this: any, resInfo: resInfo, txt: string, retry: boolean, part: number): void;
     /**
      * Waits for a Steam Chat message from this user to this account and resolves their message content. The "normal" friendMessage event handler will be blocked for this user.
      * @param steamID64 - The steamID64 of the user to read a message from
@@ -735,6 +752,8 @@ declare class Bot {
     readChatMessage(steamID64: string, timeout: number): Promise<string | null>;
 }
 
+declare type EIdTypes = undefined;
+
 /**
  * Constructor - Initializes the controller and starts all bot accounts
  */
@@ -743,7 +762,9 @@ declare class Controller {
     /**
      * Stores references to all bot account objects mapped to their accountName
      */
-    bots: any;
+    bots: {
+        [key: string]: Bot;
+    };
     /**
      * The main bot account
      */
@@ -751,7 +772,7 @@ declare class Controller {
     /**
      * Collection of miscellaneous functions for easier access
      */
-    misc: any;
+    misc: undefined;
     /**
      * Collection of various misc parameters
      */
@@ -759,7 +780,9 @@ declare class Controller {
     /**
      * Stores all recent comment, vote etc. requests
      */
-    activeRequests: any;
+    activeRequests: {
+        [key: string]: { status: string; type: string; amount: number; quotesArr: string[] | undefined; requestedby: string; accounts: Bot[]; thisIteration: number; retryAttempt: number; amountBeforeRetry: number | undefined; until: number; ipCooldownPenaltyAdded: boolean | undefined; failed: object; };
+    };
     /**
      * Internal: Initializes the bot by importing data from the disk, running the updater and finally logging in all bot accounts.
      */
@@ -771,7 +794,7 @@ declare class Controller {
     /**
      * The updater object
      */
-    updater: any;
+    updater: undefined;
     /**
      * Internal: Loads all parts of the application to get IntelliSense support after the updater ran and calls login() when done.
      */
@@ -845,7 +868,7 @@ declare class Controller {
      */
     filters: any;
     /**
-     * Runs internal dataUpdate event code and emits dataUpdate event for plugins. The event is emitted whenever DataManager is instructed to import or export a key.
+     * Runs internal dataUpdate event code and emits dataUpdate event for plugins. The event is emitted whenever DataManager is instructed to import a file from the disk or export a DataManager property to it. On data export `oldData` will always be `null`.
      * @param key - Which DataManager key got updated
      * @param oldData - Old content of the updated key
      * @param newData - New content of the updated key
@@ -881,8 +904,9 @@ declare class Controller {
     /**
      * Checks the remaining space on the friendlist of a bot account, sends a warning message if it is less than 10 and force unfriends oldest lastcomment db user to always keep room for 1 friend.
      * @param bot - Bot object of the account to check
+     * @param callback - Called with `remaining` (Number) on success or `null` on failure
      */
-    friendListCapacityCheck(bot: Bot, callback: any): void;
+    friendListCapacityCheck(bot: Bot, callback: (...params: any[]) => any): void;
     /**
      * Check for friends who haven't requested comments in config.unfriendtime days and unfriend them
      */
@@ -910,8 +934,9 @@ declare class Controller {
      * Note: You need to provide a full URL for discussions, curators & reviews. For discussions only type checking/determination is supported.
      * @param str - The profileID argument provided by the user
      * @param expectedIdType - The type of SteamID expected or `null` if type should be assumed.
+     * @param callback - Called with `err` (String or null), `id` (String or null), `idType` (String or null) parameters on completion. The `id` param has the format `userID/appID` for type review and full input url for type discussion.
      */
-    handleSteamIdResolving(str: string, expectedIdType: EIdTypes, callback: any): void;
+    handleSteamIdResolving(str: string, expectedIdType: EIdTypes, callback: (...params: any[]) => any): void;
     /**
      * Logs text to the terminal and appends it to the output.txt file.
      * @param type - String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
@@ -933,7 +958,7 @@ declare class Controller {
      */
     _loggerLogAfterReady(): void;
     /**
-     * Runs internal dataUpdate event code and emits dataUpdate event for plugins. The event is emitted whenever DataManager is instructed to import or export a key.
+     * Runs internal dataUpdate event code and emits dataUpdate event for plugins. The event is emitted whenever DataManager is instructed to import a file from the disk or export a DataManager property to it. On data export `oldData` will always be `null`.
      * @param key - Which DataManager key got updated
      * @param oldData - Old content of the updated key
      * @param newData - New content of the updated key
@@ -969,8 +994,9 @@ declare class Controller {
     /**
      * Checks the remaining space on the friendlist of a bot account, sends a warning message if it is less than 10 and force unfriends oldest lastcomment db user to always keep room for 1 friend.
      * @param bot - Bot object of the account to check
+     * @param callback - Called with `remaining` (Number) on success or `null` on failure
      */
-    friendListCapacityCheck(bot: Bot, callback: any): void;
+    friendListCapacityCheck(bot: Bot, callback: (...params: any[]) => any): void;
     /**
      * Check for friends who haven't requested comments in config.unfriendtime days and unfriend them
      */
@@ -998,8 +1024,9 @@ declare class Controller {
      * Note: You need to provide a full URL for discussions, curators & reviews. For discussions only type checking/determination is supported.
      * @param str - The profileID argument provided by the user
      * @param expectedIdType - The type of SteamID expected or `null` if type should be assumed.
+     * @param callback - Called with `err` (String or null), `id` (String or null), `idType` (String or null) parameters on completion. The `id` param has the format `userID/appID` for type review and full input url for type discussion.
      */
-    handleSteamIdResolving(str: string, expectedIdType: EIdTypes, callback: any): void;
+    handleSteamIdResolving(str: string, expectedIdType: EIdTypes, callback: (...params: any[]) => any): void;
     /**
      * Logs text to the terminal and appends it to the output.txt file.
      * @param type - String that determines the type of the log message. Can be info, warn, error, debug or an empty string to not use the field.
@@ -1026,6 +1053,14 @@ declare class Controller {
      * @param firstLogin - Is set to true by controller if this is the first login to display more information
      */
     login(firstLogin: boolean): void;
+    /**
+     * Get all accounts which have not yet switched their status. Only the relevant properties of logininfo are documented here.
+     */
+    static readonly allAccountsOffline: { index: number; accountName: string; }[];
+    /**
+     * Get all accounts which have not yet fully been populated. Ignore accounts that are not online as they will never populate their user object. Only the relevant properties of logininfo are documented here.
+     */
+    static readonly allAccountsNotPopulated: { index: number; accountName: string; }[];
     /**
      * Internal: Logs in accounts on different proxies synchronously
      * @param allAccounts - Array of logininfo entries of accounts to log in
@@ -1075,15 +1110,7 @@ declare class Controller {
  */
 declare function restartdata(data: string): void;
 
-/**
- * ID types supported by this resolver
- */
-declare const EIdTypes: any;
-
-/**
- * ID types supported by this resolver
- */
-declare const EIdTypes: any;
+declare type EIdTypes = undefined;
 
 /**
  * Implementation of a synchronous for loop in JS (Used as reference: https://whitfin.io/handling-synchronous-asynchronous-loops-javascriptnode-js/)
@@ -1138,19 +1165,22 @@ declare function cutStringsIntelligently(txt: string, limit: number, cutChars: s
 /**
  * Attempts to reinstall all modules
  * @param logger - The currently used logger function (real or fake, the caller decides)
+ * @param callback - Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
-declare function reinstallAll(logger: (...params: any[]) => any, callback: any): void;
+declare function reinstallAll(logger: (...params: any[]) => any, callback: (...params: any[]) => any): void;
 
 /**
  * Updates all installed packages to versions listed in package.json from the project root directory.
+ * @param callback - Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
-declare function update(callback: any): void;
+declare function update(callback: (...params: any[]) => any): void;
 
 /**
  * Updates all installed packages to versions listed in package.json
  * @param path - Custom path to read package.json from and install packages to
+ * @param callback - Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
-declare function updateFromPath(path: string, callback: any): void;
+declare function updateFromPath(path: string, callback: (...params: any[]) => any): void;
 
 /**
  * Installs the latest version available on NPM for an array of packages. Updating core dependencies might cause untested behavior, be careful.
@@ -1158,6 +1188,8 @@ declare function updateFromPath(path: string, callback: any): void;
  * @returns Resolves when done or rejects on failure
  */
 declare function installLatest(packages: string[]): Promise<void>;
+
+declare type logOnOptions = any;
 
 /**
  * Constructor - The dataManager system imports, checks, handles errors and provides a file updating service for all configuration files
@@ -1203,47 +1235,47 @@ declare class DataManager {
      */
     writeQuotesToDisk(): void;
     /**
-     * Internal: Loads cache.json from disk in DataManager and handles potential errors
+     * Internal: Loads cache.json from disk, updates cachefile property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importCacheFromDisk(): Promise<object>;
     /**
-     * Internal: Loads data.json from disk in DataManager and handles potential errors
+     * Internal: Loads data.json from disk, updates datafile property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importDataFromDisk(): Promise<object>;
     /**
-     * Internal: Loads config.json from disk in DataManager and handles potential errors
+     * Internal: Loads config.json from disk, updates config property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importConfigFromDisk(): Promise<object>;
     /**
-     * Internal: Loads advancedconfig.json from disk in DataManager and handles potential errors
+     * Internal: Loads advancedconfig.json from disk, updates advancedconfig property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importAdvancedConfigFromDisk(): Promise<object>;
     /**
-     * Internal: Loads accounts.txt/logininfo.json from disk in DataManager and handles potential errors
+     * Internal: Loads accounts.txt/logininfo.json from disk, updates logininfo property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importLogininfoFromDisk(): Promise<object[]>;
     /**
-     * Internal: Loads proxies.txt from disk in DataManager and handles potential errors
+     * Internal: Loads proxies.txt from disk, updates proxies property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importProxiesFromDisk(): Promise<object[]>;
     /**
-     * Internal: Loads quotes.txt from disk in DataManager and handles potential errors
+     * Internal: Loads quotes.txt from disk, updates quotes property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importQuotesFromDisk(): Promise<string[]>;
     /**
-     * Internal: Loads languages from disk in DataManager and handles potential errors
+     * Internal: Loads languages from disk, updates languages property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importLanguagesFromDisk(): Promise<object>;
     /**
-     * Internal: Loads customlang.json from disk in DataManager and handles potential errors
+     * Internal: Loads customlang.json from disk, updates languages property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importCustomLangFromDisk(): Promise<object>;
@@ -1271,16 +1303,24 @@ declare class DataManager {
     /**
      * Stores all `config.json` settings.
      */
-    config: any;
+    config: {
+        [key: string]: any;
+    };
     /**
      * Stores all `advancedconfig.json` settings.
      */
-    advancedconfig: any;
+    advancedconfig: {
+        [key: string]: any;
+    };
     /**
      * Stores all supported languages and their strings used for responding to a user.
      * All default strings have already been replaced with corresponding matches from `customlang.json`.
      */
-    lang: any;
+    lang: {
+        [key: string]: {
+            [key: string]: string;
+        };
+    };
     /**
      * Stores all quotes used for commenting provided via the `quotes.txt` file.
      */
@@ -1296,7 +1336,7 @@ declare class DataManager {
     /**
      * Stores the login information for every bot account provided via the `logininfo.json` or `accounts.txt` files.
      */
-    logininfo: any;
+    logininfo: logOnOptions[];
     /**
      * Database which stores the timestamp of the last request of every user. This is used to enforce `config.unfriendTime`.
      * Document structure: { id: string, time: Number }
@@ -1360,47 +1400,47 @@ declare class DataManager {
      */
     writeQuotesToDisk(): void;
     /**
-     * Internal: Loads cache.json from disk in DataManager and handles potential errors
+     * Internal: Loads cache.json from disk, updates cachefile property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importCacheFromDisk(): Promise<object>;
     /**
-     * Internal: Loads data.json from disk in DataManager and handles potential errors
+     * Internal: Loads data.json from disk, updates datafile property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importDataFromDisk(): Promise<object>;
     /**
-     * Internal: Loads config.json from disk in DataManager and handles potential errors
+     * Internal: Loads config.json from disk, updates config property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importConfigFromDisk(): Promise<object>;
     /**
-     * Internal: Loads advancedconfig.json from disk in DataManager and handles potential errors
+     * Internal: Loads advancedconfig.json from disk, updates advancedconfig property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importAdvancedConfigFromDisk(): Promise<object>;
     /**
-     * Internal: Loads accounts.txt/logininfo.json from disk in DataManager and handles potential errors
+     * Internal: Loads accounts.txt/logininfo.json from disk, updates logininfo property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importLogininfoFromDisk(): Promise<object[]>;
     /**
-     * Internal: Loads proxies.txt from disk in DataManager and handles potential errors
+     * Internal: Loads proxies.txt from disk, updates proxies property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importProxiesFromDisk(): Promise<object[]>;
     /**
-     * Internal: Loads quotes.txt from disk in DataManager and handles potential errors
+     * Internal: Loads quotes.txt from disk, updates quotes property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importQuotesFromDisk(): Promise<string[]>;
     /**
-     * Internal: Loads languages from disk in DataManager and handles potential errors
+     * Internal: Loads languages from disk, updates languages property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importLanguagesFromDisk(): Promise<object>;
     /**
-     * Internal: Loads customlang.json from disk in DataManager and handles potential errors
+     * Internal: Loads customlang.json from disk, updates languages property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
     _importCustomLangFromDisk(): Promise<object>;
@@ -1436,10 +1476,13 @@ declare class DataManager {
      * Retrieves a language string from one of the available language files and replaces keywords if desired.
      * If a userID is provided it will lookup which language the user has set. If nothing is set, the default language set in the config will be returned.
      * @param str - Name of the language string to be retrieved
+     * @param [replace] - Optional: Object containing keywords in the string to replace. Pass the keyword as key and the corresponding value to replace as value.
      * @param [userIDOrLanguage] - Optional: ID of the user to lookup in the userSettings database. You can also pass the name of a supported language like "english" to get a specific language.
      * @returns Returns a promise that resolves with the language string or `null` if it could not be found.
      */
-    getLang(str: string, replace: any, userIDOrLanguage?: string): Promise<string | null>;
+    getLang(str: string, replace?: {
+        [key: string]: string;
+    }, userIDOrLanguage?: string): Promise<string | null>;
     /**
      * Gets a random quote
      * @param quotesArr - Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
@@ -1520,10 +1563,13 @@ declare class DataManager {
      * Retrieves a language string from one of the available language files and replaces keywords if desired.
      * If a userID is provided it will lookup which language the user has set. If nothing is set, the default language set in the config will be returned.
      * @param str - Name of the language string to be retrieved
+     * @param [replace] - Optional: Object containing keywords in the string to replace. Pass the keyword as key and the corresponding value to replace as value.
      * @param [userIDOrLanguage] - Optional: ID of the user to lookup in the userSettings database. You can also pass the name of a supported language like "english" to get a specific language.
      * @returns Returns a promise that resolves with the language string or `null` if it could not be found.
      */
-    getLang(str: string, replace: any, userIDOrLanguage?: string): Promise<string | null>;
+    getLang(str: string, replace?: {
+        [key: string]: string;
+    }, userIDOrLanguage?: string): Promise<string | null>;
     /**
      * Gets a random quote
      * @param quotesArr - Optional: Custom array of quotes to choose from. If not provided the default quotes set which was imported from the disk will be used.
@@ -1638,164 +1684,6 @@ declare class JobManager {
 }
 
 /**
- * Constructor - Creates a new Discussion object
- */
-declare class CSteamDiscussion {
-    constructor(community: SteamCommunity, data: any);
-    _community: SteamCommunity;
-    /**
-     * Scrapes a range of comments from this discussion
-     * @param startIndex - Index (0 based) of the first comment to fetch
-     * @param endIndex - Index (0 based) of the last comment to fetch
-     * @param callback - First argument is null/Error, second is array containing the requested comments
-     */
-    getComments(startIndex: number, endIndex: number, callback: (...params: any[]) => any): void;
-    /**
-     * Posts a comment to this discussion's comment section
-     * @param message - Content of the comment to post
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    postComment(message: string, callback: (...params: any[]) => any): void;
-    /**
-     * Delete a comment from this discussion's comment section
-     * @param gidcomment - ID of the comment to delete
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    deleteComment(gidcomment: string, callback: (...params: any[]) => any): void;
-    /**
-     * Subscribes to this discussion's comment section
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    subscribe(callback: (...params: any[]) => any): void;
-    /**
-     * Unsubscribes from this discussion's comment section
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    unsubscribe(callback: (...params: any[]) => any): void;
-}
-
-/**
- * @property [reviewID] - ID of review, used for voting & reporting. Remains `null` if it is your review or you are not logged in as the buttons are not presented then.
- * @property steamID - SteamID object of the review author
- * @property appID - AppID of the associated game
- * @property postedDate - Date of when the review was posted initially
- * @property [updatedDate] - Date of when the review was last updated. Remains `null` if review was never updated
- * @property recommended - True if the author recommends the game, false otherwise.
- * @property isEarlyAccess - True if the review is an early access review
- * @property content - Text content of the review
- * @property [commentsAmount] - Amount of comments reported by Steam. Remains `null` if coments are disabled
- * @property [comments] - Array of the last 10 comments left on this review
- * @property recentPlaytimeHours - Amount of hours the author played this game for in the last 2 weeks
- * @property totalPlaytimeHours - Amount of hours the author played this game for in total
- * @property [playtimeHoursAtReview] - Amount of hours the author played this game for at the point of review. Remains `null` if Steam does not provide this information.
- * @property votesHelpful - Amount of 'Review is helpful' votes
- * @property votesFunny - Amount of 'Review is funny' votes
- */
-declare type Review = {
-    reviewID?: string;
-    steamID: SteamID;
-    appID: string;
-    postedDate: Date;
-    updatedDate?: Date;
-    recommended: boolean;
-    isEarlyAccess: boolean;
-    content: string;
-    commentsAmount?: number;
-    comments?: { index: number; id: string; authorLink: string; postedDate: Date; content: string; }[];
-    recentPlaytimeHours: number;
-    totalPlaytimeHours: number;
-    playtimeHoursAtReview?: number;
-    votesHelpful: number;
-    votesFunny: number;
-};
-
-/**
- * Constructor - Creates a new CSteamReview object
- * @param community - Current SteamCommunity instance
- * @param data - Review data collected by the scraper
- */
-declare class CSteamReview {
-    constructor(community: SteamCommunity, data: Review);
-    _community: SteamCommunity;
-    /**
-     * Posts a comment to this review
-     * @param message - Content of the comment to post
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    comment(message: string, callback: (...params: any[]) => any): void;
-    /**
-     * Votes on this review as helpful
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    voteHelpful(callback: (...params: any[]) => any): void;
-    /**
-     * Votes on this review as unhelpful
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    voteUnhelpful(callback: (...params: any[]) => any): void;
-    /**
-     * Votes on this review as funny
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    voteFunny(callback: (...params: any[]) => any): void;
-    /**
-     * Removes funny vote from this review
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    voteRemoveFunny(callback: (...params: any[]) => any): void;
-}
-
-/**
- * Constructor - Creates a new SharedFile object
- */
-declare class CSteamSharedFile {
-    constructor(community: SteamCommunity, data: any);
-    _community: SteamCommunity;
-    /**
-     * Deletes a comment from this sharedfile's comment section
-     * @param cid - ID of the comment to delete
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    deleteComment(cid: string, callback: (...params: any[]) => any): void;
-    /**
-     * Favorites this sharedfile
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    favorite(callback: (...params: any[]) => any): void;
-    /**
-     * Posts a comment to this sharedfile
-     * @param message - Content of the comment to post
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    comment(message: string, callback: (...params: any[]) => any): void;
-    /**
-     * Subscribes to this sharedfile's comment section. Note: Checkbox on webpage does not update
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    subscribeComments(callback: (...params: any[]) => any): void;
-    /**
-     * Unfavorites this sharedfile
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    unfavorite(callback: (...params: any[]) => any): void;
-    /**
-     * Unsubscribes from this sharedfile's comment section. Note: Checkbox on webpage does not update
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    unsubscribeComments(callback: (...params: any[]) => any): void;
-    /**
-     * Subscribes to this workshop item
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    subscribeWorkshop(callback: (...params: any[]) => any): void;
-    /**
-     * Unsubscribes from this workshop item
-     * @param callback - Takes only an Error object/null as the first argument
-     */
-    unsubscribeWorkshop(callback: (...params: any[]) => any): void;
-}
-
-/**
  * Attempts to instantiate a plugin
  * @param pluginName - Name of the plugin package
  * @returns Creates a plugin instance and returns it along with more information
@@ -1809,6 +1697,7 @@ declare function instantiatePlugin(pluginName: string): any;
  * @property statusUpdate - Controller statusUpdate event
  * @property steamGuardInput - Controller steamGuardInput event
  * @property steamGuardQrCode - Controller steamGuardQrCode event
+ * @property dataUpdate - Controller dataUpdate event
  */
 declare type Plugin = {
     load: (...params: any[]) => any;
@@ -1817,6 +1706,7 @@ declare type Plugin = {
     statusUpdate: (...params: any[]) => any;
     steamGuardInput: (...params: any[]) => any;
     steamGuardQrCode: (...params: any[]) => any;
+    dataUpdate: (...params: any[]) => any;
 };
 
 /**
@@ -1907,7 +1797,9 @@ declare class PluginSystem {
     /**
      * References to all plugin objects
      */
-    pluginList: any;
+    pluginList: {
+        [key: string]: Plugin;
+    };
     /**
      * Manages all registered commands and gives you access to them
      */
@@ -1918,16 +1810,19 @@ declare class PluginSystem {
     jobManager: JobManager;
     /**
      * Helper function - Get a list of all installed plugins
+     * @returns Array of arrays containing package name & version of all installed plugins
      */
-    getInstalledPlugins(): any;
+    getInstalledPlugins(): string[][];
     /**
      * Helper function - Get a list of all active (loaded) plugins
+     * @returns Array of arrays containing package name & version of all active (loaded) plugins
      */
-    getActivePlugins(): any;
+    getActivePlugins(): string[][];
     /**
      * Internal: Checks for available updates of all enabled plugins on NPM
+     * @param [pluginPackages] - List of arrays containing plugin name and installed version to check for updates. If not provided, all enabled plugins will be checked
      */
-    _checkPluginUpdates(pluginPackages: any): void;
+    _checkPluginUpdates(pluginPackages?: string[][]): void;
     /**
      * Registers an plugin update check job. This is called by Controller after the initial _loadPlugins() call
      */
@@ -2063,8 +1958,9 @@ declare class SessionHandler {
     hasStorageValidToken(): Promise<boolean>;
     /**
      * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
+     * @param callback - Called with `refreshToken` (String) on success or `null` on failure
      */
-    _getTokenFromStorage(callback: any): void;
+    _getTokenFromStorage(callback: (...params: any[]) => any): void;
     /**
      * Internal - Saves a new token for this account to tokens.db
      * @param token - The refreshToken to store
@@ -2133,8 +2029,9 @@ declare class SessionHandler {
     hasStorageValidToken(): Promise<boolean>;
     /**
      * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
+     * @param callback - Called with `refreshToken` (String) on success or `null` on failure
      */
-    _getTokenFromStorage(callback: any): void;
+    _getTokenFromStorage(callback: (...params: any[]) => any): void;
     /**
      * Internal - Saves a new token for this account to tokens.db
      * @param token - The refreshToken to store
@@ -2239,12 +2136,31 @@ declare function run(): void;
 declare class Updater {
     constructor(controller: Controller);
     /**
+     * Copy everything in a folder including its subpaths - Thanks (modified): https://stackoverflow.com/a/26038979/12934162
+     * @param src - From path
+     * @param dest - To path
+     * @param firstCall - Set to `true` on first call, will be set to `false` on recursive call
+     */
+    static copyFolderRecursiveSync(src: string, dest: string, firstCall: boolean): void;
+    /**
+     * Copy everything in a folder including its subpaths - Thanks (modified): https://stackoverflow.com/a/26038979/12934162
+     * @param src - From path
+     * @param dest - To path
+     * @param firstCall - Set to `true` on first call, will be set to `false` on recursive call
+     */
+    static copyFolderRecursiveSync(src: string, dest: string, firstCall: boolean): void;
+    /**
      * Checks for any available update and installs it.
      * @param forceUpdate - If true an update will be forced, even if disableAutoUpdate is true or the newest version is already installed
      * @param respondModule - If defined, this function will be called with the result of the check. This allows to integrate checking for updates into commands or plugins. Passes resInfo and txt as parameters.
+     * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
      * @returns Promise that will be resolved with false when no update was found or with true when the update check or download was completed. Expect a restart when true was returned.
      */
-    run(forceUpdate: boolean, respondModule: (...params: any[]) => any, resInfo: any): Promise<boolean>;
+    run(forceUpdate: boolean, respondModule: (...params: any[]) => any, resInfo: resInfo): Promise<boolean>;
+    /**
+     * Make initiating the update a function to simplify the permission check below
+     */
+    static initiateUpdate(): void;
     /**
      * Registers an update check job. This is called by Controller after the data integrity and startup update check
      */

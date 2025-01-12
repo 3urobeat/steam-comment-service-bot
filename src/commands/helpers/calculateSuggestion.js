@@ -4,7 +4,7 @@
  * Created Date: 2024-12-23 14:10:58
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 11:41:33
+ * Last Modified: 2025-01-12 15:48:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 - 2025 3urobeat <https://github.com/3urobeat>
@@ -14,9 +14,6 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * @module CommandHandler
- */
 
 const CommandHandler = require("../commandHandler.js");
 
@@ -102,7 +99,7 @@ function jaroWinkler(s1, s2) {
 /**
  * Calculates command suggestions using the Jaro Winkler distance of `input` to all registered commands
  * @param {string} input String to get the nearest registered commands of
- * @returns {{ name: string, closeness: number }[]} Returns a sorted Array of Objects, containing the command name and closeness in percent of name to `input` of every registered command
+ * @returns {Array.<{ name: string, closeness: number }>} Returns a sorted Array of Objects, containing the command name and closeness in percent of name to `input` of every registered command
  */
 CommandHandler.prototype.calculateCommandSuggestions = function(input) {
     const result = [];

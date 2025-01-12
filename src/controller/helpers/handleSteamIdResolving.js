@@ -4,10 +4,10 @@
  * Created Date: 2022-03-09 12:58:17
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-02 12:07:21
+ * Last Modified: 2025-01-12 15:31:16
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -33,13 +33,15 @@ const EIdTypes = {
     "review": "review"
 };
 
+module.exports = EIdTypes;
+
 
 /**
  * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
  * Note: You need to provide a full URL for discussions, curators & reviews. For discussions only type checking/determination is supported.
  * @param {string} str The profileID argument provided by the user. If `null` the function will instantly callback with `null`.
  * @param {EIdTypes} expectedIdType The type of SteamID expected or `null` if type should be assumed.
- * @param {function(string|null, string|null, EIdTypes|null): void} callback
+ * @param {function((string|null), (string|null), (EIdTypes|null)): void} callback
  * Called with `err` (String or null), `id` (String or null), `idType` (String or null) parameters on completion. The `id` param has the format `userID/appID` for type review and full input url for type discussion.
  */
 Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) => {

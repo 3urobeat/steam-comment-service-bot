@@ -193,7 +193,7 @@ SteamCommunity.prototype.getSteamSharedFile = function(sharedFileId, callback) {
  * Constructor - Creates a new SharedFile object
  * @class
  * @param {SteamCommunity} community
- * @param {{ id: string, type: ESharedFileType, appID: number, owner: SteamID|null, fileSize: string|null, postDate: number, resolution: string|null, category: string[], tags: string[], uniqueVisitorsCount: number, favoritesCount: number, upvoteCount: number|null, guideNumRatings: Number|null, isUpvoted: boolean, isDownvoted: boolean }} data
+ * @param {{ id: string, type: ESharedFileType, appID: number, owner: SteamID|null, fileSize: (string|null), postDate: number, resolution: (string|null), category: string[], tags: string[], uniqueVisitorsCount: number, favoritesCount: number, upvoteCount: number|null, guideNumRatings: Number|null, isUpvoted: boolean, isDownvoted: boolean }} data
  */
 function CSteamSharedFile(community, data) {
 	/**

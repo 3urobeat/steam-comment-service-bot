@@ -4,10 +4,10 @@
  * Created Date: 2024-05-03 12:17:16
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-04 22:00:04
+ * Last Modified: 2025-01-12 13:27:54
  * Modified By: 3urobeat
  *
- * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2024 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -75,7 +75,7 @@ export default [
             // JsDoc - https://github.com/gajus/eslint-plugin-jsdoc
             "jsdoc/check-alignment": "warn",
             "jsdoc/check-indentation": "warn",
-            "jsdoc/check-types": "warn",
+            "jsdoc/check-types": "off", // We need to use syntax Object.<string, string> instead of shorthander {[key: string]: string} for jsdoc & tsd-jsdoc to work
             "jsdoc/informative-docs": "warn",
             "jsdoc/require-asterisk-prefix": "warn",
             "jsdoc/require-description": "warn",

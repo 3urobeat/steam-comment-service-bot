@@ -4,10 +4,10 @@
  * Created Date: 2022-10-10 12:53:20
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-08 17:49:48
+ * Last Modified: 2025-01-12 12:24:26
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -39,7 +39,7 @@ SessionHandler.prototype.hasStorageValidToken = async function() {
 
 /**
  * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
- * @param {function(string|null): void} callback Called with `refreshToken` (String) on success or `null` on failure
+ * @param {function((string|null)): void} callback Called with `refreshToken` (String) on success or `null` on failure
  */
 SessionHandler.prototype._getTokenFromStorage = function(callback) {
 

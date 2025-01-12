@@ -1,0 +1,13 @@
+{
+    "source": {
+        "include": [ "./src" ],
+        "exclude": [ "./src/commands/core/", "./src/libraryPatches/" ]
+    },
+    "opts": {
+        "encoding": "utf8",
+        "destination": "out/",
+        "recurse": true,
+        "verbose": false
+    },
+    "plugins": [ "node_modules/jsdoc-tsimport-plugin/index.js" ]
+}

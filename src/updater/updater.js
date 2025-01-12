@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-28 21:01:28
+ * Last Modified: 2025-01-12 15:58:24
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -96,6 +96,7 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
 
                 /**
                  * Make initiating the update a function to simplify the permission check below
+                 * @memberof Updater
                  */
                 async function initiateUpdate() {
                     _this.controller.info.activeLogin = true; // Block new requests by setting active login to true

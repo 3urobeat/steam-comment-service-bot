@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-03 21:05:37
+ * Last Modified: 2025-01-12 15:46:23
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -67,13 +67,10 @@ const Bot = function(controller, index) {
 
     /**
      * Additional login related information for this bot account
+     * @type {{ logOnOptions: DataManager.logOnOptions, logOnTries: number, relogTries: number, pendingLogin: boolean, waitingFor2FA: boolean, proxyIndex: number, proxy: string }}
      */
     this.loginData = {
-        /**
-         * @type {{ index: number, accountName: string, password: string, sharedSecret?: string, steamGuardCode?: null, machineName?: string, deviceFriendlyName?: string }}
-         */
         logOnOptions:  controller.data.logininfo.find((e) => e.index == index), // TODO: This could be an issue later when the index could change at runtime
-
         logOnTries:    0,
         relogTries:    0, // Amount of times logOns have been retried after relogTimeout. handleRelog() attempts to cycle proxies after enough failures
         pendingLogin:  false,
@@ -90,6 +87,7 @@ const Bot = function(controller, index) {
 
     /**
      * Stores the timestamp and reason of the last disconnect. This is used by handleRelog() to take proper action
+     * @type {{ timestamp: number, reason: string }}
      */
     this.lastDisconnect = {
         timestamp: 0,
@@ -335,7 +333,7 @@ Bot.prototype.unlockFamilyView = function() {};
 
 /**
  * Internal - Attempts to get a cached family view code for this account from tokens.db
- * @param {function(string|null): void} callback Called with `familyViewCode` (String) on success or `null` on failure
+ * @param {function((string|null)): void} callback Called with `familyViewCode` (String) on success or `null` on failure
  */
 Bot.prototype._getFamilyViewCodeFromStorage = function(callback) {}; // eslint-disable-line
 
@@ -386,6 +384,6 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry, part = 0) {
  * Waits for a Steam Chat message from this user to this account and resolves their message content. The "normal" friendMessage event handler will be blocked for this user.
  * @param {string} steamID64 The steamID64 of the user to read a message from
  * @param {number} timeout Time in ms after which the Promise will be resolved if user does not respond. Pass 0 to disable (not recommended)
- * @returns {Promise.<string|null>} Resolved with `String` on response or `null` on timeout.
+ * @returns {Promise.<(string|null)>} Resolved with `String` on response or `null` on timeout.
  */
 Bot.prototype.readChatMessage = function(steamID64, timeout) {}; // eslint-disable-line

@@ -4,7 +4,7 @@
  * Created Date: 2023-03-19 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-11 16:49:10
+ * Last Modified: 2025-01-12 14:02:22
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -48,7 +48,7 @@ const PluginSystem = function (controller) {
 
     /**
      * References to all plugin objects
-     * @type {{[key: string]: Plugin}}
+     * @type {Object.<string, Plugin>}
      */
     this.pluginList = {};
 
@@ -81,13 +81,13 @@ const PluginSystem = function (controller) {
 
     /**
      * Helper function - Get a list of all installed plugins
-     * @returns {[string, string][]} Array of arrays containing package name & version of all installed plugins
+     * @returns {Array.<string[]>} Array of arrays containing package name & version of all installed plugins
      */
     this.getInstalledPlugins = (() => Object.entries(this.packageJson.dependencies).filter(([key, value]) => this.PLUGIN_REGEX.test(key))); // eslint-disable-line
 
     /**
      * Helper function - Get a list of all active (loaded) plugins
-     * @returns {[string, string][]} Array of arrays containing package name & version of all active (loaded) plugins
+     * @returns {Array.<string[]>} Array of arrays containing package name & version of all active (loaded) plugins
      */
     this.getActivePlugins = (() => Object.keys(this.pluginList).map((key) => [key, this.packageJson.dependencies[key]]));
 
@@ -102,7 +102,7 @@ module.exports = PluginSystem;
 
 /**
  * Internal: Checks for available updates of all enabled plugins on NPM
- * @param {[string, string][]} [pluginPackages] List of arrays containing plugin name and installed version to check for updates. If not provided, all enabled plugins will be checked
+ * @param {Array.<string[]>} [pluginPackages] List of arrays containing plugin name and installed version to check for updates. If not provided, all enabled plugins will be checked
  */
 PluginSystem.prototype._checkPluginUpdates = async function(pluginPackages = null) {
     const npminteraction = require("../controller/helpers/npminteraction.js");
