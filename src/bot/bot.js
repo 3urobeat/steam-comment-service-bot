@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 15:46:23
+ * Last Modified: 2025-01-12 16:50:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -273,41 +273,49 @@ module.exports = Bot;
 
 /**
  * Handles the SteamUser debug events if enabled in advancedconfig
+ * @private
  */
 Bot.prototype._attachSteamDebugEvent = function() {};
 
 /**
  * Handles the SteamUser disconnect event and tries to relog the account
+ * @private
  */
 Bot.prototype._attachSteamDisconnectedEvent = function() {};
 
 /**
  * Handles the SteamUser error event
+ * @private
  */
 Bot.prototype._attachSteamErrorEvent = function() {};
 
 /**
- * Handles messages, cooldowns and executes commands.
+ * Handles messages, cooldowns and executes commands
+ * @private
  */
 Bot.prototype._attachSteamFriendMessageEvent = function() {};
 
 /**
  * Do some stuff when account is logged in
+ * @private
  */
 Bot.prototype._attachSteamLoggedOnEvent = function() {};
 
 /**
  * Accepts a friend request, adds the user to the lastcomment.db database and invites him to your group
+ * @private
  */
 Bot.prototype._attachSteamFriendRelationshipEvent = function() {};
 
 /**
  * Accepts a group invite if acceptgroupinvites in the config is true
+ * @private
  */
 Bot.prototype._attachSteamGroupRelationshipEvent = function() {};
 
 /**
  * Handles setting cookies and accepting offline friend & group invites
+ * @private
  */
 Bot.prototype._attachSteamWebSessionEvent = function() {};
 
@@ -333,12 +341,14 @@ Bot.prototype.unlockFamilyView = function() {};
 
 /**
  * Internal - Attempts to get a cached family view code for this account from tokens.db
+ * @private
  * @param {function((string|null)): void} callback Called with `familyViewCode` (String) on success or `null` on failure
  */
 Bot.prototype._getFamilyViewCodeFromStorage = function(callback) {}; // eslint-disable-line
 
 /**
  * Internal - Saves a new family view code for this account to tokens.db
+ * @private
  * @param {string} familyViewCode The family view code to store
  */
 Bot.prototype._saveFamilyViewCodeToStorage = function(familyViewCode) {}; // eslint-disable-line

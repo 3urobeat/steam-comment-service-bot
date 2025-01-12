@@ -4,7 +4,7 @@
  * Created Date: 2022-10-09 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 12:24:26
+ * Last Modified: 2025-01-12 17:20:19
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
@@ -81,6 +81,7 @@ SessionHandler.prototype.getToken = function() { // I'm not allowed to use arrow
 
 /**
  * Internal - Handles resolving the getToken() promise and skipping the account if necessary
+ * @private
  * @param {string} token The token to resolve with or null when account should be skipped
  */
 SessionHandler.prototype._resolvePromise = function(token) {
@@ -114,6 +115,7 @@ SessionHandler.prototype._resolvePromise = function(token) {
 
 /**
  * Internal - Attempts to log into account with credentials
+ * @private
  */
 SessionHandler.prototype._attemptCredentialsLogin = function() {
 
@@ -210,40 +212,47 @@ SessionHandler.prototype.attemptTokenRenew = function() {
 
 /**
  * Internal: Attaches listeners to all steam-session events we care about
+ * @private
  */
 SessionHandler.prototype._attachEvents = function() {};
 
 /**
  * Internal: Handles submitting 2FA code
+ * @private
  * @param {object} res Response object from startWithCredentials() promise
  */
 SessionHandler.prototype._handle2FA = function(res) {}; // eslint-disable-line
 
 /**
  * Internal: Helper function to get 2FA code from user and passing it to accept function or skipping account if desired
+ * @private
  */
 SessionHandler.prototype._get2FAUserInput = function() {};
 
 /**
  * Internal: Helper function to make accepting and re-requesting invalid steam guard codes easier
+ * @private
  * @param {string} code Input from user
  */
 SessionHandler.prototype._acceptSteamGuardCode = function(code) {}; // eslint-disable-line
 
 /**
  * Handles displaying a QR Code to login using the Steam Mobile App
+ * @private
  * @param {StartSessionResponse} res Response object from startWithQR() promise
  */
 SessionHandler.prototype._handleQRCode = function(res) {}; // eslint-disable-line
 
 /**
  * Helper function to make handling login errors easier
+ * @private
  * @param {*} err Error thrown by startWithCredentials()
  */
 SessionHandler.prototype._handleCredentialsLoginError = function(err) {}; // eslint-disable-line
 
 /**
  * Helper function to make handling login errors easier
+ * @private
  * @param {*} err Error thrown by startWithQR()
  */
 SessionHandler.prototype._handleQrCodeLoginError = function(err) {}; // eslint-disable-line
@@ -256,12 +265,14 @@ SessionHandler.prototype.hasStorageValidToken = async function() {};
 
 /**
  * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
+ * @private
  * @param {function((string|null)): void} callback Called with `refreshToken` (String) on success or `null` on failure
  */
 SessionHandler.prototype._getTokenFromStorage = function(callback) {}; // eslint-disable-line
 
 /**
  * Internal - Saves a new token for this account to tokens.db
+ * @private
  * @param {string} token The refreshToken to store
  */
 SessionHandler.prototype._saveTokenToStorage = function(token) {}; // eslint-disable-line

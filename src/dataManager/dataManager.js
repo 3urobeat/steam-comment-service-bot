@@ -4,7 +4,7 @@
  * Created Date: 2023-03-21 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 15:45:10
+ * Last Modified: 2025-01-12 17:03:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -127,6 +127,7 @@ const DataManager = function (controller) {
 
 /**
  * Loads all DataManager helper files. This is done outside of the constructor to be able to await it.
+ * @private
  * @returns {Promise.<void>} Resolved when all files have been loaded
  */
 DataManager.prototype._loadDataManagerFiles = function() {
@@ -314,11 +315,13 @@ DataManager.prototype.setUserCooldown = function (id, timestamp) {}; // eslint-d
 
 /**
  * Internal: Checks tokens.db every 24 hours for refreshToken expiration in <=7 days, logs warning and sends botowner a Steam msg
+ * @private
  */
 DataManager.prototype._startExpiringTokensCheckInterval = () => {};
 
 /**
  * Internal: Asks user if they want to refresh the tokens of all expiring accounts when no active request was found and relogs them
+ * @private
  * @param {object} expiring Object of botobject entries to ask user for
  */
 DataManager.prototype._askForGetNewToken = function (expiring) {}; // eslint-disable-line
@@ -344,6 +347,7 @@ DataManager.prototype.refreshCache = function () {};
 
 /**
  * Internal: Helper function to try and restore backup of corrupted file from cache.json
+ * @private
  * @param {string} name Name of the file
  * @param {string} filepath Absolute path of the file on the disk
  * @param {object} cacheentry Backup-Object of the file in cache.json
@@ -354,6 +358,7 @@ DataManager.prototype._restoreBackup = function (name, filepath, cacheentry, onl
 
 /**
  * Internal: Helper function to pull new file from GitHub
+ * @private
  * @param {string} name Name of the file
  * @param {string} filepath Full path, starting from project root with './'
  * @param {function(any): void} resolve Your promise to resolve when file was pulled

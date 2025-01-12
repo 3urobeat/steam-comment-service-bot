@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 15:58:24
+ * Last Modified: 2025-01-12 17:21:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -201,6 +201,7 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
 
 /**
  * Registers an update check job. This is called by Controller after the data integrity and startup update check
+ * @private
  */
 Updater.prototype._registerUpdateChecker = function() {
 

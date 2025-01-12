@@ -4,10 +4,10 @@
  * Created Date: 2022-10-09 13:22:39
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-07 16:21:06
+ * Last Modified: 2025-01-12 17:21:15
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -21,6 +21,7 @@ const SessionHandler = require("../sessionHandler.js");
 
 /**
  * Helper function to make handling login errors easier
+ * @private
  * @param {*} err Error thrown by startWithCredentials()
  */
 SessionHandler.prototype._handleCredentialsLoginError = function(err) {
@@ -68,6 +69,7 @@ SessionHandler.prototype._handleCredentialsLoginError = function(err) {
 
 /**
  * Helper function to make handling login errors easier
+ * @private
  * @param {*} err Error thrown by startWithQR()
  */
 SessionHandler.prototype._handleQrCodeLoginError = function(err) {

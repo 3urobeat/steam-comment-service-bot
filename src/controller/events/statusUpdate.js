@@ -4,7 +4,7 @@
  * Created Date: 2023-03-30 21:05:13
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-07 22:19:17
+ * Last Modified: 2025-01-12 17:00:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -21,6 +21,7 @@ const Controller = require("../controller");
 
 /**
  * Runs internal statusUpdate event code and emits statusUpdate event for plugins
+ * @private
  * @param {Bot} bot Bot instance
  * @param {Bot.EStatus} newStatus The new status of this bot
  */

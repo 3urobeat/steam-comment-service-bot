@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 12:24:58
+ * Last Modified: 2025-01-12 17:01:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -122,6 +122,7 @@ Controller.prototype.friendListCapacityCheck = function(bot, callback) {
 
 /**
  * Check for friends who haven't requested comments in config.unfriendtime days and unfriend them
+ * @private
  */
 Controller.prototype._lastcommentUnfriendCheck = function() {
     this.data.lastCommentDB.find({ time: { $lte: Date.now() - (this.data.config.unfriendtime * 86400000) } }, (err, docs) => { // Until is a date in ms, so we check if it is less than right now

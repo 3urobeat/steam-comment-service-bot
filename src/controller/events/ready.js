@@ -4,10 +4,10 @@
  * Created Date: 2023-03-29 12:23:29
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-22 16:50:30
+ * Last Modified: 2025-01-12 17:00:15
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -23,6 +23,7 @@ const { round }  = require("../helpers/misc.js");
 
 /**
  * Runs internal ready event code and emits ready event for plugins
+ * @private
  */
 Controller.prototype._readyEvent = function() {
 

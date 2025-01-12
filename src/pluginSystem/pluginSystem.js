@@ -4,7 +4,7 @@
  * Created Date: 2023-03-19 13:34:27
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 14:02:22
+ * Last Modified: 2025-01-12 17:06:16
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -102,6 +102,7 @@ module.exports = PluginSystem;
 
 /**
  * Internal: Checks for available updates of all enabled plugins on NPM
+ * @private
  * @param {Array.<string[]>} [pluginPackages] List of arrays containing plugin name and installed version to check for updates. If not provided, all enabled plugins will be checked
  */
 PluginSystem.prototype._checkPluginUpdates = async function(pluginPackages = null) {
@@ -147,6 +148,7 @@ PluginSystem.prototype._checkPluginUpdates = async function(pluginPackages = nul
 
 /**
  * Registers an plugin update check job. This is called by Controller after the initial _loadPlugins() call
+ * @private
  */
 PluginSystem.prototype._registerUpdateChecker = function() {
 
@@ -172,23 +174,27 @@ PluginSystem.prototype._registerUpdateChecker = function() {
 
 /**
  * Internal: Loads a plugin npm package and populates pluginList
+ * @private
  * @param {string} pluginPackageName Name of the plugin npm package to load
  */
 PluginSystem.prototype._loadPlugin = async function(pluginPackageName) {}; // eslint-disable-line
 
 /**
  * Internal: Checks for updates (if !disablePluginsAutoUpdate), loads all plugin npm packages and populates pluginList
+ * @private
  */
 PluginSystem.prototype._loadPlugins = async function () {};
 
 /**
  * Internal: Unloads a plugin
+ * @private
  * @param {string} pluginName Name of the plugin package to unload
  */
 PluginSystem.prototype._unloadPlugin = function(pluginName) {}; // eslint-disable-line
 
 /**
  * Internal: Unloads all plugins
+ * @private
  */
 PluginSystem.prototype._unloadAllPlugins = function() {};
 
@@ -205,6 +211,7 @@ PluginSystem.prototype.reloadPlugins = function () {};
 
 /**
  * Internal: Checks a plugin, displays relevant warnings and decides whether the plugin is allowed to be loaded
+ * @private
  * @param {string} folderName Name of the plugin folder. This is used to reference the plugin when thisPluginConf is undefined
  * @param {object} thisPlugin Plugin file object returned by require()
  * @param {object} thisPluginConf package.json object of this plugin
@@ -253,6 +260,7 @@ PluginSystem.prototype.loadPluginConfig = function (pluginName) {}; // eslint-di
 
 /**
  * Internal: Integrates changes made to a plugin's default config into the user's config
+ * @private
  * @author JLCD <https://github.com/DerDeathraven/>
  * @param {string} pluginName Name of your plugin
  * @param {object} currentConfig Config file currently loaded for this plugin

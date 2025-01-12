@@ -4,7 +4,7 @@
  * Created Date: 2023-06-04 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 2025-01-04 13:27:11
+ * Last Modified: 2025-01-12 17:05:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -50,6 +50,7 @@ function instantiatePlugin(pluginName) {
 
 /**
  * Internal: Loads a plugin npm package and populates pluginList
+ * @private
  * @param {string} pluginPackageName Name of the plugin npm package to load
  */
 PluginSystem.prototype._loadPlugin = async function(pluginPackageName) {
@@ -136,6 +137,7 @@ PluginSystem.prototype._loadPlugin = async function(pluginPackageName) {
 
 /**
  * Internal: Checks for updates (if !disablePluginsAutoUpdate), loads all plugin npm packages and populates pluginList
+ * @private
  */
 PluginSystem.prototype._loadPlugins = async function () {
 
@@ -159,6 +161,7 @@ PluginSystem.prototype._loadPlugins = async function () {
 
 /**
  * Internal: Unloads a plugin
+ * @private
  * @param {string} pluginName Name of the plugin package to unload
  */
 PluginSystem.prototype._unloadPlugin = function(pluginName) {
@@ -189,6 +192,7 @@ PluginSystem.prototype._unloadPlugin = function(pluginName) {
 
 /**
  * Internal: Unloads all plugins
+ * @private
  */
 PluginSystem.prototype._unloadAllPlugins = function() {
     logger("info", "PluginSystem: Unloading all plugins...", false, false, null, true);

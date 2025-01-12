@@ -4,7 +4,7 @@
  * Created Date: 2023-04-01 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 15:48:21
+ * Last Modified: 2025-01-12 16:54:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -65,6 +65,7 @@ const CommandHandler = function(controller) {
 
 /**
  * Internal: Imports core commands on startup
+ * @private
  * @returns {Promise.<void>} Resolved when all commands have been imported
  */
 CommandHandler.prototype._importCoreCommands = function() {

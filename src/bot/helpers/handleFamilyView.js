@@ -4,7 +4,7 @@
  * Created Date: 2024-12-20 23:51:51
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 12:24:26
+ * Last Modified: 2025-01-12 16:53:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 - 2025 3urobeat <https://github.com/3urobeat>
@@ -157,6 +157,7 @@ Bot.prototype.unlockFamilyView = function() {
 
 /**
  * Internal - Attempts to get a cached family view code for this account from tokens.db
+ * @private
  * @param {function((string|null)): void} callback Called with `familyViewCode` (String) on success or `null` on failure
  */
 Bot.prototype._getFamilyViewCodeFromStorage = function(callback) {
@@ -183,6 +184,7 @@ Bot.prototype._getFamilyViewCodeFromStorage = function(callback) {
 
 /**
  * Internal - Saves a new family view code for this account to tokens.db
+ * @private
  * @param {string} familyViewCode The family view code to store
  */
 Bot.prototype._saveFamilyViewCodeToStorage = function(familyViewCode) {

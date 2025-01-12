@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 15:55:58
+ * Last Modified: 2025-01-12 16:59:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -255,6 +255,7 @@ Controller.prototype.login = async function(firstLogin) {
 
 /**
  * Internal: Logs in accounts on different proxies synchronously
+ * @private
  * @param {Array} allAccounts Array of logininfo entries of accounts to log in
  */
 Controller.prototype._processFastLoginQueue = function(allAccounts) {
@@ -316,6 +317,7 @@ Controller.prototype._processFastLoginQueue = function(allAccounts) {
 
 /**
  * Internal: Logs in accounts asynchronously to allow for user interaction
+ * @private
  * @param {Array} allAccounts Array of logininfo entries of accounts to log in
  */
 Controller.prototype._processSlowLoginQueue = function(allAccounts) {

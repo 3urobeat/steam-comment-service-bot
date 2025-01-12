@@ -4,10 +4,10 @@
  * Created Date: 2023-06-04 12:00:48
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:09:45
+ * Last Modified: 2025-01-12 17:01:05
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -21,6 +21,7 @@ const Controller = require("../controller");
 
 /**
  * Emits steamGuardInput event for bot & plugins
+ * @private
  * @param {Bot} bot Bot instance of the affected account
  * @param {function(string): void} submitCode Function to submit a code. Pass an empty string to skip the account.
  */

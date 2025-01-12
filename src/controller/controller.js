@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 15:32:12
+ * Last Modified: 2025-01-12 16:58:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -136,6 +136,7 @@ if (parseInt(process.argv[3]) + 2500 > Date.now()) { // Check if this process ju
 
 /**
  * Internal: Initializes the bot by importing data from the disk, running the updater and finally logging in all bot accounts.
+ * @private
  */
 Controller.prototype._start = async function() {
     const checkAndGetFile = require("../starter.js").checkAndGetFile; // Temp var to use checkAndGetFile() before it is referenced in DataManager
@@ -282,6 +283,7 @@ Controller.prototype._start = async function() {
 
 /**
  * Internal: Loads all parts of the application to get IntelliSense support after the updater ran and calls login() when done.
+ * @private
  */
 Controller.prototype._preLogin = async function() {
 
@@ -387,12 +389,14 @@ Controller.prototype.login = function(firstLogin) {}; // eslint-disable-line
 
 /**
  * Internal: Logs in accounts on different proxies synchronously
+ * @private
  * @param {Array} allAccounts Array of logininfo entries of accounts to log in
  */
 Controller.prototype._processFastLoginQueue = function(allAccounts) {}; // eslint-disable-line
 
 /**
  * Internal: Logs in accounts asynchronously to allow for user interaction
+ * @private
  * @param {Array} allAccounts Array of logininfo entries of accounts to log in
  */
 Controller.prototype._processSlowLoginQueue = function(allAccounts) {}; // eslint-disable-line
@@ -437,6 +441,7 @@ Controller.prototype.filters = {};
 
 /**
  * Runs internal dataUpdate event code and emits dataUpdate event for plugins. The event is emitted whenever DataManager is instructed to import a file from the disk or export a DataManager property to it. On data export `oldData` will always be `null`.
+ * @private
  * @param {string} key Which DataManager key got updated
  * @param {any} oldData Old content of the updated key
  * @param {any} newData New content of the updated key
@@ -445,11 +450,13 @@ Controller.prototype._dataUpdateEvent = function(key, oldData, newData) {}; // e
 
 /**
  * Runs internal ready event code and emits ready event for plugins
+ * @private
  */
 Controller.prototype._readyEvent = function() {};
 
 /**
  * Runs internal statusUpdate event code and emits statusUpdate event for plugins
+ * @private
  * @param {Bot} bot Bot instance
  * @param {Bot.EStatus} newStatus The new status of this bot
  */
@@ -457,6 +464,7 @@ Controller.prototype._statusUpdateEvent = function(bot, newStatus) {}; // eslint
 
 /**
  * Emits steamGuardInput event for bot & plugins
+ * @private
  * @param {Bot} bot Bot instance of the affected account
  * @param {function(string): void} submitCode Function to submit a code. Pass an empty string to skip the account.
  */
@@ -464,6 +472,7 @@ Controller.prototype._steamGuardInputEvent = function(bot, submitCode) {}; // es
 
 /**
  * Emits steamGuardQrCode event for bot & plugins
+ * @private
  * @param {Bot} bot Bot instance of the affected account
  * @param {string} challengeUrl The QrCode Challenge URL supplied by Steam. Display this value using a QR-Code parser and let a user scan it using their Steam Mobile App.
  */
@@ -484,6 +493,7 @@ Controller.prototype.friendListCapacityCheck = function(bot, callback) {}; // es
 
 /**
  * Check for friends who haven't requested comments in config.unfriendtime days and unfriend them
+ * @private
  */
 Controller.prototype._lastcommentUnfriendCheck = function() {} // eslint-disable-line
 
@@ -505,6 +515,7 @@ Controller.prototype.getBotsPerProxy = function(filterOffline = false) {}; // es
 /**
  * Internal: Handles process's unhandledRejection & uncaughtException error events.
  * Should a NPM related error be detected it attempts to reinstall all packages using our npminteraction helper function
+ * @private
  */
 Controller.prototype._handleErrors = function() {} // eslint-disable-line
 
@@ -532,11 +543,13 @@ Controller.prototype.logger = function(type, str, nodate, remove, animation, pri
 
 /**
  * Internal: Call this function after loading advancedconfig.json to set previously inaccessible options
+ * @private
  * @param {object} advancedconfig The advancedconfig object imported by the DataManager
  */
 Controller.prototype._loggerOptionsUpdateAfterConfigLoad = function(advancedconfig) {}; // eslint-disable-line
 
 /**
  * Internal: Logs all held back messages from logAfterReady array
+ * @private
  */
 Controller.prototype._loggerLogAfterReady = function() {};

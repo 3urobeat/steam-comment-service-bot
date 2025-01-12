@@ -4,10 +4,10 @@
  * Created Date: 2022-10-09 12:59:31
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-01 14:56:23
+ * Last Modified: 2025-01-12 17:21:02
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -24,6 +24,7 @@ const SessionHandler = require("../sessionHandler.js");
 
 /**
  * Internal: Handles submitting 2FA code
+ * @private
  * @param {StartSessionResponse} res Response object from startWithCredentials() promise
  */
 SessionHandler.prototype._handle2FA = function(res) {
@@ -77,6 +78,7 @@ SessionHandler.prototype._handle2FA = function(res) {
 
 /**
  * Internal: Helper function to get 2FA code from user and passing it to accept function or skipping account if desired
+ * @private
  */
 SessionHandler.prototype._get2FAUserInput = function() {
 
@@ -134,6 +136,7 @@ SessionHandler.prototype._get2FAUserInput = function() {
 
 /**
  * Internal: Helper function to make accepting and re-requesting invalid steam guard codes easier
+ * @private
  * @param {string} code Input from user
  */
 SessionHandler.prototype._acceptSteamGuardCode = function(code) {
@@ -164,6 +167,7 @@ SessionHandler.prototype._acceptSteamGuardCode = function(code) {
 
 /**
  * Handles displaying a QR Code to login using the Steam Mobile App
+ * @private
  * @param {StartSessionResponse} res Response object from startWithQR() promise
  */
 SessionHandler.prototype._handleQRCode = function(res) {
