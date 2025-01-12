@@ -4,21 +4,29 @@
  * Created Date: 2024-12-23 14:10:58
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-23 16:48:52
+ * Last Modified: 2025-01-12 11:41:33
  * Modified By: 3urobeat
  *
- * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2024 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * @module CommandHandler
+ */
 
-const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
+const CommandHandler = require("../commandHandler.js");
 
 
-// Credit: https://sumn2u.medium.com/string-similarity-comparision-in-js-with-examples-4bae35f13968 & https://gist.github.com/sumn2u/0e0b5d9505ad096284928a987ace13fb#file-jaro-wrinker-js
+/**
+ * Calculate JaroWinkler distance between two inputs. Credit: https://sumn2u.medium.com/string-similarity-comparision-in-js-with-examples-4bae35f13968 & https://gist.github.com/sumn2u/0e0b5d9505ad096284928a987ace13fb#file-jaro-wrinker-js
+ * @param {string} s1 First input
+ * @param {string} s2 Second input
+ * @returns {number} Returns closeness
+ */
 function jaroWinkler(s1, s2) {
     let m = 0;
 
@@ -93,19 +101,18 @@ function jaroWinkler(s1, s2) {
 
 /**
  * Calculates command suggestions using the Jaro Winkler distance of `input` to all registered commands
- * @param {CommandHandler} commandHandler The commandHandler object
  * @param {string} input String to get the nearest registered commands of
  * @returns {{ name: string, closeness: number }[]} Returns a sorted Array of Objects, containing the command name and closeness in percent of name to `input` of every registered command
  */
-module.exports.calculateCommandSuggestions = (commandHandler, input) => {
+CommandHandler.prototype.calculateCommandSuggestions = function(input) {
     const result = [];
 
     // Loop through all registered commands
-    for (let i = 0; i < commandHandler.commands.length; i++) {
+    for (let i = 0; i < this.commands.length; i++) {
         // Loop through all names of this command
-        for (let j = 0; j < commandHandler.commands[i].names.length; j++) {
+        for (let j = 0; j < this.commands[i].names.length; j++) {
 
-            const thisCommandName = commandHandler.commands[i].names[j];
+            const thisCommandName = this.commands[i].names[j];
 
             result.push({
                 name: thisCommandName,

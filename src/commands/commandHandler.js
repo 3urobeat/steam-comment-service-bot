@@ -4,10 +4,10 @@
  * Created Date: 2023-04-01 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-24 13:26:21
+ * Last Modified: 2025-01-12 11:41:44
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -18,7 +18,6 @@
 const fs = require("fs");
 
 const Controller = require("../controller/controller.js"); // eslint-disable-line
-const { calculateCommandSuggestions } = require("./helpers/calculateSuggestion.js");
 
 
 /**
@@ -57,6 +56,9 @@ const CommandHandler = function(controller) {
      * @type {Array.<Command>}
      */
     this.commands = [];
+
+    // Load CommandHandler helper to calculate suggestions for runCommand()
+    require("./helpers/calculateSuggestion.js");
 
 };
 
@@ -201,7 +203,7 @@ CommandHandler.prototype.runCommand = async function(name, args, respondModule, 
 
     if (!thisCmd) {
         // Calculate a command suggestion from user input
-        const suggestions = calculateCommandSuggestions(this, name);
+        const suggestions = this.calculateCommandSuggestions(name);
 
         logger("warn", `CommandHandler runCommand(): Command '${name}' was not found! Suggesting user command '${suggestions[0].name}' with a similarity of ${suggestions[0].closeness}%`);
 
@@ -273,3 +275,13 @@ CommandHandler.prototype.reloadCommands = function() {
 
 
 module.exports = CommandHandler;
+
+
+/* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
+
+/**
+ * Calculates command suggestions using the Jaro Winkler distance of `input` to all registered commands
+ * @param {string} input String to get the nearest registered commands of
+ * @returns {{ name: string, closeness: number }[]} Returns a sorted Array of Objects, containing the command name and closeness in percent of name to `input` of every registered command
+ */
+CommandHandler.prototype.calculateCommandSuggestions = function(input) {}; // eslint-disable-line
