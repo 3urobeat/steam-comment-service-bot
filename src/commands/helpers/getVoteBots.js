@@ -4,7 +4,7 @@
  * Created Date: 2023-05-28 12:21:02
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-06 20:18:28
+ * Last Modified: 2025-01-12 18:27:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -21,6 +21,7 @@ const { timeToString } = require("../../controller/helpers/misc.js");
 
 /**
  * Finds all needed and currently available bot accounts for a vote request.
+ * @private
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {number|"all"} amount Amount of votes requested or "all" to get the max available amount
  * @param {string} id The sharedfile id to vote on

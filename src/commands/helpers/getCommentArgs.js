@@ -4,10 +4,10 @@
  * Created Date: 2022-02-28 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-26 20:06:16
+ * Last Modified: 2025-01-12 18:26:16
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -22,14 +22,15 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 /**
  * Helper function: Gets the visibility status of a profile and appends it to idType
+ * @private
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {string} steamID64 The steamID64 of the profile to check
  * @param {string} type Type of steamID64, determined by handleSteamIdResolving(). Must be "profile", otherwise callback will be called instantly with this type param, unchanged.
  * @param {function(string): void} callback Called on completion with your new idType
  */
-function getVisibilityStatus(commandHandler, steamID64, type, callback) {
+function _getVisibilityStatus(commandHandler, steamID64, type, callback) {
     if (steamID64 && type == "profile") {
-        logger("debug", `CommandHandler getVisibilityStatus(): Getting visibility status of profile ${steamID64}...`);
+        logger("debug", `CommandHandler _getVisibilityStatus(): Getting visibility status of profile ${steamID64}...`);
 
         commandHandler.controller.main.community.getSteamUser(new SteamID(steamID64), async (err, user) => {
             if (err || !user || !user.privacyState) {
@@ -37,13 +38,13 @@ function getVisibilityStatus(commandHandler, steamID64, type, callback) {
 
                 callback(type + "Public");
             } else {
-                logger("debug", "CommandHandler getVisibilityStatus(): Successfully checked privacyState of receiving user: " + user.privacyState);
+                logger("debug", "CommandHandler _getVisibilityStatus(): Successfully checked privacyState of receiving user: " + user.privacyState);
 
                 callback(type + user.privacyState[0].toUpperCase() + user.privacyState.slice(1)); // Append privacy state to type with the first letter capitalized
             }
         });
     } else {
-        logger("debug", `CommandHandler getVisibilityStatus(): Type '${type}' was provided, ignoring request...`);
+        logger("debug", `CommandHandler _getVisibilityStatus(): Type '${type}' was provided, ignoring request...`);
 
         callback(type);
     }
@@ -52,6 +53,7 @@ function getVisibilityStatus(commandHandler, steamID64, type, callback) {
 
 /**
  * Retrieves arguments from a comment request. If request is invalid (for example too many comments requested) an error message will be sent
+ * @private
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Array} args The command arguments
  * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
@@ -124,7 +126,7 @@ module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
                             }
 
                             // Get profile visibility status if profile. Resolving at the bottom will wait until profileID is set
-                            getVisibilityStatus(commandHandler, res, type, (newType) => {
+                            _getVisibilityStatus(commandHandler, res, type, (newType) => {
                                 profileID = res;     // Will be null on err
                                 idType    = newType; // Update idType with what handleSteamIdResolving determined
                             });
@@ -140,7 +142,7 @@ module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
                     logger("debug", "CommandHandler getCommentArgs(): No profileID parameter received, setting profileID to requesterID...");
 
                     // Get profile visibility status if profile. Resolving at the bottom will wait until profileID is set
-                    getVisibilityStatus(commandHandler, requesterID, "profile", (newType) => {
+                    _getVisibilityStatus(commandHandler, requesterID, "profile", (newType) => {
                         profileID = requesterID; // Will be null on err
                         idType    = newType;     // Update idType with what handleSteamIdResolving determined
                     });

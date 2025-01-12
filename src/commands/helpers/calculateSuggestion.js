@@ -4,7 +4,7 @@
  * Created Date: 2024-12-23 14:10:58
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 15:48:32
+ * Last Modified: 2025-01-12 17:47:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 - 2025 3urobeat <https://github.com/3urobeat>
@@ -20,11 +20,12 @@ const CommandHandler = require("../commandHandler.js");
 
 /**
  * Calculate JaroWinkler distance between two inputs. Credit: https://sumn2u.medium.com/string-similarity-comparision-in-js-with-examples-4bae35f13968 & https://gist.github.com/sumn2u/0e0b5d9505ad096284928a987ace13fb#file-jaro-wrinker-js
+ * @private
  * @param {string} s1 First input
  * @param {string} s2 Second input
  * @returns {number} Returns closeness
  */
-function jaroWinkler(s1, s2) {
+function _jaroWinkler(s1, s2) {
     let m = 0;
 
     // Exit early if either are empty.
@@ -113,7 +114,7 @@ CommandHandler.prototype.calculateCommandSuggestions = function(input) {
 
             result.push({
                 name: thisCommandName,
-                closeness: (jaroWinkler(thisCommandName, input) * 100).toFixed(2) // Limit to 2 decimals
+                closeness: (_jaroWinkler(thisCommandName, input) * 100).toFixed(2) // Limit to 2 decimals
             });
 
         }

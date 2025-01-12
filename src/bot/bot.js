@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 16:50:29
+ * Last Modified: 2025-01-12 17:35:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -184,6 +184,7 @@ Bot.EStatus = EStatus;
 
 /**
  * Calls SteamUser logOn() for this account. This will either trigger the SteamUser loggedOn or error event.
+ * @private
  */
 Bot.prototype._loginToSteam = async function() {
 

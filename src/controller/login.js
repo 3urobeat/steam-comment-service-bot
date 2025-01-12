@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 16:59:06
+ * Last Modified: 2025-01-12 18:23:51
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -165,15 +165,15 @@ Controller.prototype.login = async function(firstLogin) {
 
         /**
          * Get all accounts which have not yet switched their status. Only the relevant properties of logininfo are documented here.
-         * @memberof Controller
          * @type {Array.<{ index: number, accountName: string }>}
+         * @private
          */
         const allAccountsOffline = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.OFFLINE);
 
         /**
          * Get all accounts which have not yet fully been populated. Ignore accounts that are not online as they will never populate their user object. Only the relevant properties of logininfo are documented here.
-         * @memberof Controller
          * @type {Array.<{ index: number, accountName: string }>}
+         * @private
          */
         const allAccountsNotPopulated = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.ONLINE && !this.bots[e.accountName].user.limitations);
 

@@ -4,7 +4,7 @@
  * Created Date: 2022-03-09 12:58:17
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 15:31:16
+ * Last Modified: 2025-01-12 18:09:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
@@ -23,6 +23,7 @@ const Controller = require("../controller.js");
 
 /**
  * ID types supported by this resolver
+ * @enum {EIdTypes}
  */
 const EIdTypes = {
     "profile": "profile",

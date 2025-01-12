@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 17:25:28
+ * Last Modified: 2025-01-12 17:56:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -18,15 +18,17 @@
 const { EventEmitter } = require("events");
 
 
-// "Hack" to get type information in code completion without requiring file during runtime
+// "Hack" to get type information in code completion without requiring file during runtime. Mark as private to avoid breaking generated docs
 /**
  * @typedef Bot
  * @type {import("../bot/bot.js")}
+ * @private
  */
 
 /**
  * @typedef EIdTypes
  * @type {import("./helpers/handleSteamIdResolving.js")}
+ * @private
  */
 
 
@@ -89,6 +91,7 @@ const Controller = function() {
 
 /**
  * Process data that should be kept over restarts
+ * @private
  * @param {string} data Stringified data received by previous process
  */
 function restartdata(data) {

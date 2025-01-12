@@ -4,7 +4,7 @@
  * Created Date: 2023-06-04 15:37:17
  * Author: DerDeathraven
  *
- * Last Modified: 2025-01-12 17:05:35
+ * Last Modified: 2025-01-12 17:51:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -20,10 +20,11 @@ const PluginSystem = require("./pluginSystem.js");
 
 /**
  * Attempts to instantiate a plugin
+ * @private
  * @param {string} pluginName Name of the plugin package
  * @returns {{ pluginName: string, pluginInstance: object, pluginJson: object }} Creates a plugin instance and returns it along with more information
  */
-function instantiatePlugin(pluginName) {
+function _instantiatePlugin(pluginName) {
     try {
         // Load plugin and pluginJson
         const importedPlugin = require(pluginName);
@@ -62,7 +63,7 @@ PluginSystem.prototype._loadPlugin = async function(pluginPackageName) {
     }
 
     // Attempt to instantiate the plugin
-    const instantiatedPlugin = instantiatePlugin.bind(this)(pluginPackageName);
+    const instantiatedPlugin = _instantiatePlugin.bind(this)(pluginPackageName);
 
     const { pluginName, pluginInstance, pluginJson } = instantiatedPlugin;
 

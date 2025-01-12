@@ -4,10 +4,10 @@
  * Created Date: 2023-05-28 12:18:49
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-03 13:08:06
+ * Last Modified: 2025-01-12 18:27:02
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -20,6 +20,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 /**
  * Retrieves arguments from a non-specific request without id processing
+ * @private
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Array} args The command arguments
  * @param {string} cmd Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function

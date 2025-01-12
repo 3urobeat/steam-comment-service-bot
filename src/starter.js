@@ -4,7 +4,7 @@
  * Created Date: 2021-07-10 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 15:57:11
+ * Last Modified: 2025-01-12 18:24:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -49,6 +49,7 @@ const execArgs = [ "--max-old-space-size=2048", "--optimize-for-size", /* "--ins
 
 /**
  * Provide function to detach parent process event listeners
+ * @private
  */
 function detachParentListeners() {
     logger("info", "Detaching parent's event listeners...", false, true);
@@ -63,6 +64,7 @@ function detachParentListeners() {
 
 /**
  * Provide function to only once attach listeners to parent process
+ * @private
  * @param {function(): void} callback Called on completion
  */
 function attachParentListeners(callback) {
@@ -180,6 +182,7 @@ function attachParentListeners(callback) {
 
 /**
  * Provide function to attach listeners to make communicating with child possible
+ * @private
  */
 function attachChildListeners() {
     forkedprocess.on("message", (msg) => {
@@ -257,7 +260,7 @@ module.exports.checkAndGetFile = (file, logger, norequire = false, force = false
 
         /**
          * Function that will download a new file, test it and resolve/reject promise
-         * @memberof checkAndGetFile
+         * @private
          */
         function getNewFile() {
             // Determine branch

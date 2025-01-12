@@ -4,7 +4,7 @@
  * Created Date: 2023-09-24 16:10:36
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-06 19:27:25
+ * Last Modified: 2025-01-12 18:26:42
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -20,6 +20,7 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 /**
  * Retrieves arguments from a follow request. If request is invalid, an error message will be sent
+ * @private
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Array} args The command arguments
  * @param {string} cmd Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function

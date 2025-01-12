@@ -4,7 +4,7 @@
  * Created Date: 2023-09-24 18:01:44
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-06 20:13:45
+ * Last Modified: 2025-01-12 18:26:55
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -21,6 +21,7 @@ const { timeToString } = require("../../controller/helpers/misc.js");
 
 /**
  * Finds all needed and currently available bot accounts for a follow request.
+ * @private
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {number|"all"} amount Amount of favs requested or "all" to get the max available amount
  * @param {boolean} canBeLimited If the accounts are allowed to be limited

@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 17:21:50
+ * Last Modified: 2025-01-12 18:24:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -96,7 +96,7 @@ Updater.prototype.run = function(forceUpdate, respondModule, resInfo) {
 
                 /**
                  * Make initiating the update a function to simplify the permission check below
-                 * @memberof Updater
+                 * @private
                  */
                 async function initiateUpdate() {
                     _this.controller.info.activeLogin = true; // Block new requests by setting active login to true

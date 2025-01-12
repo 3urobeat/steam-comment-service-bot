@@ -62,10 +62,6 @@ declare class Bot {
      */
     community: SteamCommunity;
     /**
-     * Calls SteamUser logOn() for this account. This will either trigger the SteamUser loggedOn or error event.
-     */
-    _loginToSteam(): void;
-    /**
      * Checks if user is blocked, has an active cooldown for spamming or isn't a friend
      * @param steamID64 - The steamID64 of the message sender
      * @param message - The message string provided by steam-user friendMessage event
@@ -289,106 +285,6 @@ declare type resInfo = {
 };
 
 /**
- * Calculate JaroWinkler distance between two inputs. Credit: https://sumn2u.medium.com/string-similarity-comparision-in-js-with-examples-4bae35f13968 & https://gist.github.com/sumn2u/0e0b5d9505ad096284928a987ace13fb#file-jaro-wrinker-js
- * @param s1 - First input
- * @param s2 - Second input
- * @returns Returns closeness
- */
-declare function jaroWinkler(s1: string, s2: string): number;
-
-/**
- * Helper function: Gets the visibility status of a profile and appends it to idType
- * @param commandHandler - The commandHandler object
- * @param steamID64 - The steamID64 of the profile to check
- * @param type - Type of steamID64, determined by handleSteamIdResolving(). Must be "profile", otherwise callback will be called instantly with this type param, unchanged.
- * @param callback - Called on completion with your new idType
- */
-declare function getVisibilityStatus(commandHandler: CommandHandler, steamID64: string, type: string, callback: (...params: any[]) => any): void;
-
-/**
- * Retrieves arguments from a comment request. If request is invalid (for example too many comments requested) an error message will be sent
- * @param commandHandler - The commandHandler object
- * @param args - The command arguments
- * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
- * @param respond - The shortened respondModule call
- * @returns Resolves promise with object containing all relevant data when done
- */
-declare function getCommentArgs(commandHandler: CommandHandler, args: any[], resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any): Promise<{ maxRequestAmount: number; commentcmdUsage: string; numberOfComments: number; profileID: string; idType: string; quotesArr: string[]; }>;
-
-/**
- * Finds all needed and currently available bot accounts for a comment request.
- * @param commandHandler - The commandHandler object
- * @param numberOfComments - Number of requested comments
- * @param canBeLimited - If the accounts are allowed to be limited
- * @param idType - Type of the request. This can either be "profile(PrivacyState)", "group", "sharedfile", "discussion" or "review". This is used to determine if limited accs need to be added first.
- * @param receiverSteamID - Optional: steamID64 of the receiving user. If set, accounts that are friend with the user will be prioritized and accsToAdd will be calculated.
- * @returns `availableAccounts` contains all account names from bot object, `accsToAdd` account names which are limited and not friend, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
- */
-declare function getAvailableBotsForCommenting(commandHandler: CommandHandler, numberOfComments: number, canBeLimited: boolean, idType: string, receiverSteamID: string): any;
-
-/**
- * Finds all needed and currently available bot accounts for a favorite request.
- * @param commandHandler - The commandHandler object
- * @param amount - Amount of favs requested or "all" to get the max available amount
- * @param id - The sharedfile id to favorize
- * @param favType - Either "favorite" or "unfavorite", depending on which request this is
- * @returns Resolves with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
- */
-declare function getAvailableBotsForFavorizing(commandHandler: CommandHandler, amount: number | "all", id: string, favType: string): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
-
-/**
- * Retrieves arguments from a follow request. If request is invalid, an error message will be sent
- * @param commandHandler - The commandHandler object
- * @param args - The command arguments
- * @param cmd - Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function
- * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
- * @param respond - The shortened respondModule call
- * @returns If the user provided a specific amount, amount will be a number. If user provided "all" or "max", it will be returned as an unmodified string for getVoteBots.js to handle
- */
-declare function getFollowArgs(commandHandler: CommandHandler, args: any[], cmd: string, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any): Promise<{ amount: number | string; id: string; }>;
-
-/**
- * Finds all needed and currently available bot accounts for a follow request.
- * @param commandHandler - The commandHandler object
- * @param amount - Amount of favs requested or "all" to get the max available amount
- * @param canBeLimited - If the accounts are allowed to be limited
- * @param id - The user id to follow
- * @param idType - Either "user" or "curator"
- * @param favType - Either "follow" or "unfollow", depending on which request this is
- * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
- * @returns Resolves with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
- */
-declare function getAvailableBotsForFollowing(commandHandler: CommandHandler, amount: number | "all", canBeLimited: boolean, id: string, idType: string, favType: string, resInfo: CommandHandler.resInfo): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
-
-/**
- * Retrieves arguments from a non-specific request without id processing
- * @param commandHandler - The commandHandler object
- * @param args - The command arguments
- * @param cmd - Either "upvote", "downvote", "favorite" or "unfavorite", depending on which command is calling this function
- * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
- * @param respond - The shortened respondModule call
- * @returns If the user provided a specific amount, amount will be a number. If user provided "all" or "max", it will be returned as an unmodified string for getVoteBots.js to handle
- */
-declare function getMiscArgs(commandHandler: CommandHandler, args: any[], cmd: string, resInfo: CommandHandler.resInfo, respond: (...params: any[]) => any): Promise<{ err: null | any; amountRaw: number | string; id: string; idType: string; }>;
-
-/**
- * Finds all needed and currently available bot accounts for a vote request.
- * @param commandHandler - The commandHandler object
- * @param amount - Amount of votes requested or "all" to get the max available amount
- * @param id - The sharedfile id to vote on
- * @param voteType - Type of the request
- * @param resInfo - Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
- * @returns Resolves with obj: `availableAccounts` contains all account names from bot object, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
- */
-declare function getAvailableBotsForVoting(commandHandler: CommandHandler, amount: number | "all", id: string, voteType: "upvote" | "downvote" | "funnyvote", resInfo: CommandHandler.resInfo): Promise<{ amount: number; availableAccounts: string[]; whenAvailable: number; whenAvailableStr: string; }>;
-
-/**
- * Helper function to sort failed object by number so that it is easier to read
- * @param failedObj - Current state of failed object
- */
-declare function sortFailedObject(failedObj: any): void;
-
-/**
  * Logs request errors
  * @param error - The error string returned by steamcommunity
  * @param commandHandler - The commandHandler object
@@ -405,12 +301,6 @@ declare function logRequestError(error: string, commandHandler: CommandHandler, 
 declare function failedObjToString(obj: any): string;
 
 /**
- * Helper function to sort failed object by number so that it is easier to read
- * @param failedObj - Current state of failed object
- */
-declare function sortFailedObject(failedObj: any): void;
-
-/**
  * Checks if the following request process iteration should be skipped
  * @param commandHandler - The commandHandler object
  * @param loop - Object returned by syncLoop() to control request loop
@@ -419,175 +309,6 @@ declare function sortFailedObject(failedObj: any): void;
  * @returns true if iteration should continue, false if iteration should be skipped using return
  */
 declare function handleIterationSkip(commandHandler: CommandHandler, loop: any, bot: Bot, receiverSteamID64: string): boolean;
-
-/**
- * Constructor - Initializes an object which represents a user steam account
- * @param controller - Reference to the controller object
- * @param index - The index of this account in the logininfo object
- */
-declare class Bot {
-    constructor(controller: Controller, index: number);
-    /**
-     * Reference to the controller object
-     */
-    controller: Controller;
-    /**
-     * Reference to the DataManager object
-     */
-    data: DataManager;
-    /**
-     * Login index of this bot account
-     */
-    index: number;
-    /**
-     * Status of this bot account
-     */
-    status: EStatus;
-    /**
-     * SteamID64's to ignore in the friendMessage event handler. This is used by readChatMessage() to prevent duplicate responses.
-     */
-    friendMessageBlock: string[];
-    /**
-     * Additional login related information for this bot account
-     */
-    loginData: any;
-    /**
-     * Username of this bot account
-     */
-    accountName: string;
-    /**
-     * Stores the timestamp and reason of the last disconnect. This is used by handleRelog() to take proper action
-     */
-    lastDisconnect: any;
-    /**
-     * This SteamUser instance
-     */
-    user: SteamUser;
-    /**
-     * This SteamCommunity instance
-     */
-    community: SteamCommunity;
-    /**
-     * Calls SteamUser logOn() for this account. This will either trigger the SteamUser loggedOn or error event.
-     */
-    _loginToSteam(): void;
-    /**
-     * Checks if user is blocked, has an active cooldown for spamming or isn't a friend
-     * @param steamID64 - The steamID64 of the message sender
-     * @param message - The message string provided by steam-user friendMessage event
-     * @returns `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
-     */
-    checkMsgBlock(steamID64: any, message: string): boolean;
-    /**
-     * Attempts to check if this account has family view (feature to restrict features for child accounts) enabled
-     * @returns Returns a Promise which resolves with a boolean, indicating whether family view is enabled or not. If request failed, `false` is returned.
-     */
-    checkForFamilyView(): Promise<boolean>;
-    /**
-     * Requests family view unlock key from user and attempts to unlock it
-     * @returns Returns a Promise which resolves when done
-     */
-    unlockFamilyView(): Promise<void>;
-    /**
-     * Handles aborting a login attempt should an account get stuck to prevent the bot from softlocking (see issue #139)
-     */
-    handleLoginTimeout(): void;
-    /**
-     * Handles checking for missing game licenses, requests them and then starts playing
-     */
-    handleMissingGameLicenses(): void;
-    /**
-     * Changes the proxy of this bot account.
-     * @param newProxyIndex - Index of the new proxy inside the DataManager.proxies array.
-     */
-    switchProxy(newProxyIndex: number): void;
-    /**
-     * Checks host internet connection, updates the status of all proxies checked >2.5 min ago and switches the proxy of this bot account if necessary.
-     * @returns Resolves with a boolean indicating whether the proxy was switched when done. A relog is triggered when the proxy was switched.
-     */
-    checkAndSwitchMyProxy(): Promise<boolean>;
-    /**
-     * Attempts to get this account, after failing all logOnRetries, back online after some time. Does not apply to initial logins.
-     */
-    handleRelog(): void;
-    /**
-     * Our commandHandler respondModule implementation - Sends a message to a Steam user
-     * @param _this - The Bot object context
-     * @param resInfo - Object containing information passed to command by friendMessage event
-     * @param txt - The text to send
-     * @param retry - Internal: true if this message called itself again to send failure message
-     * @param part - Internal: Index of which part to send for messages larger than 750 chars
-     */
-    sendChatMessage(_this: any, resInfo: resInfo, txt: string, retry: boolean, part: number): void;
-    /**
-     * Waits for a Steam Chat message from this user to this account and resolves their message content. The "normal" friendMessage event handler will be blocked for this user.
-     * @param steamID64 - The steamID64 of the user to read a message from
-     * @param timeout - Time in ms after which the Promise will be resolved if user does not respond. Pass 0 to disable (not recommended)
-     * @returns Resolved with `String` on response or `null` on timeout.
-     */
-    readChatMessage(steamID64: string, timeout: number): Promise<string | null>;
-    /**
-     * Accepts a group invite if acceptgroupinvites in the config is true
-     */
-    _attachSteamGroupRelationshipEvent(): void;
-    /**
-     * Checks if user is blocked, has an active cooldown for spamming or isn't a friend
-     * @param steamID64 - The steamID64 of the message sender
-     * @param message - The message string provided by steam-user friendMessage event
-     * @returns `true` if friendMessage event shouldn't be handled, `false` if user is allowed to be handled
-     */
-    checkMsgBlock(steamID64: any, message: string): boolean;
-    /**
-     * Attempts to check if this account has family view (feature to restrict features for child accounts) enabled
-     * @returns Returns a Promise which resolves with a boolean, indicating whether family view is enabled or not. If request failed, `false` is returned.
-     */
-    checkForFamilyView(): Promise<boolean>;
-    /**
-     * Requests family view unlock key from user and attempts to unlock it
-     * @returns Returns a Promise which resolves when done
-     */
-    unlockFamilyView(): Promise<void>;
-    /**
-     * Handles aborting a login attempt should an account get stuck to prevent the bot from softlocking (see issue #139)
-     */
-    handleLoginTimeout(): void;
-    /**
-     * Handles checking for missing game licenses, requests them and then starts playing
-     */
-    handleMissingGameLicenses(): void;
-    /**
-     * Changes the proxy of this bot account.
-     * @param newProxyIndex - Index of the new proxy inside the DataManager.proxies array.
-     */
-    switchProxy(newProxyIndex: number): void;
-    /**
-     * Checks host internet connection, updates the status of all proxies checked >2.5 min ago and switches the proxy of this bot account if necessary.
-     * @returns Resolves with a boolean indicating whether the proxy was switched when done. A relog is triggered when the proxy was switched.
-     */
-    checkAndSwitchMyProxy(): Promise<boolean>;
-    /**
-     * Attempts to get this account, after failing all logOnRetries, back online after some time. Does not apply to initial logins.
-     */
-    handleRelog(): void;
-    /**
-     * Our commandHandler respondModule implementation - Sends a message to a Steam user
-     * @param _this - The Bot object context
-     * @param resInfo - Object containing information passed to command by friendMessage event
-     * @param txt - The text to send
-     * @param retry - Internal: true if this message called itself again to send failure message
-     * @param part - Internal: Index of which part to send for messages larger than 750 chars
-     */
-    sendChatMessage(_this: any, resInfo: resInfo, txt: string, retry: boolean, part: number): void;
-    /**
-     * Waits for a Steam Chat message from this user to this account and resolves their message content. The "normal" friendMessage event handler will be blocked for this user.
-     * @param steamID64 - The steamID64 of the user to read a message from
-     * @param timeout - Time in ms after which the Promise will be resolved if user does not respond. Pass 0 to disable (not recommended)
-     * @returns Resolved with `String` on response or `null` on timeout.
-     */
-    readChatMessage(steamID64: string, timeout: number): Promise<string | null>;
-}
-
-declare type EIdTypes = undefined;
 
 /**
  * Constructor - Initializes the controller and starts all bot accounts
@@ -777,14 +498,6 @@ declare class Controller {
      */
     login(firstLogin: boolean): void;
     /**
-     * Get all accounts which have not yet switched their status. Only the relevant properties of logininfo are documented here.
-     */
-    static readonly allAccountsOffline: { index: number; accountName: string; }[];
-    /**
-     * Get all accounts which have not yet fully been populated. Ignore accounts that are not online as they will never populate their user object. Only the relevant properties of logininfo are documented here.
-     */
-    static readonly allAccountsNotPopulated: { index: number; accountName: string; }[];
-    /**
      * Adds a new account to the set of bot accounts in use and writes changes to accounts.txt
      * @param accountName - Username of the account
      * @param password - Password of the account
@@ -818,12 +531,16 @@ declare class Controller {
 }
 
 /**
- * Process data that should be kept over restarts
- * @param data - Stringified data received by previous process
+ * ID types supported by this resolver
  */
-declare function restartdata(data: string): void;
-
-declare type EIdTypes = undefined;
+declare const enum EIdTypes {
+    profile = "profile",
+    group = "group",
+    sharedfile = "sharedfile",
+    discussion = "discussion",
+    curator = "curator",
+    review = "review"
+}
 
 /**
  * Implementation of a synchronous for loop in JS (Used as reference: https://whitfin.io/handling-synchronous-asynchronous-loops-javascriptnode-js/)
@@ -1336,13 +1053,6 @@ declare class JobManager {
 }
 
 /**
- * Attempts to instantiate a plugin
- * @param pluginName - Name of the plugin package
- * @returns Creates a plugin instance and returns it along with more information
- */
-declare function instantiatePlugin(pluginName: string): any;
-
-/**
  * @property load - Called on Plugin load
  * @property unload - Called on Plugin unload
  * @property ready - Controller ready event
@@ -1534,22 +1244,6 @@ declare class SessionHandler {
 }
 
 /**
- * Provide function to detach parent process event listeners
- */
-declare function detachParentListeners(): void;
-
-/**
- * Provide function to only once attach listeners to parent process
- * @param callback - Called on completion
- */
-declare function attachParentListeners(callback: (...params: any[]) => any): void;
-
-/**
- * Provide function to attach listeners to make communicating with child possible
- */
-declare function attachChildListeners(): void;
-
-/**
  * Checks if the needed file exists and gets it if it doesn't
  * @param file - The file path (from project root) to check and get
  * @param logger - Your current logger function
@@ -1571,13 +1265,6 @@ declare function run(): void;
 declare function restart(args: any): void;
 
 /**
- * Compatibility feature function to ensure automatic updating works. It gets the corresponding compatibility feature to this version and runs it if compatibilityfeaturedone in data.json is false.
- * @param controller - Reference to the controller object
- * @returns Resolves with `forceUpdate` (Boolean) when done. 'forceUpdate` must be passed to updater in controller.js!
- */
-declare function runCompatibility(controller: Controller): Promise<void | null>;
-
-/**
  * Checks for an available update from the GitHub repo
  * @param datafile - The current `data.json` file from the DataManager
  * @param branch - Which branch you want to check. Defaults to the current branch set in `data.json`
@@ -1585,29 +1272,6 @@ declare function runCompatibility(controller: Controller): Promise<void | null>;
  * @param callback - Called with `updateFound` (Boolean) and `data` (Object) on completion. `updatefound` will be false if the check should fail. `data` includes the full data.json file found online.
  */
 declare function check(datafile: any, branch: string, forceUpdate: boolean, callback: (...params: any[]) => any): void;
-
-/**
- * Run the application. This function is called by start.js
- */
-declare function run(): void;
-
-/**
- * Applies custom update rules for a few files (gets called by downloadUpdate.js)
- * @param compatibilityfeaturedone - Legacy param, is unused
- * @param oldconfig - The old config from before the update
- * @param oldadvancedconfig - The old advancedconfig from before the update
- * @param olddatafile - The old datafile from before the update
- * @param callback - Legacy param, is unused
- * @returns Resolves when we can proceed
- */
-declare function customUpdateRules(compatibilityfeaturedone: any, oldconfig: any, oldadvancedconfig: any, olddatafile: any, callback: (...params: any[]) => any): Promise<void>;
-
-/**
- * Downloads all files from the repository and installs them
- * @param controller - Reference to the controller object
- * @returns Resolves when we can proceed. Null on success, err on failure.
- */
-declare function startDownload(controller: Controller): Promise<null | any>;
 
 /**
  * Run the application. This function is called by start.js
@@ -1626,20 +1290,6 @@ declare function run(): void;
 declare class Updater {
     constructor(controller: Controller);
     /**
-     * Copy everything in a folder including its subpaths - Thanks (modified): https://stackoverflow.com/a/26038979/12934162
-     * @param src - From path
-     * @param dest - To path
-     * @param firstCall - Set to `true` on first call, will be set to `false` on recursive call
-     */
-    static copyFolderRecursiveSync(src: string, dest: string, firstCall: boolean): void;
-    /**
-     * Copy everything in a folder including its subpaths - Thanks (modified): https://stackoverflow.com/a/26038979/12934162
-     * @param src - From path
-     * @param dest - To path
-     * @param firstCall - Set to `true` on first call, will be set to `false` on recursive call
-     */
-    static copyFolderRecursiveSync(src: string, dest: string, firstCall: boolean): void;
-    /**
      * Checks for any available update and installs it.
      * @param forceUpdate - If true an update will be forced, even if disableAutoUpdate is true or the newest version is already installed
      * @param respondModule - If defined, this function will be called with the result of the check. This allows to integrate checking for updates into commands or plugins. Passes resInfo and txt as parameters.
@@ -1647,9 +1297,5 @@ declare class Updater {
      * @returns Promise that will be resolved with false when no update was found or with true when the update check or download was completed. Expect a restart when true was returned.
      */
     run(forceUpdate: boolean, respondModule: (...params: any[]) => any, resInfo: resInfo): Promise<boolean>;
-    /**
-     * Make initiating the update a function to simplify the permission check below
-     */
-    static initiateUpdate(): void;
 }
 
