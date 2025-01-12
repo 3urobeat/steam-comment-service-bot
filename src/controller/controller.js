@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 16:58:54
+ * Last Modified: 2025-01-12 17:25:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -214,7 +214,7 @@ Controller.prototype._start = async function() {
     this.data = new DataManager(this); // All functions provided by the DataManager, as well as all imported file data will be accessible here
 
     await this.data._loadDataManagerFiles();
-    await this.data._importFromDisk();
+    await this.data.importFromDisk();
 
 
     /* ------------ Print startup messages to log and set terminal title: ------------ */

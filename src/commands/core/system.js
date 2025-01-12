@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-08 19:27:11
+ * Last Modified: 2025-01-12 17:25:28
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -190,7 +190,7 @@ module.exports.reload = {
         commandHandler.controller.pluginSystem.reloadPlugins();
 
         // Reload data
-        await commandHandler.data._importFromDisk();
+        await commandHandler.data.importFromDisk();
 
         // Send response message
         respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("reloadcmdreloaded", null, resInfo.userID)); // Pass new resInfo object which contains prefix and everything the original resInfo obj contained

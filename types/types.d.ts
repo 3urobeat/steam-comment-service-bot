@@ -948,55 +948,55 @@ declare class DataManager {
      */
     writeQuotesToDisk(): void;
     /**
-     * Internal: Loads cache.json from disk, updates cachefile property in DataManager and handles potential errors
+     * Loads cache.json from disk, updates cachefile property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importCacheFromDisk(): Promise<object>;
+    importCacheFromDisk(): Promise<object>;
     /**
-     * Internal: Loads data.json from disk, updates datafile property in DataManager and handles potential errors
+     * Loads data.json from disk, updates datafile property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importDataFromDisk(): Promise<object>;
+    importDataFromDisk(): Promise<object>;
     /**
-     * Internal: Loads config.json from disk, updates config property in DataManager and handles potential errors
+     * Loads config.json from disk, updates config property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importConfigFromDisk(): Promise<object>;
+    importConfigFromDisk(): Promise<object>;
     /**
-     * Internal: Loads advancedconfig.json from disk, updates advancedconfig property in DataManager and handles potential errors
+     * Loads advancedconfig.json from disk, updates advancedconfig property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importAdvancedConfigFromDisk(): Promise<object>;
+    importAdvancedConfigFromDisk(): Promise<object>;
     /**
-     * Internal: Loads accounts.txt/logininfo.json from disk, updates logininfo property in DataManager and handles potential errors
+     * Loads accounts.txt/logininfo.json from disk, updates logininfo property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importLogininfoFromDisk(): Promise<object[]>;
+    importLogininfoFromDisk(): Promise<object[]>;
     /**
-     * Internal: Loads proxies.txt from disk, updates proxies property in DataManager and handles potential errors
+     * Loads proxies.txt from disk, updates proxies property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importProxiesFromDisk(): Promise<object[]>;
+    importProxiesFromDisk(): Promise<object[]>;
     /**
-     * Internal: Loads quotes.txt from disk, updates quotes property in DataManager and handles potential errors
+     * Loads quotes.txt from disk, updates quotes property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importQuotesFromDisk(): Promise<string[]>;
+    importQuotesFromDisk(): Promise<string[]>;
     /**
-     * Internal: Loads languages from disk, updates languages property in DataManager and handles potential errors
+     * Loads languages from disk, updates languages property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importLanguagesFromDisk(): Promise<object>;
+    importLanguagesFromDisk(): Promise<object>;
     /**
-     * Internal: Loads customlang.json from disk, updates languages property in DataManager and handles potential errors
+     * Loads customlang.json from disk, updates languages property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importCustomLangFromDisk(): Promise<object>;
+    importCustomLangFromDisk(): Promise<object>;
     /**
-     * Internal: Loads all config & data files from disk and handles potential errors
+     * Loads all config & data files from disk and handles potential errors
      * @returns Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importFromDisk(): Promise<void>;
+    importFromDisk(): Promise<void>;
     /**
      * Verifies the data integrity of every source code file in the project by comparing its checksum.
      * This function is used to verify the integrity of every module loaded AFTER the controller & DataManager. Both of those need manual checkAndGetFile() calls to import, which is handled by the Controller.
@@ -1108,55 +1108,55 @@ declare class DataManager {
      */
     writeQuotesToDisk(): void;
     /**
-     * Internal: Loads cache.json from disk, updates cachefile property in DataManager and handles potential errors
+     * Loads cache.json from disk, updates cachefile property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importCacheFromDisk(): Promise<object>;
+    importCacheFromDisk(): Promise<object>;
     /**
-     * Internal: Loads data.json from disk, updates datafile property in DataManager and handles potential errors
+     * Loads data.json from disk, updates datafile property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importDataFromDisk(): Promise<object>;
+    importDataFromDisk(): Promise<object>;
     /**
-     * Internal: Loads config.json from disk, updates config property in DataManager and handles potential errors
+     * Loads config.json from disk, updates config property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importConfigFromDisk(): Promise<object>;
+    importConfigFromDisk(): Promise<object>;
     /**
-     * Internal: Loads advancedconfig.json from disk, updates advancedconfig property in DataManager and handles potential errors
+     * Loads advancedconfig.json from disk, updates advancedconfig property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importAdvancedConfigFromDisk(): Promise<object>;
+    importAdvancedConfigFromDisk(): Promise<object>;
     /**
-     * Internal: Loads accounts.txt/logininfo.json from disk, updates logininfo property in DataManager and handles potential errors
+     * Loads accounts.txt/logininfo.json from disk, updates logininfo property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importLogininfoFromDisk(): Promise<object[]>;
+    importLogininfoFromDisk(): Promise<object[]>;
     /**
-     * Internal: Loads proxies.txt from disk, updates proxies property in DataManager and handles potential errors
+     * Loads proxies.txt from disk, updates proxies property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importProxiesFromDisk(): Promise<object[]>;
+    importProxiesFromDisk(): Promise<object[]>;
     /**
-     * Internal: Loads quotes.txt from disk, updates quotes property in DataManager and handles potential errors
+     * Loads quotes.txt from disk, updates quotes property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importQuotesFromDisk(): Promise<string[]>;
+    importQuotesFromDisk(): Promise<string[]>;
     /**
-     * Internal: Loads languages from disk, updates languages property in DataManager and handles potential errors
+     * Loads languages from disk, updates languages property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importLanguagesFromDisk(): Promise<object>;
+    importLanguagesFromDisk(): Promise<object>;
     /**
-     * Internal: Loads customlang.json from disk, updates languages property in DataManager and handles potential errors
+     * Loads customlang.json from disk, updates languages property in DataManager and handles potential errors
      * @returns Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importCustomLangFromDisk(): Promise<object>;
+    importCustomLangFromDisk(): Promise<object>;
     /**
-     * Internal: Loads all config & data files from disk and handles potential errors
+     * Loads all config & data files from disk and handles potential errors
      * @returns Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
      */
-    _importFromDisk(): Promise<void>;
+    importFromDisk(): Promise<void>;
     /**
      * Verifies the data integrity of every source code file in the project by comparing its checksum.
      * This function is used to verify the integrity of every module loaded AFTER the controller & DataManager. Both of those need manual checkAndGetFile() calls to import, which is handled by the Controller.

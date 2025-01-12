@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-09 21:41:21
+ * Last Modified: 2025-01-12 17:29:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -22,10 +22,10 @@ const DataManager = require("./dataManager.js");
 
 
 /**
- * Internal: Loads cache.json from disk, updates cachefile property in DataManager and handles potential errors
+ * Loads cache.json from disk, updates cachefile property in DataManager and handles potential errors
  * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
-DataManager.prototype._importCacheFromDisk = function() {
+DataManager.prototype.importCacheFromDisk = function() {
     return new Promise((resolve) => {
         try {
             delete require.cache[require.resolve(srcdir + "/data/cache.json")]; // Delete cache to enable reloading data
@@ -65,10 +65,10 @@ DataManager.prototype._importCacheFromDisk = function() {
 
 
 /**
- * Internal: Loads data.json from disk, updates datafile property in DataManager and handles potential errors
+ * Loads data.json from disk, updates datafile property in DataManager and handles potential errors
  * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
-DataManager.prototype._importDataFromDisk = function() {
+DataManager.prototype.importDataFromDisk = function() {
     return new Promise((resolve) => {
         try {
             delete require.cache[require.resolve(srcdir + "/data/data.json")]; // Delete cache to enable reloading data
@@ -105,10 +105,10 @@ DataManager.prototype._importDataFromDisk = function() {
 
 
 /**
- * Internal: Loads config.json from disk, updates config property in DataManager and handles potential errors
+ * Loads config.json from disk, updates config property in DataManager and handles potential errors
  * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
-DataManager.prototype._importConfigFromDisk = function() {
+DataManager.prototype.importConfigFromDisk = function() {
     return new Promise((resolve) => {
         try {
             delete require.cache[require.resolve(srcdir + "/../config.json")]; // Delete cache to enable reloading data
@@ -163,10 +163,10 @@ DataManager.prototype._importConfigFromDisk = function() {
 
 
 /**
- * Internal: Loads advancedconfig.json from disk, updates advancedconfig property in DataManager and handles potential errors
+ * Loads advancedconfig.json from disk, updates advancedconfig property in DataManager and handles potential errors
  * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
-DataManager.prototype._importAdvancedConfigFromDisk = function() {
+DataManager.prototype.importAdvancedConfigFromDisk = function() {
     return new Promise((resolve) => {
         try {
             delete require.cache[require.resolve(srcdir + "/../advancedconfig.json")]; // Delete cache to enable reloading data
@@ -203,10 +203,10 @@ DataManager.prototype._importAdvancedConfigFromDisk = function() {
 
 
 /**
- * Internal: Loads accounts.txt/logininfo.json from disk, updates logininfo property in DataManager and handles potential errors
+ * Loads accounts.txt/logininfo.json from disk, updates logininfo property in DataManager and handles potential errors
  * @returns {Promise.<object[]>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
-DataManager.prototype._importLogininfoFromDisk = function() {
+DataManager.prototype.importLogininfoFromDisk = function() {
     return new Promise((resolve) => {
         const logininfo = [];
 
@@ -231,7 +231,7 @@ DataManager.prototype._importLogininfoFromDisk = function() {
                     });
                 });
 
-                logger("debug", `DataManager _importLogininfoFromDisk(): Found ${logininfo.length} accounts in accounts.txt, not checking for logininfo.json...`);
+                logger("debug", `DataManager importLogininfoFromDisk(): Found ${logininfo.length} accounts in accounts.txt, not checking for logininfo.json...`);
 
                 this.controller._dataUpdateEvent("logininfo", this.logininfo, logininfo);
                 this.logininfo = logininfo;
@@ -280,10 +280,10 @@ DataManager.prototype._importLogininfoFromDisk = function() {
 
 
 /**
- * Internal: Loads proxies.txt from disk, updates proxies property in DataManager and handles potential errors
+ * Loads proxies.txt from disk, updates proxies property in DataManager and handles potential errors
  * @returns {Promise.<object[]>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
-DataManager.prototype._importProxiesFromDisk = function() {
+DataManager.prototype.importProxiesFromDisk = function() {
     return new Promise((resolve) => {
         let proxies = []; // When the file is just created there can't be proxies in it (this bot doesn't support magic)
 
@@ -316,7 +316,7 @@ DataManager.prototype._importProxiesFromDisk = function() {
                 // Escape each delimiter if necessary and construct regex to split proxy below once with 1. delimiter, then once with 2. delimiter on the remaining string, and so on...
                 proxySplitRegex = new RegExp(proxySplitDelimiters.map((e) => `(${e.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&")})(.*)`).join(""), "g");
             } else {
-                logger("debug", "DataManager _importProxiesFromDisk(): No proxyFormat provided in advancedconfig, skipping proxy format conversion...");
+                logger("debug", "DataManager importProxiesFromDisk(): No proxyFormat provided in advancedconfig, skipping proxy format conversion...");
             }
 
 
@@ -354,7 +354,7 @@ DataManager.prototype._importProxiesFromDisk = function() {
                         lastOnlineCheck: 0
                     };
 
-                    logger("debug", `DataManager _importProxiesFromDisk(): Converted proxy '${e}' using format '${this.advancedconfig.proxyFormat}' to '${proxies[i].proxy}'`);
+                    logger("debug", `DataManager importProxiesFromDisk(): Converted proxy '${e}' using format '${this.advancedconfig.proxyFormat}' to '${proxies[i].proxy}'`);
 
                 } else { // Can be used as is
 
@@ -380,10 +380,10 @@ DataManager.prototype._importProxiesFromDisk = function() {
 
 
 /**
- * Internal: Loads quotes.txt from disk, updates quotes property in DataManager and handles potential errors
+ * Loads quotes.txt from disk, updates quotes property in DataManager and handles potential errors
  * @returns {Promise.<string[]>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
-DataManager.prototype._importQuotesFromDisk = function() {
+DataManager.prototype.importQuotesFromDisk = function() {
     return new Promise((resolve) => {
         let quotes = [];
 
@@ -421,10 +421,10 @@ DataManager.prototype._importQuotesFromDisk = function() {
 
 
 /**
- * Internal: Loads languages from disk, updates languages property in DataManager and handles potential errors
+ * Loads languages from disk, updates languages property in DataManager and handles potential errors
  * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
-DataManager.prototype._importLanguagesFromDisk = function() {
+DataManager.prototype.importLanguagesFromDisk = function() {
     return new Promise((resolve) => {
         try {
             const obj = {};
@@ -438,7 +438,7 @@ DataManager.prototype._importLanguagesFromDisk = function() {
 
             // Iterate through all files in lang dir and load them
             fs.readdir("./src/data/lang", (err, files) => {
-                logger("debug", `DataManager _importLanguagesFromDisk(): Found these languages in the lang folder: '${files.join(", ")}'`);
+                logger("debug", `DataManager importLanguagesFromDisk(): Found these languages in the lang folder: '${files.join(", ")}'`);
 
                 files.forEach((e) => {
                     let thisFile;
@@ -486,10 +486,10 @@ DataManager.prototype._importLanguagesFromDisk = function() {
 
 
 /**
- * Internal: Loads customlang.json from disk, updates languages property in DataManager and handles potential errors
+ * Loads customlang.json from disk, updates languages property in DataManager and handles potential errors
  * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
-DataManager.prototype._importCustomLangFromDisk = function() {
+DataManager.prototype.importCustomLangFromDisk = function() {
     return new Promise((resolve) => {
         // Check before trying to import if the user even created the file
         if (fs.existsSync(srcdir + "/../customlang.json")) {
@@ -545,7 +545,7 @@ DataManager.prototype._importCustomLangFromDisk = function() {
                 }
             });
         } else {
-            logger("debug", "DataManager _importCustomLangFromDisk(): No customlang.json file found");
+            logger("debug", "DataManager importCustomLangFromDisk(): No customlang.json file found");
             resolve(this.lang); // Resolve with default lang object
         }
     });
@@ -553,26 +553,26 @@ DataManager.prototype._importCustomLangFromDisk = function() {
 
 
 /**
- * Internal: Loads all config & data files from disk and handles potential errors
+ * Loads all config & data files from disk and handles potential errors
  * @returns {Promise.<void>} Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
-DataManager.prototype._importFromDisk = async function () {
+DataManager.prototype.importFromDisk = async function () {
 
     // Call all functions from above after another. This must be done async to avoid a check failing that depends on something from a previous function. We sadly cannot use Promise.all() because of this.
     logger("info", "Importing data files and settings...", false, true, logger.animation("loading"));
 
-    await this._importCacheFromDisk();
-    await this._importDataFromDisk();
-    await this._importConfigFromDisk();
-    await this._importAdvancedConfigFromDisk();
+    await this.importCacheFromDisk();
+    await this.importDataFromDisk();
+    await this.importConfigFromDisk();
+    await this.importAdvancedConfigFromDisk();
 
     this.controller._loggerOptionsUpdateAfterConfigLoad(this.advancedconfig); // Call optionsUpdateAfterConfigLoad() to set previously inaccessible options
 
-    await this._importLogininfoFromDisk();
-    await this._importProxiesFromDisk();
-    await this._importQuotesFromDisk();
-    await this._importLanguagesFromDisk();
-    await this._importCustomLangFromDisk();
+    await this.importLogininfoFromDisk();
+    await this.importProxiesFromDisk();
+    await this.importQuotesFromDisk();
+    await this.importLanguagesFromDisk();
+    await this.importCustomLangFromDisk();
 
     this.lastCommentDB   = new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); // Autoload
     this.ratingHistoryDB = new nedb({ filename: srcdir + "/data/ratingHistory.db", autoload: true });
