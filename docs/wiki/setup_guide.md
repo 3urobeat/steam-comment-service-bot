@@ -4,7 +4,7 @@
 &nbsp;
 
 This page will walk you through downloading, setting up and configuring the bot!  
-This process usually takes around 5-10 minutes.  
+This process usually takes around 10 minutes, provided you've already created a few Steam accounts to use with the bot.  
 
 If you would like to rather follow a video than these written instructions, click: <a href="https://youtu.be/8J78rC9Z28U" target="_blank"><img src="https://img.shields.io/badge/YouTube-Tutorial-red"></a>  
 Every headline on this page also contains a YouTube badge which will take you to the corresponding video part when clicked!  
