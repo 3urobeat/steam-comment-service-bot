@@ -4,7 +4,7 @@
  * Created Date: 2024-12-28 12:56:44
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 17:26:11
+ * Last Modified: 2025-01-16 22:08:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 - 2025 3urobeat <https://github.com/3urobeat>
@@ -118,27 +118,30 @@ Controller.prototype.respreadProxies = async function() {
     // Update status of all proxies once
     await this.data.checkAllProxies(15000);
 
-    // Get all proxies which are online
+    // Get all proxies which are online and calculate perfect balance
     const onlineProxies = this.data.proxies.filter((e) => e.isOnline);
-    let   pendingRelogs = [];                                           // Stores bot accountNames which are waiting for an active request to finish before relogging
+    let   pendingRelogs = [];                                                         // Stores bot accountNames which are waiting for an active request to finish before relogging
+    const balance       = Math.ceil(this.getBots("*").length / onlineProxies.length);
 
     this.getBots("*").forEach((e) => {
         const currentProxy = e.loginData.proxy;
-        const newProxy     = onlineProxies[e.index % onlineProxies.length]; // Spread all accounts over all online proxies
 
-        // Assign new proxy info
-        this.bots[e.accountName].loginData.proxyIndex = newProxy.proxyIndex;
-        this.bots[e.accountName].loginData.proxy      = newProxy.proxy;
+        // Check if this proxy is down or above balance and switch this bot away from it
+        if (!onlineProxies.find((f) => f.proxy == currentProxy) || this.getBotsPerProxy().find((f) => f.proxy == currentProxy).bots.length > balance) {
+            // Get the first proxy below perfect balance
+            const newProxy = this.getBotsPerProxy().find((f) => f.bots.length < balance); // Must re-fetch getBotsPerProxy() result to include changes made by previous iteration
 
-        // Deny further requests and queue account for relog if proxy has changed
-        if (currentProxy != newProxy.proxy) {
+            // Assign new proxy info
+            this.bots[e.accountName].loginData.proxyIndex = newProxy.proxyIndex;
+            this.bots[e.accountName].loginData.proxy      = newProxy.proxy;
+
+            // Deny further requests and queue account for relog
             this.info.activeLogin = true;
-
             pendingRelogs.push(e.accountName);
 
             logger("info", `Account '${e.accountName}' switched from proxy '${currentProxy}' to proxy '${newProxy.proxy}'. Queueing relog for account...`);
         } else {
-            logger("debug", `Account '${e.accountName}' has not switched from proxy '${newProxy.proxy}'. No relog required.`);
+            logger("debug", `Account '${e.accountName}' has not switched from proxy '${currentProxy}'. No relog required.`);
         }
     });
 
