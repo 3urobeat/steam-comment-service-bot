@@ -23,7 +23,7 @@ The order of this list represents the order in which they are instantiated when 
   - [Updater](./updater/updater.md)
   - [JobManager](./jobs/jobManager.md)
   - [Bot](./bot/bot.md)
-    - [sessionHandler](./sessionHandler/sessionHandler.md)
+    - [sessionHandler](./sessions/sessionHandler.md)
   - [CommandHandler](./commands/commandHandler.md)
   - [PluginSystem](./pluginSystem/pluginSystem.md)
 
