@@ -18,9 +18,10 @@ declare const enum EStatus {
  * Constructor - Initializes an object which represents a user steam account
  * @param controller - Reference to the controller object
  * @param index - The index of this account in the logininfo object
+ * @param proxyIndex - The index of the proxy in DataManager proxies to use for this instance
  */
 declare class Bot {
-    constructor(controller: Controller, index: number);
+    constructor(controller: Controller, index: number, proxyIndex: number);
     /**
      * Reference to the controller object
      */
