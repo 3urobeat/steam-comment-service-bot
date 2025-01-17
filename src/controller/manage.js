@@ -4,7 +4,7 @@
  * Created Date: 2024-12-28 12:56:44
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-16 22:08:29
+ * Last Modified: 2025-01-17 18:18:19
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 - 2025 3urobeat <https://github.com/3urobeat>
@@ -173,7 +173,7 @@ Controller.prototype.respreadProxies = async function() {
             // Break interval & resolve if no account is pending anymore, otherwise display waiting message
             if (pendingRelogs.length == 0) {
                 clearInterval(pendingCheckInterval);
-                resolve();
+                setTimeout(resolve, 2500); // Status update can take a second to register, delay login call a little
             } else {
                 if (lastPendingRelogsMsgAmount != pendingRelogs.length) {
                     logger("info", `Waiting for bot(s) '${pendingRelogs.map((e) => this.bots[e].index).join(", ")}' to finish their active request to relog to apply proxy switch...`, false, false, logger.animation("waiting")); // Using !remove because a blocking request would bury this message instantly
