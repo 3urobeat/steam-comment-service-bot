@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 18:23:51
+ * Last Modified: 2025-01-17 18:29:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -91,7 +91,11 @@ Controller.prototype.login = async function(firstLogin) {
             || (this.bots[e.accountName].user && this.bots[e.accountName].user.options.httpProxy != this.bots[e.accountName].loginData.proxy)) {
             logger("debug", `Creating new bot object for account '${e.accountName}'${this.bots[e.accountName] ? " due to proxy change" : ""}...`);
 
-            this.bots[e.accountName] = new Bot(this, e.index); // Create a new bot object for this account and store a reference to it
+            // Reuse proxy information if bot already existed (and therefore changed its proxy to this one). Otherwise spread all accounts equally with a simple modulo calculation
+            const proxyIndex = this.bots[e.accountName] ? this.bots[e.accountName].loginData.proxyIndex : e.index % this.data.proxies.length;
+
+            // Create a new bot object for this account and store a reference to it
+            this.bots[e.accountName] = new Bot(this, e.index, proxyIndex);
         } else {
             logger("debug", `Found existing bot object for '${e.accountName}' with unchanged proxy! Reusing it...`);
         }

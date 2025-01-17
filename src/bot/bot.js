@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 17:35:24
+ * Last Modified: 2025-01-17 18:25:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -30,8 +30,9 @@ const SessionHandler = require("../sessions/sessionHandler.js");
  * @class
  * @param {Controller} controller Reference to the controller object
  * @param {number} index The index of this account in the logininfo object
+ * @param {number} proxyIndex The index of the proxy in DataManager proxies to use for this instance
  */
-const Bot = function(controller, index) {
+const Bot = function(controller, index, proxyIndex) {
 
     /**
      * Reference to the controller object
@@ -62,8 +63,6 @@ const Bot = function(controller, index) {
      * @type {string[]}
      */
     this.friendMessageBlock = [];
-
-    const proxyIndex = this.index % controller.data.proxies.length; // Spread all accounts equally with a simple modulo calculation
 
     /**
      * Additional login related information for this bot account
