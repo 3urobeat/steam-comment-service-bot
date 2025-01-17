@@ -71,6 +71,11 @@
             "checksum": "7da53806101a9d10b174638c5367db7d"
         },
         {
+            "path": "scripts/generateDevDocs.js",
+            "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/scripts/generateDevDocs.js",
+            "checksum": "a0fb7f65e08b7c32692df964255c63a5"
+        },
+        {
             "path": "scripts/generateDevDocsJsDocs.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/scripts/generateDevDocsJsDocs.js",
             "checksum": "9db5000231c13bf7643d0be292e03f8b"

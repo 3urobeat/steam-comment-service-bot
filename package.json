@@ -24,6 +24,7 @@
     "scripts": {
         "start": "node start.js",
         "dev": "node scripts/generateFileStructure.js && node start",
+        "devdocs": "node scripts/generateDevDocs.js",
         "jsdocs": "node scripts/generateDevDocsJsDocs.js",
         "types": "jsdoc -t node_modules/tsd-jsdoc/dist -c jsdoc.config.json -d types ; node scripts/generateFileStructure.js",
         "deps": "ncu -u && npm update"
