@@ -27,6 +27,7 @@
         "devdocs": "node scripts/generateDevDocs.js",
         "jsdocs": "node scripts/generateDevDocsJsDocs.js",
         "types": "jsdoc -t node_modules/tsd-jsdoc/dist -c jsdoc.config.json -d types ; node scripts/generateFileStructure.js",
+        "docs": "npm run types && npm run jsdocs && npm run devdocs",
         "deps": "ncu -u && npm update"
     },
     "author": "3urobeat",
