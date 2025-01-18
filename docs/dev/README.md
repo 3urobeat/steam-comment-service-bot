@@ -18,14 +18,14 @@ The order of this list represents the order in which they are instantiated when 
 - Parent Process:
   - [Starter](./starter.md)
 - Child Process:
-  - [Controller](./controller/controller.md)
-  - [DataManager](./dataManager/dataManager.md)
-  - [Updater](./updater/updater.md)
-  - [JobManager](./jobs/jobManager.md)
-  - [Bot](./bot/bot.md)
-    - [sessionHandler](./sessions/sessionHandler.md)
-  - [CommandHandler](./commands/commandHandler.md)
-  - [PluginSystem](./pluginSystem/pluginSystem.md)
+  - [Controller](./controller/index.md)
+  - [DataManager](./dataManager/index.md)
+  - [Updater](./updater/index.md)
+  - [JobManager](./jobs/index.md)
+  - [Bot](./bot/index.md)
+    - [sessionHandler](./sessions/index.md)
+  - [CommandHandler](./commands/index.md)
+  - [PluginSystem](./pluginSystem/index.md)
 
 &nbsp;
 
