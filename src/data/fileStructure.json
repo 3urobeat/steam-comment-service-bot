@@ -43,7 +43,7 @@
         {
             "path": "README.md",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/README.md",
-            "checksum": "9aae26d99d45afd93be0075368826e51"
+            "checksum": "729fd6a72f5cdf67f21f4a68c4404fb2"
         },
         {
             "path": "eslint.config.mjs",

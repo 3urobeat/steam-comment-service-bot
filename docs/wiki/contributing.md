@@ -14,6 +14,7 @@ Please read this page *before* diving in, it contains a few **very** important p
 
 ## Table Of Contents
 - [Reporting an issue](#reporting-an-issue)
+- [Developer Documentation](#dev-docs)
 - [How to fork and open pull requests](#how-to-fork-and-open-pull-requests)
 - [Updating or Adding a language translation](#translating)
 - [Styling guidelines](#styling-guidelines)
@@ -27,6 +28,15 @@ Please report it by creating an [issue](https://github.com/3urobeat/steam-commen
 If you've got a feature request instead, you can choose the "Feature request" template.
   
 If you have any questions, please open a [Q&A discussion](https://github.com/3urobeat/steam-comment-service-bot/discussions/new?category=q-a) instead!
+
+&nbsp;
+
+<a id="dev-docs"></a>
+
+## Developer Documentation
+You might already be familiar with the user documentation/wiki (this directory).  
+The docs directory however also holds the developer documentation, which contains more detailed information, including the generated JsDocs for every module.  
+Please check it out and use it as a reference while working on the project. [Link](../dev#readme)
 
 &nbsp;
 
