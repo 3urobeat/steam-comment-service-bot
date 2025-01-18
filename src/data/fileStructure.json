@@ -73,7 +73,7 @@
         {
             "path": "scripts/generateDevDocs.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/scripts/generateDevDocs.js",
-            "checksum": "a0fb7f65e08b7c32692df964255c63a5"
+            "checksum": "8d22299923e389eda8432b8040534a0c"
         },
         {
             "path": "scripts/generateDevDocsJsDocs.js",

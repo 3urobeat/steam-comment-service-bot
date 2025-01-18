@@ -4,7 +4,7 @@
  * Created Date: 2025-01-17 21:45:27
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-17 23:31:22
+ * Last Modified: 2025-01-18 11:30:49
  * Modified By: 3urobeat
  *
  * Copyright (c) 2025 3urobeat <https://github.com/3urobeat>
@@ -68,7 +68,7 @@ dirs.forEach((dirName) => {
 
 
     // Append rest of introduction
-    fs.appendFileSync(thisOut, "\n&nbsp;\n\n<a id=\"introduction\"></a>\n\n## Introduction\n" + introSplit.join("\n"));
+    fs.appendFileSync(thisOut, "\n&nbsp;\n\n<a id=\"introduction\"></a>\n\n# Introduction\n" + introSplit.join("\n"));
 
 
     // Append everything else
@@ -83,7 +83,7 @@ dirs.forEach((dirName) => {
 
         // Append tag and content
         const fileNameRaw = fileName.replace(".md", "");
-        fs.appendFileSync(thisOut, `\n&nbsp;\n\n<a id="${fileNameRaw}"></a>\n\n## ${fileNameRaw[0].toUpperCase() + fileNameRaw.slice(1)}\n${fileContent}`);
+        fs.appendFileSync(thisOut, `\n&nbsp;\n\n<a id="${fileNameRaw}"></a>\n\n# ${fileNameRaw[0].toUpperCase() + fileNameRaw.slice(1)}\n${fileContent}`);
     });
 
     console.log(`Successfully generated module '${dirName}'`);
