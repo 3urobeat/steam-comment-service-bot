@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 17:25:28
+ * Last Modified: 2025-01-19 19:53:00
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -332,7 +332,7 @@ module.exports.eval = {
 };
 
 
-const availableManageModes = "addAccount, removeAccount, filterAccounts";
+const availableManageModes = "addAccount, removeAccount, filterAccounts, proxyStatus";
 
 module.exports.manage = {
     names: ["manage"],
@@ -415,6 +415,57 @@ module.exports.manage = {
                 const filterResult = commandHandler.controller.filterAccounts(commandHandler.controller.filters[selectedFilter]);
 
                 respond(await commandHandler.data.getLang("managecmdfiltersuccess", { "matchamount": filterResult.length, "selectedfilter": selectedFilter, "usernames": filterResult.map((e) => e.accountName).join(", ") }));
+                break;
+            }
+
+            case "proxystatus": { // Block "fixes" eslint no-case-declarations warning
+                // Get all proxies
+                const proxies = commandHandler.controller.getBotsPerProxy();
+
+                // Filter used & unused and online/offline for unused
+                const used          = proxies.filter((e) => e.bots.length > 0);
+                const unusedOffline = proxies.filter((e) => e.bots.length == 0 && !e.isOnline);
+                const unusedOnline  = proxies.filter((e) => e.bots.length == 0 &&  e.isOnline);
+
+                // Construct message
+                let msg = "Used:";
+
+                if (used.length > 0) {
+                    used.forEach((e) => {
+                        if (e.proxy == "null") e.proxy = "local ip";
+
+                        msg += `\n- ${e.proxyIndex} (${e.proxy}) is ${e.isOnline ? "online" : "offline"} used by bot(s) '${e.bots.map((f) => f.index).join(", ")}'`;
+                    });
+                } else {
+                    msg += " /";
+                }
+
+                msg += "\nUnused Offline:";
+
+                if (unusedOffline > 0) {
+                    unusedOffline.forEach((e, i) => {
+                        if (i > 0) msg += ",";
+
+                        msg += ` ${e.proxyIndex}`;
+                    });
+                } else {
+                    msg += " /";
+                }
+
+                msg += "\nUnused Offline:";
+
+                if (unusedOnline > 0) {
+                    unusedOnline.forEach((e, i) => {
+                        if (i > 0) msg += ",";
+
+                        msg += ` ${e.proxyIndex}`;
+                    });
+                } else {
+                    msg += " /";
+                }
+
+                // Send raw
+                respond(msg);
                 break;
             }
 

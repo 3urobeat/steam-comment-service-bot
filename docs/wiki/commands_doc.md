@@ -47,7 +47,7 @@ This is the full documentation of all commands. Most commands have aliases but s
 | !update       | `true`           | Checks for an available update and installs it if automatic updates are enabled and no requests are active. 'true' forces an update. Blocks new requests if it currently waits for one to be completed. (Owner only.) |
 | !log          | No arguments     | Shows the last 15 lines of the log. (Owner only.) |
 | !eval         | `javascriptCode` | Disabled by default, needs to be toggled on with `enableevalcmd` in config.json.<h4>**Warning!** This will run any javascript code that was provided. It is strongly advised to leave this feature off unless you know exactly what this means! If you have multiple owners configured they can also run code on **your** machine!</h4> (Owner only.) |
-| !manage       | `mode argument`  | Interact with the manage module to administrate the active set of bot accounts (add, remove, filter). Run the command without `mode` or `argument` to display help. (Owner only.) |
+| !manage       | `mode argument`  | Interact with the manage module to administrate the active set of bot accounts (add, remove, filter, proxy status). Run the command without `mode` or `argument` to display help. (Owner only.) |
   
 &nbsp;
 
