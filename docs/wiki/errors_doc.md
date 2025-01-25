@@ -44,6 +44,7 @@ You can find all HTTP status codes here: [Wikipedia](https://en.wikipedia.org/wi
 `Error: Failed loading profile data, please try again later` | The bot couldn't get profile data to prevent other possible errors and give a more precise error. Do not worry, the comment process can still work fine but other preventable errors could occur.
 `Error: Already logged on, cannot log on again` | The account is already logged in somewhere. Make sure the bot is not running already and that you aren't logged into them in your browser. Also make sure the bot is not in a compressed folder (.zip) anymore.
 `Error: To post this comment, your account must have Steam Guard enabled` | You must have at least an email steam guard configured for that account in order to comment on any steam profile. Read more about steam limitations: [Click](./steam_limitations.md)  
+`Error: InsufficientPrivilege` | Your account might be VAC banned and is therefore not allowed to interact (vote?). This was the case in [#253](https://github.com/3urobeat/steam-comment-service-bot/issues/253).
 
 &nbsp;
 
