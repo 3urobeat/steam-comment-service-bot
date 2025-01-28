@@ -4,7 +4,7 @@
  * Created Date: 2023-07-04 21:29:42
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-10 16:49:06
+ * Last Modified: 2025-01-28 17:44:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -122,6 +122,15 @@ DataManager.prototype.writeLogininfoToDisk = function() {
         const logininfojson = {};
 
         for (const e of this.logininfo) {
+            // Detect use of special syntax "*:cookie"
+            if (e.sharedSecret == "usecachedcookie") {
+                // Check if "*:cookie" was already appended
+                if (!Object.values(logininfojson).some((f) => f[0] == "*" && f[1] == "cookie")) {
+                    logininfojson[`bot${e.index}`] = [ "*", "cookie" ];
+                }
+                continue;
+            }
+
             logininfojson[`bot${e.index}`] = [ e.accountName, e.password, e.sharedSecret ];
         }
 
@@ -149,6 +158,15 @@ DataManager.prototype.writeLogininfoToDisk = function() {
 
         // Re-construct accounts.txt string. Iterate over bots instead of logininfo to retain a changed bots hierarchy
         for (const e of this.logininfo) {
+            // Detect use of special syntax "*:cookie"
+            if (e.sharedSecret == "usecachedcookie") {
+                // Check if "*:cookie" was already appended
+                if (!accountstxt.includes("*:cookie")) {
+                    accountstxt.push("*:cookie");
+                }
+                continue;
+            }
+
             if (e.sharedSecret) {
                 accountstxt.push(`${e.accountName}:${e.password}:${e.sharedSecret}`);
             } else {

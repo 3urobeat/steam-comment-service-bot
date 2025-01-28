@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-28 13:46:09
+ * Last Modified: 2025-01-28 17:47:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -229,7 +229,9 @@ DataManager.prototype.importLogininfoFromDisk = function() {
                             // Push this account to data if it wasn't already configured manually
                             if (!data.includes(`${e.accountName}:`)) {
                                 logger("debug", `DataManager importLogininfoFromDisk(): Special syntax "*:cookie" found, pushing accountName '${e.accountName}' to data...`);
-                                data.push(`${e.accountName}:`);
+
+                                // Use "usecachedcookie" for sharedsecret to let dataExport know that *:cookie was used. Keep password null to prevent sessionHandler from attempting to use it
+                                data.push(`${e.accountName}::usecachedcookie`);
                             }
                         });
                     }
@@ -280,7 +282,9 @@ DataManager.prototype.importLogininfoFromDisk = function() {
                             // Push this account to data if it wasn't already configured manually
                             if (!values.find((f) => f[0] == e.accountName)) {
                                 logger("debug", `DataManager importLogininfoFromDisk(): Special syntax "*:cookie" found, pushing accountName '${e.accountName}' to data...`);
-                                logininfoFile["bot" + (Object.keys(logininfoFile).length + i)] = [ e.accountName, null, null ];
+
+                                // Use "usecachedcookie" for sharedsecret to let dataExport know that *:cookie was used. Keep password null to prevent sessionHandler from attempting to use it
+                                logininfoFile["bot" + (Object.keys(logininfoFile).length + i)] = [ e.accountName, null, "usecachedcookie" ];
                             }
                         });
                     }
