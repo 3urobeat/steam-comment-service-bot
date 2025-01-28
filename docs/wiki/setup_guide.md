@@ -58,7 +58,7 @@ Make sure your accounts have at least E-Mail Steam Guard activated! This is a re
 I highly recommend that you take a quick look at the [Steam Limitations wiki page](./steam_limitations.md) to learn more about what you can and cannot do with your accounts.
 
 <details>
-  <summary>Another, optional method (not recommended anymore):</summary>
+  <summary>Another, legacy method (not recommended anymore, support may be dropped in the future):</summary>
   
   If you'd rather like to provide your accounts in an object notation (JSON), then empty the accounts.txt file and create a `logininfo.json` file.  
   Fill out the usernames and passwords of each bot account you want to use, following this object notation format:  
@@ -78,6 +78,10 @@ I highly recommend that you take a quick look at the [Steam Limitations wiki pag
   It is not recommended anymore as the chance of making a syntax mistake is way higher and requires more effort to extend for lots of accounts.
 </details>  
   
+&nbsp;
+
+**Tip:** If you have already started the bot before and want to log in all previously cached accounts, provide the special syntax `*:cookie` as an account instead of manually listing the accounts with username & password.
+
 &nbsp;
 
 #### Config: <a href="https://youtu.be/8J78rC9Z28U?t=181" target="_blank"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a> 

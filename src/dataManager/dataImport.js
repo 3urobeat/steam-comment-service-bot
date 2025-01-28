@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 17:29:13
+ * Last Modified: 2025-01-28 12:47:19
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -208,73 +208,109 @@ DataManager.prototype.importAdvancedConfigFromDisk = function() {
  */
 DataManager.prototype.importLogininfoFromDisk = function() {
     return new Promise((resolve) => {
-        const logininfo = [];
+        (async () => {                  // We need await support in this Promise, sorry for the convoluted pattern :/
+            const logininfo = [];
 
-        // Check accounts.txt first so we can ignore potential syntax errors in logininfo
-        if (fs.existsSync("./accounts.txt")) {
-            let data = fs.readFileSync("./accounts.txt", "utf8").split("\n");
+            // Check accounts.txt first so we can ignore potential syntax errors in logininfo
+            if (fs.existsSync("./accounts.txt")) {
+                let data = fs.readFileSync("./accounts.txt", "utf8").split("\n");
 
-            if (data.length > 0 && data[0].startsWith("//Comment")) data = data.slice(1); // Remove comment from array
+                if (data != "") {
+                    // Remove comment from array
+                    if (data.length > 0 && data[0].startsWith("//Comment")) {
+                        data = data.slice(1);
+                    }
 
-            if (data != "") {
-                data.forEach((e, i) => {
-                    if (e.length < 2) return; // If the line is empty ignore it to avoid issues like this: https://github.com/3urobeat/steam-comment-service-bot/issues/80
-                    e = e.split(":");
-                    e[e.length - 1] = e[e.length - 1].replace("\r", ""); // Remove Windows next line character from last index (which has to be the end of the line)
+                    // Check for special syntax that includes all cached accounts in tokens.db
+                    if (data.includes("*:cookie")) {
+                        const dbRes = await this.tokensDB.findAsync({}); // Get all
 
-                    logininfo.push({
-                        index: i,
-                        accountName: e[0],
-                        password: e[1],
-                        sharedSecret: e[2],
-                        steamGuardCode: null
+                        dbRes.forEach((e) => {
+                            // Push this account to data if it wasn't already configured manually
+                            if (!data.includes(`${e.accountName}:`)) {
+                                logger("debug", `DataManager importLogininfoFromDisk(): Special syntax "*:cookie" found, pushing accountName '${e.accountName}' to data...`);
+                                data.push(`${e.accountName}:`);
+                            }
+                        });
+                    }
+
+                    data.forEach((e, i) => {
+                        // If the line is empty or contains special syntax ignore it to avoid issues like this: https://github.com/3urobeat/steam-comment-service-bot/issues/80
+                        if (e.length < 2 || e == "*:cookie") return;
+                        e = e.split(":");
+                        e[e.length - 1] = e[e.length - 1].replace("\r", ""); // Remove Windows next line character from last index (which has to be the end of the line)
+
+                        logininfo.push({
+                            index: i,
+                            accountName: e[0],
+                            password: e[1],
+                            sharedSecret: e[2],
+                            steamGuardCode: null
+                        });
                     });
-                });
 
-                logger("debug", `DataManager importLogininfoFromDisk(): Found ${logininfo.length} accounts in accounts.txt, not checking for logininfo.json...`);
+                    logger("debug", `DataManager importLogininfoFromDisk(): Found ${logininfo.length} accounts in accounts.txt, not checking for logininfo.json...`);
+
+                    this.controller._dataUpdateEvent("logininfo", this.logininfo, logininfo);
+                    this.logininfo = logininfo;
+                    return resolve(logininfo);
+                }
+            }
+
+            // Check logininfo for Syntax errors and display custom error message
+            try {
+                // Only check if file exists (it is not shipped by default anymore since 2.12.1). If it doesn't an empty obj will be returned, leading to empty logininfo err msg in checkData()
+                if (fs.existsSync("./logininfo.json")) {
+                    delete require.cache[require.resolve(srcdir + "/../logininfo.json")]; // Delete cache to enable reloading data
+
+                    // Print deprecation warning once directly at boot and another time on ready
+                    logger("warn", "The usage of 'logininfo.json' is deprecated, please consider moving your accounts to 'accounts.txt' instead!", true);
+                    logger("warn", "The usage of 'logininfo.json' is deprecated, please consider moving your accounts to 'accounts.txt' instead!");
+
+                    const logininfoFile = require(srcdir + "/../logininfo.json");
+
+                    // Check for special syntax that includes all cached accounts in tokens.db
+                    const values = Object.values(logininfoFile);
+
+                    if (values.find((e) => e[0] == "*" && e[1] == "cookie")) {
+                        const dbRes = await this.tokensDB.findAsync({}); // Get all
+
+                        dbRes.forEach((e, i) => {
+                            // Push this account to data if it wasn't already configured manually
+                            if (!values.find((f) => f[0] == e.accountName)) {
+                                logger("debug", `DataManager importLogininfoFromDisk(): Special syntax "*:cookie" found, pushing accountName '${e.accountName}' to data...`);
+                                logininfoFile["bot" + (Object.keys(logininfoFile).length + i)] = [ e.accountName, null, null ];
+                            }
+                        });
+                    }
+
+                    // Reformat to use new logininfo object structure
+                    Object.values(logininfoFile).forEach((k, i) => {
+                        if (k[0] == "*" && k[1] == "cookie") return; // Ignore special syntax
+
+                        logininfo.push({
+                            index: i,
+                            accountName: k[0],
+                            password: k[1],
+                            sharedSecret: k[2],
+                            steamGuardCode: null
+                        });
+                    });
+                }
+
+                logger("debug", `Found ${logininfo.length} accounts in logininfo.json...`);
 
                 this.controller._dataUpdateEvent("logininfo", this.logininfo, logininfo);
                 this.logininfo = logininfo;
-                return resolve(logininfo);
-            }
-        }
-
-        // Check logininfo for Syntax errors and display custom error message
-        try {
-            // Only check if file exists (it is not shipped by default anymore since 2.12.1). If it doesn't an empty obj will be returned, leading to empty logininfo err msg in checkData()
-            if (fs.existsSync("./logininfo.json")) {
-                delete require.cache[require.resolve(srcdir + "/../logininfo.json")]; // Delete cache to enable reloading data
-
-                // Print deprecation warning once directly at boot and another time on ready
-                logger("warn", "The usage of 'logininfo.json' is deprecated, please consider moving your accounts to 'accounts.txt' instead!", true);
-                logger("warn", "The usage of 'logininfo.json' is deprecated, please consider moving your accounts to 'accounts.txt' instead!");
-
-                const logininfoFile = require(srcdir + "/../logininfo.json");
-
-                // Reformat to use new logininfo object structure
-                Object.keys(logininfoFile).forEach((k, i) => {
-                    logininfo.push({
-                        index: i,
-                        accountName: logininfoFile[k][0],
-                        password: logininfoFile[k][1],
-                        sharedSecret: logininfoFile[k][2],
-                        steamGuardCode: null
-                    });
-                });
+                resolve(logininfo);
+            } catch (err) {
+                logger("error", "It seems like you made a mistake in your logininfo.json. Please check if your Syntax looks exactly like in the example/template and try again.\n        " + err, true);
+                return this.controller.stop();
             }
 
-            logger("debug", `Found ${logininfo.length} accounts in logininfo.json...`);
-
-            this.controller._dataUpdateEvent("logininfo", this.logininfo, logininfo);
-            this.logininfo = logininfo;
-            resolve(logininfo);
-        } catch (err) {
-            logger("error", "It seems like you made a mistake in your logininfo.json. Please check if your Syntax looks exactly like in the example/template and try again.\n        " + err, true);
-            return this.controller.stop();
-        }
-
-        // Create empty accounts.txt file if neither exist
-        if (!fs.existsSync("./accounts.txt") && !fs.existsSync("./logininfo.json")) this._pullNewFile("accounts.txt", "./accounts.txt", () => {}, true); // Ignore resolve() param
+            // Create empty accounts.txt file if neither exist
+            if (!fs.existsSync("./accounts.txt") && !fs.existsSync("./logininfo.json")) this._pullNewFile("accounts.txt", "./accounts.txt", () => {}, true); // Ignore resolve() param
+        })();
     });
 };
 
@@ -568,6 +604,8 @@ DataManager.prototype.importFromDisk = async function () {
 
     this.controller._loggerOptionsUpdateAfterConfigLoad(this.advancedconfig); // Call optionsUpdateAfterConfigLoad() to set previously inaccessible options
 
+    this.tokensDB = new nedb({ filename: srcdir + "/data/tokens.db", autoload: true }); // We need to access tokensDB in logininfo import
+
     await this.importLogininfoFromDisk();
     await this.importProxiesFromDisk();
     await this.importQuotesFromDisk();
@@ -576,7 +614,6 @@ DataManager.prototype.importFromDisk = async function () {
 
     this.lastCommentDB   = new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); // Autoload
     this.ratingHistoryDB = new nedb({ filename: srcdir + "/data/ratingHistory.db", autoload: true });
-    this.tokensDB        = new nedb({ filename: srcdir + "/data/tokens.db", autoload: true });
     this.userSettingsDB  = new nedb({ filename: srcdir + "/data/userSettings.db", autoload: true });
 
     logger("info", `Successfully loaded ${this.logininfo.length} accounts, ${this.proxies.length} proxies, ${this.quotes.length} quotes, ${Object.keys(this.lang).length} languages and 4 databases!`, false, true, logger.animation("loading"));
