@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-28 12:47:19
+ * Last Modified: 2025-01-28 13:46:09
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -234,9 +234,10 @@ DataManager.prototype.importLogininfoFromDisk = function() {
                         });
                     }
 
+                    // Filter empty or special syntax lines to avoid issues
+                    data = data.filter((e) => e.length > 1 && e != "*:cookie");
+
                     data.forEach((e, i) => {
-                        // If the line is empty or contains special syntax ignore it to avoid issues like this: https://github.com/3urobeat/steam-comment-service-bot/issues/80
-                        if (e.length < 2 || e == "*:cookie") return;
                         e = e.split(":");
                         e[e.length - 1] = e[e.length - 1].replace("\r", ""); // Remove Windows next line character from last index (which has to be the end of the line)
 
@@ -285,7 +286,9 @@ DataManager.prototype.importLogininfoFromDisk = function() {
                     }
 
                     // Reformat to use new logininfo object structure
-                    Object.values(logininfoFile).forEach((k, i) => {
+                    const valuesToProcess = Object.values(logininfoFile).filter((e) => e[0] != "*" && e[1] != "cookie");
+
+                    valuesToProcess.forEach((k, i) => {
                         if (k[0] == "*" && k[1] == "cookie") return; // Ignore special syntax
 
                         logininfo.push({
