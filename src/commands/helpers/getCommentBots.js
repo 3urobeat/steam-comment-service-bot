@@ -4,7 +4,7 @@
  * Created Date: 2023-04-09 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 18:26:29
+ * Last Modified: 2025-01-29 20:19:36
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -26,24 +26,29 @@ const { timeToString } = require("../../controller/helpers/misc.js");
  * @private
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {number} numberOfComments Number of requested comments
+ * @param {number} maxRequestAmount The maximum amount of comments this user is allowed to request
  * @param {boolean} canBeLimited If the accounts are allowed to be limited
  * @param {string} idType Type of the request. This can either be "profile(PrivacyState)", "group", "sharedfile", "discussion" or "review". This is used to determine if limited accs need to be added first.
  * @param {string} receiverSteamID Optional: steamID64 of the receiving user. If set, accounts that are friend with the user will be prioritized and accsToAdd will be calculated.
- * @returns {{ accsNeeded: number, availableAccounts: Array.<string>, accsToAdd: Array.<string>, whenAvailable: number, whenAvailableStr: string }} `availableAccounts` contains all account names from bot object, `accsToAdd` account names which are limited and not friend, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
+ * @returns {{ accsMinNeeded: number, availableAccounts: Array.<string>, accsToAdd: Array.<string>, whenAvailable: number, whenAvailableStr: string }} `availableAccounts` contains all account names from bot object, `accsToAdd` account names which are limited and not friend, `whenAvailable` is a timestamp representing how long to wait until accsNeeded accounts will be available and `whenAvailableStr` is formatted human-readable as time from now
  */
-module.exports.getAvailableBotsForCommenting = async function(commandHandler, numberOfComments, canBeLimited, idType, receiverSteamID = null) {
+module.exports.getAvailableBotsForCommenting = async function(commandHandler, numberOfComments, maxRequestAmount, canBeLimited, idType, receiverSteamID = null) {
 
     // Calculate the amount of accounts needed for this request
-    let accountsNeeded;
+    let accountsMin;
+    let accountsMax;
 
     // Method 1: Use as many accounts as possible to maximize the spread (Default)
-    if (numberOfComments <= commandHandler.controller.getBots().length) {
-        accountsNeeded = numberOfComments;
-    } else {
-        accountsNeeded = commandHandler.controller.getBots().length; // Cap accountsNeeded at amount of accounts because if numberOfComments is greater we will start at account 1 again
+    const botsAvailable = commandHandler.controller.getBots();
+
+    accountsMin = Math.ceil(numberOfComments / (maxRequestAmount / botsAvailable.length)); // Divide numberOfComments by how many times one account is allowed to comment
+    accountsMax = numberOfComments;
+
+    if (numberOfComments > botsAvailable.length) {  // Cap accountsMax at amount of accounts
+        accountsMax = botsAvailable.length;
     }
 
-    // Method 2: Use as few accounts as possible to maximize the amount of parallel requests (Not implemented yet)
+    // Method 2: Use as few accounts as possible by locking to min to maximize the amount of parallel requests (Not implemented yet)
     // TODO
 
 
@@ -145,8 +150,8 @@ module.exports.getAvailableBotsForCommenting = async function(commandHandler, nu
 
 
     // Cut result to only include needed accounts
-    if (allAccounts.length > accountsNeeded) {
-        allAccounts = allAccounts.slice(0, accountsNeeded);
+    if (allAccounts.length > accountsMax) {
+        allAccounts = allAccounts.slice(0, accountsMax);
     }
 
 
@@ -161,15 +166,15 @@ module.exports.getAvailableBotsForCommenting = async function(commandHandler, nu
 
 
     // Log debug values
-    if (allAccounts.length < accountsNeeded) {
-        logger("debug", `CommandHandler getAvailableBotsForCommenting(): Calculated ${accountsNeeded} accs needed for ${numberOfComments} comments but only ${allAccounts.length} are available. If accs will become available, the user needs to wait: ${whenAvailableStr || "/"}`);
+    if (allAccounts.length < accountsMin) {
+        logger("debug", `CommandHandler getAvailableBotsForCommenting(): Calculated ${accountsMin} - ${accountsMax} accs needed for ${numberOfComments} comments but only ${allAccounts.length} are available. If accs will become available, the user needs to wait: ${whenAvailableStr || "/"}`);
     } else {
-        logger("debug", `CommandHandler getAvailableBotsForCommenting(): Calculated ${accountsNeeded} accs needed for ${numberOfComments} comments and ${allAccounts.length} are available: ${allAccounts}`);
+        logger("debug", `CommandHandler getAvailableBotsForCommenting(): Calculated ${accountsMin} - ${accountsMax} accs needed for ${numberOfComments} comments and ${allAccounts.length} are available: ${allAccounts}`);
     }
 
     // Return values
     return {
-        "accsNeeded": accountsNeeded,
+        "accsMinNeeded": accountsMin,
         "availableAccounts": allAccounts,
         "accsToAdd": accsToAdd,
         "whenAvailable": whenAvailable,

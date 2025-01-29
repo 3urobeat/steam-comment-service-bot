@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-12-31 15:56:38
+ * Last Modified: 2025-01-29 22:08:31
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -115,7 +115,7 @@ module.exports.comment = {
 
         // Get all currently available bot accounts. Block limited accounts from being eligible from commenting in groups
         const allowLimitedAccounts = (idType != "group");
-        const { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = await getAvailableBotsForCommenting(commandHandler, numberOfComments, allowLimitedAccounts, idType, receiverSteamID64); // Await *has* an effect on this expression you idiot
+        const { accsMinNeeded, availableAccounts, accsToAdd, whenAvailableStr } = await getAvailableBotsForCommenting(commandHandler, numberOfComments, maxRequestAmount, allowLimitedAccounts, idType, receiverSteamID64); // Await *has* an effect on this expression you idiot
 
         // Check if this bot has no suitable accounts for this request and there won't be any available at any point
         if (availableAccounts.length == 0 && !whenAvailableStr) {
@@ -128,14 +128,14 @@ module.exports.comment = {
             return;
         }
 
-        // Check if user needs to add accounts first. Make sure the lack of accounts is caused by accsToAdd, not cooldown
-        if (availableAccounts.length - accsToAdd.length < accsNeeded && !whenAvailableStr) {
+        // Check if user needs to add accounts first. Make sure the lack of accounts is caused by accsToAdd, not cooldown. We check against accsMin but send message based on accsMax to get the user to add the most
+        if (availableAccounts.length - accsToAdd.length < accsMinNeeded && !whenAvailableStr) {
             // If acceptFriendRequests is turned off, we can skip this altogether
             if (commandHandler.data.advancedconfig.acceptFriendRequests) {
                 let addStr = await commandHandler.data.getLang("commentaddbotaccounts", null, requesterID);
                 accsToAdd.forEach(e => addStr += `\n' steamcommunity.com/profiles/${commandHandler.data.cachefile.botaccid[commandHandler.controller.getBots(null, true)[e].index]} '`);
 
-                logger("info", `Found enough available accounts but user needs to add ${accsToAdd.length} limited accounts first before I'm able to comment.`);
+                logger("info", `Found enough available accounts but user needs to add ${accsMinNeeded} - ${accsToAdd.length} limited accounts first before I'm able to comment.`);
 
                 respondModule(context, { charLimit: 500, cutChars: ["\n"], ...resInfo }, addStr); // Manually limit part length to 500 chars as addStr can cause many messages and only allow cuts at newlines to prevent links from getting embedded
                 return;
@@ -153,20 +153,22 @@ module.exports.comment = {
 
                 logger("warn", "Found enough available accounts which the user would need to add first but 'acceptFriendRequests' is disabled in 'advancedconfig.json'! Sending 'request less' message instead...");
 
-                respond(await commandHandler.data.getLang("requesttoohigh", { "maxRequestAmount": availableAccounts.length - accsToAdd.length, "cmdusage": commentcmdUsage }, requesterID));
+                const maxReducedAccsRequestAmount = Math.trunc((availableAccounts.length - accsToAdd.length) * (maxRequestAmount / commandHandler.controller.getBots().length));
+                respond(await commandHandler.data.getLang("requesttoohigh", { "maxRequestAmount": maxReducedAccsRequestAmount, "cmdusage": commentcmdUsage }, requesterID));
                 return;
             }
         }
 
         // Check if not enough available accounts were found because of cooldown
-        if (availableAccounts.length < accsNeeded) {
+        if (availableAccounts.length < accsMinNeeded) {
             if (availableAccounts.length > 0) {
-                respond(await commandHandler.data.getLang("commentnotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availableAccounts.length }, requesterID)); // Using allAccounts.length works for the "spread requests on as many accounts as possible" method
+                const availablenow = Math.trunc(availableAccounts.length * (maxRequestAmount / commandHandler.controller.getBots()));
+                respond(await commandHandler.data.getLang("commentnotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availablenow }, requesterID)); // Using allAccounts.length works for the "spread requests on as many accounts as possible" method
             } else {
                 respond(await commandHandler.data.getLang("commentzeroavailableaccs", { "waittime": whenAvailableStr }, requesterID));
             }
 
-            logger("info", `Found only ${availableAccounts.length} available account(s) but ${accsNeeded} account(s) are needed to send ${numberOfComments} comments.`);
+            logger("info", `Found only ${availableAccounts.length} available account(s) but ${accsMinNeeded} account(s) are needed to send ${numberOfComments} comments.`);
             return;
         }
 
