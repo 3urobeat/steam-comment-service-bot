@@ -533,7 +533,7 @@
         {
             "path": "src/sessions/helpers/handleCredentialsLoginError.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/sessions/helpers/handleCredentialsLoginError.js",
-            "checksum": "a8ca32a04c285693bdc835e8e0f8181c"
+            "checksum": "f509ce710cd01606479146f520482de6"
         },
         {
             "path": "src/sessions/helpers/tokenStorageHandler.js",

@@ -4,7 +4,7 @@
  * Created Date: 2022-10-09 13:22:39
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-31 11:44:55
+ * Last Modified: 2025-01-31 15:37:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
@@ -38,7 +38,9 @@ SessionHandler.prototype._handleCredentialsLoginError = function(err) {
         logger("debug", err.stack, true);
 
         // Add additional messages for specific errors to hopefully help the user diagnose the cause
-        if (err.eresult == EResult.InvalidPassword) logger("", `Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try omitting the shared_secret (if you provided one) and check the username & password of '${this.logOnOptions.accountName}' in account.txt!`, true);
+        if (err.eresult == EResult.InvalidPassword) {
+            logger("", `Note: The error "InvalidPassword" can also be caused by a wrong username${this.logOnOptions.sharedSecret ? " or shared_secret" : ""}!\n      Please check the username & password of '${this.logOnOptions.accountName}' in accounts.txt${this.logOnOptions.sharedSecret ? " and try omitting the shared_secret you provided" : ""}!`, true);
+        }
 
         // Skips account or stops bot, depending on which loginindex this is
         this._resolvePromise(null);
