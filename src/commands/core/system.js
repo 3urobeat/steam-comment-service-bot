@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-19 19:53:00
+ * Last Modified: 2025-01-31 16:06:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -311,7 +311,7 @@ module.exports.eval = {
 
             // Sanitize result to filter logindata. This is not 100% safe but should prevent accidental leaks (only owners can use this cmd)
             commandHandler.data.logininfo.forEach((e) => {
-                evaled = evaled.replace(new RegExp(e.password, "g"), "\"censored\"");
+                if (e.password) evaled = evaled.replace(new RegExp(e.password, "g"), "\"censored\"");
             });
 
             // Check for character limit and cut message
