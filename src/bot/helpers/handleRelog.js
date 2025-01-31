@@ -4,10 +4,10 @@
  * Created Date: 2023-10-05 16:14:46
  * Author: 3urobeat
  *
- * Last Modified: 2024-06-06 18:04:20
+ * Last Modified: 2025-01-31 11:43:07
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -78,7 +78,7 @@ Bot.prototype.checkAndSwitchMyProxy = async function() {
 
     if (!this.loginData.proxy) return false; // Ignore anything below if this account does not use a proxy
 
-    logger("info", `[${this.logPrefix}] Steam appears to be reachable without a proxy. Checking if Steam is reachable using proxy ${this.loginData.proxyIndex}...`, false, false, logger.animation("loading"));
+    logger("info", `[${this.logPrefix}] Steam appears to be reachable without a proxy. Checking if Steam is reachable using proxy ${this.loginData.proxyIp}...`, false, false, logger.animation("loading"));
 
 
     // Refresh online status of all proxies if not done in the last 2.5 minutes to check if this one is down and potentially switch to a working one
@@ -93,7 +93,7 @@ Bot.prototype.checkAndSwitchMyProxy = async function() {
 
         // Check if no available proxy was found (exclude host) and return false
         if (activeProxies.length == 0) {
-            logger("warn", `[${this.logPrefix}] Failed to ping Steam using proxy ${this.loginData.proxyIndex} but no other available proxy was found! Continuing to try with this proxy...`, false, false, null, true);
+            logger("warn", `[${this.logPrefix}] Failed to ping Steam using proxy ${this.loginData.proxyIp} (${this.loginData.proxyIndex}) but no other available proxy was found! Continuing to try with this proxy...`, false, false, null, true);
             return false;
         }
 
@@ -101,7 +101,7 @@ Bot.prototype.checkAndSwitchMyProxy = async function() {
         // Find proxy with least amount of associated bots
         const leastUsedProxy = activeProxies.reduce((a, b) => a.bots.length < b.bots.length ? a : b);
 
-        logger("warn", `[${this.logPrefix}] Failed to ping Steam using proxy ${this.loginData.proxyIndex}! Switching to proxy ${leastUsedProxy.proxyIndex} which currently has the least amount of usage and appears to be online.`, false, false, null, true);
+        logger("warn", `[${this.logPrefix}] Failed to ping Steam using proxy ${this.loginData.proxyIp} (${this.loginData.proxyIndex})! Switching to proxy ${leastUsedProxy.ip} (${leastUsedProxy.proxyIndex}) which currently has the least amount of usage and appears to be online.`, false, false, null, true);
 
 
         // Switch proxy and relog, no need for handleRelog() to do something
@@ -112,7 +112,7 @@ Bot.prototype.checkAndSwitchMyProxy = async function() {
 
     } else {
 
-        logger("info", `[${this.logPrefix}] Successfully pinged Steam using proxy ${this.loginData.proxyIndex}. I'll keep using this proxy.`, false, false, null, true);
+        logger("info", `[${this.logPrefix}] Successfully pinged Steam using proxy ${this.loginData.proxyIp} (${this.loginData.proxyIndex}). I'll keep using this proxy.`, false, false, null, true);
         return false;
     }
 

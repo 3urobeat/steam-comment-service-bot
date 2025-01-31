@@ -4,10 +4,10 @@
  * Created Date: 2023-05-02 13:46:21
  * Author: 3urobeat
  *
- * Last Modified: 2024-08-10 19:13:29
+ * Last Modified: 2025-01-31 11:42:18
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -45,7 +45,7 @@ Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObje
 /**
  * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
  * @param {boolean} [filterOffline=false] Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
- * @returns {Array.<{ bots: Array.<Bot>, proxy: string, proxyIndex: number, isOnline: boolean, lastOnlineCheck: number }>} Bot accounts mapped to their associated proxy
+ * @returns {Array.<{ bots: Array.<Bot>, proxy: string, proxyIndex: number, ip: string, isOnline: boolean, lastOnlineCheck: number }>} Bot accounts mapped to their associated proxy
  */
 Controller.prototype.getBotsPerProxy = function(filterOffline = false) {
 

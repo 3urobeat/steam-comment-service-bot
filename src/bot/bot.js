@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-17 18:25:37
+ * Last Modified: 2025-01-31 11:45:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -66,7 +66,7 @@ const Bot = function(controller, index, proxyIndex) {
 
     /**
      * Additional login related information for this bot account
-     * @type {{ logOnOptions: DataManager.logOnOptions, logOnTries: number, relogTries: number, pendingLogin: boolean, waitingFor2FA: boolean, proxyIndex: number, proxy: string }}
+     * @type {{ logOnOptions: DataManager.logOnOptions, logOnTries: number, relogTries: number, pendingLogin: boolean, waitingFor2FA: boolean, proxyIndex: number, proxy: string, proxyIp: string }}
      */
     this.loginData = {
         logOnOptions:  controller.data.logininfo.find((e) => e.index == index), // TODO: This could be an issue later when the index could change at runtime
@@ -75,7 +75,8 @@ const Bot = function(controller, index, proxyIndex) {
         pendingLogin:  false,
         waitingFor2FA: false, // Set by sessionHandler's handle2FA & bot's handleFamilyView helpers to prevent handleLoginTimeout from triggering
         proxyIndex:    proxyIndex,
-        proxy:         controller.data.proxies[proxyIndex].proxy
+        proxy:         controller.data.proxies.find((e) => e.proxyIndex == proxyIndex).proxy,
+        proxyIp:       controller.data.proxies.find((e) => e.proxyIndex == proxyIndex).ip
     };
 
     /**
@@ -117,7 +118,7 @@ const Bot = function(controller, index, proxyIndex) {
     this.sessionHandler = new SessionHandler(this);
 
     // Create user & community instance
-    logger("debug", `[${this.logPrefix}] Using proxy ${this.loginData.proxyIndex} "${this.loginData.proxy}" to log in to Steam and SteamCommunity...`);
+    logger("debug", `[${this.logPrefix}] Using proxy ${this.loginData.proxyIp} to log in to Steam and SteamCommunity...`);
 
     // Force protocol for now: https://dev.doctormckay.com/topic/4187-disconnect-due-to-encryption-error-causes-relog-to-break-error-already-logged-on/?do=findComment&comment=10917
     /**
@@ -247,7 +248,7 @@ Bot.prototype._loginToSteam = async function() {
 
     // Log login message for this account, with mentioning proxies or without
     if (!thisProxy.proxy) logger("info", `[${this.logPrefix}] Trying to log in without proxy... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
-        else logger("info", `[${this.logPrefix}] Trying to log in with proxy ${thisProxy.proxyIndex}... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+        else logger("info", `[${this.logPrefix}] Trying to log in with proxy '${thisProxy.ip}'... (Attempt ${this.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
 
 
     // Call our steam-session helper to get a valid refresh token for us

@@ -98,7 +98,7 @@
         {
             "path": "src/bot/bot.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/bot.js",
-            "checksum": "0ba7d2a8b6ea0b099ac048f463aba40a"
+            "checksum": "7899bf771b815568113e946fb35982b9"
         },
         {
             "path": "src/bot/events/debug.js",
@@ -158,7 +158,7 @@
         {
             "path": "src/bot/helpers/handleRelog.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/helpers/handleRelog.js",
-            "checksum": "bfdca2b6488b9a3f1b05040ad5b7f8d0"
+            "checksum": "34543fa515a98457d368d54c0ee6cc10"
         },
         {
             "path": "src/bot/helpers/steamChatInteraction.js",
@@ -278,7 +278,7 @@
         {
             "path": "src/controller/controller.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/controller.js",
-            "checksum": "8f38af85e14432d5d88340a953e8ada1"
+            "checksum": "886cfd986562d1ee7301ce0829ec5818"
         },
         {
             "path": "src/controller/events/dataUpdate.js",
@@ -313,7 +313,7 @@
         {
             "path": "src/controller/helpers/getBots.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/getBots.js",
-            "checksum": "3d705fe87e27f06d346fd8f1ed227b72"
+            "checksum": "d60a5378f365ba5cb0d84c1940e87cf8"
         },
         {
             "path": "src/controller/helpers/handleErrors.js",
@@ -533,7 +533,7 @@
         {
             "path": "src/sessions/helpers/handleCredentialsLoginError.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/sessions/helpers/handleCredentialsLoginError.js",
-            "checksum": "10ba37eeb53947955c17d1fe704c23ea"
+            "checksum": "a8ca32a04c285693bdc835e8e0f8181c"
         },
         {
             "path": "src/sessions/helpers/tokenStorageHandler.js",
@@ -653,7 +653,7 @@
         {
             "path": "types/types.d.ts",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/types/types.d.ts",
-            "checksum": "4fdd62100889efbe5e6ed82105deb95c"
+            "checksum": "fbd387bb09982020c403dc839ddd9242"
         }
     ]
 }

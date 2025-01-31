@@ -429,7 +429,7 @@ declare class Controller {
      * @param [filterOffline = false] - Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
      * @returns Bot accounts mapped to their associated proxy
      */
-    getBotsPerProxy(filterOffline?: boolean): { bots: Bot[]; proxy: string; proxyIndex: number; isOnline: boolean; lastOnlineCheck: number; }[];
+    getBotsPerProxy(filterOffline?: boolean): { bots: Bot[]; proxy: string; proxyIndex: number; ip: string; isOnline: boolean; lastOnlineCheck: number; }[];
     /**
      * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
      * Note: You need to provide a full URL for discussions, curators & reviews. For discussions only type checking/determination is supported.
@@ -472,7 +472,7 @@ declare class Controller {
      * @param [filterOffline = false] - Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
      * @returns Bot accounts mapped to their associated proxy
      */
-    getBotsPerProxy(filterOffline?: boolean): { bots: Bot[]; proxy: string; proxyIndex: number; isOnline: boolean; lastOnlineCheck: number; }[];
+    getBotsPerProxy(filterOffline?: boolean): { bots: Bot[]; proxy: string; proxyIndex: number; ip: string; isOnline: boolean; lastOnlineCheck: number; }[];
     /**
      * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
      * Note: You need to provide a full URL for discussions, curators & reviews. For discussions only type checking/determination is supported.
