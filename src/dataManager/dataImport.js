@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-28 17:47:43
+ * Last Modified: 2025-01-31 11:28:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -365,7 +365,7 @@ DataManager.prototype.importProxiesFromDisk = function() {
 
             // Add no proxy (local ip) if useLocalIP is true
             if (this.advancedconfig.useLocalIP) {
-                proxies.unshift({ proxyIndex: 0, proxy: null, isOnline: true, lastOnlineCheck: 0 });
+                proxies.unshift({ proxyIndex: 0, proxy: null, ip: null, isOnline: true, lastOnlineCheck: 0 });
             }
 
 
@@ -380,7 +380,7 @@ DataManager.prototype.importProxiesFromDisk = function() {
 
                     /* if (formatSplit.length != proxySplit.length) {
                         logger("error", `The proxy '${e}' at index ${i} does not seem to match the proxyFormat set in advancedconfig.json!`, true);
-                        proxies[i] = { proxyIndex: i, proxy: null, isOnline: false, lastOnlineCheck: Date.now() }; // TODO: I hope this does not cause issues later?
+                        proxies[i] = { proxyIndex: i, proxy: null, ip: null, isOnline: false, lastOnlineCheck: Date.now() }; // TODO: I hope this does not cause issues later?
                         return;
                     } */
 
@@ -393,6 +393,7 @@ DataManager.prototype.importProxiesFromDisk = function() {
                     proxies[i] = {
                         proxyIndex: i,
                         proxy: (proxyUsername && proxyPassword) ? `http://${proxyUsername}:${proxyPassword}@${proxyIp}:${proxyPort}` : `http://${proxyIp}:${proxyPort}`, // Reconstruct proxy string in the expected format
+                        ip: proxyIp,
                         isOnline: true,
                         lastOnlineCheck: 0
                     };
@@ -403,7 +404,16 @@ DataManager.prototype.importProxiesFromDisk = function() {
 
                     if (typeof e == "string" && !e.includes("://")) e = "http://" + e; // Precede proxy with http if user did not to prevent SteamCommunity requests from failing
 
-                    proxies[i] = { proxyIndex: i, proxy: e, isOnline: true, lastOnlineCheck: 0 };
+                    // Extract proxy ip
+                    let proxyIp = null;
+
+                    try {
+                        proxyIp = e.split("@")[1].split(":")[0];
+                    } catch (err) { // eslint-disable-line
+                        logger("warn", `Failed to extract IP from proxy '${e}' to use in log messages, using full proxy at the risk of exposing proxy credentials in log file!`, true);
+                    }
+
+                    proxies[i] = { proxyIndex: i, proxy: e, ip: proxyIp, isOnline: true, lastOnlineCheck: 0 };
                 }
             });
 

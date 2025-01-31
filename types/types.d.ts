@@ -759,7 +759,7 @@ declare class DataManager {
     /**
      * Stores all proxies provided via the `proxies.txt` file.
      */
-    proxies: { proxy: string; proxyIndex: number; isOnline: boolean; lastOnlineCheck: number; }[];
+    proxies: { proxy: string; proxyIndex: number; ip: string; isOnline: boolean; lastOnlineCheck: number; }[];
     /**
      * Stores IDs from config files converted at runtime and backups for all config & data files.
      */

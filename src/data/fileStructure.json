@@ -393,7 +393,7 @@
         {
             "path": "src/dataManager/dataImport.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataImport.js",
-            "checksum": "97e73d1442bf51dd16249f2f8e0c2330"
+            "checksum": "6186bba6ef631cfd0f8902605b3e2f9c"
         },
         {
             "path": "src/dataManager/dataIntegrity.js",
@@ -403,7 +403,7 @@
         {
             "path": "src/dataManager/dataManager.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataManager.js",
-            "checksum": "f47885cf041dc9662cc9f0e8b80fdcf5"
+            "checksum": "4d3f17d9840e96639d618770ea27549b"
         },
         {
             "path": "src/dataManager/dataProcessing.js",
@@ -653,7 +653,7 @@
         {
             "path": "types/types.d.ts",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/types/types.d.ts",
-            "checksum": "be3a9942125d6a75565fe76706d5fb4b"
+            "checksum": "4fdd62100889efbe5e6ed82105deb95c"
         }
     ]
 }
