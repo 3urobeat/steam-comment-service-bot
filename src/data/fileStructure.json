@@ -113,7 +113,7 @@
         {
             "path": "src/bot/events/error.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/error.js",
-            "checksum": "76f843ec7f67f43b2db2a27f297fe0b8"
+            "checksum": "63a058d32f6e98186d9f873c3f4b0bef"
         },
         {
             "path": "src/bot/events/friendMessage.js",
