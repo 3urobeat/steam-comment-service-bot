@@ -4,7 +4,7 @@
  * Created Date: 2024-12-28 12:56:44
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-17 18:18:19
+ * Last Modified: 2025-01-31 17:57:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 - 2025 3urobeat <https://github.com/3urobeat>
@@ -60,7 +60,7 @@ Controller.prototype.removeAccount = function(accountName) {
 
     // Abort if this account does not exist
     if (!this.bots[accountName]) {
-        logger("warn", `Cannot remove account '${accountName}' because no bot instance exists for it!`);
+        logger("warn", `Cannot remove account '${accountName}' because no bot instance exists for it!`); // No need to throw an error, the account is already removed
         return;
     }
 
@@ -88,8 +88,7 @@ Controller.prototype.relogAccount = function(accountName) {
 
     // Abort if this account does not exist
     if (!this.bots[accountName]) {
-        logger("error", `Cannot relog account '${accountName}' because no bot instance exists for it!`);
-        return;
+        return new Error(`Cannot relog account '${accountName}' because no bot instance exists for it!`); // Communicate error back to caller
     }
 
     // Make sure this account is not included in skippedaccounts
