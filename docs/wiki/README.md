@@ -20,6 +20,7 @@ Are you rather searching for the developer documentation? [Click here to get red
 - [Integrating into your own application](./integrating_into_your_app.md)
 - [Creating plugins](./creating_plugins.md)
 - [Contributing to the project](./contributing.md)
+- [Beta Versions](./beta_versions.md)
 - [Version Changelogs](./version_changelogs.md)
 
 &nbsp;
