@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-31 11:28:10
+ * Last Modified: 2025-02-05 17:33:59
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -333,7 +333,7 @@ DataManager.prototype.importProxiesFromDisk = function() {
         if (!fs.existsSync("./proxies.txt")) {
             logger("info", "Creating empty proxies.txt file because it doesn't exist...", false, true, logger.animation("loading"));
 
-            this.proxies = [];
+            proxies = [{ proxyIndex: 0, proxy: null, ip: null, isOnline: true, lastOnlineCheck: 0 }];
             this.writeProxiesToDisk();
 
         } else {
