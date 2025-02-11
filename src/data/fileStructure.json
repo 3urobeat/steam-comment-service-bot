@@ -133,7 +133,7 @@
         {
             "path": "src/bot/events/webSession.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/webSession.js",
-            "checksum": "bc3f1ae0356f30a06079ee1741294d96"
+            "checksum": "8b225e0845cc0c40e78a307c64e193d6"
         },
         {
             "path": "src/bot/helpers/checkMsgBlock.js",

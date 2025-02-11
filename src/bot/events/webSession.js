@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 16:41:09
+ * Last Modified: 2025-02-11 17:26:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -44,7 +44,7 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
                 logger("warn", `[${this.logPrefix}] It appears that this account has family view enabled!`, false, false, logger.animation("loading"), true);
                 await this.unlockFamilyView(this.community);
             } else {
-                logger("info", `[${this.logPrefix}] Account does not seem to have family view enabled. Proceeding...`, false, true);
+                logger("debug", `[${this.logPrefix}] Account does not seem to have family view enabled. Proceeding...`, false, true);
             }
         }
 
