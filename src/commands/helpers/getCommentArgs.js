@@ -4,7 +4,7 @@
  * Created Date: 2022-02-28 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 18:26:16
+ * Last Modified: 2025-02-11 17:59:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
@@ -58,7 +58,7 @@ function _getVisibilityStatus(commandHandler, steamID64, type, callback) {
  * @param {Array} args The command arguments
  * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @param {function(string): void} respond The shortened respondModule call
- * @returns {Promise.<{ maxRequestAmount: number, commentcmdUsage: string, numberOfComments: number, profileID: string, idType: string, quotesArr: Array.<string> }>} Resolves promise with object containing all relevant data when done
+ * @returns {Promise.<{ maxRequestAmount: number, commentcmdUsage: string, numberOfComments: number, userRequestedMax: boolean, profileID: string, idType: string, quotesArr: Array.<string> }>} Resolves promise with object containing all relevant data when done
  */
 module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
     return new Promise((resolve) => {
@@ -68,9 +68,10 @@ module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
             let owners = commandHandler.data.cachefile.ownerid;
             if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-            const requesterID      = resInfo.userID;
+            const requesterID    = resInfo.userID;
             let maxRequestAmount = commandHandler.data.config.maxRequests; // Set to default value and if the requesting user is an owner it gets changed below
             let numberOfComments = 0;
+            let userRequestedMax = false;
             let quotesArr        = commandHandler.data.quotes;
 
             let profileID;
@@ -96,6 +97,7 @@ module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
                 if (isNaN(args[0])) { // Isn't a number?
                     if (args[0].toLowerCase() == "all" || args[0].toLowerCase() == "max") {
                         args[0] = maxRequestAmount; // Replace the argument with the max amount of comments this user is allowed to request
+                        userRequestedMax = true;
                     } else {
                         logger("debug", `CommandHandler getCommentArgs(): User provided invalid request amount "${args[0]}". Stopping...`);
 
@@ -182,7 +184,7 @@ module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
                     logger("debug", `CommandHandler getCommentArgs() success. maxRequestAmount: ${maxRequestAmount} | numberOfComments: ${numberOfComments} | ID: ${profileID} | idType: ${idType} | quotesArr.length: ${quotesArr.length}`);
 
                     // Return obj if profileID is not null, otherwise return false as an error has occurred, the user was informed and execution should be stopped
-                    if (profileID) resolve({ maxRequestAmount, numberOfComments, profileID, idType, quotesArr });
+                    if (profileID) resolve({ maxRequestAmount, numberOfComments, userRequestedMax, profileID, idType, quotesArr });
                         else return resolve(false);
                 }
             }, 250);

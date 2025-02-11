@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-29 22:08:31
+ * Last Modified: 2025-02-11 18:35:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -85,7 +85,7 @@ module.exports.comment = {
 
 
         /* --------- Calculate maxRequestAmount and get arguments from comment request --------- */
-        const { maxRequestAmount, numberOfComments, profileID, idType, quotesArr } = await getCommentArgs(commandHandler, args, resInfo, respond);
+        let { maxRequestAmount, numberOfComments, userRequestedMax, profileID, idType, quotesArr } = await getCommentArgs(commandHandler, args, resInfo, respond); // eslint-disable-line prefer-const
 
         if (!maxRequestAmount && !numberOfComments && !quotesArr) return; // Looks like the helper aborted the request
 
@@ -140,22 +140,28 @@ module.exports.comment = {
                 respondModule(context, { charLimit: 500, cutChars: ["\n"], ...resInfo }, addStr); // Manually limit part length to 500 chars as addStr can cause many messages and only allow cuts at newlines to prevent links from getting embedded
                 return;
             } else {
-                // TODO: This could become obsolete (or need rethinking) when comment mode 2 is implemented
-                let commentcmdUsage;
-
-                if (owners.includes(requesterID)) {
-                    if (availableAccounts.length - accsToAdd.length > 1) commentcmdUsage = await commandHandler.data.getLang("commentcmdusageowner", { "cmdprefix": resInfo.cmdprefix }, requesterID);
-                        else commentcmdUsage = await commandHandler.data.getLang("commentcmdusageowner2", { "cmdprefix": resInfo.cmdprefix }, requesterID);
-                } else {
-                    if (availableAccounts.length - accsToAdd.length > 1) commentcmdUsage = await commandHandler.data.getLang("commentcmdusage", { "cmdprefix": resInfo.cmdprefix }, requesterID);
-                        else commentcmdUsage = await commandHandler.data.getLang("commentcmdusage2", { "cmdprefix": resInfo.cmdprefix }, requesterID);
-                }
-
-                logger("warn", "Found enough available accounts which the user would need to add first but 'acceptFriendRequests' is disabled in 'advancedconfig.json'! Sending 'request less' message instead...");
-
                 const maxReducedAccsRequestAmount = Math.trunc((availableAccounts.length - accsToAdd.length) * (maxRequestAmount / commandHandler.controller.getBots().length));
-                respond(await commandHandler.data.getLang("requesttoohigh", { "maxRequestAmount": maxReducedAccsRequestAmount, "cmdusage": commentcmdUsage }, requesterID));
-                return;
+
+                if (userRequestedMax && maxReducedAccsRequestAmount > 0) {
+                    logger("info", `Reduced comment amount from ${numberOfComments} to ${maxReducedAccsRequestAmount} because user requested 'all' but hasn't added enough accounts and 'acceptFriendRequests' is disabled.`);
+                    numberOfComments = maxReducedAccsRequestAmount;
+                } else {
+                    // TODO: This could become obsolete (or need rethinking) when comment mode 2 is implemented
+                    let commentcmdUsage;
+
+                    if (owners.includes(requesterID)) {
+                        if (availableAccounts.length - accsToAdd.length > 1) commentcmdUsage = await commandHandler.data.getLang("commentcmdusageowner", { "cmdprefix": resInfo.cmdprefix }, requesterID);
+                            else commentcmdUsage = await commandHandler.data.getLang("commentcmdusageowner2", { "cmdprefix": resInfo.cmdprefix }, requesterID);
+                    } else {
+                        if (availableAccounts.length - accsToAdd.length > 1) commentcmdUsage = await commandHandler.data.getLang("commentcmdusage", { "cmdprefix": resInfo.cmdprefix }, requesterID);
+                            else commentcmdUsage = await commandHandler.data.getLang("commentcmdusage2", { "cmdprefix": resInfo.cmdprefix }, requesterID);
+                    }
+
+                    logger("warn", "Found enough available accounts which the user would need to add first but 'acceptFriendRequests' is disabled in 'advancedconfig.json'! Sending 'request less' message instead...");
+
+                    respond(await commandHandler.data.getLang("requesttoohigh", { "maxRequestAmount": maxReducedAccsRequestAmount, "cmdusage": commentcmdUsage }, requesterID));
+                    return;
+                }
             }
         }
 
