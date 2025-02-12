@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-31 11:41:41
+ * Last Modified: 2025-02-12 21:55:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -63,7 +63,7 @@ const Controller = function() {
 
     /**
      * Collection of various misc parameters
-     * @type {{ bootStartTimestamp: number, lastLoginTimestamp: object, steamGuardInputTime: number, startupWarnings: number, activeLogin: boolean, relogAfterDisconnect: boolean, readyAfter: number, skippedaccounts: string[], commentCounter: number }}
+     * @type {{ bootStartTimestamp: number, lastLoginTimestamp: object, steamGuardInputTime: number, startupWarnings: number, activeLogin: boolean, relogAfterDisconnect: boolean, readyAfter: number, skippedaccounts: string[], commentCounter: number, favCounter: number, followCounter: number, voteCounter: number }}
      */
     this.info = {
         bootStartTimestamp: Date.now(), // Save timestamp to be able to calculate startup time in ready event
@@ -74,7 +74,11 @@ const Controller = function() {
         relogAfterDisconnect: true,     // Allows to prevent accounts from relogging when calling bot.logOff()
         readyAfter: 0,                  // Length of last startup in seconds
         skippedaccounts: [],            // Array of account names which have been skipped
-        commentCounter: 0               // Tracks total amount of comments to display in info command
+
+        commentCounter: 0,              // Tracks total amount of comments to display in info/stats command
+        favCounter: 0,                  // Tracks total amount of favs + unfavs
+        followCounter: 0,               // ...
+        voteCounter: 0,
     };
 
     /**

@@ -4,7 +4,7 @@
  * Created Date: 2023-09-24 15:04:33
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-06 19:48:16
+ * Last Modified: 2025-02-12 21:57:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -240,13 +240,14 @@ module.exports.follow = {
                     failedcmdreference = `\nTo get detailed information why which request failed please type '${resInfo.cmdprefix}failed'. You can read why your error was probably caused here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md`;
                 }
 
-                // Send finished message
+                // Send finished message and set status of this request to cooldown
                 respond(`${await commandHandler.data.getLang("followsuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "totalamount": activeReqEntry.amount }, requesterID)}\n${failedcmdreference}`);
 
-                // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
                 activeReqEntry.status = "cooldown";
 
             }
+
+            commandHandler.controller.info.followCounter += activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
 
         });
     }
@@ -470,13 +471,14 @@ module.exports.unfollow = {
                     failedcmdreference = `\nTo get detailed information why which request failed please type '${resInfo.cmdprefix}failed'. You can read why your error was probably caused here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md`;
                 }
 
-                // Send finished message
+                // Send finished message and set status of this request to cooldown
                 respond(`${await commandHandler.data.getLang("followsuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "totalamount": activeReqEntry.amount }, requesterID)}\n${failedcmdreference}`);
 
-                // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
                 activeReqEntry.status = "cooldown";
 
             }
+
+            commandHandler.controller.info.followCounter += activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
 
         });
     }

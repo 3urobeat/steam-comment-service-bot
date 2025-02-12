@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-25 18:49:13
+ * Last Modified: 2025-02-12 22:07:40
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -111,6 +111,8 @@ module.exports.info = {
             let userLastReq = "Never";
             if (doc) userLastReq = ((new Date(doc.time)).toISOString().replace(/T/, " ").replace(/\..+/, "")) + " (GMT time)";
 
+            const info = commandHandler.controller.info;
+
             /* eslint-disable no-irregular-whitespace */
             respond(`
                 -----------------------------------~~~~~------------------------------------
@@ -122,7 +124,7 @@ module.exports.info = {
                 >   Your ID: ${resInfo.userID} | Steam Chat? ${resInfo.fromSteamChat ? "Yes" : "No"} | Owner? ${owners.includes(resInfo.userID) ? "Yes" : "No"}
                 >   Your last request: ${userLastReq}
                 >   Last processed request: ${(new Date(lastReq)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)
-                >   I have commented ${commandHandler.controller.info.commentCounter} times since my last restart and completed request!
+                >   I have fulfilled ${info.commentCounter + info.favCounter + info.followCounter + info.voteCounter} comments/favs/follows/votes since my last restart!
                 -----------------------------------~~~~~------------------------------------
             `.replace(/^( {4})+/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
             /* eslint-enable no-irregular-whitespace */
