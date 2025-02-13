@@ -4,7 +4,7 @@
  * Created Date: 2023-06-02 14:07:27
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 18:26:47
+ * Last Modified: 2025-02-13 22:23:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -40,7 +40,7 @@ module.exports.getAvailableBotsForFavorizing = async (commandHandler, amount, id
     // Remove bot accounts from allAccounts which have already favorized this id, or only allow them for type unfavorite
     const previousLengthFavorized = allAccounts.length;
     const alreadyUsedRes          = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: "favorite" }, {});
-    const alreadyUsed             = alreadyUsedRes.map((e) => e.accountName); // Reduce db response to accountNames only
+    const alreadyUsed             = alreadyUsedRes.map((e) => e.accountName).filter((e) => allAccounts.includes(e)); // Reduce db response to accountNames only but filter any !ONLINE accounts
 
     if (favType == "favorite") {
         allAccounts = allAccounts.filter((e) => !alreadyUsed.includes(e));

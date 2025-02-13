@@ -4,7 +4,7 @@
  * Created Date: 2023-05-28 12:21:02
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 18:27:12
+ * Last Modified: 2025-02-13 22:23:30
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -47,7 +47,7 @@ module.exports.getAvailableBotsForVoting = async (commandHandler, amount, id, vo
     // Remove bot accounts from allAccounts which have already voted on this id with this voteType
     const previousLengthVoted = allAccounts.length;
     const alreadyUsedRes      = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: voteType }, {});
-    const alreadyUsed         = alreadyUsedRes.map((e) => e.accountName); // Reduce db response to accountNames only
+    const alreadyUsed         = alreadyUsedRes.map((e) => e.accountName).filter((e) => allAccounts.includes(e)); // Reduce db response to accountNames only but filter any !ONLINE accounts
 
     allAccounts = allAccounts.filter((e) => !alreadyUsed.includes(e));
 
