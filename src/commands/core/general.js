@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-02-12 22:07:40
+ * Last Modified: 2025-02-13 21:52:15
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -129,6 +129,53 @@ module.exports.info = {
             `.replace(/^( {4})+/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
             /* eslint-enable no-irregular-whitespace */
         });
+    }
+};
+
+
+module.exports.stats = {
+    names: ["stats", "statistics"],
+    description: "Returns statistics about the amount of fulfilled requests",
+    args: [],
+    ownersOnly: false,
+
+    /**
+     * The stats command
+     * @param {CommandHandler} commandHandler The commandHandler object
+     * @param {Array} args Array of arguments that will be passed to the command
+     * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
+     * @param {object} context The context (this.) of the object calling this command. Will be passed to respondModule() as first parameter.
+     * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
+     */
+    run: async (commandHandler, args, respondModule, context, resInfo) => {
+        const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
+
+        const info       = commandHandler.controller.info;
+        const stats      = await commandHandler.data.statsDB.findAsync({});
+        const statsStart = (new Date(stats.find((e) => e.requestType == "startedTrackingTimestamp").timestamp)).toISOString().split("T", 1)[0];
+
+        const totalComments = stats.find((e) => e.requestType == "comment");
+        const totalFavs     = stats.find((e) => e.requestType == "favorite");
+        const totalFollows  = stats.find((e) => e.requestType == "follow");
+        const totalVotes    = stats.find((e) => e.requestType == "vote");
+
+        /* eslint-disable no-irregular-whitespace */
+        respond(`
+            -----------------------------------~~~~~------------------------------------
+            >   During the last ${Number(Math.round(((new Date() - commandHandler.controller.info.bootStartTimestamp) / 3600000)+"e"+2)+"e-"+2)} hours of uptime, I have...
+            >   - sent ${info.commentCounter} comments
+            >   - sent ${info.favCounter} un-/favorites
+            >   - sent ${info.followCounter} un-/follows
+            >   - sent ${info.voteCounter} votes
+            |
+            >   Since ${statsStart}, I have...
+            >   - sent ${totalComments ? totalComments.amount : 0} comments
+            >   - sent ${totalFavs     ? totalFavs.amount     : 0} un-/favorites
+            >   - sent ${totalFollows  ? totalFollows.amount  : 0} un-/follows
+            >   - sent ${totalVotes    ? totalVotes.amount    : 0} votes
+            -----------------------------------~~~~~------------------------------------
+        `.replace(/^( {4})+/gm, "")); // Remove all the whitespaces that are added by the proper code indentation here
+        /* eslint-enable no-irregular-whitespace */
     }
 };
 
