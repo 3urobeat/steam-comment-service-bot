@@ -4,7 +4,7 @@
  * Created Date: 2023-09-24 15:04:33
  * Author: 3urobeat
  *
- * Last Modified: 2025-02-12 21:57:20
+ * Last Modified: 2025-02-13 21:27:42
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -247,7 +247,10 @@ module.exports.follow = {
 
             }
 
-            commandHandler.controller.info.followCounter += activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
+            const followAmount = activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
+
+            commandHandler.controller.info.followCounter += followAmount;
+            commandHandler.data.countRequestToStatistics("follow", followAmount);
 
         });
     }
@@ -478,7 +481,10 @@ module.exports.unfollow = {
 
             }
 
-            commandHandler.controller.info.followCounter += activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
+            const followAmount = activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
+
+            commandHandler.controller.info.followCounter += followAmount;
+            commandHandler.data.countRequestToStatistics("follow", followAmount);
 
         });
     }

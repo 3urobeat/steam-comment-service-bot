@@ -4,7 +4,7 @@
  * Created Date: 2023-05-28 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 2025-02-12 21:57:41
+ * Last Modified: 2025-02-13 21:27:46
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -267,7 +267,10 @@ async function processVoteRequest(origin, commandHandler, args, respondModule, c
 
         }
 
-        commandHandler.controller.info.voteCounter += activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
+        const voteAmount = activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
+
+        commandHandler.controller.info.voteCounter += voteAmount;
+        commandHandler.data.countRequestToStatistics("vote", voteAmount);
 
     });
 }

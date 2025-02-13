@@ -779,6 +779,12 @@ declare class DataManager {
      */
     ratingHistoryDB: Nedb;
     /**
+     * Database which stores amount of requests fulfilled per request type to keep track of statistics.
+     * Document structure: { requestType: string, amount: number }
+     * One special record of `requestType: "startedTrackingTimestamp"` is being inserted by DataManager on first load.
+     */
+    statsDB: Nedb;
+    /**
      * Database which stores the refreshTokens for all bot accounts.
      * Document structure: { accountName: string, token: string }
      */
@@ -940,6 +946,12 @@ declare class DataManager {
      */
     decodeJWT(token: string): any | null;
     /**
+     * Increments the counter for a request type in statistics.db
+     * @param requestType - Name of the request type to increment
+     * @param [amount] - Optional: Amount by which to increase the counter, default 1
+     */
+    countRequestToStatistics(requestType: string, amount?: number): void;
+    /**
      * Refreshes Backups in cache.json with new data
      */
     refreshCache(): void;
@@ -1000,6 +1012,12 @@ declare class DataManager {
      * @returns JWT object on success, `null` on failure
      */
     decodeJWT(token: string): any | null;
+    /**
+     * Increments the counter for a request type in statistics.db
+     * @param requestType - Name of the request type to increment
+     * @param [amount] - Optional: Amount by which to increase the counter, default 1
+     */
+    countRequestToStatistics(requestType: string, amount?: number): void;
     /**
      * Refreshes Backups in cache.json with new data
      */

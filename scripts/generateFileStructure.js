@@ -4,7 +4,7 @@
  * Created Date: 2023-09-02 14:41:54
  * Author: 3urobeat
  *
- * Last Modified: 2025-02-04 20:33:15
+ * Last Modified: 2025-02-13 21:54:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -29,7 +29,7 @@ const crypto = require("crypto");
 const ignore = [
     ".git", "node_modules", "backup", "plugins", "docs", // Folders
     "logininfo.json", "accounts.txt", "config.json", "proxies.txt", "quotes.txt", "advancedconfig.json", "config.json", "customlang.json", // Config files
-    "output.txt", "src/data/cache.json", "src/data/data.json", "src/data/fileStructure.json", "src/data/lastcomment.db", "src/data/ratingHistory.db", "src/data/tokens.db", "src/data/userSettings.db", // Files changing at runtime
+    "output.txt", "src/data/cache.json", "src/data/data.json", "src/data/fileStructure.json", "src/data/lastcomment.db", "src/data/ratingHistory.db", "src/data/statistics.db", "src/data/tokens.db", "src/data/userSettings.db", // Files changing at runtime
     ".gitignore", ".dockerignore", "Dockerfile", "steam-comment-service-bot.code-workspace", "package.json", "package-lock.json" // Misc
 ];
 

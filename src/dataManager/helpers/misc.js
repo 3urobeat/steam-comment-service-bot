@@ -4,10 +4,10 @@
  * Created Date: 2023-03-24 18:58:55
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:13:35
+ * Last Modified: 2025-02-13 21:20:02
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -60,4 +60,20 @@ DataManager.prototype.decodeJWT = function(token) {
         logger("err", `Failed to decode JWT! Error: ${err}`, true);
         return null;
     }
+};
+
+
+/**
+ * Increments the counter for a request type in statistics.db
+ * @param {string} requestType Name of the request type to increment
+ * @param {number} [amount] Optional: Amount by which to increase the counter, default 1
+ */
+DataManager.prototype.countRequestToStatistics = function(requestType, amount = 1) {
+
+    this.statsDB.update({ requestType: requestType }, { $inc: { amount: amount } }, { upsert: true }, (err) => {
+        if (err) {
+            logger("err", `Failed to increment counter for requestType '${requestType}' in statistics.db! Error: ${err}`);
+        }
+    });
+
 };

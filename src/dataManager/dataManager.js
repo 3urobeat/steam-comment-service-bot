@@ -4,7 +4,7 @@
  * Created Date: 2023-03-21 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-31 11:27:15
+ * Last Modified: 2025-02-13 21:20:14
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -104,6 +104,14 @@ const DataManager = function (controller) {
      * @type {Nedb}
      */
     this.ratingHistoryDB = {};
+
+    /**
+     * Database which stores amount of requests fulfilled per request type to keep track of statistics.
+     * Document structure: { requestType: string, amount: number }
+     * One special record of `requestType: "startedTrackingTimestamp"` is being inserted by DataManager on first load.
+     * @type {Nedb}
+     */
+    this.statsDB = {};
 
     /**
      * Database which stores the refreshTokens for all bot accounts.
@@ -339,6 +347,13 @@ DataManager.prototype.getLastCommentRequest = function (steamID64 = null) {}; //
  * @returns {object|null} JWT object on success, `null` on failure
  */
 DataManager.prototype.decodeJWT = function (token) {}; // eslint-disable-line
+
+/**
+ * Increments the counter for a request type in statistics.db
+ * @param {string} requestType Name of the request type to increment
+ * @param {number} [amount] Optional: Amount by which to increase the counter, default 1
+ */
+DataManager.prototype.countRequestToStatistics = function(requestType, amount = 1) {}; // eslint-disable-line
 
 /**
  * Refreshes Backups in cache.json with new data

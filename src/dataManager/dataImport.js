@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-02-05 17:33:59
+ * Last Modified: 2025-02-13 20:08:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -629,10 +629,23 @@ DataManager.prototype.importFromDisk = async function () {
     await this.importLanguagesFromDisk();
     await this.importCustomLangFromDisk();
 
-    this.lastCommentDB   = new nedb({ filename: srcdir + "/data/lastcomment.db", autoload: true }); // Autoload
+    this.lastCommentDB   = new nedb({ filename: srcdir + "/data/lastcomment.db",   autoload: true }); // Autoload
     this.ratingHistoryDB = new nedb({ filename: srcdir + "/data/ratingHistory.db", autoload: true });
-    this.userSettingsDB  = new nedb({ filename: srcdir + "/data/userSettings.db", autoload: true });
+    this.statsDB         = new nedb({ filename: srcdir + "/data/statistics.db",    autoload: true });
+    this.userSettingsDB  = new nedb({ filename: srcdir + "/data/userSettings.db",  autoload: true });
 
     logger("info", `Successfully loaded ${this.logininfo.length} accounts, ${this.proxies.length} proxies, ${this.quotes.length} quotes, ${Object.keys(this.lang).length} languages and 4 databases!`, false, true, logger.animation("loading"));
+
+
+    // Add startedTrackingTimestamp record to statsDB if it doesn't exist yet
+    this.statsDB.findOne({ requestType: "startedTrackingTimestamp" }, (err, doc) => {
+        if (doc) return;
+
+        logger("debug", "DataManager importFromDisk(): Inserting 'startedTrackingTimestamp' record into statistics.db because it doesn't exist yet...");
+
+        this.statsDB.insert({ requestType: "startedTrackingTimestamp", timestamp: Date.now() }, (err) => {
+            if (err) logger("error", "Failed to insert 'startedTrackingTimestamp' into statistics.db! Error: " + err);
+        });
+    });
 
 };

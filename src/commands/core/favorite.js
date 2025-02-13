@@ -4,7 +4,7 @@
  * Created Date: 2023-06-02 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 2025-02-12 21:57:31
+ * Last Modified: 2025-02-13 21:27:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -214,7 +214,10 @@ module.exports.favorite = {
 
                 }
 
-                commandHandler.controller.info.favCounter += activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
+                const favAmount = activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
+
+                commandHandler.controller.info.favCounter += favAmount;
+                commandHandler.data.countRequestToStatistics("favorite", favAmount);
 
             });
         });
@@ -413,7 +416,10 @@ module.exports.unfavorite = {
 
                 }
 
-                commandHandler.controller.info.favCounter += activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
+                const favAmount = activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
+
+                commandHandler.controller.info.favCounter += favAmount;
+                commandHandler.data.countRequestToStatistics("favorite", favAmount);
 
             });
         });

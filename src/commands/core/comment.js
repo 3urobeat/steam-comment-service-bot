@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-02-11 18:35:46
+ * Last Modified: 2025-02-13 21:24:37
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -362,6 +362,7 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
             // Instantly set status of this request to cooldown
             activeReqEntry.status = "cooldown";
             commandHandler.controller.info.commentCounter += 1;
+            commandHandler.data.countRequestToStatistics("comment");
 
             return;
         }
@@ -440,7 +441,10 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
 
         }
 
-        commandHandler.controller.info.commentCounter += activeReqEntry.amount - activeReqEntry.amountBeforeRetry - Object.keys(activeReqEntry.failed).length; // Add numberOfComments of this attempt minus failedamount to commentCounter
+        const commentAmount = activeReqEntry.amount - activeReqEntry.amountBeforeRetry - Object.keys(activeReqEntry.failed).length;
+
+        commandHandler.controller.info.commentCounter += commentAmount;
+        commandHandler.data.countRequestToStatistics("comment", commentAmount);
 
     });
 }
