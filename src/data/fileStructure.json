@@ -468,7 +468,7 @@
         {
             "path": "src/libraryPatches/CSteamSharedFile.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/libraryPatches/CSteamSharedFile.js",
-            "checksum": "96f5930f24861d9bc88d684bc887dc7e"
+            "checksum": "117f79e8196880a8bf4445560cdb5bde"
         },
         {
             "path": "src/libraryPatches/EDiscussionType.js",
