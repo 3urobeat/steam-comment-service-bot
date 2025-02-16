@@ -152,5 +152,5 @@
     "managecmdfiltersuccess": "These ${matchamount} bot accounts match the selected filter '${selectedfilter}':\n'${usernames}'",
     "managecmdusage": "Provide one of these modes: '${availablemodes}'.\nRun command with mode but without argument parameter to display help for that selected mode.\n\nCommand usage: ${cmdusage}",
 
-    "childbotmessage": "This is one account running in a bot cluster.\nPlease add the main bot and send him a ${cmdprefix}help message.\nIf you want to check out what this is about, type: ${cmdprefix}about\nThis is the main bot account:"
+    "childbotmessage": "This is one account running in a bot cluster.\nPlease add the main bot and send them a ${cmdprefix}help message.\nIf you want to check out what this is about, type: ${cmdprefix}about\nThis is the main bot account:"
 }

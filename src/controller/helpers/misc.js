@@ -4,7 +4,7 @@
  * Created Date: 2023-03-25 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 12:24:58
+ * Last Modified: 2025-02-16 15:13:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -111,7 +111,7 @@ module.exports.checkConnection = (url, throwTimeout = false, proxy) => {
 
         // Use http and provide a proxy if requested - Credit: https://stackoverflow.com/a/49611762
         if (proxy) {                                                                                     // TODO: Missing authentication could perhaps cause errors here
-            const auth = "Basic " + Buffer.from(proxy.username + ":" + proxy.password).toString("base64"); // Construct autentication
+            const auth = "Basic " + Buffer.from(proxy.username + ":" + proxy.password).toString("base64"); // Construct authentication
 
             url = url.replace("https://", ""); // Remove preceding https:// from url
 
