@@ -4,7 +4,7 @@
  * Created Date: 2022-03-09 12:58:17
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 18:09:02
+ * Last Modified: 2025-02-16 15:55:33
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
@@ -147,20 +147,46 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
                     else callback(null, str, idType);
             });
 
-        } else if (str.includes("store.steampowered.com/curator/")) {
-            logger("debug", "handleSteamIdResolving: User provided curator link...");
+        } else if (str.includes("store.steampowered.com/curator/") || str.includes("store.steampowered.com/developer/") || str.includes("store.steampowered.com/publisher/")) { // Apparently developer & publisher are also curators (https://github.com/3urobeat/steam-comment-service-bot/issues/266)
+            logger("debug", "handleSteamIdResolving: User provided curator link, resolving clanid from curator webpage...");
 
-            // Cut domain away
-            const split = str.replace("/?appid=", "").split("/"); // Remove any trailing app id, we don't exactly know what the user provided
-            if (split[split.length - 1] == "") split.pop();     // Remove trailing slash (which is now a space because of split("/"))
-
-            str = split[split.length - 1].split("-")[0];
-
-            // Update idType
+            // Update idType and instantly abort if it doesn't match expectations
             idType = "curator";
 
-            if (expectedIdType && idType != expectedIdType) callback(`Received steamID of type ${idType} but expected ${expectedIdType}.`, null, null);
-                else callback(null, str, idType);
+            if (expectedIdType && idType != expectedIdType) {
+                callback(`Received steamID of type ${idType} but expected ${expectedIdType}.`, null, null);
+                return;
+            }
+
+            // Resolve clanid from curator webpage
+            let output = "";
+
+            require("https").get(str, (res) => {
+                res.setEncoding("utf8");
+
+                res.on("data", function (chunk) {
+                    output += chunk;
+                });
+
+                res.on("end", () => {
+                    try {
+                        // Load result into cheerio
+                        const $ = require("cheerio").load(output);
+
+                        // Find follow_btn div child which has an id starting with "CuratorFollowBtn"
+                        const CuratorFollowBtn = $(".follow_controls > .follow_btn [id^=\"CuratorFollowBtn\"]").attr("id");
+
+                        if (!CuratorFollowBtn) return callback("Couldn't find follow button on curator page!", null, idType);
+
+                        // Get the clanid from the follow button container id after an underscore: "CuratorFollowBtn_26299579"
+                        callback(null, CuratorFollowBtn.split("_")[1], idType);
+                    } catch (err) {
+                        logger("error", "Failed to get clanid from curator page: " + err);
+                        callback("Failed to get clanid from curator page!", null, idType);
+                        return;
+                    }
+                });
+            });
 
         } else { // Doesn't seem to be an URL. We can ignore discussions & reviews as we need expect the user to provide the full URL.
 
