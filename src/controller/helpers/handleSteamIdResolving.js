@@ -4,7 +4,7 @@
  * Created Date: 2022-03-09 12:58:17
  * Author: 3urobeat
  *
- * Last Modified: 2025-02-16 15:55:33
+ * Last Modified: 2025-02-16 16:09:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
@@ -160,6 +160,9 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
 
             // Resolve clanid from curator webpage
             let output = "";
+
+            if (str.startsWith("http://"))   str = str.replace("http://", "https://"); // Steam Chat auto-precedes an URL without https:// with http:// (but node's https module does *not* like that)
+            if (!str.startsWith("https://")) str = "https://" + str;                   // If URL came from another source than the Steam Chat and didn't include https://
 
             require("https").get(str, (res) => {
                 res.setEncoding("utf8");
