@@ -152,3 +152,7 @@ If you've made a plugin, check the 'Creating Plugins' wiki page and add the `bot
   This list was generated using my [langStringsChangeDetector.js](/scripts/langStringsChangeDetector.js) script.
 
 </details>
+
+Commit: [b1b500c](https://github.com/3urobeat/steam-comment-service-bot/commit/b1b500c)
+
+&nbsp;
