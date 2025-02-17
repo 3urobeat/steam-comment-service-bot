@@ -13,14 +13,14 @@
         "output-logger": "^2.3.8",
         "qrcode": "^1.5.4",
         "request": "^2.88.2",
-        "steam-comment-bot-discord-plugin": "^1.0.3",
+        "steam-comment-bot-discord-plugin": "^1.0.4",
         "steam-comment-bot-rest": "^1.3.0",
-        "steam-comment-bot-webserver": "^1.0.1",
-        "steam-session": "^1.9.0",
+        "steam-comment-bot-webserver": "^1.0.2",
+        "steam-session": "^1.9.2",
         "steam-user": "^5.2.0",
-        "steamcommunity": "^3.48.5",
+        "steamcommunity": "^3.48.6",
         "steamid": "^2.1.0",
-        "steamid-resolver": "^1.3.6"
+        "steamid-resolver": "^1.4.0"
     },
     "scripts": {
         "start": "node start.js",
@@ -39,9 +39,9 @@
     "homepage": "https://github.com/3urobeat",
     "repository": "https://github.com/3urobeat/steam-comment-service-bot",
     "devDependencies": {
-        "@eslint/js": "^9.18.0",
-        "eslint": "^9.18.0",
-        "eslint-plugin-jsdoc": "^50.6.1",
+        "@eslint/js": "^9.20.0",
+        "eslint": "^9.20.1",
+        "eslint-plugin-jsdoc": "^50.6.3",
         "jsdoc": "^4.0.4",
         "jsdoc-to-markdown": "^9.1.1",
         "jsdoc-tsimport-plugin": "^1.0.5",
