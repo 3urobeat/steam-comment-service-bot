@@ -1,14 +1,14 @@
 {
-    "version": "21600b03",
-    "versionstr": "BETA 2.16 b3",
-    "branch": "beta-testing",
+    "version": "21600",
+    "versionstr": "2.16.0",
+    "branch": "master",
     "filetostart": "./src/starter.js",
-    "filetostarturl": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/starter.js",
+    "filetostarturl": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/src/starter.js",
     "mestr": "3urobeat",
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/3urobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://github.com/sponsors/3urobeat",
     "firststart": true,
     "compatibilityfeaturedone": false,
-    "whatsnew": "Please read the recent commits of the beta-testing branch on GitHub to see what's new.",
+    "whatsnew": "Added new commands !manage, !plugins, !stats. Added proxyFormat setting to advancedconfig, added support for detecting & unlocking family view, added official Docker support, reworked a bunch of systems, improved user experience and fixed bugs. Read the full changelog on Github!",
     "timesloggedin": 0,
     "totallogintime": 0
 }
