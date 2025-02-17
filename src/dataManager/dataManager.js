@@ -4,10 +4,10 @@
  * Created Date: 2023-03-21 22:34:51
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:12:30
+ * Last Modified: 2025-02-13 21:20:14
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -18,6 +18,12 @@
 const { default: Nedb } = require("@seald-io/nedb"); // eslint-disable-line
 
 const Controller = require("../controller/controller.js"); // eslint-disable-line
+
+
+/**
+ * @typedef logOnOptions Login information stored for one account
+ * @type {{ index: number, accountName: string, password: string, sharedSecret: (string|undefined), steamGuardCode: (null|undefined), machineName: (string|undefined), deviceFriendlyName: (string|undefined) }}
+ */
 
 
 /**
@@ -44,20 +50,20 @@ const DataManager = function (controller) {
 
     /**
      * Stores all `config.json` settings.
-     * @type {{[key: string]: any}}
+     * @type {Object.<string, any>}
      */
     this.config = {};
 
     /**
      * Stores all `advancedconfig.json` settings.
-     * @type {{[key: string]: any}}
+     * @type {Object.<string, any>}
      */
     this.advancedconfig = {};
 
     /**
      * Stores all supported languages and their strings used for responding to a user.
      * All default strings have already been replaced with corresponding matches from `customlang.json`.
-     * @type {{[key: string]: {[key: string]: string}}}
+     * @type {Object.<string, Object.<string, string>>}
      */
     this.lang = {};
 
@@ -69,19 +75,19 @@ const DataManager = function (controller) {
 
     /**
      * Stores all proxies provided via the `proxies.txt` file.
-     * @type {Array.<{ proxy: string, proxyIndex: number, isOnline: boolean, lastOnlineCheck: number }>}
+     * @type {Array.<{ proxy: string, proxyIndex: number, ip: string, isOnline: boolean, lastOnlineCheck: number }>}
      */
     this.proxies = [];
 
     /**
      * Stores IDs from config files converted at runtime and backups for all config & data files.
-     * @type {{ ownerid: Array.<string>, botsgroup: string, botsgroupid: string, configgroup: string, configgroup64id: string, ownerlinkid: string, botaccid: Array.<string>, pluginVersions: {[key: string]: string}, configjson: {}, advancedconfigjson: {}, datajson: {} }}
+     * @type {{ ownerid: Array.<string>, botsgroup: string, botsgroupid: string, configgroup: string, configgroup64id: string, ownerlinkid: string, botaccid: Array.<string>, pluginVersions: Object.<string, string>, configjson: {}, advancedconfigjson: {}, datajson: {} }}
      */
     this.cachefile = {};
 
     /**
      * Stores the login information for every bot account provided via the `logininfo.json` or `accounts.txt` files.
-     * @type {Array.<{ index: number, accountName: string, password: string, sharedSecret?: string, steamGuardCode?: null, machineName?: string, deviceFriendlyName?: string }>}
+     * @type {logOnOptions[]}
      */
     this.logininfo = [];
 
@@ -98,6 +104,14 @@ const DataManager = function (controller) {
      * @type {Nedb}
      */
     this.ratingHistoryDB = {};
+
+    /**
+     * Database which stores amount of requests fulfilled per request type to keep track of statistics.
+     * Document structure: { requestType: string, amount: number }
+     * One special record of `requestType: "startedTrackingTimestamp"` is being inserted by DataManager on first load.
+     * @type {Nedb}
+     */
+    this.statsDB = {};
 
     /**
      * Database which stores the refreshTokens for all bot accounts.
@@ -121,6 +135,7 @@ const DataManager = function (controller) {
 
 /**
  * Loads all DataManager helper files. This is done outside of the constructor to be able to await it.
+ * @private
  * @returns {Promise.<void>} Resolved when all files have been loaded
  */
 DataManager.prototype._loadDataManagerFiles = function() {
@@ -189,10 +204,64 @@ DataManager.prototype.writeProxiesToDisk = function() {};
 DataManager.prototype.writeQuotesToDisk = function() {};
 
 /**
- * Internal: Loads all config & data files from disk and handles potential errors
+ * Loads cache.json from disk, updates cachefile property in DataManager and handles potential errors
+ * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ */
+DataManager.prototype.importCacheFromDisk = function() {};
+
+/**
+ * Loads data.json from disk, updates datafile property in DataManager and handles potential errors
+ * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ */
+DataManager.prototype.importDataFromDisk = function() {};
+
+/**
+ * Loads config.json from disk, updates config property in DataManager and handles potential errors
+ * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ */
+DataManager.prototype.importConfigFromDisk = function() {};
+
+/**
+ * Loads advancedconfig.json from disk, updates advancedconfig property in DataManager and handles potential errors
+ * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ */
+DataManager.prototype.importAdvancedConfigFromDisk = function() {};
+
+/**
+ * Loads accounts.txt/logininfo.json from disk, updates logininfo property in DataManager and handles potential errors
+ * @returns {Promise.<object[]>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ */
+DataManager.prototype.importLogininfoFromDisk = function() {};
+
+/**
+ * Loads proxies.txt from disk, updates proxies property in DataManager and handles potential errors
+ * @returns {Promise.<object[]>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ */
+DataManager.prototype.importProxiesFromDisk = function() {};
+
+/**
+ * Loads quotes.txt from disk, updates quotes property in DataManager and handles potential errors
+ * @returns {Promise.<string[]>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ */
+DataManager.prototype.importQuotesFromDisk = function() {};
+
+/**
+ * Loads languages from disk, updates languages property in DataManager and handles potential errors
+ * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ */
+DataManager.prototype.importLanguagesFromDisk = function() {};
+
+/**
+ * Loads customlang.json from disk, updates languages property in DataManager and handles potential errors
+ * @returns {Promise.<object>} Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
+ */
+DataManager.prototype.importCustomLangFromDisk = function() {};
+
+/**
+ * Loads all config & data files from disk and handles potential errors
  * @returns {Promise.<void>} Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.
  */
-DataManager.prototype._importFromDisk = async function () {};
+DataManager.prototype.importFromDisk = async function () {};
 
 /**
  * Verifies the data integrity of every source code file in the project by comparing its checksum.
@@ -225,9 +294,9 @@ DataManager.prototype.checkAllProxies = async function(ignoreLastCheckedWithin =
  * Retrieves a language string from one of the available language files and replaces keywords if desired.
  * If a userID is provided it will lookup which language the user has set. If nothing is set, the default language set in the config will be returned.
  * @param {string} str Name of the language string to be retrieved
- * @param {{[key: string]: string}} [replace] Optional: Object containing keywords in the string to replace. Pass the keyword as key and the corresponding value to replace as value.
+ * @param {Object.<string, string>} [replace] Optional: Object containing keywords in the string to replace. Pass the keyword as key and the corresponding value to replace as value.
  * @param {string} [userIDOrLanguage] Optional: ID of the user to lookup in the userSettings database. You can also pass the name of a supported language like "english" to get a specific language.
- * @returns {Promise.<string|null>} Returns a promise that resolves with the language string or `null` if it could not be found.
+ * @returns {Promise.<(string|null)>} Returns a promise that resolves with the language string or `null` if it could not be found.
  */
 DataManager.prototype.getLang = async function(str, replace = null, userIDOrLanguage = "") {}; // eslint-disable-line
 
@@ -254,11 +323,13 @@ DataManager.prototype.setUserCooldown = function (id, timestamp) {}; // eslint-d
 
 /**
  * Internal: Checks tokens.db every 24 hours for refreshToken expiration in <=7 days, logs warning and sends botowner a Steam msg
+ * @private
  */
 DataManager.prototype._startExpiringTokensCheckInterval = () => {};
 
 /**
  * Internal: Asks user if they want to refresh the tokens of all expiring accounts when no active request was found and relogs them
+ * @private
  * @param {object} expiring Object of botobject entries to ask user for
  */
 DataManager.prototype._askForGetNewToken = function (expiring) {}; // eslint-disable-line
@@ -278,12 +349,20 @@ DataManager.prototype.getLastCommentRequest = function (steamID64 = null) {}; //
 DataManager.prototype.decodeJWT = function (token) {}; // eslint-disable-line
 
 /**
+ * Increments the counter for a request type in statistics.db
+ * @param {string} requestType Name of the request type to increment
+ * @param {number} [amount] Optional: Amount by which to increase the counter, default 1
+ */
+DataManager.prototype.countRequestToStatistics = function(requestType, amount = 1) {}; // eslint-disable-line
+
+/**
  * Refreshes Backups in cache.json with new data
  */
 DataManager.prototype.refreshCache = function () {};
 
 /**
  * Internal: Helper function to try and restore backup of corrupted file from cache.json
+ * @private
  * @param {string} name Name of the file
  * @param {string} filepath Absolute path of the file on the disk
  * @param {object} cacheentry Backup-Object of the file in cache.json
@@ -294,6 +373,7 @@ DataManager.prototype._restoreBackup = function (name, filepath, cacheentry, onl
 
 /**
  * Internal: Helper function to pull new file from GitHub
+ * @private
  * @param {string} name Name of the file
  * @param {string} filepath Full path, starting from project root with './'
  * @param {function(any): void} resolve Your promise to resolve when file was pulled

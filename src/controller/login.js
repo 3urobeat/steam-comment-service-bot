@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-12 16:00:32
+ * Last Modified: 2025-01-26 21:29:28
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -84,14 +84,20 @@ Controller.prototype.login = async function(firstLogin) {
     this.info.activeLogin = true;
 
 
-    // Create new bot objects and register them bot accounts which are "new"
+    // Create new bot objects and register them bot accounts which are "new". We need to recreate bot objects of bots who have changed their proxy in order for it to actually get used
     allAccounts.forEach(async (e, i) => {
-        if (!this.bots[e.accountName]) {
-            logger("debug", `Creating new bot object for ${e.accountName}...`);
+        // Check if either no bot object exists yet or if bot has changed proxy and re-create
+        if (!this.bots[e.accountName]
+            || (this.bots[e.accountName].user && this.bots[e.accountName].user.options.httpProxy != this.bots[e.accountName].loginData.proxy)) {
+            logger("debug", `Creating new bot object for account '${e.accountName}'${this.bots[e.accountName] ? " due to proxy change" : ""}...`);
 
-            this.bots[e.accountName] = new Bot(this, e.index); // Create a new bot object for this account and store a reference to it
+            // Reuse proxy information if bot already existed (and therefore changed its proxy to this one). Otherwise spread all accounts equally with a simple modulo calculation
+            const proxyIndex = this.bots[e.accountName] ? this.bots[e.accountName].loginData.proxyIndex : e.index % this.data.proxies.length;
+
+            // Create a new bot object for this account and store a reference to it
+            this.bots[e.accountName] = new Bot(this, e.index, proxyIndex);
         } else {
-            logger("debug", `Found existing bot object for ${e.accountName}! Reusing it...`);
+            logger("debug", `Found existing bot object for '${e.accountName}' with unchanged proxy! Reusing it...`);
         }
 
         // Check if this acc has a valid token stored to qualify for fastQueue. This async function is awaited below for all accounts at once using Promise.all(). Self-assign result in then() so that the value is accessible, instead of nested inside a fulfilled Promise object.
@@ -131,10 +137,11 @@ Controller.prototype.login = async function(firstLogin) {
 
 
     // Register interval to check if all accounts have been processed
-    let lastAmountUpdateTimestamp = Date.now();
-    let lastCancelingInMsgMinute  = 0;          // Last minute value logged in "Canceling this login process in [...]" message used to prevent duplicate messages
-    let lastWaitingForMsgAmount   = 0;          // Last amount of accounts logged in "[...] waiting for user object [...] to populate" message used to prevent duplicate messages
-    let waitingForAmountAccounts  = 0;
+    let lastAmountUpdateTimestamp    = Date.now();
+    let lastCancelingInMsgMinute     = 0;          // Last minute value logged in "Canceling this login process in [...]" message used to prevent duplicate messages
+    let lastWaitingForDebugMsgAmount = 0;
+    let lastWaitingForMsgAmount      = 0;          // Last amount of accounts logged in "[...] waiting for user object [...] to populate" message used to prevent duplicate messages
+    let waitingForAmountAccounts     = 0;
 
     const allAccsOnlineInterval = setInterval(() => {
 
@@ -161,14 +168,16 @@ Controller.prototype.login = async function(firstLogin) {
         // Process various checks before deeming this login process to be finished
 
         /**
-         * Get all accounts which have not yet switched their status
-         * @type {{ index: number, accountName: string }[]} Array of loginInfo objects, which among other things have these props
+         * Get all accounts which have not yet switched their status. Only the relevant properties of logininfo are documented here.
+         * @type {Array.<{ index: number, accountName: string }>}
+         * @private
          */
         const allAccountsOffline = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.OFFLINE);
 
         /**
-         * Get all accounts which have not yet fully been populated. Ignore accounts that are not online as they will never populate their user object
-         * @type {{ index: number, accountName: string }[]} Array of loginInfo objects, which among other things have these props
+         * Get all accounts which have not yet fully been populated. Ignore accounts that are not online as they will never populate their user object. Only the relevant properties of logininfo are documented here.
+         * @type {Array.<{ index: number, accountName: string }>}
+         * @private
          */
         const allAccountsNotPopulated = allAccounts.filter((e) => this.bots[e.accountName].status == Bot.EStatus.ONLINE && !this.bots[e.accountName].user.limitations);
 
@@ -185,18 +194,18 @@ Controller.prototype.login = async function(firstLogin) {
         // Check if this login process might be softlocked. Display warning after 5 minutes, abort process after 15 minutes
         if (Date.now() - lastAmountUpdateTimestamp > 300000) {     // 300000 ms = 5  min
             if (Date.now() - lastAmountUpdateTimestamp > 900000) { // 900000 ms = 15 min
-                logger("warn", `Detected softlocked login process! Setting status of bot(s) '${allAccountsWaitingFor.flatMap((e) => e.index).join(", ")}' to ERROR and calling handleRelog!`, false, false, null, true);
+                logger("warn", `Detected softlocked login process! Setting status of bot(s) '${allAccountsWaitingFor.join(", ")}' to ERROR and calling handleRelog!`, false, false, null, true);
 
                 // Check if main account is involved and this is the initial login and terminate the bot
-                if (allAccountsWaitingFor.find((e) => e.index == 0) && this.info.readyAfter == 0) {
+                if (allAccountsWaitingFor.includes(0) && this.info.readyAfter == 0) {
                     logger("", "", true);
                     logger("error", "Aborting because the first bot account always needs to be logged in!\n        Please correct what caused the error and try again.", true);
                     return this.stop();
                 }
 
                 // Set status of every account to OFFLINE and call handleRelog to let it figure this out
-                allAccountsWaitingFor.forEach((e) => {
-                    const thisBot = this.bots[e.accountName];
+                allAccountsWaitingFor.forEach((index) => {
+                    const thisBot = this.bots[this.getBots("*").find((e) => e.index == index).accountName];
 
                     this._statusUpdateEvent(thisBot, Bot.EStatus.ERROR);
                     thisBot.handleRelog();
@@ -219,7 +228,11 @@ Controller.prototype.login = async function(firstLogin) {
 
         // Abort if we are still waiting for accounts to become not OFFLINE
         if (allAccountsOffline.length > 0) {
-            logger("debug", `Controller login(): Waiting for bot(s) '${allAccountsOffline.flatMap((e) => e.index).join(", ")}' to switch status to not OFFLINE before resolving...`, false, true); // Cannot log with date to prevent log output file spam
+            // Only reprint this log message when the amount of accounts has changed to prevent spam
+            if (lastWaitingForDebugMsgAmount != allAccountsOffline.length) {
+                logger("debug", `Controller login(): Waiting for bot(s) '${allAccountsOffline.flatMap((e) => e.index).join(", ")}' to switch status to not OFFLINE before resolving...`, false, true);
+                lastWaitingForDebugMsgAmount = allAccountsOffline.length;
+            }
             return;
         }
 
@@ -227,7 +240,7 @@ Controller.prototype.login = async function(firstLogin) {
         if (allAccountsNotPopulated.length > 0) {
             // Only reprint this log message when the amount of accounts has changed to prevent spam
             if (lastWaitingForMsgAmount != allAccountsNotPopulated.length) {
-                logger("info", `All accounts logged in, waiting for user object of bot(s) '${allAccountsNotPopulated.flatMap((e) => e.index).join(", ")}' to populate...`, false, true, logger.animation("waiting")); // Cannot log with date to prevent log output file spam
+                logger("info", `All accounts logged in, waiting for user object of bot(s) '${allAccountsNotPopulated.flatMap((e) => e.index).join(", ")}' to populate...`, false, true, logger.animation("waiting"));
                 lastWaitingForMsgAmount = allAccountsNotPopulated.length;
             }
             return;
@@ -246,6 +259,7 @@ Controller.prototype.login = async function(firstLogin) {
 
 /**
  * Internal: Logs in accounts on different proxies synchronously
+ * @private
  * @param {Array} allAccounts Array of logininfo entries of accounts to log in
  */
 Controller.prototype._processFastLoginQueue = function(allAccounts) {
@@ -307,6 +321,7 @@ Controller.prototype._processFastLoginQueue = function(allAccounts) {
 
 /**
  * Internal: Logs in accounts asynchronously to allow for user interaction
+ * @private
  * @param {Array} allAccounts Array of logininfo entries of accounts to log in
  */
 Controller.prototype._processSlowLoginQueue = function(allAccounts) {

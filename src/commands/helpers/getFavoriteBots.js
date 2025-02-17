@@ -4,10 +4,10 @@
  * Created Date: 2023-06-02 14:07:27
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:05:20
+ * Last Modified: 2025-02-13 22:23:30
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -21,6 +21,7 @@ const { timeToString } = require("../../controller/helpers/misc.js");
 
 /**
  * Finds all needed and currently available bot accounts for a favorite request.
+ * @private
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {number|"all"} amount Amount of favs requested or "all" to get the max available amount
  * @param {string} id The sharedfile id to favorize
@@ -38,16 +39,13 @@ module.exports.getAvailableBotsForFavorizing = async (commandHandler, amount, id
 
     // Remove bot accounts from allAccounts which have already favorized this id, or only allow them for type unfavorite
     const previousLengthFavorized = allAccounts.length;
-    const alreadyFavorized        = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: "favorite" }, {});
+    const alreadyUsedRes          = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: "favorite" }, {});
+    const alreadyUsed             = alreadyUsedRes.map((e) => e.accountName).filter((e) => allAccounts.includes(e)); // Reduce db response to accountNames only but filter any !ONLINE accounts
 
     if (favType == "favorite") {
-        alreadyFavorized.forEach((e) => {
-            if (allAccounts.indexOf(e.accountName) != -1) allAccounts.splice(allAccounts.indexOf(e.accountName), 1); // Remove all accounts that already favorized
-        });
+        allAccounts = allAccounts.filter((e) => !alreadyUsed.includes(e));
     } else {
-        allAccounts.forEach((e) => {
-            if (!alreadyFavorized.some(e => e.accountName)) allAccounts.splice(allAccounts.indexOf(e), 1); // Remove all accounts that have not favorized
-        });
+        allAccounts = alreadyUsed;
     }
 
     if (previousLengthFavorized - allAccounts.length > 0) logger("info", `${previousLengthFavorized - allAccounts.length} of ${previousLengthFavorized} bot accounts were removed from available accounts because we know that they have already un-/favorized this item!`);

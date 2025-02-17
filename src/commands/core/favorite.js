@@ -4,10 +4,10 @@
  * Created Date: 2023-06-02 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-10 18:19:35
+ * Last Modified: 2025-02-13 21:27:33
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -207,13 +207,17 @@ module.exports.favorite = {
                         failedcmdreference = `\nTo get detailed information why which request failed please type '${resInfo.cmdprefix}failed'. You can read why your error was probably caused here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md`;
                     }
 
-                    // Send finished message
+                    // Send finished message and set status of this request to cooldown
                     respond(`${await commandHandler.data.getLang("favoritesuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "numberOfFavs": activeReqEntry.amount }, requesterID)}\n${failedcmdreference}`);
 
-                    // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
                     activeReqEntry.status = "cooldown";
 
                 }
+
+                const favAmount = activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
+
+                commandHandler.controller.info.favCounter += favAmount;
+                commandHandler.data.countRequestToStatistics("favorite", favAmount);
 
             });
         });
@@ -405,13 +409,17 @@ module.exports.unfavorite = {
                         failedcmdreference = `\nTo get detailed information why which request failed please type '${resInfo.cmdprefix}failed'. You can read why your error was probably caused here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md`;
                     }
 
-                    // Send finished message
+                    // Send finished message and set status of this request to cooldown
                     respond(`${await commandHandler.data.getLang("favoritesuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "numberOfFavs": activeReqEntry.amount }, requesterID)}\n${failedcmdreference}`);
 
-                    // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
                     activeReqEntry.status = "cooldown";
 
                 }
+
+                const favAmount = activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
+
+                commandHandler.controller.info.favCounter += favAmount;
+                commandHandler.data.countRequestToStatistics("favorite", favAmount);
 
             });
         });

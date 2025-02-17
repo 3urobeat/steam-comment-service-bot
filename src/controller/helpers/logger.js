@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:09:00
+ * Last Modified: 2025-01-12 17:01:05
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -75,6 +75,7 @@ global.logger = Controller.prototype.logger;
 
 /**
  * Internal: Call this function after loading advancedconfig.json to set previously inaccessible options
+ * @private
  * @param {object} advancedconfig The advancedconfig object imported by the DataManager
  */
 Controller.prototype._loggerOptionsUpdateAfterConfigLoad = function(advancedconfig) {
@@ -87,6 +88,7 @@ Controller.prototype._loggerOptionsUpdateAfterConfigLoad = function(advancedconf
 
 /**
  * Internal: Logs all held back messages from logAfterReady array
+ * @private
  */
 Controller.prototype._loggerLogAfterReady = function() {
     botIsReady = true;

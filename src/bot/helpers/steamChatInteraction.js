@@ -4,10 +4,10 @@
  * Created Date: 2023-04-01 21:09:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 16:19:27
+ * Last Modified: 2025-01-12 12:24:26
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -116,7 +116,7 @@ Bot.prototype.sendChatMessage = function(_this, resInfo, txt, retry = 0, part = 
  * Waits for a Steam Chat message from this user to this account and resolves their message content. The "normal" friendMessage event handler will be blocked for this user.
  * @param {string} steamID64 The steamID64 of the user to read a message from
  * @param {number} timeout Time in ms after which the Promise will be resolved if user does not respond. Pass 0 to disable (not recommended)
- * @returns {Promise.<string|null>} Resolved with `String` on response or `null` on timeout.
+ * @returns {Promise.<(string|null)>} Resolved with `String` on response or `null` on timeout.
  */
 Bot.prototype.readChatMessage = function(steamID64, timeout) {
     return new Promise((resolve) => {

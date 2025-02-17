@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-03 12:51:26
+ * Last Modified: 2025-01-12 17:53:33
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -20,6 +20,7 @@ const Controller = require("../../controller/controller.js"); // eslint-disable-
 
 /**
  * Waits for active requests to finish and logs off all bot accounts
+ * @private
  * @param {Controller} controller Reference to the controller object
  * @param {function(object, string): void} respondModule If defined, this function will be called with the result of the check. This allows to integrate checking for updates into commands or plugins. Passes resInfo and txt as parameters.
  * @param {import("../../commands/commandHandler.js").resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).

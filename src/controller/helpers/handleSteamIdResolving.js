@@ -4,10 +4,10 @@
  * Created Date: 2022-03-09 12:58:17
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-02 12:07:21
+ * Last Modified: 2025-02-16 16:09:13
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -23,6 +23,7 @@ const Controller = require("../controller.js");
 
 /**
  * ID types supported by this resolver
+ * @enum {EIdTypes}
  */
 const EIdTypes = {
     "profile": "profile",
@@ -33,13 +34,15 @@ const EIdTypes = {
     "review": "review"
 };
 
+module.exports = EIdTypes;
+
 
 /**
  * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
  * Note: You need to provide a full URL for discussions, curators & reviews. For discussions only type checking/determination is supported.
  * @param {string} str The profileID argument provided by the user. If `null` the function will instantly callback with `null`.
  * @param {EIdTypes} expectedIdType The type of SteamID expected or `null` if type should be assumed.
- * @param {function(string|null, string|null, EIdTypes|null): void} callback
+ * @param {function((string|null), (string|null), (EIdTypes|null)): void} callback
  * Called with `err` (String or null), `id` (String or null), `idType` (String or null) parameters on completion. The `id` param has the format `userID/appID` for type review and full input url for type discussion.
  */
 Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) => {
@@ -144,20 +147,49 @@ Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) =>
                     else callback(null, str, idType);
             });
 
-        } else if (str.includes("store.steampowered.com/curator/")) {
-            logger("debug", "handleSteamIdResolving: User provided curator link...");
+        } else if (str.includes("store.steampowered.com/curator/") || str.includes("store.steampowered.com/developer/") || str.includes("store.steampowered.com/publisher/")) { // Apparently developer & publisher are also curators (https://github.com/3urobeat/steam-comment-service-bot/issues/266)
+            logger("debug", "handleSteamIdResolving: User provided curator link, resolving clanid from curator webpage...");
 
-            // Cut domain away
-            const split = str.replace("/?appid=", "").split("/"); // Remove any trailing app id, we don't exactly know what the user provided
-            if (split[split.length - 1] == "") split.pop();     // Remove trailing slash (which is now a space because of split("/"))
-
-            str = split[split.length - 1].split("-")[0];
-
-            // Update idType
+            // Update idType and instantly abort if it doesn't match expectations
             idType = "curator";
 
-            if (expectedIdType && idType != expectedIdType) callback(`Received steamID of type ${idType} but expected ${expectedIdType}.`, null, null);
-                else callback(null, str, idType);
+            if (expectedIdType && idType != expectedIdType) {
+                callback(`Received steamID of type ${idType} but expected ${expectedIdType}.`, null, null);
+                return;
+            }
+
+            // Resolve clanid from curator webpage
+            let output = "";
+
+            if (str.startsWith("http://"))   str = str.replace("http://", "https://"); // Steam Chat auto-precedes an URL without https:// with http:// (but node's https module does *not* like that)
+            if (!str.startsWith("https://")) str = "https://" + str;                   // If URL came from another source than the Steam Chat and didn't include https://
+
+            require("https").get(str, (res) => {
+                res.setEncoding("utf8");
+
+                res.on("data", function (chunk) {
+                    output += chunk;
+                });
+
+                res.on("end", () => {
+                    try {
+                        // Load result into cheerio
+                        const $ = require("cheerio").load(output);
+
+                        // Find follow_btn div child which has an id starting with "CuratorFollowBtn"
+                        const CuratorFollowBtn = $(".follow_controls > .follow_btn [id^=\"CuratorFollowBtn\"]").attr("id");
+
+                        if (!CuratorFollowBtn) return callback("Couldn't find follow button on curator page!", null, idType);
+
+                        // Get the clanid from the follow button container id after an underscore: "CuratorFollowBtn_26299579"
+                        callback(null, CuratorFollowBtn.split("_")[1], idType);
+                    } catch (err) {
+                        logger("error", "Failed to get clanid from curator page: " + err);
+                        callback("Failed to get clanid from curator page!", null, idType);
+                        return;
+                    }
+                });
+            });
 
         } else { // Doesn't seem to be an URL. We can ignore discussions & reviews as we need expect the user to provide the full URL.
 

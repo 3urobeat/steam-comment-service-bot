@@ -48,7 +48,7 @@
     "userspamblock": "由于垃圾信息，您已被封锁 90 秒。",
     "usernotfriend": "请在使用命令之前先添加我为好友！",
     "botnotready": "机器人尚未完全启动。在使用命令之前，请稍等片刻。",
-    "commandnotfound": "我不知道那个命令。输入 ${cmdprefix}help 以获取更多信息。",
+    "commandnotfound": "我不知道那个命令。 Did you mean ${cmdprefix}${cmdsuggestion}? 输入 ${cmdprefix}help 以获取更多信息。",
     "commandowneronly": "此命令仅供所有者使用。\n如果您是机器人所有者，请确保已将您的ownerid添加到config.json中。\n如果此请求来自插件，请确保传递userID和ownerIDs参数。",
     "nouserid": "调用命令时未提供userID！由于无法应用冷却或此命令的默认行为无法在没有userID的情况下使用，因此正在阻止该命令。这是开发人员必须解决的编码问题。",
     "noidparam": "请提供一个ID！此上下文中可能无法使用此命令的默认行为，例如当从Steam Chat外部或开发人员忘记传递userID以启用它时。",
@@ -68,6 +68,7 @@
 
     "jobscmdregistered": "这些作业目前已注册: ",
     "jobscmdnoneregistered": "目前没有作业注册。",
+    "pluginscmdresponse": "These plugins are currently active:\n${activeplugins}\n\nThese plugins are installed but currently inactive:\n${inactiveplugins}",
     "reloadcmdreloaded": "重新加载所有命令和插件。",
     "activerelog": "机器人目前正在等待最后一个活动请求完成，以便重新登录帐户。\n请稍等片刻，然后重试。",
     "updatecmdforce": "Forcing an update from the ${branchname} branch...",
@@ -121,8 +122,7 @@
     "sessionscmdmsg": "目前有${amount}个活动会话：",
     "mysessionscmdnosessions": "目前没有您启动的活动会话。",
 
-    "addfriendcmdacclimited": "无法使用bot0添加${profileid}为好友，因为机器人账户受限。",
-    "addfriendcmdsuccess": "正在使用所有机器人帐户添加好友${profileid}...这将花费约${estimatedtime}秒。请检查日志以查看潜在错误。",
+    "addfriendcmdsuccess": "Adding friend ${profileid} with ${numberOfAdds} bot accounts... This will take ~${estimatedtime} seconds. Please check the log for potential errors.",
     "unfriendcmdsuccess": "我正在使用所有机器人帐户取消与您的好友关系。这将需要一些时间...\n您随时可以再次向我发送好友请求。",
     "unfriendidcmdsuccess": "已从所有机器人帐户中移除好友${profileid}。",
 
@@ -130,7 +130,7 @@
     "unfriendallcmdpending": "在30秒内使用所有机器人帐户取消所有人（除所有者之外）的好友关系...\n键入'${cmdprefix}unfriendall abort'以中止/停止过程。",
     "unfriendallcmdstart": "开始取消所有人的好友关系...",
 
-    "joingroupcmdsuccess": "使用所有机器人帐户加入组'${groupid}'...",
+    "joingroupcmdsuccess": "Joining group '${groupid}' with ${numberOfJoins} bot accounts...",
 
     "leavegroupcmdsuccess": "使用所有机器人帐户退出组'${groupid}'...",
 
@@ -143,6 +143,14 @@
 
     "evalcmdturnedoff": "eval命令已关闭！",
     "evalcmdlogininfoblock": "您的代码包含'logininfo'。为了保护密码，这是不允许的。",
+
+    "managecmdaddusage": "Provide the credentials of the account to add to the current set of bot accounts as argument in this format:\n'${credentialsformat}' (${optionalparameter} is optional)\n\nCommand usage: ${cmdusage}",
+    "managecmdaddsuccess": "The bot will attempt to add & login '${username}'. Please check the log for potential errors.",
+    "managecmdremoveusage": "Provide the username (accountName) of the bot account to remove from the current set of bot accounts as argument.\n\nCommand usage: ${cmdusage}",
+    "managecmdremovesuccess": "The bot will log off & remove account '${username}' if it exists. Please check the log for potential errors.",
+    "managecmdfilterusage": "Provide one of these arguments to filter the current list of bot accounts and display their names:\n'${availablefilters}'\n\nCommand usage: ${cmdusage}",
+    "managecmdfiltersuccess": "These ${matchamount} bot accounts match the selected filter '${selectedfilter}':\n'${usernames}'",
+    "managecmdusage": "Provide one of these modes: '${availablemodes}'.\nRun command with mode but without argument parameter to display help for that selected mode.\n\nCommand usage: ${cmdusage}",
 
     "childbotmessage": "这是一个运行在机器人群集中的帐户。\n请添加主要的机器人并发送给他一个${cmdprefix}help消息。\n如果您想了解这是什么，请键入：${cmdprefix}about\n这是主要的机器人账户："
 }

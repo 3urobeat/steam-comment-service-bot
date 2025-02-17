@@ -4,10 +4,10 @@
  * Created Date: 2024-10-07 18:05:37
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-07 21:59:04
+ * Last Modified: 2025-01-12 18:27:30
  * Modified By: 3urobeat
  *
- * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2024 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -20,9 +20,10 @@ const Bot = require("../../bot/bot.js");
 
 /**
  * Helper function to sort failed object by number so that it is easier to read
+ * @private
  * @param {object} failedObj Current state of failed object
  */
-function sortFailedObject(failedObj) {
+function _sortFailedObject(failedObj) {
     const sortedvals = Object.keys(failedObj).sort((a, b) => {
         return Number(a.split(" ")[0].replace("i", "")) - Number(b.split(" ")[0].replace("i", ""));
     });
@@ -77,7 +78,7 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
         }
 
         // Sort failed object to make it easier to read
-        activeReqEntry.failed = sortFailedObject(activeReqEntry.failed);
+        activeReqEntry.failed = _sortFailedObject(activeReqEntry.failed);
 
         // Break the loop and return false. No need to update status as it was already set to aborted
         loop.break();
@@ -91,7 +92,7 @@ module.exports.handleIterationSkip = (commandHandler, loop, bot, receiverSteamID
         logger("warn", "Detected error for all remaining interactions, aborting request!");
 
         // Sort failed object to make it easier to read
-        activeReqEntry.failed = sortFailedObject(activeReqEntry.failed);
+        activeReqEntry.failed = _sortFailedObject(activeReqEntry.failed);
 
         // Update status to error
         activeReqEntry.status = "error";

@@ -4,10 +4,10 @@
  * Created Date: 2022-10-14 14:58:25
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-1 12:34:46
+ * Last Modified: 2025-01-12 17:03:58
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -23,6 +23,7 @@ const DataManager = require("../dataManager.js");
  * If this fails and the token expires in <=7 days, it logs a warning and sends the botowner a Steam msg
  *
  * Note: This function should be redundant as SteamUser now automatically attempts to renew refreshTokens when `renewRefreshTokens` is enabled.
+ * @private
  */
 DataManager.prototype._startExpiringTokensCheckInterval = function() {
     const _this = this;
@@ -125,6 +126,7 @@ DataManager.prototype._startExpiringTokensCheckInterval = function() {
 
 /**
  * Internal: Asks user if they want to refresh the tokens of all expiring accounts when no active request was found and relogs them
+ * @private
  * @param {object} expiring Object of botobject entries to ask user for
  */
 DataManager.prototype._askForGetNewToken = function(expiring) {
@@ -192,7 +194,7 @@ DataManager.prototype._askForGetNewToken = function(expiring) {
 
             } else { // If the obj is now empty then lets continue
 
-                // Ask user if he/she wants to refresh the tokens now
+                // Ask user if they want to refresh the tokens now
                 askForRelog();
             }
         }

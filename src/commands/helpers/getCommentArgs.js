@@ -4,10 +4,10 @@
  * Created Date: 2022-02-28 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-26 20:06:16
+ * Last Modified: 2025-02-11 17:59:38
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -22,14 +22,15 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 /**
  * Helper function: Gets the visibility status of a profile and appends it to idType
+ * @private
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {string} steamID64 The steamID64 of the profile to check
  * @param {string} type Type of steamID64, determined by handleSteamIdResolving(). Must be "profile", otherwise callback will be called instantly with this type param, unchanged.
  * @param {function(string): void} callback Called on completion with your new idType
  */
-function getVisibilityStatus(commandHandler, steamID64, type, callback) {
+function _getVisibilityStatus(commandHandler, steamID64, type, callback) {
     if (steamID64 && type == "profile") {
-        logger("debug", `CommandHandler getVisibilityStatus(): Getting visibility status of profile ${steamID64}...`);
+        logger("debug", `CommandHandler _getVisibilityStatus(): Getting visibility status of profile ${steamID64}...`);
 
         commandHandler.controller.main.community.getSteamUser(new SteamID(steamID64), async (err, user) => {
             if (err || !user || !user.privacyState) {
@@ -37,13 +38,13 @@ function getVisibilityStatus(commandHandler, steamID64, type, callback) {
 
                 callback(type + "Public");
             } else {
-                logger("debug", "CommandHandler getVisibilityStatus(): Successfully checked privacyState of receiving user: " + user.privacyState);
+                logger("debug", "CommandHandler _getVisibilityStatus(): Successfully checked privacyState of receiving user: " + user.privacyState);
 
                 callback(type + user.privacyState[0].toUpperCase() + user.privacyState.slice(1)); // Append privacy state to type with the first letter capitalized
             }
         });
     } else {
-        logger("debug", `CommandHandler getVisibilityStatus(): Type '${type}' was provided, ignoring request...`);
+        logger("debug", `CommandHandler _getVisibilityStatus(): Type '${type}' was provided, ignoring request...`);
 
         callback(type);
     }
@@ -52,11 +53,12 @@ function getVisibilityStatus(commandHandler, steamID64, type, callback) {
 
 /**
  * Retrieves arguments from a comment request. If request is invalid (for example too many comments requested) an error message will be sent
+ * @private
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {Array} args The command arguments
  * @param {CommandHandler.resInfo} resInfo Object containing additional information your respondModule might need to process the response (for example the userID who executed the command).
  * @param {function(string): void} respond The shortened respondModule call
- * @returns {Promise.<{ maxRequestAmount: number, commentcmdUsage: string, numberOfComments: number, profileID: string, idType: string, quotesArr: Array.<string> }>} Resolves promise with object containing all relevant data when done
+ * @returns {Promise.<{ maxRequestAmount: number, commentcmdUsage: string, numberOfComments: number, userRequestedMax: boolean, profileID: string, idType: string, quotesArr: Array.<string> }>} Resolves promise with object containing all relevant data when done
  */
 module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
     return new Promise((resolve) => {
@@ -66,9 +68,10 @@ module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
             let owners = commandHandler.data.cachefile.ownerid;
             if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-            const requesterID      = resInfo.userID;
+            const requesterID    = resInfo.userID;
             let maxRequestAmount = commandHandler.data.config.maxRequests; // Set to default value and if the requesting user is an owner it gets changed below
             let numberOfComments = 0;
+            let userRequestedMax = false;
             let quotesArr        = commandHandler.data.quotes;
 
             let profileID;
@@ -94,6 +97,7 @@ module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
                 if (isNaN(args[0])) { // Isn't a number?
                     if (args[0].toLowerCase() == "all" || args[0].toLowerCase() == "max") {
                         args[0] = maxRequestAmount; // Replace the argument with the max amount of comments this user is allowed to request
+                        userRequestedMax = true;
                     } else {
                         logger("debug", `CommandHandler getCommentArgs(): User provided invalid request amount "${args[0]}". Stopping...`);
 
@@ -124,7 +128,7 @@ module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
                             }
 
                             // Get profile visibility status if profile. Resolving at the bottom will wait until profileID is set
-                            getVisibilityStatus(commandHandler, res, type, (newType) => {
+                            _getVisibilityStatus(commandHandler, res, type, (newType) => {
                                 profileID = res;     // Will be null on err
                                 idType    = newType; // Update idType with what handleSteamIdResolving determined
                             });
@@ -140,7 +144,7 @@ module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
                     logger("debug", "CommandHandler getCommentArgs(): No profileID parameter received, setting profileID to requesterID...");
 
                     // Get profile visibility status if profile. Resolving at the bottom will wait until profileID is set
-                    getVisibilityStatus(commandHandler, requesterID, "profile", (newType) => {
+                    _getVisibilityStatus(commandHandler, requesterID, "profile", (newType) => {
                         profileID = requesterID; // Will be null on err
                         idType    = newType;     // Update idType with what handleSteamIdResolving determined
                     });
@@ -180,7 +184,7 @@ module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
                     logger("debug", `CommandHandler getCommentArgs() success. maxRequestAmount: ${maxRequestAmount} | numberOfComments: ${numberOfComments} | ID: ${profileID} | idType: ${idType} | quotesArr.length: ${quotesArr.length}`);
 
                     // Return obj if profileID is not null, otherwise return false as an error has occurred, the user was informed and execution should be stopped
-                    if (profileID) resolve({ maxRequestAmount, numberOfComments, profileID, idType, quotesArr });
+                    if (profileID) resolve({ maxRequestAmount, numberOfComments, userRequestedMax, profileID, idType, quotesArr });
                         else return resolve(false);
                 }
             }, 250);

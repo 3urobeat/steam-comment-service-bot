@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:18:29
+ * Last Modified: 2025-01-12 17:53:30
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -21,6 +21,7 @@ const download = require("download"); // TODO: Does it make a difference if we r
 
 /**
  * Downloads all files from the repository and installs them
+ * @private
  * @param {Controller} controller Reference to the controller object
  * @returns {Promise.<null|any>} Resolves when we can proceed. Null on success, err on failure.
  */

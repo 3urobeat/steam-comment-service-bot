@@ -4,10 +4,10 @@
  * Created Date: 2022-02-28 12:22:48
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-10 18:33:36
+ * Last Modified: 2025-01-12 18:27:20
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -20,9 +20,10 @@ const CommandHandler = require("../commandHandler"); // eslint-disable-line
 
 /**
  * Helper function to sort failed object by number so that it is easier to read
+ * @private
  * @param {object} failedObj Current state of failed object
  */
-function sortFailedObject(failedObj) {
+function _sortFailedObject(failedObj) {
     const sortedvals = Object.keys(failedObj).sort((a, b) => {
         return Number(a.split(" ")[0].replace("i", "")) - Number(b.split(" ")[0].replace("i", ""));
     });
@@ -116,7 +117,7 @@ module.exports.logRequestError = (error, commandHandler, bot, id) => {
 
 
     // Sort failed object to make it easier to read
-    activeReqEntry.failed = sortFailedObject(activeReqEntry.failed);
+    activeReqEntry.failed = _sortFailedObject(activeReqEntry.failed);
 };
 
 

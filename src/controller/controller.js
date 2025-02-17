@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-13 12:34:46
+ * Last Modified: 2025-02-12 21:55:08
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -18,6 +18,20 @@
 const { EventEmitter } = require("events");
 
 
+// "Hack" to get type information in code completion without requiring file during runtime. Mark as private to avoid breaking generated docs
+/**
+ * @typedef Bot
+ * @type {import("../bot/bot.js")}
+ * @private
+ */
+
+/**
+ * @typedef EIdTypes
+ * @type {import("./helpers/handleSteamIdResolving.js")}
+ * @private
+ */
+
+
 /**
  * Constructor - Initializes the controller and starts all bot accounts
  * @class
@@ -25,67 +39,31 @@ const { EventEmitter } = require("events");
 const Controller = function() {
     this.srcdir = srcdir; // Let users see the global var srcdir more easily
 
+    /**
+     * Stores references to all bot account objects mapped to their accountName
+     * @type {Object.<string, Bot>}
+     */
+    this.bots = {};
+
+    /**
+     * The main bot account
+     * @type {Bot}
+     */
+    this.main = {}; // Store short-hand reference to the main acc (populated later)
+
     // Create eventEmitter
     this.events = new EventEmitter();
 
     /**
      * Collection of miscellaneous functions for easier access
+     * @type {import("./helpers/misc.js")}
      */
-    this.misc = {
-        /**
-         * Implementation of a synchronous for loop in JS (Used as reference: https://whitfin.io/handling-synchronous-asynchronous-loops-javascriptnode-js/)
-         * @param {number} iterations The amount of iterations
-         * @param {function(object, number): void} func The function to run each iteration (Params: loop, index)
-         * @param {function(): void} exit This function will be called when the loop is finished
-         */
-        syncLoop: (iterations, func, exit) => {}, // eslint-disable-line
-
-        /**
-         * Rounds a number with x decimals
-         * @param {number} value Number to round
-         * @param {number} decimals Amount of decimals
-         * @returns {number} Rounded number
-         */
-        round: (value, decimals) => {}, // eslint-disable-line
-
-        /**
-         * Converts a timestamp to a human-readable "until from now" format. Does not care about past/future.
-         * @param {number} timestamp UNIX timestamp to convert
-         * @returns {string} "x seconds/minutes/hours/days"
-         */
-        timeToString: () => {},
-
-        /**
-         * Pings a *https* URL to check if the service and this internet connection is working
-         * @param {string} url The URL of the service to check
-         * @param {boolean} [throwTimeout=false] If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
-         * @param {{ ip: string, port: number, username: string, password: string }} [proxy] Provide a proxy if the connection check should be made through a proxy instead of the local connection
-         * @returns {Promise.<{ statusMessage: string, statusCode: number|null }>} Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
-         */
-        checkConnection: (url, throwTimeout = false, proxy) => {}, // eslint-disable-line
-
-        /**
-         * Splits a HTTP proxy URL into its parts
-         * @param {string} url The HTTP proxy URL
-         * @returns {{ ip: string, port: number, username: string, password: string }} Object containing the proxy parts
-         */
-        splitProxyString: (url) => {}, // eslint-disable-line
-
-        /**
-         * Helper function which attempts to cut Strings intelligently and returns all parts. It will attempt to not cut words & links in half.
-         * It is used by the steamChatInteraction helper but can be used in plugins as well.
-         * @param {string} txt The string to cut
-         * @param {number} limit Maximum length for each part. The function will attempt to cut txt into parts that don't exceed this amount.
-         * @param {Array.<string>} cutChars Optional: Custom chars to search after for cutting string in parts. Default: [" ", "\n", "\r"]
-         * @param {number} threshold Optional: Maximum amount that limit can be reduced to find the last space or line break. If no match is found within this limit a word will be cut. Default: 15% of total length
-         * @returns {Array} Returns all parts of the string in an array
-         */
-        cutStringsIntelligently: (txt, limit, cutChars, threshold) => {} // eslint-disable-line
-    };
+    this.misc = {};
 
 
     /**
      * Collection of various misc parameters
+     * @type {{ bootStartTimestamp: number, lastLoginTimestamp: object, steamGuardInputTime: number, startupWarnings: number, activeLogin: boolean, relogAfterDisconnect: boolean, readyAfter: number, skippedaccounts: string[], commentCounter: number, favCounter: number, followCounter: number, voteCounter: number }}
      */
     this.info = {
         bootStartTimestamp: Date.now(), // Save timestamp to be able to calculate startup time in ready event
@@ -96,12 +74,16 @@ const Controller = function() {
         relogAfterDisconnect: true,     // Allows to prevent accounts from relogging when calling bot.logOff()
         readyAfter: 0,                  // Length of last startup in seconds
         skippedaccounts: [],            // Array of account names which have been skipped
-        commentCounter: 0               // Tracks total amount of comments to display in info command
+
+        commentCounter: 0,              // Tracks total amount of comments to display in info/stats command
+        favCounter: 0,                  // Tracks total amount of favs + unfavs
+        followCounter: 0,               // ...
+        voteCounter: 0,
     };
 
     /**
      * Stores all recent comment, vote etc. requests
-     * @type {{[key: string]: { status: string, type: string, amount: number, quotesArr?: Array.<string>, requestedby: string, accounts: Array.<Bot>, thisIteration: number, retryAttempt: number, amountBeforeRetry?: number, until: number, ipCooldownPenaltyAdded?: boolean, failed: object }}}
+     * @type {Object.<string, { status: string, type: string, amount: number, quotesArr: (Array.<string>|undefined), requestedby: string, accounts: Array.<Bot>, thisIteration: number, retryAttempt: number, amountBeforeRetry: (number|undefined), until: number, ipCooldownPenaltyAdded: (boolean|undefined), failed: object }>}
      */
     this.activeRequests = {};
 };
@@ -113,6 +95,7 @@ const Controller = function() {
 
 /**
  * Process data that should be kept over restarts
+ * @private
  * @param {string} data Stringified data received by previous process
  */
 function restartdata(data) {
@@ -160,6 +143,7 @@ if (parseInt(process.argv[3]) + 2500 > Date.now()) { // Check if this process ju
 
 /**
  * Internal: Initializes the bot by importing data from the disk, running the updater and finally logging in all bot accounts.
+ * @private
  */
 Controller.prototype._start = async function() {
     const checkAndGetFile = require("../starter.js").checkAndGetFile; // Temp var to use checkAndGetFile() before it is referenced in DataManager
@@ -197,6 +181,19 @@ Controller.prototype._start = async function() {
     logger("", "---------------------------------------------------------", true, true);
 
 
+    // Check for unsupported node.js version (<16.0.0)
+    const versionarr = process.version.replace("v", "").split(".");
+
+    versionarr.forEach((e, i) => { if (e.length == 1 && parseInt(e) < 10) versionarr[i] = `0${e}`; }); // Put 0 in front of single digits
+
+    if (parseInt(versionarr.join("")) < 160000) {
+        logger("", "\n************************************************************************************\n", true);
+        logger("error", `This application requires at least node.js ${logger.colors.reset}v16.0.0${logger.colors.fgred} but you have ${logger.colors.reset}${process.version}${logger.colors.fgred} installed!\n        Please update your node.js installation: ${logger.colors.reset} https://nodejs.org/`, true);
+        logger("", "\n************************************************************************************\n", true);
+        return this.stop();
+    }
+
+
     /* ------------ Check internet connection: ------------ */
     logger("info", "Checking if Steam is reachable...", false, true, logger.animation("loading"));
 
@@ -217,13 +214,14 @@ Controller.prototype._start = async function() {
     if (!await checkAndGetFile("./src/dataManager/dataManager.js", logger, false, false)) return;
     const DataManager = require("../dataManager/dataManager.js");
 
+    /**
+     * The dataManager object
+     * @type {DataManager}
+     */
     this.data = new DataManager(this); // All functions provided by the DataManager, as well as all imported file data will be accessible here
 
     await this.data._loadDataManagerFiles();
-    await this.data._importFromDisk();
-
-    // Call optionsUpdateAfterConfigLoad() to set previously inaccessible options
-    this._loggerOptionsUpdateAfterConfigLoad(this.data.advancedconfig);
+    await this.data.importFromDisk();
 
 
     /* ------------ Print startup messages to log and set terminal title: ------------ */
@@ -235,19 +233,6 @@ Controller.prototype._start = async function() {
     } else {
         process.stdout.write(`${String.fromCharCode(27)}]0;${this.data.datafile.mestr}'s Steam Comment Service Bot v${this.data.datafile.versionstr} | ${process.platform}${String.fromCharCode(7)}`); // Sets terminal title (thanks: https://stackoverflow.com/a/30360821/12934162)
         process.title = "CommentBot"; // Sets process title in task manager etc.
-    }
-
-
-    // Check for unsupported node.js version (<16.0.0)
-    const versionarr = process.version.replace("v", "").split(".");
-
-    versionarr.forEach((e, i) => { if (e.length == 1 && parseInt(e) < 10) versionarr[i] = `0${e}`; }); // Put 0 in front of single digits
-
-    if (parseInt(versionarr.join("")) < 160000) {
-        logger("", "\n************************************************************************************\n", true);
-        logger("error", `This application requires at least node.js ${logger.colors.reset}v16.0.0${logger.colors.fgred} but you have ${logger.colors.reset}${process.version}${logger.colors.fgred} installed!\n        Please update your node.js installation: ${logger.colors.reset} https://nodejs.org/`, true);
-        logger("", "\n************************************************************************************\n", true);
-        return this.stop();
     }
 
 
@@ -278,6 +263,10 @@ Controller.prototype._start = async function() {
         return this.stop();
     }
 
+    /**
+     * The updater object
+     * @type {import("../updater/updater.js")}
+     */
     this.updater = new Updater(this);
 
     // Check if the last update failed and skip the updater for now
@@ -301,6 +290,7 @@ Controller.prototype._start = async function() {
 
 /**
  * Internal: Loads all parts of the application to get IntelliSense support after the updater ran and calls login() when done.
+ * @private
  */
 Controller.prototype._preLogin = async function() {
 
@@ -314,44 +304,12 @@ Controller.prototype._preLogin = async function() {
     this.jobManager = new JobManager(this);
 
 
-    /**
-     * The dataManager object
-     * @type {DataManager}
-     */
-    this.data;
-
-
-    // Update Updater IntelliSense without modifying what _start() has already set. Integrity has already been checked
-    let Updater = require("../updater/updater.js"); // eslint-disable-line
-
-    /**
-     * The updater object
-     * @type {Updater}
-     */
-    this.updater;
-
     // Register update check job
     this.updater._registerUpdateChecker();
 
 
-    // Check bot.js for errors and load it explicitly again to get IntelliSense support
-    if (!await this.checkAndGetFile("./src/bot/bot.js", logger, false, false)) return this.stop(); // TODO: Is this still necessary when the dataIntegrity check and updater already ran??
-    let Bot = require("../bot/bot.js"); // eslint-disable-line
-
-    /**
-     * Stores references to all bot account objects mapped to their accountName
-     * @type {{[key: string]: Bot}}
-     */
-    this.bots = {};
-
-    /**
-     * The main bot account
-     * @type {Bot}
-     */
-    this.main = {}; // Store short-hand reference to the main acc (populated later)
-
-
     // Load Controller event handlers & helpers. This must happen after bot.js has been verified
+    require("./events/dataUpdate.js");
     require("./events/ready.js");
     require("./events/statusUpdate.js");
     require("./events/steamGuardInput.js");
@@ -360,6 +318,7 @@ Controller.prototype._preLogin = async function() {
     require("./helpers/getBots.js");
     require("./helpers/handleSteamIdResolving.js");
     require("./login.js");
+    require("./manage.js");
 
 
     // Load commandHandler
@@ -381,11 +340,23 @@ Controller.prototype._preLogin = async function() {
      * @type {PluginSystem}
      */
     this.pluginSystem = new PluginSystem(this);
-    await this.pluginSystem._loadPlugins(); // Load all plugins now. Await to hopefully give plugins enough time to catch Steam Guard events
+
+    await this.pluginSystem._loadPlugins();     // Load all plugins now. Await to hopefully give plugins enough time to catch Steam Guard events
+    this.pluginSystem._registerUpdateChecker(); // Register update check job for all plugins
 
 
     // Start logging in
     this.login(true);
+
+
+    // Register job to reload & respread proxies every 96 hours (I didn't know where to put this)
+    this.jobManager.registerJob({
+        name: "respreadProxies",
+        description: "Reloads, checks and if possible respreads all proxies every 96 hours",
+        func: () => { this.respreadProxies(); },
+        interval: 3.456e+8,     // 96h in ms
+        runOnRegistration: false
+    });
 
 };
 
@@ -425,23 +396,74 @@ Controller.prototype.login = function(firstLogin) {}; // eslint-disable-line
 
 /**
  * Internal: Logs in accounts on different proxies synchronously
+ * @private
  * @param {Array} allAccounts Array of logininfo entries of accounts to log in
  */
 Controller.prototype._processFastLoginQueue = function(allAccounts) {}; // eslint-disable-line
 
 /**
  * Internal: Logs in accounts asynchronously to allow for user interaction
+ * @private
  * @param {Array} allAccounts Array of logininfo entries of accounts to log in
  */
 Controller.prototype._processSlowLoginQueue = function(allAccounts) {}; // eslint-disable-line
 
 /**
+ * Adds a new account to the set of bot accounts in use and writes changes to accounts.txt
+ * @param {string} accountName Username of the account
+ * @param {string} password Password of the account
+ * @param {string} [sharedSecret] Optional: Shared secret of the account
+ */
+Controller.prototype.addAccount = function(accountName, password, sharedSecret = "") {}; // eslint-disable-line
+
+/**
+ * Removes an account from the active set of bot accounts and writes changes to accounts.txt
+ * @param {string} accountName Username of the account to remove
+ */
+Controller.prototype.removeAccount = function(accountName) {}; // eslint-disable-line
+
+/**
+ * Relogs an account
+ * @param {string} accountName Username of the account to relog
+ */
+Controller.prototype.relogAccount = function(accountName) {}; // eslint-disable-line
+
+/**
+ * Reloads and respreads all proxies and relogs affected accounts
+ */
+Controller.prototype.respreadProxies = async function() {};
+
+/**
+ * Filters the active set of bot accounts by a given criteria
+ * @param {function(Bot): boolean} predicate Function that returns true if the account should be included in the result
+ * @returns {Array.<Bot>} Array of bot instances that match the criteria
+ */
+Controller.prototype.filterAccounts = function(predicate) {}; // eslint-disable-line
+
+/**
+ * Set of premade functions for filterAccounts()
+ * @type {{ all: Function, statusOffline: Function, statusOnline: Function, statusError: Function, statusSkipped: Function, limited: Function, unlimited: Function }}
+ */
+Controller.prototype.filters = {};
+
+/**
+ * Runs internal dataUpdate event code and emits dataUpdate event for plugins. The event is emitted whenever DataManager is instructed to import a file from the disk or export a DataManager property to it. On data export `oldData` will always be `null`.
+ * @private
+ * @param {string} key Which DataManager key got updated
+ * @param {any} oldData Old content of the updated key
+ * @param {any} newData New content of the updated key
+ */
+Controller.prototype._dataUpdateEvent = function(key, oldData, newData) {}; // eslint-disable-line
+
+/**
  * Runs internal ready event code and emits ready event for plugins
+ * @private
  */
 Controller.prototype._readyEvent = function() {};
 
 /**
  * Runs internal statusUpdate event code and emits statusUpdate event for plugins
+ * @private
  * @param {Bot} bot Bot instance
  * @param {Bot.EStatus} newStatus The new status of this bot
  */
@@ -449,6 +471,7 @@ Controller.prototype._statusUpdateEvent = function(bot, newStatus) {}; // eslint
 
 /**
  * Emits steamGuardInput event for bot & plugins
+ * @private
  * @param {Bot} bot Bot instance of the affected account
  * @param {function(string): void} submitCode Function to submit a code. Pass an empty string to skip the account.
  */
@@ -456,6 +479,7 @@ Controller.prototype._steamGuardInputEvent = function(bot, submitCode) {}; // es
 
 /**
  * Emits steamGuardQrCode event for bot & plugins
+ * @private
  * @param {Bot} bot Bot instance of the affected account
  * @param {string} challengeUrl The QrCode Challenge URL supplied by Steam. Display this value using a QR-Code parser and let a user scan it using their Steam Mobile App.
  */
@@ -470,12 +494,13 @@ Controller.prototype.checkLastcommentDB = function(bot) {}; // eslint-disable-li
 /**
  * Checks the remaining space on the friendlist of a bot account, sends a warning message if it is less than 10 and force unfriends oldest lastcomment db user to always keep room for 1 friend.
  * @param {Bot} bot Bot object of the account to check
- * @param {function(number|null): void} callback Called with `remaining` (Number) on success or `null` on failure
+ * @param {function(((number|null))): void} callback Called with `remaining` (Number) on success or `null` on failure
  */
 Controller.prototype.friendListCapacityCheck = function(bot, callback) {}; // eslint-disable-line
 
 /**
  * Check for friends who haven't requested comments in config.unfriendtime days and unfriend them
+ * @private
  */
 Controller.prototype._lastcommentUnfriendCheck = function() {} // eslint-disable-line
 
@@ -490,34 +515,23 @@ Controller.prototype.getBots = function(statusFilter = EStatus.ONLINE, mapToObje
 /**
  * Retrieves bot accounts per proxy. This can be used to find the most and least used active proxies for example.
  * @param {boolean} [filterOffline=false] Set to true to remove proxies which are offline. Make sure to call `checkAllProxies()` beforehand!
- * @returns {Array.<{ bots: Array.<Bot>, proxy: string, proxyIndex: number, isOnline: boolean, lastOnlineCheck: number }>} Bot accounts mapped to their associated proxy
+ * @returns {Array.<{ bots: Array.<Bot>, proxy: string, proxyIndex: number, ip: string, isOnline: boolean, lastOnlineCheck: number }>} Bot accounts mapped to their associated proxy
  */
 Controller.prototype.getBotsPerProxy = function(filterOffline = false) {}; // eslint-disable-line
 
 /**
  * Internal: Handles process's unhandledRejection & uncaughtException error events.
  * Should a NPM related error be detected it attempts to reinstall all packages using our npminteraction helper function
+ * @private
  */
 Controller.prototype._handleErrors = function() {} // eslint-disable-line
-
-/**
- * ID types supported by this resolver
- */
-const EIdTypes = { // eslint-disable-line
-    "profile": "profile",
-    "group": "group",
-    "sharedfile": "sharedfile",
-    "discussion": "discussion",
-    "curator": "curator",
-    "review": "review"
-};
 
 /**
  * Handles converting URLs to steamIDs, determining their type if unknown and checking if it matches your expectation.
  * Note: You need to provide a full URL for discussions, curators & reviews. For discussions only type checking/determination is supported.
  * @param {string} str The profileID argument provided by the user
  * @param {EIdTypes} expectedIdType The type of SteamID expected or `null` if type should be assumed.
- * @param {function(string|null, string|null, EIdTypes|null): void} callback
+ * @param {function((string|null), (string|null), (EIdTypes|null)): void} callback
  * Called with `err` (String or null), `id` (String or null), `idType` (String or null) parameters on completion. The `id` param has the format `userID/appID` for type review and full input url for type discussion.
  */
 Controller.prototype.handleSteamIdResolving = (str, expectedIdType, callback) => {} // eslint-disable-line
@@ -536,11 +550,13 @@ Controller.prototype.logger = function(type, str, nodate, remove, animation, pri
 
 /**
  * Internal: Call this function after loading advancedconfig.json to set previously inaccessible options
+ * @private
  * @param {object} advancedconfig The advancedconfig object imported by the DataManager
  */
 Controller.prototype._loggerOptionsUpdateAfterConfigLoad = function(advancedconfig) {}; // eslint-disable-line
 
 /**
  * Internal: Logs all held back messages from logAfterReady array
+ * @private
  */
 Controller.prototype._loggerLogAfterReady = function() {};

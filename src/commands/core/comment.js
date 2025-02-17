@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-10 18:24:16
+ * Last Modified: 2025-02-13 21:24:37
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -67,7 +67,7 @@ module.exports.comment = {
         if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
         const requesterID        = resInfo.userID;
-        let receiverSteamID64  = requesterID;
+        let   receiverSteamID64  = requesterID;
         const ownercheck         = owners.includes(requesterID);
 
 
@@ -85,7 +85,7 @@ module.exports.comment = {
 
 
         /* --------- Calculate maxRequestAmount and get arguments from comment request --------- */
-        const { maxRequestAmount, numberOfComments, profileID, idType, quotesArr } = await getCommentArgs(commandHandler, args, resInfo, respond);
+        let { maxRequestAmount, numberOfComments, userRequestedMax, profileID, idType, quotesArr } = await getCommentArgs(commandHandler, args, resInfo, respond); // eslint-disable-line prefer-const
 
         if (!maxRequestAmount && !numberOfComments && !quotesArr) return; // Looks like the helper aborted the request
 
@@ -115,30 +115,66 @@ module.exports.comment = {
 
         // Get all currently available bot accounts. Block limited accounts from being eligible from commenting in groups
         const allowLimitedAccounts = (idType != "group");
-        const { accsNeeded, availableAccounts, accsToAdd, whenAvailableStr } = await getAvailableBotsForCommenting(commandHandler, numberOfComments, allowLimitedAccounts, idType, receiverSteamID64); // Await *has* an effect on this expression you idiot
+        const { accsMinNeeded, availableAccounts, accsToAdd, whenAvailableStr } = await getAvailableBotsForCommenting(commandHandler, numberOfComments, maxRequestAmount, allowLimitedAccounts, idType, receiverSteamID64); // Await *has* an effect on this expression you idiot
 
-        if (availableAccounts.length == 0 && !whenAvailableStr) { // Check if this bot has no suitable accounts for this request and there won't be any available at any point
-            if (!allowLimitedAccounts) respond(await commandHandler.data.getLang("genericnounlimitedaccs", { "cmdprefix": resInfo.cmdprefix }, requesterID)); // Send less generic message for requests which require unlimited accounts
-                else respond(await commandHandler.data.getLang("commentnoaccounts", { "cmdprefix": resInfo.cmdprefix }, requesterID));
+        // Check if this bot has no suitable accounts for this request and there won't be any available at any point
+        if (availableAccounts.length == 0 && !whenAvailableStr) {
+            if (!allowLimitedAccounts) {
+                respond(await commandHandler.data.getLang("genericnounlimitedaccs", { "cmdprefix": resInfo.cmdprefix }, requesterID)); // Send less generic message for requests which require unlimited accounts
+            } else {
+                respond(await commandHandler.data.getLang("commentnoaccounts", { "cmdprefix": resInfo.cmdprefix }, requesterID));
+            }
 
             return;
         }
 
-        if (availableAccounts.length - accsToAdd.length < accsNeeded && !whenAvailableStr) { // Check if user needs to add accounts first. Make sure the lack of accounts is caused by accsToAdd, not cooldown
-            let addStr = await commandHandler.data.getLang("commentaddbotaccounts", null, requesterID);
-            accsToAdd.forEach(e => addStr += `\n' steamcommunity.com/profiles/${commandHandler.data.cachefile.botaccid[commandHandler.controller.getBots(null, true)[e].index]} '`);
+        // Check if user needs to add accounts first. Make sure the lack of accounts is caused by accsToAdd, not cooldown. We check against accsMin but send message based on accsMax to get the user to add the most
+        if (availableAccounts.length - accsToAdd.length < accsMinNeeded && !whenAvailableStr) {
+            // If acceptFriendRequests is turned off, we can skip this altogether
+            if (commandHandler.data.advancedconfig.acceptFriendRequests) {
+                let addStr = await commandHandler.data.getLang("commentaddbotaccounts", null, requesterID);
+                accsToAdd.forEach(e => addStr += `\n' steamcommunity.com/profiles/${commandHandler.data.cachefile.botaccid[commandHandler.controller.getBots(null, true)[e].index]} '`);
 
-            logger("info", `Found enough available accounts but user needs to add ${accsToAdd.length} limited accounts first before I'm able to comment.`);
+                logger("info", `Found enough available accounts but user needs to add ${accsMinNeeded} - ${accsToAdd.length} limited accounts first before I'm able to comment.`);
 
-            respondModule(context, { charLimit: 500, cutChars: ["\n"], ...resInfo }, addStr); // Manually limit part length to 500 chars as addStr can cause many messages and only allow cuts at newlines to prevent links from getting embedded
-            return;
+                respondModule(context, { charLimit: 500, cutChars: ["\n"], ...resInfo }, addStr); // Manually limit part length to 500 chars as addStr can cause many messages and only allow cuts at newlines to prevent links from getting embedded
+                return;
+            } else {
+                const maxReducedAccsRequestAmount = Math.trunc((availableAccounts.length - accsToAdd.length) * (maxRequestAmount / commandHandler.controller.getBots().length));
+
+                if (userRequestedMax && maxReducedAccsRequestAmount > 0) {
+                    logger("info", `Reduced comment amount from ${numberOfComments} to ${maxReducedAccsRequestAmount} because user requested 'all' but hasn't added enough accounts and 'acceptFriendRequests' is disabled.`);
+                    numberOfComments = maxReducedAccsRequestAmount;
+                } else {
+                    // TODO: This could become obsolete (or need rethinking) when comment mode 2 is implemented
+                    let commentcmdUsage;
+
+                    if (owners.includes(requesterID)) {
+                        if (availableAccounts.length - accsToAdd.length > 1) commentcmdUsage = await commandHandler.data.getLang("commentcmdusageowner", { "cmdprefix": resInfo.cmdprefix }, requesterID);
+                            else commentcmdUsage = await commandHandler.data.getLang("commentcmdusageowner2", { "cmdprefix": resInfo.cmdprefix }, requesterID);
+                    } else {
+                        if (availableAccounts.length - accsToAdd.length > 1) commentcmdUsage = await commandHandler.data.getLang("commentcmdusage", { "cmdprefix": resInfo.cmdprefix }, requesterID);
+                            else commentcmdUsage = await commandHandler.data.getLang("commentcmdusage2", { "cmdprefix": resInfo.cmdprefix }, requesterID);
+                    }
+
+                    logger("warn", "Found enough available accounts which the user would need to add first but 'acceptFriendRequests' is disabled in 'advancedconfig.json'! Sending 'request less' message instead...");
+
+                    respond(await commandHandler.data.getLang("requesttoohigh", { "maxRequestAmount": maxReducedAccsRequestAmount, "cmdusage": commentcmdUsage }, requesterID));
+                    return;
+                }
+            }
         }
 
-        if (availableAccounts.length < accsNeeded) { // Check if not enough available accounts were found because of cooldown
-            if (availableAccounts.length > 0) respond(await commandHandler.data.getLang("commentnotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availableAccounts.length }, requesterID)); // Using allAccounts.length works for the "spread requests on as many accounts as possible" method
-                else respond(await commandHandler.data.getLang("commentzeroavailableaccs", { "waittime": whenAvailableStr }, requesterID));
+        // Check if not enough available accounts were found because of cooldown
+        if (availableAccounts.length < accsMinNeeded) {
+            if (availableAccounts.length > 0) {
+                const availablenow = Math.trunc(availableAccounts.length * (maxRequestAmount / commandHandler.controller.getBots()));
+                respond(await commandHandler.data.getLang("commentnotenoughavailableaccs", { "waittime": whenAvailableStr, "availablenow": availablenow }, requesterID)); // Using allAccounts.length works for the "spread requests on as many accounts as possible" method
+            } else {
+                respond(await commandHandler.data.getLang("commentzeroavailableaccs", { "waittime": whenAvailableStr }, requesterID));
+            }
 
-            logger("info", `Found only ${availableAccounts.length} available account(s) but ${accsNeeded} account(s) are needed to send ${numberOfComments} comments.`);
+            logger("info", `Found only ${availableAccounts.length} available account(s) but ${accsMinNeeded} account(s) are needed to send ${numberOfComments} comments.`);
             return;
         }
 
@@ -326,6 +362,7 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
             // Instantly set status of this request to cooldown
             activeReqEntry.status = "cooldown";
             commandHandler.controller.info.commentCounter += 1;
+            commandHandler.data.countRequestToStatistics("comment");
 
             return;
         }
@@ -404,7 +441,10 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
 
         }
 
-        commandHandler.controller.info.commentCounter += activeReqEntry.amount - activeReqEntry.amountBeforeRetry - Object.keys(activeReqEntry.failed).length; // Add numberOfComments of this attempt minus failedamount to commentCounter
+        const commentAmount = activeReqEntry.amount - activeReqEntry.amountBeforeRetry - Object.keys(activeReqEntry.failed).length;
+
+        commandHandler.controller.info.commentCounter += commentAmount;
+        commandHandler.data.countRequestToStatistics("comment", commentAmount);
 
     });
 }

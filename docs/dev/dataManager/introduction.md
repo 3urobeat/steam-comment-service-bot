@@ -1,17 +1,12 @@
 # DataManager
 [⬅️ Go back to dev home](../#readme) <a href="/src/dataManager/dataManager.js" target="_blank"><img align="right" src="https://img.shields.io/badge/<%2F>%20Source-darkcyan"></a>
 
-&nbsp;
-
 The DataManager system imports, checks, handles errors and provides a file updating service for all config & source code files.  
 It is the central point for holding and managing any data which the application stores on the filesystem.  
 
 Use the data and functions exposed by this module whenever you need to e.g. read and write to a config file. 
 
-&nbsp;
-
-Every function and object property is documented with JsDocs in the implementation file.  
-Please check them out using your IntelliSense or by clicking the button in the top right corner of this page.
+Please use your browser's search function <kbd>Ctrl</kbd>+<kbd>F</kbd> to find something specific on this page.
 
 &nbsp;
 

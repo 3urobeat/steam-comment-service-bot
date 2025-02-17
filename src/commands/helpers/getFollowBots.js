@@ -4,10 +4,10 @@
  * Created Date: 2023-09-24 18:01:44
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-23 16:19:05
+ * Last Modified: 2025-02-13 22:23:41
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -21,6 +21,7 @@ const { timeToString } = require("../../controller/helpers/misc.js");
 
 /**
  * Finds all needed and currently available bot accounts for a follow request.
+ * @private
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {number|"all"} amount Amount of favs requested or "all" to get the max available amount
  * @param {boolean} canBeLimited If the accounts are allowed to be limited
@@ -50,16 +51,13 @@ module.exports.getAvailableBotsForFollowing = async (commandHandler, amount, can
 
     // Remove bot accounts from allAccounts which have already followed this id, or only allow them for type unfollow
     const previousLength = allAccounts.length;
-    const alreadyUsed    = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: idType + "Follow" }, {});
+    const alreadyUsedRes = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: idType + "Follow" }, {});
+    const alreadyUsed    = alreadyUsedRes.map((e) => e.accountName).filter((e) => allAccounts.includes(e)); // Reduce db response to accountNames only but filter any !ONLINE accounts
 
     if (favType == "follow") {
-        alreadyUsed.forEach((e) => {
-            if (allAccounts.indexOf(e.accountName) != -1) allAccounts.splice(allAccounts.indexOf(e.accountName), 1); // Remove all accounts that already followed
-        });
+        allAccounts = allAccounts.filter((e) => !alreadyUsed.includes(e));
     } else {
-        allAccounts.forEach((e) => {
-            if (!alreadyUsed.some(e => e.accountName)) allAccounts.splice(allAccounts.indexOf(e), 1); // Remove all accounts that have not followed
-        });
+        allAccounts = alreadyUsed;
     }
 
     if (previousLength - allAccounts.length > 0) logger("info", `${previousLength - allAccounts.length} of ${previousLength} bot accounts were removed from available accounts because we know that they have already un-/followed this user!`);

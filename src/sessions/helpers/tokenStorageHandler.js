@@ -4,10 +4,10 @@
  * Created Date: 2022-10-10 12:53:20
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-08 17:49:48
+ * Last Modified: 2025-01-12 17:21:27
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -39,7 +39,8 @@ SessionHandler.prototype.hasStorageValidToken = async function() {
 
 /**
  * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
- * @param {function(string|null): void} callback Called with `refreshToken` (String) on success or `null` on failure
+ * @private
+ * @param {function((string|null)): void} callback Called with `refreshToken` (String) on success or `null` on failure
  */
 SessionHandler.prototype._getTokenFromStorage = function(callback) {
 
@@ -78,6 +79,7 @@ SessionHandler.prototype._getTokenFromStorage = function(callback) {
 
 /**
  * Internal - Saves a new token for this account to tokens.db
+ * @private
  * @param {string} token The refreshToken to store
  */
 SessionHandler.prototype._saveTokenToStorage = function(token) {
@@ -102,6 +104,7 @@ SessionHandler.prototype.invalidateTokenInStorage = function() {
 // Note: Code is not checked for issues!
 /**
  * Internal - Cleans out every expired key from tokens.db of accounts that are not currently used.
+ * @private
  */
 /* SessionHandler.prototype._cleanTokenStorage = async function() {
 

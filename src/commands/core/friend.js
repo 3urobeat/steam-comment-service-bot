@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-08-10 15:09:08
+ * Last Modified: 2025-01-05 15:21:02
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -22,8 +22,15 @@ const CommandHandler = require("../commandHandler.js"); // eslint-disable-line
 
 module.exports.addFriend = {
     names: ["addfriend", "add"],
-    description: "Adds the ID with all bot accounts. Requires unlimited accounts!",
+    description: "Adds the ID with amount/all available bot accounts. Requires unlimited accounts!",
     args: [
+        {
+            name: "amount",
+            description: "The amount of accounts to request to add",
+            type: "string",
+            isOptional: false,
+            ownersOnly: true
+        },
         {
             name: "ID",
             description: "The link, steamID64 or vanity of the profile to add",
@@ -46,43 +53,50 @@ module.exports.addFriend = {
         const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
         const requesterID = resInfo.userID;
 
-        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        // Deny request if bot is not fully started yet. Add msg prefix to existing resInfo object
+        if (commandHandler.controller.info.readyAfter == 0) {
+            respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID));
+            return;
+        }
 
-        if (!args[0]) return respond(await commandHandler.data.getLang("invalidprofileid", null, requesterID));
-
-        commandHandler.controller.handleSteamIdResolving(args[0], "profile", async (err, res) => {
-            if (err) return respond((await commandHandler.data.getLang("invalidprofileid", null, requesterID)) + "\n\nError: " + err);
-
-            // Check if first bot account is limited to be able to display error message instantly
-            if (commandHandler.controller.main.user.limitations && commandHandler.controller.main.user.limitations.limited == true) {
-                respond(await commandHandler.data.getLang("addfriendcmdacclimited", { "profileid": res }, requesterID));
+        // Process !number amount parameter, set to max if "all", otherwise deny
+        if (isNaN(args[0])) {
+            if (args[0] != undefined && (args[0].toLowerCase() == "all" || args[0].toLowerCase() == "max")) {
+                args[0] = Infinity;
+            } else {
+                respond(await commandHandler.data.getLang("invalidnumber", { "cmdusage": resInfo.cmdprefix + "addfriend amount id" }, requesterID));
                 return;
             }
+        }
 
-            respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("addfriendcmdsuccess", { "profileid": res, "estimatedtime": 5 * commandHandler.controller.getBots().length }, requesterID));
-            logger("info", `Adding friend '${res}' with all bot accounts... This will take ~${5 * commandHandler.controller.getBots().length} seconds.`);
+        // Deny request if ID parameter is missing
+        if (!args[1]) {
+            respond(await commandHandler.data.getLang("invalidprofileid", null, requesterID));
+            return;
+        }
 
-            commandHandler.controller.getBots().forEach((e, i) => {
-                // Check if this bot account is limited
-                if (e.user.limitations && e.user.limitations.limited == true) {
-                    logger("error", `[${e.logPrefix}] Can't add user '${res}' as a friend because the bot account is limited.`);
-                    return;
-                }
+        // Resolve ID
+        commandHandler.controller.handleSteamIdResolving(args[1], "profile", async (err, id) => {
+            if (err) return respond((await commandHandler.data.getLang("invalidprofileid", null, requesterID)) + "\n\nError: " + err);
 
-                if (e.user.myFriends[res] != 3 && e.user.myFriends[res] != 1) { // Check if provided user is not friend and not blocked
-                    setTimeout(() => {
-                        e.user.addFriend(new SteamID(res), (err) => {
-                            if (err) logger("error", `[${e.logPrefix}] Failed to add '${res}' as a friend: ${err}`);
-                                else logger("info", `[${e.logPrefix}] Added '${res}' as a friend.`);
-                        });
+            // Get all bot accounts up until amount which are unlimited and not already in group
+            const unlimitedAccs = commandHandler.controller.filterAccounts(commandHandler.controller.filters.unlimited);
+            const accsToAdd     = unlimitedAccs.filter((e) => e.user.myFriends[id] != 3 && e.user.myFriends[id] != 1).slice(0, args[0]); // Check if provided user is not friend and not blocked
 
-                        commandHandler.controller.friendListCapacityCheck(e, (remaining) => { // Check remaining friendlist space
-                            if (remaining < 25) logger("warn", `[${e.logPrefix}] Friendlist space is running low! There are ${remaining} spots remaining.`);
-                        });
-                    }, 5000 * i);
-                } else {
-                    logger("warn", `[${e.logPrefix}] This bot account is already friend with '${res}' or the account was blocked/blocked you.`);
-                }
+            respond(await commandHandler.data.getLang("addfriendcmdsuccess", { "profileid": id, "numberOfAdds": accsToAdd.length, "estimatedtime": 5 * accsToAdd.length }, requesterID));
+            logger("info", `Adding friend '${id}' with ${accsToAdd.length} bot accounts... This will take ~${5 * accsToAdd.length} seconds.`);
+
+            accsToAdd.forEach((e, i) => {
+                setTimeout(() => {
+                    e.user.addFriend(new SteamID(id), (err) => {
+                        if (err) logger("error", `[${e.logPrefix}] Failed to add '${id}' as a friend: ${err}`);
+                            else logger("info", `[${e.logPrefix}] Added '${id}' as a friend.`);
+                    });
+
+                    commandHandler.controller.friendListCapacityCheck(e, (remaining) => { // Check remaining friendlist space
+                        if (remaining < 25) logger("warn", `[${e.logPrefix}] Friendlist space is running low! There are ${remaining} spots remaining.`);
+                    });
+                }, 5000 * i);
             });
         });
     }

@@ -4,10 +4,10 @@
  * Created Date: 2022-02-26 16:54:03
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:19:34
+ * Last Modified: 2025-01-12 18:27:52
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -33,6 +33,7 @@ module.exports.run = () => {
 
         /**
          * Copy everything in a folder including its subpaths - Thanks (modified): https://stackoverflow.com/a/26038979/12934162
+         * @private
          * @param {string} src From path
          * @param {string} dest To path
          * @param {boolean} firstCall Set to `true` on first call, will be set to `false` on recursive call

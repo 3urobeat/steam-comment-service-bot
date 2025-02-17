@@ -4,10 +4,10 @@
  * Created Date: 2022-10-09 13:22:39
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-07 16:21:06
+ * Last Modified: 2025-01-31 15:37:59
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -21,6 +21,7 @@ const SessionHandler = require("../sessionHandler.js");
 
 /**
  * Helper function to make handling login errors easier
+ * @private
  * @param {*} err Error thrown by startWithCredentials()
  */
 SessionHandler.prototype._handleCredentialsLoginError = function(err) {
@@ -37,7 +38,9 @@ SessionHandler.prototype._handleCredentialsLoginError = function(err) {
         logger("debug", err.stack, true);
 
         // Add additional messages for specific errors to hopefully help the user diagnose the cause
-        if (err.eresult == EResult.InvalidPassword) logger("", `Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try omitting the shared_secret (if you provided one) and check the username & password of '${this.logOnOptions.accountName}' in account.txt!`, true);
+        if (err.eresult == EResult.InvalidPassword) {
+            logger("", `Note: The error "InvalidPassword" can also be caused by a wrong username${this.logOnOptions.sharedSecret ? " or shared_secret" : ""}!\n      Please check the username & password of '${this.logOnOptions.accountName}' in accounts.txt${this.logOnOptions.sharedSecret ? " and try omitting the shared_secret you provided" : ""}!`, true);
+        }
 
         // Skips account or stops bot, depending on which loginindex this is
         this._resolvePromise(null);
@@ -57,7 +60,7 @@ SessionHandler.prototype._handleCredentialsLoginError = function(err) {
         setTimeout(() => {
             // Log login log message again with incremented logOnTries as otherwise this retry would go unnoticed in the output
             if (!this.bot.loginData.proxy) logger("info", `[${this.bot.logPrefix}] Trying to log in without proxy... (Attempt ${this.bot.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
-                else logger("info", `[${this.bot.logPrefix}] Trying to log in with proxy ${this.bot.loginData.proxyIndex}... (Attempt ${this.bot.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
+                else logger("info", `[${this.bot.logPrefix}] Trying to log in with proxy '${this.bot.loginData.proxyIp}'... (Attempt ${this.bot.loginData.logOnTries}/${this.controller.data.advancedconfig.maxLogOnRetries + 1})`, false, true, logger.animation("loading"));
 
             this._attemptCredentialsLogin();
         }, 5000);
@@ -68,6 +71,7 @@ SessionHandler.prototype._handleCredentialsLoginError = function(err) {
 
 /**
  * Helper function to make handling login errors easier
+ * @private
  * @param {*} err Error thrown by startWithQR()
  */
 SessionHandler.prototype._handleQrCodeLoginError = function(err) {

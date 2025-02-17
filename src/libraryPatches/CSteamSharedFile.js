@@ -4,7 +4,7 @@ const SteamID = require('steamid');
 const SteamCommunity  = require('steamcommunity');
 const Helpers = require('../../node_modules/steamcommunity/components/helpers.js');
 
-const ESharedFileType = require('../../node_modules/steamcommunity/resources/ESharedFileType.js');
+const ESharedFileType = require("./ESharedFileType.js");
 
 
 /**
@@ -22,6 +22,8 @@ SteamCommunity.prototype.getSteamSharedFile = function(sharedFileId, callback) {
 		fileSize: null,
 		postDate: null,
 		resolution: null,
+		categories: [],
+		tags: [],
 		uniqueVisitorsCount: null,
 		favoritesCount: null,
 		upvoteCount: null,
@@ -44,6 +46,27 @@ SteamCommunity.prototype.getSteamSharedFile = function(sharedFileId, callback) {
 			// Load output into cheerio to make parsing easier
 			let $ = Cheerio.load(body);
 
+
+			// Determine type by looking at the second breadcrumb. Find the first separator as it has a unique name and go to the next element which holds our value of interest
+			let breadcrumb = $(".breadcrumbs > .breadcrumb_separator").next().get(0).children[0].data || "";
+
+			if (breadcrumb.includes("Screenshot")) {
+				sharedfile.type = ESharedFileType.Screenshot;
+			}
+
+			if (breadcrumb.includes("Artwork")) {
+				sharedfile.type = ESharedFileType.Artwork;
+			}
+
+			if (breadcrumb.includes("Guide")) {
+				sharedfile.type = ESharedFileType.Guide;
+			}
+
+			if (breadcrumb.includes("Workshop")) {
+				sharedfile.type = ESharedFileType.Workshop;
+			}
+
+
 			// Dynamically map detailsStatsContainerLeft to detailsStatsContainerRight in an object to make readout easier. It holds size, post date and resolution.
 			let detailsStatsObj = {};
 			let detailsLeft     = $(".detailsStatsContainerLeft").children();
@@ -56,6 +79,7 @@ SteamCommunity.prototype.getSteamSharedFile = function(sharedFileId, callback) {
 
 				detailsStatsObj[detailsLeft[e].children[0].data.trim()] = detailsRight[e].children[0].data;
 			});
+
 
 			// Dynamically map stats_table descriptions to values. This holds Unique Visitors and Current Favorites
 			let statsTableObj = {};
@@ -89,8 +113,28 @@ SteamCommunity.prototype.getSteamSharedFile = function(sharedFileId, callback) {
 			}
 
 
-			// Find resolution if artwork or screenshot
-			sharedfile.resolution = detailsStatsObj["Size"] || null;
+			// Find resolution if artwork or screenshot. Guides don't have a resolution and workshop items display it somewhere else
+			if (sharedfile.type != ESharedFileType.Workshop) {
+				sharedfile.resolution = detailsStatsObj["Size"] || null;
+			} else {
+				let resolutionTag = $(".workshopTagsTitle:contains(\"Resolution:\")").next();
+
+				sharedfile.resolution = resolutionTag.text() || null; // Keep prop null if this workshop item does not have a resolution
+			}
+
+
+			// Find categories if guide or workshop item
+			if (sharedfile.type == ESharedFileType.Guide || sharedfile.type == ESharedFileType.Workshop) {
+				let categoryTag = $(".workshopTagsTitle:contains(\"Category:\")").parent().contents().slice(1).text(); // Find div containing 'Category:' workshopTagsTitle, remove first element 'Category:' and get everything else as text
+
+				sharedfile.categories = categoryTag ? categoryTag.split(", ") : []; // Convert to array if string is not empty (aka no categories have been found)
+			}
+
+
+			// Find tags (there can be multiple)
+			let tagsTag = $(".workshopTagsTitle:contains(\"Tags:\")").next().contents();
+
+			sharedfile.tags = tagsTag.map((i, e) => e.type === 'text' ? $(e).text() : '').get() || []; // Map text to an array - https://stackoverflow.com/a/31543727
 
 
 			// Find uniqueVisitorsCount. We can't use ' || null' here as Number("0") casts to false
@@ -120,26 +164,11 @@ SteamCommunity.prototype.getSteamSharedFile = function(sharedFileId, callback) {
 
 
 			// Determine if this account has already voted on this sharedfile
-			sharedfile.isUpvoted   = String($(".workshopItemControlCtn > #VoteUpBtn")[0].attribs["class"]).includes("toggled");   // Check if upvote btn class contains "toggled"
-			sharedfile.isDownvoted = String($(".workshopItemControlCtn > #VoteDownBtn")[0].attribs["class"]).includes("toggled"); // Check if downvote btn class contains "toggled"
+			const voteUpBtn   = $(".workshopItemControlCtn > #VoteUpBtn")[0]   || $(".greenlight_controls > #VoteUpBtn")[0];   // workshopItemControlCtn for "normal" items, greenlight_controls for items which can be voted into a game (e.g. CS skins)
+			const voteDownBtn = $(".workshopItemControlCtn > #VoteDownBtn")[0] || $(".greenlight_controls > #VoteDownBtn")[0];
 
-
-			// Determine type by looking at the second breadcrumb. Find the first separator as it has a unique name and go to the next element which holds our value of interest
-			let breadcrumb = $(".breadcrumbs > .breadcrumb_separator").next().get(0) || $(".breadcrumbs").get(0).children[1]; // Some artworks only have one breadcrumb like "username's Artwork" so let's check that as a backup
-
-			if (breadcrumb) { // If neither could be found then leave type at null
-				if (breadcrumb.children[0].data.includes("Screenshot")) {
-					sharedfile.type = ESharedFileType.Screenshot;
-				}
-
-				if (breadcrumb.children[0].data.includes("Artwork")) {
-					sharedfile.type = ESharedFileType.Artwork;
-				}
-
-				if (breadcrumb.children[0].data.includes("Guide")) {
-					sharedfile.type = ESharedFileType.Guide;
-				}
-			}
+			sharedfile.isUpvoted   = String(voteUpBtn.attribs["class"]).includes("toggled");   // Check if upvote btn class contains "toggled"
+			sharedfile.isDownvoted = String(voteDownBtn.attribs["class"]).includes("toggled"); // Check if downvote btn class contains "toggled"
 
 
 			// Find owner profile link, convert to steamID64 using SteamIdResolver lib and create a SteamID object
@@ -167,7 +196,7 @@ SteamCommunity.prototype.getSteamSharedFile = function(sharedFileId, callback) {
  * Constructor - Creates a new SharedFile object
  * @class
  * @param {SteamCommunity} community
- * @param {{ id: string, type: ESharedFileType, appID: number, owner: SteamID|null, fileSize: string|null, postDate: number, resolution: string|null, uniqueVisitorsCount: number, favoritesCount: number, upvoteCount: number|null, guideNumRatings: Number|null, isUpvoted: boolean, isDownvoted: boolean }} data
+ * @param {{ id: string, type: ESharedFileType, appID: number, owner: SteamID|null, fileSize: (string|null), postDate: number, resolution: (string|null), category: string[], tags: string[], uniqueVisitorsCount: number, favoritesCount: number, upvoteCount: number|null, guideNumRatings: Number|null, isUpvoted: boolean, isDownvoted: boolean }} data
  */
 function CSteamSharedFile(community, data) {
 	/**
@@ -181,7 +210,7 @@ function CSteamSharedFile(community, data) {
 
 /**
  * Deletes a comment from this sharedfile's comment section
- * @param {string} cid - ID of the comment to delete
+ * @param {String} cid - ID of the comment to delete
  * @param {function} callback - Takes only an Error object/null as the first argument
  */
 CSteamSharedFile.prototype.deleteComment = function(cid, callback) {
@@ -198,7 +227,7 @@ CSteamSharedFile.prototype.favorite = function(callback) {
 
 /**
  * Posts a comment to this sharedfile
- * @param {string} message - Content of the comment to post
+ * @param {String} message - Content of the comment to post
  * @param {function} callback - Takes only an Error object/null as the first argument
  */
 CSteamSharedFile.prototype.comment = function(message, callback) {
@@ -209,7 +238,7 @@ CSteamSharedFile.prototype.comment = function(message, callback) {
  * Subscribes to this sharedfile's comment section. Note: Checkbox on webpage does not update
  * @param {function} callback - Takes only an Error object/null as the first argument
  */
-CSteamSharedFile.prototype.subscribe = function(callback) {
+CSteamSharedFile.prototype.subscribeComments = function(callback) {
 	this._community.subscribeSharedFileComments(this.owner, this.id, callback);
 };
 
@@ -225,6 +254,22 @@ CSteamSharedFile.prototype.unfavorite = function(callback) {
  * Unsubscribes from this sharedfile's comment section. Note: Checkbox on webpage does not update
  * @param {function} callback - Takes only an Error object/null as the first argument
  */
-CSteamSharedFile.prototype.unsubscribe = function(callback) {
+CSteamSharedFile.prototype.unsubscribeComments = function(callback) {
 	this._community.unsubscribeSharedFileComments(this.owner, this.id, callback);
+};
+
+/**
+ * Subscribes to this workshop item
+ * @param {function} callback - Takes only an Error object/null as the first argument
+ */
+CSteamSharedFile.prototype.subscribeWorkshop = function(callback) {
+	this._community.subscribeWorkshopSharedFile(this.id, this.appID, callback);
+};
+
+/**
+ * Unsubscribes from this workshop item
+ * @param {function} callback - Takes only an Error object/null as the first argument
+ */
+CSteamSharedFile.prototype.unsubscribeWorkshop = function(callback) {
+	this._community.unsubscribeWorkshopSharedFile(this.id, this.appID, callback);
 };

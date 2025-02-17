@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-13 11:57:34
+ * Last Modified: 2025-02-11 17:26:08
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -22,19 +22,35 @@ const Bot = require("../bot.js");
 
 /**
  * Handles setting cookies and accepting offline friend & group invites
+ * @private
  */
 Bot.prototype._attachSteamWebSessionEvent = function() {
 
-    this.user.on("webSession", (sessionID, cookies) => { // Get websession (log in to chat)
+    this.user.on("webSession", async (sessionID, cookies) => { // Get websession (log in to chat)
 
         // Increase progress bar if one is active
         if (logger.getProgressBar()) logger.increaseProgressBar((100 / this.data.logininfo.length) / 3);
 
 
-        // Set cookies (otherwise the bot is unable to comment)
+        // Set cookies to allow sending authenticated requests (e.g. for commenting)
         this.community.setCookies(cookies);
 
-        this.controller._statusUpdateEvent(this, Bot.EStatus.ONLINE); // Set status of this account to online
+
+        // Check if account has family view enabled
+        if (!this.data.advancedconfig.skipFamilyViewUnlock) {
+            logger("info", `[${this.logPrefix}] Checking if this account has family view enabled...`, false, true, logger.animation("loading"));
+
+            if (await this.checkForFamilyView(this.community)) {
+                logger("warn", `[${this.logPrefix}] It appears that this account has family view enabled!`, false, false, logger.animation("loading"), true);
+                await this.unlockFamilyView(this.community);
+            } else {
+                logger("debug", `[${this.logPrefix}] Account does not seem to have family view enabled. Proceeding...`, false, true);
+            }
+        }
+
+
+        // Update bot's status to progress login queue
+        this.controller._statusUpdateEvent(this, Bot.EStatus.ONLINE);
 
         this.loginData.relogTries = 0;       // Reset relogTries to indicate that this proxy is working should one of the next logOn retries fail
         this.loginData.pendingLogin = false; // Unlock login again

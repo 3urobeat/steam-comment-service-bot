@@ -4,10 +4,10 @@
  * Created Date: 2023-05-28 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-10 18:20:41
+ * Last Modified: 2025-02-13 21:27:46
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -260,13 +260,17 @@ async function processVoteRequest(origin, commandHandler, args, respondModule, c
                 failedcmdreference = `\nTo get detailed information why which request failed please type '${resInfo.cmdprefix}failed'. You can read why your error was probably caused here: https://github.com/3urobeat/steam-comment-service-bot/blob/master/docs/wiki/errors_doc.md`;
             }
 
-            // Send finished message
+            // Send finished message and set status of this request to cooldown
             respond(`${await commandHandler.data.getLang("votesuccess", { "failedamount": Object.keys(activeReqEntry.failed).length, "numberOfVotes": activeReqEntry.amount }, requesterID)}\n${failedcmdreference}`);
 
-            // Set status of this request to cooldown and add amount of successful comments to our global commentCounter
             activeReqEntry.status = "cooldown";
 
         }
+
+        const voteAmount = activeReqEntry.amount - Object.keys(activeReqEntry.failed).length;
+
+        commandHandler.controller.info.voteCounter += voteAmount;
+        commandHandler.data.countRequestToStatistics("vote", voteAmount);
 
     });
 }

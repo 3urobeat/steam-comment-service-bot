@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-12 16:00:32
+ * Last Modified: 2025-01-31 15:44:55
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -22,6 +22,7 @@ const Bot = require("../bot.js");
 
 /**
  * Handles the SteamUser error event
+ * @private
  */
 Bot.prototype._attachSteamErrorEvent = function() {
 
@@ -68,7 +69,7 @@ Bot.prototype._attachSteamErrorEvent = function() {
             const blockedEnumsForRetries = [EResult.Banned, EResult.AccountNotFound]; // No need to block InvalidPassword anymore as the SessionHandler handles credentials
 
             if (this.loginData.logOnTries > this.controller.data.advancedconfig.maxLogOnRetries || blockedEnumsForRetries.includes(err.eresult)) {
-                logger("error", `[${this.logPrefix}] Couldn't log in bot${this.index} after ${this.loginData.logOnTries} attempt(s). ${err} (${err.eresult})`);
+                logger("error", `[${this.logPrefix}] Couldn't log in using proxy '${this.loginData.proxyIp}' after ${this.loginData.logOnTries} attempt(s). ${err} (${err.eresult})`);
 
                 // Abort if bot0 failed on initial login or skip account for now
                 if (this.index == 0 && this.controller.info.readyAfter == 0) {

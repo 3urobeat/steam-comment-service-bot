@@ -4,10 +4,10 @@
  * Created Date: 2022-02-22 17:39:21
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:19:22
+ * Last Modified: 2025-01-12 17:52:51
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -20,6 +20,7 @@ const fs = require("fs");
 
 /**
  * Applies custom update rules for a few files (gets called by downloadUpdate.js)
+ * @private
  * @param {any} compatibilityfeaturedone Legacy param, is unused
  * @param {object} oldconfig The old config from before the update
  * @param {object} oldadvancedconfig The old advancedconfig from before the update

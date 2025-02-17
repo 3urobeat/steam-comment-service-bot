@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-11 16:21:12
+ * Last Modified: 2025-01-12 16:41:00
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -22,7 +22,8 @@ const Bot = require("../bot.js");
 
 
 /**
- * Handles messages, cooldowns and executes commands.
+ * Handles messages, cooldowns and executes commands
+ * @private
  */
 Bot.prototype._attachSteamFriendMessageEvent = function() {
 
@@ -59,8 +60,11 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
                     this.sendChatMessage(this, resInfo, this.controller.data.datafile.aboutstr);
                     break;
                 default:
-                    if (message.startsWith(resInfo.cmdprefix)) this.sendChatMessage(this, resInfo, `${await this.controller.data.getLang("childbotmessage", { "cmdprefix": resInfo.cmdprefix }, steamID64)}\nhttps://steamcommunity.com/profiles/${new SteamID(String(this.controller.main.user.steamID)).getSteamID64()}`);
-                        else logger("debug", `[${this.logPrefix}] Chat message is not a command, ignoring message.`);
+                    if (message.startsWith(resInfo.cmdprefix)) {
+                        this.sendChatMessage(this, resInfo, `${await this.controller.data.getLang("childbotmessage", { "cmdprefix": resInfo.cmdprefix }, steamID64)}\nhttps://steamcommunity.com/profiles/${new SteamID(String(this.controller.main.user.steamID)).getSteamID64()}`);
+                    } else {
+                        logger("debug", `[${this.logPrefix}] Chat message is not a command, ignoring message.`);
+                    }
             }
 
             return;
@@ -73,7 +77,7 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         this.controller.data.lastCommentDB.findOne({ id: steamID64 }, (err, doc) => {
             if (err) logger("error", "Database error on friendMessage. This is weird. Error: " + err);
 
-            if (!doc) { // Add user to database if he/she is missing for some reason
+            if (!doc) { // Add user to database if they are missing for some reason
                 const lastcommentobj = {
                     id: new SteamID(String(steamID)).getSteamID64(),
                     time: Date.now() - (this.data.config.requestCooldown * 60000) // Subtract requestCooldown so that the user is able to use the command instantly
@@ -93,13 +97,15 @@ Bot.prototype._attachSteamFriendMessageEvent = function() {
         }
 
 
-        // Ask command handler to figure out things for us when a message with prefix was sent
+        // Ask command handler to figure things out for us when a message with prefix was sent
         const cont = message.slice(1).split(" "); // Remove prefix and split
         const args = cont.slice(1);               // Remove cmd name to only get arguments
 
-        const success = await this.controller.commandHandler.runCommand(cont[0].toLowerCase(), args, this.sendChatMessage, this, resInfo); // Don't listen to your IDE, this *await is necessary*
+        const runCommandResult = await this.controller.commandHandler.runCommand(cont[0].toLowerCase(), args, this.sendChatMessage, this, resInfo); // Don't listen to your linter, this *await is necessary*
 
-        if (!success) this.sendChatMessage(this, resInfo, await this.controller.data.getLang("commandnotfound", { "cmdprefix": resInfo.cmdprefix }, steamID64)); // Send cmd not found msg if runCommand() returned false
+        if (!runCommandResult.success) {
+            this.sendChatMessage(this, resInfo, runCommandResult.message); // Send cmd not found msg if runCommand() returned false
+        }
     });
 
 };

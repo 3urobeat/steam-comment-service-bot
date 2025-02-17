@@ -12,10 +12,12 @@ This leaves no old data behind in the memory, which is especially important for 
 &nbsp;
 
 ## Table of Contents
-- [start.js](#startjs-)
-- [starter.js](#starterjs-)
+- [start.js](#startjs)
+- [starter.js](#starterjs)
 
 &nbsp;
+
+<a id="startjs"></a>
 
 ## start.js <a href="/start.js" target="_blank"><img align="right" src="https://img.shields.io/badge/<%2F>%20Source-darkcyan"></a>
 
@@ -34,6 +36,8 @@ Every function and object property is documented with JsDocs in the implementati
 Please check them out using your IntelliSense or by clicking the button in the top right corner of this paragraph.
 
 &nbsp;
+
+<a id="starterjs"></a>
 
 ## starter.js <a href="/src/starter.js" target="_blank"><img align="right" src="https://img.shields.io/badge/<%2F>%20Source-darkcyan"></a>
 

@@ -4,7 +4,7 @@
 &nbsp;
 
 This page will walk you through downloading, setting up and configuring the bot!  
-This process usually takes around 5-10 minutes.  
+This process usually takes around 10 minutes, provided you've already created a few Steam accounts to use with the bot.  
 
 If you would like to rather follow a video than these written instructions, click: <a href="https://youtu.be/8J78rC9Z28U" target="_blank"><img src="https://img.shields.io/badge/YouTube-Tutorial-red"></a>  
 Every headline on this page also contains a YouTube badge which will take you to the corresponding video part when clicked!  
@@ -36,6 +36,28 @@ You need to have at least node.js version 16.0.0 installed: [Download](https://n
 If you already have node installed, check the version number by running `node --version` in your console or terminal.  
 If you need a tutorial for this specific node part, [click here.](https://youtu.be/8J78rC9Z28U?t=60)  
 
+### Alternative using Docker:
+<details>
+  <summary>Click to expand</summary>
+
+  The bot can also be run in a docker container.  
+  First, create a volume. This is required for you to be able to access configs and the bot to store files persistently.  
+  `docker volume create steam-comment-service-bot`  
+  This will create a new docker volume with the name 'steam-comment-service-bot'.
+
+  To pull and run the official image, execute the following command:  
+  `docker run -p 4000:4000 -v steam-comment-service-bot:/usr/src/steam-comment-service-bot 3urobeat/steam-comment-service-bot:latest`
+
+  By default port 4000 is being exposed to allow the pre-installed steam-comment-bot-rest plugin to work, should you use it.  
+  If you install more plugins that need ports as well, you need to extend the command to include the respective ports.
+
+  Run the container once to generate the volume. Open the volume (at `/var/lib/docker/volumes/steam-comment-service-bot`) to find the files to continue configuration with.
+  
+  > [!NOTE]
+  > If you are using Portainer, make sure to set the working directory at the bottom to `/usr/src/steam-comment-service-bot`
+
+</details>  
+
 &nbsp;
 
 ## Setup & Configuration: <a href="https://youtu.be/8J78rC9Z28U?t=125" target="_blank"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
@@ -58,7 +80,7 @@ Make sure your accounts have at least E-Mail Steam Guard activated! This is a re
 I highly recommend that you take a quick look at the [Steam Limitations wiki page](./steam_limitations.md) to learn more about what you can and cannot do with your accounts.
 
 <details>
-  <summary>Another, optional method (not recommended anymore):</summary>
+  <summary>Another, legacy method (not recommended anymore, support may be dropped in the future):</summary>
   
   If you'd rather like to provide your accounts in an object notation (JSON), then empty the accounts.txt file and create a `logininfo.json` file.  
   Fill out the usernames and passwords of each bot account you want to use, following this object notation format:  
@@ -78,6 +100,10 @@ I highly recommend that you take a quick look at the [Steam Limitations wiki pag
   It is not recommended anymore as the chance of making a syntax mistake is way higher and requires more effort to extend for lots of accounts.
 </details>  
   
+&nbsp;
+
+**Tip:** If you have already started the bot before and want to log in all previously cached accounts, provide the special syntax `*:cookie` as an account instead of manually listing the accounts with username & password.
+
 &nbsp;
 
 #### Config: <a href="https://youtu.be/8J78rC9Z28U?t=181" target="_blank"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a> 

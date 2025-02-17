@@ -22,7 +22,9 @@ This is the full documentation to customize your `advancedconfig.json`.
 | relogTimeout | Number in ms | Time the bot will wait after failing all reconnect attempts before trying again. Default: 900000 (15 minutes) |
 | maxLogOnRetries | Number | Amount of times the bot will retry logging in to an account if the first try fails. Default: 1 |
 | useLocalIP | true or false | If the bot should use your real IP as well when using proxies. Default: true |
+| proxyFormat | String | Used to specify the format of proxies provided in proxies.txt should they differ from the default "http://${username}:${password}@${ip}:${port}" (username & password are optional). If an empty String is provided, the provided proxies are assumed to be in the default format and will be used as is. Default: "" |
 | enableRelogOnLogOnSessionReplaced | true or false | If the bot should relog accounts when they loose connection with the error message 'LogOnSessionReplaced'. This error is usually caused when someone logs into an account from somewhere else. Default: true |
+| skipFamilyViewUnlock | true or false | If the bot should skip checking every account for enabled family view and asking for an unlock code. **Setting to true may make accounts with enabled family view unusable!** Default: false |
 | &nbsp; | | |
 | acceptFriendRequests | true or false | If the bot should accept friend requests. Default: true |
 | forceFriendlistSpaceTime | Number in days | Amount of days a user hasn't requested something to get unfriended if only one friend slot is left. Set to 0 to disable. Default: 4 |
@@ -36,7 +38,7 @@ This is the full documentation to customize your `advancedconfig.json`.
 | retryFailedComments | true or false | If the bot should retry comments that failed in a comment request. Default: false |
 | retryFailedCommentsDelay | Number in ms | Time the bot will wait before retrying the failed comments. Default: 300000 (5 minutes) |
 | retryFailedCommentsAttempts | Number | How often the bot should retry a failed comment. Default: 1 |
-| requestsIpCooldownPenalty | Number | Time in ms to add to cooldown of bot accounts participating in a comment request which experienced an IP Cooldown error (e.g. HTTP 429). **Disabling is not recommended as it might prolong the cooldown.** Default: 300000 (5 minutes) |
+| requestsIpCooldownPenalty | Number | Time in ms to add to cooldown of bot accounts participating in a request which experienced an IP Cooldown error (e.g. HTTP 429). **Disabling is not recommended as it might prolong the cooldown.** Default: 300000 (5 minutes) |
 | lastQuotesSize | Number | Amount (minus 1) of different quotes that need to be selected in between before a quote can be used again. Default: 5 |
 | &nbsp; | | |
 | enableevalcmd | true or false | The eval command allows the botowner to run javascript code from the steam chat. **Warning: This can harm your machine! Leave it to false if you don't know what you are doing!** Default: false |

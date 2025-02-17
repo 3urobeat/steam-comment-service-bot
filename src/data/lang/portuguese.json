@@ -48,7 +48,7 @@
     "userspamblock": "Você foi bloqueado por 90 segundos por fazer spam.",
     "usernotfriend": "Por favor, me adicione antes de usar um comando!",
     "botnotready": "O bot ainda não está completamente iniciado. Por favor, aguarde um momento antes de usar um comando.",
-    "commandnotfound": "Eu não conheço esse comando. Digite ${cmdprefix}help para mais informações.",
+    "commandnotfound": "Eu não conheço esse comando. Did you mean ${cmdprefix}${cmdsuggestion}? Digite ${cmdprefix}help para mais informações.",
     "commandowneronly": "Este comando está disponível apenas para os proprietários.\nSe você é o proprietário do bot, certifique-se de adicionar seu ownerid ao config.json.\nSe esta solicitação vem de um plug-in, certifique-se de passar os parâmetros userID e ownerIDs.",
     "nouserid": "O comando foi chamado sem um userID! Bloqueando o comando, pois não consigo aplicar cooldowns ou o comportamento padrão deste comando não pode ser usado sem um. Isso é um problema de codificação que deve ser corrigido por um desenvolvedor.",
     "noidparam": "Por favor, forneça um ID!\nO comportamento padrão deste comando pode estar indisponível neste contexto, por exemplo, quando o comando foi usado fora do Steam Chat ou o desenvolvedor esqueceu de passar um userID para ativá-lo.",
@@ -68,6 +68,7 @@
 
     "jobscmdregistered": "These jobs are currently registered:",
     "jobscmdnoneregistered": "There are currently no jobs registered.",
+    "pluginscmdresponse": "These plugins are currently active:\n${activeplugins}\n\nThese plugins are installed but currently inactive:\n${inactiveplugins}",
     "reloadcmdreloaded": "Recarregou todos os comandos e plugins.",
     "activerelog": "O bot está aguardando as últimas solicitações ativas serem concluídas para reiniciar as contas.\nAguarde alguns minutos e tente novamente.",
     "updatecmdforce": "Forçando uma atualização do ${branchname}...",
@@ -121,8 +122,7 @@
     "sessionscmdmsg": "Atualmente há ${amount} sessão(ões) ativa(s):",
     "mysessionscmdnosessions": "Atualmente não há sessões ativas que você iniciou.",
 
-    "addfriendcmdacclimited": "Não é possível adicionar o amigo ${profileid} com o bot0 porque a conta do bot está limitada.",
-    "addfriendcmdsuccess": "Adicionando amigo ${profileid} com todas as contas de bot... Isso levará aproximadamente ~${estimatedtime} segundos. Por favor, verifique o log para possíveis erros.",
+    "addfriendcmdsuccess": "Adicionando amigo ${profileid} com ${numberOfAdds} as contas de bot... Isso levará aproximadamente ~${estimatedtime} segundos. Por favor, verifique o log para possíveis erros.",
     "unfriendcmdsuccess": "Estou cancelando a amizade com você em todas as contas de bot. Isso levará um momento...\nVocê pode me enviar um pedido de amizade novamente a qualquer momento.",
     "unfriendidcmdsuccess": "Removido o amigo ${profileid} de todas as contas de bot.",
 
@@ -130,7 +130,7 @@
     "unfriendallcmdpending": "Cancelando a amizade de todas as pessoas (exceto proprietários) com todas as contas de bot em 30 segundos...\nDigite '${cmdprefix}unfriendall abort' para abortar/parar o processo.",
     "unfriendallcmdstart": "Iniciando o cancelamento de amizade com todos...",
 
-    "joingroupcmdsuccess": "Entrando no grupo '${groupid}' com todas as contas de bot...",
+    "joingroupcmdsuccess": "Entrando no grupo '${groupid}' com ${numberOfJoins} as contas de bot...",
 
     "leavegroupcmdsuccess": "Saindo do grupo '${groupid}' com todas as contas de bot...",
 
@@ -143,6 +143,14 @@
 
     "evalcmdturnedoff": "O comando eval foi desativado!",
     "evalcmdlogininfoblock": "Seu código inclui 'logininfo'. Para proteger senhas, isso não é permitido.",
+
+    "managecmdaddusage": "Provide the credentials of the account to add to the current set of bot accounts as argument in this format:\n'${credentialsformat}' (${optionalparameter} is optional)\n\nCommand usage: ${cmdusage}",
+    "managecmdaddsuccess": "The bot will attempt to add & login '${username}'. Please check the log for potential errors.",
+    "managecmdremoveusage": "Provide the username (accountName) of the bot account to remove from the current set of bot accounts as argument.\n\nCommand usage: ${cmdusage}",
+    "managecmdremovesuccess": "The bot will log off & remove account '${username}' if it exists. Please check the log for potential errors.",
+    "managecmdfilterusage": "Provide one of these arguments to filter the current list of bot accounts and display their names:\n'${availablefilters}'\n\nCommand usage: ${cmdusage}",
+    "managecmdfiltersuccess": "These ${matchamount} bot accounts match the selected filter '${selectedfilter}':\n'${usernames}'",
+    "managecmdusage": "Provide one of these modes: '${availablemodes}'.\nRun command with mode but without argument parameter to display help for that selected mode.\n\nCommand usage: ${cmdusage}",
 
     "childbotmessage": "Esta é uma conta em execução em um cluster de bots.\nPor favor, adicione o bot principal e envie a ele uma mensagem ${cmdprefix}help.\nSe quiser saber do que se trata, digite: ${cmdprefix}about\nEsta é a conta principal do bot:"
 }

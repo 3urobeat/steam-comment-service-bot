@@ -4,10 +4,10 @@
  * Created Date: 2023-03-25 14:02:56
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-28 16:36:37
+ * Last Modified: 2025-02-16 15:13:10
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -97,7 +97,7 @@ module.exports.timeToString = (timestamp) => {
  * @param {string} url The URL of the service to check
  * @param {boolean} [throwTimeout=false] If true, the function will throw a timeout error if Steam can't be reached after 20 seconds
  * @param {{ ip: string, port: number, username: string, password: string }} [proxy] Provide a proxy if the connection check should be made through a proxy instead of the local connection
- * @returns {Promise.<{ statusMessage: string, statusCode: number|null }>} Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
+ * @returns {Promise.<{ statusMessage: string, statusCode: (number|null) }>} Resolves on response code 2xx and rejects on any other response code. Both are called with parameter `response` (Object) which has a `statusMessage` (String) and `statusCode` (Number) key. `statusCode` is `null` if request failed.
  */
 module.exports.checkConnection = (url, throwTimeout = false, proxy) => {
     return new Promise((resolve, reject) => {
@@ -111,7 +111,7 @@ module.exports.checkConnection = (url, throwTimeout = false, proxy) => {
 
         // Use http and provide a proxy if requested - Credit: https://stackoverflow.com/a/49611762
         if (proxy) {                                                                                     // TODO: Missing authentication could perhaps cause errors here
-            const auth = "Basic " + Buffer.from(proxy.username + ":" + proxy.password).toString("base64"); // Construct autentication
+            const auth = "Basic " + Buffer.from(proxy.username + ":" + proxy.password).toString("base64"); // Construct authentication
 
             url = url.replace("https://", ""); // Remove preceding https:// from url
 

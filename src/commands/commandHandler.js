@@ -4,10 +4,10 @@
  * Created Date: 2023-04-01 21:54:21
  * Author: 3urobeat
  *
- * Last Modified: 2024-03-08 18:18:46
+ * Last Modified: 2025-01-12 16:54:13
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -23,7 +23,7 @@ const Controller = require("../controller/controller.js"); // eslint-disable-lin
 /**
  * @typedef Command Documentation of the Command structure
  * @type {object}
- * @property {[string]} names All names that should trigger this command
+ * @property {Array.<string>} names All names that should trigger this command
  * @property {string} description Description of what this command does
  * @property {Array.<CommandArg>} args Array of objects containing information about each parameter supported by this command
  * @property {boolean} ownersOnly Set to true to only allow owners to use this command.
@@ -57,11 +57,15 @@ const CommandHandler = function(controller) {
      */
     this.commands = [];
 
+    // Load CommandHandler helper to calculate suggestions for runCommand()
+    require("./helpers/calculateSuggestion.js");
+
 };
 
 
 /**
  * Internal: Imports core commands on startup
+ * @private
  * @returns {Promise.<void>} Resolved when all commands have been imported
  */
 CommandHandler.prototype._importCoreCommands = function() {
@@ -190,16 +194,25 @@ CommandHandler.prototype.unregisterCommand = function(commandName) {
  * @param {function(object, object, string): void} respondModule Function that will be called to respond to the user's request. Passes context, resInfo and txt as parameters.
  * @param {object} context The context (`this.`) of the object calling this command. Will be passed to respondModule() as first parameter to make working in this function easier.
  * @param {resInfo} resInfo Object containing additional information
- * @returns {boolean} `true` if command was found, `false` if not
+ * @returns {{ success: boolean, reason: string, message: string }} Returns an object indicating whether the command was found and executed or not. If success is `false`, a reason and corresponding message will be provided which can be sent to the user.
  */
 CommandHandler.prototype.runCommand = async function(name, args, respondModule, context, resInfo) {
+    const result = { success: false, reason: null, message: null };
 
     // Iterate through all command objects in commands array and check if name is included in names array of each command.
     const thisCmd = this.commands.find(e => e.names.includes(name));
 
     if (!thisCmd) {
-        logger("warn", `CommandHandler runCommand(): Command '${name}' was not found!`);
-        return false;
+        // Calculate a command suggestion from user input
+        const suggestions = this.calculateCommandSuggestions(name);
+
+        logger("warn", `CommandHandler runCommand(): Command '${name}' was not found! Suggesting user command '${suggestions[0].name}' with a similarity of ${suggestions[0].closeness}%`);
+
+        result.success = false;
+        result.reason  = "notfound";
+        result.message = await this.data.getLang("commandnotfound", { "cmdprefix": resInfo.cmdprefix, "cmdsuggestion": suggestions[0].name }, resInfo.userID);
+
+        return result;
     }
 
     if (!resInfo) {
@@ -222,10 +235,13 @@ CommandHandler.prototype.runCommand = async function(name, args, respondModule, 
     let owners = this.data.cachefile.ownerid;
     if (resInfo.ownerIDs && resInfo.ownerIDs.length > 0) owners = resInfo.ownerIDs;
 
-    // If command is ownersOnly, check if user is included in owners array. If not, send error msg and return true to avoid caller sending a not found msg
+    // If command is ownersOnly, check if user is included in owners array
     if (thisCmd.ownersOnly && !owners.includes(resInfo.userID)) { // If no userID was provided this check will also trigger
-        respondModule(context, resInfo, await this.data.getLang("commandowneronly", null, resInfo.userID));
-        return true;
+        result.success = false;
+        result.reason  = "owneronly";
+        result.message = await this.data.getLang("commandowneronly", null, resInfo.userID);
+
+        return result;
     }
 
     // Add default prefix to resInfo object if none was provided
@@ -235,8 +251,9 @@ CommandHandler.prototype.runCommand = async function(name, args, respondModule, 
     thisCmd.run(this, args, respondModule, context, resInfo);
 
     // Return true if command was found
-    return true;
+    result.success = true;
 
+    return result;
 };
 
 
@@ -259,3 +276,13 @@ CommandHandler.prototype.reloadCommands = function() {
 
 
 module.exports = CommandHandler;
+
+
+/* -------- Register functions to let the IntelliSense know what's going on in helper files -------- */
+
+/**
+ * Calculates command suggestions using the Jaro Winkler distance of `input` to all registered commands
+ * @param {string} input String to get the nearest registered commands of
+ * @returns {Array.<{ name: string, closeness: number }>} Returns a sorted Array of Objects, containing the command name and closeness in percent of name to `input` of every registered command
+ */
+CommandHandler.prototype.calculateCommandSuggestions = function(input) {}; // eslint-disable-line

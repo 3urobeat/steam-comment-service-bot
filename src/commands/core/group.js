@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-08 20:40:33
+ * Last Modified: 2025-01-05 14:52:17
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -57,8 +57,15 @@ module.exports.group = {
 
 module.exports.joinGroup = {
     names: ["joingroup"],
-    description: "Joins a Steam Group with all bot accounts",
+    description: "Joins a Steam Group with amount/all available bot accounts",
     args: [
+        {
+            name: "amount",
+            description: "The amount of accounts to request to join",
+            type: "string",
+            isOptional: false,
+            ownersOnly: true
+        },
         {
             name: "ID",
             description: "The link or groupID64 of the group to join",
@@ -81,21 +88,44 @@ module.exports.joinGroup = {
         const respond = ((txt) => respondModule(context, resInfo, txt)); // Shorten each call
         const requesterID = resInfo.userID;
 
-        if (commandHandler.controller.info.readyAfter == 0) return respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID)); // Check if bot isn't fully started yet - Pass new resInfo object which contains prefix and everything the original resInfo obj contained
+        // Deny request if bot is not fully started yet. Add msg prefix to existing resInfo object
+        if (commandHandler.controller.info.readyAfter == 0) {
+            respondModule(context, { prefix: "/me", ...resInfo }, await commandHandler.data.getLang("botnotready", null, requesterID));
+            return;
+        }
 
-        if (isNaN(args[0]) && !String(args[0]).startsWith("https://steamcommunity.com/groups/")) return respond(await commandHandler.data.getLang("invalidgroupid", null, requesterID));
+        // Process !number amount parameter, set to max if "all", otherwise deny
+        if (isNaN(args[0])) {
+            if (args[0] != undefined && (args[0].toLowerCase() == "all" || args[0].toLowerCase() == "max")) {
+                args[0] = Infinity;
+            } else {
+                respond(await commandHandler.data.getLang("invalidnumber", { "cmdusage": resInfo.cmdprefix + "joingroup amount id" }, requesterID));
+                return;
+            }
+        }
 
-        commandHandler.controller.handleSteamIdResolving(args[0], "group", async (err, id) => {
+        // Deny request if ID parameter does not appear to be a Steam group URL
+        if (isNaN(args[1]) && !String(args[1]).startsWith("https://steamcommunity.com/groups/")) {
+            respond(await commandHandler.data.getLang("invalidgroupid", null, requesterID));
+            return;
+        }
+
+        // Resolve ID
+        commandHandler.controller.handleSteamIdResolving(args[1], "group", async (err, id) => {
             if (err) return respond((await commandHandler.data.getLang("invalidgroupid", null, requesterID)) + "\n\nError: " + err);
 
-            commandHandler.controller.getBots().forEach((e, i) => {
+            // Get all bot accounts up until amount which are not already in the group
+            const accsToJoin = commandHandler.controller.getBots().filter((e) => e.user.myGroups[id] !== 3).slice(0, args[0]);
+
+            logger("info", `Joining group '${id}' with ${accsToJoin.length} bot accounts...`);
+            respond(await commandHandler.data.getLang("joingroupcmdsuccess", { "groupid": id, "numberOfJoins": accsToJoin.length }, requesterID));
+
+            accsToJoin.forEach((e, i) => {
                 setTimeout(() => {
-                    if (e.user.myGroups[id] !== 3) e.community.joinGroup(new SteamID(id));
+                    logger("info", `[${e.logPrefix}] Joining group '${id}'...`);
+                    e.community.joinGroup(new SteamID(id));
                 }, 1000 * i); // Delay every iteration so that we don't make a ton of requests at once
             });
-
-            respond(await commandHandler.data.getLang("joingroupcmdsuccess", { "groupid": id }, requesterID));
-            logger("info", `Joining group '${id}' with all bot accounts...`);
         });
     }
 };

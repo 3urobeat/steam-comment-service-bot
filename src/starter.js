@@ -4,10 +4,10 @@
  * Created Date: 2021-07-10 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-13 11:18:09
+ * Last Modified: 2025-01-12 18:24:12
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -49,6 +49,7 @@ const execArgs = [ "--max-old-space-size=2048", "--optimize-for-size", /* "--ins
 
 /**
  * Provide function to detach parent process event listeners
+ * @private
  */
 function detachParentListeners() {
     logger("info", "Detaching parent's event listeners...", false, true);
@@ -63,6 +64,7 @@ function detachParentListeners() {
 
 /**
  * Provide function to only once attach listeners to parent process
+ * @private
  * @param {function(): void} callback Called on completion
  */
 function attachParentListeners(callback) {
@@ -180,6 +182,7 @@ function attachParentListeners(callback) {
 
 /**
  * Provide function to attach listeners to make communicating with child possible
+ * @private
  */
 function attachChildListeners() {
     forkedprocess.on("message", (msg) => {
@@ -245,7 +248,7 @@ function attachChildListeners() {
  * @param {function(string, string): void} logger Your current logger function
  * @param {boolean} norequire If set to true the function will return the path instead of importing it
  * @param {boolean} force If set to true the function will skip checking if the file exists and overwrite it.
- * @returns {Promise.<undefined|string|object>} Resolves when file was successfully loaded
+ * @returns {Promise.<(undefined|string|object)>} Resolves when file was successfully loaded
  */
 module.exports.checkAndGetFile = (file, logger, norequire = false, force = false) => {
     return new Promise((resolve) => {
@@ -257,6 +260,7 @@ module.exports.checkAndGetFile = (file, logger, norequire = false, force = false
 
         /**
          * Function that will download a new file, test it and resolve/reject promise
+         * @private
          */
         function getNewFile() {
             // Determine branch

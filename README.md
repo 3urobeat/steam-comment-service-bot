@@ -19,7 +19,7 @@
 <p align="center">
   <a href="#introduction">Introduction</a> •
   <a href="#setup-config-guide">Setup & Configuration Guide</a> •
-  <a href="#the-wiki">Wiki</a> •
+  <a href="#the-wiki">Wiki/Docs</a> •
   <a href="#questions-bugs-issues--betas">Get Help</a> •
   <a href="#license">License</a>
 </p>
@@ -70,6 +70,9 @@ This process is pretty simple and should not take you long!
 #### **The Wiki**
 The Wiki of this repository holds a lot of valuable information, please [check it out](./docs/wiki#readme)!  
 You'll find pages on how to add proxies to drastically increase the amount of possible comments, how to integrate the bot into your own application, adding your own language, documentation on errors, the config, advancedconfig and much more.  
+
+Besides the user documentation (wiki), the docs directory also holds the developer documentation.  
+If you want to learn more about the inner workings or are planning on contributing, please [check it out](./docs/dev#readme)!
 
 #### **Questions, Bugs, Issues & Betas**
 If you have any questions, please feel free to open a [Q&A discussion](https://github.com/3urobeat/steam-comment-service-bot/discussions/new?category=q-a)!  

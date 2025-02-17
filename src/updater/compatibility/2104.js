@@ -4,10 +4,10 @@
  * Created Date: 2021-07-10 22:30:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:20:27
+ * Last Modified: 2024-12-24 13:26:33
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -22,7 +22,7 @@ const fs = require("fs");
 module.exports.run = (controller, resolve) => {
 
     controller.data.config.maxComments = Object.keys(controller.data.logininfo).length * controller.data.config.repeatedComments; // Calculate new value which is just amount_of_accounts * repeatedComments
-    controller.data.config.maxOwnerComments = controller.data.config.maxComments; // Set max comments allowed for owners to the same value - user can configure it differently later if he/she/it wishes to
+    controller.data.config.maxOwnerComments = controller.data.config.maxComments; // Set max comments allowed for owners to the same value - user can configure it differently later if they wish to
     delete controller.data.config.repeatedComments; // Remove value from config as it got removed with 2.10.4
 
     const stringifiedconfig = JSON.stringify(controller.data.config, function(k, v) { // Credit: https://stackoverflow.com/a/46217335/12934162

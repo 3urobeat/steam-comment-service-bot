@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2024-08-10 21:39:39
+ * Last Modified: 2025-01-12 17:01:05
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -53,7 +53,7 @@ Controller.prototype.checkLastcommentDB = function(bot) {
 /**
  * Checks the remaining space on the friendlist of a bot account, sends a warning message if it is less than 10 and force unfriends oldest lastcomment db user to always keep room for 1 friend.
  * @param {Bot} bot Bot object of the account to check
- * @param {function(number|null): void} callback Called with `remaining` (Number) on success or `null` on failure
+ * @param {function((number|null)): void} callback Called with `remaining` (Number) on success or `null` on failure
  */
 Controller.prototype.friendListCapacityCheck = function(bot, callback) {
     try {
@@ -122,6 +122,7 @@ Controller.prototype.friendListCapacityCheck = function(bot, callback) {
 
 /**
  * Check for friends who haven't requested comments in config.unfriendtime days and unfriend them
+ * @private
  */
 Controller.prototype._lastcommentUnfriendCheck = function() {
     this.data.lastCommentDB.find({ time: { $lte: Date.now() - (this.data.config.unfriendtime * 86400000) } }, (err, docs) => { // Until is a date in ms, so we check if it is less than right now

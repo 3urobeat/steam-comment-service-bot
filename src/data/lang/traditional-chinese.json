@@ -44,10 +44,10 @@
     "userforceunfriend": "由於使用者太多，你${forceFriendlistSpaceTime}天沒使用我\n如果還有需要繼續使用請添加。",
     "userunfriend": "你${unfriendtime}天沒使用我\n如果還有需要繼續使用請添加。",
 
-    "userspamblock": "已封鎖90秒\n原因 : 刷屏",
+    "userspamblock": "已封鎖90秒\n原因: 刷屏",
     "usernotfriend": "請在使用我之前添加好友。",
     "botnotready": "尚未完全啟動\n請等待。",
-    "commandnotfound": "資料庫尚未沒有這個功能\n請查看 ${cmdprefix}help",
+    "commandnotfound": "資料庫尚未沒有這個功能。Did you mean ${cmdprefix}${cmdsuggestion}? 請查看: ${cmdprefix}help",
     "commandowneronly": "指令只提供開發者使用\n如果你是開發者請添加你的Steam ID到config.json。",
     "nouserid": "在沒有用戶ID的情況下被調用\n阻止該指令\n這是一個編碼問題\n請聯繫開發者 : ${cmdprefix}owner",
     "noidparam": "請提供ID",
@@ -67,6 +67,7 @@
 
     "jobscmdregistered": "已註冊:",
     "jobscmdnoneregistered": "未註冊",
+    "pluginscmdresponse": "These plugins are currently active:\n${activeplugins}\n\nThese plugins are installed but currently inactive:\n${inactiveplugins}",
     "reloadcmdreloaded": "已重新讀取所有功能 / 插件",
     "activerelog": "目前正等待最後一個活動完成，以便重新登入帳戶。",
     "updatecmdforce": "強制更新 ${branchname}",
@@ -120,8 +121,7 @@
     "sessionscmdmsg": "目前有 ${amount}個活耀秒(s):",
     "mysessionscmdnosessions": "目前沒有",
 
-    "addfriendcmdacclimited": "無法添加 ${profileid} bot0可能不是課金帳號",
-    "addfriendcmdsuccess": "正在添加 ${profileid} 所有機器人同時添加，這可能需要一點時間",
+    "addfriendcmdsuccess": "Adding friend ${profileid} with ${numberOfAdds} bot accounts... This will take ~${estimatedtime} seconds. Please check the log for potential errors.",
     "unfriendcmdsuccess": "所有機器人同時解除好友，這可能需要一點時間。",
     "unfriendidcmdsuccess": "所有機器人已解除${profileid}好友",
 
@@ -129,7 +129,7 @@
     "unfriendallcmdpending": "除了開發者，我需要30秒時間解除所有好友\n填寫 '${cmdprefix}unfriendall abort' abort/stop 可停止",
     "unfriendallcmdstart": "開始解除所有好友",
 
-    "joingroupcmdsuccess": "所有的機器人正在加入'${groupid}'",
+    "joingroupcmdsuccess": "Joining group '${groupid}' with ${numberOfJoins} bot accounts",
 
     "leavegroupcmdsuccess": "所有的機器人正在退出'${groupid}'",
 
@@ -142,6 +142,14 @@
 
     "evalcmdturnedoff": "eval指令已關閉",
     "evalcmdlogininfoblock": "您的程式碼包含'logininfo'這是保護密碼的\n請使用其他的",
+
+    "managecmdaddusage": "Provide the credentials of the account to add to the current set of bot accounts as argument in this format:\n'${credentialsformat}' (${optionalparameter} is optional)\n\nCommand usage: ${cmdusage}",
+    "managecmdaddsuccess": "The bot will attempt to add & login '${username}'. Please check the log for potential errors.",
+    "managecmdremoveusage": "Provide the username (accountName) of the bot account to remove from the current set of bot accounts as argument.\n\nCommand usage: ${cmdusage}",
+    "managecmdremovesuccess": "The bot will log off & remove account '${username}' if it exists. Please check the log for potential errors.",
+    "managecmdfilterusage": "Provide one of these arguments to filter the current list of bot accounts and display their names:\n'${availablefilters}'\n\nCommand usage: ${cmdusage}",
+    "managecmdfiltersuccess": "These ${matchamount} bot accounts match the selected filter '${selectedfilter}':\n'${usernames}'",
+    "managecmdusage": "Provide one of these modes: '${availablemodes}'.\nRun command with mode but without argument parameter to display help for that selected mode.\n\nCommand usage: ${cmdusage}",
 
     "childbotmessage": "這是接收支援的機器人\n請使用以下機器人:"
 }

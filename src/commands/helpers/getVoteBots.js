@@ -4,10 +4,10 @@
  * Created Date: 2023-05-28 12:21:02
  * Author: 3urobeat
  *
- * Last Modified: 2024-02-22 17:47:26
+ * Last Modified: 2025-02-13 22:23:30
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -21,6 +21,7 @@ const { timeToString } = require("../../controller/helpers/misc.js");
 
 /**
  * Finds all needed and currently available bot accounts for a vote request.
+ * @private
  * @param {CommandHandler} commandHandler The commandHandler object
  * @param {number|"all"} amount Amount of votes requested or "all" to get the max available amount
  * @param {string} id The sharedfile id to vote on
@@ -45,11 +46,10 @@ module.exports.getAvailableBotsForVoting = async (commandHandler, amount, id, vo
 
     // Remove bot accounts from allAccounts which have already voted on this id with this voteType
     const previousLengthVoted = allAccounts.length;
-    const alreadyVoted        = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: voteType }, {});
+    const alreadyUsedRes      = await commandHandler.data.ratingHistoryDB.findAsync({ id: id, type: voteType }, {});
+    const alreadyUsed         = alreadyUsedRes.map((e) => e.accountName).filter((e) => allAccounts.includes(e)); // Reduce db response to accountNames only but filter any !ONLINE accounts
 
-    alreadyVoted.forEach((e) => {
-        if (allAccounts.indexOf(e.accountName) != -1) allAccounts.splice(allAccounts.indexOf(e.accountName), 1);
-    });
+    allAccounts = allAccounts.filter((e) => !alreadyUsed.includes(e));
 
     if (previousLengthVoted - allAccounts.length > 0) logger("info", `${previousLengthVoted - allAccounts.length} of ${previousLengthVoted} bot accounts were removed from available accounts because we know that they have already voted on this item!`);
 

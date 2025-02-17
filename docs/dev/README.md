@@ -14,18 +14,24 @@ Are you rather searching for the wiki? [Click here to get redirected](../wiki#re
 This documentation uses the same structure as the `src` folder. Each top-level module listed here contains further links to its submodules.  
 The order of this list represents the order in which they are instantiated when the application is started.
 
+**Module Tree:**
 - [Introduction](./introduction.md)
 - Parent Process:
   - [Starter](./starter.md)
 - Child Process:
-  - [Controller](./controller/controller.md)
-  - [DataManager](./dataManager/dataManager.md)
-  - [Updater](./updater/updater.md)
-  - [JobManager](./jobs/jobManager.md)
-  - [Bot](./bot/bot.md)
-    - [sessionHandler](./sessionHandler/sessionHandler.md)
-  - [CommandHandler](./commands/commandHandler.md)
-  - [PluginSystem](./pluginSystem/pluginSystem.md)
+  - [Controller](./controller/index.md)
+  - [DataManager](./dataManager/index.md)
+  - [Updater](./updater/index.md)
+  - [JobManager](./jobs/index.md)
+  - [Bot](./bot/index.md)
+    - [sessionHandler](./sessions/index.md)
+  - [CommandHandler](./commands/index.md)
+  - [PluginSystem](./pluginSystem/index.md)
+
+&nbsp;
+
+Every page consists of an introduction, optionally helpers & events and the automatically generated JsDocs from the code base for that module.  
+Use the JsDocs section to find explanations and signatures for functions and properties which that module exposes.
 
 &nbsp;
 
