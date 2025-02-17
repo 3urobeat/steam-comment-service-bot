@@ -67,7 +67,7 @@ You can see its content by clicking [here](/src/data/cache.json), however it is 
     * [.quotes](#DataManager+quotes) : <code>Array.&lt;string&gt;</code>
     * [.proxies](#DataManager+proxies) : <code>Array.&lt;{proxy: string, proxyIndex: number, isOnline: boolean, lastOnlineCheck: number}&gt;</code>
     * [.cachefile](#DataManager+cachefile) : <code>Object</code>
-    * [.logininfo](#DataManager+logininfo) : [<code>Array.&lt;logOnOptions&gt;</code>](#logOnOptions)
+    * [.logininfo](#DataManager+logininfo) : <code>Array.&lt;{index: number, accountName: string, password: string, sharedSecret: (string\|undefined), steamGuardCode: (null\|undefined), machineName: (string\|undefined), deviceFriendlyName: (string\|undefined)}&gt;</code>
     * [.lastCommentDB](#DataManager+lastCommentDB) : <code>Nedb</code>
     * [.ratingHistoryDB](#DataManager+ratingHistoryDB) : <code>Nedb</code>
     * [.tokensDB](#DataManager+tokensDB) : <code>Nedb</code>
@@ -81,17 +81,18 @@ You can see its content by clicking [here](/src/data/cache.json), however it is 
     * [.writeLogininfoToDisk()](#DataManager+writeLogininfoToDisk)
     * [.writeProxiesToDisk()](#DataManager+writeProxiesToDisk)
     * [.writeQuotesToDisk()](#DataManager+writeQuotesToDisk)
-    * [.importCacheFromDisk()](#DataManager+importCacheFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
-    * [.importDataFromDisk()](#DataManager+importDataFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
-    * [.importConfigFromDisk()](#DataManager+importConfigFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
-    * [.importAdvancedConfigFromDisk()](#DataManager+importAdvancedConfigFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
-    * [.importLogininfoFromDisk()](#DataManager+importLogininfoFromDisk) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
-    * [.importProxiesFromDisk()](#DataManager+importProxiesFromDisk) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
-    * [.importQuotesFromDisk()](#DataManager+importQuotesFromDisk) ⇒ <code>Promise.&lt;Array.&lt;string&gt;&gt;</code>
-    * [.importLanguagesFromDisk()](#DataManager+importLanguagesFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
-    * [.importCustomLangFromDisk()](#DataManager+importCustomLangFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
-    * [.importFromDisk()](#DataManager+importFromDisk) ⇒ <code>Promise.&lt;void&gt;</code>
+    * [._importCacheFromDisk()](#DataManager+_importCacheFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
+    * [._importDataFromDisk()](#DataManager+_importDataFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
+    * [._importConfigFromDisk()](#DataManager+_importConfigFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
+    * [._importAdvancedConfigFromDisk()](#DataManager+_importAdvancedConfigFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
+    * [._importLogininfoFromDisk()](#DataManager+_importLogininfoFromDisk) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
+    * [._importProxiesFromDisk()](#DataManager+_importProxiesFromDisk) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
+    * [._importQuotesFromDisk()](#DataManager+_importQuotesFromDisk) ⇒ <code>Promise.&lt;Array.&lt;string&gt;&gt;</code>
+    * [._importLanguagesFromDisk()](#DataManager+_importLanguagesFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
+    * [._importCustomLangFromDisk()](#DataManager+_importCustomLangFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
+    * [._importFromDisk()](#DataManager+_importFromDisk) ⇒ <code>Promise.&lt;void&gt;</code>
     * [.verifyIntegrity()](#DataManager+verifyIntegrity) ⇒ <code>Promise.&lt;void&gt;</code>
+    * [._loadDataManagerFiles()](#DataManager+_loadDataManagerFiles) ⇒ <code>Promise.&lt;void&gt;</code>
     * [.checkData()](#DataManager+checkData) ⇒ <code>Promise.&lt;void&gt;</code>
     * [.writeAllFilesToDisk()](#DataManager+writeAllFilesToDisk)
     * [.writeCachefileToDisk()](#DataManager+writeCachefileToDisk)
@@ -101,16 +102,16 @@ You can see its content by clicking [here](/src/data/cache.json), however it is 
     * [.writeLogininfoToDisk()](#DataManager+writeLogininfoToDisk)
     * [.writeProxiesToDisk()](#DataManager+writeProxiesToDisk)
     * [.writeQuotesToDisk()](#DataManager+writeQuotesToDisk)
-    * [.importCacheFromDisk()](#DataManager+importCacheFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
-    * [.importDataFromDisk()](#DataManager+importDataFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
-    * [.importConfigFromDisk()](#DataManager+importConfigFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
-    * [.importAdvancedConfigFromDisk()](#DataManager+importAdvancedConfigFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
-    * [.importLogininfoFromDisk()](#DataManager+importLogininfoFromDisk) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
-    * [.importProxiesFromDisk()](#DataManager+importProxiesFromDisk) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
-    * [.importQuotesFromDisk()](#DataManager+importQuotesFromDisk) ⇒ <code>Promise.&lt;Array.&lt;string&gt;&gt;</code>
-    * [.importLanguagesFromDisk()](#DataManager+importLanguagesFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
-    * [.importCustomLangFromDisk()](#DataManager+importCustomLangFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
-    * [.importFromDisk()](#DataManager+importFromDisk) ⇒ <code>Promise.&lt;void&gt;</code>
+    * [._importCacheFromDisk()](#DataManager+_importCacheFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
+    * [._importDataFromDisk()](#DataManager+_importDataFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
+    * [._importConfigFromDisk()](#DataManager+_importConfigFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
+    * [._importAdvancedConfigFromDisk()](#DataManager+_importAdvancedConfigFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
+    * [._importLogininfoFromDisk()](#DataManager+_importLogininfoFromDisk) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
+    * [._importProxiesFromDisk()](#DataManager+_importProxiesFromDisk) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
+    * [._importQuotesFromDisk()](#DataManager+_importQuotesFromDisk) ⇒ <code>Promise.&lt;Array.&lt;string&gt;&gt;</code>
+    * [._importLanguagesFromDisk()](#DataManager+_importLanguagesFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
+    * [._importCustomLangFromDisk()](#DataManager+_importCustomLangFromDisk) ⇒ <code>Promise.&lt;object&gt;</code>
+    * [._importFromDisk()](#DataManager+_importFromDisk) ⇒ <code>Promise.&lt;void&gt;</code>
     * [.verifyIntegrity()](#DataManager+verifyIntegrity) ⇒ <code>Promise.&lt;void&gt;</code>
     * [.processData()](#DataManager+processData)
     * [.checkProxy(proxyIndex)](#DataManager+checkProxy) ⇒ <code>boolean</code>
@@ -119,9 +120,13 @@ You can see its content by clicking [here](/src/data/cache.json), however it is 
     * [.getQuote(quotesArr)](#DataManager+getQuote) ⇒ <code>Promise.&lt;string&gt;</code>
     * [.getUserCooldown(id)](#DataManager+getUserCooldown) ⇒ <code>Promise.&lt;({lastRequest: number, until: number, lastRequestStr: string, untilStr: string}\|null)&gt;</code>
     * [.setUserCooldown(id, timestamp)](#DataManager+setUserCooldown)
+    * [._startExpiringTokensCheckInterval()](#DataManager+_startExpiringTokensCheckInterval)
+    * [._askForGetNewToken(expiring)](#DataManager+_askForGetNewToken)
     * [.getLastCommentRequest(steamID64)](#DataManager+getLastCommentRequest) ⇒ <code>Promise.&lt;number&gt;</code>
     * [.decodeJWT(token)](#DataManager+decodeJWT) ⇒ <code>object</code> \| <code>null</code>
     * [.refreshCache()](#DataManager+refreshCache)
+    * [._restoreBackup(name, filepath, cacheentry, onlinelink, resolve)](#DataManager+_restoreBackup)
+    * [._pullNewFile(name, filepath, resolve, noRequire)](#DataManager+_pullNewFile)
     * [.processData()](#DataManager+processData)
     * [.checkProxy(proxyIndex)](#DataManager+checkProxy) ⇒ <code>boolean</code>
     * [.checkAllProxies([ignoreLastCheckedWithin])](#DataManager+checkAllProxies) ⇒ <code>Promise.&lt;void&gt;</code>
@@ -129,9 +134,13 @@ You can see its content by clicking [here](/src/data/cache.json), however it is 
     * [.getQuote(quotesArr)](#DataManager+getQuote) ⇒ <code>Promise.&lt;string&gt;</code>
     * [.getUserCooldown(id)](#DataManager+getUserCooldown) ⇒ <code>Promise.&lt;({lastRequest: number, until: number, lastRequestStr: string, untilStr: string}\|null)&gt;</code>
     * [.setUserCooldown(id, timestamp)](#DataManager+setUserCooldown)
+    * [._startExpiringTokensCheckInterval()](#DataManager+_startExpiringTokensCheckInterval)
+    * [._askForGetNewToken(expiring)](#DataManager+_askForGetNewToken)
     * [.getLastCommentRequest(steamID64)](#DataManager+getLastCommentRequest) ⇒ <code>Promise.&lt;number&gt;</code>
     * [.decodeJWT(token)](#DataManager+decodeJWT) ⇒ <code>object</code> \| <code>null</code>
     * [.refreshCache()](#DataManager+refreshCache)
+    * [._restoreBackup(name, filepath, cacheentry, onlinelink, resolve)](#DataManager+_restoreBackup)
+    * [._pullNewFile(name, filepath, resolve, noRequire)](#DataManager+_pullNewFile)
 
 <a name="new_DataManager_new"></a>
 
@@ -195,7 +204,7 @@ Stores IDs from config files converted at runtime and backups for all config & d
 **Kind**: instance property of [<code>DataManager</code>](#DataManager)  
 <a name="DataManager+logininfo"></a>
 
-### dataManager.logininfo : [<code>Array.&lt;logOnOptions&gt;</code>](#logOnOptions)
+### dataManager.logininfo : <code>Array.&lt;{index: number, accountName: string, password: string, sharedSecret: (string\|undefined), steamGuardCode: (null\|undefined), machineName: (string\|undefined), deviceFriendlyName: (string\|undefined)}&gt;</code>
 Stores the login information for every bot account provided via the `logininfo.json` or `accounts.txt` files.
 
 **Kind**: instance property of [<code>DataManager</code>](#DataManager)  
@@ -282,73 +291,73 @@ Writes proxies to proxies.txt on disk
 Writes quotes to quotes.txt on disk
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
-<a name="DataManager+importCacheFromDisk"></a>
+<a name="DataManager+_importCacheFromDisk"></a>
 
-### dataManager.importCacheFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
-Loads cache.json from disk, updates cachefile property in DataManager and handles potential errors
-
-**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
-**Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importDataFromDisk"></a>
-
-### dataManager.importDataFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
-Loads data.json from disk, updates datafile property in DataManager and handles potential errors
+### dataManager.\_importCacheFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
+Internal: Loads cache.json from disk, updates cachefile property in DataManager and handles potential errors
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
 **Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importConfigFromDisk"></a>
+<a name="DataManager+_importDataFromDisk"></a>
 
-### dataManager.importConfigFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
-Loads config.json from disk, updates config property in DataManager and handles potential errors
-
-**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
-**Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importAdvancedConfigFromDisk"></a>
-
-### dataManager.importAdvancedConfigFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
-Loads advancedconfig.json from disk, updates advancedconfig property in DataManager and handles potential errors
+### dataManager.\_importDataFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
+Internal: Loads data.json from disk, updates datafile property in DataManager and handles potential errors
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
 **Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importLogininfoFromDisk"></a>
+<a name="DataManager+_importConfigFromDisk"></a>
 
-### dataManager.importLogininfoFromDisk() ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
-Loads accounts.txt/logininfo.json from disk, updates logininfo property in DataManager and handles potential errors
+### dataManager.\_importConfigFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
+Internal: Loads config.json from disk, updates config property in DataManager and handles potential errors
+
+**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
+**Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
+<a name="DataManager+_importAdvancedConfigFromDisk"></a>
+
+### dataManager.\_importAdvancedConfigFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
+Internal: Loads advancedconfig.json from disk, updates advancedconfig property in DataManager and handles potential errors
+
+**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
+**Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
+<a name="DataManager+_importLogininfoFromDisk"></a>
+
+### dataManager.\_importLogininfoFromDisk() ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
+Internal: Loads accounts.txt/logininfo.json from disk, updates logininfo property in DataManager and handles potential errors
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
 **Returns**: <code>Promise.&lt;Array.&lt;object&gt;&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importProxiesFromDisk"></a>
+<a name="DataManager+_importProxiesFromDisk"></a>
 
-### dataManager.importProxiesFromDisk() ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
-Loads proxies.txt from disk, updates proxies property in DataManager and handles potential errors
+### dataManager.\_importProxiesFromDisk() ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
+Internal: Loads proxies.txt from disk, updates proxies property in DataManager and handles potential errors
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
 **Returns**: <code>Promise.&lt;Array.&lt;object&gt;&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importQuotesFromDisk"></a>
+<a name="DataManager+_importQuotesFromDisk"></a>
 
-### dataManager.importQuotesFromDisk() ⇒ <code>Promise.&lt;Array.&lt;string&gt;&gt;</code>
-Loads quotes.txt from disk, updates quotes property in DataManager and handles potential errors
+### dataManager.\_importQuotesFromDisk() ⇒ <code>Promise.&lt;Array.&lt;string&gt;&gt;</code>
+Internal: Loads quotes.txt from disk, updates quotes property in DataManager and handles potential errors
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
 **Returns**: <code>Promise.&lt;Array.&lt;string&gt;&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importLanguagesFromDisk"></a>
+<a name="DataManager+_importLanguagesFromDisk"></a>
 
-### dataManager.importLanguagesFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
-Loads languages from disk, updates languages property in DataManager and handles potential errors
-
-**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
-**Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importCustomLangFromDisk"></a>
-
-### dataManager.importCustomLangFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
-Loads customlang.json from disk, updates languages property in DataManager and handles potential errors
+### dataManager.\_importLanguagesFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
+Internal: Loads languages from disk, updates languages property in DataManager and handles potential errors
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
 **Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importFromDisk"></a>
+<a name="DataManager+_importCustomLangFromDisk"></a>
 
-### dataManager.importFromDisk() ⇒ <code>Promise.&lt;void&gt;</code>
-Loads all config & data files from disk and handles potential errors
+### dataManager.\_importCustomLangFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
+Internal: Loads customlang.json from disk, updates languages property in DataManager and handles potential errors
+
+**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
+**Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
+<a name="DataManager+_importFromDisk"></a>
+
+### dataManager.\_importFromDisk() ⇒ <code>Promise.&lt;void&gt;</code>
+Internal: Loads all config & data files from disk and handles potential errors
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
 **Returns**: <code>Promise.&lt;void&gt;</code> - Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
@@ -361,6 +370,13 @@ If an already loaded file needed to be recovered then the bot will restart to lo
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
 **Returns**: <code>Promise.&lt;void&gt;</code> - Resolves when all files have been checked and, if necessary, restored. Does not resolve if the bot needs to be restarted.  
+<a name="DataManager+_loadDataManagerFiles"></a>
+
+### dataManager.\_loadDataManagerFiles() ⇒ <code>Promise.&lt;void&gt;</code>
+Loads all DataManager helper files. This is done outside of the constructor to be able to await it.
+
+**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
+**Returns**: <code>Promise.&lt;void&gt;</code> - Resolved when all files have been loaded  
 <a name="DataManager+checkData"></a>
 
 ### dataManager.checkData() ⇒ <code>Promise.&lt;void&gt;</code>
@@ -416,73 +432,73 @@ Writes proxies to proxies.txt on disk
 Writes quotes to quotes.txt on disk
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
-<a name="DataManager+importCacheFromDisk"></a>
+<a name="DataManager+_importCacheFromDisk"></a>
 
-### dataManager.importCacheFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
-Loads cache.json from disk, updates cachefile property in DataManager and handles potential errors
-
-**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
-**Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importDataFromDisk"></a>
-
-### dataManager.importDataFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
-Loads data.json from disk, updates datafile property in DataManager and handles potential errors
+### dataManager.\_importCacheFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
+Internal: Loads cache.json from disk, updates cachefile property in DataManager and handles potential errors
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
 **Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importConfigFromDisk"></a>
+<a name="DataManager+_importDataFromDisk"></a>
 
-### dataManager.importConfigFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
-Loads config.json from disk, updates config property in DataManager and handles potential errors
-
-**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
-**Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importAdvancedConfigFromDisk"></a>
-
-### dataManager.importAdvancedConfigFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
-Loads advancedconfig.json from disk, updates advancedconfig property in DataManager and handles potential errors
+### dataManager.\_importDataFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
+Internal: Loads data.json from disk, updates datafile property in DataManager and handles potential errors
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
 **Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importLogininfoFromDisk"></a>
+<a name="DataManager+_importConfigFromDisk"></a>
 
-### dataManager.importLogininfoFromDisk() ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
-Loads accounts.txt/logininfo.json from disk, updates logininfo property in DataManager and handles potential errors
+### dataManager.\_importConfigFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
+Internal: Loads config.json from disk, updates config property in DataManager and handles potential errors
+
+**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
+**Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
+<a name="DataManager+_importAdvancedConfigFromDisk"></a>
+
+### dataManager.\_importAdvancedConfigFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
+Internal: Loads advancedconfig.json from disk, updates advancedconfig property in DataManager and handles potential errors
+
+**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
+**Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
+<a name="DataManager+_importLogininfoFromDisk"></a>
+
+### dataManager.\_importLogininfoFromDisk() ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
+Internal: Loads accounts.txt/logininfo.json from disk, updates logininfo property in DataManager and handles potential errors
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
 **Returns**: <code>Promise.&lt;Array.&lt;object&gt;&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importProxiesFromDisk"></a>
+<a name="DataManager+_importProxiesFromDisk"></a>
 
-### dataManager.importProxiesFromDisk() ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
-Loads proxies.txt from disk, updates proxies property in DataManager and handles potential errors
+### dataManager.\_importProxiesFromDisk() ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
+Internal: Loads proxies.txt from disk, updates proxies property in DataManager and handles potential errors
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
 **Returns**: <code>Promise.&lt;Array.&lt;object&gt;&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importQuotesFromDisk"></a>
+<a name="DataManager+_importQuotesFromDisk"></a>
 
-### dataManager.importQuotesFromDisk() ⇒ <code>Promise.&lt;Array.&lt;string&gt;&gt;</code>
-Loads quotes.txt from disk, updates quotes property in DataManager and handles potential errors
+### dataManager.\_importQuotesFromDisk() ⇒ <code>Promise.&lt;Array.&lt;string&gt;&gt;</code>
+Internal: Loads quotes.txt from disk, updates quotes property in DataManager and handles potential errors
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
 **Returns**: <code>Promise.&lt;Array.&lt;string&gt;&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importLanguagesFromDisk"></a>
+<a name="DataManager+_importLanguagesFromDisk"></a>
 
-### dataManager.importLanguagesFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
-Loads languages from disk, updates languages property in DataManager and handles potential errors
-
-**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
-**Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importCustomLangFromDisk"></a>
-
-### dataManager.importCustomLangFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
-Loads customlang.json from disk, updates languages property in DataManager and handles potential errors
+### dataManager.\_importLanguagesFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
+Internal: Loads languages from disk, updates languages property in DataManager and handles potential errors
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
 **Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
-<a name="DataManager+importFromDisk"></a>
+<a name="DataManager+_importCustomLangFromDisk"></a>
 
-### dataManager.importFromDisk() ⇒ <code>Promise.&lt;void&gt;</code>
-Loads all config & data files from disk and handles potential errors
+### dataManager.\_importCustomLangFromDisk() ⇒ <code>Promise.&lt;object&gt;</code>
+Internal: Loads customlang.json from disk, updates languages property in DataManager and handles potential errors
+
+**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
+**Returns**: <code>Promise.&lt;object&gt;</code> - Resolves promise with file content when file has been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
+<a name="DataManager+_importFromDisk"></a>
+
+### dataManager.\_importFromDisk() ⇒ <code>Promise.&lt;void&gt;</code>
+Internal: Loads all config & data files from disk and handles potential errors
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
 **Returns**: <code>Promise.&lt;void&gt;</code> - Resolves promise when all files have been loaded successfully. The function will log an error and terminate the application should a fatal error occur.  
@@ -576,6 +592,23 @@ Updates or inserts timestamp of a user
 | id | <code>string</code> | ID of the user to update |
 | timestamp | <code>number</code> | Unix timestamp of the last interaction the user received |
 
+<a name="DataManager+_startExpiringTokensCheckInterval"></a>
+
+### dataManager.\_startExpiringTokensCheckInterval()
+Internal: Checks tokens.db every 24 hours for refreshToken expiration in <=7 days, logs warning and sends botowner a Steam msg
+
+**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
+<a name="DataManager+_askForGetNewToken"></a>
+
+### dataManager.\_askForGetNewToken(expiring)
+Internal: Asks user if they want to refresh the tokens of all expiring accounts when no active request was found and relogs them
+
+**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| expiring | <code>object</code> | Object of botobject entries to ask user for |
+
 <a name="DataManager+getLastCommentRequest"></a>
 
 ### dataManager.getLastCommentRequest(steamID64) ⇒ <code>Promise.&lt;number&gt;</code>
@@ -606,6 +639,35 @@ Decodes a JsonWebToken - https://stackoverflow.com/a/38552302
 Refreshes Backups in cache.json with new data
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
+<a name="DataManager+_restoreBackup"></a>
+
+### dataManager.\_restoreBackup(name, filepath, cacheentry, onlinelink, resolve)
+Internal: Helper function to try and restore backup of corrupted file from cache.json
+
+**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | Name of the file |
+| filepath | <code>string</code> | Absolute path of the file on the disk |
+| cacheentry | <code>object</code> | Backup-Object of the file in cache.json |
+| onlinelink | <code>string</code> | Link to the raw file in the GitHub repository |
+| resolve | <code>function</code> | Function to resolve the caller's promise |
+
+<a name="DataManager+_pullNewFile"></a>
+
+### dataManager.\_pullNewFile(name, filepath, resolve, noRequire)
+Internal: Helper function to pull new file from GitHub
+
+**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | Name of the file |
+| filepath | <code>string</code> | Full path, starting from project root with './' |
+| resolve | <code>function</code> | Your promise to resolve when file was pulled |
+| noRequire | <code>boolean</code> | Optional: Set to true if resolve() should not be called with require(file) as param |
+
 <a name="DataManager+processData"></a>
 
 ### dataManager.processData()
@@ -687,6 +749,26 @@ Updates or inserts timestamp of a user
 | id | <code>string</code> | ID of the user to update |
 | timestamp | <code>number</code> | Unix timestamp of the last interaction the user received |
 
+<a name="DataManager+_startExpiringTokensCheckInterval"></a>
+
+### dataManager.\_startExpiringTokensCheckInterval()
+Internal: Checks tokens.db every 24 hours for refreshToken expiration in <=31 days and attempts to renew.
+If this fails and the token expires in <=7 days, it logs a warning and sends the botowner a Steam msg
+
+Note: This function should be redundant as SteamUser now automatically attempts to renew refreshTokens when `renewRefreshTokens` is enabled.
+
+**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
+<a name="DataManager+_askForGetNewToken"></a>
+
+### dataManager.\_askForGetNewToken(expiring)
+Internal: Asks user if they want to refresh the tokens of all expiring accounts when no active request was found and relogs them
+
+**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| expiring | <code>object</code> | Object of botobject entries to ask user for |
+
 <a name="DataManager+getLastCommentRequest"></a>
 
 ### dataManager.getLastCommentRequest(steamID64) ⇒ <code>Promise.&lt;number&gt;</code>
@@ -717,3 +799,32 @@ Decodes a JsonWebToken - https://stackoverflow.com/a/38552302
 Refreshes Backups in cache.json with new data
 
 **Kind**: instance method of [<code>DataManager</code>](#DataManager)  
+<a name="DataManager+_restoreBackup"></a>
+
+### dataManager.\_restoreBackup(name, filepath, cacheentry, onlinelink, resolve)
+Internal: Helper function to try and restore backup of corrupted file from cache.json
+
+**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | Name of the file |
+| filepath | <code>string</code> | Absolute path of the file on the disk |
+| cacheentry | <code>object</code> | Backup-Object of the file in cache.json |
+| onlinelink | <code>string</code> | Link to the raw file in the GitHub repository |
+| resolve | <code>function</code> | Function to resolve the caller's promise |
+
+<a name="DataManager+_pullNewFile"></a>
+
+### dataManager.\_pullNewFile(name, filepath, resolve, noRequire)
+Internal: Helper function to pull new file from GitHub
+
+**Kind**: instance method of [<code>DataManager</code>](#DataManager)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | Name of the file |
+| filepath | <code>string</code> | Full path, starting from project root with './' |
+| resolve | <code>function</code> | Your promise to resolve when file was pulled |
+| noRequire | <code>boolean</code> | Optional: Set to true if resolve() should not be called with require(file) as param |
+
