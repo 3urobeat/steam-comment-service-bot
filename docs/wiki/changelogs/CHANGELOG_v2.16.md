@@ -164,3 +164,7 @@ Commit: [b1b500c](https://github.com/3urobeat/steam-comment-service-bot/commit/b
 **Fixes:**
 - Fixed loading sharedfile being broken caused by bot using a newer cheerio version than node-steamcommunity does [#271](https://github.com/3urobeat/steam-comment-service-bot/issues/271)
 - Fixed `!comment` calculating incorrect amount of bots needed when maxRequestAmount < accsAvailable and asking user to add an empty list of accounts [#272](https://github.com/3urobeat/steam-comment-service-bot/issues/272)
+
+Commit: [958e078](https://github.com/3urobeat/steam-comment-service-bot/commit/958e078)
+
+&nbsp;
