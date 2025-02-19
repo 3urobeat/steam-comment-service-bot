@@ -1,12 +1,12 @@
 {
     "name": "steam-comment-service-bot",
-    "version": "2.16.0",
+    "version": "2.16.1",
     "description": "The most advanced Steam Account Manager Bot with mass coordinated comments/likes/favs/follows and plugin support",
     "main": "start.js",
     "dependencies": {
         "@seald-io/nedb": "^4.0.4",
         "@types/tail": "^2.2.3",
-        "cheerio": "^1.0.0",
+        "cheerio": "^0.22.0",
         "download": "^8.0.0",
         "htmlparser2": "^10.0.0",
         "https": "^1.0.0",

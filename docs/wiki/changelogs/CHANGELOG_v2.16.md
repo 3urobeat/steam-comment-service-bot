@@ -5,6 +5,7 @@
 
 **Current**  
 - [2.16.0](#2.16.0)
+- [2.16.1](#2.16.1)
   
 &nbsp;
 
@@ -152,3 +153,14 @@ If you've made a plugin, check the 'Creating Plugins' wiki page and add the `bot
   This list was generated using my [langStringsChangeDetector.js](/scripts/langStringsChangeDetector.js) script.
 
 </details>
+
+Commit: [b1b500c](https://github.com/3urobeat/steam-comment-service-bot/commit/b1b500c)
+
+&nbsp;
+
+<a id="2.16.1"></a>
+
+## **2025-02-19, Version 2.16.1**
+**Fixes:**
+- Fixed loading sharedfile being broken caused by bot using a newer cheerio version than node-steamcommunity does [#271](https://github.com/3urobeat/steam-comment-service-bot/issues/271)
+- Fixed `!comment` calculating incorrect amount of bots needed when maxRequestAmount < accsAvailable and asking user to add an empty list of accounts [#272](https://github.com/3urobeat/steam-comment-service-bot/issues/272)
