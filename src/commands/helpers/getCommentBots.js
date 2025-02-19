@@ -4,7 +4,7 @@
  * Created Date: 2023-04-09 12:49:53
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-29 20:19:36
+ * Last Modified: 2025-02-19 17:41:23
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -41,7 +41,7 @@ module.exports.getAvailableBotsForCommenting = async function(commandHandler, nu
     // Method 1: Use as many accounts as possible to maximize the spread (Default)
     const botsAvailable = commandHandler.controller.getBots();
 
-    accountsMin = Math.ceil(numberOfComments / (maxRequestAmount / botsAvailable.length)); // Divide numberOfComments by how many times one account is allowed to comment
+    accountsMin = Math.ceil(numberOfComments / Math.max(maxRequestAmount / botsAvailable.length, 1)); // Divide numberOfComments by how many times one account is allowed to comment. Cap at 1 to avoid needing >1 account for 1 comment
     accountsMax = numberOfComments;
 
     if (numberOfComments > botsAvailable.length) {  // Cap accountsMax at amount of accounts
