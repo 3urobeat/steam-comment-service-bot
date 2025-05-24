@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 12:24:26
+ * Last Modified: 2025-05-24 23:26:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -22,13 +22,27 @@ const fs       = require("fs");
 const { exec } = require("child_process"); // Wanted to do it with the npm package but that didn't work out (BETA 2.8 b2)
 
 
+// Helper function to set terminal title again after npm might have changed it
+function setTerminalTitle() {
+    // Ignore call if Controller hasn't arrived at data import yet. This is the case when the parent process initially installs packages, which will trigger a restart.
+    if (!global.extdata) return;
+
+    if (process.platform == "win32") { // Set node process name to find it in task manager etc.
+        process.title = `${extdata.mestr}'s Steam Comment Service Bot v${global.extdata.versionstr} | ${process.platform}`; // Windows allows long terminal/process names
+    } else {
+        process.stdout.write(`${String.fromCharCode(27)}]0;${extdata.mestr}'s Steam Comment Service Bot v${extdata.versionstr} | ${process.platform}${String.fromCharCode(7)}`); // Sets terminal title (thanks: https://stackoverflow.com/a/30360821/12934162)
+        process.title = "CommentBot"; // Sets process title in task manager etc.
+    }
+}
+
+
 /**
  * Attempts to reinstall all modules
  * @param {function(string, string): void} logger The currently used logger function (real or fake, the caller decides)
  * @param {function((string|null), (string|null)): void} callback Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
 module.exports.reinstallAll = async (logger, callback) => {
-    logger("info", "I'm installing packages, which the bot depends on to function, inside this folder. Please wait a moment, this can take up to a minute.");
+    logger("info", "I'm installing packages, which the bot depends on to function, inside this folder. Please wait a moment, this can take a minute.");
 
     if (!fs.existsSync(srcdir + "/../node_modules")) {
         logger("info", "Creating node_modules folder...");
@@ -51,6 +65,9 @@ module.exports.reinstallAll = async (logger, callback) => {
             if (err) return callback(err, null);
 
             logger("info", "Successfully ran 'npm install --omit=dev'");
+
+            // Set terminal title again as npm may have changed it
+            setTerminalTitle();
 
             callback(null, stdout);
         });
@@ -80,6 +97,9 @@ module.exports.updateFromPath = (path, callback) => {
 
         // Logger("info", `NPM Log:\n${stdout}`, false, false, null, true) // Entire log, disabled to reduce log spam
 
+        // Set terminal title again as npm may have changed it
+        setTerminalTitle();
+
         callback(null, stdout);
     });
 };
@@ -104,6 +124,9 @@ module.exports.installLatest = (packages) => {
                 logger("debug", "npminteraction installLatest(): Finished checking and installing updates...");
                 resolve();
             }
+
+            // Set terminal title again as npm may have changed it
+            setTerminalTitle();
 
             // Logger("info", `NPM Log:\n${stdout}`, false, false, null, true); // Entire log, disabled to reduce log spam
         });

@@ -338,7 +338,7 @@
         {
             "path": "src/controller/helpers/npminteraction.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/controller/helpers/npminteraction.js",
-            "checksum": "e89e8cf56bfb726b25fd844a9e65ee7b"
+            "checksum": "ca665bded68293b3978c7efeadef9142"
         },
         {
             "path": "src/controller/login.js",
