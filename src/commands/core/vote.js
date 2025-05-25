@@ -4,7 +4,7 @@
  * Created Date: 2023-05-28 12:02:24
  * Author: 3urobeat
  *
- * Last Modified: 2025-02-13 21:27:46
+ * Last Modified: 2025-05-25 15:37:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -215,32 +215,38 @@ async function processVoteRequest(origin, commandHandler, args, respondModule, c
 
 
             /* --------- Try to vote --------- */
-            voteFunc.call(bot.community, ...Object.values(voteArgs), (error) => { // Note: Steam does not return an error for a duplicate request here
+            try {
+                voteFunc.call(bot.community, ...Object.values(voteArgs), (error) => { // Note: Steam does not return an error for a duplicate request here
 
-                /* --------- Handle errors thrown by this vote attempt or update ratingHistory db and log success message --------- */
-                if (error) {
-                    logRequestError(error, commandHandler, bot, id);
+                    /* --------- Handle errors thrown by this vote attempt or update ratingHistory db and log success message --------- */
+                    if (error) {
+                        logRequestError(error, commandHandler, bot, id);
 
-                } else {
+                    } else {
 
-                    // Set or insert entry for this account on this id for this type
-                    commandHandler.data.ratingHistoryDB.update(
-                        { id: id, accountName: activeReqEntry.accounts[i], $or: [{ type: "upvote" }, { type: "downvote" }, { type: "funnyvote" }] }, // Match all records of this account for this id, with one of the three possible types supported by this command,
-                        { $set: { type: origin, time: Date.now() } },                                                                                // ...then update the type to the one of this request
-                        { upsert: true },                                                                                                            // ...or insert a new entry if none was found
-                        (err) => {
-                            if (err) logger("warn", `Failed to update entry for '${activeReqEntry.accounts[i]}' on '${id}' in ratingHistory database to '${origin}'! Error: ` + err);
-                        });
+                        // Set or insert entry for this account on this id for this type
+                        commandHandler.data.ratingHistoryDB.update(
+                            { id: id, accountName: activeReqEntry.accounts[i], $or: [{ type: "upvote" }, { type: "downvote" }, { type: "funnyvote" }] }, // Match all records of this account for this id, with one of the three possible types supported by this command,
+                            { $set: { type: origin, time: Date.now() } },                                                                                // ...then update the type to the one of this request
+                            { upsert: true },                                                                                                            // ...or insert a new entry if none was found
+                            (err) => {
+                                if (err) logger("warn", `Failed to update entry for '${activeReqEntry.accounts[i]}' on '${id}' in ratingHistory database to '${origin}'! Error: ` + err);
+                            });
 
-                    // Log success msg
-                    if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] ${capitilizedOrigin.slice(0, -1)}ing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id} with proxy ${bot.loginData.proxyIndex}...`);
-                        else logger("info", `[${bot.logPrefix}] ${capitilizedOrigin.slice(0, -1)}ing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id}...`);
-                }
+                        // Log success msg
+                        if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] ${capitilizedOrigin.slice(0, -1)}ing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id} with proxy ${bot.loginData.proxyIndex}...`);
+                            else logger("info", `[${bot.logPrefix}] ${capitilizedOrigin.slice(0, -1)}ing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} on ${id}...`);
+                    }
 
-                // Continue with the next iteration
+                    // Continue with the next iteration
+                    loop.next();
+
+                });
+            } catch (err) {
+                logger("warn", "SteamCommunity's vote function caused an unhandled exception! The following logRequestError call is made from a try catch block.");
+                logRequestError(err, commandHandler, bot, id);
                 loop.next();
-
-            });
+            }
 
         }, commandHandler.data.config.requestDelay * (i > 0));
 
