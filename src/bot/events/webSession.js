@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-02-11 17:26:08
+ * Last Modified: 2025-05-25 14:33:39
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -125,8 +125,8 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
                 // Check if acceptgroupinvites is set to false and only allow botsgroup invite to be accepted
                 if (!this.controller.data.config.acceptgroupinvites) {
-                    if (!this.controller.data.config.yourgroup && !this.controller.data.config.botsgroup) return;
-                    if (thisgroup != this.controller.data.cachefile.configgroup64id && thisgroup != this.controller.data.cachefile.botsgroupid) return;
+                    if (!this.controller.data.config.yourgroup && !this.controller.data.config.botsgroup) continue;
+                    if (thisgroup != this.controller.data.cachefile.configgroup64id && thisgroup != this.controller.data.cachefile.botsgroupid) continue;
                     logger("info", "acceptgroupinvites is turned off but this is an invite to the group set as yourgroup or botsgroup. Accepting invite anyway...");
                 }
 
