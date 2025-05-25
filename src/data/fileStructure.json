@@ -128,12 +128,12 @@
         {
             "path": "src/bot/events/relationship.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/relationship.js",
-            "checksum": "fda6229ea7671b180d743e9aab538dc7"
+            "checksum": "8017b6aa1fdec3fd8c5333921398d200"
         },
         {
             "path": "src/bot/events/webSession.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/webSession.js",
-            "checksum": "03ab5f41877cc41968831879b0ea5c32"
+            "checksum": "289b83506c66ab238b219a93e034357f"
         },
         {
             "path": "src/bot/helpers/checkMsgBlock.js",
