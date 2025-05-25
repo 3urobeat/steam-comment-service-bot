@@ -393,7 +393,7 @@
         {
             "path": "src/dataManager/dataImport.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/dataManager/dataImport.js",
-            "checksum": "cde0e89f27ea8a71e28079ba1b266258"
+            "checksum": "1ac29b5953388b264dd059771b190598"
         },
         {
             "path": "src/dataManager/dataIntegrity.js",
