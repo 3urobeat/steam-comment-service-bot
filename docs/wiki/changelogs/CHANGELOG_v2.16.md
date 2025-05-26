@@ -6,6 +6,7 @@
 **Current**  
 - [2.16.0](#2.16.0)
 - [2.16.1](#2.16.1)
+- [2.16.2](#2.16.2)
   
 &nbsp;
 
@@ -168,3 +169,22 @@ Commit: [b1b500c](https://github.com/3urobeat/steam-comment-service-bot/commit/b
 Commit: [958e078](https://github.com/3urobeat/steam-comment-service-bot/commit/958e078)
 
 &nbsp;
+
+<a id="2.16.2"></a>
+
+## **2025-05-26, Version 2.16.2**
+**Additions:**
+- Added 21 new multi line quotes to default quotes.txt thanks to user beyond
+
+**Fixes:**
+- Fixed regression caused by [merge](https://github.com/3urobeat/node-steamcommunity/commit/5c0c5ed) loosing [fix](https://github.com/3urobeat/node-steamcommunity/commit/bdd7497) leading to artworks without breadcrumbs failing to load
+- Fixed webSession handler aborting pre-maturely when a group invite was received while the account was offline and acceptgroupinvites is set to false
+- Fixed proxy ip extraction for logging not working when using proxy without credentials and default proxyFormat
+- Fixed proxy ip extraction for logging (again) when using proxy without credentials, without proxyFormat, with http://
+- Potential Fix: Bot will set terminal title again after executing npm command to fix terminal title being lost
+
+**Changes:**
+- Bot will now decline friend requests & group invites instead of ignoring them when acceptFriendRequests/acceptgroupinvites is disabled in advancedconfig/config
+- Secured calls made to node-steamcommunity's request functions better to fix an unhandled exception stalling request handler (see [commit](https://github.com/3urobeat/steam-comment-service-bot/commit/2221b66) for full explanation)
+- Updated dependencies
+- Re-Generated developer documentation
