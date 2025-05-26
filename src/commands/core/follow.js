@@ -4,7 +4,7 @@
  * Created Date: 2023-09-24 15:04:33
  * Author: 3urobeat
  *
- * Last Modified: 2025-02-13 21:27:42
+ * Last Modified: 2025-05-25 15:37:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -197,30 +197,36 @@ module.exports.follow = {
                 if (!handleIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
                 /* --------- Try to follow --------- */
-                followFunc.call(bot.community, ...Object.values(followArgs), (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
+                try {
+                    followFunc.call(bot.community, ...Object.values(followArgs), (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
 
-                    /* --------- Handle errors thrown by this follow attempt or update ratingHistory db and log success message --------- */
-                    if (error) {
-                        logRequestError(error, commandHandler, bot, id);
-                    }
+                        /* --------- Handle errors thrown by this follow attempt or update ratingHistory db and log success message --------- */
+                        if (error) {
+                            logRequestError(error, commandHandler, bot, id);
+                        }
 
-                    if (!error || error.eresult == 2) { // Steam returns Enum 2 ("Fail") for duplicate requests
+                        if (!error || error.eresult == 2) { // Steam returns Enum 2 ("Fail") for duplicate requests
 
-                        // Add follow entry
-                        commandHandler.data.ratingHistoryDB.insert({ id: id, accountName: activeReqEntry.accounts[i], type: idType + "Follow", time: Date.now() }, (err) => {
-                            if (err) logger("warn", `Failed to insert '${idType}Follow' entry for '${activeReqEntry.accounts[i]}' for '${id}' into ratingHistory database! Error: ` + err);
-                        });
+                            // Add follow entry
+                            commandHandler.data.ratingHistoryDB.insert({ id: id, accountName: activeReqEntry.accounts[i], type: idType + "Follow", time: Date.now() }, (err) => {
+                                if (err) logger("warn", `Failed to insert '${idType}Follow' entry for '${activeReqEntry.accounts[i]}' for '${id}' into ratingHistory database! Error: ` + err);
+                            });
 
-                        // Log success message
-                        if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Sending follow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${idType} ${id} with proxy ${bot.loginData.proxyIndex}...`);
-                            else logger("info", `[${bot.logPrefix}] Sending follow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${idType} ${id}...`);
+                            // Log success message
+                            if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Sending follow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${idType} ${id} with proxy ${bot.loginData.proxyIndex}...`);
+                                else logger("info", `[${bot.logPrefix}] Sending follow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${idType} ${id}...`);
 
-                    }
+                        }
 
-                    // Continue with the next iteration
+                        // Continue with the next iteration
+                        loop.next();
+
+                    });
+                } catch (err) {
+                    logger("warn", "SteamCommunity's follow function caused an unhandled exception! The following logRequestError call is made from a try catch block.");
+                    logRequestError(err, commandHandler, bot, id);
                     loop.next();
-
-                });
+                }
 
             }, commandHandler.data.config.requestDelay * (i > 0));
 
@@ -431,30 +437,36 @@ module.exports.unfollow = {
                 if (!handleIterationSkip(commandHandler, loop, bot, id)) return; // Skip iteration if false was returned
 
                 /* --------- Try to unfollow --------- */
-                followFunc.call(bot.community, ...Object.values(followArgs), (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
+                try {
+                    followFunc.call(bot.community, ...Object.values(followArgs), (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
 
-                    /* --------- Handle errors thrown by this unfollow attempt or update ratingHistory db and log success message --------- */
-                    if (error) {
-                        logRequestError(error, commandHandler, bot, id);
-                    }
+                        /* --------- Handle errors thrown by this unfollow attempt or update ratingHistory db and log success message --------- */
+                        if (error) {
+                            logRequestError(error, commandHandler, bot, id);
+                        }
 
-                    if (!error || error.eresult == 2) { // Steam returns Enum 2 ("Fail") for duplicate requests
+                        if (!error || error.eresult == 2) { // Steam returns Enum 2 ("Fail") for duplicate requests
 
-                        // Remove follow entry
-                        commandHandler.data.ratingHistoryDB.remove({ id: id, accountName: activeReqEntry.accounts[i], type: idType + "Follow" }, (err) => {
-                            if (err) logger("warn", `Failed to remove '${idType}Follow' entry for '${activeReqEntry.accounts[i]}' for '${id}' from ratingHistory database! Error: ` + err);
-                        });
+                            // Remove follow entry
+                            commandHandler.data.ratingHistoryDB.remove({ id: id, accountName: activeReqEntry.accounts[i], type: idType + "Follow" }, (err) => {
+                                if (err) logger("warn", `Failed to remove '${idType}Follow' entry for '${activeReqEntry.accounts[i]}' for '${id}' from ratingHistory database! Error: ` + err);
+                            });
 
-                        // Log success message
-                        if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Sending unfollow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${idType} ${id} with proxy ${bot.loginData.proxyIndex}...`);
-                            else logger("info", `[${bot.logPrefix}] Sending unfollow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${idType} ${id}...`);
+                            // Log success message
+                            if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Sending unfollow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${idType} ${id} with proxy ${bot.loginData.proxyIndex}...`);
+                                else logger("info", `[${bot.logPrefix}] Sending unfollow ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} for ${idType} ${id}...`);
 
-                    }
+                        }
 
-                    // Continue with the next iteration
+                        // Continue with the next iteration
+                        loop.next();
+
+                    });
+                } catch (err) {
+                    logger("warn", "SteamCommunity's follow function caused an unhandled exception! The following logRequestError call is made from a try catch block.");
+                    logRequestError(err, commandHandler, bot, id);
                     loop.next();
-
-                });
+                }
 
             }, commandHandler.data.config.requestDelay * (i > 0));
 

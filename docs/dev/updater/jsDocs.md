@@ -7,7 +7,6 @@
     * [new Updater(controller)](#new_Updater_new)
     * [.run(forceUpdate, respondModule, resInfo)](#Updater+run) ⇒ <code>Promise.&lt;boolean&gt;</code>
         * [~stopOnFatalError()](#Updater+run..stopOnFatalError)
-    * [._registerUpdateChecker()](#Updater+_registerUpdateChecker)
 
 <a name="new_Updater_new"></a>
 
@@ -39,9 +38,3 @@ Checks for any available update and installs it.
 Shorthander to abort when a part of the updater is missing and couldn't be repaired
 
 **Kind**: inner method of [<code>run</code>](#Updater+run)  
-<a name="Updater+_registerUpdateChecker"></a>
-
-### updater.\_registerUpdateChecker()
-Registers an update check job. This is called by Controller after the data integrity and startup update check
-
-**Kind**: instance method of [<code>Updater</code>](#Updater)  

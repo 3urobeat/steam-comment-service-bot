@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-02-11 17:26:08
+ * Last Modified: 2025-05-25 14:35:21
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -57,9 +57,9 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
 
         // Print logged in message with animation on initial login, otherwise without
         if (!this.controller.info.readyAfter) {
-            logger("info", `[${this.logPrefix}] Logged in! Accepting pending friend requests & group invites...`, false, true, logger.animation("loading"));
+            logger("info", `[${this.logPrefix}] Logged in! Checking pending friend requests & group invites...`, false, true, logger.animation("loading"));
         } else {
-            logger("info", `[${this.logPrefix}] Logged in! Accepting pending friend requests & group invites...`, false, true);
+            logger("info", `[${this.logPrefix}] Logged in! Checking pending friend requests & group invites...`, false, true);
         }
 
 
@@ -70,15 +70,13 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
         /* ------------ Accept offline friend and group invites/requests: ------------ */
         // Friends:
         let processedFriendRequests = 0;
-        let ignoredFriendRequests   = 0;
+        let declinedFriendRequests  = 0;
 
         for (let i = 0; i < Object.keys(this.user.myFriends).length; i++) { // Credit: https://dev.doctormckay.com/topic/1694-accept-friend-request-sent-in-offline/
             if (this.user.myFriends[Object.keys(this.user.myFriends)[i]] == 2) {
+                const thisfriend = Object.keys(this.user.myFriends)[i];
 
                 if (this.controller.data.advancedconfig.acceptFriendRequests) {
-                    const thisfriend = Object.keys(this.user.myFriends)[i];
-
-                    // Accept friend request
                     this.user.addFriend(thisfriend);
                     processedFriendRequests++;
 
@@ -107,33 +105,45 @@ Bot.prototype._attachSteamWebSessionEvent = function() {
                         }
                     }
                 } else {
-                    ignoredFriendRequests++;
+                    this.user.removeFriend(thisfriend);
+                    declinedFriendRequests++;
                 }
-
             }
         }
 
-        // Log info msg about ignored friend requests
-        if (ignoredFriendRequests > 0) {
-            logger("info", `Ignored ${ignoredFriendRequests} pending friend request(s) because acceptFriendRequests is turned off in advancedconfig.json.`);
+        // Log info msg about declined friend requests
+        if (declinedFriendRequests > 0) {
+            logger("info", `Declined ${declinedFriendRequests} new friend request(s) because acceptFriendRequests is turned off in advancedconfig.json.`);
         }
 
         // Groups:
+        let declinedGroupInvites = 0;
+
         for (let i = 0; i < Object.keys(this.user.myGroups).length; i++) {
             if (this.user.myGroups[Object.keys(this.user.myGroups)[i]] == 2) {
                 const thisgroup = Object.keys(this.user.myGroups)[i];
 
                 // Check if acceptgroupinvites is set to false and only allow botsgroup invite to be accepted
                 if (!this.controller.data.config.acceptgroupinvites) {
-                    if (!this.controller.data.config.yourgroup && !this.controller.data.config.botsgroup) return;
-                    if (thisgroup != this.controller.data.cachefile.configgroup64id && thisgroup != this.controller.data.cachefile.botsgroupid) return;
-                    logger("info", "acceptgroupinvites is turned off but this is an invite to the group set as yourgroup or botsgroup. Accepting invite anyway...");
+                    if ((this.controller.data.config.yourgroup.length < 1 && this.controller.data.config.botsgroup.length < 1)
+                        || (thisgroup != this.controller.data.cachefile.configgroup64id && thisgroup != this.controller.data.cachefile.botsgroupid)) {
+                        this.user.respondToGroupInvite(thisgroup, false);
+                        declinedGroupInvites++;
+                        continue;
+                    }
+
+                    logger("info", "Received group invite to config's yourgroup or botsgroup. Accepting invite even though acceptgroupinvites is turned off...");
                 }
 
                 // Accept invite and log message
                 this.user.respondToGroupInvite(thisgroup, true);
                 logger("info", `[${this.logPrefix}] Accepted group invite while I was offline: ` + thisgroup);
             }
+        }
+
+        // Log info msg about declined group invites
+        if (declinedGroupInvites > 0) {
+            logger("info", `Declined ${declinedGroupInvites} new group invite(s) because acceptgroupinvites is turned off in config.json.`);
         }
 
 

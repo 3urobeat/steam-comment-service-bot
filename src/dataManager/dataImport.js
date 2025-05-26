@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-02-13 20:08:04
+ * Last Modified: 2025-05-26 19:06:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -402,16 +402,21 @@ DataManager.prototype.importProxiesFromDisk = function() {
 
                 } else { // Can be used as is
 
-                    if (typeof e == "string" && !e.includes("://")) e = "http://" + e; // Precede proxy with http if user did not to prevent SteamCommunity requests from failing
-
-                    // Extract proxy ip
+                    // Extract proxy ip for logging without exposing credentials
                     let proxyIp = null;
 
                     try {
-                        proxyIp = e.split("@")[1].split(":")[0];
+                        if (e.includes("@")) { // Contains username & password
+                            proxyIp = e.replace("http://", "").split("@")[1].split(":")[0];
+                        } else {               // Does not contain credentials
+                            proxyIp = e.replace("http://", "").split(":")[0];
+                        }
                     } catch (err) { // eslint-disable-line
                         logger("warn", `Failed to extract IP from proxy '${e}' to use in log messages, using full proxy at the risk of exposing proxy credentials in log file!`, true);
                     }
+
+                    // Precede proxy with http if user did not to prevent SteamCommunity requests from failing
+                    if (typeof e == "string" && !e.includes("://")) e = "http://" + e;
 
                     proxies[i] = { proxyIndex: i, proxy: e, ip: proxyIp, isOnline: true, lastOnlineCheck: 0 };
                 }

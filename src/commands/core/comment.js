@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-02-13 21:24:37
+ * Last Modified: 2025-05-25 15:41:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -334,20 +334,26 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
             const quote = await commandHandler.data.getQuote(activeReqEntry.quotesArr); // Get a random quote to comment with
             commentArgs["quote"] = quote; // Replace key "quote" in args obj
 
-            postComment.call(bot.community, ...Object.values(commentArgs), (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
+            try {
+                postComment.call(bot.community, ...Object.values(commentArgs), (error) => { // Very important! Using call() and passing the bot's community instance will keep context (this.) as it was lost by our postComment variable assignment!
 
-                /* --------- Handle errors thrown by this comment attempt or log success message --------- */
-                if (error) {
-                    logRequestError(error, commandHandler, bot, receiverSteamID64);
-                } else {
-                    if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${whereStr} with proxy ${bot.loginData.proxyIndex}: ${String(quote).split("\n")[0]}`);
-                        else logger("info", `[${bot.logPrefix}] Comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${whereStr}: ${String(quote).split("\n")[0]}`); // Splitting \n to only get first line of multi line comments
-                }
+                    /* --------- Handle errors thrown by this comment attempt or log success message --------- */
+                    if (error) {
+                        logRequestError(error, commandHandler, bot, receiverSteamID64);
+                    } else {
+                        if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${whereStr} with proxy ${bot.loginData.proxyIndex}: ${String(quote).split("\n")[0]}`);
+                            else logger("info", `[${bot.logPrefix}] Comment ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${whereStr}: ${String(quote).split("\n")[0]}`); // Splitting \n to only get first line of multi line comments
+                    }
 
-                // Continue with the next iteration
+                    // Continue with the next iteration
+                    loop.next();
+
+                });
+            } catch (err) {
+                logger("warn", "SteamCommunity's postComment function caused an unhandled exception! The following logRequestError call is made from a try catch block.");
+                logRequestError(err, commandHandler, bot, receiverSteamID64);
                 loop.next();
-
-            });
+            }
 
         }, commandHandler.data.config.requestDelay * (i > 0)); // Delay every comment that is not the first one
 

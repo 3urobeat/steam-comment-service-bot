@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 16:41:06
+ * Last Modified: 2025-05-25 14:02:12
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -31,7 +31,11 @@ Bot.prototype._attachSteamFriendRelationshipEvent = function() {
         if (relationship == 2) {
             const steamID64 = new SteamID(String(steamID)).getSteamID64();
 
-            if (!this.data.advancedconfig.acceptFriendRequests) return logger("info", `[${this.logPrefix}] Received friend request from ${steamID64} but acceptFriendRequests is turned off in advancedconfig.json`);
+            if (!this.data.advancedconfig.acceptFriendRequests) {
+                logger("info", `[${this.logPrefix}] Declining friend request from ${steamID64} because acceptFriendRequests is turned off in advancedconfig.json...`);
+                this.user.removeFriend(steamID);
+                return;
+            }
 
             // Accept friend request
             this.user.addFriend(steamID);
@@ -91,9 +95,14 @@ Bot.prototype._attachSteamGroupRelationshipEvent = function() {
 
             // Check if acceptgroupinvites is set to false and only allow botsgroup invite to be accepted
             if (!this.controller.data.config.acceptgroupinvites) {
-                if (this.controller.data.config.yourgroup.length < 1 && this.controller.data.config.botsgroup.length < 1) return;
-                if (steamID64 != this.controller.data.cachefile.configgroup64id && steamID64 != this.controller.data.cachefile.botsgroupid) return;
-                logger("info", "acceptgroupinvites is turned off but this is an invite to the group set as yourgroup or botsgroup. Accepting invite anyway...");
+                if ((this.controller.data.config.yourgroup.length < 1 && this.controller.data.config.botsgroup.length < 1)
+                    || (steamID64 != this.controller.data.cachefile.configgroup64id && steamID64 != this.controller.data.cachefile.botsgroupid)) {
+                    this.user.respondToGroupInvite(steamID, false);
+                    logger("info", `[${this.logPrefix}] Declined group invite because acceptgroupinvites is turned off: ${steamID64}`);
+                    return;
+                }
+
+                logger("info", "Received group invite to config's yourgroup or botsgroup. Accepting invite even though acceptgroupinvites is turned off...");
             }
 
             this.user.respondToGroupInvite(steamID, true);

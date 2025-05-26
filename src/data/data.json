@@ -1,6 +1,6 @@
 {
-    "version": "21601",
-    "versionstr": "2.16.1",
+    "version": "21602",
+    "versionstr": "2.16.2",
     "branch": "master",
     "filetostart": "./src/starter.js",
     "filetostarturl": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/src/starter.js",
@@ -8,7 +8,7 @@
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/3urobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://github.com/sponsors/3urobeat",
     "firststart": true,
     "compatibilityfeaturedone": false,
-    "whatsnew": "Fixed sharedfiles failing to load caused by dependency version mismatch. Fixed !comment calculating incorrect amount of bots needed when maxRequestAmount < accsAvailable and asking user to add empty list of accounts.",
+    "whatsnew": "Bot will now decline friend requests/group invites when accepting is disabled in config instead of ignoring them. Fixed certain artworks failing to load, fixed some misc proxy parsing issues & minor other improvements.",
     "timesloggedin": 0,
     "totallogintime": 0
 }

@@ -4,7 +4,7 @@
  * Created Date: 2023-06-02 13:23:01
  * Author: 3urobeat
  *
- * Last Modified: 2025-02-13 21:27:33
+ * Last Modified: 2025-05-25 15:37:54
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -166,28 +166,34 @@ module.exports.favorite = {
                     }
 
                     /* --------- Try to favorite --------- */
-                    favFunc.call(bot.community, sharedfile.id, sharedfile.appID, (error) => { // Note: Steam does not return an error for a duplicate request here
+                    try {
+                        favFunc.call(bot.community, sharedfile.id, sharedfile.appID, (error) => { // Note: Steam does not return an error for a duplicate request here
 
-                        /* --------- Handle errors thrown by this favorite attempt or update ratingHistory db and log success message --------- */
-                        if (error) {
-                            logRequestError(error, commandHandler, bot, id);
+                            /* --------- Handle errors thrown by this favorite attempt or update ratingHistory db and log success message --------- */
+                            if (error) {
+                                logRequestError(error, commandHandler, bot, id);
 
-                        } else {
+                            } else {
 
-                            // Add favorite entry
-                            commandHandler.data.ratingHistoryDB.insert({ id: id, accountName: activeReqEntry.accounts[i], type: "favorite", time: Date.now() }, (err) => {
-                                if (err) logger("warn", `Failed to insert 'favorite' entry for '${activeReqEntry.accounts[i]}' on '${id}' into ratingHistory database! Error: ` + err);
-                            });
+                                // Add favorite entry
+                                commandHandler.data.ratingHistoryDB.insert({ id: id, accountName: activeReqEntry.accounts[i], type: "favorite", time: Date.now() }, (err) => {
+                                    if (err) logger("warn", `Failed to insert 'favorite' entry for '${activeReqEntry.accounts[i]}' on '${id}' into ratingHistory database! Error: ` + err);
+                                });
 
-                            // Log success message
-                            if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Favorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id} with proxy ${bot.loginData.proxyIndex}...`);
-                                else logger("info", `[${bot.logPrefix}] Favorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id}...`);
-                        }
+                                // Log success message
+                                if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Favorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id} with proxy ${bot.loginData.proxyIndex}...`);
+                                    else logger("info", `[${bot.logPrefix}] Favorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id}...`);
+                            }
 
-                        // Continue with the next iteration
+                            // Continue with the next iteration
+                            loop.next();
+
+                        });
+                    } catch (err) {
+                        logger("warn", "SteamCommunity's favorite function caused an unhandled exception! The following logRequestError call is made from a try catch block.");
+                        logRequestError(err, commandHandler, bot, id);
                         loop.next();
-
-                    });
+                    }
 
                 }, commandHandler.data.config.requestDelay * (i > 0));
 
@@ -368,28 +374,34 @@ module.exports.unfavorite = {
                     }
 
                     /* --------- Try to unfavorite --------- */
-                    favFunc.call(bot.community, sharedfile.id, sharedfile.appID, (error) => {
+                    try {
+                        favFunc.call(bot.community, sharedfile.id, sharedfile.appID, (error) => {
 
-                        /* --------- Handle errors thrown by this unfavorite attempt or update ratingHistory db and log success message --------- */
-                        if (error) {
-                            logRequestError(error, commandHandler, bot, id);
+                            /* --------- Handle errors thrown by this unfavorite attempt or update ratingHistory db and log success message --------- */
+                            if (error) {
+                                logRequestError(error, commandHandler, bot, id);
 
-                        } else {
+                            } else {
 
-                            // Remove favorite entry
-                            commandHandler.data.ratingHistoryDB.remove({ id: id, accountName: activeReqEntry.accounts[i], type: "favorite" }, (err) => {
-                                if (err) logger("warn", `Failed to remove 'favorite' entry for '${activeReqEntry.accounts[i]}' on '${id}' from ratingHistory database! Error: ` + err);
-                            });
+                                // Remove favorite entry
+                                commandHandler.data.ratingHistoryDB.remove({ id: id, accountName: activeReqEntry.accounts[i], type: "favorite" }, (err) => {
+                                    if (err) logger("warn", `Failed to remove 'favorite' entry for '${activeReqEntry.accounts[i]}' on '${id}' from ratingHistory database! Error: ` + err);
+                                });
 
-                            // Log success message
-                            if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Unfavorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id} with proxy ${bot.loginData.proxyIndex}...`);
-                                else logger("info", `[${bot.logPrefix}] Unfavorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id}...`);
-                        }
+                                // Log success message
+                                if (commandHandler.data.proxies.length > 1) logger("info", `[${bot.logPrefix}] Unfavorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id} with proxy ${bot.loginData.proxyIndex}...`);
+                                    else logger("info", `[${bot.logPrefix}] Unfavorizing ${activeReqEntry.thisIteration + 1}/${activeReqEntry.amount} ${id}...`);
+                            }
 
-                        // Continue with the next iteration
+                            // Continue with the next iteration
+                            loop.next();
+
+                        });
+                    } catch (err) {
+                        logger("warn", "SteamCommunity's favorite function caused an unhandled exception! The following logRequestError call is made from a try catch block.");
+                        logRequestError(err, commandHandler, bot, id);
                         loop.next();
-
-                    });
+                    }
 
                 }, commandHandler.data.config.requestDelay * (i > 0));
 
