@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-05-25 21:56:11
+ * Last Modified: 2025-05-26 19:06:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -407,9 +407,9 @@ DataManager.prototype.importProxiesFromDisk = function() {
 
                     try {
                         if (e.includes("@")) { // Contains username & password
-                            proxyIp = e.split("@")[1].split(":")[0];
+                            proxyIp = e.replace("http://", "").split("@")[1].split(":")[0];
                         } else {               // Does not contain credentials
-                            proxyIp = e.split(":")[0];
+                            proxyIp = e.replace("http://", "").split(":")[0];
                         }
                     } catch (err) { // eslint-disable-line
                         logger("warn", `Failed to extract IP from proxy '${e}' to use in log messages, using full proxy at the risk of exposing proxy credentials in log file!`, true);
