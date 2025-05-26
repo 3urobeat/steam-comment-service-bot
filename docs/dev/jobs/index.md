@@ -38,7 +38,6 @@ Please use your browser's search function <kbd>Ctrl</kbd>+<kbd>F</kbd> to find s
     * [new JobManager(controller)](#new_JobManager_new)
     * [.controller](#JobManager+controller) : [<code>Controller</code>](#Controller)
     * [.jobs](#JobManager+jobs) : [<code>Array.&lt;Job&gt;</code>](#Job)
-    * [._runDueJobs()](#JobManager+_runDueJobs)
     * [.registerJob(job)](#JobManager+registerJob) ⇒ <code>Error</code> \| <code>null</code>
     * [.unregisterJob(name)](#JobManager+unregisterJob) ⇒ <code>Error</code> \| <code>null</code>
 
@@ -64,12 +63,6 @@ Reference to the controller object
 Collection of all registered jobs
 
 **Kind**: instance property of [<code>JobManager</code>](#JobManager)  
-<a name="JobManager+_runDueJobs"></a>
-
-### jobManager.\_runDueJobs()
-Internal: Executes all due jobs.
-
-**Kind**: instance method of [<code>JobManager</code>](#JobManager)  
 <a name="JobManager+registerJob"></a>
 
 ### jobManager.registerJob(job) ⇒ <code>Error</code> \| <code>null</code>

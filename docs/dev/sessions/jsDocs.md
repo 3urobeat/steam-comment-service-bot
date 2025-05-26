@@ -5,31 +5,11 @@
 
 * [SessionHandler](#SessionHandler)
     * [new SessionHandler(bot)](#new_SessionHandler_new)
-    * [._attachEvents()](#SessionHandler+_attachEvents)
-    * [._handle2FA(res)](#SessionHandler+_handle2FA)
-    * [._get2FAUserInput()](#SessionHandler+_get2FAUserInput)
-    * [._acceptSteamGuardCode(code)](#SessionHandler+_acceptSteamGuardCode)
-    * [._handleQRCode(res)](#SessionHandler+_handleQRCode)
-    * [._handleCredentialsLoginError(err)](#SessionHandler+_handleCredentialsLoginError)
-    * [._handleQrCodeLoginError(err)](#SessionHandler+_handleQrCodeLoginError)
     * [.hasStorageValidToken()](#SessionHandler+hasStorageValidToken) ⇒ <code>Promise.&lt;boolean&gt;</code>
-    * [._getTokenFromStorage(callback)](#SessionHandler+_getTokenFromStorage)
-    * [._saveTokenToStorage(token)](#SessionHandler+_saveTokenToStorage)
     * [.invalidateTokenInStorage()](#SessionHandler+invalidateTokenInStorage)
     * [.getToken()](#SessionHandler+getToken) ⇒ <code>Promise.&lt;(string\|null)&gt;</code>
-    * [._resolvePromise(token)](#SessionHandler+_resolvePromise)
-    * [._attemptCredentialsLogin()](#SessionHandler+_attemptCredentialsLogin)
     * [.attemptTokenRenew()](#SessionHandler+attemptTokenRenew) ⇒ <code>Promise.&lt;boolean&gt;</code>
-    * [._attachEvents()](#SessionHandler+_attachEvents)
-    * [._handle2FA(res)](#SessionHandler+_handle2FA)
-    * [._get2FAUserInput()](#SessionHandler+_get2FAUserInput)
-    * [._acceptSteamGuardCode(code)](#SessionHandler+_acceptSteamGuardCode)
-    * [._handleQRCode(res)](#SessionHandler+_handleQRCode)
-    * [._handleCredentialsLoginError(err)](#SessionHandler+_handleCredentialsLoginError)
-    * [._handleQrCodeLoginError(err)](#SessionHandler+_handleQrCodeLoginError)
     * [.hasStorageValidToken()](#SessionHandler+hasStorageValidToken) ⇒ <code>Promise.&lt;boolean&gt;</code>
-    * [._getTokenFromStorage(callback)](#SessionHandler+_getTokenFromStorage)
-    * [._saveTokenToStorage(token)](#SessionHandler+_saveTokenToStorage)
     * [.invalidateTokenInStorage()](#SessionHandler+invalidateTokenInStorage)
 
 <a name="new_SessionHandler_new"></a>
@@ -42,73 +22,6 @@ Constructor - Object oriented approach for handling session for one account
 | --- | --- | --- |
 | bot | [<code>Bot</code>](#Bot) | The bot object of this account |
 
-<a name="SessionHandler+_attachEvents"></a>
-
-### sessionHandler.\_attachEvents()
-Internal: Attaches listeners to all steam-session events we care about
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-<a name="SessionHandler+_handle2FA"></a>
-
-### sessionHandler.\_handle2FA(res)
-Internal: Handles submitting 2FA code
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| res | <code>StartSessionResponse</code> | Response object from startWithCredentials() promise |
-
-<a name="SessionHandler+_get2FAUserInput"></a>
-
-### sessionHandler.\_get2FAUserInput()
-Internal: Helper function to get 2FA code from user and passing it to accept function or skipping account if desired
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-<a name="SessionHandler+_acceptSteamGuardCode"></a>
-
-### sessionHandler.\_acceptSteamGuardCode(code)
-Internal: Helper function to make accepting and re-requesting invalid steam guard codes easier
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| code | <code>string</code> | Input from user |
-
-<a name="SessionHandler+_handleQRCode"></a>
-
-### sessionHandler.\_handleQRCode(res)
-Handles displaying a QR Code to login using the Steam Mobile App
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| res | <code>StartSessionResponse</code> | Response object from startWithQR() promise |
-
-<a name="SessionHandler+_handleCredentialsLoginError"></a>
-
-### sessionHandler.\_handleCredentialsLoginError(err)
-Helper function to make handling login errors easier
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| err | <code>\*</code> | Error thrown by startWithCredentials() |
-
-<a name="SessionHandler+_handleQrCodeLoginError"></a>
-
-### sessionHandler.\_handleQrCodeLoginError(err)
-Helper function to make handling login errors easier
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| err | <code>\*</code> | Error thrown by startWithQR() |
-
 <a name="SessionHandler+hasStorageValidToken"></a>
 
 ### sessionHandler.hasStorageValidToken() ⇒ <code>Promise.&lt;boolean&gt;</code>
@@ -116,28 +29,6 @@ Checks if the database contains a valid token for this account. You can assume t
 
 **Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
 **Returns**: <code>Promise.&lt;boolean&gt;</code> - Resolves with `true` if a valid token was found, `false` otherwise  
-<a name="SessionHandler+_getTokenFromStorage"></a>
-
-### sessionHandler.\_getTokenFromStorage(callback)
-Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| callback | <code>function</code> | Called with `refreshToken` (String) on success or `null` on failure |
-
-<a name="SessionHandler+_saveTokenToStorage"></a>
-
-### sessionHandler.\_saveTokenToStorage(token)
-Internal - Saves a new token for this account to tokens.db
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| token | <code>string</code> | The refreshToken to store |
-
 <a name="SessionHandler+invalidateTokenInStorage"></a>
 
 ### sessionHandler.invalidateTokenInStorage()
@@ -151,23 +42,6 @@ Handles getting a refresh token for steam-user to auth with
 
 **Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
 **Returns**: <code>Promise.&lt;(string\|null)&gt;</code> - `refreshToken` on success or `null` on failure  
-<a name="SessionHandler+_resolvePromise"></a>
-
-### sessionHandler.\_resolvePromise(token)
-Internal - Handles resolving the getToken() promise and skipping the account if necessary
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| token | <code>string</code> | The token to resolve with or null when account should be skipped |
-
-<a name="SessionHandler+_attemptCredentialsLogin"></a>
-
-### sessionHandler.\_attemptCredentialsLogin()
-Internal - Attempts to log into account with credentials
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
 <a name="SessionHandler+attemptTokenRenew"></a>
 
 ### sessionHandler.attemptTokenRenew() ⇒ <code>Promise.&lt;boolean&gt;</code>
@@ -175,73 +49,6 @@ Attempts to renew the refreshToken used for the current session. Whether a new t
 
 **Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
 **Returns**: <code>Promise.&lt;boolean&gt;</code> - Returns a promise which resolves with `true` if Steam issued a new token, `false` otherwise. Rejects if no token is stored in the database.  
-<a name="SessionHandler+_attachEvents"></a>
-
-### sessionHandler.\_attachEvents()
-Internal: Attaches listeners to all steam-session events we care about
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-<a name="SessionHandler+_handle2FA"></a>
-
-### sessionHandler.\_handle2FA(res)
-Internal: Handles submitting 2FA code
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| res | <code>object</code> | Response object from startWithCredentials() promise |
-
-<a name="SessionHandler+_get2FAUserInput"></a>
-
-### sessionHandler.\_get2FAUserInput()
-Internal: Helper function to get 2FA code from user and passing it to accept function or skipping account if desired
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-<a name="SessionHandler+_acceptSteamGuardCode"></a>
-
-### sessionHandler.\_acceptSteamGuardCode(code)
-Internal: Helper function to make accepting and re-requesting invalid steam guard codes easier
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| code | <code>string</code> | Input from user |
-
-<a name="SessionHandler+_handleQRCode"></a>
-
-### sessionHandler.\_handleQRCode(res)
-Handles displaying a QR Code to login using the Steam Mobile App
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| res | <code>StartSessionResponse</code> | Response object from startWithQR() promise |
-
-<a name="SessionHandler+_handleCredentialsLoginError"></a>
-
-### sessionHandler.\_handleCredentialsLoginError(err)
-Helper function to make handling login errors easier
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| err | <code>\*</code> | Error thrown by startWithCredentials() |
-
-<a name="SessionHandler+_handleQrCodeLoginError"></a>
-
-### sessionHandler.\_handleQrCodeLoginError(err)
-Helper function to make handling login errors easier
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| err | <code>\*</code> | Error thrown by startWithQR() |
-
 <a name="SessionHandler+hasStorageValidToken"></a>
 
 ### sessionHandler.hasStorageValidToken() ⇒ <code>Promise.&lt;boolean&gt;</code>
@@ -249,28 +56,6 @@ Checks if the database contains a valid token for this account. You can assume t
 
 **Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
 **Returns**: <code>Promise.&lt;boolean&gt;</code> - Resolves with `true` if a valid token was found, `false` otherwise  
-<a name="SessionHandler+_getTokenFromStorage"></a>
-
-### sessionHandler.\_getTokenFromStorage(callback)
-Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| callback | <code>function</code> | Called with `refreshToken` (String) on success or `null` on failure |
-
-<a name="SessionHandler+_saveTokenToStorage"></a>
-
-### sessionHandler.\_saveTokenToStorage(token)
-Internal - Saves a new token for this account to tokens.db
-
-**Kind**: instance method of [<code>SessionHandler</code>](#SessionHandler)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| token | <code>string</code> | The refreshToken to store |
-
 <a name="SessionHandler+invalidateTokenInStorage"></a>
 
 ### sessionHandler.invalidateTokenInStorage()
