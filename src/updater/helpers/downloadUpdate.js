@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-07-15 15:59:00
+ * Last Modified: 2025-07-17 11:57:17
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -77,6 +77,32 @@ module.exports.startDownload = (controller) => {
                 };
 
                 const files = scandir("."); // Scan the directory of this installation
+
+
+                // Extract user installed packages (plugins) from package.json to be able to reinstall them after package.json has been replaced
+                const oldPackageJson        = require(srcdir + "/../package.json");
+                const newPackageJson        = require(srcdir + `/../steam-comment-service-bot-${controller.data.datafile.branch}/package.json`);
+                const currentDeps           = oldPackageJson.dependencies || {};
+                const upstreamDeps          = newPackageJson.dependencies || {};
+                let   amountOfPackagesAdded = 0;
+
+                for (const key in currentDeps) {
+                    if (!Object.prototype.hasOwnProperty.call(upstreamDeps, key)) {
+                        logger("debug", `Adding user installed package '${key}@${currentDeps[key]}' to upstream package.json...`, true);
+
+                        newPackageJson.dependencies[key] = currentDeps[key];
+                        amountOfPackagesAdded++;
+                    }
+                }
+
+                if (amountOfPackagesAdded > 0) {
+                    logger("", `${logger.colors.fgyellow}Transferring ${amountOfPackagesAdded} user installed package(s)...${logger.colors.reset}`, true, false, logger.animation("loading"));
+
+                    fs.writeFile(`./steam-comment-service-bot-${controller.data.datafile.branch}/package.json`, JSON.stringify(newPackageJson, null, 4), (err) => {
+                        if (err) logger("error", "Updater: Error writing user installed dependencies to package.json! " + err);
+                    });
+                }
+
 
                 // Delete old files
                 logger("", `${logger.colors.fgyellow}Deleting old files...${logger.colors.reset}`, true, false, logger.animation("loading"));
