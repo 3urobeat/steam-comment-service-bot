@@ -628,7 +628,7 @@
         {
             "path": "src/updater/helpers/downloadUpdate.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/helpers/downloadUpdate.js",
-            "checksum": "6844c8a0dadcef31e1eadf05200db5cd"
+            "checksum": "69a7daf488611d07b1eff743e8382b1a"
         },
         {
             "path": "src/updater/helpers/prepareUpdate.js",

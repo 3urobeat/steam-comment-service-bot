@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-07-17 11:57:17
+ * Last Modified: 2025-07-17 11:59:18
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -18,6 +18,11 @@
 const fs       = require("fs");
 const download = require("download"); // TODO: Does it make a difference if we require this lib inside the function or at the top score? Asking because of missing module error handling
 
+/**
+ * @typedef Controller
+ * @type {import("../../controller/controller.js")}
+ * @private
+ */
 
 /**
  * Downloads all files from the repository and installs them
