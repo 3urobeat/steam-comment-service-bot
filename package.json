@@ -23,8 +23,8 @@
         "steamid-resolver": "^1.4.0"
     },
     "scripts": {
-        "start": "node start.js",
-        "dev": "node scripts/generateFileStructure.js && node start",
+        "start": "NODE_ENV=production node start.js",
+        "dev": "node scripts/generateFileStructure.js && NODE_ENV=development node start",
 
         "devdocs": "node scripts/generateDevDocs.js",
         "jsdocs": "node scripts/generateDevDocsJsDocs.js",

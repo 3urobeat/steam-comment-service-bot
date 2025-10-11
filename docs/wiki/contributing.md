@@ -56,7 +56,7 @@ This branch contains the latest changes and must be the one you base your change
 You can now create your own branch using `git checkout -b "branchname"`, make changes and commit them to it.  
 It makes sense to give the branch a sensible name based on what your changes will be, but no pressure.  
 
-The setup of your dev bot is very similar to the [normal setup](./setup_guide.md), however make sure to run the command `npm install` in your terminal manually.  
+The setup of your dev bot is very similar to the [normal setup](./setup_guide.md), however make sure to run the command `npm ci` in your terminal manually.  
 This will install all dev dependencies, which are omitted in the normal installation to save space.  
 It is probably also a good idea to enable `printDebug` in `advancedconfig.json` to see a more detailed log output.
 

@@ -4,7 +4,7 @@
  * Created Date: 2021-07-10 10:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 18:24:12
+ * Last Modified: 2025-10-11 14:00:19
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -73,7 +73,7 @@ function attachParentListeners(callback) {
 
     /* ------------ Make a fake logger to use when the lib isn't loaded yet: ------------ */
     logger = (type, str) => {
-        // Make a "fake" logger function in order to be able to log the error message when the user forgot to run 'npm install'
+        // Make a "fake" logger function in order to be able to log error messages when dependencies have not been installed yet
         let separator = "";
         if (type.length > 1 && str.length > 1) separator = "|"; // Make sure separator gets only shown if both arguments contain characters
 
@@ -99,7 +99,7 @@ function attachParentListeners(callback) {
 
             npminteraction.reinstallAll(logger, (err, stdout) => { // eslint-disable-line
                 if (err) {
-                    logger("error", "I was unable to reinstall all modules. Please try running 'npm install --omit=dev' manually. Error: " + err);
+                    logger("error", "I was unable to reinstall all modules. Please try running 'npm ci --omit=dev' manually. Error: " + err);
                     process.exit(1);
 
                 } else {

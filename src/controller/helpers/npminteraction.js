@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-05-24 23:26:52
+ * Last Modified: 2025-10-11 13:58:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -59,12 +59,12 @@ module.exports.reinstallAll = async (logger, callback) => {
     fs.rm(srcdir + "/../node_modules", { recursive: true }, (err) => {
         if (err) return callback(err, null);
 
-        logger("info", "Running 'npm install --omit=dev'. This can take a moment, please wait...");
+        logger("info", "Running 'npm ci --omit=dev'. This can take a moment, please wait...");
 
-        exec("npm install --omit=dev", { cwd: srcdir + "/.." }, (err, stdout) => {
+        exec("npm ci --omit=dev", { cwd: srcdir + "/.." }, (err, stdout) => {
             if (err) return callback(err, null);
 
-            logger("info", "Successfully ran 'npm install --omit=dev'");
+            logger("info", "Successfully ran 'npm ci --omit=dev'");
 
             // Set terminal title again as npm may have changed it
             setTerminalTitle();
@@ -85,14 +85,14 @@ module.exports.update = (callback) => {
 
 
 /**
- * Updates all installed packages to versions listed in package.json
+ * Updates all installed packages to versions listed in package-lock.json
  * @param {string} path Custom path to read package.json from and install packages to
  * @param {function((string|null), (string|null)): void} callback Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */
 module.exports.updateFromPath = (path, callback) => {
-    logger("debug", `npminteraction update(): Running 'npm install --omit=dev' in '${path}'. This can take a moment, please wait...`);
+    logger("debug", `npminteraction update(): Running 'npm ci --omit=dev' in '${path}'. This can take a moment, please wait...`);
 
-    exec("npm install --omit=dev", { cwd: path }, (err, stdout) => {
+    exec("npm ci --omit=dev", { cwd: path }, (err, stdout) => {
         if (err) return callback(err, null);
 
         // Logger("info", `NPM Log:\n${stdout}`, false, false, null, true) // Entire log, disabled to reduce log spam
