@@ -607,7 +607,7 @@ declare function reinstallAll(logger: (...params: any[]) => any, callback: (...p
 declare function update(callback: (...params: any[]) => any): void;
 
 /**
- * Updates all installed packages to versions listed in package.json
+ * Updates all installed packages to versions listed in package-lock.json
  * @param path - Custom path to read package.json from and install packages to
  * @param callback - Called with `err` (String) and `stdout` (String) (npm response) parameters on completion
  */

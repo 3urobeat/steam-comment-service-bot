@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-26 21:29:28
+ * Last Modified: 2025-10-11 12:53:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -240,7 +240,7 @@ Controller.prototype.login = async function(firstLogin) {
         if (allAccountsNotPopulated.length > 0) {
             // Only reprint this log message when the amount of accounts has changed to prevent spam
             if (lastWaitingForMsgAmount != allAccountsNotPopulated.length) {
-                logger("info", `All accounts logged in, waiting for user object of bot(s) '${allAccountsNotPopulated.flatMap((e) => e.index).join(", ")}' to populate...`, false, true, logger.animation("waiting"));
+                logger("info", `All accounts logged in, waiting for Steam to provide the full information of bot(s) '${allAccountsNotPopulated.flatMap((e) => e.index).join(", ")}'. This can take a minute.`, false, true, logger.animation("waiting"));
                 lastWaitingForMsgAmount = allAccountsNotPopulated.length;
             }
             return;

@@ -1,7 +1,8 @@
-# https://dockerize.io/guides/docker-nuxtjs-guide
+# WARN: Needs to be built in fresh checked out branch! Otherwise accounts.txt and other configuration files are included as is!
+# Local build: "DOCKER_BUILDKIT=1 docker build --progress=plain -t steam-comment-service-bot ."
+# Requires BuildKit! https://docs.docker.com/build/buildkit
 
-# Local build: "docker build -t steam-comment-service-bot ."
-# Start: "docker run -p 4000:4000 -v <destination path>:/usr/src/steam-comment-service-bot steam-comment-service-bot"
+# Start: "docker run -p 4000:4000 -v <destination path>:/usr/src/steam-comment-service-bot 3urobeat/steam-comment-service-bot"
 
 FROM node:lts-alpine
 
@@ -11,6 +12,11 @@ WORKDIR /usr/src/steam-comment-service-bot
 
 # Copy the app, note .dockerignore
 COPY . /usr/src/steam-comment-service-bot
+RUN ls -al /usr/src/steam-comment-service-bot
+
+# Set ownership and switch to unprivileged user
+RUN chown -R node:node ./
+USER node
 RUN ls -al /usr/src/steam-comment-service-bot
 
 # Expose port a port if a plugin requires one, in this case 4000 for the pre-installed steam-comment-bot-rest plugin

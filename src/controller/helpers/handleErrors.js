@@ -4,7 +4,7 @@
  * Created Date: 2023-03-21 22:53:37
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 17:01:05
+ * Last Modified: 2025-10-11 13:58:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
@@ -43,7 +43,7 @@ Controller.prototype._handleErrors = function() {
 
             npminteraction.reinstallAll(logger, (err, stdout) => { //eslint-disable-line
                 if (err) {
-                    logger("error", "I was unable to reinstall all modules. Please try running 'npm install --omit=dev' manually. Error: " + err);
+                    logger("error", "I was unable to reinstall all modules. Please try running 'npm ci --omit=dev' manually. Error: " + err);
                     return this.stop();
                 } else {
                     // Logger("info", `NPM Log:\n${stdout}`, true) //entire log (not using it rn to avoid possible confusion with vulnerabilities message)

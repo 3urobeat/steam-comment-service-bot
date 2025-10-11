@@ -149,7 +149,7 @@ The bot is now ready to be started! Do not modify any of the other files.
 &nbsp;
 
 ## Usage: <a href="https://youtu.be/8J78rC9Z28U?t=239" target="_blank"><img align="right" src="https://img.shields.io/badge/YouTube-Tutorial%20section-red"></a>
-Open up a power shell/terminal in this folder and type `node start.js`.  
+Open up a power shell/terminal in this folder and type `npm run start`.  
 
 > [!IMPORTANT]
 > Do not start the bot with a tool that restarts on changes, like for example 'nodemon'! Always use plain `node`.  
