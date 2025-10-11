@@ -7,6 +7,7 @@
 - [2.16.0](#2.16.0)
 - [2.16.1](#2.16.1)
 - [2.16.2](#2.16.2)
+- [2.16.3](#2.16.3)
   
 &nbsp;
 
@@ -209,3 +210,7 @@ Commit: [be3444d](https://github.com/3urobeat/steam-comment-service-bot/commit/b
 - Docs: Switched instructions to use npm start script instead of running `node start.js` manually
 - Updated dependencies
 - Minor other changes
+
+Commit: [1315bb5](https://github.com/3urobeat/steam-comment-service-bot/commit/1315bb5)
+
+&nbsp;
