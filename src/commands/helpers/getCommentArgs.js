@@ -4,7 +4,7 @@
  * Created Date: 2022-02-28 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 2025-02-11 17:59:38
+ * Last Modified: 2025-10-11 13:27:49
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
@@ -113,7 +113,7 @@ module.exports.getCommentArgs = (commandHandler, args, resInfo, respond) => {
                     return resolve(false);
                 }
 
-                numberOfComments = args[0];
+                numberOfComments = Number(args[0]);
 
 
                 /* --------- Check profileid argument if it was provided --------- */
