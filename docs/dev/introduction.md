@@ -25,11 +25,11 @@ The `src` directory also contains a folder for library patches I've made, the co
 &nbsp;
 
 ## Start and Restart process
-As mentioned above, the bot runs inside a child process, controlled by a parent process, which is the one you are actually starting when running the command `node start`.  
+As mentioned above, the bot runs inside a child process, controlled by a parent process, which is the one you are actually starting when running the command `npm run start`.  
 This two process architecture allows me to completely restart the bot itself without any user interaction at all and without leaving any old data in the memory behind. This was quite revolutionary for me to figure out back when I built the updater :'D  
 
 The startup procedure looks like follows:  
-`node start` **->** start.js (cannot be reloaded) **->** src/starter.js (can only be hot-reloaded) **->** src/controller.js (child process, can be fully reloaded)  
+`npm run start` **->** start.js (cannot be reloaded) **->** src/starter.js (can only be hot-reloaded) **->** src/controller.js (child process, can be fully reloaded)  
 The Controller now inits the DataManager, then performs a few checks (e.g. internet connection), then inits the Updater and then starts spawning Bot objects to log in all accounts (if no update was found).
 
 The starter process dev documentation page can be found [here](./starter.md).
