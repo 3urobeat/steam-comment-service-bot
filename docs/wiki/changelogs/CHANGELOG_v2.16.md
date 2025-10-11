@@ -192,3 +192,20 @@ Commit: [958e078](https://github.com/3urobeat/steam-comment-service-bot/commit/9
 Commit: [be3444d](https://github.com/3urobeat/steam-comment-service-bot/commit/be3444d)
 
 &nbsp;
+
+<a id="2.16.3"></a>
+
+## **2025-10-11, Version 2.16.3**
+**Fixes:**
+- Fixed updater loosing user installed plugins
+- Fixed outdated function call in `retryFailedComments`, causing exception [#281](https://github.com/3urobeat/steam-comment-service-bot/issues/281)
+- Fixed comment amount being a String(??), leading to incorrect retry amount in `retryFailedComments`
+
+**Changes:**
+- Reworded login "waiting for bot accounts to be populated" message to be more user friendly
+- Improved docker build process
+- Bot process in Docker image is now unprivileged
+- Switched to using `npm ci` instead of `npm install` to avoid potential package version mismatch issues
+- Docs: Switched instructions to use npm start script instead of running `node start.js` manually
+- Updated dependencies
+- Minor other changes
