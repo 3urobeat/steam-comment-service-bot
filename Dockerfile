@@ -1,6 +1,8 @@
+# WARN: Needs to be built in fresh checked out branch! Otherwise accounts.txt and other configuration files are included as is!
 # Local build: "DOCKER_BUILDKIT=1 docker build --progress=plain -t steam-comment-service-bot ."
 # Requires BuildKit! https://docs.docker.com/build/buildkit
-# Start: "docker run -p 4000:4000 -v <destination path>:/usr/src/steam-comment-service-bot steam-comment-service-bot"
+
+# Start: "docker run -p 4000:4000 -v <destination path>:/usr/src/steam-comment-service-bot 3urobeat/steam-comment-service-bot"
 
 FROM node:lts-alpine
 
