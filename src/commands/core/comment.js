@@ -4,7 +4,7 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-05-25 15:41:05
+ * Last Modified: 2025-10-11 12:40:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
@@ -409,7 +409,7 @@ async function comment(commandHandler, resInfo, respond, postComment, commentArg
                 activeReqEntry.failed = {};
 
                 // Call comment function again
-                comment(commandHandler, respond, receiverSteamID64);
+                comment(commandHandler, resInfo, respond, postComment, commentArgs, receiverSteamID64);
             }, commandHandler.data.advancedconfig.retryFailedCommentsDelay);
 
             return;
