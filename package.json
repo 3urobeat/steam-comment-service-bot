@@ -25,11 +25,17 @@
     "scripts": {
         "start": "node start.js",
         "dev": "node scripts/generateFileStructure.js && node start",
+
         "devdocs": "node scripts/generateDevDocs.js",
         "jsdocs": "node scripts/generateDevDocsJsDocs.js",
         "types": "jsdoc -t node_modules/tsd-jsdoc/dist -c jsdoc.config.json -d types ; node scripts/generateFileStructure.js",
         "docs": "npm run types && npm run jsdocs && npm run devdocs",
-        "deps": "ncu -u && npm update"
+
+        "deps": "ncu -u && npm update",
+
+        "get-version": "grep \"\\\"version\\\":\" package.json | awk '{split($0,a,\" \"); print $2}' | sed -r 's/\"|,//g'",
+        "docker-build": "DOCKER_BUILDKIT=1 docker build --progress=plain -t 3urobeat/steam-comment-service-bot:latest -t 3urobeat/steam-comment-service-bot:$(npm run get-version | tail -n 1) .",
+        "docker-push": "docker image push 3urobeat/steam-comment-service-bot:latest && docker image push 3urobeat/steam-comment-service-bot:$(npm run get-version | tail -n 1)"
     },
     "author": "3urobeat",
     "license": "GPL-3.0",
