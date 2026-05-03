@@ -199,6 +199,7 @@ Commit: [be3444d](https://github.com/3urobeat/steam-comment-service-bot/commit/b
 ## **2025-10-11, Version 2.16.3**
 **Fixes:**
 - Fixed updater loosing user installed plugins
+- Fixed updater loosing statistics.db
 - Fixed outdated function call in `retryFailedComments`, causing exception [#281](https://github.com/3urobeat/steam-comment-service-bot/issues/281)
 - Fixed comment amount being a String(??), leading to incorrect retry amount in `retryFailedComments`
 
