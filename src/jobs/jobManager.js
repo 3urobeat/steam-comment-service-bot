@@ -4,7 +4,7 @@
  * Created Date: 2024-02-11 10:48:17
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-12 17:04:36
+ * Last Modified: 2025-12-30 22:36:11
  * Modified By: 3urobeat
  *
  * Copyright (c) 2024 - 2025 3urobeat <https://github.com/3urobeat>
@@ -128,14 +128,15 @@ JobManager.prototype.registerJob = function(job) {
  */
 JobManager.prototype.unregisterJob = function(name) {
 
+    // Attempt to find job
+    const index = this.jobs.findIndex((e) => e.name === name);
+
     // Check if job does not exist
-    if (!this.jobs.some((e) => e.name === name)) {
+    if (index === -1) {
         return new Error("Job does not exist!");
     }
 
     // Remove job and return null on success
-    const index = this.jobs.findIndex((e) => e.name === name);
-
     this.jobs.splice(index, 1);
 
     logger("debug", `JobManager: Unregistered job '${name}'!`);

@@ -453,12 +453,12 @@
         {
             "path": "src/jobs/jobManager.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/jobs/jobManager.js",
-            "checksum": "893682a182d4101da3c829ee73c89e97"
+            "checksum": "b8e74b64027436fea4e17ef926635d0c"
         },
         {
             "path": "src/libraryPatches/CSteamDiscussion.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/libraryPatches/CSteamDiscussion.js",
-            "checksum": "9c31876534f36bd1740fcab0673c27d9"
+            "checksum": "129c3093b8433243a8c47d723abd5c08"
         },
         {
             "path": "src/libraryPatches/CSteamReviews.js",

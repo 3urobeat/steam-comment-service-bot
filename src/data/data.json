@@ -1,6 +1,6 @@
 {
-    "version": "21603",
-    "versionstr": "2.16.3",
+    "version": "21604",
+    "versionstr": "2.16.4",
     "branch": "master",
     "filetostart": "./src/starter.js",
     "filetostarturl": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/master/src/starter.js",
@@ -8,7 +8,7 @@
     "aboutstr": "This bot was created by 3urobeat.\nGitHub: https://github.com/3urobeat/steam-comment-service-bot \nSteam: https://steamcommunity.com/id/3urobeat \nIf you like my work, any donation would be appreciated! https://github.com/sponsors/3urobeat",
     "firststart": true,
     "compatibilityfeaturedone": false,
-    "whatsnew": "Fixed retryFailedComments not working, fixed updater loosing some persistent files, various minor general improvements and updated dependencies.",
+    "whatsnew": "Fixed discussions failing to resolve due to Steam update and updated dependencies.",
     "timesloggedin": 0,
     "totallogintime": 0
 }

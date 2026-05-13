@@ -123,7 +123,7 @@ Should you get an error while starting, make sure your syntax is correct. Common
 Please make sure your code is somewhat good looking, is easy to read and is properly documented.  
 Take a look at any of the other source code files in the project to see how I style my code.
 
-The project includes an [eslint config](/.eslintrc.json) to enforce the project's styling rules, so please make sure your eslint installation works.  
+The project includes an [eslint config](/.eslint.config.mjs) to enforce the project's styling rules, so please make sure your eslint installation works.  
 It should be included as a dev dependency when setting up the project on your machine.  
 While working on your code, eslint should automatically display warnings or errors for parts of your code if you are using an IDE.  
 To run the linter manually, you can execute the command `npx eslint .` in the project folder.  
