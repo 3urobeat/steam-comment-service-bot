@@ -8,6 +8,7 @@
 - [2.16.1](#2.16.1)
 - [2.16.2](#2.16.2)
 - [2.16.3](#2.16.3)
+- [2.16.4](#2.16.4)
   
 &nbsp;
 
@@ -215,3 +216,14 @@ Commit: [be3444d](https://github.com/3urobeat/steam-comment-service-bot/commit/b
 Commit: [1315bb5](https://github.com/3urobeat/steam-comment-service-bot/commit/1315bb5)
 
 &nbsp;
+
+<a id="2.16.4"></a>
+
+## **2026-05-13, Version 2.16.4**
+**Fixes:**
+- Fixed jsdoc2md using global cache
+- Fixed discussion authorLink failing to resolve due to page layout update
+
+**Changes:**
+- Updated dependencies
+- Minor other changes
