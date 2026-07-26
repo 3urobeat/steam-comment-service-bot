@@ -25,6 +25,7 @@
     "scripts": {
         "start": "NODE_ENV=production node start.js",
         "dev": "node scripts/generateFileStructure.js && NODE_ENV=development node start",
+        "devInspect": "node scripts/generateFileStructure.js && NODE_ENV=development node --inspect start",
 
         "devdocs": "node scripts/generateDevDocs.js",
         "jsdocs": "jsdoc2md --clear && node scripts/generateDevDocsJsDocs.js",
@@ -56,5 +57,10 @@
     "overrides": {
         "jsdoc": "^4.0.5"
     },
-    "types": "./types/types.d.ts"
+    "types": "./types/types.d.ts",
+    "allowScripts": {
+        "protobufjs": true,
+        "steam-comment-bot-rest": true,
+        "steam-comment-bot-discord-plugin": true
+    }
 }
