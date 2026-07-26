@@ -4,10 +4,10 @@
  * Created Date: 2022-02-28 11:55:06
  * Author: 3urobeat
  *
- * Last Modified: 2025-10-11 13:27:49
+ * Last Modified: 2026-07-26 11:38:18
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2026 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -34,7 +34,7 @@ function _getVisibilityStatus(commandHandler, steamID64, type, callback) {
 
         commandHandler.controller.main.community.getSteamUser(new SteamID(steamID64), async (err, user) => {
             if (err || !user || !user.privacyState) {
-                logger("warn", `[Main] Failed to check if ${steamID64} is private: ${err}\n       Assuming profile is public and hoping for the best...`); // This can happen sometimes and most of the times commenting will still work
+                logger("warn", `[Main] Failed to check if ${steamID64} is private: ${err} - Assuming profile is public and hoping for the best...`); // This can happen sometimes and most of the times commenting will still work
 
                 callback(type + "Public");
             } else {
