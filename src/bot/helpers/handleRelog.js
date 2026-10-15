@@ -4,10 +4,10 @@
  * Created Date: 2023-10-05 16:14:46
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-31 11:43:07
+ * Last Modified: 2026-10-15 15:19:55
  * Modified By: 3urobeat
  *
- * Copyright (c) 2023 - 2025 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2023 - 2026 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -16,8 +16,9 @@
 
 
 const SteamUser      = require("steam-user");
-const SteamCommunity = require("steamcommunity");
-const request        = require("request");
+const SteamCommunity = require("@3urobeat/steamcommunity");
+const got            = require(require.resolve("got", { paths: [require.resolve("@3urobeat/steamcommunity")] })).default;
+const { HttpsProxyAgent } = require("https-proxy-agent");
 const Bot = require("../bot");
 
 
@@ -39,8 +40,10 @@ Bot.prototype.switchProxy = function(newProxyIndex) {
     this.user.logOff();
 
     // Recreate user and community object with new proxy
+    const switchedCommunityProxyAgent = this.loginData.proxy ? new HttpsProxyAgent(this.loginData.proxy) : null;
+
     this.user      = new SteamUser({ autoRelogin: false, renewRefreshTokens: true, httpProxy: this.loginData.proxy, protocol: SteamUser.EConnectionProtocol.WebSocket });
-    this.community = new SteamCommunity({ request: request.defaults({ "proxy": this.loginData.proxy }) });
+    this.community = new SteamCommunity({ got: got.extend(switchedCommunityProxyAgent ? { agent: { https: switchedCommunityProxyAgent, http: switchedCommunityProxyAgent } } : {}) });
 
     // Attach event listeners again. The old ones are taken care of by the Garbage Collector because the object gets destroyed
     this._attachSteamDebugEvent();

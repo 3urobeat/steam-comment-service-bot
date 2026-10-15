@@ -1,7 +1,7 @@
 {
     "source": {
         "include": [ "./src" ],
-        "exclude": [ "./src/commands/core/", "./src/libraryPatches/" ]
+        "exclude": [ "./src/commands/core/" ]
     },
     "opts": {
         "encoding": "utf8",

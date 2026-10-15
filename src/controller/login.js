@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-10-11 12:53:32
+ * Last Modified: 2026-10-15 15:19:44
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2026 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -358,7 +358,8 @@ Controller.prototype._processSlowLoginQueue = function(allAccounts) {
                 if (thisbot.status == Bot.EStatus.OFFLINE) return;
 
                 clearInterval(accIsOnlineInterval);
-                this.info.lastLoginTimestamp = Date.now();
+                if (!this.info.lastLoginTimestamp[String(thisbot.loginData.proxy)]) this.info.lastLoginTimestamp[String(thisbot.loginData.proxy)] = 0;
+                this.info.lastLoginTimestamp[String(thisbot.loginData.proxy)] = Date.now();
 
                 // Continue with next iteration
                 loop.next();

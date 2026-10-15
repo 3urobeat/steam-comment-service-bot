@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-31 11:45:01
+ * Last Modified: 2026-10-15 15:39:24
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2026 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -16,8 +16,9 @@
 
 
 const SteamUser      = require("steam-user");
-const SteamCommunity = require("steamcommunity");
-const request        = require("request"); // Yes I know, the library is deprecated but we must wait for node-steamcommunity to drop the lib as well
+const SteamCommunity = require("@3urobeat/steamcommunity");
+const got            = require(require.resolve("got", { paths: [require.resolve("@3urobeat/steamcommunity")] })).default; // Use got bundled with steamcommunity
+const { HttpsProxyAgent } = require("https-proxy-agent");
 
 const EStatus        = require("./EStatus.js");
 const Controller     = require("../controller/controller.js"); // eslint-disable-line
@@ -127,20 +128,12 @@ const Bot = function(controller, index, proxyIndex) {
      */
     this.user = new SteamUser({ autoRelogin: false, renewRefreshTokens: true, httpProxy: this.loginData.proxy, protocol: SteamUser.EConnectionProtocol.WebSocket });
 
+    const communityProxyAgent = this.loginData.proxy ? new HttpsProxyAgent(this.loginData.proxy) : null;
     /**
      * This SteamCommunity instance
      * @type {SteamCommunity}
      */
-    this.community = new SteamCommunity({ request: request.defaults({ "proxy": this.loginData.proxy }) }); // Pass proxy to community library as well
-
-    // Load my library patches
-    require("../libraryPatches/CSteamSharedFile.js");
-    require("../libraryPatches/sharedfiles.js");
-    require("../libraryPatches/helpers.js");
-    require("../libraryPatches/CSteamDiscussion.js");
-    require("../libraryPatches/discussions.js");
-    require("../libraryPatches/CSteamReviews.js");
-    require("../libraryPatches/reviews.js");
+    this.community = new SteamCommunity({ got: got.extend(communityProxyAgent ? { agent: { https: communityProxyAgent, http: communityProxyAgent } } : {}) });
 
     if (global.checkm8!="b754jfJNgZWGnzogvl<rsHGTR4e368essegs9<") this.controller.stop();
 
