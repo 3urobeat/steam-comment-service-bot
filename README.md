@@ -91,6 +91,11 @@ This project and all code included is distributed under the GPL-3.0 license.
 If you want to use code from this repository in your project, feel free to do so as long as you **include a URL** as comment above the code block to the file in this repository!  
 When using this project as a whole you are only allowed to edit the config files. You are **not** allowed to edit any files in a way that would remove credit to myself, the author.  
 
+#### **AI Usage**
+This project pre-dates the AI era. The entire code base is hand written.  
+I'm okay with using AI to track down bugs, speed up debugging and sketch context aware examples but any and all code must be human reviewed/implemented.  
+There will be no vibe coded bullshit.
+
 #### **Credits & Donations**
 Thank you [DoctorMcKay](https://github.com/DoctorMcKay) for creating the [steam-user](https://github.com/DoctorMcKay/node-steam-user) and [steamcommunity](https://github.com/DoctorMcKay/node-steamcommunity) libraries which this project heavily depends on!  
 

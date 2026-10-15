@@ -5,6 +5,7 @@
 
 You would like to contribute to the project itself?  
 Great! No matter if it's fixing a few typos or adding a whole feature - every contribution is welcome.  
+All contributions have to be made without major AI assistance in the final submitted code. You sign this off when submitting code via a pull request or similar.
 
 You can see a list of all features that still need to be worked on, are in progress or are finished in the repo's [projects](https://github.com/3urobeat/steam-comment-service-bot/projects) section.  
 
