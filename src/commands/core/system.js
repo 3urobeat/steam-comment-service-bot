@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2025-01-31 16:06:33
+ * Last Modified: 2026-10-17 15:04:20
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2025 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2026 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -310,8 +310,11 @@ module.exports.eval = {
             if (typeof evaled !== "string") evaled = require("util").inspect(evaled);
 
             // Sanitize result to filter logindata. This is not 100% safe but should prevent accidental leaks (only owners can use this cmd)
-            commandHandler.data.logininfo.forEach((e) => {
-                if (e.password) evaled = evaled.replace(new RegExp(e.password, "g"), "\"censored\"");
+            commandHandler.controller.getBots().forEach((e) => {
+                evaled = evaled.replace(new RegExp(e.loginData.logOnOptions.password, "g"), "\"censored\"");
+                evaled = evaled.replace(new RegExp(e.loginData.logOnOptions.sharedSecret, "g"), "\"censored\"");
+                evaled = evaled.replace(new RegExp(e.user._loginSession._accessToken, "g"), "\"censored\"");
+                evaled = evaled.replace(new RegExp(e.user._loginSession._refreshToken, "g"), "\"censored\"");
             });
 
             // Check for character limit and cut message
