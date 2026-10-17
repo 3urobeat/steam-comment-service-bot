@@ -103,7 +103,7 @@
         {
             "path": "src/bot/events/debug.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/bot/events/debug.js",
-            "checksum": "98702e3c9e8095b450a787318668059c"
+            "checksum": "2ec82c0974a3f248ff63ac675d651b4b"
         },
         {
             "path": "src/bot/events/disconnected.js",

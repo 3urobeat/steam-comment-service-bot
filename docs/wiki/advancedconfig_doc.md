@@ -47,6 +47,7 @@ This is the full documentation to customize your `advancedconfig.json`.
 | steamUserDebug | true or false | Enables and logs debug messages of the steam-user lib. Default: false |
 | steamUserDebugVerbose | true or false | Enables and logs debug-verbose messages of the steam-user lib. Default: false |
 | steamSessionDebug | true or false | Enabled and logs debug messages of the steam-session lib. Default: false |
+| steamCommunityDebug | true or false | Enabled and logs debug messages of the steamcommunity lib. Default: false |
 | logAnimationSpeed | Number in ms | Time the logging lib will wait between each frame of an animation. Default: 250 |
 
 &nbsp;

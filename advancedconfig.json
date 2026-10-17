@@ -35,5 +35,6 @@
     "steamUserDebug": false,
     "steamUserDebugVerbose": false,
     "steamSessionDebug": false,
+    "steamCommunityDebug": false,
     "logAnimationSpeed": 250
 }
