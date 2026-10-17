@@ -4,10 +4,10 @@
  * Created Date: 2021-07-09 16:26:00
  * Author: 3urobeat
  *
- * Last Modified: 2023-12-27 14:19:44
+ * Last Modified: 2026-10-17 16:10:42
  * Modified By: 3urobeat
  *
- * Copyright (c) 2021 - 2023 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2021 - 2026 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -42,7 +42,14 @@ module.exports.check = (datafile, branch, forceUpdate, callback) => {
             });
 
             res.on("end", () => {
-                output = JSON.parse(output);
+                try {
+                    output = JSON.parse(output);
+                } catch (err) {
+                    logger("error", "Updater checkForUpdate function Error: Failed to parse online data.json as JSON: " + err, true);
+                    callback(false, {});
+                    return;
+                }
+
                 const onlineversion    = output.version;
                 const onlineversionstr = output.versionstr;
 
@@ -51,7 +58,16 @@ module.exports.check = (datafile, branch, forceUpdate, callback) => {
                 // Return true if an update should be forced, if a greater version was found, if online versioning entered beta or if online versioning left beta
                 const updateFound = forceUpdate || onlineversion > datafile.version || !onlineversionstr.includes("BETA") && datafile.versionstr.includes("BETA") || onlineversionstr.includes("BETA") && !datafile.versionstr.includes("BETA");
 
-                callback(updateFound, output); // Make our callback!
+                try {
+                    callback(updateFound, output); // Make our callback!
+                } catch (err) {
+                    logger("error", "Updater checkForUpdate function Error: Callback threw: " + err, true);
+                }
+            });
+
+            res.on("error", function(err) {
+                logger("warn", `${logger.colors.reset}[${logger.colors.fgred}Notice${logger.colors.reset}]: Couldn't check for an available update because the response stream errored.\n          Error: ${err}`, true);
+                callback(false, {});
             });
         });
 

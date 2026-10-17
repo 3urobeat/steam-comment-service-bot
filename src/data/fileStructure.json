@@ -563,7 +563,7 @@
         {
             "path": "src/updater/helpers/checkForUpdate.js",
             "url": "https://raw.githubusercontent.com/3urobeat/steam-comment-service-bot/beta-testing/src/updater/helpers/checkForUpdate.js",
-            "checksum": "e3cc99d51cc90f6d6cb14c0f37eac7d2"
+            "checksum": "d975d0b79e0e0c5ac301bcf894c626e6"
         },
         {
             "path": "src/updater/helpers/createBackup.js",
